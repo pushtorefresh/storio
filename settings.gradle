@@ -1,0 +1,2 @@
+include ':bamboostorage'
+include ':bamboostorage-tests'

@@ -1,0 +1,21 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 20
+    buildToolsVersion '20.0.0'
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 20
+        versionCode 1
+        versionName '1.0'
+
+        testApplicationId 'com.pushtorefresh.bamboostorage.test'
+        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
+    }
+}
+
+dependencies {
+    // Android support library, required for @NonNull and @Nullable annotations
+    compile 'com.android.support:support-v4:20.0.0'
+}
