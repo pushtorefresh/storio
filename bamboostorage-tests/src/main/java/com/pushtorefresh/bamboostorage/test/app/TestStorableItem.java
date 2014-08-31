@@ -6,14 +6,14 @@ import android.database.Cursor;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.bamboostorage.ABambooStorableItem;
 import com.pushtorefresh.bamboostorage.ContentPathForContentResolver;
-import com.pushtorefresh.bamboostorage.StorableItem;
 
 /**
  * @author Artem Zinnatullin [artem.zinnatullin@gmail.com]
  */
 @ContentPathForContentResolver(TestStorableItem.TableInfo.TABLE_NAME)
-public class TestStorableItem extends StorableItem {
+public class TestStorableItem extends ABambooStorableItem {
 
     private String mTestStringField;
 

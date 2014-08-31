@@ -99,7 +99,7 @@ public class IntegrationTests extends AndroidTestCase {
 
         mBambooStorage.add(storableItem);
 
-        storableItem.set_id(TestStorableItem.DEFAULT_INTERNAL_ID);
+        storableItem.set_id(TestStorableItem.DEFAULT_INTERNAL_ITEM_ID);
         storableItem.setTestStringField("should add new item");
         storableItem.setTestIntField(mRandom.nextInt());
         storableItem.setTestLongField(mRandom.nextLong());

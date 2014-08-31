@@ -44,7 +44,7 @@ public class BambooStorage {
     /**
      * Thread-safe cache of (StorableItemClass, ContentPath) pairs for better performance
      */
-    private final Map<Class<? extends StorableItem>, String> cacheOfClassAndContentPathPairs = new ConcurrentHashMap<Class<? extends StorableItem>, String>();
+    private final Map<Class<? extends IBambooStorableItem>, String> cacheOfClassAndContentPathPairs = new ConcurrentHashMap<Class<? extends IBambooStorableItem>, String>();
 
     public BambooStorage(@NonNull Context context, @NonNull String contentProviderAuthority) {
         mContentPath     = "content://" + contentProviderAuthority + "/%s";
@@ -56,7 +56,7 @@ public class BambooStorage {
      * Adds storableItem to the Storage
      * @param storableItem to add
      */
-    public void add(@NonNull StorableItem storableItem) {
+    public void add(@NonNull IBambooStorableItem storableItem) {
         Uri uri = mContentResolver.insert(buildUri(storableItem.getClass()), storableItem.toContentValues(mResources));
         storableItem.set_id(ContentUris.parseId(uri));
     }
@@ -67,7 +67,7 @@ public class BambooStorage {
      * @return count of updated items
      * @throws IllegalArgumentException if storable item internal id <= 0 -> it was not stored in StorageManager
      */
-    public int update(@NonNull StorableItem storableItem) {
+    public int update(@NonNull IBambooStorableItem storableItem) {
         long itemInternalId = storableItem.get_id();
 
         if (itemInternalId <= 0) {
@@ -87,7 +87,7 @@ public class BambooStorage {
      * @param storableItem to add or update
      * @return true if item was added, false if item was updated
      */
-    public boolean addOrUpdate(@NonNull StorableItem storableItem) {
+    public boolean addOrUpdate(@NonNull IBambooStorableItem storableItem) {
         if (storableItem.get_id() <= 0) {
             // item was not stored in the storage
             add(storableItem);
@@ -105,7 +105,7 @@ public class BambooStorage {
      * @param <T> generic type of StorableItem
      * @return storable item with required internal id or null if storage does not contain this item
      */
-    public <T extends StorableItem> T getByInternalId(@NonNull Class<T> classOfStorableItem, long itemInternalId) {
+    public <T extends IBambooStorableItem> T getByInternalId(@NonNull Class<T> classOfStorableItem, long itemInternalId) {
         Cursor cursor = getAsCursor(classOfStorableItem, WHERE_ID, buildWhereArgsByInternalId(itemInternalId), null);
 
         try {
@@ -131,7 +131,7 @@ public class BambooStorage {
      * @return list of StorableItems, can be empty but not null
      */
     @NonNull
-    public <T extends StorableItem> List<T> getAsList(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
+    public <T extends IBambooStorableItem> List<T> getAsList(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
         Cursor cursor = getAsCursor(classOfStorableItem, where, whereArgs, orderBy);
 
         List<T> list = new ArrayList<T>(cursor == null ? 0 : cursor.getCount());
@@ -162,7 +162,7 @@ public class BambooStorage {
      * @param <T> generic type of StorableItem
      * @return list of StorableItems, can be empty but not null
      */
-    public <T extends StorableItem> List<T> getAsList(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs) {
+    public <T extends IBambooStorableItem> List<T> getAsList(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs) {
         return getAsList(classOfStorableItem, where, whereArgs, null);
     }
 
@@ -173,7 +173,7 @@ public class BambooStorage {
      * @return list of StorableItems, can be empty but not null
      */
     @NonNull
-    public <T extends StorableItem> List<T> getAsList(@NonNull Class<T> classOfStorableItem) {
+    public <T extends IBambooStorableItem> List<T> getAsList(@NonNull Class<T> classOfStorableItem) {
         return getAsList(classOfStorableItem, null, null);
     }
 
@@ -186,7 +186,7 @@ public class BambooStorage {
      * @return cursor with query result, can be null
      */
     @Nullable
-    public Cursor getAsCursor(@NonNull Class<? extends StorableItem> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
+    public Cursor getAsCursor(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
         return mContentResolver.query(
                 buildUri(classOfStorableItem),
                 null,
@@ -206,7 +206,7 @@ public class BambooStorage {
      * @return first item in the query result or null if there are no query results
      */
     @Nullable
-    public <T extends StorableItem> T getFirst(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
+    public <T extends IBambooStorableItem> T getFirst(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
         Cursor cursor = getAsCursor(classOfStorableItem, where, whereArgs, orderBy);
 
         try {
@@ -229,7 +229,7 @@ public class BambooStorage {
      * @return first item of required type, can be null
      */
     @Nullable
-    public <T extends StorableItem> T getFirst(@NonNull Class<T> classOfStorableItem) {
+    public <T extends IBambooStorableItem> T getFirst(@NonNull Class<T> classOfStorableItem) {
         return getFirst(classOfStorableItem, null, null, null);
     }
 
@@ -246,7 +246,7 @@ public class BambooStorage {
      * @return last item in the query result or null if there are no query results
      */
     @Nullable
-    public <T extends StorableItem> T getLast(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
+    public <T extends IBambooStorableItem> T getLast(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
         Cursor cursor = getAsCursor(classOfStorableItem, where, whereArgs, orderBy);
 
         try {
@@ -278,7 +278,7 @@ public class BambooStorage {
      * @return last item of required type, can be null
      */
     @Nullable
-    public <T extends StorableItem> T getLast(@NonNull Class<T> classOfStorableItem) {
+    public <T extends IBambooStorableItem> T getLast(@NonNull Class<T> classOfStorableItem) {
         return getLast(classOfStorableItem, null, null, null);
     }
 
@@ -287,7 +287,7 @@ public class BambooStorage {
      * @param storableItem item to be removed from the storage
      * @return count of removed items, it could be 0, or 1, or > 1 if you have items with same internal id in the storage
      */
-    public int remove(@NonNull StorableItem storableItem) {
+    public int remove(@NonNull IBambooStorableItem storableItem) {
         return remove(storableItem.getClass(), WHERE_ID, buildWhereArgsByInternalId(storableItem));
     }
 
@@ -298,7 +298,7 @@ public class BambooStorage {
      * @param whereArgs args for binding to where clause, same format as for ContentResolver
      * @return count of removed items
      */
-    public int remove(@NonNull Class<? extends StorableItem> classOfStorableItems, String where, String[] whereArgs) {
+    public int remove(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems, String where, String[] whereArgs) {
         return mContentResolver.delete(buildUri(classOfStorableItems), where, whereArgs);
     }
 
@@ -308,7 +308,7 @@ public class BambooStorage {
      * @param classOfStorableItems type of storable item you want to delete
      * @return count of removed items
      */
-    public int removeAllOfType(@NonNull Class<? extends StorableItem> classOfStorableItems) {
+    public int removeAllOfType(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems) {
         return remove(classOfStorableItems, null, null);
     }
 
@@ -317,7 +317,7 @@ public class BambooStorage {
      * @param storableItem to check
      * @return true if item stored in storage, false if not
      */
-    public boolean contains(@NonNull StorableItem storableItem) {
+    public boolean contains(@NonNull IBambooStorableItem storableItem) {
         Cursor cursor = getAsCursor(storableItem.getClass(), WHERE_ID, buildWhereArgsByInternalId(storableItem), null);
 
         if (cursor == null || !cursor.moveToFirst()) {
@@ -333,7 +333,7 @@ public class BambooStorage {
      * @param classOfStorableItems type of storable item you want to count
      * @return count of items in the storage of required type
      */
-    public int countOfItems(@NonNull Class<? extends StorableItem> classOfStorableItems) {
+    public int countOfItems(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems) {
         Cursor cursor = getAsCursor(classOfStorableItems, null, null, null);
 
         try {
@@ -352,7 +352,7 @@ public class BambooStorage {
      * The observer that originated the change will only receive the notification if it
      * has requested to receive self-change notifications by implementing
      */
-    public void notifyChange(@NonNull Class<? extends StorableItem> classOfStorableItem, @Nullable ContentObserver contentObserver) {
+    public void notifyChange(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem, @Nullable ContentObserver contentObserver) {
         mContentResolver.notifyChange(buildUri(classOfStorableItem), contentObserver);
     }
 
@@ -360,7 +360,7 @@ public class BambooStorage {
      * Notifying about change in the storage using content resolver notifyChange method
      * @param classOfStorableItem class of StorableItem
      */
-    public void notifyChange(@NonNull Class<? extends StorableItem> classOfStorableItem) {
+    public void notifyChange(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem) {
         mContentResolver.notifyChange(buildUri(classOfStorableItem), null);
     }
 
@@ -370,7 +370,7 @@ public class BambooStorage {
      * @return Uri for accessing content
      */
     @NonNull
-    private Uri buildUri(@NonNull Class<? extends StorableItem> clazz) {
+    private Uri buildUri(@NonNull Class<? extends IBambooStorableItem> clazz) {
         String contentPath = cacheOfClassAndContentPathPairs.get(clazz);
 
         if (contentPath == null) {
@@ -402,7 +402,7 @@ public class BambooStorage {
      * @param storableItem to get internal id
      * @return where args
      */
-    private static String[] buildWhereArgsByInternalId(@NonNull StorableItem storableItem) {
+    private static String[] buildWhereArgsByInternalId(@NonNull IBambooStorableItem storableItem) {
         return buildWhereArgsByInternalId(storableItem.get_id());
     }
 
@@ -415,7 +415,7 @@ public class BambooStorage {
      * @throws IllegalArgumentException if classOfStorableItem can not be used to create item from Cursor
      */
     @NonNull
-    public static <T extends StorableItem> T createStorableItemFromCursor(@NonNull Class<T> classOfStorableItem, @NonNull Cursor cursor) {
+    public static <T extends IBambooStorableItem> T createStorableItemFromCursor(@NonNull Class<T> classOfStorableItem, @NonNull Cursor cursor) {
         try {
             T storableItem = classOfStorableItem.newInstance();
             storableItem._fillFromCursor(cursor);
