@@ -15,7 +15,7 @@ import android.support.annotation.NonNull;
  *
  * @author Artem Zinnatullin [artem.zinnatullin@gmail.com]
  */
-public abstract class BambooSQLiteOpenHelperContentProvider extends ContentProvider {
+public abstract class ABambooSQLiteOpenHelperContentProvider extends ContentProvider {
 
     /**
      * User's SQLiteOpenHelper
