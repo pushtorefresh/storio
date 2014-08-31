@@ -1,4 +1,4 @@
-## Android `BambooStorage` 
+## `Android BambooStorage` 
 ######Modern, fast and memory efficient Storage API based on `ContentProviders`
 
 **BambooStorage** provides you a way to store your classes in `ContentProvider` without boilerplate `CRUD` (Create-Read-Update-Delete) code for each storable type
@@ -7,7 +7,32 @@
 
 If you currently use `SQLiteOpenHelper` (`SQLiteDatabase` under it) to store your data, you can easily switch to `BambooStorage` because it provides base class for `ContentProvider` with `SQLiteOpenHelper`
 
-// INSTRUCTIONS IN PROGRESS
+-----------------------------------
+**What API can provide `BambooStorage`? It's CRUD with collection like methods names** 
+Implementation is as efficient as possible
+
+- `add(yourStorableItem)` — adds an item to the storage
+- `update(yourStorableItem)` — updates an item in the storage
+- `addOrUpdate(yourStorableItem)` — adds or updates item in/to the storage
+- `getByInternalId(classOfStorableItem, internalItemId)` — low-level get method to receive item from storage
+- `getAsList(classOfStorableItems, where, whereArgs, order)` — gets stored items as list
+- `getAsList(classOfStorableItems, where, whereArgs)` — gets stored items as list with default storage's order
+- `getAsList(classOfStorableItems)` — gets all stored items of required type as list
+- `getAsCursor(classOfStorableItems, where, whereArgs, order)` — gets stored items as cursor!
+- `getFirst(classOfStorableItems, where, whereArgs, order)` — gets first item from query result
+- `getFirst(classOfStorableItems)` — gets first item of required type with default order for storage
+- `getLast(classOfStorableItems, where, whereArgs, order)` — gets last item from query result
+- `getLast(classOfStorableItems)` — gets last item of required type with default order for storage
+- `remove(yourStorableItem)` — removes item from the storage
+- `remove(classOfStorableItems, where, whereArgs)` — removes item(s) from the storage using where condition
+- `removeAllOfType(classOfStorableItems)` — removes all items of required type
+- `contains(yourStorableItem)` — returns true if storage contains item, false if not
+- `countOfItems(classOfStorableItems)` — returns count of items of required type 
+- `notifyChange(classOfStorableItems, contentObserver)` — notifying content obserevers about change in the storage
+- `notifyChange(classOfStorableItems)` — notifying content observers about change in the storage
+
+-----------------------------------
+**HOW to use `BambooStorage` in your project, 3 easy steps**
 
 **1) Your storable class should implement `IBambooStorableItem` or extend `ABambooStorableItem`**
 
@@ -67,26 +92,3 @@ You can extend `ABambooSQLiteOpenHelperContentProvider` and provide your `SQLite
                                   getContext(), 
                                   "content://authority_of_your_content_provider"
     );
-    
-**4) What API can provide `BambooStorage`? It's CRUD with collection like methods names** 
-Implementation is as efficient as possible
-
-- `add(yourStorableItem)` — adds an item to the storage
-- `update(yourStorableItem)` — updates an item in the storage
-- `addOrUpdate(yourStorableItem)` — adds or updates item in/to the storage
-- `getByInternalId(classOfStorableItem, internalItemId)` — low-level get method to receive item from storage
-- `getAsList(classOfStorableItems, where, whereArgs, order)` — gets stored items as list
-- `getAsList(classOfStorableItems, where, whereArgs)` — gets stored items as list with default storage's order
-- `getAsList(classOfStorableItems)` — gets all stored items of required type as list
-- `getAsCursor(classOfStorableItems, where, whereArgs, order)` — gets stored items as cursor!
-- `getFirst(classOfStorableItems, where, whereArgs, order)` — gets first item from query result
-- `getFirst(classOfStorableItems)` — gets first item of required type with default order for storage
-- `getLast(classOfStorableItems, where, whereArgs, order)` — gets last item from query result
-- `getLast(classOfStorableItems)` — gets last item of required type with default order for storage
-- `remove(yourStorableItem)` — removes item from the storage
-- `remove(classOfStorableItems, where, whereArgs)` — removes item(s) from the storage using where condition
-- `removeAllOfType(classOfStorableItems)` — removes all items of required type
-- `contains(yourStorableItem)` — returns true if storage contains item, false if not
-- `countOfItems(classOfStorableItems)` — returns count of items of required type 
-- `notifyChange(classOfStorableItems, contentObserver)` — notifying content obserevers about change in the storage
-- `notifyChange(classOfStorableItems)` — notifying content observers about change in the storage
