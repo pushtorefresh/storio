@@ -370,7 +370,7 @@ public class BambooStorage {
      * @return Uri for accessing content
      */
     @NonNull
-    public Uri buildUri(@NonNull Class<? extends StorableItem> clazz) {
+    private Uri buildUri(@NonNull Class<? extends StorableItem> clazz) {
         String contentPath = cacheOfClassAndContentPathPairs.get(clazz);
 
         if (contentPath == null) {

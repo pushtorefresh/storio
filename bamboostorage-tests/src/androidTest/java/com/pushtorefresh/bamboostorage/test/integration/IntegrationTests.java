@@ -223,4 +223,254 @@ public class IntegrationTests extends AndroidTestCase {
 
         cursor.close();
     }
+
+    public void testGetFirstWithWherePositive() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        storableItem0.setTestIntField(0);
+
+        // NOTICE, two elements with same WHERE field value
+        // BambooStorage should return FIRST element
+        storableItem1.setTestIntField(1).setTestStringField("first");
+        storableItem2.setTestIntField(1).setTestStringField("second");
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        TestStorableItem storedItem = mBambooStorage.getFirst(
+                TestStorableItem.class,
+                TestStorableItem.TableInfo.TEST_INT_FIELD + " = ?",
+                new String[] { String.valueOf(storableItem1.getTestIntField() )},
+                null
+        );
+
+        assertFalse(storableItem2.equals(storedItem));
+        assertEquals(storableItem1, storedItem);
+    }
+
+    public void testGetFirstWithWhereNegative() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        storableItem0.setTestIntField(0);
+        storableItem1.setTestIntField(1);
+        storableItem2.setTestIntField(2);
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        TestStorableItem storedItem = mBambooStorage.getFirst(
+                TestStorableItem.class,
+                TestStorableItem.TableInfo.TEST_INT_FIELD + " = ?",
+                new String[] { String.valueOf(4) },
+                null
+        );
+
+        assertNull(storedItem);
+    }
+
+    public void testGetFirstWithoutWherePositive() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+
+        TestStorableItem firstStoredItem = mBambooStorage.getFirst(TestStorableItem.class);
+
+        assertEquals(storableItem0, firstStoredItem);
+        assertFalse(storableItem1.equals(firstStoredItem));
+    }
+
+    public void testGetFirstWithoutWhereNegative() {
+        TestStorableItem firstStoredItem = mBambooStorage.getFirst(TestStorableItem.class);
+        assertNull(firstStoredItem);
+    }
+
+    public void testGetLastWithWherePositive() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        storableItem0.setTestIntField(0);
+
+        // NOTICE, two elements with same WHERE field value
+        // BambooStorage should return SECOND element
+        storableItem1.setTestIntField(1).setTestStringField("first");
+        storableItem2.setTestIntField(2).setTestStringField("second");
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        TestStorableItem lastItem = mBambooStorage.getLast(
+                TestStorableItem.class,
+                TestStorableItem.TableInfo.TEST_INT_FIELD + " = ?",
+                new String[] { String.valueOf(storableItem2.getTestIntField()) },
+                null
+        );
+
+        assertFalse(storableItem1.equals(lastItem));
+        assertEquals(storableItem2, lastItem);
+    }
+
+    public void testGetLastWithWhereNegative() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        storableItem0.setTestIntField(0);
+        storableItem1.setTestIntField(1);
+        storableItem2.setTestIntField(2);
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        TestStorableItem lastItem = mBambooStorage.getLast(
+                TestStorableItem.class,
+                TestStorableItem.TableInfo.TEST_INT_FIELD + " = ?",
+                new String[] { String.valueOf(3) },
+                null
+        );
+
+        assertNull(lastItem);
+    }
+
+    public void testGetLastWithoutWherePositive() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        storableItem0.setTestIntField(0);
+        storableItem1.setTestIntField(1);
+        storableItem2.setTestIntField(2);
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        TestStorableItem lastItem = mBambooStorage.getLast(TestStorableItem.class);
+
+        assertEquals(storableItem2, lastItem);
+    }
+
+    public void testGetLastWithoutWhereNegative() {
+        assertNull(mBambooStorage.getLast(TestStorableItem.class));
+    }
+
+    public void testRemoveWithoutWherePositive() {
+        TestStorableItem storableItem = generateRandomStorableItem();
+
+        mBambooStorage.add(storableItem);
+        assertTrue(mBambooStorage.contains(storableItem));
+
+        assertEquals(1, mBambooStorage.remove(storableItem));
+        assertFalse(mBambooStorage.contains(storableItem));
+    }
+
+    public void testRemoveWithoutWhereNegative() {
+        TestStorableItem storableItem = generateRandomStorableItem();
+
+        assertFalse(mBambooStorage.contains(storableItem));
+        assertEquals(0, mBambooStorage.remove(storableItem));
+        assertFalse(mBambooStorage.contains(storableItem));
+    }
+
+    public void testRemoveWithWherePositive() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        storableItem0.setTestIntField(0);
+        storableItem1.setTestIntField(1);
+        storableItem2.setTestIntField(2);
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        assertTrue(mBambooStorage.contains(storableItem1));
+        assertEquals(3, mBambooStorage.countOfItems(TestStorableItem.class));
+
+        assertEquals(1, mBambooStorage.remove(
+                TestStorableItem.class,
+                TestStorableItem.TableInfo.TEST_INT_FIELD + " = ?",
+                new String[] { String.valueOf(storableItem1.getTestIntField()) }
+        ));
+
+        assertFalse(mBambooStorage.contains(storableItem1));
+        assertEquals(2, mBambooStorage.countOfItems(TestStorableItem.class));
+    }
+
+    public void testRemoveWithWhereNegative() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        storableItem0.setTestIntField(0);
+        storableItem1.setTestIntField(1);
+        storableItem2.setTestIntField(2);
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        assertEquals(3, mBambooStorage.countOfItems(TestStorableItem.class));
+
+        assertEquals(0, mBambooStorage.remove(
+                TestStorableItem.class,
+                TestStorableItem.TableInfo.TEST_INT_FIELD + " = ?",
+                new String[] { String.valueOf(4) }
+        ));
+
+        assertEquals(3, mBambooStorage.countOfItems(TestStorableItem.class));
+    }
+
+    public void testRemoveAllOfType() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        assertEquals(3, mBambooStorage.countOfItems(TestStorableItem.class));
+        assertEquals(3, mBambooStorage.removeAllOfType(TestStorableItem.class));
+        assertEquals(0, mBambooStorage.countOfItems(TestStorableItem.class));
+    }
+
+    public void testContainsPositive() {
+        TestStorableItem storableItem = generateRandomStorableItem();
+        mBambooStorage.add(storableItem);
+        assertTrue(mBambooStorage.contains(storableItem));
+    }
+
+    public void testContainsNegative() {
+        TestStorableItem storableItem = generateRandomStorableItem();
+        // not putting item to the storage
+        assertFalse(mBambooStorage.contains(storableItem));
+    }
+
+    public void testCountOfItems0() {
+        assertEquals(0, mBambooStorage.countOfItems(TestStorableItem.class));
+    }
+
+    public void testCountOfItems3() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        assertEquals(3, mBambooStorage.countOfItems(TestStorableItem.class));
+    }
 }
