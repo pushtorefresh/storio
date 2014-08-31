@@ -35,10 +35,10 @@ public interface IBambooStorableItem {
 
     /**
      * Converts this object to ContentValues
-     * @param res which can be needed for toContentValues process
+     * @param res which can be needed for _toContentValues process
      * @return ContentValues representation of StorableItem
      */
-    @NonNull ContentValues toContentValues(@NonNull Resources res);
+    @NonNull ContentValues _toContentValues(@NonNull Resources res);
 
     /**
      * Fills StorableItem's fields from cursor

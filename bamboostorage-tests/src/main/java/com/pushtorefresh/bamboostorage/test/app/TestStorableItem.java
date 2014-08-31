@@ -48,7 +48,7 @@ public class TestStorableItem extends ABambooStorableItem {
         return this;
     }
 
-    @NonNull @Override public ContentValues toContentValues(@NonNull Resources res) {
+    @NonNull @Override public ContentValues _toContentValues(@NonNull Resources res) {
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(TableInfo.TEST_STRING_FIELD, mTestStringField);

@@ -37,7 +37,7 @@ public class BambooStorage {
     private final ContentResolver mContentResolver;
 
     /**
-     * Resources for StorableItem.toContentValues() calls
+     * Resources for StorableItem._toContentValues() calls
      */
     private final Resources mResources;
 
@@ -57,7 +57,7 @@ public class BambooStorage {
      * @param storableItem to add
      */
     public void add(@NonNull IBambooStorableItem storableItem) {
-        Uri uri = mContentResolver.insert(buildUri(storableItem.getClass()), storableItem.toContentValues(mResources));
+        Uri uri = mContentResolver.insert(buildUri(storableItem.getClass()), storableItem._toContentValues(mResources));
         storableItem.set_id(ContentUris.parseId(uri));
     }
 
@@ -75,7 +75,7 @@ public class BambooStorage {
         } else {
             return mContentResolver.update(
                     buildUri(storableItem.getClass()),
-                    storableItem.toContentValues(mResources),
+                    storableItem._toContentValues(mResources),
                     WHERE_ID,
                     buildWhereArgsByInternalId(storableItem)
             );
