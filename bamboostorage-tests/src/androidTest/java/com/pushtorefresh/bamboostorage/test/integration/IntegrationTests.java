@@ -1,10 +1,12 @@
 package com.pushtorefresh.bamboostorage.test.integration;
 
+import android.database.Cursor;
 import android.test.AndroidTestCase;
 
 import com.pushtorefresh.bamboostorage.BambooStorage;
 import com.pushtorefresh.bamboostorage.test.app.TestStorableItem;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -117,7 +119,7 @@ public class IntegrationTests extends AndroidTestCase {
 
         TestStorableItem storedItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id());
 
-        assertTrue(storableItem != storedItem);
+        assertNotSame(storableItem, storedItem);
         assertEquals(storableItem, storedItem);
     }
 
@@ -130,5 +132,95 @@ public class IntegrationTests extends AndroidTestCase {
         TestStorableItem storedItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id() + 1);
 
         assertNull(storedItem);
+    }
+
+    public void testGetAsListByClassOnly() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        List<TestStorableItem> list = mBambooStorage.getAsList(TestStorableItem.class);
+
+        assertEquals(3, list.size());
+
+        assertEquals(storableItem0, list.get(0));
+        assertEquals(storableItem1, list.get(1));
+        assertEquals(storableItem2, list.get(2));
+    }
+
+    public void testGetAsListWithWhereCondition() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        storableItem0.setTestIntField(0);
+        storableItem1.setTestIntField(1);
+        storableItem2.setTestIntField(2);
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        assertEquals(3, mBambooStorage.countOfItems(TestStorableItem.class));
+
+        List<TestStorableItem> list = mBambooStorage.getAsList(
+                TestStorableItem.class,
+                TestStorableItem.TableInfo.TEST_INT_FIELD + " = ?",
+                new String[] { String.valueOf(storableItem0.getTestIntField()) }
+        );
+
+        assertEquals(1, list.size());
+
+        assertEquals(storableItem0, list.get(0));
+    }
+
+    public void testGetAsCursorWithoutWhere() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        Cursor cursor = mBambooStorage.getAsCursor(TestStorableItem.class, null, null, null);
+
+        assertNotNull(cursor);
+        assertEquals(3, cursor.getCount());
+        cursor.close();
+    }
+
+    public void testGetAsCursorWithWhere() {
+        TestStorableItem storableItem0 = generateRandomStorableItem();
+        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem2 = generateRandomStorableItem();
+
+        storableItem0.setTestIntField(0);
+        storableItem1.setTestIntField(1);
+        storableItem2.setTestIntField(2);
+
+        mBambooStorage.add(storableItem0);
+        mBambooStorage.add(storableItem1);
+        mBambooStorage.add(storableItem2);
+
+        Cursor cursor = mBambooStorage.getAsCursor(
+                TestStorableItem.class,
+                TestStorableItem.TableInfo.TEST_INT_FIELD + " = ?",
+                new String[] { String.valueOf(storableItem0.getTestIntField()) },
+                null
+        );
+
+        assertNotNull(cursor);
+        assertEquals(1, cursor.getCount());
+
+        cursor.moveToFirst();
+
+        assertEquals(storableItem0, BambooStorage.createStorableItemFromCursor(TestStorableItem.class, cursor));
+
+        cursor.close();
     }
 }

@@ -167,6 +167,17 @@ public class BambooStorage {
     }
 
     /**
+     * Gets all stored items of required type with default order as list in memory
+     * @param classOfStorableItem class of StorableItem
+     * @param <T> generic type of StorableItem
+     * @return list of StorableItems, can be empty but not null
+     */
+    @NonNull
+    public <T extends StorableItem> List<T> getAsList(@NonNull Class<T> classOfStorableItem) {
+        return getAsList(classOfStorableItem, null, null);
+    }
+
+    /**
      * Gets all stored items of required type which satisfies where condition as cursor
      * @param classOfStorableItem class of StorableItem
      * @param where where clause
@@ -401,11 +412,10 @@ public class BambooStorage {
      * @param cursor cursor to getByInternalId fields of item
      * @param <T> generic type of the storable item
      * @return storable item filled with info from cursor
-     * @throws InstantiationException
-     * @throws IllegalAccessException
+     * @throws IllegalArgumentException if classOfStorableItem can not be used to create item from Cursor
      */
     @NonNull
-    private static <T extends StorableItem> T createStorableItemFromCursor(@NonNull Class<T> classOfStorableItem, @NonNull Cursor cursor) {
+    public static <T extends StorableItem> T createStorableItemFromCursor(@NonNull Class<T> classOfStorableItem, @NonNull Cursor cursor) {
         try {
             T storableItem = classOfStorableItem.newInstance();
             storableItem._fillFromCursor(cursor);
