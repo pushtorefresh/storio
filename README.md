@@ -1,11 +1,13 @@
 ## `Android BambooStorage` 
-######Modern, fast and memory efficient Storage API based on `ContentProviders`
+######Modern, fast and memory efficient Storage API based on [`ContentProviders`](http://developer.android.com/reference/android/content/ContentProvider.html)
 
-**BambooStorage** provides you a way to store your classes in `ContentProvider` without boilerplate `CRUD` (Create-Read-Update-Delete) code for each storable type
+*Author of the original idea — [@ivanGusef](https://github.com/ivanGusef)*
+
+**BambooStorage** provides you a way to store your classes in `ContentProvider` without boilerplate [`CRUD`](http://en.wikipedia.org/wiki/Create,_read,_update_and_delete) (Create-Read-Update-Delete) code for each storable type
 
 **PLEASE DO NOT STOP THINKING ABOUT THE LIBRARY AFTER YOU SAW the word "ContentProvider" :)**
 
-If you currently use `SQLiteOpenHelper` (`SQLiteDatabase` under it) to store your data, you can easily switch to `BambooStorage` because it provides base class for `ContentProvider` with `SQLiteOpenHelper`
+If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper.html) ([`SQLiteDatabase`](http://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html) under it) to store your data, you can easily switch to `BambooStorage` because it provides base class for `ContentProvider` with `SQLiteOpenHelper`
 
 -----------------------------------
 **What API can provide `BambooStorage`? It's CRUD with collection like methods names** 
@@ -34,9 +36,12 @@ Implementation is as efficient as possible
 -----------------------------------
 **HOW to use `BambooStorage` in your project, 3 easy steps**
 
-**1) Your storable class should implement `IBambooStorableItem` or extend `ABambooStorableItem`**
+**1) Your storable class should implement `IBambooStorableItem` or extend `ABambooStorableItem`** and implement `_toContentValues(resources)` and `_fillFromCursor(cursor)` methods
 
-    @ContentPathForContentResolver(YourStorableType.TableInfo.TABLE_NAME)
+    @BambooStorableTypeMeta(
+        contentPath = YourStorableType.TableInfo.TABLE_NAME, // Mandatory
+        internalIdFieldName = YourStorableType.TableInfo.INTERNAL_ID // Optional, default value = "_id"
+    )
     public class YourStorableType extends ABambooStorableItem {
         
         private String mStringField;
@@ -63,13 +68,20 @@ Implementation is as efficient as possible
         // If under your ContentProvider not an SQLiteDatabase
         // -> just rename this interface/class for fields mapping in cursor as you need
         public interface TableInfo {
-            static String TABLE_NAME   = "your_storable_items";
-            static String STRING_FIELD = "string_field;
-            static String INT_FIELD    = "int_field;
+            String TABLE_NAME         = "your_storable_items";
+            
+            String INTERNAL_ID_FIELD  = "_internal_id";
+            String STRING_FIELD       = "string_field;
+            String INT_FIELD          = "int_field;
+            
+            String CREATE_TABLE_QUERY = "CREATE TABLE " + TABLE_NAME + " (" +
+                INTERNAL_ID_FIELD + " INTEGER PRIMARY KEY, " + 
+                STRING_FIELD + " TEXT, " + 
+                INT_FIELD + " INTEGER);";
         }
     }
 
-**2) Mark your storable class with `@ContentPathForContentResolver`**
+**2) Mark your storable class with `@BambooStorableTypeMeta` annotation**
 
 -> Check the previous step sources
 
@@ -92,3 +104,13 @@ You can extend `ABambooSQLiteOpenHelperContentProvider` and provide your `SQLite
                                   getContext(), 
                                   "content://authority_of_your_content_provider"
     );
+
+
+-----------------------------------
+
+##Good to know
+
+- `BambooStorage` is thread-safe, but your `ContentProvider` should be thread-safe too
+- By default, `SQLiteDatabase` is thead-safe, so if you are using `ContentProvider` with `SQLiteDatabase` it is thead-safe too :)
+- `BambooStorage` is written in very efficient way, even work with `BambooStorableTypeMeta` annotation is fast because of internal cache (`YourStorableType`, `BambooStorableTypeMeta`)
+- It is better to have [`Singleton`](http://en.wikipedia.org/wiki/Singleton_pattern) instance of `BambooStorage` for each `ContentProvider`, even better, if you would use some [`DI`](http://en.wikipedia.org/wiki/Dependency_injection) tool for that, for example — [`Dagger`](http://square.github.io/dagger/)
