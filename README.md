@@ -1,6 +1,8 @@
 ## `Android BambooStorage` 
 ######Modern, fast and memory efficient Storage API based on [`ContentProviders`](http://developer.android.com/reference/android/content/ContentProvider.html)
 
+*Author of the original idea — [@ivanGusef](https://github.com/ivanGusef)*
+
 **BambooStorage** provides you a way to store your classes in `ContentProvider` without boilerplate [`CRUD`](http://en.wikipedia.org/wiki/Create,_read,_update_and_delete) (Create-Read-Update-Delete) code for each storable type
 
 **PLEASE DO NOT STOP THINKING ABOUT THE LIBRARY AFTER YOU SAW the word "ContentProvider" :)**
