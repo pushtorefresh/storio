@@ -3,16 +3,18 @@ package com.pushtorefresh.bamboostorage.test.app;
 import android.content.ContentValues;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.bamboostorage.ABambooStorableItem;
-import com.pushtorefresh.bamboostorage.ContentPathForContentResolver;
+import com.pushtorefresh.bamboostorage.BambooStorableTypeMeta;
 
 /**
  * @author Artem Zinnatullin [artem.zinnatullin@gmail.com]
  */
-@ContentPathForContentResolver(TestStorableItem.TableInfo.TABLE_NAME)
+@BambooStorableTypeMeta(
+        contentPath = TestStorableItem.TableInfo.TABLE_NAME,
+        internalIdFieldName = TestStorableItem.TableInfo.TEST_INTERNAL_ID
+)
 public class TestStorableItem extends ABambooStorableItem {
 
     private String mTestStringField;
@@ -101,12 +103,13 @@ public class TestStorableItem extends ABambooStorableItem {
     public interface TableInfo {
         String TABLE_NAME = "test_items";
 
+        String TEST_INTERNAL_ID  = "TEST_INTERNAL_ID";
         String TEST_STRING_FIELD = "TEST_STRING_FIELD";
         String TEST_INT_FIELD    = "TEST_INT_FIELD";
         String TEST_LONG_FIELD   = "TEST_LONG_FIELD";
 
         String CREATE_TABLE_QUERY = "CREATE TABLE " + TABLE_NAME + " (" +
-                BaseColumns._ID + " INTEGER PRIMARY KEY, " +
+                TEST_INTERNAL_ID + " INTEGER PRIMARY KEY, " +
                 TEST_STRING_FIELD + " TEXT, " +
                 TEST_INT_FIELD + " INTEGER, " +
                 TEST_LONG_FIELD + " INTEGER);"; // SQLite Integer is 64bits -> Java long

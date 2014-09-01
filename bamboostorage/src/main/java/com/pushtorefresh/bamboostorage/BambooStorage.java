@@ -7,7 +7,6 @@ import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -20,11 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Artem Zinnatullin [artem.zinnatullin@gmail.com]
  */
 public class BambooStorage {
-
-    /**
-     * Statement: where internal id = ?
-     */
-    private static final String WHERE_ID = BaseColumns._ID + " = ?";
 
     /**
      * Content path string for building uris for requests
@@ -42,9 +36,9 @@ public class BambooStorage {
     private final Resources mResources;
 
     /**
-     * Thread-safe cache of (StorableItemClass, ContentPath) pairs for better performance
+     * Thread-safe cache of (StorableItemClass, BambooStorableTypeMeta) pairs for better performance
      */
-    private final Map<Class<? extends IBambooStorableItem>, String> cacheOfClassAndContentPathPairs = new ConcurrentHashMap<Class<? extends IBambooStorableItem>, String>();
+    private final Map<Class<? extends IBambooStorableItem>, BambooStorableTypeMetaWithExtra> cacheOfClassAndContentPathPairs = new ConcurrentHashMap<Class<? extends IBambooStorableItem>, BambooStorableTypeMetaWithExtra>();
 
     public BambooStorage(@NonNull Context context, @NonNull String contentProviderAuthority) {
         mContentPath     = "content://" + contentProviderAuthority + "/%s";
@@ -68,15 +62,16 @@ public class BambooStorage {
      * @throws IllegalArgumentException if storable item internal id <= 0 -> it was not stored in StorageManager
      */
     public int update(@NonNull IBambooStorableItem storableItem) {
-        long itemInternalId = storableItem.get_id();
+        final long itemInternalId = storableItem.get_id();
 
         if (itemInternalId <= 0) {
             throw new IllegalArgumentException("Item: " + storableItem + " can not be updated, because its internal id is <= 0");
         } else {
+            final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
             return mContentResolver.update(
-                    buildUri(storableItem.getClass()),
+                    buildUri(classOfStorableItem),
                     storableItem._toContentValues(mResources),
-                    WHERE_ID,
+                    getTypeMetaWithExtra(classOfStorableItem).whereById,
                     buildWhereArgsByInternalId(storableItem)
             );
         }
@@ -105,8 +100,14 @@ public class BambooStorage {
      * @param <T> generic type of StorableItem
      * @return storable item with required internal id or null if storage does not contain this item
      */
+    @Nullable
     public <T extends IBambooStorableItem> T getByInternalId(@NonNull Class<T> classOfStorableItem, long itemInternalId) {
-        Cursor cursor = getAsCursor(classOfStorableItem, WHERE_ID, buildWhereArgsByInternalId(itemInternalId), null);
+        final Cursor cursor = getAsCursor(
+                classOfStorableItem,
+                getTypeMetaWithExtra(classOfStorableItem).whereById,
+                buildWhereArgsByInternalId(itemInternalId),
+                null
+        );
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
@@ -132,9 +133,9 @@ public class BambooStorage {
      */
     @NonNull
     public <T extends IBambooStorableItem> List<T> getAsList(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
-        Cursor cursor = getAsCursor(classOfStorableItem, where, whereArgs, orderBy);
+        final Cursor cursor = getAsCursor(classOfStorableItem, where, whereArgs, orderBy);
 
-        List<T> list = new ArrayList<T>(cursor == null ? 0 : cursor.getCount());
+        final List<T> list = new ArrayList<T>(cursor == null ? 0 : cursor.getCount());
 
         if (cursor == null || !cursor.moveToFirst()) {
             return list;
@@ -207,7 +208,7 @@ public class BambooStorage {
      */
     @Nullable
     public <T extends IBambooStorableItem> T getFirst(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
-        Cursor cursor = getAsCursor(classOfStorableItem, where, whereArgs, orderBy);
+        final Cursor cursor = getAsCursor(classOfStorableItem, where, whereArgs, orderBy);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
@@ -247,7 +248,7 @@ public class BambooStorage {
      */
     @Nullable
     public <T extends IBambooStorableItem> T getLast(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
-        Cursor cursor = getAsCursor(classOfStorableItem, where, whereArgs, orderBy);
+        final Cursor cursor = getAsCursor(classOfStorableItem, where, whereArgs, orderBy);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
@@ -288,7 +289,12 @@ public class BambooStorage {
      * @return count of removed items, it could be 0, or 1, or > 1 if you have items with same internal id in the storage
      */
     public int remove(@NonNull IBambooStorableItem storableItem) {
-        return remove(storableItem.getClass(), WHERE_ID, buildWhereArgsByInternalId(storableItem));
+        final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
+        return remove(
+                classOfStorableItem,
+                getTypeMetaWithExtra(classOfStorableItem).whereById,
+                buildWhereArgsByInternalId(storableItem)
+        );
     }
 
     /**
@@ -318,7 +324,13 @@ public class BambooStorage {
      * @return true if item stored in storage, false if not
      */
     public boolean contains(@NonNull IBambooStorableItem storableItem) {
-        Cursor cursor = getAsCursor(storableItem.getClass(), WHERE_ID, buildWhereArgsByInternalId(storableItem), null);
+        final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
+        final Cursor cursor = getAsCursor(
+                classOfStorableItem,
+                getTypeMetaWithExtra(classOfStorableItem).whereById,
+                buildWhereArgsByInternalId(storableItem),
+                null
+        );
 
         if (cursor == null || !cursor.moveToFirst()) {
             return false;
@@ -365,27 +377,36 @@ public class BambooStorage {
     }
 
     /**
+     * Gets type meta with some extra from cache or directly from classOfStorableItem
+     * @param classOfStorableItem type of storable item to get meta info from
+     * @return type meta info with some extra data
+     */
+    @NonNull
+    private BambooStorableTypeMetaWithExtra getTypeMetaWithExtra(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem) {
+        BambooStorableTypeMetaWithExtra typeMetaWithExtra = cacheOfClassAndContentPathPairs.get(classOfStorableItem);
+
+        // no cached value
+        if (typeMetaWithExtra == null) {
+            if (!classOfStorableItem.isAnnotationPresent(BambooStorableTypeMeta.class)) {
+                throw new IllegalArgumentException("Class " + classOfStorableItem + " should be marked with " + BambooStorableTypeMeta.class + " annotation");
+            }
+
+            typeMetaWithExtra = new BambooStorableTypeMetaWithExtra(classOfStorableItem.getAnnotation(BambooStorableTypeMeta.class));
+            cacheOfClassAndContentPathPairs.put(classOfStorableItem, typeMetaWithExtra);
+        }
+
+        return typeMetaWithExtra;
+    }
+
+    /**
      * Builds uri for accessing content
-     * @param clazz of the content for building uri
+     * @param classOfStorableItem of the content to build uri
      * @return Uri for accessing content
      */
     @NonNull
-    private Uri buildUri(@NonNull Class<? extends IBambooStorableItem> clazz) {
-        String contentPath = cacheOfClassAndContentPathPairs.get(clazz);
-
-        if (contentPath == null) {
-            if (!clazz.isAnnotationPresent(ContentPathForContentResolver.class)) {
-                throw new IllegalArgumentException("Class " + clazz + " should be marked with " + ContentPathForContentResolver.class + " annotation");
-            }
-
-            ContentPathForContentResolver tableRepresentation = clazz.getAnnotation(ContentPathForContentResolver.class);
-
-            contentPath = tableRepresentation.value();
-
-            cacheOfClassAndContentPathPairs.put(clazz, contentPath);
-        }
-
-        return Uri.parse(String.format(mContentPath, contentPath));
+    private Uri buildUri(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem) {
+        BambooStorableTypeMetaWithExtra typeMetaWithExtra = getTypeMetaWithExtra(classOfStorableItem);
+        return Uri.parse(String.format(mContentPath, typeMetaWithExtra.typeMeta.contentPath()));
     }
 
     /**
@@ -393,6 +414,7 @@ public class BambooStorage {
      * @param internalStorableItemId internal id of storable item
      * @return where args
      */
+    @NonNull
     private static String[] buildWhereArgsByInternalId(long internalStorableItemId) {
         return new String[] { String.valueOf(internalStorableItemId) };
     }
@@ -402,6 +424,7 @@ public class BambooStorage {
      * @param storableItem to get internal id
      * @return where args
      */
+    @NonNull
     private static String[] buildWhereArgsByInternalId(@NonNull IBambooStorableItem storableItem) {
         return buildWhereArgsByInternalId(storableItem.get_id());
     }
