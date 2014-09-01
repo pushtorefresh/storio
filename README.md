@@ -36,7 +36,10 @@ Implementation is as efficient as possible
 
 **1) Your storable class should implement `IBambooStorableItem` or extend `ABambooStorableItem`**
 
-    @ContentPathForContentResolver(YourStorableType.TableInfo.TABLE_NAME)
+    @BambooStorableTypeMeta(
+        contentPath = YourStorableType.TableInfo.TABLE_NAME, // Mandatory
+        internalIdFieldName = YourStorableType.TableInfo.INTERNAL_ID // Optional, default value = "_id"
+    )
     public class YourStorableType extends ABambooStorableItem {
         
         private String mStringField;
@@ -63,13 +66,20 @@ Implementation is as efficient as possible
         // If under your ContentProvider not an SQLiteDatabase
         // -> just rename this interface/class for fields mapping in cursor as you need
         public interface TableInfo {
-            static String TABLE_NAME   = "your_storable_items";
-            static String STRING_FIELD = "string_field;
-            static String INT_FIELD    = "int_field;
+            String TABLE_NAME         = "your_storable_items";
+            
+            String INTERNAL_ID_FIELD  = "_internal_id";
+            String STRING_FIELD       = "string_field;
+            String INT_FIELD          = "int_field;
+            
+            String CREATE_TABLE_QUERY = "CREATE TABLE " + TABLE_NAME + " (" +
+                INTERNAL_ID_FIELD + " INTEGER PRIMARY KEY, " + 
+                STRING_FIELD + " TEXT, " + 
+                INT_FIELD + " INTEGER);";
         }
     }
 
-**2) Mark your storable class with `@ContentPathForContentResolver`**
+**2) Mark your storable class with `@BambooStorableTypeMeta` annotation**
 
 -> Check the previous step sources
 
