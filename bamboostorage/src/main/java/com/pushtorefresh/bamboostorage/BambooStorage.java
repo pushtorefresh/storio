@@ -38,7 +38,7 @@ public class BambooStorage {
     /**
      * Thread-safe cache of (StorableItemClass, BambooStorableTypeMeta) pairs for better performance
      */
-    private final Map<Class<? extends IBambooStorableItem>, BambooStorableTypeMetaWithExtra> cacheOfClassAndContentPathPairs = new ConcurrentHashMap<Class<? extends IBambooStorableItem>, BambooStorableTypeMetaWithExtra>();
+    private final Map<Class<? extends IBambooStorableItem>, BambooStorableTypeMetaWithExtra> mCacheOfStorableItemTypesAndTheirMeta = new ConcurrentHashMap<Class<? extends IBambooStorableItem>, BambooStorableTypeMetaWithExtra>();
 
     public BambooStorage(@NonNull Context context, @NonNull String contentProviderAuthority) {
         mContentPath     = "content://" + contentProviderAuthority + "/%s";
@@ -383,7 +383,7 @@ public class BambooStorage {
      */
     @NonNull
     private BambooStorableTypeMetaWithExtra getTypeMetaWithExtra(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem) {
-        BambooStorableTypeMetaWithExtra typeMetaWithExtra = cacheOfClassAndContentPathPairs.get(classOfStorableItem);
+        BambooStorableTypeMetaWithExtra typeMetaWithExtra = mCacheOfStorableItemTypesAndTheirMeta.get(classOfStorableItem);
 
         // no cached value
         if (typeMetaWithExtra == null) {
@@ -392,7 +392,7 @@ public class BambooStorage {
             }
 
             typeMetaWithExtra = new BambooStorableTypeMetaWithExtra(classOfStorableItem.getAnnotation(BambooStorableTypeMeta.class));
-            cacheOfClassAndContentPathPairs.put(classOfStorableItem, typeMetaWithExtra);
+            mCacheOfStorableItemTypesAndTheirMeta.put(classOfStorableItem, typeMetaWithExtra);
         }
 
         return typeMetaWithExtra;
