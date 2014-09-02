@@ -29,3 +29,5 @@ local.properties
 *.iml
 
 *.DS_STORE
+
+custom_env.gradle
