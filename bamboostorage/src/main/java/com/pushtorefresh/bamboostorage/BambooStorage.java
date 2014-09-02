@@ -59,7 +59,7 @@ public class BambooStorage {
      * Updates storable item in the storage
      * @param storableItem to update
      * @return count of updated items
-     * @throws IllegalArgumentException if storable item internal id <= 0 -> it was not stored in StorageManager
+     * @throws IllegalArgumentException if storable item internal id less or equals zero — it was not stored in StorageManager
      */
     public int update(@NonNull IBambooStorableItem storableItem) {
         final long itemInternalId = storableItem.get_id();
@@ -286,7 +286,7 @@ public class BambooStorage {
     /**
      * Removes storable item from storage
      * @param storableItem item to be removed from the storage
-     * @return count of removed items, it could be 0, or 1, or > 1 if you have items with same internal id in the storage
+     * @return count of removed items, it could be 0, or 1, or greater than 1 if you have items with same internal id in the storage
      */
     public int remove(@NonNull IBambooStorableItem storableItem) {
         final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
@@ -360,7 +360,7 @@ public class BambooStorage {
     /**
      * Notifying about change in the storage using content resolver notifyChange method
      * @param classOfStorableItem class of StorableItem
-     * @param contentObserver The observer that originated the change, may be <code>null</null>.
+     * @param contentObserver the observer that originated the change, may be null
      * The observer that originated the change will only receive the notification if it
      * has requested to receive self-change notifications by implementing
      */

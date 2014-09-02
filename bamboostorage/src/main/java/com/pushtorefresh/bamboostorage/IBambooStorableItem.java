@@ -22,7 +22,7 @@ public interface IBambooStorableItem {
 
     /**
      * Returns internal item id
-     * If id is <= 0, StorableItem was never saved in the storage
+     * If id is less or equals zero, StorableItem was never saved in the storage
      * @return internal item id
      */
     long get_id();
