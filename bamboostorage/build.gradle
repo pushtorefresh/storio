@@ -26,7 +26,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 20
         versionCode 1
-        versionName '1.0'
+        versionName version
 
         testApplicationId 'com.pushtorefresh.bamboostorage.test'
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
@@ -70,7 +70,7 @@ afterEvaluate { project ->
 
             pom.project {
                 name 'Android BambooStorage library'
-                packaging 'aar'
+                packaging 'jar' // this does not work.. it always builds 'aar', so check the bottom of build.gradle with workaround
                 description 'Modern, fast and memory efficient Storage API based on ContentProviders'
                 url 'https://github.com/pushtorefresh/bamboo-storage'
 
@@ -118,4 +118,22 @@ task androidSourcesJar(type: Jar) {
 artifacts {
     archives androidSourcesJar
     archives androidJavadocsJar
+}
+
+// forcing to build 'jar' instead of 'aar'
+// see http://stackoverflow.com/questions/19307341/android-library-gradle-release-jar
+// see https://github.com/square/assertj-android/pull/80
+android.libraryVariants.all { variant ->
+    def name = variant.buildType.name
+
+    if (name.equals(com.android.builder.core.BuilderConstants.DEBUG)) {
+        return; // Skip debug builds.
+    }
+
+    def task = project.tasks.create "jar${name.capitalize()}", Jar
+
+    task.dependsOn variant.javaCompile
+    task.from variant.javaCompile.destinationDir
+
+    artifacts.add('archives', task);
 }
