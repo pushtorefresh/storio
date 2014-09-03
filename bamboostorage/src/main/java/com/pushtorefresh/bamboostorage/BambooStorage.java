@@ -21,6 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BambooStorage {
 
     /**
+     * Thread-safe cache of (StorableItemClass, BambooStorableTypeMeta) pairs for better performance
+     */
+    private static final Map<Class<? extends IBambooStorableItem>, BambooStorableTypeMetaWithExtra> CACHE_OF_STORABLE_ITEM_TYPES_AND_THEIR_META = new ConcurrentHashMap<Class<? extends IBambooStorableItem>, BambooStorableTypeMetaWithExtra>();
+
+    /**
      * Content path string for building uris for requests
      */
     private final String mContentPath;
@@ -34,11 +39,6 @@ public class BambooStorage {
      * Resources for StorableItem._toContentValues() calls
      */
     private final Resources mResources;
-
-    /**
-     * Thread-safe cache of (StorableItemClass, BambooStorableTypeMeta) pairs for better performance
-     */
-    private final Map<Class<? extends IBambooStorableItem>, BambooStorableTypeMetaWithExtra> mCacheOfStorableItemTypesAndTheirMeta = new ConcurrentHashMap<Class<? extends IBambooStorableItem>, BambooStorableTypeMetaWithExtra>();
 
     public BambooStorage(@NonNull Context context, @NonNull String contentProviderAuthority) {
         mContentPath     = "content://" + contentProviderAuthority + "/%s";
@@ -141,9 +141,11 @@ public class BambooStorage {
             return list;
         }
 
+        final String internalIdFieldName = getTypeMetaWithExtra(classOfStorableItem).typeMeta.internalIdFieldName();
+
         try {
             do {
-                list.add(createStorableItemFromCursor(classOfStorableItem, cursor));
+                list.add(createStorableItemFromCursor(classOfStorableItem, internalIdFieldName, cursor));
             } while (cursor.moveToNext());
         } finally {
             cursor.close();
@@ -382,8 +384,8 @@ public class BambooStorage {
      * @return type meta info with some extra data
      */
     @NonNull
-    private BambooStorableTypeMetaWithExtra getTypeMetaWithExtra(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem) {
-        BambooStorableTypeMetaWithExtra typeMetaWithExtra = mCacheOfStorableItemTypesAndTheirMeta.get(classOfStorableItem);
+    private static BambooStorableTypeMetaWithExtra getTypeMetaWithExtra(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem) {
+        BambooStorableTypeMetaWithExtra typeMetaWithExtra = CACHE_OF_STORABLE_ITEM_TYPES_AND_THEIR_META.get(classOfStorableItem);
 
         // no cached value
         if (typeMetaWithExtra == null) {
@@ -392,7 +394,7 @@ public class BambooStorage {
             }
 
             typeMetaWithExtra = new BambooStorableTypeMetaWithExtra(classOfStorableItem.getAnnotation(BambooStorableTypeMeta.class));
-            mCacheOfStorableItemTypesAndTheirMeta.put(classOfStorableItem, typeMetaWithExtra);
+            CACHE_OF_STORABLE_ITEM_TYPES_AND_THEIR_META.put(classOfStorableItem, typeMetaWithExtra);
         }
 
         return typeMetaWithExtra;
@@ -432,15 +434,17 @@ public class BambooStorage {
     /**
      * Creates and fills storable item from cursor
      * @param classOfStorableItem class of storable item to instantiate
+     * @param internalIdFieldName class's internal id field name
      * @param cursor cursor to getByInternalId fields of item
      * @param <T> generic type of the storable item
      * @return storable item filled with info from cursor
      * @throws IllegalArgumentException if classOfStorableItem can not be used to create item from Cursor
      */
     @NonNull
-    public static <T extends IBambooStorableItem> T createStorableItemFromCursor(@NonNull Class<T> classOfStorableItem, @NonNull Cursor cursor) {
+    private static <T extends IBambooStorableItem> T createStorableItemFromCursor(@NonNull Class<T> classOfStorableItem, @NonNull String internalIdFieldName, @NonNull Cursor cursor) {
         try {
             T storableItem = classOfStorableItem.newInstance();
+            storableItem.set_id(cursor.getLong(cursor.getColumnIndex(internalIdFieldName)));
             storableItem._fillFromCursor(cursor);
             return storableItem;
         } catch (InstantiationException e) {
@@ -448,5 +452,18 @@ public class BambooStorage {
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException(classOfStorableItem + " can not be used for createStorableItemFromCursor() because it had no default constructor or it's not public, instance can not be created by class.newInstance()");
         }
+    }
+
+    /**
+     * Creates and fills storable item from cursor
+     * @param classOfStorableItem class of storable item to instantiate
+     * @param cursor cursor to getByInternalId fields of item
+     * @param <T> generic type of the storable item
+     * @return storable item filled with info from cursor
+     * @throws IllegalArgumentException if classOfStorableItem can not be used to create item from Cursor
+     */
+    @NonNull
+    public static <T extends IBambooStorableItem> T createStorableItemFromCursor(@NonNull Class<T> classOfStorableItem, @NonNull Cursor cursor) {
+        return createStorableItemFromCursor(classOfStorableItem, getTypeMetaWithExtra(classOfStorableItem).typeMeta.internalIdFieldName(), cursor);
     }
 }
