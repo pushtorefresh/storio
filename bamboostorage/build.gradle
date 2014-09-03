@@ -6,7 +6,7 @@ if (project.file('../custom_env.gradle').exists()) {
     apply from: project.file('../custom_env.gradle')
 }
 
-version = '1.1'
+version = '1.2.2'
 group   = 'com.pushtorefresh'
 
 def isReleaseBuild() {
@@ -70,7 +70,7 @@ afterEvaluate { project ->
 
             pom.project {
                 name 'Android BambooStorage library'
-                packaging 'jar' // this does not work.. it always builds 'aar', so check the bottom of build.gradle with workaround
+                packaging 'aar'
                 description 'Modern, fast and memory efficient Storage API based on ContentProviders'
                 url 'https://github.com/pushtorefresh/bamboo-storage'
 
@@ -118,22 +118,4 @@ task androidSourcesJar(type: Jar) {
 artifacts {
     archives androidSourcesJar
     archives androidJavadocsJar
-}
-
-// forcing to build 'jar' instead of 'aar'
-// see http://stackoverflow.com/questions/19307341/android-library-gradle-release-jar
-// see https://github.com/square/assertj-android/pull/80
-android.libraryVariants.all { variant ->
-    def name = variant.buildType.name
-
-    if (name.equals(com.android.builder.core.BuilderConstants.DEBUG)) {
-        return; // Skip debug builds.
-    }
-
-    def task = project.tasks.create "jar${name.capitalize()}", Jar
-
-    task.dependsOn variant.javaCompile
-    task.from variant.javaCompile.destinationDir
-
-    artifacts.add('archives', task);
 }
