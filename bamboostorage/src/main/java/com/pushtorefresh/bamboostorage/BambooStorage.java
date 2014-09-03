@@ -40,6 +40,11 @@ public class BambooStorage {
      */
     private final Resources mResources;
 
+    /**
+     * Creates BambooStorage object
+     * @param context feel free to pass any context, no memory leaks. Required to work with ContentResolver and provide Resources to IBambooStorableItem._toContentValues(res)
+     * @param contentProviderAuthority authority of your ContentProvider
+     */
     public BambooStorage(@NonNull Context context, @NonNull String contentProviderAuthority) {
         mContentPath     = "content://" + contentProviderAuthority + "/%s";
         mContentResolver = context.getContentResolver();
@@ -406,7 +411,7 @@ public class BambooStorage {
      * @return Uri for accessing content
      */
     @NonNull
-    private Uri buildUri(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem) {
+    public Uri buildUri(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem) {
         BambooStorableTypeMetaWithExtra typeMetaWithExtra = getTypeMetaWithExtra(classOfStorableItem);
         return Uri.parse(String.format(mContentPath, typeMetaWithExtra.typeMeta.contentPath()));
     }
