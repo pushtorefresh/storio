@@ -10,6 +10,11 @@
 If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper.html) ([`SQLiteDatabase`](http://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html) under it) to store your data, you can easily switch to `BambooStorage` because it provides base class for `ContentProvider` with `SQLiteOpenHelper`
 
 -----------------------------------
+**Released on the mavenCentral**
+
+`compile 'com.pushtorefresh:bamboostorage:1.0' // current release is 1.0` 
+
+-----------------------------------
 **What API can provide `BambooStorage`? It's CRUD with collection like methods names** 
 Implementation is as efficient as possible
 
