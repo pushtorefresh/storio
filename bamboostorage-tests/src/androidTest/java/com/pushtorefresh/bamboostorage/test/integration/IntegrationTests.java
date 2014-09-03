@@ -1,6 +1,7 @@
 package com.pushtorefresh.bamboostorage.test.integration;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
 
 import com.pushtorefresh.bamboostorage.BambooStorage;
@@ -32,7 +33,7 @@ public class IntegrationTests extends AndroidTestCase {
         assertEquals(0, mBambooStorage.countOfItems(TestStorableItem.class));
     }
 
-    private TestStorableItem generateRandomStorableItem() {
+    private @NonNull TestStorableItem generateRandomStorableItem() {
         return new TestStorableItem()
                 .setTestStringField("test string " + mRandom.nextLong())
                 .setTestIntField(mRandom.nextInt())
@@ -44,6 +45,7 @@ public class IntegrationTests extends AndroidTestCase {
 
         mBambooStorage.add(storableItem);
 
+        assertTrue(storableItem.get_id() > 0);
         assertTrue(mBambooStorage.contains(storableItem));
     }
 
@@ -61,18 +63,22 @@ public class IntegrationTests extends AndroidTestCase {
 
         mBambooStorage.add(storableItem);
 
-        storableItem.setTestStringField("updated");
-        storableItem.setTestIntField(mRandom.nextInt());
-        storableItem.setTestLongField(mRandom.nextLong());
+        TestStorableItem storedItem = mBambooStorage.getByInternalId(TestStorableItem.class, storableItem.get_id());
+        assertNotNull(storedItem);
+        assertEquals(storableItem, storedItem);
 
-        int countOfUpdatedItems = mBambooStorage.update(storableItem);
+        storedItem.setTestStringField("updated");
+        storedItem.setTestIntField(mRandom.nextInt());
+        storedItem.setTestLongField(mRandom.nextLong());
+
+        int countOfUpdatedItems = mBambooStorage.update(storedItem);
 
         assertEquals(1, countOfUpdatedItems);
         assertEquals(1, mBambooStorage.countOfItems(storableItem.getClass()));
 
-        TestStorableItem itemFromStorage = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id());
+        TestStorableItem updatedStoredItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id());
 
-        assertEquals(storableItem, itemFromStorage);
+        assertEquals(storedItem, updatedStoredItem);
     }
 
     public void testAddOrUpdateShouldUpdate() {
@@ -80,18 +86,22 @@ public class IntegrationTests extends AndroidTestCase {
 
         mBambooStorage.add(storableItem);
 
-        storableItem.setTestStringField("should update");
-        storableItem.setTestIntField(mRandom.nextInt());
-        storableItem.setTestLongField(mRandom.nextLong());
+        TestStorableItem storedItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id());
+        assertNotNull(storedItem);
+        assertEquals(storableItem, storedItem);
 
-        boolean trueIfAddedFalseIfUpdated = mBambooStorage.addOrUpdate(storableItem);
+        storedItem.setTestStringField("should update");
+        storedItem.setTestIntField(mRandom.nextInt());
+        storedItem.setTestLongField(mRandom.nextLong());
+
+        boolean trueIfAddedFalseIfUpdated = mBambooStorage.addOrUpdate(storedItem);
 
         assertFalse(trueIfAddedFalseIfUpdated);
         assertEquals(1, mBambooStorage.countOfItems(storableItem.getClass()));
 
-        TestStorableItem itemFromStorage = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id());
+        TestStorableItem updatedStoredItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id());
 
-        assertEquals(storableItem, itemFromStorage);
+        assertEquals(storedItem, updatedStoredItem);
     }
 
     public void testAddOrUpdateShouldAdd() {
