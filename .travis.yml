@@ -1,0 +1,22 @@
+language: android
+jdk: oraclejdk7
+env:
+  matrix:
+    - ANDROID_TARGET=android-20  ANDROID_ABI=armeabi-v7a
+
+android:
+  components:
+    - build-tools-20.0.0
+    - extra-android-m2repository
+    - extra-android-support
+
+before_script:
+  # Create and start emulator
+  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - adb wait-for-device
+  - adb shell input keyevent 82 &
+
+script:
+    - ./gradlew clean build --info
+    - ./gradlew connectedAndroidTest --info
