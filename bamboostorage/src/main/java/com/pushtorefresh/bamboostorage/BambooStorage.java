@@ -333,6 +333,7 @@ public class BambooStorage {
      */
     public boolean contains(@NonNull IBambooStorableItem storableItem) {
         final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
+
         final Cursor cursor = getAsCursor(
                 classOfStorableItem,
                 getTypeMetaWithExtra(classOfStorableItem).whereById,
@@ -340,11 +341,12 @@ public class BambooStorage {
                 null
         );
 
-        if (cursor == null || !cursor.moveToFirst()) {
-            return false;
-        } else {
-            cursor.close();
-            return true;
+        try {
+            return cursor != null && cursor.moveToFirst();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 
