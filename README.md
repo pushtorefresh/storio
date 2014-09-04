@@ -12,7 +12,7 @@ If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference
 -----------------------------------
 **Released on the mavenCentral**
 
-`compile 'com.pushtorefresh:bamboostorage:1.1' // current release is v1.1`
+`compile 'com.pushtorefresh:bamboostorage:1.2.2' // current release is v1.2.2`
 
 -----------------------------------
 **What API can provide `BambooStorage`? It's CRUD with collection like methods names** 
