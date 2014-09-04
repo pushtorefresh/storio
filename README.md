@@ -42,10 +42,10 @@ Implementation is as efficient as possible
 -----------------------------------
 **HOW to use `BambooStorage` in your project, 3 easy steps**
 
-**1) Your storable class should implement `IBambooStorableItem` or extend `ABambooStorableItem`** and implement `_toContentValues(resources)` and `_fillFromCursor(cursor)` methods
+**1) Your storable class should implement `IBambooStorableItem` or extend `ABambooStorableItem`** and implement `toContentValues(Resources res)` and `fillFromCursor(Cursor cursor)` methods
 
     @BambooStorableTypeMeta(
-        contentPath = YourStorableType.TableInfo.TABLE_NAME, // Mandatory
+        contentPath = YourStorableType.TableInfo.TABLE_NAME, // Required
         internalIdFieldName = YourStorableType.TableInfo.INTERNAL_ID // Optional, default value = "_id"
     )
     public class YourStorableType extends ABambooStorableItem {
