@@ -14,6 +14,7 @@ If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference
 
 `compile 'com.pushtorefresh:bamboostorage:1.1' // current release is v1.1`
 
+
 -----------------------------------
 **What API can provide `BambooStorage`? It's CRUD with collection like methods names** 
 Implementation is as efficient as possible
