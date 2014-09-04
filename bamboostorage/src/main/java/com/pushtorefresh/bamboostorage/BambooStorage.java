@@ -36,13 +36,13 @@ public class BambooStorage {
     private final ContentResolver mContentResolver;
 
     /**
-     * Resources for StorableItem._toContentValues() calls
+     * Resources for StorableItem.toContentValues() calls
      */
     private final Resources mResources;
 
     /**
      * Creates BambooStorage object
-     * @param context feel free to pass any context, no memory leaks. Required to work with ContentResolver and provide Resources to IBambooStorableItem._toContentValues(res)
+     * @param context feel free to pass any context, no memory leaks. Required to work with ContentResolver and provide Resources to IBambooStorableItem.toContentValues(res)
      * @param contentProviderAuthority authority of your ContentProvider
      */
     public BambooStorage(@NonNull Context context, @NonNull String contentProviderAuthority) {
@@ -56,8 +56,9 @@ public class BambooStorage {
      * @param storableItem to add
      */
     public void add(@NonNull IBambooStorableItem storableItem) {
-        Uri uri = mContentResolver.insert(buildUri(storableItem.getClass()), storableItem._toContentValues(mResources));
-        storableItem.set_id(ContentUris.parseId(uri));
+        storableItem.setInternalId(IBambooStorableItem.DEFAULT_INTERNAL_ITEM_ID);
+        Uri uri = mContentResolver.insert(buildUri(storableItem.getClass()), storableItem.toContentValues(mResources));
+        storableItem.setInternalId(ContentUris.parseId(uri));
     }
 
     /**
@@ -67,7 +68,7 @@ public class BambooStorage {
      * @throws IllegalArgumentException if storable item internal id less or equals zero — it was not stored in StorageManager
      */
     public int update(@NonNull IBambooStorableItem storableItem) {
-        final long itemInternalId = storableItem.get_id();
+        final long itemInternalId = storableItem.getInternalId();
 
         if (itemInternalId <= 0) {
             throw new IllegalArgumentException("Item: " + storableItem + " can not be updated, because its internal id is <= 0");
@@ -75,7 +76,7 @@ public class BambooStorage {
             final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
             return mContentResolver.update(
                     buildUri(classOfStorableItem),
-                    storableItem._toContentValues(mResources),
+                    storableItem.toContentValues(mResources),
                     getTypeMetaWithExtra(classOfStorableItem).whereById,
                     buildWhereArgsByInternalId(storableItem)
             );
@@ -88,7 +89,7 @@ public class BambooStorage {
      * @return true if item was added, false if item was updated
      */
     public boolean addOrUpdate(@NonNull IBambooStorableItem storableItem) {
-        if (storableItem.get_id() <= 0) {
+        if (storableItem.getInternalId() <= 0) {
             // item was not stored in the storage
             add(storableItem);
             return true;
@@ -433,7 +434,7 @@ public class BambooStorage {
      */
     @NonNull
     private static String[] buildWhereArgsByInternalId(@NonNull IBambooStorableItem storableItem) {
-        return buildWhereArgsByInternalId(storableItem.get_id());
+        return buildWhereArgsByInternalId(storableItem.getInternalId());
     }
 
     /**
@@ -449,8 +450,8 @@ public class BambooStorage {
     private static <T extends IBambooStorableItem> T createStorableItemFromCursor(@NonNull Class<T> classOfStorableItem, @NonNull String internalIdFieldName, @NonNull Cursor cursor) {
         try {
             T storableItem = classOfStorableItem.newInstance();
-            storableItem.set_id(cursor.getLong(cursor.getColumnIndex(internalIdFieldName)));
-            storableItem._fillFromCursor(cursor);
+            storableItem.setInternalId(cursor.getLong(cursor.getColumnIndex(internalIdFieldName)));
+            storableItem.fillFromCursor(cursor);
             return storableItem;
         } catch (InstantiationException e) {
             throw new IllegalArgumentException(classOfStorableItem + " can not be used for createStorableItemFromCursor() because its instance can not be created by class.newInstance()");

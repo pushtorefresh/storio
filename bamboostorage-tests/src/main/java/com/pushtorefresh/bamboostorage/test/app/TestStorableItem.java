@@ -50,7 +50,7 @@ public class TestStorableItem extends ABambooStorableItem {
         return this;
     }
 
-    @NonNull @Override public ContentValues _toContentValues(@NonNull Resources res) {
+    @NonNull @Override public ContentValues toContentValues(@NonNull Resources res) {
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(TableInfo.TEST_STRING_FIELD, mTestStringField);
@@ -61,7 +61,7 @@ public class TestStorableItem extends ABambooStorableItem {
     }
 
     @Override
-    public void _fillFromCursor(@NonNull Cursor cursor) {
+    public void fillFromCursor(@NonNull Cursor cursor) {
         mTestStringField = cursor.getString(cursor.getColumnIndex(TableInfo.TEST_STRING_FIELD));
         mTestIntField    = cursor.getInt(cursor.getColumnIndex(TableInfo.TEST_INT_FIELD));
         mTestLongField   = cursor.getLong(cursor.getColumnIndex(TableInfo.TEST_LONG_FIELD));
