@@ -18,31 +18,31 @@ public interface IBambooStorableItem {
     /**
      * Default internal id of the item, if internal item id == default, it means, that it was not stored in the storage
      */
-    static final long DEFAULT_INTERNAL_ITEM_ID = 0;
+    long DEFAULT_INTERNAL_ITEM_ID = 0;
 
     /**
      * Returns internal item id
      * If id is less or equals zero, StorableItem was never saved in the storage
      * @return internal item id
      */
-    long get_id();
+    long getInternalId();
 
     /**
-     * Sets internal item id
-     * @param _id internal item id
+     * Sets internal item internalId
+     * @param internalId internal item internalId
      */
-    void set_id(final long _id);
+    void setInternalId(final long internalId);
 
     /**
      * Converts this object to ContentValues
-     * @param res which can be needed for _toContentValues process
+     * @param res which can be needed for toContentValues process
      * @return ContentValues representation of StorableItem
      */
-    @NonNull ContentValues _toContentValues(@NonNull Resources res);
+    @NonNull ContentValues toContentValues(@NonNull Resources res);
 
     /**
      * Fills StorableItem's fields from cursor
      * @param cursor with item data
      */
-    void _fillFromCursor(@NonNull Cursor cursor);
+    void fillFromCursor(@NonNull Cursor cursor);
 }
