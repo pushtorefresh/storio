@@ -8,11 +8,11 @@ public abstract class ABambooStorableItem implements IBambooStorableItem {
 
     private long mInternalItemId = DEFAULT_INTERNAL_ITEM_ID;
 
-    @Override public final long get_id() {
+    @Override public final long getInternalId() {
         return mInternalItemId;
     }
 
-    @Override public final void set_id(long _id) {
-        mInternalItemId = _id;
+    @Override public final void setInternalId(long internalId) {
+        mInternalItemId = internalId;
     }
 }
