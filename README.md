@@ -3,9 +3,7 @@
 
 *Author of the original idea — [@ivanGusef](https://github.com/ivanGusef)*
 
-**BambooStorage** provides you a way to store your classes in `ContentProvider` without boilerplate [`CRUD`](http://en.wikipedia.org/wiki/Create,_read,_update_and_delete) (Create-Read-Update-Delete) code for each storable type
-
-**PLEASE DO NOT STOP THINKING ABOUT THE LIBRARY AFTER YOU SAW the word "ContentProvider" :)**
+**BambooStorage** provides you a way to store your data in `ContentProvider` without boilerplate [`CRUD`](http://en.wikipedia.org/wiki/Create,_read,_update_and_delete) (Create-Read-Update-Delete) code for each storable type
 
 If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper.html) ([`SQLiteDatabase`](http://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html) under it) to store your data, you can easily switch to `BambooStorage` because it provides base class for `ContentProvider` with `SQLiteOpenHelper`
 
@@ -14,8 +12,11 @@ If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference
 
 `compile 'com.pushtorefresh:bamboostorage:1.2.2' // current release is v1.2.2`
 
+
+**`master`** branch build status [on Travis CI](https://travis-ci.org/pushtorefresh/bamboo-storage): [![Build Status](https://travis-ci.org/pushtorefresh/bamboo-storage.svg?branch=master)](https://travis-ci.org/pushtorefresh/bamboo-storage)
+
 -----------------------------------
-**What API can provide `BambooStorage`? It's CRUD with collection like methods names** 
+**What API provides `BambooStorage`? It's CRUD with collection like methods names** 
 Implementation is as efficient as possible
 
 - `add(yourStorableItem)` — adds an item to the storage
@@ -41,10 +42,10 @@ Implementation is as efficient as possible
 -----------------------------------
 **HOW to use `BambooStorage` in your project, 3 easy steps**
 
-**1) Your storable class should implement `IBambooStorableItem` or extend `ABambooStorableItem`** and implement `_toContentValues(resources)` and `_fillFromCursor(cursor)` methods
+**1) Your storable class should implement `IBambooStorableItem` or extend `ABambooStorableItem`** and implement `toContentValues(Resources res)` and `fillFromCursor(Cursor cursor)` methods
 
     @BambooStorableTypeMeta(
-        contentPath = YourStorableType.TableInfo.TABLE_NAME, // Mandatory
+        contentPath = YourStorableType.TableInfo.TABLE_NAME, // Required
         internalIdFieldName = YourStorableType.TableInfo.INTERNAL_ID // Optional, default value = "_id"
     )
     public class YourStorableType extends ABambooStorableItem {
@@ -53,19 +54,20 @@ Implementation is as efficient as possible
         private int mIntField;
         
         public YourStorableType() {
-            // PLEASE left default constructor 
-            // to left BambooStorage a chance to crete instance of YourStorableType ;)
+            // PLEASE left the default constructor 
+            // to left BambooStorage a chance to create instance of YourStorableType ;)
         }
         
-        @Override @NonNull public _toContentValues(@NonNull Resources res) {
-            ContentValues contenValues = new ContentValues();
+        @Override @NonNull public toContentValues(@NonNull Resources res) {
+            ContentValues contentValues = new ContentValues();
+            
             contentValues.put(TableInfo.STRING_FIELD, mStringField);
             contentValues.put(TableInfo.INT_FIELD, mIntField);
             
             return contentValues;
         }
         
-        @Override public _fillFromCursor(@NonNull Cursor cursor) {
+        @Override public fillFromCursor(@NonNull Cursor cursor) {
             mStringField = cursor.getString(cursor.getColumnIndex(TableInfo.STRING_FIELD));
             mIntField    = cursor.getInt(cursor.getColumnIndex(TableInfo.INT_FIELD));
         }
@@ -119,3 +121,4 @@ You can extend `ABambooSQLiteOpenHelperContentProvider` and provide your `SQLite
 - By default, `SQLiteDatabase` is thead-safe, so if you are using `ContentProvider` with `SQLiteDatabase` it is thead-safe too :)
 - `BambooStorage` is written in very efficient way, even work with `BambooStorableTypeMeta` annotation is fast because of internal cache (`YourStorableType`, `BambooStorableTypeMeta`)
 - It is better to have [`Singleton`](http://en.wikipedia.org/wiki/Singleton_pattern) instance of `BambooStorage` for each `ContentProvider`, even better, if you would use some [`DI`](http://en.wikipedia.org/wiki/Dependency_injection) tool for that, for example — [`Dagger`](http://square.github.io/dagger/)
+- `BambooStorage` can work with non `SQLiteDatabase-driven` `ContentProvider`, it is an abstraction over any type of `ContentProvider`

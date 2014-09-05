@@ -45,7 +45,7 @@ public class IntegrationTests extends AndroidTestCase {
 
         mBambooStorage.add(storableItem);
 
-        assertTrue(storableItem.get_id() > 0);
+        assertTrue(storableItem.getInternalId() > 0);
         assertTrue(mBambooStorage.contains(storableItem));
     }
 
@@ -63,7 +63,7 @@ public class IntegrationTests extends AndroidTestCase {
 
         mBambooStorage.add(storableItem);
 
-        TestStorableItem storedItem = mBambooStorage.getByInternalId(TestStorableItem.class, storableItem.get_id());
+        TestStorableItem storedItem = mBambooStorage.getByInternalId(TestStorableItem.class, storableItem.getInternalId());
         assertNotNull(storedItem);
         assertEquals(storableItem, storedItem);
 
@@ -76,7 +76,7 @@ public class IntegrationTests extends AndroidTestCase {
         assertEquals(1, countOfUpdatedItems);
         assertEquals(1, mBambooStorage.countOfItems(storableItem.getClass()));
 
-        TestStorableItem updatedStoredItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id());
+        TestStorableItem updatedStoredItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.getInternalId());
 
         assertEquals(storedItem, updatedStoredItem);
     }
@@ -86,7 +86,7 @@ public class IntegrationTests extends AndroidTestCase {
 
         mBambooStorage.add(storableItem);
 
-        TestStorableItem storedItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id());
+        TestStorableItem storedItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.getInternalId());
         assertNotNull(storedItem);
         assertEquals(storableItem, storedItem);
 
@@ -99,7 +99,7 @@ public class IntegrationTests extends AndroidTestCase {
         assertFalse(trueIfAddedFalseIfUpdated);
         assertEquals(1, mBambooStorage.countOfItems(storableItem.getClass()));
 
-        TestStorableItem updatedStoredItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id());
+        TestStorableItem updatedStoredItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.getInternalId());
 
         assertEquals(storedItem, updatedStoredItem);
     }
@@ -109,7 +109,7 @@ public class IntegrationTests extends AndroidTestCase {
 
         mBambooStorage.add(storableItem);
 
-        storableItem.set_id(TestStorableItem.DEFAULT_INTERNAL_ITEM_ID);
+        storableItem.setInternalId(TestStorableItem.DEFAULT_INTERNAL_ITEM_ID);
         storableItem.setTestStringField("should add new item");
         storableItem.setTestIntField(mRandom.nextInt());
         storableItem.setTestLongField(mRandom.nextLong());
@@ -127,7 +127,7 @@ public class IntegrationTests extends AndroidTestCase {
 
         mBambooStorage.add(storableItem);
 
-        TestStorableItem storedItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id());
+        TestStorableItem storedItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.getInternalId());
 
         assertNotSame(storableItem, storedItem);
         assertEquals(storableItem, storedItem);
@@ -139,7 +139,7 @@ public class IntegrationTests extends AndroidTestCase {
         mBambooStorage.add(storableItem);
 
         // NOTICE: internal_id + 1
-        TestStorableItem storedItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.get_id() + 1);
+        TestStorableItem storedItem = mBambooStorage.getByInternalId(storableItem.getClass(), storableItem.getInternalId() + 1);
 
         assertNull(storedItem);
     }
