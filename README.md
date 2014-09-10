@@ -10,7 +10,7 @@ If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference
 -----------------------------------
 **Released on the mavenCentral**
 
-`compile 'com.pushtorefresh:bamboostorage:1.2.2' // current release is v1.2.2`
+`compile 'com.pushtorefresh:bamboostorage:1.3' // current release is v1.3`
 
 
 **`master`** branch build status [on Travis CI](https://travis-ci.org/pushtorefresh/bamboo-storage): [![Build Status](https://travis-ci.org/pushtorefresh/bamboo-storage.svg?branch=master)](https://travis-ci.org/pushtorefresh/bamboo-storage)
