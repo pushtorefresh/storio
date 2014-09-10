@@ -130,34 +130,37 @@ public class BambooStorage {
 
     /**
      * Gets all stored items of required type which satisfies where condition as list in memory
+     *
      * @param classOfStorableItem class of StorableItem
-     * @param where where clause
-     * @param whereArgs args for binding to where clause, same format as for ContentResolver
-     * @param orderBy order by clause
-     * @param <T> generic type of StorableItem
+     * @param where               where clause
+     * @param whereArgs           args for binding to where clause, same format as for ContentResolver
+     * @param orderBy             order by clause
+     * @param <T>                 generic type of StorableItem
      * @return list of StorableItems, can be empty but not null
      */
     @NonNull
     public <T extends IBambooStorableItem> List<T> getAsList(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
         final Cursor cursor = getAsCursor(classOfStorableItem, where, whereArgs, orderBy);
 
-        final List<T> list = new ArrayList<T>(cursor == null ? 0 : cursor.getCount());
-
-        if (cursor == null || !cursor.moveToFirst()) {
-            return list;
-        }
-
-        final String internalIdFieldName = getTypeMetaWithExtra(classOfStorableItem).typeMeta.internalIdFieldName();
-
         try {
+            final List<T> list = new ArrayList<T>(cursor == null ? 0 : cursor.getCount());
+
+            if (cursor == null || !cursor.moveToFirst()) {
+                return list;
+            }
+
+            final String internalIdFieldName = getTypeMetaWithExtra(classOfStorableItem).typeMeta.internalIdFieldName();
+
             do {
                 list.add(createStorableItemFromCursor(classOfStorableItem, internalIdFieldName, cursor));
             } while (cursor.moveToNext());
-        } finally {
-            cursor.close();
-        }
 
-        return list;
+            return list;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     /**
