@@ -3,7 +3,7 @@
 
 *Author of the original idea — [@ivanGusef](https://github.com/ivanGusef)*
 
-**BambooStorage** provides you a way to store your data in `ContentProvider` without boilerplate [`CRUD`](http://en.wikipedia.org/wiki/Create,_read,_update_and_delete) (Create-Read-Update-Delete) code for each storable type
+**BambooStorage** provides you an easy way to store your data in `ContentProvider` without boilerplate [`CRUD`](http://en.wikipedia.org/wiki/Create,_read,_update_and_delete) (Create-Read-Update-Delete) code for each storable type
 
 If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper.html) ([`SQLiteDatabase`](http://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html) under it) to store your data, you can easily switch to `BambooStorage` because it provides base class for `ContentProvider` with `SQLiteOpenHelper`
 
@@ -14,6 +14,10 @@ If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference
 
 
 **`master`** branch build status [on Travis CI](https://travis-ci.org/pushtorefresh/bamboo-storage): [![Build Status](https://travis-ci.org/pushtorefresh/bamboo-storage.svg?branch=master)](https://travis-ci.org/pushtorefresh/bamboo-storage)
+
+***Listed in:***
+
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Android%20BambooStorage-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/928)
 
 -----------------------------------
 **What API provides `BambooStorage`? It's CRUD with collection like methods names** 
