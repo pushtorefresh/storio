@@ -41,6 +41,11 @@ public class BambooStorage {
     private final Resources mResources;
 
     /**
+     * Notifier
+     */
+    private final IBambooStorageNotifier mNotifier;
+
+    /**
      * Creates BambooStorage object
      * @param context feel free to pass any context, no memory leaks. Required to work with ContentResolver and provide Resources to IBambooStorableItem.toContentValues(res)
      * @param contentProviderAuthority authority of your ContentProvider
@@ -49,6 +54,31 @@ public class BambooStorage {
         mContentPath     = "content://" + contentProviderAuthority + "/%s";
         mContentResolver = context.getContentResolver();
         mResources       = context.getResources();
+        mNotifier        = provideNotifier();
+    }
+
+    /**
+     * Provides notifier for bamboo storage
+     * @return notifier
+     */
+    protected IBambooStorageNotifier provideNotifier() {
+        return new BambooStorageDefaultNotifier();
+    }
+
+    /**
+     * Adds listener to the BambooStorage
+     * @param listener listener to add
+     */
+    public void addListener(@NonNull IBambooStorageListener listener) {
+        mNotifier.addListener(listener);
+    }
+
+    /**
+     * Removes listener from the BambooStorage
+     * @param listener listener to remove
+     */
+    public void removeListener(@NonNull IBambooStorageListener listener) {
+        mNotifier.removeListener(listener);
     }
 
     /**
@@ -59,6 +89,8 @@ public class BambooStorage {
         storableItem.setInternalId(IBambooStorableItem.DEFAULT_INTERNAL_ITEM_ID);
         Uri uri = mContentResolver.insert(buildUri(storableItem.getClass()), storableItem.toContentValues(mResources));
         storableItem.setInternalId(ContentUris.parseId(uri));
+
+        mNotifier.notifyAboutAdd(storableItem);
     }
 
     /**
@@ -74,12 +106,17 @@ public class BambooStorage {
             throw new IllegalArgumentException("Item: " + storableItem + " can not be updated, because its internal id is <= 0");
         } else {
             final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
-            return mContentResolver.update(
+
+            final int count = mContentResolver.update(
                     buildUri(classOfStorableItem),
                     storableItem.toContentValues(mResources),
                     getTypeMetaWithExtra(classOfStorableItem).whereById,
                     buildWhereArgsByInternalId(storableItem)
             );
+
+            mNotifier.notifyAboutUpdate(storableItem, count);
+
+            return count;
         }
     }
 
@@ -301,11 +338,16 @@ public class BambooStorage {
      */
     public int remove(@NonNull IBambooStorableItem storableItem) {
         final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
-        return remove(
+
+        final int count = remove(
                 classOfStorableItem,
                 getTypeMetaWithExtra(classOfStorableItem).whereById,
                 buildWhereArgsByInternalId(storableItem)
         );
+
+        mNotifier.notifyAboutRemove(storableItem, count);
+
+        return count;
     }
 
     /**
@@ -316,7 +358,9 @@ public class BambooStorage {
      * @return count of removed items
      */
     public int remove(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems, String where, String[] whereArgs) {
-        return mContentResolver.delete(buildUri(classOfStorableItems), where, whereArgs);
+        final int count = mContentResolver.delete(buildUri(classOfStorableItems), where, whereArgs);
+        mNotifier.notifyAboutRemove(classOfStorableItems, where, whereArgs, count);
+        return count;
     }
 
     /**
@@ -326,7 +370,9 @@ public class BambooStorage {
      * @return count of removed items
      */
     public int removeAllOfType(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems) {
-        return remove(classOfStorableItems, null, null);
+        final int count = remove(classOfStorableItems, null, null);
+        mNotifier.notifyAboutRemoveAllOfType(classOfStorableItems, count);
+        return count;
     }
 
     /**
