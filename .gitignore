@@ -2,7 +2,6 @@
 *.apk
 *.ap_
 .gradle/
-gradle/
 build/
 
 # files for the dex VM

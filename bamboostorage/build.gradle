@@ -6,7 +6,7 @@ if (project.file('../custom_env.gradle').exists()) {
     apply from: project.file('../custom_env.gradle')
 }
 
-version = '1.2.2'
+version = '1.3.1'
 group   = 'com.pushtorefresh'
 
 def isReleaseBuild() {
