@@ -27,9 +27,6 @@ android {
         targetSdkVersion 20
         versionCode 1
         versionName version
-
-        testApplicationId 'com.pushtorefresh.bamboostorage.test'
-        testInstrumentationRunner 'android.test.InstrumentationTestRunner'
     }
 }
 
