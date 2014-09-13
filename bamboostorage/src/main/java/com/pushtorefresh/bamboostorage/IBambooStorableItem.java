@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 
 /**
  * IBambooStorableItem is an abstraction for items representation in BambooStorage
- * <p/>
+ *
  * <p>DEFAULT PUBLIC CONSTRUCTOR IS REQUIRED for creating class instance in BambooStorage
  * for later filling it with Cursor</p>
  *
