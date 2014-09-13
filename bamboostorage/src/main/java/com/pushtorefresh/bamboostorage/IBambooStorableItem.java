@@ -23,18 +23,21 @@ public interface IBambooStorableItem {
     /**
      * Returns internal item id
      * If id is less or equals zero, StorableItem was never saved in the storage
+     *
      * @return internal item id
      */
     long getInternalId();
 
     /**
      * Sets internal item internalId
+     *
      * @param internalId internal item internalId
      */
     void setInternalId(final long internalId);
 
     /**
      * Converts this object to ContentValues
+     *
      * @param res which can be needed for toContentValues process
      * @return ContentValues representation of StorableItem
      */
@@ -42,6 +45,7 @@ public interface IBambooStorableItem {
 
     /**
      * Fills StorableItem's fields from cursor
+     *
      * @param cursor with item data
      */
     void fillFromCursor(@NonNull Cursor cursor);
