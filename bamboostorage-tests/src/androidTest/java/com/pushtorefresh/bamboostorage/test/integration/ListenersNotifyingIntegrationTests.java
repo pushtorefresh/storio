@@ -8,6 +8,7 @@ import com.pushtorefresh.bamboostorage.IBambooStorableItem;
 import com.pushtorefresh.bamboostorage.IBambooStorageListener;
 import com.pushtorefresh.bamboostorage.test.app.TestStorableItem;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -19,8 +20,9 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         private AtomicBoolean mAddCalled    = new AtomicBoolean(false);
         private AtomicBoolean mUpdateCalled = new AtomicBoolean(false);
-        private AtomicBoolean mRemoveCalled = new AtomicBoolean(false);
-        private AtomicBoolean mRemoveAllOfTypeCalled = new AtomicBoolean(false);
+        private AtomicBoolean mRemoveItemCalled = new AtomicBoolean(false);
+        private AtomicBoolean mRemoveWithWhereCalled  = new AtomicBoolean(false);
+        private AtomicBoolean mRemoveAllOfTypeCalled  = new AtomicBoolean(false);
         private AtomicBoolean mAnyCRUDOperationCalled = new AtomicBoolean(false);
 
         @Override public void onAdd(@NonNull IBambooStorableItem storableItem) {
@@ -32,12 +34,12 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         }
 
         @Override public void onRemove(@NonNull IBambooStorableItem storableItem, int count) {
-            mRemoveCalled.set(true);
+            mRemoveItemCalled.set(true);
         }
 
         @Override
         public void onRemove(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems, String where, String[] whereArgs, int count) {
-            mRemoveCalled.set(true);
+            mRemoveWithWhereCalled.set(true);
         }
 
         @Override
@@ -55,7 +57,8 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         public void assertOnlyAddCalled() {
             assertTrue(mAddCalled.get());
             assertFalse(mUpdateCalled.get());
-            assertFalse(mRemoveCalled.get());
+            assertFalse(mRemoveItemCalled.get());
+            assertFalse(mRemoveWithWhereCalled.get());
             assertFalse(mRemoveAllOfTypeCalled.get());
             assertTrue(mAnyCRUDOperationCalled.get());
         }
@@ -63,7 +66,8 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         public void assertOnlyUpdateCalled() {
             assertFalse(mAddCalled.get());
             assertTrue(mUpdateCalled.get());
-            assertFalse(mRemoveCalled.get());
+            assertFalse(mRemoveItemCalled.get());
+            assertFalse(mRemoveWithWhereCalled.get());
             assertFalse(mRemoveAllOfTypeCalled.get());
             assertTrue(mAnyCRUDOperationCalled.get());
         }
@@ -71,7 +75,17 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         public void assertOnlyRemoveCalled() {
             assertFalse(mAddCalled.get());
             assertFalse(mUpdateCalled.get());
-            assertTrue(mRemoveCalled.get());
+            assertTrue(mRemoveItemCalled.get());
+            assertFalse(mRemoveWithWhereCalled.get());
+            assertFalse(mRemoveAllOfTypeCalled.get());
+            assertTrue(mAnyCRUDOperationCalled.get());
+        }
+
+        public void assertOnlyRemoveWithWhereCalled() {
+            assertFalse(mAddCalled.get());
+            assertFalse(mUpdateCalled.get());
+            assertFalse(mRemoveItemCalled.get());
+            assertTrue(mRemoveWithWhereCalled.get());
             assertFalse(mRemoveAllOfTypeCalled.get());
             assertTrue(mAnyCRUDOperationCalled.get());
         }
@@ -79,7 +93,8 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         public void assertOnlyRemoveAllOfTypeCalled() {
             assertFalse(mAddCalled.get());
             assertFalse(mUpdateCalled.get());
-            assertFalse(mRemoveCalled.get());
+            assertFalse(mRemoveItemCalled.get());
+            assertFalse(mRemoveWithWhereCalled.get());
             assertTrue(mRemoveAllOfTypeCalled.get());
             assertTrue(mAnyCRUDOperationCalled.get());
         }
@@ -102,7 +117,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         assertEquals(0, mBambooStorage.countOfItems(TestStorableItem.class));
     }
 
-    private static void shouldBeTrueInFuture(AtomicBoolean atomicBoolean) {
+    private static void shouldBeTrueInNearFuture(AtomicBoolean atomicBoolean) {
         final long startTime = System.currentTimeMillis();
 
         while (System.currentTimeMillis() - startTime < 300) {
@@ -115,78 +130,156 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
     }
 
     public void testNotifyAboutAdd() {
-        StubListener addListener = new StubListener();
+        final TestStorableItem testStorableItem = TestStorableItemFactory.newRandomItem();
+
+        StubListener addListener = new StubListener() {
+            @Override public void onAdd(@NonNull IBambooStorableItem storableItem) {
+                assertSame(testStorableItem, storableItem);
+                super.onAdd(storableItem);
+            }
+        };
 
         mBambooStorage.addListener(addListener);
 
-        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
 
-        mBambooStorage.add(storableItem);
+        mBambooStorage.add(testStorableItem);
 
-        shouldBeTrueInFuture(addListener.mAddCalled);
+        shouldBeTrueInNearFuture(addListener.mAddCalled);
         addListener.assertOnlyAddCalled();
 
         mBambooStorage.removeListener(addListener);
     }
 
     public void testNotifyAboutUpdate() {
-        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
-        mBambooStorage.add(storableItem);
+        final TestStorableItem testStorableItem = TestStorableItemFactory.newRandomItem();
+        mBambooStorage.add(testStorableItem);
 
-        StubListener updateListener = new StubListener();
+        StubListener updateListener = new StubListener() {
+            @Override public void onUpdate(@NonNull IBambooStorableItem storableItem, int count) {
+                assertSame(testStorableItem, storableItem);
+                assertEquals(1, count);
+                super.onUpdate(storableItem, count);
+            }
+        };
         mBambooStorage.addListener(updateListener);
 
-        mBambooStorage.update(storableItem);
+        mBambooStorage.update(testStorableItem);
 
-        shouldBeTrueInFuture(updateListener.mUpdateCalled);
+        shouldBeTrueInNearFuture(updateListener.mUpdateCalled);
         updateListener.assertOnlyUpdateCalled();
 
         mBambooStorage.removeListener(updateListener);
     }
 
     public void testNotifyAboutAddOrUpdateAdd() {
-        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
+        final TestStorableItem testStorableItem = TestStorableItemFactory.newRandomItem();
 
-        StubListener addListener = new StubListener();
+        StubListener addListener = new StubListener() {
+            @Override public void onAdd(@NonNull IBambooStorableItem storableItem) {
+                assertSame(testStorableItem, storableItem);
+                super.onAdd(storableItem);
+            }
+        };
         mBambooStorage.addListener(addListener);
 
         // no item to update, so add listener should be called
-        mBambooStorage.addOrUpdate(storableItem);
+        mBambooStorage.addOrUpdate(testStorableItem);
 
-        shouldBeTrueInFuture(addListener.mAddCalled);
+        shouldBeTrueInNearFuture(addListener.mAddCalled);
         addListener.assertOnlyAddCalled();
 
         mBambooStorage.removeListener(addListener);
     }
 
     public void testNotifyAboutAddOrUpdateUpdate() {
-        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
+        final TestStorableItem testStorableItem = TestStorableItemFactory.newRandomItem();
 
         // no item to update, so add listener should be called
-        mBambooStorage.add(storableItem);
+        mBambooStorage.add(testStorableItem);
 
-        StubListener updateListener = new StubListener();
+        StubListener updateListener = new StubListener() {
+            @Override public void onUpdate(@NonNull IBambooStorableItem storableItem, int count) {
+                assertSame(testStorableItem, storableItem);
+                assertEquals(1, count);
+                super.onUpdate(storableItem, count);
+            }
+        };
         mBambooStorage.addListener(updateListener);
 
-        mBambooStorage.addOrUpdate(storableItem);
+        mBambooStorage.addOrUpdate(testStorableItem);
 
-        shouldBeTrueInFuture(updateListener.mUpdateCalled);
+        shouldBeTrueInNearFuture(updateListener.mUpdateCalled);
         updateListener.assertOnlyUpdateCalled();
 
         mBambooStorage.removeListener(updateListener);
     }
 
     public void testNotifyAboutRemove() {
-        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
-        mBambooStorage.add(storableItem);
+        final TestStorableItem testStorableItem = TestStorableItemFactory.newRandomItem();
+        mBambooStorage.add(testStorableItem);
 
-        StubListener removeListener = new StubListener();
+        StubListener removeListener = new StubListener() {
+            @Override public void onRemove(@NonNull IBambooStorableItem storableItem, int count) {
+                assertSame(testStorableItem, storableItem);
+                assertEquals(1, count);
+                super.onRemove(storableItem, count);
+            }
+        };
         mBambooStorage.addListener(removeListener);
 
-        mBambooStorage.remove(storableItem);
-        shouldBeTrueInFuture(removeListener.mRemoveCalled);
+        mBambooStorage.remove(testStorableItem);
+        shouldBeTrueInNearFuture(removeListener.mRemoveItemCalled);
         removeListener.assertOnlyRemoveCalled();
 
         mBambooStorage.removeListener(removeListener);
+    }
+
+    public void testNotifyAboutRemoveWithWhereCalled() {
+        final String testWhere = TestStorableItem.TableInfo.TEST_INT_FIELD + " = ?";
+        final String[] testWhereArgs = { "1" };
+
+
+        StubListener removeWithWhereListener = new StubListener() {
+            @Override
+            public void onRemove(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems, String where, String[] whereArgs, int count) {
+                assertEquals(TestStorableItem.class, classOfStorableItems);
+                assertEquals(testWhere, where);
+                assertTrue(Arrays.equals(testWhereArgs, whereArgs));
+                super.onRemove(classOfStorableItems, where, whereArgs, count);
+            }
+        };
+
+        mBambooStorage.addListener(removeWithWhereListener);
+        mBambooStorage.remove(TestStorableItem.class, testWhere, testWhereArgs);
+
+        shouldBeTrueInNearFuture(removeWithWhereListener.mRemoveWithWhereCalled);
+        removeWithWhereListener.assertOnlyRemoveWithWhereCalled();
+        mBambooStorage.removeListener(removeWithWhereListener);
+    }
+
+    public void testNotifyAboutRemoveAllOfTypeCalled() {
+        TestStorableItem testStorableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem testStorableItem2 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem testStorableItem3 = TestStorableItemFactory.newRandomItem();
+
+        mBambooStorage.add(testStorableItem1);
+        mBambooStorage.add(testStorableItem2);
+        mBambooStorage.add(testStorableItem3);
+
+        StubListener removeAllOfTypeListener = new StubListener() {
+            @Override
+            public void onRemoveAllOfType(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems, int count) {
+                assertEquals(TestStorableItem.class, classOfStorableItems);
+                assertEquals(3, count);
+                super.onRemoveAllOfType(classOfStorableItems, count);
+            }
+        };
+        mBambooStorage.addListener(removeAllOfTypeListener);
+
+        mBambooStorage.removeAllOfType(TestStorableItem.class);
+        shouldBeTrueInNearFuture(removeAllOfTypeListener.mRemoveAllOfTypeCalled);
+        removeAllOfTypeListener.assertOnlyRemoveAllOfTypeCalled();
+
+        mBambooStorage.removeListener(removeAllOfTypeListener);
     }
 }

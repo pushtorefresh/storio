@@ -49,7 +49,8 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
         }
     }
 
-    @Override public void notifyAboutUpdate(@NonNull final IBambooStorableItem storableItem, final int count) {
+    @Override
+    public void notifyAboutUpdate(@NonNull final IBambooStorableItem storableItem, final int count) {
         if (mListeners.size() != 0) {
             mExecutor.execute(new Runnable() {
                 @Override public void run() {
@@ -64,7 +65,8 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
         }
     }
 
-    @Override public void notifyAboutRemove(@NonNull final IBambooStorableItem storableItem, final int count) {
+    @Override
+    public void notifyAboutRemove(@NonNull final IBambooStorableItem storableItem, final int count) {
         if (mListeners.size() != 0) {
             mExecutor.execute(new Runnable() {
                 @Override public void run() {

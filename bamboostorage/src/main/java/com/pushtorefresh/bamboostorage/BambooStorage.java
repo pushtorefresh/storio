@@ -339,8 +339,8 @@ public class BambooStorage {
     public int remove(@NonNull IBambooStorableItem storableItem) {
         final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
 
-        final int count = remove(
-                classOfStorableItem,
+        final int count = mContentResolver.delete(
+                buildUri(classOfStorableItem),
                 getTypeMetaWithExtra(classOfStorableItem).whereById,
                 buildWhereArgsByInternalId(storableItem)
         );
@@ -370,7 +370,7 @@ public class BambooStorage {
      * @return count of removed items
      */
     public int removeAllOfType(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems) {
-        final int count = remove(classOfStorableItems, null, null);
+        final int count = mContentResolver.delete(buildUri(classOfStorableItems), null, null);
         mNotifier.notifyAboutRemoveAllOfType(classOfStorableItems, count);
         return count;
     }
