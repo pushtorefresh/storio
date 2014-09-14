@@ -2,6 +2,8 @@ package com.pushtorefresh.bamboostorage;
 
 import android.support.annotation.NonNull;
 
+import java.util.Collection;
+
 /**
  * @author Artem Zinnatullin [artem.zinnatullin@gmail.com]
  */
@@ -21,6 +23,20 @@ public interface IBambooStorageListener {
      * @param count        count of updated entries
      */
     void onUpdate(@NonNull IBambooStorableItem storableItem, int count);
+
+    /**
+     * Called when addAll to BambooStorage happened
+     *
+     * @param storableItems collection of items
+     */
+    void onAddAll(@NonNull Collection<? extends IBambooStorableItem> storableItems);
+
+    /**
+     * Called when addOrUpdateAll to BambooStorage happened
+     *
+     * @param storableItems collection of items
+     */
+    void onAddOrUpdateAll(@NonNull Collection<? extends IBambooStorableItem> storableItems);
 
     /**
      * Called when remove of storable item happened in BambooStorage

@@ -2,6 +2,8 @@ package com.pushtorefresh.bamboostorage;
 
 import android.support.annotation.NonNull;
 
+import java.util.Collection;
+
 /**
  * @author Artem Zinnatullin [artem.zinnatullin@gmail.com]
  */
@@ -28,7 +30,6 @@ public interface IBambooStorageNotifier {
      */
     void notifyAboutAdd(@NonNull IBambooStorableItem storableItem);
 
-
     /**
      * Should notify listeners about update operation
      *
@@ -36,6 +37,20 @@ public interface IBambooStorageNotifier {
      * @param count        count of updated entries
      */
     void notifyAboutUpdate(@NonNull IBambooStorableItem storableItem, int count);
+
+    /**
+     * Should notify listeners about add of items from collection
+     *
+     * @param storableItems added collection of items
+     */
+    void notifyAboutAddAll(@NonNull Collection<? extends IBambooStorableItem> storableItems);
+
+    /**
+     * Should notify listeners about add or update items from collection
+     *
+     * @param storableItems collection of items
+     */
+    void notifyAboutAddOrUpdateAll(@NonNull Collection<? extends IBambooStorableItem> storableItems);
 
     /**
      * Should notify listeners about remove operation
