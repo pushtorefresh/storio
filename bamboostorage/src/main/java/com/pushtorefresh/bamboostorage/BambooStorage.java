@@ -70,7 +70,7 @@ public class BambooStorage {
      * Adds listener to the BambooStorage
      * @param listener listener to add
      */
-    public void addListener(@NonNull IBambooStorageListener listener) {
+    public void addListener(@NonNull ABambooStorageListener listener) {
         mNotifier.addListener(listener);
     }
 
@@ -78,7 +78,7 @@ public class BambooStorage {
      * Removes listener from the BambooStorage
      * @param listener listener to remove
      */
-    public void removeListener(@NonNull IBambooStorageListener listener) {
+    public void removeListener(@NonNull ABambooStorageListener listener) {
         mNotifier.removeListener(listener);
     }
 
@@ -416,7 +416,7 @@ public class BambooStorage {
      * @param whereArgs args for binding to where clause, same format as for ContentResolver
      * @return count of removed items
      */
-    public int remove(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems, String where, String[] whereArgs) {
+    public int remove(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems, @Nullable String where, @Nullable String[] whereArgs) {
         final int count = mContentResolver.delete(buildUri(classOfStorableItems), where, whereArgs);
         mNotifier.notifyAboutRemove(classOfStorableItems, where, whereArgs, count);
         return count;
