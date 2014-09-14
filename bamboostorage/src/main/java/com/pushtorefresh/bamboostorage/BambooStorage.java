@@ -166,11 +166,9 @@ public class BambooStorage {
         }
 
         for (IBambooStorableItem storableItem : storableItems) {
-            if (storableItem == null) {
-                continue;
+            if (storableItem != null) {
+                addInternal(storableItem, false);
             }
-
-            addInternal(storableItem, false);
         }
 
         mNotifier.notifyAboutAddAll(storableItems);
@@ -184,6 +182,10 @@ public class BambooStorage {
      * @param storableItems collection of items
      */
     public void addOrUpdateAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+        if (storableItems.isEmpty()) {
+            return;
+        }
+
         for (IBambooStorableItem storableItem : storableItems) {
             if (storableItem != null) {
                 addOrUpdateInternal(storableItem, false);
