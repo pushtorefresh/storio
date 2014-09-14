@@ -14,14 +14,14 @@ public interface IBambooStorageNotifier {
      *
      * @param listener BambooStorage listener
      */
-    void addListener(@NonNull IBambooStorageListener listener);
+    void addListener(@NonNull ABambooStorageListener listener);
 
     /**
      * Removes listener
      *
      * @param listener BambooStorage listener
      */
-    void removeListener(@NonNull IBambooStorageListener listener);
+    void removeListener(@NonNull ABambooStorageListener listener);
 
     /**
      * Should notify listeners about add operation

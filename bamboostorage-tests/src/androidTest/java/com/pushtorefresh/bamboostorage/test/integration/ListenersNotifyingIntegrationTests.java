@@ -3,9 +3,9 @@ package com.pushtorefresh.bamboostorage.test.integration;
 import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
 
+import com.pushtorefresh.bamboostorage.ABambooStorageListener;
 import com.pushtorefresh.bamboostorage.BambooStorage;
 import com.pushtorefresh.bamboostorage.IBambooStorableItem;
-import com.pushtorefresh.bamboostorage.IBambooStorageListener;
 import com.pushtorefresh.bamboostorage.test.app.TestStorableItem;
 
 import java.util.Arrays;
@@ -19,7 +19,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
     private static final long ASYNC_TEST_TIMEOUT = 1000;
 
-    private static class StubListener implements IBambooStorageListener {
+    private static class TestBambooStorageListener extends ABambooStorageListener {
 
         private AtomicBoolean mAddCalled    = new AtomicBoolean(false);
         private AtomicBoolean mUpdateCalled = new AtomicBoolean(false);
@@ -185,7 +185,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
     public void testNotifyAboutAdd() {
         final TestStorableItem testStorableItem = TestStorableItemFactory.newRandomItem();
 
-        StubListener addListener = new StubListener() {
+        TestBambooStorageListener addListener = new TestBambooStorageListener() {
             @Override public void onAdd(@NonNull IBambooStorableItem storableItem) {
                 assertEquals(testStorableItem, storableItem);
                 super.onAdd(storableItem);
@@ -207,7 +207,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         final TestStorableItem testStorableItem = TestStorableItemFactory.newRandomItem();
         mBambooStorage.add(testStorableItem);
 
-        StubListener updateListener = new StubListener() {
+        TestBambooStorageListener updateListener = new TestBambooStorageListener() {
             @Override public void onUpdate(@NonNull IBambooStorableItem storableItem, int count) {
                 assertEquals(testStorableItem, storableItem);
                 assertEquals(1, count);
@@ -227,7 +227,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
     public void testNotifyAboutAddAll() {
         final Collection<TestStorableItem> testStorableItems = TestStorableItemFactory.newRandomItems(3);
 
-        StubListener addAllListener = new StubListener() {
+        TestBambooStorageListener addAllListener = new TestBambooStorageListener() {
             @Override
             public void onAddAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
                 assertEquals(testStorableItems, storableItems);
@@ -248,7 +248,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
     public void testNotifyAboutAddOrUpdateAll() {
         final Collection<TestStorableItem> testStorableItems = TestStorableItemFactory.newRandomItems(3);
 
-        StubListener addOrUpdateAllListener = new StubListener() {
+        TestBambooStorageListener addOrUpdateAllListener = new TestBambooStorageListener() {
             @Override
             public void onAddOrUpdateAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
                 assertEquals(testStorableItems, storableItems);
@@ -269,7 +269,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
     public void testNotifyAboutAddOrUpdateAdd() {
         final TestStorableItem testStorableItem = TestStorableItemFactory.newRandomItem();
 
-        StubListener addListener = new StubListener() {
+        TestBambooStorageListener addListener = new TestBambooStorageListener() {
             @Override public void onAdd(@NonNull IBambooStorableItem storableItem) {
                 assertEquals(testStorableItem, storableItem);
                 super.onAdd(storableItem);
@@ -292,7 +292,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         // no item to update, so add listener should be called
         mBambooStorage.add(testStorableItem);
 
-        StubListener updateListener = new StubListener() {
+        TestBambooStorageListener updateListener = new TestBambooStorageListener() {
             @Override public void onUpdate(@NonNull IBambooStorableItem storableItem, int count) {
                 assertEquals(testStorableItem, storableItem);
                 assertEquals(1, count);
@@ -313,7 +313,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         final TestStorableItem testStorableItem = TestStorableItemFactory.newRandomItem();
         mBambooStorage.add(testStorableItem);
 
-        StubListener removeListener = new StubListener() {
+        TestBambooStorageListener removeListener = new TestBambooStorageListener() {
             @Override public void onRemove(@NonNull IBambooStorableItem storableItem, int count) {
                 assertEquals(testStorableItem, storableItem);
                 assertEquals(1, count);
@@ -334,7 +334,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         final String[] testWhereArgs = { "1" };
 
 
-        StubListener removeWithWhereListener = new StubListener() {
+        TestBambooStorageListener removeWithWhereListener = new TestBambooStorageListener() {
             @Override
             public void onRemove(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems, String where, String[] whereArgs, int count) {
                 assertEquals(TestStorableItem.class, classOfStorableItems);
@@ -361,7 +361,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         mBambooStorage.add(testStorableItem2);
         mBambooStorage.add(testStorableItem3);
 
-        StubListener removeAllOfTypeListener = new StubListener() {
+        TestBambooStorageListener removeAllOfTypeListener = new TestBambooStorageListener() {
             @Override
             public void onRemoveAllOfType(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems, int count) {
                 assertEquals(TestStorableItem.class, classOfStorableItems);

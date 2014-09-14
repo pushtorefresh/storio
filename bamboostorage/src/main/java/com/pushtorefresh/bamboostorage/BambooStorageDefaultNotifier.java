@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadFactory;
  */
 public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
 
-    private final Queue<IBambooStorageListener> mListeners = new ConcurrentLinkedQueue<IBambooStorageListener>();
+    private final Queue<ABambooStorageListener> mListeners = new ConcurrentLinkedQueue<ABambooStorageListener>();
 
     private final Executor mExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
         @Override public Thread newThread(Runnable r) {
@@ -27,11 +27,11 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
         }
     });
 
-    @Override public void addListener(@NonNull IBambooStorageListener listener) {
+    @Override public void addListener(@NonNull ABambooStorageListener listener) {
         mListeners.add(listener);
     }
 
-    @Override public void removeListener(@NonNull IBambooStorageListener listener) {
+    @Override public void removeListener(@NonNull ABambooStorageListener listener) {
         mListeners.remove(listener);
     }
 
@@ -41,7 +41,7 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
                 @Override public void run() {
                     final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
 
-                    for (IBambooStorageListener listener : mListeners) {
+                    for (ABambooStorageListener listener : mListeners) {
                         listener.onAdd(storableItem);
                         listener.onAnyCRUDOperation(classOfStorableItem);
                     }
@@ -57,7 +57,7 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
                 @Override public void run() {
                     final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
 
-                    for (IBambooStorageListener listener : mListeners) {
+                    for (ABambooStorageListener listener : mListeners) {
                         listener.onUpdate(storableItem, count);
                         listener.onAnyCRUDOperation(classOfStorableItem);
                     }
@@ -80,7 +80,7 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
                         }
                     }
 
-                    for (IBambooStorageListener listener : mListeners) {
+                    for (ABambooStorageListener listener : mListeners) {
                         listener.onAddAll(storableItems);
                         listener.onAnyCRUDOperation(classOfStorableItems);
                     }
@@ -103,7 +103,7 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
                         }
                     }
 
-                    for (IBambooStorageListener listener : mListeners) {
+                    for (ABambooStorageListener listener : mListeners) {
                         listener.onAddOrUpdateAll(storableItems);
                         listener.onAnyCRUDOperation(classOfStorableItems);
                     }
@@ -119,7 +119,7 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
                 @Override public void run() {
                     final Class<? extends IBambooStorableItem> classOfStorableItem = storableItem.getClass();
 
-                    for (IBambooStorageListener listener : mListeners) {
+                    for (ABambooStorageListener listener : mListeners) {
                         listener.onRemove(storableItem, count);
                         listener.onAnyCRUDOperation(classOfStorableItem);
                     }
@@ -133,7 +133,7 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
         if (mListeners.size() != 0) {
             mExecutor.execute(new Runnable() {
                 @Override public void run() {
-                    for (IBambooStorageListener listener : mListeners) {
+                    for (ABambooStorageListener listener : mListeners) {
                         listener.onRemove(classOfStorableItems, where, whereArgs, count);
                         listener.onAnyCRUDOperation(classOfStorableItems);
                     }
@@ -147,7 +147,7 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
         if (mListeners.size() != 0) {
             mExecutor.execute(new Runnable() {
                 @Override public void run() {
-                    for (IBambooStorageListener listener : mListeners) {
+                    for (ABambooStorageListener listener : mListeners) {
                         listener.onRemoveAllOfType(classOfStorableItems, count);
                         listener.onAnyCRUDOperation(classOfStorableItems);
                     }
