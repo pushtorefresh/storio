@@ -16,6 +16,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
+    private static final long ASYNC_TEST_TIMEOUT = 1000;
+
     private static class StubListener implements IBambooStorageListener {
 
         private AtomicBoolean mAddCalled    = new AtomicBoolean(false);
@@ -120,13 +122,19 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
     private static void shouldBeTrueInNearFuture(AtomicBoolean atomicBoolean) {
         final long startTime = System.currentTimeMillis();
 
-        while (System.currentTimeMillis() - startTime < 300) {
+        while (System.currentTimeMillis() - startTime < ASYNC_TEST_TIMEOUT) {
+            try {
+                Thread.sleep(5); // giving another threads time to do their work
+            } catch (InterruptedException e) {
+                fail("Thread was interrupted " + e);
+            }
+
             if (atomicBoolean.get()) {
                 return;
             }
         }
 
-        fail("Should be true in future failed by timeout");
+        fail("Should be true in future failed by timeout (" + ASYNC_TEST_TIMEOUT + " ms)");
     }
 
     public void testNotifyAboutAdd() {
