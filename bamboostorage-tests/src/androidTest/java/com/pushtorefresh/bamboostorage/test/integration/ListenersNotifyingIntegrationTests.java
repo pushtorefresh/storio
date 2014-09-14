@@ -9,6 +9,7 @@ import com.pushtorefresh.bamboostorage.IBambooStorageListener;
 import com.pushtorefresh.bamboostorage.test.app.TestStorableItem;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -22,7 +23,9 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         private AtomicBoolean mAddCalled    = new AtomicBoolean(false);
         private AtomicBoolean mUpdateCalled = new AtomicBoolean(false);
-        private AtomicBoolean mRemoveItemCalled = new AtomicBoolean(false);
+        private AtomicBoolean mAddAllCalled = new AtomicBoolean(false);
+        private AtomicBoolean mAddOrUpdateAllCalled   = new AtomicBoolean(false);
+        private AtomicBoolean mRemoveItemCalled       = new AtomicBoolean(false);
         private AtomicBoolean mRemoveWithWhereCalled  = new AtomicBoolean(false);
         private AtomicBoolean mRemoveAllOfTypeCalled  = new AtomicBoolean(false);
         private AtomicBoolean mAnyCRUDOperationCalled = new AtomicBoolean(false);
@@ -33,6 +36,16 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         @Override public void onUpdate(@NonNull IBambooStorableItem storableItem, int count) {
             mUpdateCalled.set(true);
+        }
+
+        @Override
+        public void onAddAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+            mAddAllCalled.set(true);
+        }
+
+        @Override
+        public void onAddOrUpdateAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+            mAddOrUpdateAllCalled.set(true);
         }
 
         @Override public void onRemove(@NonNull IBambooStorableItem storableItem, int count) {
@@ -58,7 +71,20 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         public void assertOnlyAddCalled() {
             assertTrue(mAddCalled.get());
+            assertFalse(mAddAllCalled.get());
             assertFalse(mUpdateCalled.get());
+            assertFalse(mAddOrUpdateAllCalled.get());
+            assertFalse(mRemoveItemCalled.get());
+            assertFalse(mRemoveWithWhereCalled.get());
+            assertFalse(mRemoveAllOfTypeCalled.get());
+            assertTrue(mAnyCRUDOperationCalled.get());
+        }
+
+        public void assertOnlyAddAllCalled() {
+            assertFalse(mAddCalled.get());
+            assertTrue(mAddAllCalled.get());
+            assertFalse(mUpdateCalled.get());
+            assertFalse(mAddOrUpdateAllCalled.get());
             assertFalse(mRemoveItemCalled.get());
             assertFalse(mRemoveWithWhereCalled.get());
             assertFalse(mRemoveAllOfTypeCalled.get());
@@ -67,7 +93,20 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         public void assertOnlyUpdateCalled() {
             assertFalse(mAddCalled.get());
+            assertFalse(mAddAllCalled.get());
             assertTrue(mUpdateCalled.get());
+            assertFalse(mAddOrUpdateAllCalled.get());
+            assertFalse(mRemoveItemCalled.get());
+            assertFalse(mRemoveWithWhereCalled.get());
+            assertFalse(mRemoveAllOfTypeCalled.get());
+            assertTrue(mAnyCRUDOperationCalled.get());
+        }
+
+        public void assertOnlyAddOrUpdateAllCalled() {
+            assertFalse(mAddCalled.get());
+            assertFalse(mAddAllCalled.get());
+            assertFalse(mUpdateCalled.get());
+            assertTrue(mAddOrUpdateAllCalled.get());
             assertFalse(mRemoveItemCalled.get());
             assertFalse(mRemoveWithWhereCalled.get());
             assertFalse(mRemoveAllOfTypeCalled.get());
@@ -76,7 +115,9 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         public void assertOnlyRemoveCalled() {
             assertFalse(mAddCalled.get());
+            assertFalse(mAddAllCalled.get());
             assertFalse(mUpdateCalled.get());
+            assertFalse(mAddOrUpdateAllCalled.get());
             assertTrue(mRemoveItemCalled.get());
             assertFalse(mRemoveWithWhereCalled.get());
             assertFalse(mRemoveAllOfTypeCalled.get());
@@ -85,7 +126,9 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         public void assertOnlyRemoveWithWhereCalled() {
             assertFalse(mAddCalled.get());
+            assertFalse(mAddAllCalled.get());
             assertFalse(mUpdateCalled.get());
+            assertFalse(mAddOrUpdateAllCalled.get());
             assertFalse(mRemoveItemCalled.get());
             assertTrue(mRemoveWithWhereCalled.get());
             assertFalse(mRemoveAllOfTypeCalled.get());
@@ -94,7 +137,9 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         public void assertOnlyRemoveAllOfTypeCalled() {
             assertFalse(mAddCalled.get());
+            assertFalse(mAddAllCalled.get());
             assertFalse(mUpdateCalled.get());
+            assertFalse(mAddOrUpdateAllCalled.get());
             assertFalse(mRemoveItemCalled.get());
             assertFalse(mRemoveWithWhereCalled.get());
             assertTrue(mRemoveAllOfTypeCalled.get());
@@ -142,7 +187,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         StubListener addListener = new StubListener() {
             @Override public void onAdd(@NonNull IBambooStorableItem storableItem) {
-                assertSame(testStorableItem, storableItem);
+                assertEquals(testStorableItem, storableItem);
                 super.onAdd(storableItem);
             }
         };
@@ -164,7 +209,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         StubListener updateListener = new StubListener() {
             @Override public void onUpdate(@NonNull IBambooStorableItem storableItem, int count) {
-                assertSame(testStorableItem, storableItem);
+                assertEquals(testStorableItem, storableItem);
                 assertEquals(1, count);
                 super.onUpdate(storableItem, count);
             }
@@ -179,12 +224,54 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
         mBambooStorage.removeListener(updateListener);
     }
 
+    public void testNotifyAboutAddAll() {
+        final Collection<TestStorableItem> testStorableItems = TestStorableItemFactory.newRandomItems(3);
+
+        StubListener addAllListener = new StubListener() {
+            @Override
+            public void onAddAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+                assertEquals(testStorableItems, storableItems);
+                super.onAddAll(storableItems);
+            }
+        };
+
+        mBambooStorage.addListener(addAllListener);
+
+        mBambooStorage.addAll(testStorableItems);
+
+        shouldBeTrueInNearFuture(addAllListener.mAddAllCalled);
+        addAllListener.assertOnlyAddAllCalled();
+
+        mBambooStorage.removeListener(addAllListener);
+    }
+
+    public void testNotifyAboutAddOrUpdateAll() {
+        final Collection<TestStorableItem> testStorableItems = TestStorableItemFactory.newRandomItems(3);
+
+        StubListener addOrUpdateAllListener = new StubListener() {
+            @Override
+            public void onAddOrUpdateAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+                assertEquals(testStorableItems, storableItems);
+                super.onAddOrUpdateAll(storableItems);
+            }
+        };
+
+        mBambooStorage.addListener(addOrUpdateAllListener);
+
+        mBambooStorage.addOrUpdateAll(testStorableItems);
+
+        shouldBeTrueInNearFuture(addOrUpdateAllListener.mAddOrUpdateAllCalled);
+        addOrUpdateAllListener.assertOnlyAddOrUpdateAllCalled();
+
+        mBambooStorage.removeListener(addOrUpdateAllListener);
+    }
+
     public void testNotifyAboutAddOrUpdateAdd() {
         final TestStorableItem testStorableItem = TestStorableItemFactory.newRandomItem();
 
         StubListener addListener = new StubListener() {
             @Override public void onAdd(@NonNull IBambooStorableItem storableItem) {
-                assertSame(testStorableItem, storableItem);
+                assertEquals(testStorableItem, storableItem);
                 super.onAdd(storableItem);
             }
         };
@@ -207,7 +294,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         StubListener updateListener = new StubListener() {
             @Override public void onUpdate(@NonNull IBambooStorableItem storableItem, int count) {
-                assertSame(testStorableItem, storableItem);
+                assertEquals(testStorableItem, storableItem);
                 assertEquals(1, count);
                 super.onUpdate(storableItem, count);
             }
@@ -228,7 +315,7 @@ public class ListenersNotifyingIntegrationTests extends AndroidTestCase {
 
         StubListener removeListener = new StubListener() {
             @Override public void onRemove(@NonNull IBambooStorableItem storableItem, int count) {
-                assertSame(testStorableItem, storableItem);
+                assertEquals(testStorableItem, storableItem);
                 assertEquals(1, count);
                 super.onRemove(storableItem, count);
             }

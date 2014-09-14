@@ -6,6 +6,7 @@ import android.test.AndroidTestCase;
 import com.pushtorefresh.bamboostorage.BambooStorage;
 import com.pushtorefresh.bamboostorage.test.app.TestStorableItem;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -114,6 +115,35 @@ public class CRUDIntegrationTests extends AndroidTestCase {
         assertEquals(2, mBambooStorage.countOfItems(storableItem.getClass()));
 
         assertEquals(storableItem, mBambooStorage.getLast(storableItem.getClass()));
+    }
+
+    public void testAddAll() {
+        Collection<TestStorableItem> storableItems = TestStorableItemFactory.newRandomItems(3);
+
+        mBambooStorage.addAll(storableItems);
+
+        assertEquals(storableItems.size(), mBambooStorage.countOfItems(TestStorableItem.class));
+
+        for (TestStorableItem storableItem : storableItems) {
+            assertTrue(mBambooStorage.contains(storableItem));
+        }
+    }
+
+    public void testAddOrUpdateAll() {
+        Collection<TestStorableItem> storableItems = TestStorableItemFactory.newRandomItems(3);
+
+        TestStorableItem shouldBeUpdated = TestStorableItemFactory.newRandomItem();
+        mBambooStorage.add(shouldBeUpdated);
+
+        storableItems.add(shouldBeUpdated);
+
+        mBambooStorage.addOrUpdateAll(storableItems);
+
+        assertEquals(storableItems.size(), mBambooStorage.countOfItems(TestStorableItem.class));
+
+        for (TestStorableItem storableItem : storableItems) {
+            assertTrue(mBambooStorage.contains(storableItem));
+        }
     }
 
     public void testGetByInternalIdPositive() {
