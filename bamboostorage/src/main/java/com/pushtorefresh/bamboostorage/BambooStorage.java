@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -86,11 +87,17 @@ public class BambooStorage {
      * @param storableItem to add
      */
     public void add(@NonNull IBambooStorableItem storableItem) {
+        addInternal(storableItem, true);
+    }
+
+    protected void addInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
         storableItem.setInternalId(IBambooStorableItem.DEFAULT_INTERNAL_ITEM_ID);
         Uri uri = mContentResolver.insert(buildUri(storableItem.getClass()), storableItem.toContentValues(mResources));
         storableItem.setInternalId(ContentUris.parseId(uri));
 
-        mNotifier.notifyAboutAdd(storableItem);
+        if (notify) {
+            mNotifier.notifyAboutAdd(storableItem);
+        }
     }
 
     /**
@@ -100,6 +107,10 @@ public class BambooStorage {
      * @throws IllegalArgumentException if storable item internal id less or equals zero — it was not stored in StorageManager
      */
     public int update(@NonNull IBambooStorableItem storableItem) {
+        return updateInternal(storableItem, true);
+    }
+
+    protected int updateInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
         final long itemInternalId = storableItem.getInternalId();
 
         if (itemInternalId <= 0) {
@@ -114,7 +125,9 @@ public class BambooStorage {
                     buildWhereArgsByInternalId(storableItem)
             );
 
-            mNotifier.notifyAboutUpdate(storableItem, count);
+            if (notify) {
+                mNotifier.notifyAboutUpdate(storableItem, count);
+            }
 
             return count;
         }
@@ -126,14 +139,58 @@ public class BambooStorage {
      * @return true if item was added, false if item was updated
      */
     public boolean addOrUpdate(@NonNull IBambooStorableItem storableItem) {
+        return addOrUpdateInternal(storableItem, true);
+    }
+
+    protected boolean addOrUpdateInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
         if (storableItem.getInternalId() <= 0) {
             // item was not stored in the storage
-            add(storableItem);
+            addInternal(storableItem, notify);
             return true;
         } else {
-            update(storableItem);
+            updateInternal(storableItem, notify);
             return false;
         }
+    }
+
+    /**
+     * Adds collection of items to the storage
+     *
+     * NOTICE try to avoid adding collections with multiple classes because storage listener will receive onAnyCRUDOperation only about first item's class
+     *
+     * @param storableItems collection
+     */
+    public void addAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+        if (storableItems.isEmpty()) {
+            return;
+        }
+
+        for (IBambooStorableItem storableItem : storableItems) {
+            if (storableItem == null) {
+                continue;
+            }
+
+            addInternal(storableItem, false);
+        }
+
+        mNotifier.notifyAboutAddAll(storableItems);
+    }
+
+    /**
+     * Adds or updates all items from collection to the storage
+     *
+     * NOTICE try to avoid adding collections with multiple classes because storage listener will receive onAnyCRUDOperation only about first item's class
+     *
+     * @param storableItems collection of items
+     */
+    public void addOrUpdateAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+        for (IBambooStorableItem storableItem : storableItems) {
+            if (storableItem != null) {
+                addOrUpdateInternal(storableItem, false);
+            }
+        }
+
+        mNotifier.notifyAboutAddOrUpdateAll(storableItems);
     }
 
     /**

@@ -2,6 +2,7 @@ package com.pushtorefresh.bamboostorage;
 
 import android.support.annotation.NonNull;
 
+import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
@@ -59,6 +60,52 @@ public class BambooStorageDefaultNotifier implements IBambooStorageNotifier {
                     for (IBambooStorageListener listener : mListeners) {
                         listener.onUpdate(storableItem, count);
                         listener.onAnyCRUDOperation(classOfStorableItem);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void notifyAboutAddAll(@NonNull final Collection<? extends IBambooStorableItem> storableItems) {
+        if (mListeners.size() != 0) {
+            mExecutor.execute(new Runnable() {
+                @SuppressWarnings("ConstantConditions") @Override public void run() {
+                    Class<? extends IBambooStorableItem> classOfStorableItems = null;
+
+                    for (IBambooStorableItem storableItem : storableItems) {
+                        if (storableItem != null) {
+                            classOfStorableItems = storableItem.getClass();
+                            break;
+                        }
+                    }
+
+                    for (IBambooStorageListener listener : mListeners) {
+                        listener.onAddAll(storableItems);
+                        listener.onAnyCRUDOperation(classOfStorableItems);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void notifyAboutAddOrUpdateAll(@NonNull final Collection<? extends IBambooStorableItem> storableItems) {
+        if (mListeners.size() != 0) {
+            mExecutor.execute(new Runnable() {
+                @SuppressWarnings("ConstantConditions") @Override public void run() {
+                    Class<? extends IBambooStorableItem> classOfStorableItems = null;
+
+                    for (IBambooStorableItem storableItem : storableItems) {
+                        if (storableItem != null) {
+                            classOfStorableItems = storableItem.getClass();
+                            break;
+                        }
+                    }
+
+                    for (IBambooStorageListener listener : mListeners) {
+                        listener.onAddOrUpdateAll(storableItems);
+                        listener.onAnyCRUDOperation(classOfStorableItems);
                     }
                 }
             });
