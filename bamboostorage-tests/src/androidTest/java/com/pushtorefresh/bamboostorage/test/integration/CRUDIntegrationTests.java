@@ -1,19 +1,19 @@
 package com.pushtorefresh.bamboostorage.test.integration;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
 
 import com.pushtorefresh.bamboostorage.BambooStorage;
 import com.pushtorefresh.bamboostorage.test.app.TestStorableItem;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
 /**
  * @author Artem Zinnatullin [artem.zinnatullin@gmail.com]
  */
-public class IntegrationTests extends AndroidTestCase {
+public class CRUDIntegrationTests extends AndroidTestCase {
 
     private final Random mRandom = new Random(System.currentTimeMillis());
 
@@ -22,7 +22,9 @@ public class IntegrationTests extends AndroidTestCase {
     @Override protected void setUp() throws Exception {
         super.setUp();
 
-        mBambooStorage = new BambooStorage(getContext(), "com.pushtorefresh.bamboostorage.test");
+        if (mBambooStorage == null) {
+            mBambooStorage = new BambooStorage(getContext(), "com.pushtorefresh.bamboostorage.test");
+        }
 
         // clearing storage before each test
         removeAllTestStorableItems();
@@ -33,15 +35,8 @@ public class IntegrationTests extends AndroidTestCase {
         assertEquals(0, mBambooStorage.countOfItems(TestStorableItem.class));
     }
 
-    private @NonNull TestStorableItem generateRandomStorableItem() {
-        return new TestStorableItem()
-                .setTestStringField("test string " + mRandom.nextLong())
-                .setTestIntField(mRandom.nextInt())
-                .setTestLongField(mRandom.nextLong());
-    }
-
     public void testAdd() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem);
 
@@ -50,7 +45,7 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testAddSameItemTwice() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem);
         mBambooStorage.add(storableItem);
@@ -59,7 +54,7 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testUpdate() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem);
 
@@ -82,7 +77,7 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testAddOrUpdateShouldUpdate() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem);
 
@@ -105,7 +100,7 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testAddOrUpdateShouldAdd() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem);
 
@@ -122,8 +117,37 @@ public class IntegrationTests extends AndroidTestCase {
         assertEquals(storableItem, mBambooStorage.getLast(storableItem.getClass()));
     }
 
+    public void testAddAll() {
+        Collection<TestStorableItem> storableItems = TestStorableItemFactory.newRandomItems(3);
+
+        mBambooStorage.addAll(storableItems);
+
+        assertEquals(storableItems.size(), mBambooStorage.countOfItems(TestStorableItem.class));
+
+        for (TestStorableItem storableItem : storableItems) {
+            assertTrue(mBambooStorage.contains(storableItem));
+        }
+    }
+
+    public void testAddOrUpdateAll() {
+        Collection<TestStorableItem> storableItems = TestStorableItemFactory.newRandomItems(3);
+
+        TestStorableItem shouldBeUpdated = TestStorableItemFactory.newRandomItem();
+        mBambooStorage.add(shouldBeUpdated);
+
+        storableItems.add(shouldBeUpdated);
+
+        mBambooStorage.addOrUpdateAll(storableItems);
+
+        assertEquals(storableItems.size(), mBambooStorage.countOfItems(TestStorableItem.class));
+
+        for (TestStorableItem storableItem : storableItems) {
+            assertTrue(mBambooStorage.contains(storableItem));
+        }
+    }
+
     public void testGetByInternalIdPositive() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem);
 
@@ -134,7 +158,7 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetByInternalIdNegative() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem);
 
@@ -145,9 +169,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetAsListByClassOnly() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem0);
         mBambooStorage.add(storableItem1);
@@ -163,9 +187,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetAsListWithWhereCondition() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         storableItem0.setTestIntField(0);
         storableItem1.setTestIntField(1);
@@ -189,9 +213,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetAsCursorWithoutWhere() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem0);
         mBambooStorage.add(storableItem1);
@@ -205,9 +229,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetAsCursorWithWhere() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         storableItem0.setTestIntField(0);
         storableItem1.setTestIntField(1);
@@ -235,9 +259,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetFirstWithWherePositive() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         storableItem0.setTestIntField(0);
 
@@ -262,9 +286,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetFirstWithWhereNegative() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         storableItem0.setTestIntField(0);
         storableItem1.setTestIntField(1);
@@ -285,8 +309,8 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetFirstWithoutWherePositive() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem0);
         mBambooStorage.add(storableItem1);
@@ -303,9 +327,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetLastWithWherePositive() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         storableItem0.setTestIntField(0);
 
@@ -330,9 +354,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetLastWithWhereNegative() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         storableItem0.setTestIntField(0);
         storableItem1.setTestIntField(1);
@@ -353,9 +377,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testGetLastWithoutWherePositive() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         storableItem0.setTestIntField(0);
         storableItem1.setTestIntField(1);
@@ -375,7 +399,7 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testRemoveWithoutWherePositive() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem);
         assertTrue(mBambooStorage.contains(storableItem));
@@ -385,7 +409,7 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testRemoveWithoutWhereNegative() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
 
         assertFalse(mBambooStorage.contains(storableItem));
         assertEquals(0, mBambooStorage.remove(storableItem));
@@ -393,9 +417,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testRemoveWithWherePositive() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         storableItem0.setTestIntField(0);
         storableItem1.setTestIntField(1);
@@ -419,9 +443,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testRemoveWithWhereNegative() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         storableItem0.setTestIntField(0);
         storableItem1.setTestIntField(1);
@@ -443,9 +467,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testRemoveAllOfType() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem0);
         mBambooStorage.add(storableItem1);
@@ -457,13 +481,13 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testContainsPositive() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
         mBambooStorage.add(storableItem);
         assertTrue(mBambooStorage.contains(storableItem));
     }
 
     public void testContainsNegative() {
-        TestStorableItem storableItem = generateRandomStorableItem();
+        TestStorableItem storableItem = TestStorableItemFactory.newRandomItem();
         // not putting item to the storage
         assertFalse(mBambooStorage.contains(storableItem));
     }
@@ -473,9 +497,9 @@ public class IntegrationTests extends AndroidTestCase {
     }
 
     public void testCountOfItems3() {
-        TestStorableItem storableItem0 = generateRandomStorableItem();
-        TestStorableItem storableItem1 = generateRandomStorableItem();
-        TestStorableItem storableItem2 = generateRandomStorableItem();
+        TestStorableItem storableItem0 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem1 = TestStorableItemFactory.newRandomItem();
+        TestStorableItem storableItem2 = TestStorableItemFactory.newRandomItem();
 
         mBambooStorage.add(storableItem0);
         mBambooStorage.add(storableItem1);
