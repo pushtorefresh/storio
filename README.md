@@ -20,6 +20,13 @@ If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Android%20BambooStorage-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/928)
 
 -----------------------------------
+
+**Breaking changes in 2.0 (under development):**
+- Generating `fromCursor()` and `fillFromCursor()` at compile time
+- No more `add()`, `update()`, `addOrUpdate()`, just one `save()`, `saveAll()`
+
+-----------------------------------
+
 **What API provides `BambooStorage`? It's CRUD with collection like methods names** 
 Implementation is as efficient as possible
 
