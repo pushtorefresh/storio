@@ -48,7 +48,8 @@ public class BambooStorage {
 
     /**
      * Creates BambooStorage object
-     * @param context feel free to pass any context, no memory leaks. Required to work with ContentResolver and provide Resources to IBambooStorableItem.toContentValues(res)
+     *
+     * @param context                  feel free to pass any context, no memory leaks. Required to work with ContentResolver and provide Resources to IBambooStorableItem.toContentValues(res)
      * @param contentProviderAuthority authority of your ContentProvider
      */
     public BambooStorage(@NonNull Context context, @NonNull String contentProviderAuthority) {
@@ -57,19 +58,21 @@ public class BambooStorage {
 
     /**
      * Creates BambooStorage object
-     * @param context feel free to pass any context, no memory leaks. Required to work with ContentResolver and provide Resources to IBambooStorableItem.toContentValues(res)
+     *
+     * @param context                  feel free to pass any context, no memory leaks. Required to work with ContentResolver and provide Resources to IBambooStorableItem.toContentValues(res)
      * @param contentProviderAuthority authority of your ContentProvider
-     * @param notifier for notifying BambooStorage listeners
+     * @param notifier                 for notifying BambooStorage listeners
      */
     public BambooStorage(@NonNull Context context, @NonNull String contentProviderAuthority, @NonNull IBambooStorageNotifier notifier) {
-        mContentPath     = "content://" + contentProviderAuthority + "/%s";
+        mContentPath = "content://" + contentProviderAuthority + "/%s";
         mContentResolver = context.getContentResolver();
-        mResources       = context.getResources();
-        mNotifier        = notifier;
+        mResources = context.getResources();
+        mNotifier = notifier;
     }
 
     /**
      * Adds listener to the BambooStorage
+     *
      * @param listener listener to add
      */
     public void addListener(@NonNull ABambooStorageListener listener) {
@@ -78,6 +81,7 @@ public class BambooStorage {
 
     /**
      * Removes listener from the BambooStorage
+     *
      * @param listener listener to remove
      */
     public void removeListener(@NonNull ABambooStorageListener listener) {
@@ -86,6 +90,7 @@ public class BambooStorage {
 
     /**
      * Adds storableItem to the Storage
+     *
      * @param storableItem to add
      */
     public void add(@NonNull IBambooStorableItem storableItem) {
@@ -94,8 +99,9 @@ public class BambooStorage {
 
     /**
      * Should add item to the storage
+     *
      * @param storableItem item to add
-     * @param notify true if notifier should notify listeners, false otherwise
+     * @param notify       true if notifier should notify listeners, false otherwise
      */
     protected void addInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
         storableItem.setInternalId(IBambooStorableItem.DEFAULT_INTERNAL_ITEM_ID);
@@ -109,6 +115,7 @@ public class BambooStorage {
 
     /**
      * Updates storable item in the storage
+     *
      * @param storableItem to update
      * @return count of updated items
      * @throws IllegalArgumentException if storable item internal id less or equals zero — it was not stored in StorageManager
@@ -119,8 +126,9 @@ public class BambooStorage {
 
     /**
      * Should update storable item in the storage
+     *
      * @param storableItem to update
-     * @param notify true if notifier should notify listeners, false otherwise
+     * @param notify       true if notifier should notify listeners, false otherwise
      * @return count of updated items
      * @throws IllegalArgumentException if storable item internal
      */
@@ -149,6 +157,7 @@ public class BambooStorage {
 
     /**
      * Adds or updates storable item to/in storage
+     *
      * @param storableItem to add or update
      * @return true if item was added, false if item was updated
      */
@@ -158,8 +167,9 @@ public class BambooStorage {
 
     /**
      * Should add or update storable item to/in storage
+     *
      * @param storableItem to add or update
-     * @param notify true if notifier should notify listeners, false otherwise
+     * @param notify       true if notifier should notify listeners, false otherwise
      * @return true if item was added, false if item was updated
      */
     protected boolean addOrUpdateInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
@@ -217,9 +227,10 @@ public class BambooStorage {
 
     /**
      * Gets stored item by its internal id
+     *
      * @param classOfStorableItem class of storable item
-     * @param itemInternalId internal id of the item you want to getByInternalId from storage
-     * @param <T> generic type of StorableItem
+     * @param itemInternalId      internal id of the item you want to getByInternalId from storage
+     * @param <T>                 generic type of StorableItem
      * @return storable item with required internal id or null if storage does not contain this item
      */
     @Nullable
@@ -285,9 +296,9 @@ public class BambooStorage {
      * NOTICE: orderBy is null, so it's default for your type of storage in ContentProvider
      *
      * @param classOfStorableItem class of StorableItem
-     * @param where where clause
-     * @param whereArgs args for binding to where clause, same format as for ContentResolver
-     * @param <T> generic type of StorableItem
+     * @param where               where clause
+     * @param whereArgs           args for binding to where clause, same format as for ContentResolver
+     * @param <T>                 generic type of StorableItem
      * @return list of StorableItems, can be empty but not null
      */
     public <T extends IBambooStorableItem> List<T> getAsList(@NonNull Class<T> classOfStorableItem, @Nullable String where, @Nullable String[] whereArgs) {
@@ -296,8 +307,9 @@ public class BambooStorage {
 
     /**
      * Gets all stored items of required type with default order as list in memory
+     *
      * @param classOfStorableItem class of StorableItem
-     * @param <T> generic type of StorableItem
+     * @param <T>                 generic type of StorableItem
      * @return list of StorableItems, can be empty but not null
      */
     @NonNull
@@ -307,10 +319,11 @@ public class BambooStorage {
 
     /**
      * Gets all stored items of required type which satisfies where condition as cursor
+     *
      * @param classOfStorableItem class of StorableItem
-     * @param where where clause
-     * @param whereArgs args for binding to where clause, same format as for ContentResolver
-     * @param orderBy order by clause
+     * @param where               where clause
+     * @param whereArgs           args for binding to where clause, same format as for ContentResolver
+     * @param orderBy             order by clause
      * @return cursor with query result, can be null
      */
     @Nullable
@@ -326,11 +339,12 @@ public class BambooStorage {
 
     /**
      * Gets first item from the query result
+     *
      * @param classOfStorableItem class of StorableItem
-     * @param where where clause
-     * @param whereArgs args for binding to where clause, same format as for ContentResolver
-     * @param orderBy order by clause
-     * @param <T> generic type of StorableItem
+     * @param where               where clause
+     * @param whereArgs           args for binding to where clause, same format as for ContentResolver
+     * @param orderBy             order by clause
+     * @param <T>                 generic type of StorableItem
      * @return first item in the query result or null if there are no query results
      */
     @Nullable
@@ -352,8 +366,9 @@ public class BambooStorage {
 
     /**
      * Gets first item of required type with default order
+     *
      * @param classOfStorableItem class of StorableItem
-     * @param <T> generic type of StorableItem
+     * @param <T>                 generic type of StorableItem
      * @return first item of required type, can be null
      */
     @Nullable
@@ -367,10 +382,10 @@ public class BambooStorage {
      * It's pretty fast implementation based on cursor using, it's memory and speed efficiently
      *
      * @param classOfStorableItem class of StorableItem
-     * @param where where clause
-     * @param whereArgs args for binding to where clause, same format as for ContentResolver
-     * @param orderBy order by clause
-     * @param <T> generic type of StorableItem
+     * @param where               where clause
+     * @param whereArgs           args for binding to where clause, same format as for ContentResolver
+     * @param orderBy             order by clause
+     * @param <T>                 generic type of StorableItem
      * @return last item in the query result or null if there are no query results
      */
     @Nullable
@@ -401,8 +416,9 @@ public class BambooStorage {
 
     /**
      * Gets last item of required type with default order
+     *
      * @param classOfStorableItem class of StorableItem
-     * @param <T> generic type of StorableItem
+     * @param <T>                 generic type of StorableItem
      * @return last item of required type, can be null
      */
     @Nullable
@@ -412,6 +428,7 @@ public class BambooStorage {
 
     /**
      * Removes storable item from storage
+     *
      * @param storableItem item to be removed from the storage
      * @return count of removed items, it could be 0, or 1, or greater than 1 if you have items with same internal id in the storage
      */
@@ -431,9 +448,10 @@ public class BambooStorage {
 
     /**
      * Removes all storable items of required type which matched where condition
+     *
      * @param classOfStorableItems type of storable item you want to delete
-     * @param where where clause
-     * @param whereArgs args for binding to where clause, same format as for ContentResolver
+     * @param where                where clause
+     * @param whereArgs            args for binding to where clause, same format as for ContentResolver
      * @return count of removed items
      */
     public int remove(@NonNull Class<? extends IBambooStorableItem> classOfStorableItems, @Nullable String where, @Nullable String[] whereArgs) {
@@ -445,6 +463,7 @@ public class BambooStorage {
     /**
      * Removes all storable items of required type
      * Same as calling remove(class, null, null)
+     *
      * @param classOfStorableItems type of storable item you want to delete
      * @return count of removed items
      */
@@ -456,6 +475,7 @@ public class BambooStorage {
 
     /**
      * Checks "is item currently stored in storage"
+     *
      * @param storableItem to check
      * @return true if item stored in storage, false if not
      */
@@ -480,6 +500,7 @@ public class BambooStorage {
 
     /**
      * Returns count of items in the storage of required type
+     *
      * @param classOfStorableItems type of storable item you want to count
      * @return count of items in the storage of required type
      */
@@ -497,10 +518,11 @@ public class BambooStorage {
 
     /**
      * Notifying about change in the storage using content resolver notifyChange method
+     *
      * @param classOfStorableItem class of StorableItem
-     * @param contentObserver the observer that originated the change, may be null
-     * The observer that originated the change will only receive the notification if it
-     * has requested to receive self-change notifications by implementing
+     * @param contentObserver     the observer that originated the change, may be null
+     *                            The observer that originated the change will only receive the notification if it
+     *                            has requested to receive self-change notifications by implementing
      */
     public void notifyChange(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem, @Nullable ContentObserver contentObserver) {
         mContentResolver.notifyChange(buildUri(classOfStorableItem), contentObserver);
@@ -508,6 +530,7 @@ public class BambooStorage {
 
     /**
      * Notifying about change in the storage using content resolver notifyChange method
+     *
      * @param classOfStorableItem class of StorableItem
      */
     public void notifyChange(@NonNull Class<? extends IBambooStorableItem> classOfStorableItem) {
@@ -516,6 +539,7 @@ public class BambooStorage {
 
     /**
      * Gets type meta with some extra from cache or directly from classOfStorableItem
+     *
      * @param classOfStorableItem type of storable item to get meta info from
      * @return type meta info with some extra data
      */
@@ -538,6 +562,7 @@ public class BambooStorage {
 
     /**
      * Builds uri for accessing content
+     *
      * @param classOfStorableItem of the content to build uri
      * @return Uri for accessing content
      */
@@ -549,16 +574,18 @@ public class BambooStorage {
 
     /**
      * Builds where args with storable item id for common requests to the content resolver
+     *
      * @param internalStorableItemId internal id of storable item
      * @return where args
      */
     @NonNull
     private static String[] buildWhereArgsByInternalId(long internalStorableItemId) {
-        return new String[] { String.valueOf(internalStorableItemId) };
+        return new String[]{String.valueOf(internalStorableItemId)};
     }
 
     /**
      * Builds where args with storable item id for common requests to the content resolver
+     *
      * @param storableItem to get internal id
      * @return where args
      */
@@ -569,10 +596,11 @@ public class BambooStorage {
 
     /**
      * Creates and fills storable item from cursor
+     *
      * @param classOfStorableItem class of storable item to instantiate
      * @param internalIdFieldName class's internal id field name
-     * @param cursor cursor to getByInternalId fields of item
-     * @param <T> generic type of the storable item
+     * @param cursor              cursor to getByInternalId fields of item
+     * @param <T>                 generic type of the storable item
      * @return storable item filled with info from cursor
      * @throws IllegalArgumentException if classOfStorableItem can not be used to create item from Cursor
      */
@@ -592,9 +620,10 @@ public class BambooStorage {
 
     /**
      * Creates and fills storable item from cursor
+     *
      * @param classOfStorableItem class of storable item to instantiate
-     * @param cursor cursor to getByInternalId fields of item
-     * @param <T> generic type of the storable item
+     * @param cursor              cursor to getByInternalId fields of item
+     * @param <T>                 generic type of the storable item
      * @return storable item filled with info from cursor
      * @throws IllegalArgumentException if classOfStorableItem can not be used to create item from Cursor
      */
