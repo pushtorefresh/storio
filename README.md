@@ -10,7 +10,7 @@ If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference
 -----------------------------------
 **Released on the mavenCentral**
 
-`compile 'com.pushtorefresh:bamboostorage:1.3.1' // current release is v1.3.1`
+`compile 'com.pushtorefresh:bamboostorage:1.4.0' // current release is v1.4.0`
 
 
 **`master`** branch build status [on Travis CI](https://travis-ci.org/pushtorefresh/bamboo-storage): [![Build Status](https://travis-ci.org/pushtorefresh/bamboo-storage.svg?branch=master)](https://travis-ci.org/pushtorefresh/bamboo-storage)
@@ -20,6 +20,11 @@ If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Android%20BambooStorage-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/928)
 
 -----------------------------------
+##Release notes:
+
+**v1.4.0 (September 16, 2014):**
+- Now you can add listener to the `BambooStorage`, check `ABambooStorageListener`, very useful with some `EventBus` like [`Otto`](https://github.com/square/otto)
+- New `addAll(collectionOfItems)` and `addOrUpdateAll(collectionOfItems)` methods 
 
 **Breaking changes in 2.0 (under development):**
 - Generating `fromCursor()` and `fillFromCursor()` at compile time
@@ -30,9 +35,13 @@ If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference
 **What API provides `BambooStorage`? It's CRUD with collection like methods names** 
 Implementation is as efficient as possible
 
+- `addListener(ABambooStorageListener)` — adds listener to the `BambooStorage`
+- `removeListener(ABambooStorageListener)` — removes listener from the `BambooStorage`
 - `add(yourStorableItem)` — adds an item to the storage
 - `update(yourStorableItem)` — updates an item in the storage
 - `addOrUpdate(yourStorableItem)` — adds or updates item in/to the storage
+- `addAll(yourStorableItems)` — adds a collection of items to the storage
+- `addOrUpdateAll(yourStorableItems)` — adds/updates a collection of items to the storage
 - `getByInternalId(classOfStorableItem, internalItemId)` — low-level get method to receive item from storage
 - `getAsList(classOfStorableItems, where, whereArgs, order)` — gets stored items as list
 - `getAsList(classOfStorableItems, where, whereArgs)` — gets stored items as list with default storage's order
