@@ -89,21 +89,21 @@ public class BambooStorage {
     }
 
     /**
-     * Adds storableItem to the Storage
+     * Adds storableItem to the storage and notify storage listeners about that
      *
      * @param storableItem to add
      */
     public void add(@NonNull IBambooStorableItem storableItem) {
-        addInternal(storableItem, true);
+        add(storableItem, true);
     }
 
     /**
-     * Should add item to the storage
+     * Adds storableItem to the storage
      *
      * @param storableItem item to add
      * @param notify       true if notifier should notify listeners, false otherwise
      */
-    protected void addInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
+    public void add(@NonNull IBambooStorableItem storableItem, boolean notify) {
         storableItem.setInternalId(IBambooStorableItem.DEFAULT_INTERNAL_ITEM_ID);
         Uri uri = mContentResolver.insert(buildUri(storableItem.getClass()), storableItem.toContentValues(mResources));
         storableItem.setInternalId(ContentUris.parseId(uri));
@@ -121,18 +121,18 @@ public class BambooStorage {
      * @throws IllegalArgumentException if storable item internal id less or equals zero — it was not stored in StorageManager
      */
     public int update(@NonNull IBambooStorableItem storableItem) {
-        return updateInternal(storableItem, true);
+        return update(storableItem, true);
     }
 
     /**
-     * Should update storable item in the storage
+     * Updates storable item in the storage
      *
      * @param storableItem to update
      * @param notify       true if notifier should notify listeners, false otherwise
      * @return count of updated items
-     * @throws IllegalArgumentException if storable item internal
+     * @throws IllegalArgumentException if storable item internal id less or equals zero — it was not stored in StorageManager
      */
-    protected int updateInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
+    public int update(@NonNull IBambooStorableItem storableItem, boolean notify) {
         final long itemInternalId = storableItem.getInternalId();
 
         if (itemInternalId <= 0) {
@@ -156,29 +156,29 @@ public class BambooStorage {
     }
 
     /**
-     * Adds or updates storable item to/in storage
+     * Adds or updates storable item to/in storage with notifying listeners
      *
      * @param storableItem to add or update
      * @return true if item was added, false if item was updated
      */
     public boolean addOrUpdate(@NonNull IBambooStorableItem storableItem) {
-        return addOrUpdateInternal(storableItem, true);
+        return addOrUpdate(storableItem, true);
     }
 
     /**
-     * Should add or update storable item to/in storage
+     * Adds or updates storable item to/in storage
      *
      * @param storableItem to add or update
      * @param notify       true if notifier should notify listeners, false otherwise
      * @return true if item was added, false if item was updated
      */
-    protected boolean addOrUpdateInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
+    public boolean addOrUpdate(@NonNull IBambooStorableItem storableItem, boolean notify) {
         if (storableItem.getInternalId() <= 0) {
             // item was not stored in the storage
-            addInternal(storableItem, notify);
+            add(storableItem, notify);
             return true;
         } else {
-            updateInternal(storableItem, notify);
+            update(storableItem, notify);
             return false;
         }
     }
@@ -189,19 +189,33 @@ public class BambooStorage {
      * NOTICE try to avoid adding collections with multiple classes because storage listener will receive onAnyCRUDOperation only about first item's class
      *
      * @param storableItems collection
+     * @param notify        true if notifier should notify listeners, false otherwise
      */
-    public void addAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+    public void addAll(@NonNull Collection<? extends IBambooStorableItem> storableItems, boolean notify) {
         if (storableItems.isEmpty()) {
             return;
         }
 
         for (IBambooStorableItem storableItem : storableItems) {
             if (storableItem != null) {
-                addInternal(storableItem, false);
+                add(storableItem, false);
             }
         }
 
-        mNotifier.notifyAboutAddAll(storableItems);
+        if (notify) {
+            mNotifier.notifyAboutAddAll(storableItems);
+        }
+    }
+
+    /**
+     * Adds collection of items to the storage with notifying listeners
+     *
+     * NOTICE try to avoid adding collections with multiple classes because storage listener will receive onAnyCRUDOperation only about first item's class
+     *
+     * @param storableItems collection
+     */
+    public void addAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+        addAll(storableItems, true);
     }
 
     /**
@@ -210,19 +224,33 @@ public class BambooStorage {
      * NOTICE try to avoid adding collections with multiple classes because storage listener will receive onAnyCRUDOperation only about first item's class
      *
      * @param storableItems collection of items
+     * @param notify        true if notifier should notify listeners, false otherwise
      */
-    public void addOrUpdateAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+    public void addOrUpdateAll(@NonNull Collection<? extends IBambooStorableItem> storableItems, boolean notify) {
         if (storableItems.isEmpty()) {
             return;
         }
 
         for (IBambooStorableItem storableItem : storableItems) {
             if (storableItem != null) {
-                addOrUpdateInternal(storableItem, false);
+                addOrUpdate(storableItem, false);
             }
         }
 
-        mNotifier.notifyAboutAddOrUpdateAll(storableItems);
+        if (notify) {
+            mNotifier.notifyAboutAddOrUpdateAll(storableItems);
+        }
+    }
+
+    /**
+     * Adds or updates all items from collection to the storage with notifying listeners
+     *
+     * NOTICE try to avoid adding collections with multiple classes because storage listener will receive onAnyCRUDOperation only about first item's class
+     *
+     * @param storableItems collection of items
+     */
+    public void addOrUpdateAll(@NonNull Collection<? extends IBambooStorableItem> storableItems) {
+        addOrUpdateAll(storableItems, true);
     }
 
     /**
