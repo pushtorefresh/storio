@@ -52,18 +52,20 @@ public class BambooStorage {
      * @param contentProviderAuthority authority of your ContentProvider
      */
     public BambooStorage(@NonNull Context context, @NonNull String contentProviderAuthority) {
-        mContentPath     = "content://" + contentProviderAuthority + "/%s";
-        mContentResolver = context.getContentResolver();
-        mResources       = context.getResources();
-        mNotifier        = provideNotifier();
+        this(context, contentProviderAuthority, new BambooStorageDefaultNotifier());
     }
 
     /**
-     * Provides notifier for bamboo storage
-     * @return notifier
+     * Creates BambooStorage object
+     * @param context feel free to pass any context, no memory leaks. Required to work with ContentResolver and provide Resources to IBambooStorableItem.toContentValues(res)
+     * @param contentProviderAuthority authority of your ContentProvider
+     * @param notifier for notifying BambooStorage listeners
      */
-    protected IBambooStorageNotifier provideNotifier() {
-        return new BambooStorageDefaultNotifier();
+    public BambooStorage(@NonNull Context context, @NonNull String contentProviderAuthority, @NonNull IBambooStorageNotifier notifier) {
+        mContentPath     = "content://" + contentProviderAuthority + "/%s";
+        mContentResolver = context.getContentResolver();
+        mResources       = context.getResources();
+        mNotifier        = notifier;
     }
 
     /**
@@ -90,6 +92,11 @@ public class BambooStorage {
         addInternal(storableItem, true);
     }
 
+    /**
+     * Should add item to the storage
+     * @param storableItem item to add
+     * @param notify true if notifier should notify listeners, false otherwise
+     */
     protected void addInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
         storableItem.setInternalId(IBambooStorableItem.DEFAULT_INTERNAL_ITEM_ID);
         Uri uri = mContentResolver.insert(buildUri(storableItem.getClass()), storableItem.toContentValues(mResources));
@@ -110,6 +117,13 @@ public class BambooStorage {
         return updateInternal(storableItem, true);
     }
 
+    /**
+     * Should update storable item in the storage
+     * @param storableItem to update
+     * @param notify true if notifier should notify listeners, false otherwise
+     * @return count of updated items
+     * @throws IllegalArgumentException if storable item internal
+     */
     protected int updateInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
         final long itemInternalId = storableItem.getInternalId();
 
@@ -142,6 +156,12 @@ public class BambooStorage {
         return addOrUpdateInternal(storableItem, true);
     }
 
+    /**
+     * Should add or update storable item to/in storage
+     * @param storableItem to add or update
+     * @param notify true if notifier should notify listeners, false otherwise
+     * @return true if item was added, false if item was updated
+     */
     protected boolean addOrUpdateInternal(@NonNull IBambooStorableItem storableItem, boolean notify) {
         if (storableItem.getInternalId() <= 0) {
             // item was not stored in the storage
