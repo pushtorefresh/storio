@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.pushtorefresh.bamboostorage.test_app">
-    <application>
-        <provider
-            android:name="com.pushtorefresh.bamboostorage.test.app.TestContentProvider"
-            android:authorities="com.pushtorefresh.bamboostorage.test"
-            android:exported="false" />
-    </application>
-</manifest>

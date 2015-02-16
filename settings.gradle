@@ -1,2 +1,1 @@
-include ':bamboostorage'
-include ':bamboostorage-tests'
+include ':bamboo-storage'
