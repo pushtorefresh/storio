@@ -10,7 +10,7 @@ import com.pushtorefresh.android.bamboostorage.wtf.QueryBuilder;
 
 public class SinglePutResult<T extends BambooStorableType> {
 
-    private final Long insertedId;
+    @Nullable private final Long insertedId;
     private final int updatedCount;
 
     public SinglePutResult(@NonNull BambooStorage bambooStorage, T object) {
