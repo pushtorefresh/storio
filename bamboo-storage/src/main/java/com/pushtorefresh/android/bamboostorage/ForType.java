@@ -6,6 +6,7 @@ import com.pushtorefresh.android.bamboostorage.result.IterableQueryResult;
 import com.pushtorefresh.android.bamboostorage.result.MultiplePutResult;
 import com.pushtorefresh.android.bamboostorage.result.SinglePutResult;
 import com.pushtorefresh.android.bamboostorage.result.SingleQueryResult;
+import com.pushtorefresh.android.bamboostorage.result.SingleDeleteResult;
 import com.pushtorefresh.android.bamboostorage.wtf.Query;
 import com.pushtorefresh.android.bamboostorage.wtf.QueryBuilder;
 
@@ -49,5 +50,13 @@ public class ForType<T extends BambooStorableType> {
 
     @NonNull public SingleQueryResult<T> getLast(@NonNull Query query) {
         return new SingleQueryResult<>(bambooStorage, type, query);
+    }
+
+    @NonNull public SingleDeleteResult<T> delete(@NonNull T object) {
+        return new SingleDeleteResult<>(bambooStorage, object);
+    }
+
+    @NonNull public SingleDeleteResult<T> delete(@NonNull Query query) {
+        return new SingleDeleteResult<>(bambooStorage, type, query);
     }
 }

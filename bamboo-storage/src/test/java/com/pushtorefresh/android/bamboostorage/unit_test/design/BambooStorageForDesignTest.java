@@ -75,5 +75,15 @@ public class BambooStorageForDesignTest implements BambooStorage {
                 @NonNull T object, @Nullable String where, @Nullable String[] whereArgs) {
             return 0;
         }
+
+        @Override
+        public <T extends BambooStorableType> int delete(@NonNull Class<T> type, @Nullable String where, @Nullable String[] whereArgs) {
+            return 0;
+        }
+
+        @Override
+        public <T extends BambooStorableType> int delete(@NonNull T object) {
+            return 0;
+        }
     }
 }

@@ -29,5 +29,9 @@ public interface BambooStorage {
         <T extends BambooStorableType> long insert(@NonNull T object);
 
         <T extends BambooStorableType> int update(@NonNull T object, @Nullable String where, @Nullable String[] whereArgs);
+
+        <T extends BambooStorableType> int delete(@NonNull Class<T> type, @Nullable String where, @Nullable String[] whereArgs);
+
+        <T extends BambooStorableType> int delete(@NonNull T object);
     }
 }

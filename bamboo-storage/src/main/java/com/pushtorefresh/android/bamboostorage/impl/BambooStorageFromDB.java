@@ -94,6 +94,27 @@ public class BambooStorageFromDB implements BambooStorage {
                     whereArgs
             );
         }
+
+        @Override
+        public <T extends BambooStorableType> int delete(@NonNull Class<T> type, @Nullable String where, @Nullable String[] whereArgs) {
+            return db.delete(
+                    getTableName(type),
+                    where,
+                    whereArgs
+            );
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends BambooStorableType> int delete(@NonNull T object) {
+            Class<T> type = (Class<T>) object.getClass();
+
+            return db.delete(
+                    getTableName(type),
+                    getStorableIdFieldName(type) + " = ?",
+                    new String[] { object.getStorableId() }
+            );
+        }
     }
 
     @NonNull protected <T extends BambooStorableType> StorableInBamboo getAnnotation(Class<T> type) {
