@@ -58,4 +58,10 @@ public class DeleteAllDesignTest {
                 .deleteAll(users)
                 .getDeleteResults();
     }
+
+    @Test public void deleteAllOfType() {
+        SingleDeleteResult<User> deleteResult = getBambooStorage()
+                .forType(User.class)
+                .deleteAll();
+    }
 }
