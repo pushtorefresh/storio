@@ -42,7 +42,7 @@ public class DeleteDesignTest {
     }
 
     @Test public void deleteQueryDeletedCount() {
-        Query query = new QueryBuilder().where("name = ?", "artem").build();
+        Query query = new QueryBuilder().where("name = ?").whereArgs("artem").build();
 
         int deletedCount = getBambooStorage()
                 .forType(User.class)
@@ -51,7 +51,7 @@ public class DeleteDesignTest {
     }
 
     @Test public void deleteQueryWasDeleted() {
-        Query query = new QueryBuilder().where("name = ?", "dog").build();
+        Query query = new QueryBuilder().where("name = ?").whereArgs("dog").build();
 
         boolean wasDeleted = getBambooStorage()
                 .forType(User.class)
@@ -60,7 +60,7 @@ public class DeleteDesignTest {
     }
 
     @Test public void deleteQueryWasNotDeleted() {
-        Query query = new QueryBuilder().where("name = ?", "what").build();
+        Query query = new QueryBuilder().where("name = ?").whereArgs("what").build();
 
         boolean wasNotDeleted = getBambooStorage()
                 .forType(User.class)
