@@ -16,7 +16,7 @@ public class PutDesignTest {
         boolean wasInserted = getBambooStorage()
                 .forType(User.class)
                 .put(new User())
-                .wasUpdated();
+                .wasInserted();
     }
 
     @Test public void putWasUpdated() {
