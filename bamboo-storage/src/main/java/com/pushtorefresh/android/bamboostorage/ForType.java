@@ -3,6 +3,7 @@ package com.pushtorefresh.android.bamboostorage;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.result.IterableQueryResult;
+import com.pushtorefresh.android.bamboostorage.result.MultiplePutResult;
 import com.pushtorefresh.android.bamboostorage.result.SinglePutResult;
 import com.pushtorefresh.android.bamboostorage.result.SingleQueryResult;
 import com.pushtorefresh.android.bamboostorage.wtf.Query;
@@ -18,8 +19,12 @@ public class ForType<T extends BambooStorableType> {
         this.type = type;
     }
 
-    @NonNull public SinglePutResult<T> put(T object) {
+    @NonNull public SinglePutResult<T> put(@NonNull T object) {
         return new SinglePutResult<>(bambooStorage, object);
+    }
+
+    @NonNull public MultiplePutResult<T> putAll(@NonNull Iterable<T> objects) {
+        return new MultiplePutResult<>(bambooStorage, objects);
     }
 
     @NonNull public IterableQueryResult<T> getAll() {

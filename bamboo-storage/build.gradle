@@ -20,6 +20,6 @@ dependencies {
     // Unit testing
     testCompile 'junit:junit:4.12'
 
-    // Mock it, bitch!
+    // Mocking library
     testCompile 'org.mockito:mockito-core:1.10.19'
 }
