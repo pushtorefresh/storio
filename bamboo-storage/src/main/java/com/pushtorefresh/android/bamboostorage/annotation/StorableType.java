@@ -1,4 +1,4 @@
-package com.pushtorefresh.android.bamboostorage;
+package com.pushtorefresh.android.bamboostorage.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

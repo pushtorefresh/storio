@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorableType;
-import com.pushtorefresh.android.bamboostorage.StorableType;
+import com.pushtorefresh.android.bamboostorage.annotation.StorableType;
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.ForType;
 import com.pushtorefresh.android.bamboostorage.wtf.StorableTypeParser;
