@@ -4,9 +4,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorableType;
-import com.pushtorefresh.android.bamboostorage.StorableInBamboo;
+import com.pushtorefresh.android.bamboostorage.StorableType;
 
-@StorableInBamboo(idFieldName = User.COLUMN_ID, tableName = User.TABLE_NAME)
+@StorableType(idFieldName = User.COLUMN_ID, tableName = User.TABLE_NAME)
 public class User implements BambooStorableType {
 
     static final String TABLE_NAME      = "users";

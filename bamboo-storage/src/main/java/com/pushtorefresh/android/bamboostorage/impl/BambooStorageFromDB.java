@@ -7,9 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorableType;
+import com.pushtorefresh.android.bamboostorage.StorableType;
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.ForType;
-import com.pushtorefresh.android.bamboostorage.StorableInBamboo;
 import com.pushtorefresh.android.bamboostorage.wtf.StorableTypeParser;
 import com.pushtorefresh.android.bamboostorage.wtf.StorableTypeSerializer;
 
@@ -121,14 +121,14 @@ public class BambooStorageFromDB implements BambooStorage {
         }
     }
 
-    @NonNull protected <T extends BambooStorableType> StorableInBamboo getAnnotation(Class<T> type) {
+    @NonNull protected <T extends BambooStorableType> StorableType getAnnotation(Class<T> type) {
         // TODO REFACTOR and FIX, add caching layer for annotations
 
-        if (!type.isAnnotationPresent(StorableInBamboo.class)) {
-            throw new IllegalStateException("Type " + type.getCanonicalName() + " should be annotated with " + StorableInBamboo.class.getCanonicalName() + " annotation");
+        if (!type.isAnnotationPresent(StorableType.class)) {
+            throw new IllegalStateException("Type " + type.getCanonicalName() + " should be annotated with " + StorableType.class.getCanonicalName() + " annotation");
         }
 
-        return type.getAnnotation(StorableInBamboo.class);
+        return type.getAnnotation(StorableType.class);
     }
 
     @NonNull protected <T extends BambooStorableType> String getTableName(Class<T> type) {
