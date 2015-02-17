@@ -15,8 +15,12 @@ public class QueryBuilder {
     @Nullable private String[] whereArgs;
     @Nullable private String orderBy;
 
-    @NonNull public QueryBuilder where(@Nullable String where, @Nullable String... whereArgs) {
+    @NonNull public QueryBuilder where(@Nullable String where) {
         this.where = where;
+        return this;
+    }
+
+    @NonNull public QueryBuilder whereArgs(@Nullable String... whereArgs) {
         this.whereArgs = whereArgs;
         return this;
     }

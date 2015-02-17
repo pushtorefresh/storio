@@ -19,7 +19,8 @@ public class SinglePutResult<T extends BambooStorableType> {
             updatedCount = 0;
         } else {
             Query query = new QueryBuilder()
-                    .where(bambooStorage.getInternal().getStorableIdFieldName(object.getClass()), object.getStorableId())
+                    .where(bambooStorage.getInternal().getStorableIdFieldName(object.getClass()))
+                    .whereArgs(String.valueOf(object.getStorableId()))
                     .build();
 
             updatedCount = bambooStorage.getInternal().update(object, query.where, query.whereArgs);
