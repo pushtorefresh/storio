@@ -11,11 +11,9 @@ import java.util.Map;
 
 public class MultiplePutResult<T extends BambooStorableType> {
 
-    @NonNull private final Map<T, SinglePutResult<T>> putResults;
+    @NonNull private final Map<T, SinglePutResult<T>> putResults = new HashMap<>();
 
     public MultiplePutResult(@NonNull BambooStorage bambooStorage, @NonNull Iterable<T> objects) {
-        putResults = new HashMap<>();
-
         for (T object : objects) {
             putResults.put(object, new SinglePutResult<>(bambooStorage, object));
         }
