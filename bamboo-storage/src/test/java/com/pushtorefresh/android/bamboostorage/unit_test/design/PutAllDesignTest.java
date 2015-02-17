@@ -19,7 +19,7 @@ import java.util.Stack;
 
 public class PutAllDesignTest {
 
-    @NonNull private BambooStorage getBambooStorage() {
+    @NonNull BambooStorage getBambooStorage() {
         return new BambooStorageForDesignTest();
     }
 

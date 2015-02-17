@@ -12,7 +12,7 @@ import rx.Observable;
 
 public class GetFirstDesignTest {
 
-    @NonNull public BambooStorage getBambooStorage() {
+    @NonNull BambooStorage getBambooStorage() {
         return new BambooStorageForDesignTest();
     }
 

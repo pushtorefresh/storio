@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class DeleteDesignTest {
 
-    @NonNull private BambooStorage getBambooStorage() {
+    @NonNull BambooStorage getBambooStorage() {
         return new BambooStorageForDesignTest();
     }
 
