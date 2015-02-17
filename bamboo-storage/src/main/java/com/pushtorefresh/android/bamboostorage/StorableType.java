@@ -1,15 +1,15 @@
 package com.pushtorefresh.android.bamboostorage;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 public @interface StorableType {
 
-    @NonNull String idFieldName();
+    String idFieldName() default "_id";
 
-    @Nullable String tableName();
+    String tableName() default "";
 }
