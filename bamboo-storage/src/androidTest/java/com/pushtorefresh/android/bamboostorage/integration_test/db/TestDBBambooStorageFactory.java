@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
-import com.pushtorefresh.android.bamboostorage.impl.BambooStorageFromDB;
+import com.pushtorefresh.android.bamboostorage.impl.BambooStorageFromDatabase;
 
 public class TestDBBambooStorageFactory {
 
@@ -24,7 +24,10 @@ public class TestDBBambooStorageFactory {
         };
     }
 
-    @NonNull public static BambooStorage getTestBambooStorageFromDB(@NonNull Context context) {
-        return new BambooStorageFromDB(getTestSQLiteOpenHelper(context));
+    @NonNull public static BambooStorage getTestBambooStorageFromDatabase(@NonNull Context context) {
+        return new BambooStorageFromDatabase.Builder()
+                .sqLiteOpenHelper(getTestSQLiteOpenHelper(context))
+                .searchForGeneratedClasses(false)
+                .build();
     }
 }

@@ -17,39 +17,37 @@ import com.pushtorefresh.android.bamboostorage.wtf.StorableTypeSerializer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BambooStorageFromDB implements BambooStorage {
+public class BambooStorageFromDatabase implements BambooStorage {
 
-    private static final Map<Class, StorableTypeParser> PARSERS  = new ConcurrentHashMap<>();
-    private static final Map<Class, StorableTypeSerializer> SERIALIZERS = new ConcurrentHashMap<>();
+    private final Map<Class, StorableTypeParser> parsers = new ConcurrentHashMap<>();
+    private final Map<Class, StorableTypeSerializer> serializers = new ConcurrentHashMap<>();
 
     @NonNull private final SQLiteDatabase db;
     @NonNull private final Internal internal = new InternalImpl();
+    private final boolean searchForGeneratedClasses;
 
-    public BambooStorageFromDB(@NonNull SQLiteDatabase db) {
+    protected BambooStorageFromDatabase(@NonNull SQLiteDatabase db, boolean searchForGeneratedClasses) {
         this.db = db;
-    }
-
-    public BambooStorageFromDB(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
-        this.db = sqLiteOpenHelper.getWritableDatabase();
+        this.searchForGeneratedClasses = searchForGeneratedClasses;
     }
 
     @SuppressWarnings("unchecked")
     @NonNull @Override public <T extends BambooStorableType> StorableTypeParser<T> getParser(@NonNull Class<T> type) {
-        return PARSERS.get(type);
+        return parsers.get(type);
     }
 
     @Override public <T extends BambooStorableType> void setParserForType(@NonNull Class<T> type, @NonNull StorableTypeParser<T> parser) {
-        PARSERS.put(type, parser);
+        parsers.put(type, parser);
     }
 
     @SuppressWarnings("unchecked")
     @NonNull @Override public <T extends BambooStorableType> StorableTypeSerializer<T> getSerializer(@NonNull Class<T> type) {
-        return SERIALIZERS.get(type);
+        return serializers.get(type);
     }
 
     @Override public <T extends BambooStorableType> void setSerializerForType(
             @NonNull Class<T> type, @NonNull StorableTypeSerializer<T> serializer) {
-        SERIALIZERS.put(type, serializer);
+        serializers.put(type, serializer);
     }
 
     @NonNull @Override public <T extends BambooStorableType> ForType<T> forType(@NonNull Class<T> type) {
@@ -143,5 +141,47 @@ public class BambooStorageFromDB implements BambooStorage {
 
     @NonNull protected <T extends BambooStorableType> String getTableName(Class<T> type) {
         return getAnnotation(type).tableName();
+    }
+
+    public static class Builder {
+        @Nullable private SQLiteDatabase db;
+        private boolean searchForGeneratedClasses = true;
+
+        @NonNull public Builder database(SQLiteDatabase db) {
+            if (db == null) {
+                throw new IllegalArgumentException("db should not be null");
+            }
+
+            this.db = db;
+            return this;
+        }
+
+        @NonNull public Builder sqLiteOpenHelper(SQLiteOpenHelper sqLiteOpenHelper) {
+            if (sqLiteOpenHelper == null) {
+                throw new IllegalArgumentException("sqLiteOpenHelper should not be null");
+            }
+
+            SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+
+            if (db == null) {
+                throw new IllegalArgumentException("sqLiteOpenHelper should return non null writable database");
+            }
+
+            this.db = db;
+            return this;
+        }
+
+        @NonNull public Builder searchForGeneratedClasses(boolean searchForGeneratedClasses) {
+            this.searchForGeneratedClasses = searchForGeneratedClasses;
+            return this;
+        }
+
+        @NonNull public BambooStorage build() {
+            if (db == null) {
+                throw new IllegalStateException("database should not be null for building " + BambooStorageFromDatabase.class.getSimpleName() + " instance");
+            }
+
+            return new BambooStorageFromDatabase(db, searchForGeneratedClasses);
+        }
     }
 }

@@ -17,7 +17,7 @@ public class PutToDBTest extends AndroidTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        bambooStorage = TestDBBambooStorageFactory.getTestBambooStorageFromDB(getContext());
+        bambooStorage = TestDBBambooStorageFactory.getTestBambooStorageFromDatabase(getContext());
 
         bambooStorage.setSerializerForType(User.class, new StorableTypeSerializer<User>() {
             @NonNull
