@@ -5,5 +5,5 @@ import android.support.annotation.NonNull;
 
 public interface StorableTypeParser<T> {
 
-    T parseFromCursor(@NonNull Cursor cursor);
+    @NonNull T parseFromCursor(@NonNull Cursor cursor);
 }

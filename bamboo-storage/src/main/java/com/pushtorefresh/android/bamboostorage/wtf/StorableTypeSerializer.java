@@ -5,5 +5,5 @@ import android.support.annotation.NonNull;
 
 public interface StorableTypeSerializer<T> {
 
-    @NonNull public ContentValues toContentValues(T object);
+    @NonNull public ContentValues toContentValues(@NonNull T object);
 }

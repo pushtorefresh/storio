@@ -51,4 +51,27 @@ public class User implements BambooStorableType {
         this.surname = surname;
         return this;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (name != null ? !name.equals(user.name) : user.name != null) return false;
+        if (storableId != null ? !storableId.equals(user.storableId) : user.storableId != null)
+            return false;
+        if (surname != null ? !surname.equals(user.surname) : user.surname != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = storableId != null ? storableId.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (surname != null ? surname.hashCode() : 0);
+        return result;
+    }
 }

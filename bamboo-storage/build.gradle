@@ -11,8 +11,11 @@ android {
 }
 
 dependencies {
+    // Common code
+    compile project(':bamboo-storage-common')
+
     // @NonNull and @Nullable
-    compile 'com.android.support:support-annotations:20.0.0'
+    compile 'com.android.support:support-annotations:21.0.3'
 
     // Reactive Extensions for JVM
     provided 'io.reactivex:rxjava:1.0.6'

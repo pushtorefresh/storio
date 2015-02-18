@@ -1,1 +1,3 @@
+include ':bamboo-storage-common'
 include ':bamboo-storage'
+include ':bamboo-storage-processor'

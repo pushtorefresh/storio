@@ -10,6 +10,7 @@ import com.pushtorefresh.android.bamboostorage.BambooStorableType;
 import com.pushtorefresh.android.bamboostorage.annotation.StorableType;
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.ForType;
+import com.pushtorefresh.android.bamboostorage.exception.InsertRuntimeException;
 import com.pushtorefresh.android.bamboostorage.wtf.StorableTypeParser;
 import com.pushtorefresh.android.bamboostorage.wtf.StorableTypeSerializer;
 
@@ -80,11 +81,20 @@ public class BambooStorageFromDB implements BambooStorage {
         @Override public <T extends BambooStorableType> long insert(@NonNull T object) {
             Class<T> type = (Class<T>) object.getClass();
 
-            return db.insert(
+            long insertedId = db.insert(
                     getTableName(type),
                     null,
                     getSerializer(type).toContentValues(object)
             );
+
+            if (insertedId == -1) {
+                throw new InsertRuntimeException("Can not insert object of type " + object.getClass().getCanonicalName() + ": " + object + ", sqlDataBase returned -1");
+            }
+
+            // setting inserted id to object
+            object.setStorableId(insertedId);
+
+            return insertedId;
         }
 
         @SuppressWarnings("unchecked")
