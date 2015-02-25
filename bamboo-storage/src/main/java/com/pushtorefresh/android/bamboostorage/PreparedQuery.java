@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.android.bamboostorage.wtf.Query;
+import com.pushtorefresh.android.bamboostorage.query.Query;
 
 import java.util.List;
 
@@ -14,17 +14,21 @@ import rx.functions.Func1;
 
 public abstract class PreparedQuery {
 
-    @NonNull private final Query query;
+    @NonNull protected final BambooStorage bambooStorage;
+    @NonNull protected final Query query;
 
-    public PreparedQuery(@NonNull Query query) {
+    public PreparedQuery(@NonNull BambooStorage bambooStorage, @NonNull Query query) {
+        this.bambooStorage = bambooStorage;
         this.query = query;
     }
 
     public static class Builder {
 
+        @NonNull private final BambooStorage bambooStorage;
         @NonNull private final Query query;
 
-        public Builder(@NonNull Query query) {
+        public Builder(@NonNull BambooStorage bambooStorage, @NonNull Query query) {
+            this.bambooStorage = bambooStorage;
             this.query = query;
         }
 
@@ -37,19 +41,18 @@ public abstract class PreparedQuery {
 
         @NonNull public PreparedQueryWithResultAsCursor resultAsCursor() {
             validateFields();
-            return new PreparedQueryWithResultAsCursor(query);
+            return new PreparedQueryWithResultAsCursor(bambooStorage, query);
         }
 
-        @NonNull public <R extends BambooStorableType> PreparedQueryWithResultsAsObjects<R>
-        resultAsObjects(@NonNull Class<R> type, @NonNull Func1<Cursor, R> mapFunc) {
+        @NonNull public <R> PreparedQueryWithResultsAsObjects<R> resultAsObjects(@NonNull Func1<Cursor, R> mapFunc) {
             validateFields();
-            return new PreparedQueryWithResultsAsObjects<>(query, mapFunc);
+            return new PreparedQueryWithResultsAsObjects<>(bambooStorage, query, mapFunc);
         }
 
         public static class PreparedQueryWithResultAsCursor extends PreparedQuery {
 
-            PreparedQueryWithResultAsCursor(@NonNull Query query) {
-                super(query);
+            PreparedQueryWithResultAsCursor(@NonNull BambooStorage bambooStorage, @NonNull Query query) {
+                super(bambooStorage, query);
             }
 
             @NonNull public Cursor executeAsBlocking() {
@@ -65,10 +68,10 @@ public abstract class PreparedQuery {
             }
         }
 
-        public static class PreparedQueryWithResultsAsObjects<R extends BambooStorableType> extends PreparedQuery {
+        public static class PreparedQueryWithResultsAsObjects<R> extends PreparedQuery {
 
-            PreparedQueryWithResultsAsObjects(@NonNull Query query, @NonNull Func1<Cursor, R> mapFunc) {
-                super(query);
+            PreparedQueryWithResultsAsObjects(@NonNull BambooStorage bambooStorage, @NonNull Query query, @NonNull Func1<Cursor, R> mapFunc) {
+                super(bambooStorage, query);
             }
 
             @Nullable public List<R> executeAsBlocking() {
