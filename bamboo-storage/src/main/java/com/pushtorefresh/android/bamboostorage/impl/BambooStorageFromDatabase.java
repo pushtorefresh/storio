@@ -7,10 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorableType;
+import com.pushtorefresh.android.bamboostorage.PreparedQuery;
 import com.pushtorefresh.android.bamboostorage.annotation.StorableType;
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.ForType;
 import com.pushtorefresh.android.bamboostorage.exception.InsertRuntimeException;
+import com.pushtorefresh.android.bamboostorage.wtf.Query;
 import com.pushtorefresh.android.bamboostorage.wtf.StorableTypeParser;
 import com.pushtorefresh.android.bamboostorage.wtf.StorableTypeSerializer;
 
@@ -52,6 +54,10 @@ public class BambooStorageFromDatabase implements BambooStorage {
 
     @NonNull @Override public <T extends BambooStorableType> ForType<T> forType(@NonNull Class<T> type) {
         return new ForType<>(this, type);
+    }
+
+    @NonNull @Override public PreparedQuery.Builder prepareQuery(@NonNull Query query) {
+        return new PreparedQuery.Builder(query);
     }
 
     @NonNull @Override public Internal getInternal() {

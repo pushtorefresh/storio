@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.android.bamboostorage.wtf.Query;
 import com.pushtorefresh.android.bamboostorage.wtf.StorableTypeParser;
 import com.pushtorefresh.android.bamboostorage.wtf.StorableTypeSerializer;
 
@@ -18,6 +19,8 @@ public interface BambooStorage {
     <T extends BambooStorableType> void setSerializerForType(@NonNull Class<T> type, @NonNull StorableTypeSerializer<T> serializer);
 
     @NonNull <T extends BambooStorableType> ForType<T> forType(@NonNull Class<T> type);
+
+    @NonNull PreparedQuery.Builder prepareQuery(@NonNull Query query);
 
     @NonNull Internal getInternal();
 

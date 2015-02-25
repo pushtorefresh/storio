@@ -2,12 +2,10 @@ package com.pushtorefresh.android.bamboostorage;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.result.IterableQueryResult;
 import com.pushtorefresh.android.bamboostorage.result.MultipleDeleteResult;
 import com.pushtorefresh.android.bamboostorage.result.MultiplePutResult;
 import com.pushtorefresh.android.bamboostorage.result.SingleDeleteResult;
 import com.pushtorefresh.android.bamboostorage.result.SinglePutResult;
-import com.pushtorefresh.android.bamboostorage.result.SingleQueryResult;
 import com.pushtorefresh.android.bamboostorage.wtf.Query;
 import com.pushtorefresh.android.bamboostorage.wtf.QueryBuilder;
 
@@ -27,30 +25,6 @@ public class ForType<T extends BambooStorableType> {
 
     @NonNull public MultiplePutResult<T> putAll(@NonNull Iterable<T> objects) {
         return new MultiplePutResult<>(bambooStorage, objects);
-    }
-
-    @NonNull public IterableQueryResult<T> getAll() {
-        return new IterableQueryResult<>(bambooStorage, type, QueryBuilder.allFieldsNull());
-    }
-
-    @NonNull public IterableQueryResult<T> getAll(@NonNull Query query) {
-        return new IterableQueryResult<>(bambooStorage, type, query);
-    }
-
-    @NonNull public SingleQueryResult<T> getFirst() {
-        return new SingleQueryResult<>(bambooStorage, type, QueryBuilder.allFieldsNull());
-    }
-
-    @NonNull public SingleQueryResult<T> getFirst(@NonNull Query query) {
-        return new SingleQueryResult<>(bambooStorage, type, query);
-    }
-
-    @NonNull public SingleQueryResult<T> getLast() {
-        return new SingleQueryResult<>(bambooStorage, type, QueryBuilder.allFieldsNull());
-    }
-
-    @NonNull public SingleQueryResult<T> getLast(@NonNull Query query) {
-        return new SingleQueryResult<>(bambooStorage, type, query);
     }
 
     @NonNull public SingleDeleteResult<T> delete(@NonNull T object) {
