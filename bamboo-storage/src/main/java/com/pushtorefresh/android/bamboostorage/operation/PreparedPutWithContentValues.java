@@ -81,7 +81,7 @@ public class PreparedPutWithContentValues extends PreparedPut<Long> {
             return this;
         }
 
-        @NonNull public PreparedPutWithContentValues prepare() {
+        @NonNull public PreparedOperation<Long> prepare() {
             if (insertQuery != null) {
                 return new PreparedPutWithContentValues(bambooStorage, insertQuery, contentValues);
             } else if (updateQuery != null) {

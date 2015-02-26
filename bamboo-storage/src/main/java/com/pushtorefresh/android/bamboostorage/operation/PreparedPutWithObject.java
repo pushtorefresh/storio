@@ -115,7 +115,7 @@ public class PreparedPutWithObject<T> extends PreparedPut<SinglePutResult> {
             return this;
         }
 
-        @NonNull public PreparedPutWithObject<T> prepare() {
+        @NonNull public PreparedOperation<SinglePutResult> prepare() {
             return new PreparedPutWithObject<>(
                     bambooStorage,
                     object,
