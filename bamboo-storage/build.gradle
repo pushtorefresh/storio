@@ -12,10 +12,10 @@ android {
 
 dependencies {
     // @NonNull and @Nullable
-    compile 'com.android.support:support-annotations:21.0.3'
+    provided 'com.android.support:support-annotations:21.0.3'
 
     // Reactive Extensions for JVM
-    compile 'io.reactivex:rxjava:1.0.6'
+    provided 'io.reactivex:rxjava:1.0.6'
 
     // Unit testing
     testCompile 'junit:junit:4.12'
