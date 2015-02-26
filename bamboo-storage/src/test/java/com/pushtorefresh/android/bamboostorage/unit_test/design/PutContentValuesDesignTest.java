@@ -22,11 +22,10 @@ public class PutContentValuesDesignTest {
 
         long insertedRowId = bambooStorage()
                 .put()
-                .asContentValues()
-                .query(new InsertQueryBuilder()
+                .contentValues(contentValues)
+                .insertQuery(new InsertQueryBuilder()
                         .table("users")
                         .build())
-                .data(contentValues)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -36,11 +35,10 @@ public class PutContentValuesDesignTest {
 
         Observable<Long> observableInsertedRowId = bambooStorage()
                 .put()
-                .asContentValues()
-                .query(new InsertQueryBuilder()
+                .contentValues(contentValues)
+                .insertQuery(new InsertQueryBuilder()
                         .table("users")
                         .build())
-                .data(contentValues)
                 .prepare()
                 .createObservable();
     }
@@ -50,13 +48,12 @@ public class PutContentValuesDesignTest {
 
         long updatedRowsCount = bambooStorage()
                 .put()
-                .asContentValues()
+                .contentValues(contentValues)
                 .updateQuery(new UpdateQueryBuilder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
-                .data(contentValues)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -66,13 +63,12 @@ public class PutContentValuesDesignTest {
 
         Observable<Long> observableUpdatedRowsCount = bambooStorage()
                 .put()
-                .asContentValues()
+                .contentValues(contentValues)
                 .updateQuery(new UpdateQueryBuilder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
-                .data(contentValues)
                 .prepare()
                 .createObservable();
     }

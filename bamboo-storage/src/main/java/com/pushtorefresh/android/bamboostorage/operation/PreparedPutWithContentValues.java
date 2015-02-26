@@ -62,22 +62,18 @@ public class PreparedPutWithContentValues extends PreparedPut<Long> {
         private UpdateQuery updateQuery;
         private ContentValues contentValues;
 
-        public Builder(@NonNull BambooStorage bambooStorage) {
+        public Builder(@NonNull BambooStorage bambooStorage, @NonNull ContentValues contentValues) {
             this.bambooStorage = bambooStorage;
+            this.contentValues = contentValues;
         }
 
-        @NonNull public Builder query(@NonNull InsertQuery insertQuery) {
+        @NonNull public Builder insertQuery(@NonNull InsertQuery insertQuery) {
             this.insertQuery = insertQuery;
             return this;
         }
 
         @NonNull public Builder updateQuery(@NonNull UpdateQuery updateQuery) {
             this.updateQuery = updateQuery;
-            return this;
-        }
-
-        @NonNull public Builder data(@NonNull ContentValues contentValues) {
-            this.contentValues = contentValues;
             return this;
         }
 

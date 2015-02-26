@@ -1,5 +1,6 @@
 package com.pushtorefresh.android.bamboostorage.operation;
 
+import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
@@ -20,8 +21,8 @@ public abstract class PreparedPut<T> implements PreparedOperation<T> {
             this.bambooStorage = bambooStorage;
         }
 
-        @NonNull public PreparedPutWithContentValues.Builder asContentValues() {
-            return new PreparedPutWithContentValues.Builder(bambooStorage);
+        @NonNull public PreparedPutWithContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
+            return new PreparedPutWithContentValues.Builder(bambooStorage, contentValues);
         }
 
         @NonNull public <T> PreparedPutWithObject.Builder<T> object(T object) {
