@@ -6,7 +6,7 @@ import android.database.MatrixCursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
-import com.pushtorefresh.android.bamboostorage.operation.PreparedGet;
+import com.pushtorefresh.android.bamboostorage.operation.get.PreparedGet;
 import com.pushtorefresh.android.bamboostorage.operation.PreparedPut;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 import com.pushtorefresh.android.bamboostorage.query.InsertQuery;

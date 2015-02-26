@@ -1,4 +1,4 @@
-package com.pushtorefresh.android.bamboostorage.operation;
+package com.pushtorefresh.android.bamboostorage.operation.get;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;

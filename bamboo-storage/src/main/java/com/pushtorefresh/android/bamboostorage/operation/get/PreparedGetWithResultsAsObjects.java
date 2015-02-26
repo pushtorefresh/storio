@@ -1,9 +1,10 @@
-package com.pushtorefresh.android.bamboostorage.operation;
+package com.pushtorefresh.android.bamboostorage.operation.get;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.query.Query;
 
 import java.util.ArrayList;

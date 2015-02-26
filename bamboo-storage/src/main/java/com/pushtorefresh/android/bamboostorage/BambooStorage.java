@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.operation.PreparedPut;
-import com.pushtorefresh.android.bamboostorage.operation.PreparedGet;
+import com.pushtorefresh.android.bamboostorage.operation.get.PreparedGet;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 import com.pushtorefresh.android.bamboostorage.query.InsertQuery;
 import com.pushtorefresh.android.bamboostorage.query.Query;
