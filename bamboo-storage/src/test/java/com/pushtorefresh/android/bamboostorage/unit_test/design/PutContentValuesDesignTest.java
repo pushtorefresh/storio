@@ -42,7 +42,7 @@ public class PutContentValuesDesignTest {
                         .build())
                 .data(contentValues)
                 .prepare()
-                .executeAsObservable();
+                .createObservable();
     }
 
     @Test public void updateContentValuesBlocking() {
@@ -74,6 +74,6 @@ public class PutContentValuesDesignTest {
                         .build())
                 .data(contentValues)
                 .prepare()
-                .executeAsObservable();
+                .createObservable();
     }
 }

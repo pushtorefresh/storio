@@ -37,7 +37,7 @@ public class PutObjectsDesignTest {
                 .mapFunc(User.MAP_TO_CONTENT_VALUES)
                 .putResolver(User.PUT_RESOLVER)
                 .prepare()
-                .executeAsObservable();
+                .createObservable();
     }
 
     @Test public void updateByQueryBlocking() {

@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.query.Query;
 
-public abstract class PreparedGet {
+public abstract class PreparedGet<T> implements Operation<T> {
 
     @NonNull protected final BambooStorage bambooStorage;
     @NonNull protected final Query query;
@@ -42,7 +42,7 @@ public abstract class PreparedGet {
             return new PreparedGetWithResultAsCursor(bambooStorage, query);
         }
 
-        @NonNull public <R> PreparedGetWithResultsAsObjects<R> resultAsObjects(@NonNull MapFunc<Cursor, R> mapFunc) {
+        @NonNull public <T> PreparedGetWithResultsAsObjects<T> resultAsObjects(@NonNull MapFunc<Cursor, T> mapFunc) {
             validateFields();
             return new PreparedGetWithResultsAsObjects<>(bambooStorage, query, mapFunc);
         }

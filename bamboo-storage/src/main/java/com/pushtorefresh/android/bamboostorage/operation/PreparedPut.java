@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 
-public class PreparedPut {
+public abstract class PreparedPut<T> implements Operation<T> {
 
     @NonNull protected final BambooStorage bambooStorage;
 

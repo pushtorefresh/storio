@@ -12,7 +12,7 @@ import com.pushtorefresh.android.bamboostorage.query.UpdateQueryBuilder;
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedPutWithObject<T> extends PreparedPut {
+public class PreparedPutWithObject<T> extends PreparedPut<SinglePutResult> {
 
     @NonNull private final T object;
     @NonNull private final MapFunc<T, ContentValues> mapFunc;
@@ -72,7 +72,7 @@ public class PreparedPutWithObject<T> extends PreparedPut {
     }
 
 
-    @NonNull public Observable<SinglePutResult> executeAsObservable() {
+    @NonNull public Observable<SinglePutResult> createObservable() {
         return Observable.create(new Observable.OnSubscribe<SinglePutResult>() {
             @Override
             public void call(Subscriber<? super SinglePutResult> subscriber) {

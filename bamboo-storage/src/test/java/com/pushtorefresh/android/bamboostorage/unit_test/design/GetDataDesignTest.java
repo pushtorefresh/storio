@@ -51,7 +51,7 @@ public class GetDataDesignTest {
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
                 .resultAsCursor()
-                .executeAsObservable();
+                .createObservable();
     }
 
     @Test public void getAsObservableObjects() {
@@ -63,6 +63,6 @@ public class GetDataDesignTest {
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
                 .resultAsObjects(User.MAP_FROM_CURSOR)
-                .executeAsObservable();
+                .createObservable();
     }
 }

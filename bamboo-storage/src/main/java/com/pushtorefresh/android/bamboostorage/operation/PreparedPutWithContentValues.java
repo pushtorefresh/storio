@@ -12,7 +12,7 @@ import com.pushtorefresh.android.bamboostorage.query.UpdateQuery;
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedPutWithContentValues extends PreparedPut {
+public class PreparedPutWithContentValues extends PreparedPut<Long> {
 
     @Nullable private final InsertQuery insertQuery;
     @Nullable private final UpdateQuery updateQuery;
@@ -32,17 +32,17 @@ public class PreparedPutWithContentValues extends PreparedPut {
         this.contentValues = contentValues;
     }
 
-    public long executeAsBlocking() {
+    @NonNull public Long executeAsBlocking() {
         if (insertQuery != null) {
             return bambooStorage.getInternal().insert(insertQuery, contentValues);
         } else if (updateQuery != null) {
-            return bambooStorage.getInternal().update(updateQuery, contentValues);
+            return (long) bambooStorage.getInternal().update(updateQuery, contentValues);
         } else {
             throw new PutException("Put can not be performed because no query is set, please specify InsertQuery or UpdateQuery");
         }
     }
 
-    @NonNull public Observable<Long> executeAsObservable() {
+    @NonNull public Observable<Long> createObservable() {
         return Observable.create(new Observable.OnSubscribe<Long>() {
             @Override public void call(Subscriber<? super Long> subscriber) {
                 long result = executeAsBlocking();
