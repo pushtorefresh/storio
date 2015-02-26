@@ -1,4 +1,4 @@
-package com.pushtorefresh.android.bamboostorage.operation;
+package com.pushtorefresh.android.bamboostorage.operation.put;
 
 import android.support.annotation.Nullable;
 

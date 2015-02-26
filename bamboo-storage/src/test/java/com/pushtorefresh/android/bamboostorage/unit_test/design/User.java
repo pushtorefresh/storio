@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
-import com.pushtorefresh.android.bamboostorage.operation.PutResolver;
+import com.pushtorefresh.android.bamboostorage.operation.put.PutResolver;
 
 public class User {
 

@@ -1,4 +1,4 @@
-package com.pushtorefresh.android.bamboostorage.operation;
+package com.pushtorefresh.android.bamboostorage.operation.put;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.exception.PutException;
+import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
 import com.pushtorefresh.android.bamboostorage.query.InsertQuery;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQuery;
 

@@ -3,7 +3,7 @@ package com.pushtorefresh.android.bamboostorage.unit_test.design;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
-import com.pushtorefresh.android.bamboostorage.operation.SinglePutResult;
+import com.pushtorefresh.android.bamboostorage.operation.put.SinglePutResult;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQueryBuilder;
 
 import org.junit.Test;

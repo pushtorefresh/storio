@@ -1,9 +1,10 @@
-package com.pushtorefresh.android.bamboostorage.operation;
+package com.pushtorefresh.android.bamboostorage.operation.put;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
 
 public abstract class PreparedPut<T> implements PreparedOperation<T> {
 

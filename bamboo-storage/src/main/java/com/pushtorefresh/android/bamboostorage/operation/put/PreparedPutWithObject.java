@@ -1,10 +1,12 @@
-package com.pushtorefresh.android.bamboostorage.operation;
+package com.pushtorefresh.android.bamboostorage.operation.put;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
+import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
 import com.pushtorefresh.android.bamboostorage.query.InsertQueryBuilder;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQuery;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQueryBuilder;
