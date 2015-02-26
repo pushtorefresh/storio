@@ -1,0 +1,25 @@
+apply plugin: 'android-sdk-manager'
+apply plugin: 'com.android.library'
+
+android {
+	compileSdkVersion 21
+	buildToolsVersion '21.1.2'
+
+    defaultConfig {
+        minSdkVersion 1
+    }
+}
+
+dependencies {
+    // @NonNull and @Nullable
+    provided 'com.android.support:support-annotations:21.0.3'
+
+    // Reactive Extensions for JVM
+    provided 'io.reactivex:rxjava:1.0.6'
+
+    // Unit testing
+    testCompile 'junit:junit:4.12'
+
+    // Mocking
+    testCompile 'org.mockito:mockito-core:1.10.19'
+}
