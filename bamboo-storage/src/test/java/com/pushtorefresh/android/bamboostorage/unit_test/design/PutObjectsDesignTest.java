@@ -31,7 +31,7 @@ public class PutObjectsDesignTest {
     @Test public void putObjectAsObservable() {
         User user = new User();
 
-        Observable<SinglePutResult> putResultObservable = bambooStorage()
+        Observable<SinglePutResult> observablePutResult = bambooStorage()
                 .put()
                 .object(user)
                 .mapFunc(User.MAP_TO_CONTENT_VALUES)
