@@ -4,14 +4,15 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
 import com.pushtorefresh.android.bamboostorage.query.Query;
 
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedGetWithResultAsCursor extends PreparedGet<Cursor> {
+public class PreparedGetAsCursor extends PreparedGet<Cursor> {
 
-    public PreparedGetWithResultAsCursor(@NonNull BambooStorage bambooStorage, @NonNull Query query) {
+    public PreparedGetAsCursor(@NonNull BambooStorage bambooStorage, @NonNull Query query) {
         super(bambooStorage, query);
     }
 
@@ -28,5 +29,25 @@ public class PreparedGetWithResultAsCursor extends PreparedGet<Cursor> {
                 }
             }
         });
+    }
+
+    public static class Builder {
+
+        @NonNull private final BambooStorage bambooStorage;
+
+        private Query query;
+
+        public Builder(@NonNull BambooStorage bambooStorage) {
+            this.bambooStorage = bambooStorage;
+        }
+
+        @NonNull public Builder query(@NonNull Query query) {
+            this.query = query;
+            return this;
+        }
+
+        @NonNull public PreparedOperation<Cursor> prepare() {
+            return new PreparedGetAsCursor(bambooStorage, query);
+        }
     }
 }
