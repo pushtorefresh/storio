@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.android.bamboostorage.operation.delete.PreparedDelete;
 import com.pushtorefresh.android.bamboostorage.operation.put.PreparedPut;
 import com.pushtorefresh.android.bamboostorage.operation.get.PreparedGet;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
@@ -16,6 +17,8 @@ public interface BambooStorage {
     @NonNull PreparedGet.Builder get();
 
     @NonNull PreparedPut.Builder put();
+
+    @NonNull PreparedDelete.Builder delete();
 
     @NonNull Internal getInternal();
 

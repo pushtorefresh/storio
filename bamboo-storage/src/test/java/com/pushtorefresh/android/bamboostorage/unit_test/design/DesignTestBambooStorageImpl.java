@@ -6,6 +6,7 @@ import android.database.MatrixCursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.operation.delete.PreparedDelete;
 import com.pushtorefresh.android.bamboostorage.operation.get.PreparedGet;
 import com.pushtorefresh.android.bamboostorage.operation.put.PreparedPut;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
@@ -23,6 +24,10 @@ public class DesignTestBambooStorageImpl implements BambooStorage {
 
     @NonNull @Override public PreparedPut.Builder put() {
         return new PreparedPut.Builder(this);
+    }
+
+    @NonNull @Override public PreparedDelete.Builder delete() {
+        return new PreparedDelete.Builder(this);
     }
 
     @NonNull @Override public Internal getInternal() {
