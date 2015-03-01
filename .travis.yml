@@ -22,3 +22,6 @@ before_script:
 
 script:
   - ./gradlew clean build connectedAndroidTest --info
+
+notifications:
+  email: false
