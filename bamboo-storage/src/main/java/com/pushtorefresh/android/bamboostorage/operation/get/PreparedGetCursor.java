@@ -41,7 +41,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
             this.bambooStorage = bambooStorage;
         }
 
-        @NonNull public Builder query(@NonNull Query query) {
+        @NonNull public Builder withQuery(@NonNull Query query) {
             this.query = query;
             return this;
         }
