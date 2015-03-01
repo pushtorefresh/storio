@@ -20,7 +20,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
         DeleteObjectResult<User> deleteResult = bambooStorage()
                 .delete()
                 .object(user)
-                .mapFunc(User.MAP_TO_DELETE_QUERY)
+                .withMapFunc(User.MAP_TO_DELETE_QUERY)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -31,7 +31,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
         Observable<DeleteObjectResult<User>> deleteResultObservable = bambooStorage()
                 .delete()
                 .object(user)
-                .mapFunc(User.MAP_TO_DELETE_QUERY)
+                .withMapFunc(User.MAP_TO_DELETE_QUERY)
                 .prepare()
                 .createObservable();
     }
@@ -42,7 +42,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
         DeleteCollectionOfObjectsResult<User> deleteResult = bambooStorage()
                 .delete()
                 .objects(users)
-                .mapFunc(User.MAP_TO_DELETE_QUERY)
+                .withMapFunc(User.MAP_TO_DELETE_QUERY)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -53,7 +53,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
         Observable<DeleteCollectionOfObjectsResult<User>> deleteResultObservable = bambooStorage()
                 .delete()
                 .objects(users)
-                .mapFunc(User.MAP_TO_DELETE_QUERY)
+                .withMapFunc(User.MAP_TO_DELETE_QUERY)
                 .prepare()
                 .createObservable();
     }
