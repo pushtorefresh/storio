@@ -1,9 +1,7 @@
 package com.pushtorefresh.android.bamboostorage.unit_test.design;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.query.QueryBuilder;
 
 import org.junit.Test;
@@ -12,11 +10,7 @@ import java.util.List;
 
 import rx.Observable;
 
-public class GetDataDesignTest {
-
-    @NonNull private BambooStorage bambooStorage() {
-        return new DesignTestBambooStorageImpl();
-    }
+public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test public void getAsCursor() {
         Cursor cursor = bambooStorage()
