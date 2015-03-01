@@ -12,10 +12,10 @@ import rx.Observable;
 
 public class GetOperationDesignTest extends OperationDesignTest {
 
-    @Test public void getAsCursor() {
+    @Test public void getCursorBlocking() {
         Cursor cursor = bambooStorage()
                 .get()
-                .asCursor()
+                .cursor()
                 .query(new QueryBuilder()
                         .table("users")
                         .where("email = ?")
@@ -25,10 +25,10 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void getAsObjects() {
+    @Test public void getListOfObjectsBlocking() {
         List<User> users = bambooStorage()
                 .get()
-                .asListOfObjects(User.class)
+                .listOfObjects(User.class)
                 .mapFunc(User.MAP_FROM_CURSOR)
                 .query(new QueryBuilder()
                         .table("users")
@@ -39,10 +39,10 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void getAsObservableCursor() {
+    @Test public void getCursorObservable() {
         Observable<Cursor> observableCursor = bambooStorage()
                 .get()
-                .asCursor()
+                .cursor()
                 .query(new QueryBuilder()
                         .table("users")
                         .whereArgs("email = ?")
@@ -52,10 +52,10 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void getAsObservableObjects() {
+    @Test public void getListOfObjectsObservable() {
         Observable<List<User>> observableUsers = bambooStorage()
                 .get()
-                .asListOfObjects(User.class)
+                .listOfObjects(User.class)
                 .mapFunc(User.MAP_FROM_CURSOR)
                 .query(new QueryBuilder()
                         .table("users")

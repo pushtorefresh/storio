@@ -24,12 +24,12 @@ public abstract class PreparedGet<T> implements PreparedOperation<T> {
             this.bambooStorage = bambooStorage;
         }
 
-        @NonNull public PreparedGetAsCursor.Builder asCursor() {
-            return new PreparedGetAsCursor.Builder(bambooStorage);
+        @NonNull public PreparedGetCursor.Builder cursor() {
+            return new PreparedGetCursor.Builder(bambooStorage);
         }
 
-        @NonNull public <T> PreparedGetAsListOfObjects.Builder<T> asListOfObjects(@NonNull Class<T> type) {
-            return new PreparedGetAsListOfObjects.Builder<>(bambooStorage, type);
+        @NonNull public <T> PreparedGetListOfObjects.Builder<T> listOfObjects(@NonNull Class<T> type) {
+            return new PreparedGetListOfObjects.Builder<>(bambooStorage, type);
         }
     }
 

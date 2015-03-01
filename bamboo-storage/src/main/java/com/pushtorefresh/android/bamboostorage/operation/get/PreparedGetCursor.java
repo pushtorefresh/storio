@@ -10,9 +10,9 @@ import com.pushtorefresh.android.bamboostorage.query.Query;
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedGetAsCursor extends PreparedGet<Cursor> {
+public class PreparedGetCursor extends PreparedGet<Cursor> {
 
-    public PreparedGetAsCursor(@NonNull BambooStorage bambooStorage, @NonNull Query query) {
+    public PreparedGetCursor(@NonNull BambooStorage bambooStorage, @NonNull Query query) {
         super(bambooStorage, query);
     }
 
@@ -47,7 +47,7 @@ public class PreparedGetAsCursor extends PreparedGet<Cursor> {
         }
 
         @NonNull public PreparedOperation<Cursor> prepare() {
-            return new PreparedGetAsCursor(bambooStorage, query);
+            return new PreparedGetCursor(bambooStorage, query);
         }
     }
 }
