@@ -22,7 +22,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteObjectResult<T
 
     @NonNull @Override public DeleteObjectResult<T> executeAsBlocking() {
         final DeleteQuery deleteQuery = mapFunc.map(object);
-        final int countOfDeletedRows = bambooStorage.getInternal().delete(deleteQuery);
+        final int countOfDeletedRows = bambooStorage.internal().delete(deleteQuery);
         return new DeleteObjectResult<>(object, deleteQuery, countOfDeletedRows);
     }
 

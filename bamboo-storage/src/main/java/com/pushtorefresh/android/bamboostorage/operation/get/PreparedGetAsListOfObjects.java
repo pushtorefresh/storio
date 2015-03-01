@@ -25,7 +25,7 @@ public class PreparedGetAsListOfObjects<T> extends PreparedGet<List<T>> {
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources") // Min SDK :(
     @NonNull public List<T> executeAsBlocking() {
-        final Cursor cursor = bambooStorage.getInternal().query(query);
+        final Cursor cursor = bambooStorage.internal().query(query);
 
         try {
             final List<T> list = new ArrayList<>(cursor.getCount());
