@@ -2,7 +2,7 @@ package com.pushtorefresh.android.bamboostorage.unit_test.design;
 
 import android.content.ContentValues;
 
-import com.pushtorefresh.android.bamboostorage.operation.put.SinglePutResult;
+import com.pushtorefresh.android.bamboostorage.operation.put.PutResult;
 import com.pushtorefresh.android.bamboostorage.query.InsertQueryBuilder;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQueryBuilder;
 
@@ -13,41 +13,37 @@ import rx.Observable;
 public class PutOperationDesignTest extends OperationDesignTest {
 
     @Test public void putObjectBlocking() {
-        User user = new User();
+        User user = newUser();
 
-        SinglePutResult putResult = bambooStorage()
+        PutResult putResult = bambooStorage()
                 .put()
                 .object(user)
+                .into(User.TABLE)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .putResolver(User.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
 
     @Test public void putObjectAsObservable() {
-        User user = new User();
+        User user = newUser();
 
-        Observable<SinglePutResult> observablePutResult = bambooStorage()
+        Observable<PutResult> observablePutResult = bambooStorage()
                 .put()
                 .object(user)
+                .into(User.TABLE)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .putResolver(User.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
 
     @Test public void updateByQueryBlocking() {
-        User user = new User();
+        User user = newUser();
 
-        SinglePutResult putResult = bambooStorage()
+        PutResult putResult = bambooStorage()
                 .put()
                 .object(user)
+                .into(User.TABLE)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .updateQuery(new UpdateQueryBuilder()
-                        .table("users")
-                        .where("email = ?")
-                        .whereArgs(user.getEmail())
-                        .build())
                 .prepare()
                 .executeAsBlocking();
     }
