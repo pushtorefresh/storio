@@ -18,7 +18,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteByQueryResult> {
     }
 
     @NonNull @Override public DeleteByQueryResult executeAsBlocking() {
-        int countOfDeletedRows = bambooStorage.getInternal().delete(deleteQuery);
+        int countOfDeletedRows = bambooStorage.internal().delete(deleteQuery);
         return new DeleteByQueryResult(deleteQuery, countOfDeletedRows);
     }
 

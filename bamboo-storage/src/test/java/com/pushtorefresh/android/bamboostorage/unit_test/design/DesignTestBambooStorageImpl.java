@@ -18,6 +18,26 @@ import static org.mockito.Mockito.mock;
 
 public class DesignTestBambooStorageImpl implements BambooStorage {
 
+    @NonNull private final Internal internal = new Internal() {
+        @NonNull @Override public Cursor query(@NonNull Query query) {
+            return mock(MatrixCursor.class);
+        }
+
+        @Override
+        public long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
+            return 0;
+        }
+
+        @Override
+        public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
+            return 0;
+        }
+
+        @Override public int delete(@NonNull DeleteQuery deleteQuery) {
+            return 0;
+        }
+    };
+
     @NonNull @Override public PreparedGet.Builder get() {
         return new PreparedGet.Builder(this);
     }
@@ -30,25 +50,7 @@ public class DesignTestBambooStorageImpl implements BambooStorage {
         return new PreparedDelete.Builder(this);
     }
 
-    @NonNull @Override public Internal getInternal() {
-        return new Internal() {
-            @NonNull @Override public Cursor query(@NonNull Query query) {
-                return mock(MatrixCursor.class);
-            }
-
-            @Override
-            public long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
-                return 0;
-            }
-
-            @Override
-            public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
-                return 0;
-            }
-
-            @Override public int delete(@NonNull DeleteQuery deleteQuery) {
-                return 0;
-            }
-        };
+    @NonNull @Override public Internal internal() {
+        return internal;
     }
 }

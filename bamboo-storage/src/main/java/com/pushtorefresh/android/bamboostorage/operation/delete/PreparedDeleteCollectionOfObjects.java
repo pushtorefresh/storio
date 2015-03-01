@@ -25,7 +25,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
     }
 
     @NonNull @Override public DeleteCollectionOfObjectsResult<T> executeAsBlocking() {
-        BambooStorage.Internal bambooStorageInternal = bambooStorage.getInternal();
+        BambooStorage.Internal bambooStorageInternal = bambooStorage.internal();
 
         Map<T, DeleteByQueryResult> results = new HashMap<>();
 

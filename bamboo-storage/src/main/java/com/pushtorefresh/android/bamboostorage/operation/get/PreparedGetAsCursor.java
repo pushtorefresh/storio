@@ -17,7 +17,7 @@ public class PreparedGetAsCursor extends PreparedGet<Cursor> {
     }
 
     @NonNull public Cursor executeAsBlocking() {
-        return bambooStorage.getInternal().query(query);
+        return bambooStorage.internal().query(query);
     }
 
     @NonNull @Override public Observable<Cursor> createObservable() {

@@ -20,7 +20,7 @@ public interface BambooStorage {
 
     @NonNull PreparedDelete.Builder delete();
 
-    @NonNull Internal getInternal();
+    @NonNull Internal internal();
 
     interface Internal {
         @NonNull Cursor query(@NonNull Query query);
