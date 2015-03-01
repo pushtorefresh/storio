@@ -14,11 +14,11 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedGetAsListOfObjects<T> extends PreparedGet<List<T>> {
+public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     @NonNull private final MapFunc<Cursor, T> mapFunc;
 
-    PreparedGetAsListOfObjects(@NonNull BambooStorage bambooStorage, @NonNull Query query, @NonNull MapFunc<Cursor, T> mapFunc) {
+    PreparedGetListOfObjects(@NonNull BambooStorage bambooStorage, @NonNull Query query, @NonNull MapFunc<Cursor, T> mapFunc) {
         super(bambooStorage, query);
         this.mapFunc = mapFunc;
     }
@@ -75,7 +75,7 @@ public class PreparedGetAsListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         @NonNull public PreparedOperation<List<T>> prepare() {
-            return new PreparedGetAsListOfObjects<>(bambooStorage, query, mapFunc);
+            return new PreparedGetListOfObjects<>(bambooStorage, query, mapFunc);
         }
     }
 }
