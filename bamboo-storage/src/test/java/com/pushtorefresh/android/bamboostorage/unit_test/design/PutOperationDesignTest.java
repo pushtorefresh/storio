@@ -18,7 +18,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         SinglePutResult putResult = bambooStorage()
                 .put()
                 .object(user)
-                .mapFunc(User.MAP_TO_CONTENT_VALUES)
+                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
                 .putResolver(User.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
@@ -30,7 +30,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<SinglePutResult> observablePutResult = bambooStorage()
                 .put()
                 .object(user)
-                .mapFunc(User.MAP_TO_CONTENT_VALUES)
+                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
                 .putResolver(User.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
@@ -42,7 +42,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         SinglePutResult putResult = bambooStorage()
                 .put()
                 .object(user)
-                .mapFunc(User.MAP_TO_CONTENT_VALUES)
+                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
                 .updateQuery(new UpdateQueryBuilder()
                         .table("users")
                         .where("email = ?")

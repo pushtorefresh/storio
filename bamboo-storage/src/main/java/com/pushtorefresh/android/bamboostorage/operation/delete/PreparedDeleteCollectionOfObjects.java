@@ -66,7 +66,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
             this.objects = objects;
         }
 
-        @NonNull public Builder<T> mapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
+        @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }

@@ -64,12 +64,12 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             this.type = type;
         }
 
-        @NonNull public Builder<T> mapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
+        @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
 
-        @NonNull public Builder<T> query(@NonNull Query query) {
+        @NonNull public Builder<T> withQuery(@NonNull Query query) {
             this.query = query;
             return this;
         }

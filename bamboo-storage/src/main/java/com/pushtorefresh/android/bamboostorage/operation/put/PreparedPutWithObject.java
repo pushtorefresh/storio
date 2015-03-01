@@ -102,7 +102,7 @@ public class PreparedPutWithObject<T> extends PreparedPut<SinglePutResult> {
             this.object = object;
         }
 
-        @NonNull public Builder<T> mapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
+        @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
