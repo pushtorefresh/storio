@@ -10,6 +10,8 @@ import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQueryBuilder;
 
+import static org.mockito.Mockito.mock;
+
 public class User {
 
     public  static final String TABLE = "users";
@@ -27,12 +29,7 @@ public class User {
 
     public static final MapFunc<User, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<User, ContentValues>() {
         @Override public ContentValues map(User user) {
-            final ContentValues contentValues = new ContentValues(2);
-
-            contentValues.put(COLUMN_ID, user.id);
-            contentValues.put(COLUMN_EMAIL, user.email);
-
-            return contentValues;
+            return mock(ContentValues.class); // you should fill it with real data
         }
     };
 

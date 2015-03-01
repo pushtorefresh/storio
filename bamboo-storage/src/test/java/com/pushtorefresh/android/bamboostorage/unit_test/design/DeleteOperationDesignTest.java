@@ -15,7 +15,7 @@ import rx.Observable;
 public class DeleteOperationDesignTest extends OperationDesignTest {
 
     @Test public void deleteObjectBlocking() {
-        User user = new User(internalId, email);
+        User user = newUser();
 
         DeleteObjectResult<User> deleteResult = bambooStorage()
                 .delete()
@@ -26,7 +26,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void deleteObjectObservable() {
-        User user = new User(internalId, email);
+        User user = newUser();
 
         Observable<DeleteObjectResult<User>> deleteResultObservable = bambooStorage()
                 .delete()
