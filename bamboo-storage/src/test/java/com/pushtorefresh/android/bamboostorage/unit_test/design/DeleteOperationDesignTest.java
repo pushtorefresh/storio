@@ -1,8 +1,5 @@
 package com.pushtorefresh.android.bamboostorage.unit_test.design;
 
-import android.support.annotation.NonNull;
-
-import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.delete.DeleteByQueryResult;
 import com.pushtorefresh.android.bamboostorage.operation.delete.DeleteCollectionOfObjectsResult;
 import com.pushtorefresh.android.bamboostorage.operation.delete.DeleteObjectResult;
@@ -15,11 +12,7 @@ import java.util.List;
 
 import rx.Observable;
 
-public class DeleteOperationDesignTest {
-
-    @NonNull private BambooStorage bambooStorage() {
-        return new DesignTestBambooStorageImpl();
-    }
+public class DeleteOperationDesignTest extends OperationDesignTest {
 
     @Test public void deleteObjectBlocking() {
         User user = new User();
