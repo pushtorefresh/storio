@@ -35,9 +35,9 @@ public class PreparedPutWithContentValues extends PreparedPut<Long> {
 
     @NonNull public Long executeAsBlocking() {
         if (insertQuery != null) {
-            return bambooStorage.getInternal().insert(insertQuery, contentValues);
+            return bambooStorage.internal().insert(insertQuery, contentValues);
         } else if (updateQuery != null) {
-            return (long) bambooStorage.getInternal().update(updateQuery, contentValues);
+            return (long) bambooStorage.internal().update(updateQuery, contentValues);
         } else {
             throw new PutException("Put can not be performed because no query is set, please specify InsertQuery or UpdateQuery");
         }

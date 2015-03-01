@@ -41,7 +41,7 @@ public class PreparedPutWithObject<T> extends PreparedPut<SinglePutResult> {
 
     @NonNull private SinglePutResult executeUpdateQuery() {
         //noinspection ConstantConditions
-        int updatedRowsCount = bambooStorage.getInternal().update(updateQuery, mapFunc.map(object));
+        int updatedRowsCount = bambooStorage.internal().update(updateQuery, mapFunc.map(object));
         return new SinglePutResult(null, updatedRowsCount);
     }
 
@@ -49,7 +49,7 @@ public class PreparedPutWithObject<T> extends PreparedPut<SinglePutResult> {
         Long internalId = putResolver.getInternalIdValue(object);
 
         if (internalId == null) {
-            long insertedRowId = bambooStorage.getInternal()
+            long insertedRowId = bambooStorage.internal()
                     .insert(new InsertQueryBuilder()
                                     .table(putResolver.getTableName(object))
                                     .build(),
@@ -60,7 +60,7 @@ public class PreparedPutWithObject<T> extends PreparedPut<SinglePutResult> {
 
             return new SinglePutResult(insertedRowId, null);
         } else {
-            int updatedRowsCount = bambooStorage.getInternal()
+            int updatedRowsCount = bambooStorage.internal()
                     .update(new UpdateQueryBuilder()
                                     .table(putResolver.getTableName(object))
                                     .where(putResolver.getInternalIdColumnName(object) + " = ?")

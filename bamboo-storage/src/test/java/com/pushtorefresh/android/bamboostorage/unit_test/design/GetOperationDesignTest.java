@@ -1,9 +1,7 @@
 package com.pushtorefresh.android.bamboostorage.unit_test.design;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.query.QueryBuilder;
 
 import org.junit.Test;
@@ -12,57 +10,59 @@ import java.util.List;
 
 import rx.Observable;
 
-public class GetDataDesignTest {
+public class GetOperationDesignTest extends OperationDesignTest {
 
-    @NonNull private BambooStorage bambooStorage() {
-        return new DesignTestBambooStorageImpl();
-    }
-
-    @Test public void getAsCursor() {
+    @Test public void getCursorBlocking() {
         Cursor cursor = bambooStorage()
                 .get()
+                .cursor()
                 .query(new QueryBuilder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
-                .resultAsCursor()
+                .prepare()
                 .executeAsBlocking();
     }
 
-    @Test public void getAsObjects() {
+    @Test public void getListOfObjectsBlocking() {
         List<User> users = bambooStorage()
                 .get()
+                .listOfObjects(User.class)
+                .mapFunc(User.MAP_FROM_CURSOR)
                 .query(new QueryBuilder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
-                .resultAsObjects(User.MAP_FROM_CURSOR)
+                .prepare()
                 .executeAsBlocking();
     }
 
-    @Test public void getAsObservableCursor() {
+    @Test public void getCursorObservable() {
         Observable<Cursor> observableCursor = bambooStorage()
                 .get()
+                .cursor()
                 .query(new QueryBuilder()
                         .table("users")
                         .whereArgs("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
-                .resultAsCursor()
+                .prepare()
                 .createObservable();
     }
 
-    @Test public void getAsObservableObjects() {
+    @Test public void getListOfObjectsObservable() {
         Observable<List<User>> observableUsers = bambooStorage()
                 .get()
+                .listOfObjects(User.class)
+                .mapFunc(User.MAP_FROM_CURSOR)
                 .query(new QueryBuilder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
-                .resultAsObjects(User.MAP_FROM_CURSOR)
+                .prepare()
                 .createObservable();
     }
 }

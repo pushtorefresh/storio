@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.operation.put.PutResolver;
+import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
+import com.pushtorefresh.android.bamboostorage.query.DeleteQueryBuilder;
 
 public class User {
 
@@ -40,6 +42,16 @@ public class User {
 
         @Override public void setInternalId(@NonNull User user, long id) {
             user.internalId = id;
+        }
+    };
+
+    public static final MapFunc<User, DeleteQuery> MAP_TO_DELETE_QUERY = new MapFunc<User, DeleteQuery>() {
+        @Override public DeleteQuery map(User user) {
+            return new DeleteQueryBuilder()
+                    .table("users")
+                    .where("_id = ?")
+                    .whereArgs(String.valueOf(user.internalId))
+                    .build();
         }
     };
 
