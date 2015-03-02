@@ -2,13 +2,13 @@ package com.pushtorefresh.android.bamboostorage.operation.put;
 
 import android.support.annotation.Nullable;
 
-public class SinglePutResult {
+public class PutResult {
     @Nullable private final Long insertedId;
-    @Nullable private final Integer updatedRowsCount;
+    @Nullable private final Integer numberOfUpdatedRows;
 
-    SinglePutResult(@Nullable Long insertedId, @Nullable Integer updatedRowsCount) {
+    PutResult(@Nullable Long insertedId, @Nullable Integer numberOfUpdatedRows) {
         this.insertedId = insertedId;
-        this.updatedRowsCount = updatedRowsCount;
+        this.numberOfUpdatedRows = numberOfUpdatedRows;
     }
 
     public boolean wasInserted() {
@@ -16,14 +16,14 @@ public class SinglePutResult {
     }
 
     public boolean wasUpdated() {
-        return updatedRowsCount != null;
+        return numberOfUpdatedRows != null;
     }
 
     @Nullable public Long getInsertedId() {
         return insertedId;
     }
 
-    @Nullable public Integer getUpdatedRowsCount() {
-        return updatedRowsCount;
+    @Nullable public Integer getNumberOfUpdatedRows() {
+        return numberOfUpdatedRows;
     }
 }
