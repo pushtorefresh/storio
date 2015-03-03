@@ -1,59 +1,27 @@
 package com.pushtorefresh.android.bamboostorage.operation.put;
 
 import android.content.ContentValues;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
-import com.pushtorefresh.android.bamboostorage.query.InsertQueryBuilder;
-import com.pushtorefresh.android.bamboostorage.query.UpdateQueryBuilder;
 
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedPutWithObject<T> extends PreparedPut<PutResult> {
+public class PreparedPutWithObject<T> extends BasePreparedPutWithObject<PutResult, T> {
 
     @NonNull private final T object;
-    @NonNull private final String table;
-    @NonNull private final MapFunc<T, ContentValues> mapFunc;
 
     PreparedPutWithObject(@NonNull BambooStorage bambooStorage, @NonNull T object,
                           @NonNull String table, @NonNull MapFunc<T, ContentValues> mapFunc) {
-        super(bambooStorage);
+        super(bambooStorage, table, mapFunc);
         this.object = object;
-        this.table = table;
-        this.mapFunc = mapFunc;
     }
 
     @NonNull public PutResult executeAsBlocking() {
-        final ContentValues contentValues = mapFunc.map(object);
-
-        final Long id = contentValues.getAsLong(BaseColumns._ID);
-
-        if (id == null) {
-            final long insertedId = bambooStorage.internal().insert(
-                    new InsertQueryBuilder()
-                            .table(table)
-                            .nullColumnHack(null)
-                            .build(),
-                    contentValues
-            );
-
-            return new PutResult(insertedId, null);
-        } else {
-            int numberOfUpdatedRows = bambooStorage.internal().update(
-                    new UpdateQueryBuilder()
-                            .table(table)
-                            .where(BaseColumns._ID + "=?")
-                            .whereArgs(String.valueOf(id))
-                            .build(),
-                    contentValues
-            );
-
-            return new PutResult(null, numberOfUpdatedRows);
-        }
+        return executeAutoPut(object);
     }
 
     @NonNull public Observable<PutResult> createObservable() {
