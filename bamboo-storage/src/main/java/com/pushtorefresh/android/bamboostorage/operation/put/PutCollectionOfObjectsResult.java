@@ -5,11 +5,11 @@ import android.support.annotation.NonNull;
 import java.util.Collections;
 import java.util.Map;
 
-public class PutCollectionOfObjectResult<T> {
+public class PutCollectionOfObjectsResult<T> {
 
     @NonNull private final Map<T, PutResult> results;
 
-    public PutCollectionOfObjectResult(@NonNull Map<T, PutResult> results) {
+    public PutCollectionOfObjectsResult(@NonNull Map<T, PutResult> results) {
         this.results = Collections.unmodifiableMap(results);
     }
 

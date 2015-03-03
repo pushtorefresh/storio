@@ -10,18 +10,22 @@ import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedPutWithObject<T> extends BasePreparedPutWithObject<PutResult, T> {
+public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
 
     @NonNull private final T object;
+    @NonNull private final MapFunc<T, ContentValues> mapFunc;
 
-    PreparedPutWithObject(@NonNull BambooStorage bambooStorage, @NonNull T object,
-                          @NonNull String table, @NonNull MapFunc<T, ContentValues> mapFunc) {
-        super(bambooStorage, table, mapFunc);
+    PreparedPutWithObject(@NonNull BambooStorage bambooStorage, @NonNull PutResolver<T> putResolver,
+                          @NonNull T object, @NonNull MapFunc<T, ContentValues> mapFunc) {
+        super(bambooStorage, putResolver);
         this.object = object;
+        this.mapFunc = mapFunc;
     }
 
     @NonNull public PutResult executeAsBlocking() {
-        return executeAutoPut(object);
+        final PutResult putResult = putResolver.performPut(bambooStorage, mapFunc.map(object));
+        putResolver.afterPut(object, putResult);
+        return putResult;
     }
 
     @NonNull public Observable<PutResult> createObservable() {
@@ -43,17 +47,12 @@ public class PreparedPutWithObject<T> extends BasePreparedPutWithObject<PutResul
         @NonNull private final BambooStorage bambooStorage;
         @NonNull private final T object;
 
-        private String table;
         private MapFunc<T, ContentValues> mapFunc;
+        private PutResolver<T> putResolver;
 
         public Builder(@NonNull BambooStorage bambooStorage, @NonNull T object) {
             this.bambooStorage = bambooStorage;
             this.object = object;
-        }
-
-        @NonNull public Builder<T> into(@NonNull String table) {
-            this.table = table;
-            return this;
         }
 
         @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
@@ -61,11 +60,17 @@ public class PreparedPutWithObject<T> extends BasePreparedPutWithObject<PutResul
             return this;
         }
 
+        @NonNull public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
+            this.putResolver = putResolver;
+            return this;
+        }
+
         @NonNull public PreparedOperation<PutResult> prepare() {
             return new PreparedPutWithObject<>(
                     bambooStorage,
+                    putResolver,
                     object,
-                    table, mapFunc
+                    mapFunc
             );
         }
     }

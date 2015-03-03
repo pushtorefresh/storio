@@ -8,12 +8,14 @@ import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
 
 import java.util.Collection;
 
-public abstract class PreparedPut<T> implements PreparedOperation<T> {
+public abstract class PreparedPut<T, Result> implements PreparedOperation<Result> {
 
     @NonNull protected final BambooStorage bambooStorage;
+    @NonNull protected final PutResolver<T> putResolver;
 
-    public PreparedPut(@NonNull BambooStorage bambooStorage) {
+    public PreparedPut(@NonNull BambooStorage bambooStorage, @NonNull PutResolver<T> putResolver) {
         this.bambooStorage = bambooStorage;
+        this.putResolver = putResolver;
     }
 
     public static class Builder {

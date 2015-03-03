@@ -7,6 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
+import com.pushtorefresh.android.bamboostorage.operation.put.DefaultPutResolver;
+import com.pushtorefresh.android.bamboostorage.operation.put.PutResolver;
+import com.pushtorefresh.android.bamboostorage.operation.put.PutResult;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQueryBuilder;
 
@@ -43,7 +46,30 @@ public class User {
         }
     };
 
-    private final Long id;
+    public static final PutResolver<User> PUT_RESOLVER = new DefaultPutResolver<User>() {
+        @NonNull @Override protected String getTable() {
+            return TABLE;
+        }
+
+        @Override public void afterPut(@NonNull User object, @NonNull PutResult putResult) {
+            if (putResult.wasInserted()) {
+                object.id = putResult.getInsertedId(); // setting id after insert
+            }
+        }
+    };
+
+    public static final PutResolver<ContentValues> PUT_RESOLVER_FOR_CONTENT_VALUES = new DefaultPutResolver<ContentValues>() {
+        @NonNull @Override protected String getTable() {
+            return TABLE;
+        }
+
+        @Override
+        public void afterPut(@NonNull ContentValues object, @NonNull PutResult putResult) {
+            // do nothing
+        }
+    };
+
+    private Long id;
     private final String email;
 
     public User(@Nullable Long id, @NonNull String email) {
