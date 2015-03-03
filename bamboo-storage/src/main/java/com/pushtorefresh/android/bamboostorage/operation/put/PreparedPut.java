@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
 
+import java.util.Collection;
+
 public abstract class PreparedPut<T> implements PreparedOperation<T> {
 
     @NonNull protected final BambooStorage bambooStorage;
@@ -28,6 +30,10 @@ public abstract class PreparedPut<T> implements PreparedOperation<T> {
 
         @NonNull public <T> PreparedPutWithObject.Builder<T> object(T object) {
             return new PreparedPutWithObject.Builder<>(bambooStorage, object);
+        }
+
+        @NonNull public <T> PreparedPutCollectionOfObjects.Builder<T> objects(@NonNull Collection<T> objects) {
+            return new PreparedPutCollectionOfObjects.Builder<>(bambooStorage, objects);
         }
     }
 }
