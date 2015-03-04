@@ -30,6 +30,14 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
             return new PreparedPutWithContentValues.Builder(bambooStorage, contentValues);
         }
 
+        @NonNull public PreparedPutIterableContentValues.Builder contentValues(@NonNull Iterable<ContentValues> contentValuesIterable) {
+            return new PreparedPutIterableContentValues.Builder(bambooStorage, contentValuesIterable);
+        }
+
+        @NonNull public PreparedPutArrayContentValues.Builder contentValues(@NonNull ContentValues... contentValuesArray) {
+            return new PreparedPutArrayContentValues.Builder(bambooStorage, contentValuesArray);
+        }
+
         @NonNull public <T> PreparedPutWithObject.Builder<T> object(T object) {
             return new PreparedPutWithObject.Builder<>(bambooStorage, object);
         }
