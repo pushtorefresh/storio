@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import rx.Observable;
 
@@ -39,8 +38,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void putCollectionOfObjectsBlocking() {
-        List<User> users = new ArrayList<>();
+    @Test public void putObjectsIterableBlocking() {
+        Iterable<User> users = new ArrayList<>();
 
         PutCollectionResult<User> putResult = bambooStorage()
                 .put()
@@ -51,8 +50,32 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void putCollectionOfObjectsObservable() {
-        List<User> users = new ArrayList<>();
+    @Test public void putObjectsIterableObservable() {
+        Iterable<User> users = new ArrayList<>();
+
+        Observable<PutCollectionResult<User>> putResultObservable = bambooStorage()
+                .put()
+                .objects(users)
+                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(User.PUT_RESOLVER)
+                .prepare()
+                .createObservable();
+    }
+
+    @Test public void putObjectsArrayBlocking() {
+        User[] users = new User[]{};
+
+        PutCollectionResult<User> putResult = bambooStorage()
+                .put()
+                .objects(users)
+                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(User.PUT_RESOLVER)
+                .prepare()
+                .executeAsBlocking();
+    }
+
+    @Test public void putObjectsArrayObservable() {
+        User[] users = new User[]{};
 
         Observable<PutCollectionResult<User>> putResultObservable = bambooStorage()
                 .put()
