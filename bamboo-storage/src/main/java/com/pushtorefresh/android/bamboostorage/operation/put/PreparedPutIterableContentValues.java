@@ -13,7 +13,7 @@ import rx.Subscriber;
 
 public class PreparedPutIterableContentValues extends PreparedPut<ContentValues, PutCollectionResult<ContentValues>> {
 
-    @NonNull private final Iterable<ContentValues> mContentValuesIterable;
+    @NonNull private final Iterable<ContentValues> contentValuesIterable;
 
     private PreparedPutIterableContentValues(
             @NonNull BambooStorage bambooStorage,
@@ -21,13 +21,13 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
             @NonNull Iterable<ContentValues> contentValuesIterable) {
 
         super(bambooStorage, putResolver);
-        this.mContentValuesIterable = contentValuesIterable;
+        this.contentValuesIterable = contentValuesIterable;
     }
 
     @NonNull @Override public PutCollectionResult<ContentValues> executeAsBlocking() {
         final Map<ContentValues, PutResult> putResultsMap = new HashMap<>();
 
-        for (ContentValues contentValues : mContentValuesIterable) {
+        for (ContentValues contentValues : contentValuesIterable) {
             final PutResult putResult = putResolver.performPut(bambooStorage, contentValues);
             putResultsMap.put(contentValues, putResult);
             putResolver.afterPut(contentValues, putResult);
@@ -54,13 +54,13 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     public static class Builder {
 
         @NonNull private final BambooStorage bambooStorage;
-        @NonNull private final Iterable<ContentValues> mContentValuesIterable;
+        @NonNull private final Iterable<ContentValues> contentValuesIterable;
 
         private PutResolver<ContentValues> putResolver;
 
         public Builder(@NonNull BambooStorage bambooStorage, @NonNull Iterable<ContentValues> contentValuesIterable) {
             this.bambooStorage = bambooStorage;
-            this.mContentValuesIterable = contentValuesIterable;
+            this.contentValuesIterable = contentValuesIterable;
         }
 
         @NonNull public Builder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
@@ -72,7 +72,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
             return new PreparedPutIterableContentValues(
                     bambooStorage,
                     putResolver,
-                    mContentValuesIterable
+                    contentValuesIterable
             );
         }
     }

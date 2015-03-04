@@ -13,7 +13,7 @@ import rx.Subscriber;
 
 public class PreparedPutArrayContentValues extends PreparedPut<ContentValues, PutCollectionResult<ContentValues>> {
 
-    @NonNull private final ContentValues[] mContentValuesArray;
+    @NonNull private final ContentValues[] contentValuesArray;
 
     private PreparedPutArrayContentValues(
             @NonNull BambooStorage bambooStorage,
@@ -21,13 +21,13 @@ public class PreparedPutArrayContentValues extends PreparedPut<ContentValues, Pu
             @NonNull ContentValues[] contentValuesArray) {
 
         super(bambooStorage, putResolver);
-        this.mContentValuesArray = contentValuesArray;
+        this.contentValuesArray = contentValuesArray;
     }
 
     @NonNull @Override public PutCollectionResult<ContentValues> executeAsBlocking() {
         final Map<ContentValues, PutResult> putResultsMap = new HashMap<>();
 
-        for (ContentValues contentValues : mContentValuesArray) {
+        for (ContentValues contentValues : contentValuesArray) {
             final PutResult putResult = putResolver.performPut(bambooStorage, contentValues);
             putResultsMap.put(contentValues, putResult);
             putResolver.afterPut(contentValues, putResult);
@@ -54,13 +54,13 @@ public class PreparedPutArrayContentValues extends PreparedPut<ContentValues, Pu
     public static class Builder {
 
         @NonNull private final BambooStorage bambooStorage;
-        @NonNull private final ContentValues[] mContentValuesIterable;
+        @NonNull private final ContentValues[] contentValuesIterable;
 
         private PutResolver<ContentValues> putResolver;
 
         public Builder(@NonNull BambooStorage bambooStorage, @NonNull ContentValues... contentValuesIterable) {
             this.bambooStorage = bambooStorage;
-            this.mContentValuesIterable = contentValuesIterable;
+            this.contentValuesIterable = contentValuesIterable;
         }
 
         @NonNull public Builder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
@@ -72,7 +72,7 @@ public class PreparedPutArrayContentValues extends PreparedPut<ContentValues, Pu
             return new PreparedPutArrayContentValues(
                     bambooStorage,
                     putResolver,
-                    mContentValuesIterable
+                    contentValuesIterable
             );
         }
     }
