@@ -6,22 +6,21 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedPutCollectionOfObjects<T> extends PreparedPut<T, PutCollectionResult<T>> {
+public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>> {
 
-    @NonNull private final Collection<T> objects;
+    @NonNull private final Iterable<T> objects;
     @NonNull private final MapFunc<T, ContentValues> mapFunc;
 
 
-    public PreparedPutCollectionOfObjects(@NonNull BambooStorage bambooStorage,
-                                          @NonNull PutResolver<T> putResolver,
-                                          @NonNull Collection<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc) {
+    public PreparedPutObjects(@NonNull BambooStorage bambooStorage,
+                              @NonNull PutResolver<T> putResolver,
+                              @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc) {
         super(bambooStorage, putResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
@@ -56,12 +55,12 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<T, PutCollect
     public static class Builder<T> {
 
         @NonNull private final BambooStorage bambooStorage;
-        @NonNull private final Collection<T> objects;
+        @NonNull private final Iterable<T> objects;
 
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
 
-        public Builder(@NonNull BambooStorage bambooStorage, @NonNull Collection<T> objects) {
+        public Builder(@NonNull BambooStorage bambooStorage, @NonNull Iterable<T> objects) {
             this.bambooStorage = bambooStorage;
             this.objects = objects;
         }
@@ -76,8 +75,8 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<T, PutCollect
             return this;
         }
 
-        @NonNull public PreparedPutCollectionOfObjects<T> prepare() {
-            return new PreparedPutCollectionOfObjects<>(
+        @NonNull public PreparedPutObjects<T> prepare() {
+            return new PreparedPutObjects<>(
                     bambooStorage,
                     putResolver,
                     objects,
