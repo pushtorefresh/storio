@@ -13,7 +13,7 @@ import java.util.Map;
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedPutCollectionOfObjects<T> extends PreparedPut<T, PutCollectionOfObjectsResult<T>> {
+public class PreparedPutCollectionOfObjects<T> extends PreparedPut<T, PutCollectionResult<T>> {
 
     @NonNull private final Collection<T> objects;
     @NonNull private final MapFunc<T, ContentValues> mapFunc;
@@ -27,7 +27,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<T, PutCollect
         this.mapFunc = mapFunc;
     }
 
-    @NonNull @Override public PutCollectionOfObjectsResult<T> executeAsBlocking() {
+    @NonNull @Override public PutCollectionResult<T> executeAsBlocking() {
         final Map<T, PutResult> putResultsMap = new HashMap<>();
 
         for (T object : objects) {
@@ -36,14 +36,14 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<T, PutCollect
             putResultsMap.put(object, putResult);
         }
 
-        return new PutCollectionOfObjectsResult<>(putResultsMap);
+        return new PutCollectionResult<>(putResultsMap);
     }
 
-    @NonNull @Override public Observable<PutCollectionOfObjectsResult<T>> createObservable() {
-        return Observable.create(new Observable.OnSubscribe<PutCollectionOfObjectsResult<T>>() {
+    @NonNull @Override public Observable<PutCollectionResult<T>> createObservable() {
+        return Observable.create(new Observable.OnSubscribe<PutCollectionResult<T>>() {
             @Override
-            public void call(Subscriber<? super PutCollectionOfObjectsResult<T>> subscriber) {
-                PutCollectionOfObjectsResult<T> putResults = executeAsBlocking();
+            public void call(Subscriber<? super PutCollectionResult<T>> subscriber) {
+                PutCollectionResult<T> putResults = executeAsBlocking();
 
                 if (!subscriber.isUnsubscribed()) {
                     subscriber.onNext(putResults);
