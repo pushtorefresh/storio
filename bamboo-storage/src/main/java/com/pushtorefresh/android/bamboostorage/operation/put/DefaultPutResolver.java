@@ -5,49 +5,38 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
-import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.query.InsertQueryBuilder;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQueryBuilder;
 
-abstract class BasePreparedPutWithObject<Result, T> extends PreparedPut<Result> {
+public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
-    @NonNull final String table;
-    @NonNull final MapFunc<T, ContentValues> mapFunc;
+    @NonNull protected abstract String getTable();
 
-    BasePreparedPutWithObject(@NonNull BambooStorage bambooStorage,
-                              @NonNull String table,
-                              @NonNull MapFunc<T, ContentValues> mapFunc) {
-        super(bambooStorage);
-        this.table = table;
-        this.mapFunc = mapFunc;
-    }
-
-    @NonNull PutResult executeAutoPut(@NonNull final T object) {
-        final ContentValues contentValues = mapFunc.map(object);
-
+    @Override
+    public PutResult performPut(@NonNull BambooStorage bambooStorage, @NonNull ContentValues contentValues) {
         final Long id = contentValues.getAsLong(BaseColumns._ID);
 
         if (id == null) {
             final long insertedId = bambooStorage.internal().insert(
                     new InsertQueryBuilder()
-                            .table(table)
+                            .table(getTable())
                             .nullColumnHack(null)
                             .build(),
                     contentValues
             );
 
-            return new PutResult(insertedId, null);
+            return PutResult.newInsertResult(insertedId);
         } else {
-            int numberOfUpdatedRows = bambooStorage.internal().update(
+            final int numberOfUpdatedRows = bambooStorage.internal().update(
                     new UpdateQueryBuilder()
-                            .table(table)
+                            .table(getTable())
                             .where(BaseColumns._ID + "=?")
                             .whereArgs(String.valueOf(id))
                             .build(),
                     contentValues
             );
 
-            return new PutResult(null, numberOfUpdatedRows);
+            return PutResult.newUpdateResult(numberOfUpdatedRows);
         }
     }
 }

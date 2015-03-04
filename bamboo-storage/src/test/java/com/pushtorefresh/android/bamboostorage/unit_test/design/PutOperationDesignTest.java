@@ -2,10 +2,8 @@ package com.pushtorefresh.android.bamboostorage.unit_test.design;
 
 import android.content.ContentValues;
 
-import com.pushtorefresh.android.bamboostorage.operation.put.PutCollectionOfObjectResult;
+import com.pushtorefresh.android.bamboostorage.operation.put.PutCollectionOfObjectsResult;
 import com.pushtorefresh.android.bamboostorage.operation.put.PutResult;
-import com.pushtorefresh.android.bamboostorage.query.InsertQueryBuilder;
-import com.pushtorefresh.android.bamboostorage.query.UpdateQueryBuilder;
 
 import org.junit.Test;
 
@@ -22,20 +20,20 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResult putResult = bambooStorage()
                 .put()
                 .object(user)
-                .into(User.TABLE)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(User.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
 
-    @Test public void putObjectAsObservable() {
+    @Test public void putObjectObservable() {
         User user = newUser();
 
         Observable<PutResult> observablePutResult = bambooStorage()
                 .put()
                 .object(user)
-                .into(User.TABLE)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(User.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -43,11 +41,11 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putCollectionOfObjectsBlocking() {
         List<User> users = new ArrayList<>();
 
-        PutCollectionOfObjectResult<User> putResult = bambooStorage()
+        PutCollectionOfObjectsResult<User> putResult = bambooStorage()
                 .put()
                 .objects(users)
-                .into(User.TABLE)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(User.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -55,80 +53,33 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putCollectionOfObjectsObservable() {
         List<User> users = new ArrayList<>();
 
-        Observable<PutCollectionOfObjectResult<User>> putResultObservable = bambooStorage()
+        Observable<PutCollectionOfObjectsResult<User>> putResultObservable = bambooStorage()
                 .put()
                 .objects(users)
-                .into(User.TABLE)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(User.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
 
-
-    @Test public void updateByQueryBlocking() {
-        User user = newUser();
+    @Test public void putContentValuesBlocking() {
+        ContentValues contentValues = User.MAP_TO_CONTENT_VALUES.map(newUser());
 
         PutResult putResult = bambooStorage()
                 .put()
-                .object(user)
-                .into(User.TABLE)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
+                .contentValues(contentValues)
+                .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
                 .prepare()
                 .executeAsBlocking();
     }
 
-    @Test public void insertContentValuesBlocking() {
-        final ContentValues contentValues = new ContentValues();
+    @Test public void putContentValuesObservable() {
+        ContentValues contentValues = User.MAP_TO_CONTENT_VALUES.map(newUser());
 
-        long insertedRowId = bambooStorage()
+        Observable<PutResult> putResult = bambooStorage()
                 .put()
                 .contentValues(contentValues)
-                .insertQuery(new InsertQueryBuilder()
-                        .table("users")
-                        .build())
-                .prepare()
-                .executeAsBlocking();
-    }
-
-    @Test public void insertContentValuesAsObservable() {
-        final ContentValues contentValues = new ContentValues();
-
-        Observable<Long> observableInsertedRowId = bambooStorage()
-                .put()
-                .contentValues(contentValues)
-                .insertQuery(new InsertQueryBuilder()
-                        .table("users")
-                        .build())
-                .prepare()
-                .createObservable();
-    }
-
-    @Test public void updateContentValuesBlocking() {
-        final ContentValues contentValues = new ContentValues();
-
-        long updatedRowsCount = bambooStorage()
-                .put()
-                .contentValues(contentValues)
-                .updateQuery(new UpdateQueryBuilder()
-                        .table("users")
-                        .where("email = ?")
-                        .whereArgs("artem.zinnatullin@gmail.com")
-                        .build())
-                .prepare()
-                .executeAsBlocking();
-    }
-
-    @Test public void updateContentValuesAsObservable() {
-        final ContentValues contentValues = new ContentValues();
-
-        Observable<Long> observableUpdatedRowsCount = bambooStorage()
-                .put()
-                .contentValues(contentValues)
-                .updateQuery(new UpdateQueryBuilder()
-                        .table("users")
-                        .where("email = ?")
-                        .whereArgs("artem.zinnatullin@gmail.com")
-                        .build())
+                .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
                 .prepare()
                 .createObservable();
     }
