@@ -3,6 +3,7 @@ package com.pushtorefresh.android.bamboostorage.unit_test.design;
 import android.database.Cursor;
 
 import com.pushtorefresh.android.bamboostorage.query.QueryBuilder;
+import com.pushtorefresh.android.bamboostorage.query.RawQueryBuilder;
 
 import org.junit.Test;
 
@@ -61,6 +62,56 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
+                        .build())
+                .prepare()
+                .createObservable();
+    }
+
+    @Test public void getCursorWithRawQueryBlocking() {
+        Cursor cursor = bambooStorage()
+                .get()
+                .cursor()
+                .withQuery(new RawQueryBuilder()
+                        .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
+                        .args("arg1", "arg2")
+                        .build())
+                .prepare()
+                .executeAsBlocking();
+    }
+
+    @Test public void getCursorWithRawQueryObservable() {
+        Observable<Cursor> cursorObservable = bambooStorage()
+                .get()
+                .cursor()
+                .withQuery(new RawQueryBuilder()
+                        .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
+                        .args("arg1", "arg2")
+                        .build())
+                .prepare()
+                .createObservable();
+    }
+
+    @Test public void getListOfObjectsWithRawQueryBlocking() {
+        List<User> users = bambooStorage()
+                .get()
+                .listOfObjects(User.class)
+                .withMapFunc(User.MAP_FROM_CURSOR)
+                .withQuery(new RawQueryBuilder()
+                        .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
+                        .args("arg1", "arg2")
+                        .build())
+                .prepare()
+                .executeAsBlocking();
+    }
+
+    @Test public void getListOfObjectsWithRawQueryObservable() {
+        Observable<List<User>> usersObservable = bambooStorage()
+                .get()
+                .listOfObjects(User.class)
+                .withMapFunc(User.MAP_FROM_CURSOR)
+                .withQuery(new RawQueryBuilder()
+                        .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
+                        .args("arg1", "arg2")
                         .build())
                 .prepare()
                 .createObservable();

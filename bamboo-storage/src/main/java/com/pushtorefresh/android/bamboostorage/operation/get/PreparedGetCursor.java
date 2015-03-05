@@ -6,18 +6,29 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
 import com.pushtorefresh.android.bamboostorage.query.Query;
+import com.pushtorefresh.android.bamboostorage.query.RawQuery;
 
 import rx.Observable;
 import rx.Subscriber;
 
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
-    public PreparedGetCursor(@NonNull BambooStorage bambooStorage, @NonNull Query query) {
+    PreparedGetCursor(@NonNull BambooStorage bambooStorage, @NonNull Query query) {
         super(bambooStorage, query);
     }
 
+    PreparedGetCursor(@NonNull BambooStorage bambooStorage, @NonNull RawQuery rawQuery) {
+        super(bambooStorage, rawQuery);
+    }
+
     @NonNull public Cursor executeAsBlocking() {
-        return bambooStorage.internal().query(query);
+        if (query != null) {
+            return bambooStorage.internal().query(query);
+        } else if (rawQuery != null) {
+            return bambooStorage.internal().rawQuery(rawQuery);
+        } else {
+            throw new IllegalStateException("Please specify query");
+        }
     }
 
     @NonNull @Override public Observable<Cursor> createObservable() {
@@ -36,6 +47,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         @NonNull private final BambooStorage bambooStorage;
 
         private Query query;
+        private RawQuery rawQuery;
 
         public Builder(@NonNull BambooStorage bambooStorage) {
             this.bambooStorage = bambooStorage;
@@ -46,8 +58,19 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
             return this;
         }
 
+        @NonNull public Builder withQuery(@NonNull RawQuery rawQuery) {
+            this.rawQuery = rawQuery;
+            return this;
+        }
+
         @NonNull public PreparedOperation<Cursor> prepare() {
-            return new PreparedGetCursor(bambooStorage, query);
+            if (query != null) {
+                return new PreparedGetCursor(bambooStorage, query);
+            } else if (rawQuery != null) {
+                return new PreparedGetCursor(bambooStorage, rawQuery);
+            } else {
+                throw new IllegalStateException("Please specify query");
+            }
         }
     }
 }
