@@ -10,6 +10,7 @@ import com.pushtorefresh.android.bamboostorage.operation.get.PreparedGet;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 import com.pushtorefresh.android.bamboostorage.query.InsertQuery;
 import com.pushtorefresh.android.bamboostorage.query.Query;
+import com.pushtorefresh.android.bamboostorage.query.RawQuery;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQuery;
 
 public interface BambooStorage {
@@ -23,6 +24,9 @@ public interface BambooStorage {
     @NonNull Internal internal();
 
     interface Internal {
+
+        @NonNull Cursor rawQuery(@NonNull RawQuery rawQuery);
+
         @NonNull Cursor query(@NonNull Query query);
 
         long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues);
