@@ -7,6 +7,7 @@ import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
 import com.pushtorefresh.android.bamboostorage.query.Query;
+import com.pushtorefresh.android.bamboostorage.query.RawQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +24,22 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         this.mapFunc = mapFunc;
     }
 
+    PreparedGetListOfObjects(@NonNull BambooStorage bambooStorage, @NonNull RawQuery rawQuery, @NonNull MapFunc<Cursor, T> mapFunc) {
+        super(bambooStorage, rawQuery);
+        this.mapFunc = mapFunc;
+    }
+
     @SuppressWarnings("TryFinallyCanBeTryWithResources") // Min SDK :(
     @NonNull public List<T> executeAsBlocking() {
-        final Cursor cursor = bambooStorage.internal().query(query);
+        final Cursor cursor;
+
+        if (query != null) {
+            cursor = bambooStorage.internal().query(query);
+        } else if (rawQuery != null) {
+            cursor = bambooStorage.internal().rawQuery(rawQuery);
+        } else {
+            throw new IllegalStateException("Please specify query");
+        }
 
         try {
             final List<T> list = new ArrayList<>(cursor.getCount());
@@ -54,10 +68,11 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     public static class Builder<T> {
 
         @NonNull private final BambooStorage bambooStorage;
-        @NonNull private final Class<T> type; // currently not used
+        @NonNull private final Class<T> type; // currently type not used as object, only for generics
 
         private MapFunc<Cursor, T> mapFunc;
         private Query query;
+        private RawQuery rawQuery;
 
         public Builder(@NonNull BambooStorage bambooStorage, @NonNull Class<T> type) {
             this.bambooStorage = bambooStorage;
@@ -74,8 +89,19 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             return this;
         }
 
+        @NonNull public Builder<T> withQuery(@NonNull RawQuery rawQuery) {
+            this.rawQuery = rawQuery;
+            return this;
+        }
+
         @NonNull public PreparedOperation<List<T>> prepare() {
-            return new PreparedGetListOfObjects<>(bambooStorage, query, mapFunc);
+            if (query != null) {
+                return new PreparedGetListOfObjects<>(bambooStorage, query, mapFunc);
+            } else if (rawQuery != null) {
+                return new PreparedGetListOfObjects<>(bambooStorage, rawQuery, mapFunc);
+            } else {
+                throw new IllegalStateException("Please specify query");
+            }
         }
     }
 }
