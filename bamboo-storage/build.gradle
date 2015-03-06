@@ -6,12 +6,20 @@ android {
 	buildToolsVersion '21.1.2'
 
     defaultConfig {
-        minSdkVersion 1
+        minSdkVersion 8
+    }
+
+    defaultConfig {
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
     }
 }
 
 dependencies {
-    // @NonNull and @Nullable
+    // @NonNull and @Nullable annotations
     provided 'com.android.support:support-annotations:21.0.3'
 
     // Reactive Extensions for JVM
@@ -22,4 +30,7 @@ dependencies {
 
     // Mocking
     testCompile 'org.mockito:mockito-core:1.10.19'
+
+    // JUnit4 for Integration tests!
+    androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
 }

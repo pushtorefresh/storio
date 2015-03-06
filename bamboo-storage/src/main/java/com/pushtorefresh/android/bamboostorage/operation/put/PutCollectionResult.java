@@ -16,4 +16,30 @@ public class PutCollectionResult<T> {
     @NonNull public Map<T, PutResult> getResults() {
         return results;
     }
+
+
+    // TODO cache this value?
+    public int numberOfInserts() {
+        int numberOfInserts = 0;
+
+        for (T object : results.keySet()) {
+            if (results.get(object).wasInserted()) {
+                numberOfInserts++;
+            }
+        }
+
+        return numberOfInserts;
+    }
+
+    public int numberOfUpdates() {
+        int numberOfUpdates = 0;
+
+        for (T object : results.keySet()) {
+            if (results.get(object).wasUpdated()) {
+                numberOfUpdates++;
+            }
+        }
+
+        return numberOfUpdates;
+    }
 }

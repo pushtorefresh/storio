@@ -27,13 +27,13 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
     @NonNull @Override public DeleteCollectionOfObjectsResult<T> executeAsBlocking() {
         BambooStorage.Internal bambooStorageInternal = bambooStorage.internal();
 
-        Map<T, DeleteByQueryResult> results = new HashMap<>();
+        Map<T, DeleteResult> results = new HashMap<>();
 
         for (T object : objects) {
             final DeleteQuery deleteQuery = mapFunc.map(object);
             final int countOfDeletedRows = bambooStorageInternal.delete(deleteQuery);
 
-            results.put(object, new DeleteByQueryResult(deleteQuery, countOfDeletedRows));
+            results.put(object, new DeleteResult(deleteQuery, countOfDeletedRows));
         }
 
         return new DeleteCollectionOfObjectsResult<>(results);
