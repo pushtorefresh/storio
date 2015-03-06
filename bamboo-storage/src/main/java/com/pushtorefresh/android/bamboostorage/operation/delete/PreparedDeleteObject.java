@@ -9,7 +9,7 @@ import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedDeleteObject<T> extends PreparedDelete<DeleteObjectResult<T>> {
+public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
     @NonNull private final T object;
     @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
@@ -20,19 +20,19 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteObjectResult<T
         this.mapFunc = mapFunc;
     }
 
-    @NonNull @Override public DeleteObjectResult<T> executeAsBlocking() {
+    @NonNull @Override public DeleteResult executeAsBlocking() {
         final DeleteQuery deleteQuery = mapFunc.map(object);
         final int countOfDeletedRows = bambooStorage.internal().delete(deleteQuery);
-        return new DeleteObjectResult<>(object, deleteQuery, countOfDeletedRows);
+        return new DeleteResult(deleteQuery, countOfDeletedRows);
     }
 
-    @NonNull @Override public Observable<DeleteObjectResult<T>> createObservable() {
-        return Observable.create(new Observable.OnSubscribe<DeleteObjectResult<T>>() {
-            @Override public void call(Subscriber<? super DeleteObjectResult<T>> subscriber) {
-                final DeleteObjectResult<T> deleteObjectResult = executeAsBlocking();
+    @NonNull @Override public Observable<DeleteResult> createObservable() {
+        return Observable.create(new Observable.OnSubscribe<DeleteResult>() {
+            @Override public void call(Subscriber<? super DeleteResult> subscriber) {
+                final DeleteResult deleteResult = executeAsBlocking();
 
                 if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(deleteObjectResult);
+                    subscriber.onNext(deleteResult);
                     subscriber.onCompleted();
                 }
             }

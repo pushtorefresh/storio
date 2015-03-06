@@ -1,8 +1,7 @@
 package com.pushtorefresh.android.bamboostorage.unit_test.design;
 
-import com.pushtorefresh.android.bamboostorage.operation.delete.DeleteByQueryResult;
 import com.pushtorefresh.android.bamboostorage.operation.delete.DeleteCollectionOfObjectsResult;
-import com.pushtorefresh.android.bamboostorage.operation.delete.DeleteObjectResult;
+import com.pushtorefresh.android.bamboostorage.operation.delete.DeleteResult;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQueryBuilder;
 
 import org.junit.Test;
@@ -17,7 +16,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteObjectBlocking() {
         User user = newUser();
 
-        DeleteObjectResult<User> deleteResult = bambooStorage()
+        DeleteResult deleteResult = bambooStorage()
                 .delete()
                 .object(user)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -28,7 +27,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteObjectObservable() {
         User user = newUser();
 
-        Observable<DeleteObjectResult<User>> deleteResultObservable = bambooStorage()
+        Observable<DeleteResult> deleteResultObservable = bambooStorage()
                 .delete()
                 .object(user)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -59,7 +58,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void deleteByQueryBlocking() {
-        DeleteByQueryResult deleteResult = bambooStorage()
+        DeleteResult deleteResult = bambooStorage()
                 .delete()
                 .byQuery(new DeleteQueryBuilder()
                         .table("users")
@@ -71,7 +70,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void deleteByQueryObservable() {
-        Observable<DeleteByQueryResult> deleteResultObservable = bambooStorage()
+        Observable<DeleteResult> deleteResultObservable = bambooStorage()
                 .delete()
                 .byQuery(new DeleteQueryBuilder()
                         .table("users")

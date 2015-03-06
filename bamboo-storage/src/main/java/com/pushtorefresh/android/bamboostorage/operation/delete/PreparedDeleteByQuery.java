@@ -8,7 +8,7 @@ import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedDeleteByQuery extends PreparedDelete<DeleteByQueryResult> {
+public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     @NonNull private final DeleteQuery deleteQuery;
 
@@ -17,15 +17,15 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteByQueryResult> {
         this.deleteQuery = deleteQuery;
     }
 
-    @NonNull @Override public DeleteByQueryResult executeAsBlocking() {
+    @NonNull @Override public DeleteResult executeAsBlocking() {
         int countOfDeletedRows = bambooStorage.internal().delete(deleteQuery);
-        return new DeleteByQueryResult(deleteQuery, countOfDeletedRows);
+        return new DeleteResult(deleteQuery, countOfDeletedRows);
     }
 
-    @NonNull @Override public Observable<DeleteByQueryResult> createObservable() {
-        return Observable.create(new Observable.OnSubscribe<DeleteByQueryResult>() {
-            @Override public void call(Subscriber<? super DeleteByQueryResult> subscriber) {
-                final DeleteByQueryResult deleteByQueryResult = executeAsBlocking();
+    @NonNull @Override public Observable<DeleteResult> createObservable() {
+        return Observable.create(new Observable.OnSubscribe<DeleteResult>() {
+            @Override public void call(Subscriber<? super DeleteResult> subscriber) {
+                final DeleteResult deleteByQueryResult = executeAsBlocking();
 
                 if (!subscriber.isUnsubscribed()) {
                     subscriber.onNext(deleteByQueryResult);

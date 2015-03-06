@@ -7,13 +7,13 @@ import java.util.Map;
 
 public class DeleteCollectionOfObjectsResult<T> {
 
-    @NonNull private final Map<T, DeleteByQueryResult> results;
+    @NonNull private final Map<T, DeleteResult> results;
 
-    public DeleteCollectionOfObjectsResult(@NonNull Map<T, DeleteByQueryResult> results) {
+    public DeleteCollectionOfObjectsResult(@NonNull Map<T, DeleteResult> results) {
         this.results = Collections.unmodifiableMap(results);
     }
 
-    @NonNull public Map<T, DeleteByQueryResult> getResults() {
+    @NonNull public Map<T, DeleteResult> getResults() {
         return results;
     }
 }

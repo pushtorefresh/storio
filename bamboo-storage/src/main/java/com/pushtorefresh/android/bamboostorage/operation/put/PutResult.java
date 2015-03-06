@@ -3,7 +3,7 @@ package com.pushtorefresh.android.bamboostorage.operation.put;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public class PutResult {
+public final class PutResult {
     @Nullable private final Long insertedId;
     @Nullable private final Integer numberOfUpdatedRows;
 
@@ -24,8 +24,16 @@ public class PutResult {
         return insertedId != null;
     }
 
+    public boolean wasNotInserted() {
+        return !wasInserted();
+    }
+
     public boolean wasUpdated() {
         return numberOfUpdatedRows != null;
+    }
+
+    public boolean wasNotUpdated() {
+        return !wasUpdated();
     }
 
     @Nullable public Long getInsertedId() {
