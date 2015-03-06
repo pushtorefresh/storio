@@ -13,6 +13,7 @@ import com.pushtorefresh.android.bamboostorage.operation.put.PreparedPut;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 import com.pushtorefresh.android.bamboostorage.query.InsertQuery;
 import com.pushtorefresh.android.bamboostorage.query.Query;
+import com.pushtorefresh.android.bamboostorage.query.RawQuery;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQuery;
 
 public class BSSQLiteDatabase implements BambooStorage {
@@ -41,6 +42,13 @@ public class BSSQLiteDatabase implements BambooStorage {
     }
 
     protected class InternalImpl implements Internal {
+
+        @NonNull @Override public Cursor rawQuery(@NonNull RawQuery rawQuery) {
+            return db.rawQuery(
+                    rawQuery.query,
+                    rawQuery.args
+            );
+        }
 
         @NonNull @Override public Cursor query(@NonNull Query query) {
             return db.query(
