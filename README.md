@@ -5,6 +5,8 @@
 
 **Current state:** Active development of branch 2.x, 100% new code
 
+##Documentation for OLD release 1.x
+
 **BambooStorage** provides you an easy way to store your data in `ContentProvider` without boilerplate [`CRUD`](http://en.wikipedia.org/wiki/Create,_read,_update_and_delete) (Create-Read-Update-Delete) code for each storable type
 
 If you currently use [`SQLiteOpenHelper`](http://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper.html) ([`SQLiteDatabase`](http://developer.android.com/reference/android/database/sqlite/SQLiteDatabase.html) under it) to store your data, you can easily switch to `BambooStorage` because it provides base class for `ContentProvider` with `SQLiteOpenHelper`
