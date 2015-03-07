@@ -4,12 +4,16 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
-import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
+import com.pushtorefresh.android.bamboostorage.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.android.bamboostorage.query.Query;
 import com.pushtorefresh.android.bamboostorage.query.RawQuery;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
@@ -42,6 +46,32 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         });
     }
 
+    @NonNull @Override public Observable<Cursor> createObservableStream() {
+        final Set<String> tables;
+
+        if (query != null) {
+            tables = new HashSet<>(1);
+            tables.add(query.table);
+        } else if (rawQuery != null) {
+            tables = rawQuery.tables;
+        } else {
+            throw new IllegalStateException("Please specify query");
+        }
+
+        if (tables != null && !tables.isEmpty()) {
+            return bambooStorage
+                    .subscribeOnChanges(tables)
+                    .map(new Func1<String, Cursor>() {
+                        @Override public Cursor call(String table) {
+                            return executeAsBlocking();
+                        }
+                    })
+                    .startWith(executeAsBlocking());
+        } else {
+            return createObservable();
+        }
+    }
+
     public static class Builder {
 
         @NonNull private final BambooStorage bambooStorage;
@@ -63,7 +93,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
             return this;
         }
 
-        @NonNull public PreparedOperation<Cursor> prepare() {
+        @NonNull public PreparedOperationWithReactiveStream<Cursor> prepare() {
             if (query != null) {
                 return new PreparedGetCursor(bambooStorage, query);
             } else if (rawQuery != null) {

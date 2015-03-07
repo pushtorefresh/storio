@@ -12,14 +12,14 @@ import rx.Observable;
 public interface PreparedOperation<Result> {
 
     /**
-     * Should execute operation synchronously in current thread
+     * Executes operation synchronously in current thread
      *
      * @return result of operation
      */
     @NonNull Result executeAsBlocking();
 
     /**
-     * Should create {@link rx.Observable}
+     * Creates {@link rx.Observable} that emits only one result
      *
      * @return result of operation
      */

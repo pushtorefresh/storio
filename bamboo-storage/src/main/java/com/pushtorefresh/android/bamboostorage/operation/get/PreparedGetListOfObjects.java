@@ -5,15 +5,18 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
-import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
+import com.pushtorefresh.android.bamboostorage.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.android.bamboostorage.query.Query;
 import com.pushtorefresh.android.bamboostorage.query.RawQuery;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 
 public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
@@ -65,10 +68,37 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         });
     }
 
+    @NonNull @Override public Observable<List<T>> createObservableStream() {
+        final Set<String> tables;
+
+        if (query != null) {
+            tables = new HashSet<>(1);
+            tables.add(query.table);
+        } else if (rawQuery != null) {
+            tables = rawQuery.tables;
+        } else {
+            throw new IllegalStateException("Please specify query");
+        }
+
+        if (tables != null && !tables.isEmpty()) {
+            return bambooStorage
+                    .subscribeOnChanges(tables)
+                    .map(new Func1<String, List<T>>() {
+                        @Override public List<T> call(String s) {
+                            return executeAsBlocking();
+                        }
+                    })
+                    .startWith(executeAsBlocking());
+        } else {
+            return createObservable();
+        }
+    }
+
     public static class Builder<T> {
 
         @NonNull private final BambooStorage bambooStorage;
-        @NonNull private final Class<T> type; // currently type not used as object, only for generics
+        @NonNull
+        private final Class<T> type; // currently type not used as object, only for generics
 
         private MapFunc<Cursor, T> mapFunc;
         private Query query;
@@ -94,7 +124,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             return this;
         }
 
-        @NonNull public PreparedOperation<List<T>> prepare() {
+        @NonNull public PreparedOperationWithReactiveStream<List<T>> prepare() {
             if (query != null) {
                 return new PreparedGetListOfObjects<>(bambooStorage, query, mapFunc);
             } else if (rawQuery != null) {

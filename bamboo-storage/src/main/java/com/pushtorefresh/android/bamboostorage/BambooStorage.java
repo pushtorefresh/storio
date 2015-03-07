@@ -5,13 +5,17 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.operation.delete.PreparedDelete;
-import com.pushtorefresh.android.bamboostorage.operation.put.PreparedPut;
 import com.pushtorefresh.android.bamboostorage.operation.get.PreparedGet;
+import com.pushtorefresh.android.bamboostorage.operation.put.PreparedPut;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 import com.pushtorefresh.android.bamboostorage.query.InsertQuery;
 import com.pushtorefresh.android.bamboostorage.query.Query;
 import com.pushtorefresh.android.bamboostorage.query.RawQuery;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQuery;
+
+import java.util.Set;
+
+import rx.Observable;
 
 public interface BambooStorage {
 
@@ -20,6 +24,8 @@ public interface BambooStorage {
     @NonNull PreparedPut.Builder put();
 
     @NonNull PreparedDelete.Builder delete();
+
+    @NonNull Observable<String> subscribeOnChanges(@NonNull Set<String> tables);
 
     @NonNull Internal internal();
 
@@ -34,5 +40,7 @@ public interface BambooStorage {
         int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues);
 
         int delete(@NonNull DeleteQuery deleteQuery);
+
+        void notifyAboutChangeInTable(@NonNull String table);
     }
 }

@@ -13,6 +13,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     @NonNull protected abstract String getTable();
 
     @Override
+    @NonNull
     public PutResult performPut(@NonNull BambooStorage bambooStorage, @NonNull ContentValues contentValues) {
         final Long id = contentValues.getAsLong(BaseColumns._ID);
 

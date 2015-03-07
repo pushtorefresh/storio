@@ -14,11 +14,21 @@ import com.pushtorefresh.android.bamboostorage.query.Query;
 import com.pushtorefresh.android.bamboostorage.query.RawQuery;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQuery;
 
+import java.util.Set;
+
+import rx.Observable;
+
 import static org.mockito.Mockito.mock;
 
 public class DesignTestBambooStorageImpl implements BambooStorage {
 
+    @NonNull @Override
+    public Observable<String> subscribeOnChanges(@NonNull Set<String> tables) {
+        return Observable.empty();
+    }
+
     @NonNull private final Internal internal = new Internal() {
+
         @NonNull @Override public Cursor rawQuery(@NonNull RawQuery rawQuery) {
             return mock(Cursor.class);
         }
@@ -39,6 +49,10 @@ public class DesignTestBambooStorageImpl implements BambooStorage {
 
         @Override public int delete(@NonNull DeleteQuery deleteQuery) {
             return 0;
+        }
+
+        @Override public void notifyAboutChangeInTable(@NonNull String table) {
+
         }
     };
 
