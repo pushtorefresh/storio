@@ -19,18 +19,11 @@ android {
 }
 
 dependencies {
-    // @NonNull and @Nullable annotations
     provided 'com.android.support:support-annotations:21.0.3'
+    provided 'io.reactivex:rxjava:1.0.8'
 
-    // Reactive Extensions for JVM
-    provided 'io.reactivex:rxjava:1.0.6'
-
-    // Unit testing
     testCompile 'junit:junit:4.12'
-
-    // Mocking
     testCompile 'org.mockito:mockito-core:1.10.19'
 
-    // JUnit4 for Integration tests!
     androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
 }
