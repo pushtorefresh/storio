@@ -4,11 +4,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
-import com.pushtorefresh.android.bamboostorage.operation.PreparedOperation;
+import com.pushtorefresh.android.bamboostorage.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.android.bamboostorage.query.Query;
 import com.pushtorefresh.android.bamboostorage.query.RawQuery;
 
-public abstract class PreparedGet<T> implements PreparedOperation<T> {
+public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStream<T> {
 
     @NonNull  protected final BambooStorage bambooStorage;
     @Nullable protected final Query query;

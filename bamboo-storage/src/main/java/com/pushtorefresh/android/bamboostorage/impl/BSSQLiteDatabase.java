@@ -16,9 +16,16 @@ import com.pushtorefresh.android.bamboostorage.query.Query;
 import com.pushtorefresh.android.bamboostorage.query.RawQuery;
 import com.pushtorefresh.android.bamboostorage.query.UpdateQuery;
 
+import java.util.Set;
+
+import rx.Observable;
+import rx.functions.Func1;
+import rx.subjects.PublishSubject;
+
 public class BSSQLiteDatabase implements BambooStorage {
 
     @NonNull private final SQLiteDatabase db;
+    @NonNull private final PublishSubject<String> tablesMonitor = PublishSubject.create();
     @NonNull private final Internal internal = new InternalImpl();
 
     protected BSSQLiteDatabase(@NonNull SQLiteDatabase db) {
@@ -35,6 +42,16 @@ public class BSSQLiteDatabase implements BambooStorage {
 
     @NonNull @Override public PreparedDelete.Builder delete() {
         return new PreparedDelete.Builder(this);
+    }
+
+    @Override @NonNull
+    public Observable<String> subscribeOnChanges(@NonNull final Set<String> tables) {
+        return tablesMonitor
+                .filter(new Func1<String, Boolean>() {
+                    @Override public Boolean call(String changedTable) {
+                        return tables.contains(changedTable);
+                    }
+                });
     }
 
     @NonNull @Override public Internal internal() {
@@ -66,29 +83,51 @@ public class BSSQLiteDatabase implements BambooStorage {
 
         @Override
         public long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
-            return db.insertOrThrow(
+            final long insertedId = db.insertOrThrow(
                     insertQuery.table,
                     insertQuery.nullColumnHack,
                     contentValues
             );
+
+            if (insertedId != -1) {
+                notifyAboutChangeInTable(insertQuery.table);
+            }
+
+            return insertedId;
         }
 
         @Override
         public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
-            return db.update(
+            final int numberOfUpdatedRows = db.update(
                     updateQuery.table,
                     contentValues,
                     updateQuery.where,
                     updateQuery.whereArgs
             );
+
+            if (numberOfUpdatedRows > 0) {
+                notifyAboutChangeInTable(updateQuery.table);
+            }
+
+            return numberOfUpdatedRows;
         }
 
         @Override public int delete(@NonNull DeleteQuery deleteQuery) {
-            return db.delete(
+            final int numberOfDeletedRows = db.delete(
                     deleteQuery.table,
                     deleteQuery.where,
                     deleteQuery.whereArgs
             );
+
+            if (numberOfDeletedRows > 0) {
+                notifyAboutChangeInTable(deleteQuery.table);
+            }
+
+            return numberOfDeletedRows;
+        }
+
+        @Override public void notifyAboutChangeInTable(@NonNull String table) {
+            tablesMonitor.onNext(table);
         }
     }
 

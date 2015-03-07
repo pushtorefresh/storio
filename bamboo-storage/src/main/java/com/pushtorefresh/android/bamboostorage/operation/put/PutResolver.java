@@ -7,7 +7,7 @@ import com.pushtorefresh.android.bamboostorage.BambooStorage;
 
 public interface PutResolver<T> {
 
-    PutResult performPut(@NonNull BambooStorage bambooStorage, @NonNull ContentValues contentValues);
+    @NonNull PutResult performPut(@NonNull BambooStorage bambooStorage, @NonNull ContentValues contentValues);
 
     void afterPut(@NonNull T object, @NonNull PutResult putResult);
 }

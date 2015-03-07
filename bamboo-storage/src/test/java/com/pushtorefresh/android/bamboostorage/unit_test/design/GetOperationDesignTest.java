@@ -116,4 +116,23 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .prepare()
                 .createObservable();
     }
+
+    @Test public void getCursorObservableStream() {
+        Observable<Cursor> usersObservableStream = bambooStorage()
+                .get()
+                .cursor()
+                .withQuery(new QueryBuilder().table("users").build())
+                .prepare()
+                .createObservableStream();
+    }
+
+    @Test public void getListOfObjectsObservableStream() {
+        Observable<List<User>> usersObservableStream = bambooStorage()
+                .get()
+                .listOfObjects(User.class)
+                .withMapFunc(User.MAP_FROM_CURSOR)
+                .withQuery(new QueryBuilder().table("users").build())
+                .prepare()
+                .createObservableStream();
+    }
 }

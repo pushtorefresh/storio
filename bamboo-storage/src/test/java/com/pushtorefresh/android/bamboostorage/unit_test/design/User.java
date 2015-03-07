@@ -14,6 +14,7 @@ import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQueryBuilder;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class User {
 
@@ -32,7 +33,16 @@ public class User {
 
     public static final MapFunc<User, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<User, ContentValues>() {
         @Override public ContentValues map(User user) {
-            return mock(ContentValues.class); // you should fill it with real data
+            // unfortunately ContentValues is corrupted by Android Gradle Plugin (test)
+            final ContentValues contentValues = mock(ContentValues.class);
+
+            when(contentValues.getAsLong(COLUMN_ID))
+                    .thenReturn(user.id);
+
+            when(contentValues.getAsString(COLUMN_EMAIL))
+                    .thenReturn(user.email);
+
+            return contentValues;
         }
     };
 
