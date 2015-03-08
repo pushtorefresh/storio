@@ -12,6 +12,10 @@ public class RawQuery {
 
     @Nullable public final String[] args;
 
+    /**
+     * Set of tables which are participated in {@link #query},
+     * they can be used for Reactive Streams in {@link com.pushtorefresh.android.bamboostorage.BambooStorage#get()} operation
+     */
     @Nullable public final Set<String> tables;
 
     public RawQuery(@NonNull String query, @Nullable String[] args, @Nullable Set<String> tables) {
