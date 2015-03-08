@@ -3,6 +3,7 @@ package com.pushtorefresh.android.bamboostorage.query;
 import android.support.annotation.NonNull;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 public class RawQueryBuilder {
@@ -22,6 +23,10 @@ public class RawQueryBuilder {
     }
 
     @NonNull public RawQueryBuilder tables(@NonNull String... tables) {
+        if (this.tables == null) {
+            this.tables = new HashSet<>(tables.length);
+        }
+
         Collections.addAll(this.tables, tables);
         return this;
     }
