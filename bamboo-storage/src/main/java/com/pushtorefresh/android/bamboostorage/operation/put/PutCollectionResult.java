@@ -13,10 +13,9 @@ public class PutCollectionResult<T> {
         this.results = Collections.unmodifiableMap(results);
     }
 
-    @NonNull public Map<T, PutResult> getResults() {
+    @NonNull public Map<T, PutResult> results() {
         return results;
     }
-
 
     // TODO cache this value?
     public int numberOfInserts() {

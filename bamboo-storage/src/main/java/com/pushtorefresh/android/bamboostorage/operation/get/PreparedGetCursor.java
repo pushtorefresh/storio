@@ -61,8 +61,8 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         if (tables != null && !tables.isEmpty()) {
             return bambooStorage
                     .subscribeOnChanges(tables)
-                    .map(new Func1<String, Cursor>() {
-                        @Override public Cursor call(String table) {
+                    .map(new Func1<Set<String>, Cursor>() {
+                        @Override public Cursor call(Set<String> affectedTables) {
                             return executeAsBlocking();
                         }
                     })

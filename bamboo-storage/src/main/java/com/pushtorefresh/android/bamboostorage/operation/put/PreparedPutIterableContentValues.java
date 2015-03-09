@@ -6,7 +6,9 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -14,26 +16,64 @@ import rx.Subscriber;
 public class PreparedPutIterableContentValues extends PreparedPut<ContentValues, PutCollectionResult<ContentValues>> {
 
     @NonNull private final Iterable<ContentValues> contentValuesIterable;
+    private final boolean useTransactionIfPossible;
 
     private PreparedPutIterableContentValues(
             @NonNull BambooStorage bambooStorage,
             @NonNull PutResolver<ContentValues> putResolver,
-            @NonNull Iterable<ContentValues> contentValuesIterable) {
+            @NonNull Iterable<ContentValues> contentValuesIterable, boolean useTransactionIfPossible) {
 
         super(bambooStorage, putResolver);
         this.contentValuesIterable = contentValuesIterable;
+        this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
     @NonNull @Override public PutCollectionResult<ContentValues> executeAsBlocking() {
-        final Map<ContentValues, PutResult> putResultsMap = new HashMap<>();
+        final BambooStorage.Internal internal = bambooStorage.internal();
 
-        for (ContentValues contentValues : contentValuesIterable) {
-            final PutResult putResult = putResolver.performPut(bambooStorage, contentValues);
-            putResultsMap.put(contentValues, putResult);
-            putResolver.afterPut(contentValues, putResult);
+        final Map<ContentValues, PutResult> putResults = new HashMap<>();
+
+        final boolean withTransaction = useTransactionIfPossible
+                && internal.areTransactionsSupported();
+
+        if (withTransaction) {
+            internal.beginTransaction();
         }
 
-        return new PutCollectionResult<>(putResultsMap);
+        boolean transactionSuccessful = false;
+
+        try {
+            for (ContentValues contentValues : contentValuesIterable) {
+                final PutResult putResult = putResolver.performPut(bambooStorage, contentValues);
+                putResults.put(contentValues, putResult);
+                putResolver.afterPut(contentValues, putResult);
+
+                if (!withTransaction) {
+                    internal.notifyAboutChanges(putResult.affectedTables());
+                }
+            }
+
+            if (withTransaction) {
+                bambooStorage.internal().setTransactionSuccessful();
+                transactionSuccessful = true;
+            }
+        } finally {
+            if (withTransaction) {
+                bambooStorage.internal().endTransaction();
+
+                if (transactionSuccessful) {
+                    final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be 1 table
+
+                    for (final ContentValues contentValues : putResults.keySet()) {
+                        affectedTables.addAll(putResults.get(contentValues).affectedTables());
+                    }
+
+                    bambooStorage.internal().notifyAboutChanges(affectedTables);
+                }
+            }
+        }
+
+        return new PutCollectionResult<>(putResults);
     }
 
     @NonNull @Override public Observable<PutCollectionResult<ContentValues>> createObservable() {
@@ -57,6 +97,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         @NonNull private final Iterable<ContentValues> contentValuesIterable;
 
         private PutResolver<ContentValues> putResolver;
+        private boolean useTransactionIfPossible = true;
 
         public Builder(@NonNull BambooStorage bambooStorage, @NonNull Iterable<ContentValues> contentValuesIterable) {
             this.bambooStorage = bambooStorage;
@@ -68,11 +109,22 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
             return this;
         }
 
+        @NonNull public Builder useTransactionIfPossible() {
+            useTransactionIfPossible = true;
+            return this;
+        }
+
+        @NonNull public Builder dontUseTransaction() {
+            useTransactionIfPossible = false;
+            return this;
+        }
+
         @NonNull public PreparedPutIterableContentValues prepare() {
             return new PreparedPutIterableContentValues(
                     bambooStorage,
                     putResolver,
-                    contentValuesIterable
+                    contentValuesIterable,
+                    useTransactionIfPossible
             );
         }
     }
