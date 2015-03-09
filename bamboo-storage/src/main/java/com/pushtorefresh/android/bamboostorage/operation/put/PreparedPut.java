@@ -46,7 +46,8 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
             return new PreparedPutObjects.Builder<>(bambooStorage, objects);
         }
 
-        @NonNull public <T> PreparedPutObjects.Builder<T> objects(@NonNull T... objects) {
+        @SafeVarargs
+        @NonNull public final <T> PreparedPutObjects.Builder<T> objects(@NonNull T... objects) {
             return new PreparedPutObjects.Builder<>(bambooStorage, Arrays.asList(objects));
         }
     }

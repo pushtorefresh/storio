@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 public class DesignTestBambooStorageImpl implements BambooStorage {
 
     @NonNull @Override
-    public Observable<String> subscribeOnChanges(@NonNull Set<String> tables) {
+    public Observable<Set<String>> subscribeOnChanges(@NonNull Set<String> tables) {
         return Observable.empty();
     }
 
@@ -51,8 +51,24 @@ public class DesignTestBambooStorageImpl implements BambooStorage {
             return 0;
         }
 
-        @Override public void notifyAboutChangeInTable(@NonNull String table) {
+        @Override public void notifyAboutChanges(@NonNull Set<String> affectedTables) {
+            // no impl
+        }
 
+        @Override public boolean areTransactionsSupported() {
+            return false;
+        }
+
+        @Override public void beginTransaction() {
+            // no impl
+        }
+
+        @Override public void setTransactionSuccessful() {
+            // no impl
+        }
+
+        @Override public void endTransaction() {
+            // no impl
         }
     };
 

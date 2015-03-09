@@ -6,6 +6,8 @@ import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 
+import java.util.Collections;
+
 import rx.Observable;
 import rx.Subscriber;
 
@@ -21,9 +23,14 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     }
 
     @NonNull @Override public DeleteResult executeAsBlocking() {
+        final BambooStorage.Internal internal = bambooStorage.internal();
         final DeleteQuery deleteQuery = mapFunc.map(object);
-        final int countOfDeletedRows = bambooStorage.internal().delete(deleteQuery);
-        return new DeleteResult(deleteQuery, countOfDeletedRows);
+
+        final int countOfDeletedRows = internal.delete(deleteQuery);
+
+        internal.notifyAboutChanges(Collections.singleton(deleteQuery.table));
+
+        return DeleteResult.newDeleteResult(countOfDeletedRows, Collections.singleton(deleteQuery.table));
     }
 
     @NonNull @Override public Observable<DeleteResult> createObservable() {

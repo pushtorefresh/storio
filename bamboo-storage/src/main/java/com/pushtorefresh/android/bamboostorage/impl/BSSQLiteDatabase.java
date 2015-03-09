@@ -24,8 +24,20 @@ import rx.subjects.PublishSubject;
 
 public class BSSQLiteDatabase implements BambooStorage {
 
+    /**
+     * Real db
+     */
     @NonNull private final SQLiteDatabase db;
-    @NonNull private final PublishSubject<String> tablesMonitor = PublishSubject.create();
+
+    /**
+     * Reactive bus for notifying observers about changes in tables
+     * One change can affect several tables, so we use Set<String> as set of changed tables per event
+     */
+    @NonNull private final PublishSubject<Set<String>> tablesMonitor = PublishSubject.create();
+
+    /**
+     * Implementation of {@link com.pushtorefresh.android.bamboostorage.BambooStorage.Internal}
+     */
     @NonNull private final Internal internal = new InternalImpl();
 
     protected BSSQLiteDatabase(@NonNull SQLiteDatabase db) {
@@ -45,11 +57,18 @@ public class BSSQLiteDatabase implements BambooStorage {
     }
 
     @Override @NonNull
-    public Observable<String> subscribeOnChanges(@NonNull final Set<String> tables) {
+    public Observable<Set<String>> subscribeOnChanges(@NonNull final Set<String> tables) {
         return tablesMonitor
-                .filter(new Func1<String, Boolean>() {
-                    @Override public Boolean call(String changedTable) {
-                        return tables.contains(changedTable);
+                .filter(new Func1<Set<String>, Boolean>() {
+                    @Override public Boolean call(Set<String> changedTables) {
+                        // if one of changed tables found in tables for subscription -> notify observer
+                        for (final String changedTable : changedTables) {
+                            if (tables.contains(changedTable)) {
+                                return true;
+                            }
+                        }
+
+                        return false; // ignore changes from current event
                     }
                 });
     }
@@ -83,51 +102,49 @@ public class BSSQLiteDatabase implements BambooStorage {
 
         @Override
         public long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
-            final long insertedId = db.insertOrThrow(
+            return db.insertOrThrow(
                     insertQuery.table,
                     insertQuery.nullColumnHack,
                     contentValues
             );
-
-            if (insertedId != -1) {
-                notifyAboutChangeInTable(insertQuery.table);
-            }
-
-            return insertedId;
         }
 
         @Override
         public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
-            final int numberOfUpdatedRows = db.update(
+            return db.update(
                     updateQuery.table,
                     contentValues,
                     updateQuery.where,
                     updateQuery.whereArgs
             );
-
-            if (numberOfUpdatedRows > 0) {
-                notifyAboutChangeInTable(updateQuery.table);
-            }
-
-            return numberOfUpdatedRows;
         }
 
         @Override public int delete(@NonNull DeleteQuery deleteQuery) {
-            final int numberOfDeletedRows = db.delete(
+            return db.delete(
                     deleteQuery.table,
                     deleteQuery.where,
                     deleteQuery.whereArgs
             );
-
-            if (numberOfDeletedRows > 0) {
-                notifyAboutChangeInTable(deleteQuery.table);
-            }
-
-            return numberOfDeletedRows;
         }
 
-        @Override public void notifyAboutChangeInTable(@NonNull String table) {
-            tablesMonitor.onNext(table);
+        @Override public void notifyAboutChanges(@NonNull Set<String> affectedTables) {
+            tablesMonitor.onNext(affectedTables);
+        }
+
+        @Override public boolean areTransactionsSupported() {
+            return true;
+        }
+
+        @Override public void beginTransaction() {
+            db.beginTransaction();
+        }
+
+        @Override public void setTransactionSuccessful() {
+            db.setTransactionSuccessful();
+        }
+
+        @Override public void endTransaction() {
+            db.endTransaction();
         }
     }
 

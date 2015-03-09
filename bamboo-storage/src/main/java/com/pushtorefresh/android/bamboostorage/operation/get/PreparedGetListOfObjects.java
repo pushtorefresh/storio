@@ -83,8 +83,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         if (tables != null && !tables.isEmpty()) {
             return bambooStorage
                     .subscribeOnChanges(tables)
-                    .map(new Func1<String, List<T>>() {
-                        @Override public List<T> call(String s) {
+                    .map(new Func1<Set<String>, List<T>>() {
+                        @Override public List<T> call(Set<String> affectedTables) {
                             return executeAsBlocking();
                         }
                     })
