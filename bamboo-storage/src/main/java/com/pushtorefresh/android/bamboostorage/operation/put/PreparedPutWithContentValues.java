@@ -18,8 +18,13 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
     }
 
     @NonNull @Override public PutResult executeAsBlocking() {
-        final PutResult putResult = putResolver.performPut(bambooStorage, contentValues);
+        final PutResult putResult = putResolver.performPut(
+                bambooStorage,
+                contentValues
+        );
+
         putResolver.afterPut(contentValues, putResult);
+        bambooStorage.internal().notifyAboutChanges(putResult.affectedTables());
         return putResult;
     }
 

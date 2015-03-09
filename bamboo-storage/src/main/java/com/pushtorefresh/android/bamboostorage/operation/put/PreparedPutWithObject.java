@@ -23,8 +23,14 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
     }
 
     @NonNull public PutResult executeAsBlocking() {
-        final PutResult putResult = putResolver.performPut(bambooStorage, mapFunc.map(object));
+        final PutResult putResult = putResolver.performPut(
+                bambooStorage,
+                mapFunc.map(object)
+        );
+
         putResolver.afterPut(object, putResult);
+        bambooStorage.internal().notifyAboutChanges(putResult.affectedTables());
+
         return putResult;
     }
 

@@ -1,6 +1,7 @@
 package com.pushtorefresh.android.bamboostorage.unit_test.operation;
 
 import android.content.ContentValues;
+import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
@@ -13,6 +14,7 @@ import com.pushtorefresh.android.bamboostorage.unit_test.design.User;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
@@ -28,12 +30,17 @@ public class PreparedPutTest {
     private static class PutOneStub {
         final User user;
         final BambooStorage bambooStorage;
+        final BambooStorage.Internal internal;
         final MapFunc<User, ContentValues> mapFunc;
         final PutResolver<User> putResolver;
 
         PutOneStub() {
             user = new User(null, "test@example.com");
             bambooStorage = mock(BambooStorage.class);
+            internal = mock(BambooStorage.Internal.class);
+
+            when(bambooStorage.internal())
+                    .thenReturn(internal);
 
             when(bambooStorage.put())
                     .thenReturn(new PreparedPut.Builder(bambooStorage));
@@ -45,11 +52,28 @@ public class PreparedPutTest {
             putResolver = (PutResolver<User>) mock(PutResolver.class);
 
             when(putResolver.performPut(eq(bambooStorage), any(ContentValues.class)))
-                    .thenReturn(mock(PutResult.class));
+                    .thenReturn(PutResult.newInsertResult(1, Collections.singleton(User.TABLE)));
 
             when(mapFunc.map(user))
                     .thenReturn(mock(ContentValues.class));
 
+        }
+
+        void verifyBehavior(@NonNull PutResult putResult) {
+            // put should be called only once
+            verify(bambooStorage, times(1)).put();
+
+            // object should be mapped to ContentValues only once
+            verify(mapFunc, times(1)).map(user);
+
+            // putResolver's performPut() should be called only once
+            verify(putResolver, times(1)).performPut(eq(bambooStorage), any(ContentValues.class));
+
+            // putResolver's afterPut() callback should be called only once
+            verify(putResolver, times(1)).afterPut(user, putResult);
+
+            // only one notification should be thrown
+            verify(internal, times(1)).notifyAboutChanges(eq(Collections.singleton(User.TABLE)));
         }
     }
 
@@ -64,10 +88,7 @@ public class PreparedPutTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(putOneStub.bambooStorage, times(1)).put();
-        verify(putOneStub.mapFunc, times(1)).map(putOneStub.user);
-        verify(putOneStub.putResolver, times(1)).performPut(eq(putOneStub.bambooStorage), any(ContentValues.class));
-        verify(putOneStub.putResolver, times(1)).afterPut(putOneStub.user, putResult);
+        putOneStub.verifyBehavior(putResult);
     }
 
     @Test public void putOneObservable() {
@@ -83,26 +104,34 @@ public class PreparedPutTest {
                 .toBlocking()
                 .last();
 
-        verify(putOneStub.bambooStorage, times(1)).put();
-        verify(putOneStub.mapFunc, times(1)).map(putOneStub.user);
-        verify(putOneStub.putResolver, times(1)).performPut(eq(putOneStub.bambooStorage), any(ContentValues.class));
-        verify(putOneStub.putResolver, times(1)).afterPut(putOneStub.user, putResult);
+        putOneStub.verifyBehavior(putResult);
     }
 
     // stub class to avoid violation of DRY in "putMultiple" tests
     private static class PutMultipleStub {
         final List<User> users;
         final BambooStorage bambooStorage;
+        final BambooStorage.Internal internal;
         final MapFunc<User, ContentValues> mapFunc;
         final PutResolver<User> putResolver;
+        final boolean useTransaction;
 
-        PutMultipleStub() {
+        PutMultipleStub(boolean useTransaction) {
+            this.useTransaction = useTransaction;
+
             users = new ArrayList<>();
             users.add(new User(null, "1"));
             users.add(new User(null, "2"));
             users.add(new User(null, "3"));
 
             bambooStorage = mock(BambooStorage.class);
+            internal = mock(BambooStorage.Internal.class);
+
+            when(internal.areTransactionsSupported())
+                    .thenReturn(useTransaction);
+
+            when(bambooStorage.internal())
+                    .thenReturn(internal);
 
             when(bambooStorage.put())
                     .thenReturn(new PreparedPut.Builder(bambooStorage));
@@ -111,7 +140,7 @@ public class PreparedPutTest {
             putResolver = (PutResolver<User>) mock(PutResolver.class);
 
             when(putResolver.performPut(eq(bambooStorage), any(ContentValues.class)))
-                    .thenReturn(mock(PutResult.class));
+                    .thenReturn(PutResult.newInsertResult(1, Collections.singleton(User.TABLE)));
 
             //noinspection unchecked
             mapFunc = (MapFunc<User, ContentValues>) mock(MapFunc.class);
@@ -125,10 +154,38 @@ public class PreparedPutTest {
             when(mapFunc.map(users.get(2)))
                     .thenReturn(mock(ContentValues.class));
         }
+
+        void verifyBehavior(@NonNull PutCollectionResult<User> putCollectionResult) {
+            // only one call to bambooStorage.put() should occur
+            verify(bambooStorage, times(1)).put();
+
+            // number of calls to putResolver's performPut() should be equal to number of objects
+            verify(putResolver, times(users.size())).performPut(eq(bambooStorage), any(ContentValues.class));
+
+            for (final User user : users) {
+                // map operation for each object should be called only once
+                verify(mapFunc, times(1)).map(user);
+
+                // putResolver's afterPut() callback should be called only once for each object
+                verify(putResolver, times(1))
+                        .afterPut(user, putCollectionResult.results().get(user));
+            }
+
+            if (useTransaction) {
+                // if put() operation used transaction, only one notification should be thrown
+                verify(internal, times(1))
+                        .notifyAboutChanges(eq(Collections.singleton(User.TABLE)));
+            } else {
+                // if put() operation didn't use transaction,
+                // number of notifications should be equal to number of objects
+                verify(internal, times(users.size()))
+                        .notifyAboutChanges(eq(Collections.singleton(User.TABLE)));
+            }
+        }
     }
 
     @Test public void putMultipleBlocking() {
-        final PutMultipleStub putMultipleStub = new PutMultipleStub();
+        final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
 
         final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorage
                 .put()
@@ -138,19 +195,11 @@ public class PreparedPutTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(putMultipleStub.bambooStorage, times(1)).put();
-        verify(putMultipleStub.putResolver, times(3)).performPut(eq(putMultipleStub.bambooStorage), any(ContentValues.class));
-
-        for (User user : putMultipleStub.users) {
-            verify(putMultipleStub.mapFunc, times(1)).map(user);
-
-            verify(putMultipleStub.putResolver, times(1))
-                    .afterPut(user, putCollectionResult.getResults().get(user));
-        }
+        putMultipleStub.verifyBehavior(putCollectionResult);
     }
 
     @Test public void putMultipleObservable() {
-        final PutMultipleStub putMultipleStub = new PutMultipleStub();
+        final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
 
         final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorage
                 .put()
@@ -162,14 +211,70 @@ public class PreparedPutTest {
                 .toBlocking()
                 .last();
 
-        verify(putMultipleStub.bambooStorage, times(1)).put();
-        verify(putMultipleStub.putResolver, times(3)).performPut(eq(putMultipleStub.bambooStorage), any(ContentValues.class));
+        putMultipleStub.verifyBehavior(putCollectionResult);
+    }
 
-        for (User user : putMultipleStub.users) {
-            verify(putMultipleStub.mapFunc, times(1)).map(user);
+    @Test public void putMultipleBlockingWithoutTransaction() {
+        final PutMultipleStub putMultipleStub = new PutMultipleStub(false);
 
-            verify(putMultipleStub.putResolver, times(1))
-                    .afterPut(user, putCollectionResult.getResults().get(user));
-        }
+        final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorage
+                .put()
+                .objects(putMultipleStub.users)
+                .withMapFunc(putMultipleStub.mapFunc)
+                .withPutResolver(putMultipleStub.putResolver)
+                .dontUseTransaction()
+                .prepare()
+                .executeAsBlocking();
+
+        putMultipleStub.verifyBehavior(putCollectionResult);
+    }
+
+    @Test public void putMultipleObservableWithoutTransaction() {
+        final PutMultipleStub putMultipleStub = new PutMultipleStub(false);
+
+        final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorage
+                .put()
+                .objects(putMultipleStub.users)
+                .withMapFunc(putMultipleStub.mapFunc)
+                .withPutResolver(putMultipleStub.putResolver)
+                .dontUseTransaction()
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .last();
+
+        putMultipleStub.verifyBehavior(putCollectionResult);
+    }
+
+    @Test public void putMultipleBlockingWithTransaction() {
+        final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
+
+        final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorage
+                .put()
+                .objects(putMultipleStub.users)
+                .withMapFunc(putMultipleStub.mapFunc)
+                .withPutResolver(putMultipleStub.putResolver)
+                .useTransactionIfPossible()
+                .prepare()
+                .executeAsBlocking();
+
+        putMultipleStub.verifyBehavior(putCollectionResult);
+    }
+
+    @Test public void putMultipleObservableWithTransaction() {
+        final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
+
+        final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorage
+                .put()
+                .objects(putMultipleStub.users)
+                .withMapFunc(putMultipleStub.mapFunc)
+                .withPutResolver(putMultipleStub.putResolver)
+                .useTransactionIfPossible()
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .last();
+
+        putMultipleStub.verifyBehavior(putCollectionResult);
     }
 }

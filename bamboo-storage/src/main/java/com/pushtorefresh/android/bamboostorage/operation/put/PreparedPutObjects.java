@@ -7,7 +7,9 @@ import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -16,26 +18,67 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
 
     @NonNull private final Iterable<T> objects;
     @NonNull private final MapFunc<T, ContentValues> mapFunc;
-
+    private final boolean useTransactionIfPossible;
 
     public PreparedPutObjects(@NonNull BambooStorage bambooStorage,
                               @NonNull PutResolver<T> putResolver,
-                              @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc) {
+                              @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc,
+                              boolean useTransactionIfPossible) {
         super(bambooStorage, putResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
+        this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
     @NonNull @Override public PutCollectionResult<T> executeAsBlocking() {
-        final Map<T, PutResult> putResultsMap = new HashMap<>();
+        final BambooStorage.Internal internal = bambooStorage.internal();
+        final Map<T, PutResult> putResults = new HashMap<>();
 
-        for (T object : objects) {
-            final PutResult putResult = putResolver.performPut(bambooStorage, mapFunc.map(object));
-            putResolver.afterPut(object, putResult);
-            putResultsMap.put(object, putResult);
+        final boolean withTransaction = useTransactionIfPossible
+                && bambooStorage.internal().areTransactionsSupported();
+
+        if (withTransaction) {
+            internal.beginTransaction();
         }
 
-        return new PutCollectionResult<>(putResultsMap);
+        boolean transactionSuccessful = false;
+
+        try {
+            for (T object : objects) {
+                final PutResult putResult = putResolver.performPut(
+                        bambooStorage,
+                        mapFunc.map(object)
+                );
+
+                putResolver.afterPut(object, putResult);
+                putResults.put(object, putResult);
+
+                if (!withTransaction) {
+                    internal.notifyAboutChanges(putResult.affectedTables());
+                }
+            }
+
+            if (withTransaction) {
+                bambooStorage.internal().setTransactionSuccessful();
+                transactionSuccessful = true;
+            }
+        } finally {
+            if (withTransaction) {
+                bambooStorage.internal().endTransaction();
+
+                if (transactionSuccessful) {
+                    final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be 1 table
+
+                    for (final T object : putResults.keySet()) {
+                        affectedTables.addAll(putResults.get(object).affectedTables());
+                    }
+
+                    bambooStorage.internal().notifyAboutChanges(affectedTables);
+                }
+            }
+        }
+
+        return new PutCollectionResult<>(putResults);
     }
 
     @NonNull @Override public Observable<PutCollectionResult<T>> createObservable() {
@@ -59,6 +102,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
 
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
+        private boolean useTransactionIfPossible = true;
 
         public Builder(@NonNull BambooStorage bambooStorage, @NonNull Iterable<T> objects) {
             this.bambooStorage = bambooStorage;
@@ -75,13 +119,23 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
             return this;
         }
 
+        @NonNull public Builder<T> useTransactionIfPossible() {
+            useTransactionIfPossible = true;
+            return this;
+        }
+
+        @NonNull public Builder<T> dontUseTransaction() {
+            useTransactionIfPossible = false;
+            return this;
+        }
+
         @NonNull public PreparedPutObjects<T> prepare() {
             return new PreparedPutObjects<>(
                     bambooStorage,
                     putResolver,
                     objects,
-                    mapFunc
-            );
+                    mapFunc,
+                    useTransactionIfPossible);
         }
     }
 }

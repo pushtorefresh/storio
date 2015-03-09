@@ -25,7 +25,7 @@ public interface BambooStorage {
 
     @NonNull PreparedDelete.Builder delete();
 
-    @NonNull Observable<String> subscribeOnChanges(@NonNull Set<String> tables);
+    @NonNull Observable<Set<String>> subscribeOnChanges(@NonNull Set<String> tables);
 
     @NonNull Internal internal();
 
@@ -41,6 +41,14 @@ public interface BambooStorage {
 
         int delete(@NonNull DeleteQuery deleteQuery);
 
-        void notifyAboutChangeInTable(@NonNull String table);
+        void notifyAboutChanges(@NonNull Set<String> affectedTables);
+
+        boolean areTransactionsSupported();
+
+        void beginTransaction();
+
+        void setTransactionSuccessful();
+
+        void endTransaction();
     }
 }

@@ -13,7 +13,7 @@ public class DeleteCollectionOfObjectsResult<T> {
         this.results = Collections.unmodifiableMap(results);
     }
 
-    @NonNull public Map<T, DeleteResult> getResults() {
+    @NonNull public Map<T, DeleteResult> results() {
         return results;
     }
 }

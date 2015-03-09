@@ -7,8 +7,11 @@ import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -17,23 +20,65 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
 
     @NonNull private final Collection<T> objects;
     @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
+    private final boolean useTransactionIfPossible;
 
-    protected PreparedDeleteCollectionOfObjects(@NonNull BambooStorage bambooStorage, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc) {
+    protected PreparedDeleteCollectionOfObjects(@NonNull BambooStorage bambooStorage, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible) {
         super(bambooStorage);
         this.objects = objects;
         this.mapFunc = mapFunc;
+        this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
     @NonNull @Override public DeleteCollectionOfObjectsResult<T> executeAsBlocking() {
-        BambooStorage.Internal bambooStorageInternal = bambooStorage.internal();
+        final BambooStorage.Internal internal = bambooStorage.internal();
 
-        Map<T, DeleteResult> results = new HashMap<>();
+        final Map<T, DeleteResult> results = new HashMap<>();
 
-        for (T object : objects) {
-            final DeleteQuery deleteQuery = mapFunc.map(object);
-            final int countOfDeletedRows = bambooStorageInternal.delete(deleteQuery);
+        final boolean withTransaction = useTransactionIfPossible && internal.areTransactionsSupported();
 
-            results.put(object, new DeleteResult(deleteQuery, countOfDeletedRows));
+        if (withTransaction) {
+            internal.beginTransaction();
+        }
+
+        boolean transactionSuccessful = false;
+
+        try {
+            for (final T object : objects) {
+                final DeleteQuery deleteQuery = mapFunc.map(object);
+                final int countOfDeletedRows = internal.delete(deleteQuery);
+
+                results.put(
+                        object,
+                        DeleteResult.newDeleteResult(
+                                countOfDeletedRows,
+                                Collections.singleton(deleteQuery.table))
+                );
+
+                if (!withTransaction) {
+                    internal.notifyAboutChanges(Collections.singleton(deleteQuery.table));
+                }
+            }
+
+            if (withTransaction) {
+                internal.setTransactionSuccessful();
+                transactionSuccessful = true;
+            }
+        } finally {
+            if (withTransaction) {
+                internal.endTransaction();
+
+                if (transactionSuccessful) {
+                    // if delete was in transaction and it was successful -> notify about changes
+
+                    final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be one table
+
+                    for (final T object : results.keySet()) {
+                        affectedTables.addAll(results.get(object).affectedTables());
+                    }
+
+                    internal.notifyAboutChanges(affectedTables);
+                }
+            }
         }
 
         return new DeleteCollectionOfObjectsResult<>(results);
@@ -60,6 +105,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
         @NonNull private final Collection<T> objects;
 
         private MapFunc<T, DeleteQuery> mapFunc;
+        private boolean useTransactionIfPossible = true;
 
         public Builder(@NonNull BambooStorage bambooStorage, @NonNull Collection<T> objects) {
             this.bambooStorage = bambooStorage;
@@ -71,8 +117,23 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
             return this;
         }
 
+        @NonNull public Builder<T> useTransactionIfPossible() {
+            useTransactionIfPossible = true;
+            return this;
+        }
+
+        @NonNull public Builder<T> dontUseTransaction() {
+            useTransactionIfPossible = false;
+            return this;
+        }
+
         @NonNull public PreparedDeleteCollectionOfObjects<T> prepare() {
-            return new PreparedDeleteCollectionOfObjects<>(bambooStorage, objects, mapFunc);
+            return new PreparedDeleteCollectionOfObjects<>(
+                    bambooStorage,
+                    objects,
+                    mapFunc,
+                    useTransactionIfPossible
+            );
         }
     }
 }
