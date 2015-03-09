@@ -27,19 +27,19 @@ public class PreparedGetTest {
         final MapFunc<Cursor, User> mapFunc;
         final Query query;
         final RawQuery rawQuery;
-        final BambooStorage.Internal internalStub;
+        final BambooStorage.Internal internal;
 
         GetStub() {
             bambooStorage = mock(BambooStorage.class);
             query = mock(Query.class);
             rawQuery = mock(RawQuery.class);
-            internalStub = mockInternal();
+            internal = mockInternal();
 
             when(bambooStorage.get())
                     .thenReturn(new PreparedGet.Builder(bambooStorage));
 
             when(bambooStorage.internal())
-                    .thenReturn(internalStub);
+                    .thenReturn(internal);
 
             //noinspection unchecked
             mapFunc = (MapFunc<Cursor, User>) mock(MapFunc.class);
@@ -68,13 +68,13 @@ public class PreparedGetTest {
 
     private void verifyQueryBehavior(@NonNull final GetStub getStub) {
         verify(getStub.bambooStorage, times(1)).get();
-        verify(getStub.internalStub, times(1)).query(any(Query.class));
+        verify(getStub.internal, times(1)).query(any(Query.class));
     }
 
     private void verifyQueryBehaviorForList(@NonNull final GetStub getStub) {
         verify(getStub.bambooStorage, times(1)).get();
         verify(getStub.mapFunc, times(3)).map(any(Cursor.class));
-        verify(getStub.internalStub, times(1)).query(any(Query.class));
+        verify(getStub.internal, times(1)).query(any(Query.class));
     }
 
     @Test public void getCursorBlocking() {
@@ -138,13 +138,13 @@ public class PreparedGetTest {
 
     private void verifyRawQueryBehavior(@NonNull final GetStub getStub) {
         verify(getStub.bambooStorage, times(1)).get();
-        verify(getStub.internalStub, times(1)).rawQuery(any(RawQuery.class));
+        verify(getStub.internal, times(1)).rawQuery(any(RawQuery.class));
     }
 
     private void verifyRawQueryBehaviorForList(@NonNull final GetStub getStub) {
         verify(getStub.bambooStorage, times(1)).get();
         verify(getStub.mapFunc, times(3)).map(any(Cursor.class));
-        verify(getStub.internalStub, times(1)).rawQuery(any(RawQuery.class));
+        verify(getStub.internal, times(1)).rawQuery(any(RawQuery.class));
     }
 
     @Test public void getCursorWithRawQueryBlocking() {
