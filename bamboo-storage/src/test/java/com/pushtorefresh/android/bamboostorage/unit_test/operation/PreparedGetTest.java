@@ -1,6 +1,7 @@
 package com.pushtorefresh.android.bamboostorage.unit_test.operation;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.MapFunc;
@@ -12,8 +13,6 @@ import com.pushtorefresh.android.bamboostorage.unit_test.design.User;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import java.util.List;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -67,6 +66,17 @@ public class PreparedGetTest {
         }
     }
 
+    private void verifyQueryBehavior(@NonNull final GetStub getStub) {
+        verify(getStub.bambooStorage, times(1)).get();
+        verify(getStub.internalStub, times(1)).query(any(Query.class));
+    }
+
+    private void verifyQueryBehaviorForList(@NonNull final GetStub getStub) {
+        verify(getStub.bambooStorage, times(1)).get();
+        verify(getStub.mapFunc, times(3)).map(any(Cursor.class));
+        verify(getStub.internalStub, times(1)).query(any(Query.class));
+    }
+
     @Test public void getCursorBlocking() {
         final GetStub getStub = new GetStub();
 
@@ -77,14 +87,13 @@ public class PreparedGetTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(getStub.bambooStorage, times(1)).get();
-        verify(getStub.internalStub, times(1)).query(any(Query.class));
+        verifyQueryBehavior(getStub);
     }
 
     @Test public void getListOfObjectsBlocking() {
         final GetStub getStub = new GetStub();
 
-        List<User> users = getStub.bambooStorage
+        getStub.bambooStorage
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(getStub.mapFunc)
@@ -92,9 +101,7 @@ public class PreparedGetTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(getStub.bambooStorage, times(1)).get();
-        verify(getStub.mapFunc, times(3)).map(any(Cursor.class));
-        verify(getStub.internalStub, times(1)).query(any(Query.class));
+        verifyQueryBehaviorForList(getStub);
     }
 
     @Test public void getCursorObservable() {
@@ -109,8 +116,7 @@ public class PreparedGetTest {
                 .toBlocking()
                 .last();
 
-        verify(getStub.bambooStorage, times(1)).get();
-        verify(getStub.internalStub, times(1)).query(any(Query.class));
+        verifyQueryBehavior(getStub);
     }
 
 
@@ -127,9 +133,18 @@ public class PreparedGetTest {
                 .toBlocking()
                 .last();
 
+        verifyQueryBehaviorForList(getStub);
+    }
+
+    private void verifyRawQueryBehavior(@NonNull final GetStub getStub) {
+        verify(getStub.bambooStorage, times(1)).get();
+        verify(getStub.internalStub, times(1)).rawQuery(any(RawQuery.class));
+    }
+
+    private void verifyRawQueryBehaviorForList(@NonNull final GetStub getStub) {
         verify(getStub.bambooStorage, times(1)).get();
         verify(getStub.mapFunc, times(3)).map(any(Cursor.class));
-        verify(getStub.internalStub, times(1)).query(any(Query.class));
+        verify(getStub.internalStub, times(1)).rawQuery(any(RawQuery.class));
     }
 
     @Test public void getCursorWithRawQueryBlocking() {
@@ -142,8 +157,7 @@ public class PreparedGetTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(getStub.bambooStorage, times(1)).get();
-        verify(getStub.internalStub, times(1)).rawQuery(any(RawQuery.class));
+        verifyRawQueryBehavior(getStub);
     }
 
     @Test public void getCursorWithRawQueryObservable() {
@@ -158,8 +172,7 @@ public class PreparedGetTest {
                 .toBlocking()
                 .last();
 
-        verify(getStub.bambooStorage, times(1)).get();
-        verify(getStub.internalStub, times(1)).rawQuery(any(RawQuery.class));
+        verifyRawQueryBehavior(getStub);
     }
 
     @Test public void getListOfObjectsWithRawQueryBlocking() {
@@ -173,9 +186,7 @@ public class PreparedGetTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(getStub.bambooStorage, times(1)).get();
-        verify(getStub.mapFunc, times(3)).map(any(Cursor.class));
-        verify(getStub.internalStub, times(1)).query(any(Query.class));
+        verifyRawQueryBehaviorForList(getStub);
     }
 
     @Test public void getListOfObjectsWithRawQueryObservable() {
@@ -191,8 +202,6 @@ public class PreparedGetTest {
                 .toBlocking()
                 .last();
 
-        verify(getStub.bambooStorage, times(1)).get();
-        verify(getStub.mapFunc, times(3)).map(any(Cursor.class));
-        verify(getStub.internalStub, times(1)).query(any(Query.class));
+        verifyRawQueryBehaviorForList(getStub);
     }
 }
