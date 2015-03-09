@@ -19,9 +19,9 @@ public interface PreparedOperation<Result> {
     @NonNull Result executeAsBlocking();
 
     /**
-     * Creates {@link rx.Observable} that emits only one result
+     * Creates {@link rx.Observable} that emits only ONE result
      *
-     * @return result of operation
+     * @return observable result of operation with only one {@link rx.Observer#onNext(Object)} call
      */
     @NonNull Observable<Result> createObservable();
 }
