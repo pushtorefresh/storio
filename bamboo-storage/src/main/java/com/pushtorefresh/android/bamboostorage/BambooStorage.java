@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.operation.delete.PreparedDelete;
+import com.pushtorefresh.android.bamboostorage.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.android.bamboostorage.operation.get.PreparedGet;
 import com.pushtorefresh.android.bamboostorage.operation.put.PreparedPut;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
@@ -19,6 +20,8 @@ import rx.Observable;
 
 public interface BambooStorage {
 
+    @NonNull PreparedExecSql.Builder execSql();
+
     @NonNull PreparedGet.Builder get();
 
     @NonNull PreparedPut.Builder put();
@@ -30,6 +33,12 @@ public interface BambooStorage {
     @NonNull Internal internal();
 
     interface Internal {
+
+        /**
+         * Execute a single SQL statement that is NOT a SELECT/INSERT/UPDATE/DELETE.
+         * @param rawQuery sql query
+         */
+        void execSql(@NonNull RawQuery rawQuery);
 
         @NonNull Cursor rawQuery(@NonNull RawQuery rawQuery);
 

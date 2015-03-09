@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.BambooStorage;
 import com.pushtorefresh.android.bamboostorage.operation.delete.PreparedDelete;
+import com.pushtorefresh.android.bamboostorage.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.android.bamboostorage.operation.get.PreparedGet;
 import com.pushtorefresh.android.bamboostorage.operation.put.PreparedPut;
 import com.pushtorefresh.android.bamboostorage.query.DeleteQuery;
@@ -44,6 +45,10 @@ public class BSSQLiteDatabase implements BambooStorage {
         this.db = db;
     }
 
+    @NonNull @Override public PreparedExecSql.Builder execSql() {
+        return new PreparedExecSql.Builder(this);
+    }
+
     @NonNull @Override public PreparedGet.Builder get() {
         return new PreparedGet.Builder(this);
     }
@@ -78,6 +83,10 @@ public class BSSQLiteDatabase implements BambooStorage {
     }
 
     protected class InternalImpl implements Internal {
+
+        @Override public void execSql(@NonNull RawQuery rawQuery) {
+            db.execSQL(rawQuery.query, rawQuery.args);
+        }
 
         @NonNull @Override public Cursor rawQuery(@NonNull RawQuery rawQuery) {
             return db.rawQuery(
