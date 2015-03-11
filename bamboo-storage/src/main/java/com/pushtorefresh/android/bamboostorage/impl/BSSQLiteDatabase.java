@@ -23,7 +23,7 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 
-public class BSSQLiteDatabase implements BambooStorage {
+public class BSSQLiteDatabase extends BambooStorage {
 
     /**
      * Real db
@@ -82,7 +82,7 @@ public class BSSQLiteDatabase implements BambooStorage {
         return internal;
     }
 
-    protected class InternalImpl implements Internal {
+    protected class InternalImpl extends Internal {
 
         @Override public void execSql(@NonNull RawQuery rawQuery) {
             db.execSQL(rawQuery.query, rawQuery.args);
