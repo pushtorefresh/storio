@@ -18,7 +18,13 @@ import java.util.Set;
 
 import rx.Observable;
 
-public interface BambooStorage {
+/**
+ * Powerful abstraction over {@link android.database.sqlite.SQLiteDatabase}
+ * <p/>
+ * It's an abstract class and not an interface because we want to have ability to add some
+ * changes without breaking existing implementations
+ */
+public abstract class BambooStorage {
 
     /**
      * Prepares "execute sql" operation for BambooStorage
@@ -26,7 +32,7 @@ public interface BambooStorage {
      *
      * @return builder for PreparedExecSql
      */
-    @NonNull PreparedExecSql.Builder execSql();
+    @NonNull public abstract PreparedExecSql.Builder execSql();
 
     /**
      * Prepares "get" operation for BambooStorage
@@ -34,7 +40,7 @@ public interface BambooStorage {
      *
      * @return builder for PreparedGet
      */
-    @NonNull PreparedGet.Builder get();
+    @NonNull public abstract PreparedGet.Builder get();
 
     /**
      * Prepares "put" operation for BambooStorage
@@ -42,7 +48,7 @@ public interface BambooStorage {
      *
      * @return builder for PreparedPut
      */
-    @NonNull PreparedPut.Builder put();
+    @NonNull public abstract PreparedPut.Builder put();
 
     /**
      * Prepares "delete" operation for BambooStorage
@@ -50,7 +56,7 @@ public interface BambooStorage {
      *
      * @return builder for PreparedDelete
      */
-    @NonNull PreparedDelete.Builder delete();
+    @NonNull public abstract PreparedDelete.Builder delete();
 
     /**
      * Subscribes on changes in required tables
@@ -58,26 +64,28 @@ public interface BambooStorage {
      * @param tables set of tables that should be monitored
      * @return {@link rx.Observable} subscribed on changes in required tables
      */
-    @NonNull Observable<Set<String>> subscribeOnChanges(@NonNull Set<String> tables);
+    @NonNull
+    public abstract Observable<Set<String>> subscribeOnChanges(@NonNull Set<String> tables);
 
     /**
      * Hides some internal operations for BambooStorage to make API of BambooStorage clean and easy to understand
      *
      * @return implementation of Internal operations for BambooStorage
      */
-    @NonNull Internal internal();
+    @NonNull public abstract Internal internal();
 
     /**
-     * Hides some internal operations for BambooStorage to make API of BambooStorage clean and easy to understand
+     * Hides some internal operations for BambooStorage
+     * to make API of BambooStorage clean and easy to understand
      */
-    interface Internal {
+    public static abstract class Internal {
 
         /**
          * Execute a single SQL statement that is NOT a SELECT/INSERT/UPDATE/DELETE on the database
          *
          * @param rawQuery sql query
          */
-        void execSql(@NonNull RawQuery rawQuery);
+        public abstract void execSql(@NonNull RawQuery rawQuery);
 
         /**
          * Executes raw query on the database and returns {@link android.database.Cursor} over the result set
@@ -85,7 +93,7 @@ public interface BambooStorage {
          * @param rawQuery sql query
          * @return A Cursor object, which is positioned before the first entry. Note that Cursors are not synchronized, see the documentation for more details.
          */
-        @NonNull Cursor rawQuery(@NonNull RawQuery rawQuery);
+        @NonNull public abstract Cursor rawQuery(@NonNull RawQuery rawQuery);
 
         /**
          * Executes query on the database and returns {@link android.database.Cursor} over the result set
@@ -93,7 +101,7 @@ public interface BambooStorage {
          * @param query sql query
          * @return A Cursor object, which is positioned before the first entry. Note that Cursors are not synchronized, see the documentation for more details.
          */
-        @NonNull Cursor query(@NonNull Query query);
+        @NonNull public abstract Cursor query(@NonNull Query query);
 
         /**
          * Inserts a row into the database
@@ -102,7 +110,7 @@ public interface BambooStorage {
          * @param contentValues map that contains the initial column values for the row. The keys should be the column names and the values the column values
          * @return id of inserted row
          */
-        long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues);
+        public abstract long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues);
 
         /**
          * Updates one or multiple rows in the database
@@ -111,7 +119,7 @@ public interface BambooStorage {
          * @param contentValues a map from column names to new column values. null is a valid value that will be translated to NULL.
          * @return the number of rows affected
          */
-        int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues);
+        public abstract int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues);
 
         /**
          * Deletes one or multiple rows in the database
@@ -119,7 +127,7 @@ public interface BambooStorage {
          * @param deleteQuery query
          * @return the number of rows deleted
          */
-        int delete(@NonNull DeleteQuery deleteQuery);
+        public abstract int delete(@NonNull DeleteQuery deleteQuery);
 
         /**
          * Notifies subscribers about change in set of tables
@@ -128,28 +136,28 @@ public interface BambooStorage {
          *
          * @param affectedTables set of affected tables
          */
-        void notifyAboutChanges(@NonNull Set<String> affectedTables);
+        public abstract void notifyAboutChanges(@NonNull Set<String> affectedTables);
 
         /**
          * BambooStorage implementation could not provide support for transactions
          *
          * @return true if transactions are supported, false otherwise
          */
-        boolean areTransactionsSupported();
+        public abstract boolean areTransactionsSupported();
 
         /**
          * Begins a transaction in EXCLUSIVE mode
          */
-        void beginTransaction();
+        public abstract void beginTransaction();
 
         /**
          * Marks the current transaction as successful
          */
-        void setTransactionSuccessful();
+        public abstract void setTransactionSuccessful();
 
         /**
          * End a transaction
          */
-        void endTransaction();
+        public abstract void endTransaction();
     }
 }

@@ -21,7 +21,7 @@ import rx.Observable;
 
 import static org.mockito.Mockito.mock;
 
-public class DesignTestBambooStorageImpl implements BambooStorage {
+public class DesignTestBambooStorageImpl extends BambooStorage {
 
     @NonNull @Override
     public Observable<Set<String>> subscribeOnChanges(@NonNull Set<String> tables) {
