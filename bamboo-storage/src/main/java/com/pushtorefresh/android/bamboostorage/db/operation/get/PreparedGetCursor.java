@@ -3,7 +3,7 @@ package com.pushtorefresh.android.bamboostorage.db.operation.get;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.android.bamboostorage.db.query.Query;
 import com.pushtorefresh.android.bamboostorage.db.query.RawQuery;
@@ -17,19 +17,19 @@ import rx.functions.Func1;
 
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
-    PreparedGetCursor(@NonNull BambooStorage bambooStorage, @NonNull Query query) {
-        super(bambooStorage, query);
+    PreparedGetCursor(@NonNull BambooStorageDb bambooStorageDb, @NonNull Query query) {
+        super(bambooStorageDb, query);
     }
 
-    PreparedGetCursor(@NonNull BambooStorage bambooStorage, @NonNull RawQuery rawQuery) {
-        super(bambooStorage, rawQuery);
+    PreparedGetCursor(@NonNull BambooStorageDb bambooStorageDb, @NonNull RawQuery rawQuery) {
+        super(bambooStorageDb, rawQuery);
     }
 
     @NonNull public Cursor executeAsBlocking() {
         if (query != null) {
-            return bambooStorage.internal().query(query);
+            return bambooStorageDb.internal().query(query);
         } else if (rawQuery != null) {
-            return bambooStorage.internal().rawQuery(rawQuery);
+            return bambooStorageDb.internal().rawQuery(rawQuery);
         } else {
             throw new IllegalStateException("Please specify query");
         }
@@ -59,7 +59,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         }
 
         if (tables != null && !tables.isEmpty()) {
-            return bambooStorage
+            return bambooStorageDb
                     .subscribeOnChanges(tables)
                     .map(new Func1<Set<String>, Cursor>() {
                         @Override public Cursor call(Set<String> affectedTables) {
@@ -74,13 +74,13 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
 
     public static class Builder {
 
-        @NonNull private final BambooStorage bambooStorage;
+        @NonNull private final BambooStorageDb bambooStorageDb;
 
         private Query query;
         private RawQuery rawQuery;
 
-        public Builder(@NonNull BambooStorage bambooStorage) {
-            this.bambooStorage = bambooStorage;
+        public Builder(@NonNull BambooStorageDb bambooStorageDb) {
+            this.bambooStorageDb = bambooStorageDb;
         }
 
         @NonNull public Builder withQuery(@NonNull Query query) {
@@ -95,9 +95,9 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
 
         @NonNull public PreparedOperationWithReactiveStream<Cursor> prepare() {
             if (query != null) {
-                return new PreparedGetCursor(bambooStorage, query);
+                return new PreparedGetCursor(bambooStorageDb, query);
             } else if (rawQuery != null) {
-                return new PreparedGetCursor(bambooStorage, rawQuery);
+                return new PreparedGetCursor(bambooStorageDb, rawQuery);
             } else {
                 throw new IllegalStateException("Please specify query");
             }

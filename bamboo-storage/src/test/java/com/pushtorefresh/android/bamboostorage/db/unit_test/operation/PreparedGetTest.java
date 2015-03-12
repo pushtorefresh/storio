@@ -2,7 +2,7 @@ package com.pushtorefresh.android.bamboostorage.db.unit_test.operation;
 
 import android.database.Cursor;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.db.operation.get.PreparedGet;
 import com.pushtorefresh.android.bamboostorage.db.query.Query;
@@ -22,22 +22,22 @@ import static org.mockito.Mockito.when;
 public class PreparedGetTest {
 
     private static class GetStub {
-        final BambooStorage bambooStorage;
+        final BambooStorageDb bambooStorageDb;
         final MapFunc<Cursor, User> mapFunc;
         final Query query;
         final RawQuery rawQuery;
-        final BambooStorage.Internal internal;
+        final BambooStorageDb.Internal internal;
 
         GetStub() {
-            bambooStorage = mock(BambooStorage.class);
+            bambooStorageDb = mock(BambooStorageDb.class);
             query = mock(Query.class);
             rawQuery = mock(RawQuery.class);
             internal = mockInternal();
 
-            when(bambooStorage.get())
-                    .thenReturn(new PreparedGet.Builder(bambooStorage));
+            when(bambooStorageDb.get())
+                    .thenReturn(new PreparedGet.Builder(bambooStorageDb));
 
-            when(bambooStorage.internal())
+            when(bambooStorageDb.internal())
                     .thenReturn(internal);
 
             //noinspection unchecked
@@ -47,7 +47,7 @@ public class PreparedGetTest {
                     .thenReturn(mock(User.class));
         }
 
-        private BambooStorage.Internal mockInternal() {
+        private BambooStorageDb.Internal mockInternal() {
             final int mockObjectsSize = 3;
             final Cursor cursorStub = mock(Cursor.class);
             when(cursorStub.moveToNext()).thenAnswer(new Answer<Boolean>() {
@@ -58,30 +58,30 @@ public class PreparedGetTest {
                 }
             });
 
-            BambooStorage.Internal internal = mock(BambooStorage.Internal.class);
+            BambooStorageDb.Internal internal = mock(BambooStorageDb.Internal.class);
             when(internal.query(query)).thenReturn(cursorStub);
             when(internal.rawQuery(rawQuery)).thenReturn(cursorStub);
             return internal;
         }
 
         private void verifyQueryBehavior() {
-            verify(bambooStorage, times(1)).get();
+            verify(bambooStorageDb, times(1)).get();
             verify(internal, times(1)).query(any(Query.class));
         }
 
         private void verifyQueryBehaviorForList() {
-            verify(bambooStorage, times(1)).get();
+            verify(bambooStorageDb, times(1)).get();
             verify(mapFunc, times(3)).map(any(Cursor.class));
             verify(internal, times(1)).query(any(Query.class));
         }
 
         private void verifyRawQueryBehavior() {
-            verify(bambooStorage, times(1)).get();
+            verify(bambooStorageDb, times(1)).get();
             verify(internal, times(1)).rawQuery(any(RawQuery.class));
         }
 
         private void verifyRawQueryBehaviorForList() {
-            verify(bambooStorage, times(1)).get();
+            verify(bambooStorageDb, times(1)).get();
             verify(mapFunc, times(3)).map(any(Cursor.class));
             verify(internal, times(1)).rawQuery(any(RawQuery.class));
         }
@@ -91,7 +91,7 @@ public class PreparedGetTest {
     @Test public void getCursorBlocking() {
         final GetStub getStub = new GetStub();
 
-        getStub.bambooStorage
+        getStub.bambooStorageDb
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
@@ -104,7 +104,7 @@ public class PreparedGetTest {
     @Test public void getListOfObjectsBlocking() {
         final GetStub getStub = new GetStub();
 
-        getStub.bambooStorage
+        getStub.bambooStorageDb
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(getStub.mapFunc)
@@ -118,7 +118,7 @@ public class PreparedGetTest {
     @Test public void getCursorObservable() {
         final GetStub getStub = new GetStub();
 
-        getStub.bambooStorage
+        getStub.bambooStorageDb
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
@@ -134,7 +134,7 @@ public class PreparedGetTest {
     @Test public void getListOfObjectsObservable() {
         final GetStub getStub = new GetStub();
 
-        getStub.bambooStorage
+        getStub.bambooStorageDb
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(getStub.mapFunc)
@@ -150,7 +150,7 @@ public class PreparedGetTest {
     @Test public void getCursorWithRawQueryBlocking() {
         final GetStub getStub = new GetStub();
 
-        getStub.bambooStorage
+        getStub.bambooStorageDb
                 .get()
                 .cursor()
                 .withQuery(getStub.rawQuery)
@@ -163,7 +163,7 @@ public class PreparedGetTest {
     @Test public void getCursorWithRawQueryObservable() {
         final GetStub getStub = new GetStub();
 
-        getStub.bambooStorage
+        getStub.bambooStorageDb
                 .get()
                 .cursor()
                 .withQuery(getStub.rawQuery)
@@ -178,7 +178,7 @@ public class PreparedGetTest {
     @Test public void getListOfObjectsWithRawQueryBlocking() {
         final GetStub getStub = new GetStub();
 
-        getStub.bambooStorage
+        getStub.bambooStorageDb
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(getStub.mapFunc)
@@ -192,7 +192,7 @@ public class PreparedGetTest {
     @Test public void getListOfObjectsWithRawQueryObservable() {
         final GetStub getStub = new GetStub();
 
-        getStub.bambooStorage
+        getStub.bambooStorageDb
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(getStub.mapFunc)

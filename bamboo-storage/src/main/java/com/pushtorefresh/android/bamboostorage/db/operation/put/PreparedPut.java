@@ -3,52 +3,52 @@ package com.pushtorefresh.android.bamboostorage.db.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.operation.PreparedOperation;
 
 import java.util.Arrays;
 
 public abstract class PreparedPut<T, Result> implements PreparedOperation<Result> {
 
-    @NonNull protected final BambooStorage bambooStorage;
+    @NonNull protected final BambooStorageDb bambooStorageDb;
     @NonNull protected final PutResolver<T> putResolver;
 
-    public PreparedPut(@NonNull BambooStorage bambooStorage, @NonNull PutResolver<T> putResolver) {
-        this.bambooStorage = bambooStorage;
+    public PreparedPut(@NonNull BambooStorageDb bambooStorageDb, @NonNull PutResolver<T> putResolver) {
+        this.bambooStorageDb = bambooStorageDb;
         this.putResolver = putResolver;
     }
 
     public static class Builder {
 
-        @NonNull private final BambooStorage bambooStorage;
+        @NonNull private final BambooStorageDb bambooStorageDb;
 
-        public Builder(@NonNull BambooStorage bambooStorage) {
-            this.bambooStorage = bambooStorage;
+        public Builder(@NonNull BambooStorageDb bambooStorageDb) {
+            this.bambooStorageDb = bambooStorageDb;
         }
 
         @NonNull public PreparedPutWithContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
-            return new PreparedPutWithContentValues.Builder(bambooStorage, contentValues);
+            return new PreparedPutWithContentValues.Builder(bambooStorageDb, contentValues);
         }
 
         @NonNull public PreparedPutIterableContentValues.Builder contentValues(@NonNull Iterable<ContentValues> contentValuesIterable) {
-            return new PreparedPutIterableContentValues.Builder(bambooStorage, contentValuesIterable);
+            return new PreparedPutIterableContentValues.Builder(bambooStorageDb, contentValuesIterable);
         }
 
         @NonNull public PreparedPutIterableContentValues.Builder contentValues(@NonNull ContentValues... contentValuesArray) {
-            return new PreparedPutIterableContentValues.Builder(bambooStorage, Arrays.asList(contentValuesArray));
+            return new PreparedPutIterableContentValues.Builder(bambooStorageDb, Arrays.asList(contentValuesArray));
         }
 
         @NonNull public <T> PreparedPutWithObject.Builder<T> object(T object) {
-            return new PreparedPutWithObject.Builder<>(bambooStorage, object);
+            return new PreparedPutWithObject.Builder<>(bambooStorageDb, object);
         }
 
         @NonNull public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
-            return new PreparedPutObjects.Builder<>(bambooStorage, objects);
+            return new PreparedPutObjects.Builder<>(bambooStorageDb, objects);
         }
 
         @SafeVarargs
         @NonNull public final <T> PreparedPutObjects.Builder<T> objects(@NonNull T... objects) {
-            return new PreparedPutObjects.Builder<>(bambooStorage, Arrays.asList(objects));
+            return new PreparedPutObjects.Builder<>(bambooStorageDb, Arrays.asList(objects));
         }
     }
 }

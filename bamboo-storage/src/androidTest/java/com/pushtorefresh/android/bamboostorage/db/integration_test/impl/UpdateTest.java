@@ -21,7 +21,7 @@ public class UpdateTest extends BaseTest {
     @Test public void updateOne() {
         final User userForInsert = TestFactory.newUser();
 
-        final PutResult insertResult = bambooStorage
+        final PutResult insertResult = bambooStorageDb
                 .put()
                 .object(userForInsert)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -36,7 +36,7 @@ public class UpdateTest extends BaseTest {
                 "new@email.com" // new value
         );
 
-        final PutResult updateResult = bambooStorage
+        final PutResult updateResult = bambooStorageDb
                 .put()
                 .object(userForUpdate)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -60,7 +60,7 @@ public class UpdateTest extends BaseTest {
     @Test public void updateCollection() {
         final List<User> usersForInsert = TestFactory.newUsers(3);
 
-        final PutCollectionResult<User> insertResult = bambooStorage
+        final PutCollectionResult<User> insertResult = bambooStorageDb
                 .put()
                 .objects(usersForInsert)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -76,7 +76,7 @@ public class UpdateTest extends BaseTest {
             usersForUpdate.add(new User(usersForInsert.get(i).getId(), "new" + i + "@email.com" + i));
         }
 
-        final PutCollectionResult<User> updateResult = bambooStorage
+        final PutCollectionResult<User> updateResult = bambooStorageDb
                 .put()
                 .objects(usersForUpdate)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)

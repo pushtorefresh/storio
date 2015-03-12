@@ -17,7 +17,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putObjectBlocking() {
         User user = newUser();
 
-        PutResult putResult = bambooStorage()
+        PutResult putResult = bambooStorageDb()
                 .put()
                 .object(user)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -29,7 +29,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putObjectObservable() {
         User user = newUser();
 
-        Observable<PutResult> observablePutResult = bambooStorage()
+        Observable<PutResult> observablePutResult = bambooStorageDb()
                 .put()
                 .object(user)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -41,7 +41,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putObjectsIterableBlocking() {
         Iterable<User> users = new ArrayList<>();
 
-        PutCollectionResult<User> putResult = bambooStorage()
+        PutCollectionResult<User> putResult = bambooStorageDb()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -53,7 +53,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putObjectsIterableObservable() {
         Iterable<User> users = new ArrayList<>();
 
-        Observable<PutCollectionResult<User>> putResultObservable = bambooStorage()
+        Observable<PutCollectionResult<User>> putResultObservable = bambooStorageDb()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -65,7 +65,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putObjectsArrayBlocking() {
         User[] users = new User[]{};
 
-        PutCollectionResult<User> putResult = bambooStorage()
+        PutCollectionResult<User> putResult = bambooStorageDb()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -77,7 +77,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putObjectsArrayObservable() {
         User[] users = new User[]{};
 
-        Observable<PutCollectionResult<User>> putResultObservable = bambooStorage()
+        Observable<PutCollectionResult<User>> putResultObservable = bambooStorageDb()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -89,7 +89,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putContentValuesBlocking() {
         ContentValues contentValues = User.MAP_TO_CONTENT_VALUES.map(newUser());
 
-        PutResult putResult = bambooStorage()
+        PutResult putResult = bambooStorageDb()
                 .put()
                 .contentValues(contentValues)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -100,7 +100,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putContentValuesObservable() {
         ContentValues contentValues = User.MAP_TO_CONTENT_VALUES.map(newUser());
 
-        Observable<PutResult> putResult = bambooStorage()
+        Observable<PutResult> putResult = bambooStorageDb()
                 .put()
                 .contentValues(contentValues)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -112,7 +112,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Iterable<ContentValues> contentValuesIterable
                 = Arrays.asList(User.MAP_TO_CONTENT_VALUES.map(newUser()));
 
-        PutCollectionResult<ContentValues> putResult = bambooStorage()
+        PutCollectionResult<ContentValues> putResult = bambooStorageDb()
                 .put()
                 .contentValues(contentValuesIterable)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -124,7 +124,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Iterable<ContentValues> contentValuesIterable
                 = Arrays.asList(User.MAP_TO_CONTENT_VALUES.map(newUser()));
 
-        Observable<PutCollectionResult<ContentValues>> putResult = bambooStorage()
+        Observable<PutCollectionResult<ContentValues>> putResult = bambooStorageDb()
                 .put()
                 .contentValues(contentValuesIterable)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -135,7 +135,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putContentValuesArrayBlocking() {
         ContentValues[] contentValuesArray = {User.MAP_TO_CONTENT_VALUES.map(newUser())};
 
-        PutCollectionResult<ContentValues> putResult = bambooStorage()
+        PutCollectionResult<ContentValues> putResult = bambooStorageDb()
                 .put()
                 .contentValues(contentValuesArray)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -146,7 +146,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test public void putContentValuesArrayObservable() {
         ContentValues[] contentValuesArray = {User.MAP_TO_CONTENT_VALUES.map(newUser())};
 
-        Observable<PutCollectionResult<ContentValues>> putResult = bambooStorage()
+        Observable<PutCollectionResult<ContentValues>> putResult = bambooStorageDb()
                 .put()
                 .contentValues(contentValuesArray)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)

@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.query.InsertQueryBuilder;
 import com.pushtorefresh.android.bamboostorage.db.query.UpdateQueryBuilder;
 
@@ -16,12 +16,12 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
     @Override
     @NonNull
-    public PutResult performPut(@NonNull BambooStorage bambooStorage, @NonNull ContentValues contentValues) {
+    public PutResult performPut(@NonNull BambooStorageDb bambooStorageDb, @NonNull ContentValues contentValues) {
         final Long id = contentValues.getAsLong(BaseColumns._ID);
         final String table = getTable();
 
         if (id == null) {
-            final long insertedId = bambooStorage.internal().insert(
+            final long insertedId = bambooStorageDb.internal().insert(
                     new InsertQueryBuilder()
                             .table(table)
                             .nullColumnHack(null)
@@ -31,7 +31,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
             return PutResult.newInsertResult(insertedId, Collections.singleton(table));
         } else {
-            final int numberOfUpdatedRows = bambooStorage.internal().update(
+            final int numberOfUpdatedRows = bambooStorageDb.internal().update(
                     new UpdateQueryBuilder()
                             .table(table)
                             .where(BaseColumns._ID + "=?")

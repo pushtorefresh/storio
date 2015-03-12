@@ -19,7 +19,7 @@ public class QueryTest extends BaseTest {
     @Test public void queryAll() {
         final List<User> users = TestFactory.newUsers(3);
 
-        final PutCollectionResult<User> putResult = bambooStorage
+        final PutCollectionResult<User> putResult = bambooStorageDb
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -29,7 +29,7 @@ public class QueryTest extends BaseTest {
 
         assertEquals(users.size(), putResult.numberOfInserts());
 
-        final List<User> usersFromQuery = bambooStorage
+        final List<User> usersFromQuery = bambooStorageDb
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)

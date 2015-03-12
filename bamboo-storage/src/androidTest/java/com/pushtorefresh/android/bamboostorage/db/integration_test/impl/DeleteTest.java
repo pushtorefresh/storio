@@ -18,7 +18,7 @@ public class DeleteTest extends BaseTest {
     @Test public void deleteOne() {
         final User user = TestFactory.newUser();
 
-        final PutResult putResult = bambooStorage
+        final PutResult putResult = bambooStorageDb
                 .put()
                 .object(user)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -32,7 +32,7 @@ public class DeleteTest extends BaseTest {
         assertEquals(1, cursorAfterInsert.getCount());
         cursorAfterInsert.close();
 
-        final DeleteResult deleteResult = bambooStorage
+        final DeleteResult deleteResult = bambooStorageDb
                 .delete()
                 .object(user)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)

@@ -3,7 +3,7 @@ package com.pushtorefresh.android.bamboostorage.db.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -12,19 +12,19 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
 
     @NonNull private final ContentValues contentValues;
 
-    private PreparedPutWithContentValues(@NonNull BambooStorage bambooStorage, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
-        super(bambooStorage, putResolver);
+    private PreparedPutWithContentValues(@NonNull BambooStorageDb bambooStorageDb, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
+        super(bambooStorageDb, putResolver);
         this.contentValues = contentValues;
     }
 
     @NonNull @Override public PutResult executeAsBlocking() {
         final PutResult putResult = putResolver.performPut(
-                bambooStorage,
+                bambooStorageDb,
                 contentValues
         );
 
         putResolver.afterPut(contentValues, putResult);
-        bambooStorage.internal().notifyAboutChanges(putResult.affectedTables());
+        bambooStorageDb.internal().notifyAboutChanges(putResult.affectedTables());
         return putResult;
     }
 
@@ -43,13 +43,13 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
 
     public static class Builder {
 
-        @NonNull private final BambooStorage bambooStorage;
+        @NonNull private final BambooStorageDb bambooStorageDb;
         @NonNull private final ContentValues contentValues;
 
         private PutResolver<ContentValues> putResolver;
 
-        public Builder(@NonNull BambooStorage bambooStorage, @NonNull ContentValues contentValues) {
-            this.bambooStorage = bambooStorage;
+        public Builder(@NonNull BambooStorageDb bambooStorageDb, @NonNull ContentValues contentValues) {
+            this.bambooStorageDb = bambooStorageDb;
             this.contentValues = contentValues;
         }
 
@@ -60,7 +60,7 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
 
         @NonNull public PreparedPutWithContentValues prepare() {
             return new PreparedPutWithContentValues(
-                    bambooStorage,
+                    bambooStorageDb,
                     putResolver,
                     contentValues
             );

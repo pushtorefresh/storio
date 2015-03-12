@@ -14,7 +14,7 @@ import rx.Observable;
 public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test public void getCursorBlocking() {
-        Cursor cursor = bambooStorage()
+        Cursor cursor = bambooStorageDb()
                 .get()
                 .cursor()
                 .withQuery(new QueryBuilder()
@@ -27,7 +27,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void getListOfObjectsBlocking() {
-        List<User> users = bambooStorage()
+        List<User> users = bambooStorageDb()
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -41,7 +41,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void getCursorObservable() {
-        Observable<Cursor> observableCursor = bambooStorage()
+        Observable<Cursor> observableCursor = bambooStorageDb()
                 .get()
                 .cursor()
                 .withQuery(new QueryBuilder()
@@ -54,7 +54,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void getListOfObjectsObservable() {
-        Observable<List<User>> observableUsers = bambooStorage()
+        Observable<List<User>> observableUsers = bambooStorageDb()
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -68,7 +68,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void getCursorWithRawQueryBlocking() {
-        Cursor cursor = bambooStorage()
+        Cursor cursor = bambooStorageDb()
                 .get()
                 .cursor()
                 .withQuery(new RawQueryBuilder()
@@ -80,7 +80,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void getCursorWithRawQueryObservable() {
-        Observable<Cursor> cursorObservable = bambooStorage()
+        Observable<Cursor> cursorObservable = bambooStorageDb()
                 .get()
                 .cursor()
                 .withQuery(new RawQueryBuilder()
@@ -92,7 +92,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void getListOfObjectsWithRawQueryBlocking() {
-        List<User> users = bambooStorage()
+        List<User> users = bambooStorageDb()
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -105,7 +105,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void getListOfObjectsWithRawQueryObservable() {
-        Observable<List<User>> usersObservable = bambooStorage()
+        Observable<List<User>> usersObservable = bambooStorageDb()
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -118,7 +118,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void getCursorObservableStream() {
-        Observable<Cursor> usersObservableStream = bambooStorage()
+        Observable<Cursor> usersObservableStream = bambooStorageDb()
                 .get()
                 .cursor()
                 .withQuery(new QueryBuilder().table("users").build())
@@ -127,7 +127,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void getListOfObjectsObservableStream() {
-        Observable<List<User>> usersObservableStream = bambooStorage()
+        Observable<List<User>> usersObservableStream = bambooStorageDb()
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)

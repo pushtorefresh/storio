@@ -2,7 +2,7 @@ package com.pushtorefresh.android.bamboostorage.db.operation.exec_sql;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.operation.PreparedOperation;
 import com.pushtorefresh.android.bamboostorage.db.query.RawQuery;
 
@@ -11,16 +11,16 @@ import rx.Subscriber;
 
 public class PreparedExecSql implements PreparedOperation<Void> {
 
-    @NonNull private final BambooStorage bambooStorage;
+    @NonNull private final BambooStorageDb bambooStorageDb;
     @NonNull private final RawQuery rawQuery;
 
-    public PreparedExecSql(@NonNull BambooStorage bambooStorage, @NonNull RawQuery rawQuery) {
-        this.bambooStorage = bambooStorage;
+    public PreparedExecSql(@NonNull BambooStorageDb bambooStorageDb, @NonNull RawQuery rawQuery) {
+        this.bambooStorageDb = bambooStorageDb;
         this.rawQuery = rawQuery;
     }
 
     @NonNull @Override public Void executeAsBlocking() {
-        bambooStorage.internal().execSql(rawQuery);
+        bambooStorageDb.internal().execSql(rawQuery);
         return null;
     }
 
@@ -39,12 +39,12 @@ public class PreparedExecSql implements PreparedOperation<Void> {
 
     public static class Builder {
 
-        @NonNull private final BambooStorage bambooStorage;
+        @NonNull private final BambooStorageDb bambooStorageDb;
 
         private RawQuery rawQuery;
 
-        public Builder(@NonNull BambooStorage bambooStorage) {
-            this.bambooStorage = bambooStorage;
+        public Builder(@NonNull BambooStorageDb bambooStorageDb) {
+            this.bambooStorageDb = bambooStorageDb;
         }
 
         @NonNull public Builder withQuery(@NonNull RawQuery rawQuery) {
@@ -58,7 +58,7 @@ public class PreparedExecSql implements PreparedOperation<Void> {
             }
 
             return new PreparedExecSql(
-                    bambooStorage,
+                    bambooStorageDb,
                     rawQuery
             );
         }

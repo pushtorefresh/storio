@@ -1,6 +1,6 @@
 package com.pushtorefresh.android.bamboostorage.db.unit_test.operation;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.android.bamboostorage.db.query.RawQuery;
 import com.pushtorefresh.android.bamboostorage.db.query.RawQueryBuilder;
@@ -18,31 +18,31 @@ public class PreparedExecSqlTest {
 
     static class Stub {
 
-        private final BambooStorage bambooStorage;
-        private final BambooStorage.Internal internal;
+        private final BambooStorageDb bambooStorageDb;
+        private final BambooStorageDb.Internal internal;
         private final RawQuery rawQuery;
 
         Stub() {
-            bambooStorage = mock(BambooStorage.class);
-            internal = mock(BambooStorage.Internal.class);
+            bambooStorageDb = mock(BambooStorageDb.class);
+            internal = mock(BambooStorageDb.Internal.class);
             rawQuery = new RawQueryBuilder().query("DROP TABLE users").build();
 
-            when(bambooStorage.internal())
+            when(bambooStorageDb.internal())
                     .thenReturn(internal);
 
-            when(bambooStorage.execSql())
-                    .thenReturn(new PreparedExecSql.Builder(bambooStorage));
+            when(bambooStorageDb.execSql())
+                    .thenReturn(new PreparedExecSql.Builder(bambooStorageDb));
 
         }
 
         @SuppressWarnings("unchecked") void verifyBehavior() {
-            // bambooStorage.execSql() should be called once
-            verify(bambooStorage, times(1)).execSql();
+            // bambooStorageDb.execSql() should be called once
+            verify(bambooStorageDb, times(1)).execSql();
 
-            // bambooStorage.internal.execSql() should be called once for ANY RawQuery
+            // bambooStorageDb.internal.execSql() should be called once for ANY RawQuery
             verify(internal, times(1)).execSql(any(RawQuery.class));
 
-            // bambooStorage.internal.execSql() should be called once for required RawQuery
+            // bambooStorageDb.internal.execSql() should be called once for required RawQuery
             verify(internal, times(1)).execSql(rawQuery);
 
             // no notifications should occur
@@ -53,7 +53,7 @@ public class PreparedExecSqlTest {
     @Test public void blocking() {
         final Stub stub = new Stub();
 
-        stub.bambooStorage
+        stub.bambooStorageDb
                 .execSql()
                 .withQuery(stub.rawQuery)
                 .prepare()
@@ -65,7 +65,7 @@ public class PreparedExecSqlTest {
     @Test public void observable() {
         final Stub stub = new Stub();
 
-        stub.bambooStorage
+        stub.bambooStorageDb
                 .execSql()
                 .withQuery(stub.rawQuery)
                 .prepare()

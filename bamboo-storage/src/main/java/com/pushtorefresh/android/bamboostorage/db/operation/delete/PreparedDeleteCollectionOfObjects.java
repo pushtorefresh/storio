@@ -2,7 +2,7 @@ package com.pushtorefresh.android.bamboostorage.db.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.db.query.DeleteQuery;
 
@@ -22,15 +22,15 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
     @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
     private final boolean useTransactionIfPossible;
 
-    protected PreparedDeleteCollectionOfObjects(@NonNull BambooStorage bambooStorage, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible) {
-        super(bambooStorage);
+    protected PreparedDeleteCollectionOfObjects(@NonNull BambooStorageDb bambooStorageDb, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible) {
+        super(bambooStorageDb);
         this.objects = objects;
         this.mapFunc = mapFunc;
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
     @NonNull @Override public DeleteCollectionOfObjectsResult<T> executeAsBlocking() {
-        final BambooStorage.Internal internal = bambooStorage.internal();
+        final BambooStorageDb.Internal internal = bambooStorageDb.internal();
 
         final Map<T, DeleteResult> results = new HashMap<>();
 
@@ -101,14 +101,14 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
 
     public static class Builder<T> {
 
-        @NonNull private final BambooStorage bambooStorage;
+        @NonNull private final BambooStorageDb bambooStorageDb;
         @NonNull private final Collection<T> objects;
 
         private MapFunc<T, DeleteQuery> mapFunc;
         private boolean useTransactionIfPossible = true;
 
-        public Builder(@NonNull BambooStorage bambooStorage, @NonNull Collection<T> objects) {
-            this.bambooStorage = bambooStorage;
+        public Builder(@NonNull BambooStorageDb bambooStorageDb, @NonNull Collection<T> objects) {
+            this.bambooStorageDb = bambooStorageDb;
             this.objects = objects;
         }
 
@@ -129,7 +129,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
 
         @NonNull public PreparedDeleteCollectionOfObjects<T> prepare() {
             return new PreparedDeleteCollectionOfObjects<>(
-                    bambooStorage,
+                    bambooStorageDb,
                     objects,
                     mapFunc,
                     useTransactionIfPossible

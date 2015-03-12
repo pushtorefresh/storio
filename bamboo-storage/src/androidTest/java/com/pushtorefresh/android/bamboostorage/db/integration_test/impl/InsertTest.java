@@ -21,7 +21,7 @@ public class InsertTest extends BaseTest {
     @Test public void insertOne() {
         final User user = TestFactory.newUser();
 
-        final PutResult putResult = bambooStorage
+        final PutResult putResult = bambooStorageDb
                 .put()
                 .object(user)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -49,7 +49,7 @@ public class InsertTest extends BaseTest {
     @Test public void insertCollection() {
         final List<User> users = TestFactory.newUsers(3);
 
-        final PutCollectionResult<User> putResult = bambooStorage
+        final PutCollectionResult<User> putResult = bambooStorageDb
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)

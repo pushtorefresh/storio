@@ -16,7 +16,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteObjectBlocking() {
         User user = newUser();
 
-        DeleteResult deleteResult = bambooStorage()
+        DeleteResult deleteResult = bambooStorageDb()
                 .delete()
                 .object(user)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -27,7 +27,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteObjectObservable() {
         User user = newUser();
 
-        Observable<DeleteResult> deleteResultObservable = bambooStorage()
+        Observable<DeleteResult> deleteResultObservable = bambooStorageDb()
                 .delete()
                 .object(user)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -38,7 +38,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteCollectionOfObjectsBlocking() {
         List<User> users = new ArrayList<>();
 
-        DeleteCollectionOfObjectsResult<User> deleteResult = bambooStorage()
+        DeleteCollectionOfObjectsResult<User> deleteResult = bambooStorageDb()
                 .delete()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -49,7 +49,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteCollectionOfObjectsObservable() {
         List<User> users = new ArrayList<>();
 
-        Observable<DeleteCollectionOfObjectsResult<User>> deleteResultObservable = bambooStorage()
+        Observable<DeleteCollectionOfObjectsResult<User>> deleteResultObservable = bambooStorageDb()
                 .delete()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -58,7 +58,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void deleteByQueryBlocking() {
-        DeleteResult deleteResult = bambooStorage()
+        DeleteResult deleteResult = bambooStorageDb()
                 .delete()
                 .byQuery(new DeleteQueryBuilder()
                         .table("users")
@@ -70,7 +70,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void deleteByQueryObservable() {
-        Observable<DeleteResult> deleteResultObservable = bambooStorage()
+        Observable<DeleteResult> deleteResultObservable = bambooStorageDb()
                 .delete()
                 .byQuery(new DeleteQueryBuilder()
                         .table("users")

@@ -2,7 +2,7 @@ package com.pushtorefresh.android.bamboostorage.db.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.operation.PreparedOperation;
 import com.pushtorefresh.android.bamboostorage.db.query.DeleteQuery;
 
@@ -10,30 +10,30 @@ import java.util.Collection;
 
 public abstract class PreparedDelete<T> implements PreparedOperation<T>{
 
-    @NonNull protected BambooStorage bambooStorage;
+    @NonNull protected BambooStorageDb bambooStorageDb;
 
-    protected PreparedDelete(@NonNull BambooStorage bambooStorage) {
-        this.bambooStorage = bambooStorage;
+    protected PreparedDelete(@NonNull BambooStorageDb bambooStorageDb) {
+        this.bambooStorageDb = bambooStorageDb;
     }
 
     public static class Builder {
 
-        @NonNull private final BambooStorage bambooStorage;
+        @NonNull private final BambooStorageDb bambooStorageDb;
 
-        public Builder(@NonNull BambooStorage bambooStorage) {
-            this.bambooStorage = bambooStorage;
+        public Builder(@NonNull BambooStorageDb bambooStorageDb) {
+            this.bambooStorageDb = bambooStorageDb;
         }
 
         @NonNull public PreparedDeleteByQuery.Builder byQuery(@NonNull DeleteQuery deleteQuery) {
-            return new PreparedDeleteByQuery.Builder(bambooStorage, deleteQuery);
+            return new PreparedDeleteByQuery.Builder(bambooStorageDb, deleteQuery);
         }
 
         @NonNull public <T> PreparedDeleteObject.Builder<T> object(@NonNull T object) {
-            return new PreparedDeleteObject.Builder<>(bambooStorage, object);
+            return new PreparedDeleteObject.Builder<>(bambooStorageDb, object);
         }
 
         @NonNull public <T> PreparedDeleteCollectionOfObjects.Builder<T> objects(@NonNull Collection<T> objects) {
-            return new PreparedDeleteCollectionOfObjects.Builder<>(bambooStorage, objects);
+            return new PreparedDeleteCollectionOfObjects.Builder<>(bambooStorageDb, objects);
         }
     }
 }

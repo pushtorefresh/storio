@@ -3,7 +3,7 @@ package com.pushtorefresh.android.bamboostorage.db.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -16,7 +16,7 @@ public class RawQuery {
 
     /**
      * Set of tables which are participated in {@link #query},
-     * they can be used for Reactive Streams in {@link BambooStorage#get()} operation
+     * they can be used for Reactive Streams in {@link BambooStorageDb#get()} operation
      */
     @Nullable public final Set<String> tables;
 

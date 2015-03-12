@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.android.bamboostorage.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.android.bamboostorage.db.operation.get.PreparedGet;
@@ -21,7 +21,7 @@ import rx.Observable;
 
 import static org.mockito.Mockito.mock;
 
-public class DesignTestBambooStorageImpl extends BambooStorage {
+public class DesignTestBambooStorageImpl extends BambooStorageDb {
 
     @NonNull @Override
     public Observable<Set<String>> subscribeOnChanges(@NonNull Set<String> tables) {

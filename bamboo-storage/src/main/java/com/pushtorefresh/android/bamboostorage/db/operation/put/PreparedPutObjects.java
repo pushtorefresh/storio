@@ -3,7 +3,7 @@ package com.pushtorefresh.android.bamboostorage.db.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.operation.MapFunc;
 
 import java.util.HashMap;
@@ -20,22 +20,22 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
     @NonNull private final MapFunc<T, ContentValues> mapFunc;
     private final boolean useTransactionIfPossible;
 
-    public PreparedPutObjects(@NonNull BambooStorage bambooStorage,
+    public PreparedPutObjects(@NonNull BambooStorageDb bambooStorageDb,
                               @NonNull PutResolver<T> putResolver,
                               @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc,
                               boolean useTransactionIfPossible) {
-        super(bambooStorage, putResolver);
+        super(bambooStorageDb, putResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
     @NonNull @Override public PutCollectionResult<T> executeAsBlocking() {
-        final BambooStorage.Internal internal = bambooStorage.internal();
+        final BambooStorageDb.Internal internal = bambooStorageDb.internal();
         final Map<T, PutResult> putResults = new HashMap<>();
 
         final boolean withTransaction = useTransactionIfPossible
-                && bambooStorage.internal().areTransactionsSupported();
+                && bambooStorageDb.internal().areTransactionsSupported();
 
         if (withTransaction) {
             internal.beginTransaction();
@@ -46,7 +46,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
         try {
             for (T object : objects) {
                 final PutResult putResult = putResolver.performPut(
-                        bambooStorage,
+                        bambooStorageDb,
                         mapFunc.map(object)
                 );
 
@@ -59,12 +59,12 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
             }
 
             if (withTransaction) {
-                bambooStorage.internal().setTransactionSuccessful();
+                bambooStorageDb.internal().setTransactionSuccessful();
                 transactionSuccessful = true;
             }
         } finally {
             if (withTransaction) {
-                bambooStorage.internal().endTransaction();
+                bambooStorageDb.internal().endTransaction();
 
                 if (transactionSuccessful) {
                     final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be 1 table
@@ -73,7 +73,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
                         affectedTables.addAll(putResults.get(object).affectedTables());
                     }
 
-                    bambooStorage.internal().notifyAboutChanges(affectedTables);
+                    bambooStorageDb.internal().notifyAboutChanges(affectedTables);
                 }
             }
         }
@@ -97,15 +97,15 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
 
     public static class Builder<T> {
 
-        @NonNull private final BambooStorage bambooStorage;
+        @NonNull private final BambooStorageDb bambooStorageDb;
         @NonNull private final Iterable<T> objects;
 
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
         private boolean useTransactionIfPossible = true;
 
-        public Builder(@NonNull BambooStorage bambooStorage, @NonNull Iterable<T> objects) {
-            this.bambooStorage = bambooStorage;
+        public Builder(@NonNull BambooStorageDb bambooStorageDb, @NonNull Iterable<T> objects) {
+            this.bambooStorageDb = bambooStorageDb;
             this.objects = objects;
         }
 
@@ -131,7 +131,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
 
         @NonNull public PreparedPutObjects<T> prepare() {
             return new PreparedPutObjects<>(
-                    bambooStorage,
+                    bambooStorageDb,
                     putResolver,
                     objects,
                     mapFunc,

@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.android.bamboostorage.db.BambooStorage;
+import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
 import com.pushtorefresh.android.bamboostorage.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.android.bamboostorage.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.android.bamboostorage.db.operation.get.PreparedGet;
@@ -23,7 +23,7 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 
-public class BSSQLiteDatabase extends BambooStorage {
+public class BambooStorageSQLiteDb extends BambooStorageDb {
 
     /**
      * Real db
@@ -37,11 +37,11 @@ public class BSSQLiteDatabase extends BambooStorage {
     @NonNull private final PublishSubject<Set<String>> tablesMonitor = PublishSubject.create();
 
     /**
-     * Implementation of {@link BambooStorage.Internal}
+     * Implementation of {@link BambooStorageDb.Internal}
      */
     @NonNull private final Internal internal = new InternalImpl();
 
-    protected BSSQLiteDatabase(@NonNull SQLiteDatabase db) {
+    protected BambooStorageSQLiteDb(@NonNull SQLiteDatabase db) {
         this.db = db;
     }
 
@@ -171,12 +171,12 @@ public class BSSQLiteDatabase extends BambooStorage {
             return this;
         }
 
-        @NonNull public BSSQLiteDatabase build() {
+        @NonNull public BambooStorageSQLiteDb build() {
             if (db == null) {
                 throw new IllegalStateException("Please specify SQLiteDatabase instance");
             }
 
-            return new BSSQLiteDatabase(db);
+            return new BambooStorageSQLiteDb(db);
         }
     }
 }

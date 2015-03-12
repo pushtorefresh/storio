@@ -19,12 +19,12 @@ import java.util.Set;
 import rx.Observable;
 
 /**
- * Powerful abstraction over {@link android.database.sqlite.SQLiteDatabase}
+ * Powerful abstraction for databases
  * <p/>
- * It's an abstract class and not an interface because we want to have ability to add some
+ * It's an abstract class instead of interface because we want to have ability to add some
  * changes without breaking existing implementations
  */
-public abstract class BambooStorage {
+public abstract class BambooStorageDb {
 
     /**
      * Prepares "execute sql" operation for BambooStorage
