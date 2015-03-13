@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.db.operation.PreparedOperation;
 
@@ -29,7 +30,7 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
         );
 
         putResolver.afterPut(object, putResult);
-        bambooStorageDb.internal().notifyAboutChanges(putResult.affectedTables());
+        bambooStorageDb.internal().notifyAboutChanges(new Changes(putResult.affectedTables()));
 
         return putResult;
     }

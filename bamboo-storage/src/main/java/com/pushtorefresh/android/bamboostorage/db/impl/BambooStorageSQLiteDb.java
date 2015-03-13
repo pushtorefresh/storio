@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.android.bamboostorage.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.android.bamboostorage.db.operation.get.PreparedGet;
@@ -31,10 +32,10 @@ public class BambooStorageSQLiteDb extends BambooStorageDb {
     @NonNull private final SQLiteDatabase db;
 
     /**
-     * Reactive bus for notifying observers about changes in tables
+     * Reactive bus for notifying observers about changes in BambooStorageDb
      * One change can affect several tables, so we use Set<String> as set of changed tables per event
      */
-    @NonNull private final PublishSubject<Set<String>> tablesMonitor = PublishSubject.create();
+    @NonNull private final PublishSubject<Changes> changesBus = PublishSubject.create();
 
     /**
      * Implementation of {@link BambooStorageDb.Internal}
@@ -62,18 +63,18 @@ public class BambooStorageSQLiteDb extends BambooStorageDb {
     }
 
     @Override @NonNull
-    public Observable<Set<String>> subscribeOnChanges(@NonNull final Set<String> tables) {
-        return tablesMonitor
-                .filter(new Func1<Set<String>, Boolean>() {
-                    @Override public Boolean call(Set<String> changedTables) {
+    public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
+        return changesBus
+                .filter(new Func1<Changes, Boolean>() {
+                    @Override public Boolean call(Changes changes) {
                         // if one of changed tables found in tables for subscription -> notify observer
-                        for (final String changedTable : changedTables) {
+                        for (String changedTable : changes.tables()) {
                             if (tables.contains(changedTable)) {
                                 return true;
                             }
                         }
 
-                        return false; // ignore changes from current event
+                        return false;
                     }
                 });
     }
@@ -136,8 +137,8 @@ public class BambooStorageSQLiteDb extends BambooStorageDb {
             );
         }
 
-        @Override public void notifyAboutChanges(@NonNull Set<String> affectedTables) {
-            tablesMonitor.onNext(affectedTables);
+        @Override public void notifyAboutChanges(@NonNull Changes changes) {
+            changesBus.onNext(changes);
         }
 
         @Override public boolean areTransactionsSupported() {
