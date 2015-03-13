@@ -2,8 +2,8 @@ package com.pushtorefresh.storio.db.unit_test.impl;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
-import com.pushtorefresh.storio.db.impl.BambooStorageSQLiteDb;
+import com.pushtorefresh.storio.db.StorIODb;
+import com.pushtorefresh.storio.db.impl.StorIOSQLiteDb;
 import com.pushtorefresh.storio.db.query.RawQuery;
 import com.pushtorefresh.storio.db.query.RawQueryBuilder;
 
@@ -19,13 +19,13 @@ public class BSSQLiteDatabaseTest {
     @Test public void internalExecSql() {
         final SQLiteDatabase db = mock(SQLiteDatabase.class);
 
-        final BambooStorageDb bambooStorageDb = new BambooStorageSQLiteDb.Builder()
+        final StorIODb storIODb = new StorIOSQLiteDb.Builder()
                 .db(db)
                 .build();
 
         final RawQuery rawQuery = new RawQueryBuilder().query("ALTER TABLE users").build();
 
-        bambooStorageDb.internal().execSql(rawQuery);
+        storIODb.internal().execSql(rawQuery);
 
         verify(db, times(1)).execSQL(eq(rawQuery.query), eq(rawQuery.args));
     }

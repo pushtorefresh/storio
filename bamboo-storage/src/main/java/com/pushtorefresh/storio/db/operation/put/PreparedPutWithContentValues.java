@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 
 import rx.Observable;
@@ -13,19 +13,19 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
 
     @NonNull private final ContentValues contentValues;
 
-    private PreparedPutWithContentValues(@NonNull BambooStorageDb bambooStorageDb, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
-        super(bambooStorageDb, putResolver);
+    private PreparedPutWithContentValues(@NonNull StorIODb storIODb, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
+        super(storIODb, putResolver);
         this.contentValues = contentValues;
     }
 
     @NonNull @Override public PutResult executeAsBlocking() {
         final PutResult putResult = putResolver.performPut(
-                bambooStorageDb,
+                storIODb,
                 contentValues
         );
 
         putResolver.afterPut(contentValues, putResult);
-        bambooStorageDb.internal().notifyAboutChanges(new Changes(putResult.affectedTables()));
+        storIODb.internal().notifyAboutChanges(new Changes(putResult.affectedTables()));
         return putResult;
     }
 
@@ -44,13 +44,13 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
 
     public static class Builder {
 
-        @NonNull private final BambooStorageDb bambooStorageDb;
+        @NonNull private final StorIODb storIODb;
         @NonNull private final ContentValues contentValues;
 
         private PutResolver<ContentValues> putResolver;
 
-        public Builder(@NonNull BambooStorageDb bambooStorageDb, @NonNull ContentValues contentValues) {
-            this.bambooStorageDb = bambooStorageDb;
+        public Builder(@NonNull StorIODb storIODb, @NonNull ContentValues contentValues) {
+            this.storIODb = storIODb;
             this.contentValues = contentValues;
         }
 
@@ -61,7 +61,7 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
 
         @NonNull public PreparedPutWithContentValues prepare() {
             return new PreparedPutWithContentValues(
-                    bambooStorageDb,
+                    storIODb,
                     putResolver,
                     contentValues
             );

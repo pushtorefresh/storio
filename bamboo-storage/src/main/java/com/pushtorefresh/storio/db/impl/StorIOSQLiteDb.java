@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.db.operation.exec_sql.PreparedExecSql;
@@ -24,7 +24,7 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 
-public class BambooStorageSQLiteDb extends BambooStorageDb {
+public class StorIOSQLiteDb extends StorIODb {
 
     /**
      * Real db
@@ -32,17 +32,17 @@ public class BambooStorageSQLiteDb extends BambooStorageDb {
     @NonNull private final SQLiteDatabase db;
 
     /**
-     * Reactive bus for notifying observers about changes in BambooStorageDb
+     * Reactive bus for notifying observers about changes in StorIODb
      * One change can affect several tables, so we use Set<String> as set of changed tables per event
      */
     @NonNull private final PublishSubject<Changes> changesBus = PublishSubject.create();
 
     /**
-     * Implementation of {@link BambooStorageDb.Internal}
+     * Implementation of {@link StorIODb.Internal}
      */
     @NonNull private final Internal internal = new InternalImpl();
 
-    protected BambooStorageSQLiteDb(@NonNull SQLiteDatabase db) {
+    protected StorIOSQLiteDb(@NonNull SQLiteDatabase db) {
         this.db = db;
     }
 
@@ -172,12 +172,12 @@ public class BambooStorageSQLiteDb extends BambooStorageDb {
             return this;
         }
 
-        @NonNull public BambooStorageSQLiteDb build() {
+        @NonNull public StorIOSQLiteDb build() {
             if (db == null) {
                 throw new IllegalStateException("Please specify SQLiteDatabase instance");
             }
 
-            return new BambooStorageSQLiteDb(db);
+            return new StorIOSQLiteDb(db);
         }
     }
 }

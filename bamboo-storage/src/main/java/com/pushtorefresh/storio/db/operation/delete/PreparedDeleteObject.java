@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.db.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.MapFunc;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
@@ -17,14 +17,14 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     @NonNull private final T object;
     @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
 
-    protected PreparedDeleteObject(@NonNull BambooStorageDb bambooStorageDb, @NonNull T object, @NonNull MapFunc<T, DeleteQuery> mapFunc) {
-        super(bambooStorageDb);
+    protected PreparedDeleteObject(@NonNull StorIODb storIODb, @NonNull T object, @NonNull MapFunc<T, DeleteQuery> mapFunc) {
+        super(storIODb);
         this.object = object;
         this.mapFunc = mapFunc;
     }
 
     @NonNull @Override public DeleteResult executeAsBlocking() {
-        final BambooStorageDb.Internal internal = bambooStorageDb.internal();
+        final StorIODb.Internal internal = storIODb.internal();
         final DeleteQuery deleteQuery = mapFunc.map(object);
 
         final int countOfDeletedRows = internal.delete(deleteQuery);
@@ -49,13 +49,13 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
     public static class Builder<T> {
 
-        @NonNull private final BambooStorageDb bambooStorageDb;
+        @NonNull private final StorIODb storIODb;
         @NonNull private final T object;
 
         private MapFunc<T, DeleteQuery> mapFunc;
 
-        public Builder(@NonNull BambooStorageDb bambooStorageDb, @NonNull T object) {
-            this.bambooStorageDb = bambooStorageDb;
+        public Builder(@NonNull StorIODb storIODb, @NonNull T object) {
+            this.storIODb = storIODb;
             this.object = object;
         }
 
@@ -65,7 +65,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         }
 
         @NonNull public PreparedDeleteObject<T> prepare() {
-            return new PreparedDeleteObject<>(bambooStorageDb, object, mapFunc);
+            return new PreparedDeleteObject<>(storIODb, object, mapFunc);
         }
     }
 }

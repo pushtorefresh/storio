@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.query.InsertQueryBuilder;
 import com.pushtorefresh.storio.db.query.UpdateQueryBuilder;
 
@@ -16,12 +16,12 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
     @Override
     @NonNull
-    public PutResult performPut(@NonNull BambooStorageDb bambooStorageDb, @NonNull ContentValues contentValues) {
+    public PutResult performPut(@NonNull StorIODb storIODb, @NonNull ContentValues contentValues) {
         final Long id = contentValues.getAsLong(BaseColumns._ID);
         final String table = getTable();
 
         if (id == null) {
-            final long insertedId = bambooStorageDb.internal().insert(
+            final long insertedId = storIODb.internal().insert(
                     new InsertQueryBuilder()
                             .table(table)
                             .nullColumnHack(null)
@@ -31,7 +31,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
             return PutResult.newInsertResult(insertedId, Collections.singleton(table));
         } else {
-            final int numberOfUpdatedRows = bambooStorageDb.internal().update(
+            final int numberOfUpdatedRows = storIODb.internal().update(
                     new UpdateQueryBuilder()
                             .table(table)
                             .where(BaseColumns._ID + "=?")

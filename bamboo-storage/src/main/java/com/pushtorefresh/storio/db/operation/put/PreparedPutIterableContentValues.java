@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 
 import java.util.HashMap;
@@ -20,17 +20,17 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     private final boolean useTransactionIfPossible;
 
     private PreparedPutIterableContentValues(
-            @NonNull BambooStorageDb bambooStorageDb,
+            @NonNull StorIODb storIODb,
             @NonNull PutResolver<ContentValues> putResolver,
             @NonNull Iterable<ContentValues> contentValuesIterable, boolean useTransactionIfPossible) {
 
-        super(bambooStorageDb, putResolver);
+        super(storIODb, putResolver);
         this.contentValuesIterable = contentValuesIterable;
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
     @NonNull @Override public PutCollectionResult<ContentValues> executeAsBlocking() {
-        final BambooStorageDb.Internal internal = bambooStorageDb.internal();
+        final StorIODb.Internal internal = storIODb.internal();
 
         final Map<ContentValues, PutResult> putResults = new HashMap<>();
 
@@ -45,7 +45,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
 
         try {
             for (ContentValues contentValues : contentValuesIterable) {
-                final PutResult putResult = putResolver.performPut(bambooStorageDb, contentValues);
+                final PutResult putResult = putResolver.performPut(storIODb, contentValues);
                 putResults.put(contentValues, putResult);
                 putResolver.afterPut(contentValues, putResult);
 
@@ -55,12 +55,12 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
             }
 
             if (withTransaction) {
-                bambooStorageDb.internal().setTransactionSuccessful();
+                storIODb.internal().setTransactionSuccessful();
                 transactionSuccessful = true;
             }
         } finally {
             if (withTransaction) {
-                bambooStorageDb.internal().endTransaction();
+                storIODb.internal().endTransaction();
 
                 if (transactionSuccessful) {
                     final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be 1 table
@@ -69,7 +69,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
                         affectedTables.addAll(putResults.get(contentValues).affectedTables());
                     }
 
-                    bambooStorageDb.internal().notifyAboutChanges(new Changes(affectedTables));
+                    storIODb.internal().notifyAboutChanges(new Changes(affectedTables));
                 }
             }
         }
@@ -94,14 +94,14 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
 
     public static class Builder {
 
-        @NonNull private final BambooStorageDb bambooStorageDb;
+        @NonNull private final StorIODb storIODb;
         @NonNull private final Iterable<ContentValues> contentValuesIterable;
 
         private PutResolver<ContentValues> putResolver;
         private boolean useTransactionIfPossible = true;
 
-        public Builder(@NonNull BambooStorageDb bambooStorageDb, @NonNull Iterable<ContentValues> contentValuesIterable) {
-            this.bambooStorageDb = bambooStorageDb;
+        public Builder(@NonNull StorIODb storIODb, @NonNull Iterable<ContentValues> contentValuesIterable) {
+            this.storIODb = storIODb;
             this.contentValuesIterable = contentValuesIterable;
         }
 
@@ -122,7 +122,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
 
         @NonNull public PreparedPutIterableContentValues prepare() {
             return new PreparedPutIterableContentValues(
-                    bambooStorageDb,
+                    storIODb,
                     putResolver,
                     contentValuesIterable,
                     useTransactionIfPossible

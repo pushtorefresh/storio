@@ -2,11 +2,13 @@ package com.pushtorefresh.storio.db.operation;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.db.StorIODb;
+
 import java.util.Collections;
 import java.util.Set;
 
 /**
- * Contains information about one or more changed tables in {@link com.pushtorefresh.storio.db.BambooStorageDb}
+ * Contains information about one or more changed tables in {@link StorIODb}
  */
 public class Changes {
 

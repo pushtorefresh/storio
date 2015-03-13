@@ -4,26 +4,26 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
-import com.pushtorefresh.storio.db.impl.BambooStorageSQLiteDb;
+import com.pushtorefresh.storio.db.StorIODb;
+import com.pushtorefresh.storio.db.impl.StorIOSQLiteDb;
 
 import org.junit.Before;
 
 public abstract class BaseTest {
 
-    @NonNull protected BambooStorageDb bambooStorageDb;
+    @NonNull protected StorIODb storIODb;
     @NonNull protected SQLiteDatabase db;
 
     @Before public void setUp() throws Exception {
         db = new TestSQLiteOpenHelper(InstrumentationRegistry.getContext())
                 .getWritableDatabase();
 
-        bambooStorageDb = new BambooStorageSQLiteDb.Builder()
+        storIODb = new StorIOSQLiteDb.Builder()
                 .db(db)
                 .build();
 
         // clearing db before each test case
-        bambooStorageDb
+        storIODb
                 .delete()
                 .byQuery(User.DELETE_ALL)
                 .prepare()

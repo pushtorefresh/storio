@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.db.unit_test.operation;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.storio.db.query.RawQuery;
@@ -18,31 +18,31 @@ public class PreparedExecSqlTest {
 
     static class Stub {
 
-        private final BambooStorageDb bambooStorageDb;
-        private final BambooStorageDb.Internal internal;
+        private final StorIODb storIODb;
+        private final StorIODb.Internal internal;
         private final RawQuery rawQuery;
 
         Stub() {
-            bambooStorageDb = mock(BambooStorageDb.class);
-            internal = mock(BambooStorageDb.Internal.class);
+            storIODb = mock(StorIODb.class);
+            internal = mock(StorIODb.Internal.class);
             rawQuery = new RawQueryBuilder().query("DROP TABLE users").build();
 
-            when(bambooStorageDb.internal())
+            when(storIODb.internal())
                     .thenReturn(internal);
 
-            when(bambooStorageDb.execSql())
-                    .thenReturn(new PreparedExecSql.Builder(bambooStorageDb));
+            when(storIODb.execSql())
+                    .thenReturn(new PreparedExecSql.Builder(storIODb));
 
         }
 
         @SuppressWarnings("unchecked") void verifyBehavior() {
-            // bambooStorageDb.execSql() should be called once
-            verify(bambooStorageDb, times(1)).execSql();
+            // storIODb.execSql() should be called once
+            verify(storIODb, times(1)).execSql();
 
-            // bambooStorageDb.internal.execSql() should be called once for ANY RawQuery
+            // storIODb.internal.execSql() should be called once for ANY RawQuery
             verify(internal, times(1)).execSql(any(RawQuery.class));
 
-            // bambooStorageDb.internal.execSql() should be called once for required RawQuery
+            // storIODb.internal.execSql() should be called once for required RawQuery
             verify(internal, times(1)).execSql(rawQuery);
 
             // no notifications should occur
@@ -53,7 +53,7 @@ public class PreparedExecSqlTest {
     @Test public void blocking() {
         final Stub stub = new Stub();
 
-        stub.bambooStorageDb
+        stub.storIODb
                 .execSql()
                 .withQuery(stub.rawQuery)
                 .prepare()
@@ -65,7 +65,7 @@ public class PreparedExecSqlTest {
     @Test public void observable() {
         final Stub stub = new Stub();
 
-        stub.bambooStorageDb
+        stub.storIODb
                 .execSql()
                 .withQuery(stub.rawQuery)
                 .prepare()

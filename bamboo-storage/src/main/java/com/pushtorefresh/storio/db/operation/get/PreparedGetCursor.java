@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.operation.get;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.db.query.Query;
@@ -18,19 +18,19 @@ import rx.functions.Func1;
 
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
-    PreparedGetCursor(@NonNull BambooStorageDb bambooStorageDb, @NonNull Query query) {
-        super(bambooStorageDb, query);
+    PreparedGetCursor(@NonNull StorIODb storIODb, @NonNull Query query) {
+        super(storIODb, query);
     }
 
-    PreparedGetCursor(@NonNull BambooStorageDb bambooStorageDb, @NonNull RawQuery rawQuery) {
-        super(bambooStorageDb, rawQuery);
+    PreparedGetCursor(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery) {
+        super(storIODb, rawQuery);
     }
 
     @NonNull public Cursor executeAsBlocking() {
         if (query != null) {
-            return bambooStorageDb.internal().query(query);
+            return storIODb.internal().query(query);
         } else if (rawQuery != null) {
-            return bambooStorageDb.internal().rawQuery(rawQuery);
+            return storIODb.internal().rawQuery(rawQuery);
         } else {
             throw new IllegalStateException("Please specify query");
         }
@@ -60,7 +60,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         }
 
         if (tables != null && !tables.isEmpty()) {
-            return bambooStorageDb
+            return storIODb
                     .observeChangesInTables(tables)
                     .map(new Func1<Changes, Cursor>() { // each change triggers executeAsBlocking
                         @Override public Cursor call(Changes changes) {
@@ -75,13 +75,13 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
 
     public static class Builder {
 
-        @NonNull private final BambooStorageDb bambooStorageDb;
+        @NonNull private final StorIODb storIODb;
 
         private Query query;
         private RawQuery rawQuery;
 
-        public Builder(@NonNull BambooStorageDb bambooStorageDb) {
-            this.bambooStorageDb = bambooStorageDb;
+        public Builder(@NonNull StorIODb storIODb) {
+            this.storIODb = storIODb;
         }
 
         @NonNull public Builder withQuery(@NonNull Query query) {
@@ -96,9 +96,9 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
 
         @NonNull public PreparedOperationWithReactiveStream<Cursor> prepare() {
             if (query != null) {
-                return new PreparedGetCursor(bambooStorageDb, query);
+                return new PreparedGetCursor(storIODb, query);
             } else if (rawQuery != null) {
-                return new PreparedGetCursor(bambooStorageDb, rawQuery);
+                return new PreparedGetCursor(storIODb, rawQuery);
             } else {
                 throw new IllegalStateException("Please specify query");
             }

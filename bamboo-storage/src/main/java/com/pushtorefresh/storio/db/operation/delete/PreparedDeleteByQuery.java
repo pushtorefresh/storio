@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.db.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
 
@@ -15,13 +15,13 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     @NonNull private final DeleteQuery deleteQuery;
 
-    protected PreparedDeleteByQuery(@NonNull BambooStorageDb bambooStorageDb, @NonNull DeleteQuery deleteQuery) {
-        super(bambooStorageDb);
+    protected PreparedDeleteByQuery(@NonNull StorIODb storIODb, @NonNull DeleteQuery deleteQuery) {
+        super(storIODb);
         this.deleteQuery = deleteQuery;
     }
 
     @NonNull @Override public DeleteResult executeAsBlocking() {
-        final BambooStorageDb.Internal internal = bambooStorageDb.internal();
+        final StorIODb.Internal internal = storIODb.internal();
 
         final int countOfDeletedRows = internal.delete(deleteQuery);
         internal.notifyAboutChanges(new Changes(deleteQuery.table));
@@ -44,16 +44,16 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     public static class Builder {
 
-        @NonNull private final BambooStorageDb bambooStorageDb;
+        @NonNull private final StorIODb storIODb;
         @NonNull private final DeleteQuery deleteQuery;
 
-        public Builder(@NonNull BambooStorageDb bambooStorageDb, @NonNull DeleteQuery deleteQuery) {
-            this.bambooStorageDb = bambooStorageDb;
+        public Builder(@NonNull StorIODb storIODb, @NonNull DeleteQuery deleteQuery) {
+            this.storIODb = storIODb;
             this.deleteQuery = deleteQuery;
         }
 
         @NonNull public PreparedDeleteByQuery prepare() {
-            return new PreparedDeleteByQuery(bambooStorageDb, deleteQuery);
+            return new PreparedDeleteByQuery(storIODb, deleteQuery);
         }
     }
 }

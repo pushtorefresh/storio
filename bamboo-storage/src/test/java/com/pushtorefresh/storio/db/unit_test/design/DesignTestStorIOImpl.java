@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.db.operation.exec_sql.PreparedExecSql;
@@ -22,7 +22,7 @@ import rx.Observable;
 
 import static org.mockito.Mockito.mock;
 
-public class DesignTestBambooStorageImpl extends BambooStorageDb {
+public class DesignTestStorIOImpl extends StorIODb {
 
     @NonNull @Override
     public Observable<Changes> observeChangesInTables(@NonNull Set<String> tables) {

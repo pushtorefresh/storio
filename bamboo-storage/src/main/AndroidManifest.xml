@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    package="com.pushtorefresh.android.bamboostorage"
+    package="com.pushtorefresh.storio"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
 </manifest>

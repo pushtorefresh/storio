@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.db.operation.exec_sql;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.PreparedOperation;
 import com.pushtorefresh.storio.db.query.RawQuery;
 
@@ -11,16 +11,16 @@ import rx.Subscriber;
 
 public class PreparedExecSql implements PreparedOperation<Void> {
 
-    @NonNull private final BambooStorageDb bambooStorageDb;
+    @NonNull private final StorIODb storIODb;
     @NonNull private final RawQuery rawQuery;
 
-    public PreparedExecSql(@NonNull BambooStorageDb bambooStorageDb, @NonNull RawQuery rawQuery) {
-        this.bambooStorageDb = bambooStorageDb;
+    public PreparedExecSql(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery) {
+        this.storIODb = storIODb;
         this.rawQuery = rawQuery;
     }
 
     @NonNull @Override public Void executeAsBlocking() {
-        bambooStorageDb.internal().execSql(rawQuery);
+        storIODb.internal().execSql(rawQuery);
         return null;
     }
 
@@ -39,12 +39,12 @@ public class PreparedExecSql implements PreparedOperation<Void> {
 
     public static class Builder {
 
-        @NonNull private final BambooStorageDb bambooStorageDb;
+        @NonNull private final StorIODb storIODb;
 
         private RawQuery rawQuery;
 
-        public Builder(@NonNull BambooStorageDb bambooStorageDb) {
-            this.bambooStorageDb = bambooStorageDb;
+        public Builder(@NonNull StorIODb storIODb) {
+            this.storIODb = storIODb;
         }
 
         @NonNull public Builder withQuery(@NonNull RawQuery rawQuery) {
@@ -58,7 +58,7 @@ public class PreparedExecSql implements PreparedOperation<Void> {
             }
 
             return new PreparedExecSql(
-                    bambooStorageDb,
+                    storIODb,
                     rawQuery
             );
         }

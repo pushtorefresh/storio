@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.MapFunc;
 import com.pushtorefresh.storio.db.operation.PreparedOperation;
@@ -16,21 +16,21 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
     @NonNull private final T object;
     @NonNull private final MapFunc<T, ContentValues> mapFunc;
 
-    PreparedPutWithObject(@NonNull BambooStorageDb bambooStorageDb, @NonNull PutResolver<T> putResolver,
+    PreparedPutWithObject(@NonNull StorIODb storIODb, @NonNull PutResolver<T> putResolver,
                           @NonNull T object, @NonNull MapFunc<T, ContentValues> mapFunc) {
-        super(bambooStorageDb, putResolver);
+        super(storIODb, putResolver);
         this.object = object;
         this.mapFunc = mapFunc;
     }
 
     @NonNull public PutResult executeAsBlocking() {
         final PutResult putResult = putResolver.performPut(
-                bambooStorageDb,
+                storIODb,
                 mapFunc.map(object)
         );
 
         putResolver.afterPut(object, putResult);
-        bambooStorageDb.internal().notifyAboutChanges(new Changes(putResult.affectedTables()));
+        storIODb.internal().notifyAboutChanges(new Changes(putResult.affectedTables()));
 
         return putResult;
     }
@@ -51,14 +51,14 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
 
     public static class Builder<T> {
 
-        @NonNull private final BambooStorageDb bambooStorageDb;
+        @NonNull private final StorIODb storIODb;
         @NonNull private final T object;
 
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
 
-        public Builder(@NonNull BambooStorageDb bambooStorageDb, @NonNull T object) {
-            this.bambooStorageDb = bambooStorageDb;
+        public Builder(@NonNull StorIODb storIODb, @NonNull T object) {
+            this.storIODb = storIODb;
             this.object = object;
         }
 
@@ -74,7 +74,7 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
 
         @NonNull public PreparedOperation<PutResult> prepare() {
             return new PreparedPutWithObject<>(
-                    bambooStorageDb,
+                    storIODb,
                     putResolver,
                     object,
                     mapFunc

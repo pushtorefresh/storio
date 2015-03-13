@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.db.unit_test.operation;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.MapFunc;
 import com.pushtorefresh.storio.db.operation.delete.PreparedDelete;
@@ -25,20 +25,20 @@ public class PreparedDeleteTest {
     // stub class to avoid violation of DRY in "deleteOne" tests
     private static class DeleteOneStub {
         final User user;
-        final BambooStorageDb bambooStorageDb;
-        final BambooStorageDb.Internal internal;
+        final StorIODb storIODb;
+        final StorIODb.Internal internal;
         final MapFunc<User, DeleteQuery> mapFunc;
 
         DeleteOneStub() {
             user = new User(null, "test@example.com");
-            bambooStorageDb = mock(BambooStorageDb.class);
-            internal = mock(BambooStorageDb.Internal.class);
+            storIODb = mock(StorIODb.class);
+            internal = mock(StorIODb.Internal.class);
 
-            when(bambooStorageDb.internal())
+            when(storIODb.internal())
                     .thenReturn(internal);
 
-            when(bambooStorageDb.delete())
-                    .thenReturn(new PreparedDelete.Builder(bambooStorageDb));
+            when(storIODb.delete())
+                    .thenReturn(new PreparedDelete.Builder(storIODb));
 
             //noinspection unchecked
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
@@ -49,7 +49,7 @@ public class PreparedDeleteTest {
 
         void verifyBehavior() {
             // delete should be called only once
-            verify(bambooStorageDb, times(1)).delete();
+            verify(storIODb, times(1)).delete();
 
             // object should be mapped to ContentValues only once
             verify(mapFunc, times(1)).map(user);
@@ -65,7 +65,7 @@ public class PreparedDeleteTest {
     @Test public void deleteOneBlocking() {
         final DeleteOneStub deleteOneStub = new DeleteOneStub();
 
-        deleteOneStub.bambooStorageDb
+        deleteOneStub.storIODb
                 .delete()
                 .object(deleteOneStub.user)
                 .withMapFunc(deleteOneStub.mapFunc)
@@ -78,7 +78,7 @@ public class PreparedDeleteTest {
     @Test public void deleteOneObservable() {
         final DeleteOneStub deleteOneStub = new DeleteOneStub();
 
-        deleteOneStub.bambooStorageDb
+        deleteOneStub.storIODb
                 .delete()
                 .object(deleteOneStub.user)
                 .withMapFunc(deleteOneStub.mapFunc)
@@ -93,8 +93,8 @@ public class PreparedDeleteTest {
     // stub class to avoid violation of DRY in "deleteMultiple" tests
     private static class DeleteMultipleStub {
         final List<User> users;
-        final BambooStorageDb bambooStorageDb;
-        final BambooStorageDb.Internal internal;
+        final StorIODb storIODb;
+        final StorIODb.Internal internal;
         final MapFunc<User, DeleteQuery> mapFunc;
         final boolean useTransaction;
 
@@ -108,17 +108,17 @@ public class PreparedDeleteTest {
                 users.add(new User(null, String.valueOf(i)));
             }
 
-            bambooStorageDb = mock(BambooStorageDb.class);
-            internal = mock(BambooStorageDb.Internal.class);
+            storIODb = mock(StorIODb.class);
+            internal = mock(StorIODb.Internal.class);
 
             when(internal.areTransactionsSupported())
                     .thenReturn(useTransaction);
 
-            when(bambooStorageDb.internal())
+            when(storIODb.internal())
                     .thenReturn(internal);
 
-            when(bambooStorageDb.delete())
-                    .thenReturn(new PreparedDelete.Builder(bambooStorageDb));
+            when(storIODb.delete())
+                    .thenReturn(new PreparedDelete.Builder(storIODb));
 
             //noinspection unchecked
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
@@ -131,8 +131,8 @@ public class PreparedDeleteTest {
         }
 
         void verifyBehavior() {
-            // only one call to bambooStorageDb.delete() should occur
-            verify(bambooStorageDb, times(1)).delete();
+            // only one call to storIODb.delete() should occur
+            verify(storIODb, times(1)).delete();
 
             for (final User user : users) {
                 // map operation for each object should be called only once
@@ -158,7 +158,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleBlocking() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(true);
 
-        deleteMultipleStub.bambooStorageDb
+        deleteMultipleStub.storIODb
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
@@ -171,7 +171,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleObservable() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(true);
 
-        deleteMultipleStub.bambooStorageDb
+        deleteMultipleStub.storIODb
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
@@ -186,7 +186,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleBlockingWithoutTransaction() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(false);
 
-        deleteMultipleStub.bambooStorageDb
+        deleteMultipleStub.storIODb
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
@@ -200,7 +200,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleObservableWithoutTransaction() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(false);
 
-        deleteMultipleStub.bambooStorageDb
+        deleteMultipleStub.storIODb
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
@@ -216,7 +216,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleBlockingWithTransaction() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(true);
 
-        deleteMultipleStub.bambooStorageDb
+        deleteMultipleStub.storIODb
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
@@ -230,7 +230,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleObservableWithTransaction() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(true);
 
-        deleteMultipleStub.bambooStorageDb
+        deleteMultipleStub.storIODb
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)

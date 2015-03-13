@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.operation.get;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.MapFunc;
 import com.pushtorefresh.storio.db.operation.PreparedOperationWithReactiveStream;
@@ -23,13 +23,13 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     @NonNull private final MapFunc<Cursor, T> mapFunc;
 
-    PreparedGetListOfObjects(@NonNull BambooStorageDb bambooStorageDb, @NonNull Query query, @NonNull MapFunc<Cursor, T> mapFunc) {
-        super(bambooStorageDb, query);
+    PreparedGetListOfObjects(@NonNull StorIODb storIODb, @NonNull Query query, @NonNull MapFunc<Cursor, T> mapFunc) {
+        super(storIODb, query);
         this.mapFunc = mapFunc;
     }
 
-    PreparedGetListOfObjects(@NonNull BambooStorageDb bambooStorageDb, @NonNull RawQuery rawQuery, @NonNull MapFunc<Cursor, T> mapFunc) {
-        super(bambooStorageDb, rawQuery);
+    PreparedGetListOfObjects(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery, @NonNull MapFunc<Cursor, T> mapFunc) {
+        super(storIODb, rawQuery);
         this.mapFunc = mapFunc;
     }
 
@@ -38,9 +38,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         final Cursor cursor;
 
         if (query != null) {
-            cursor = bambooStorageDb.internal().query(query);
+            cursor = storIODb.internal().query(query);
         } else if (rawQuery != null) {
-            cursor = bambooStorageDb.internal().rawQuery(rawQuery);
+            cursor = storIODb.internal().rawQuery(rawQuery);
         } else {
             throw new IllegalStateException("Please specify query");
         }
@@ -82,7 +82,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         if (tables != null && !tables.isEmpty()) {
-            return bambooStorageDb
+            return storIODb
                     .observeChangesInTables(tables)
                     .map(new Func1<Changes, List<T>>() { // each change triggers executeAsBlocking
                         @Override public List<T> call(Changes affectedTables) {
@@ -97,7 +97,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     public static class Builder<T> {
 
-        @NonNull private final BambooStorageDb bambooStorageDb;
+        @NonNull private final StorIODb storIODb;
         @NonNull
         private final Class<T> type; // currently type not used as object, only for generic Builder class
 
@@ -105,8 +105,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         private Query query;
         private RawQuery rawQuery;
 
-        public Builder(@NonNull BambooStorageDb bambooStorageDb, @NonNull Class<T> type) {
-            this.bambooStorageDb = bambooStorageDb;
+        public Builder(@NonNull StorIODb storIODb, @NonNull Class<T> type) {
+            this.storIODb = storIODb;
             this.type = type;
         }
 
@@ -127,9 +127,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
         @NonNull public PreparedOperationWithReactiveStream<List<T>> prepare() {
             if (query != null) {
-                return new PreparedGetListOfObjects<>(bambooStorageDb, query, mapFunc);
+                return new PreparedGetListOfObjects<>(storIODb, query, mapFunc);
             } else if (rawQuery != null) {
-                return new PreparedGetListOfObjects<>(bambooStorageDb, rawQuery, mapFunc);
+                return new PreparedGetListOfObjects<>(storIODb, rawQuery, mapFunc);
             } else {
                 throw new IllegalStateException("Please specify query");
             }

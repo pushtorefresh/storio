@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.unit_test.operation;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.BambooStorageDb;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.MapFunc;
 import com.pushtorefresh.storio.db.operation.put.PreparedPut;
@@ -30,21 +30,21 @@ public class PreparedPutTest {
     // stub class to avoid violation of DRY in "putOne" tests
     private static class PutOneStub {
         final User user;
-        final BambooStorageDb bambooStorageDb;
-        final BambooStorageDb.Internal internal;
+        final StorIODb storIODb;
+        final StorIODb.Internal internal;
         final MapFunc<User, ContentValues> mapFunc;
         final PutResolver<User> putResolver;
 
         PutOneStub() {
             user = new User(null, "test@example.com");
-            bambooStorageDb = mock(BambooStorageDb.class);
-            internal = mock(BambooStorageDb.Internal.class);
+            storIODb = mock(StorIODb.class);
+            internal = mock(StorIODb.Internal.class);
 
-            when(bambooStorageDb.internal())
+            when(storIODb.internal())
                     .thenReturn(internal);
 
-            when(bambooStorageDb.put())
-                    .thenReturn(new PreparedPut.Builder(bambooStorageDb));
+            when(storIODb.put())
+                    .thenReturn(new PreparedPut.Builder(storIODb));
 
             //noinspection unchecked
             mapFunc = (MapFunc<User, ContentValues>) mock(MapFunc.class);
@@ -52,7 +52,7 @@ public class PreparedPutTest {
             //noinspection unchecked
             putResolver = (PutResolver<User>) mock(PutResolver.class);
 
-            when(putResolver.performPut(eq(bambooStorageDb), any(ContentValues.class)))
+            when(putResolver.performPut(eq(storIODb), any(ContentValues.class)))
                     .thenReturn(PutResult.newInsertResult(1, Collections.singleton(User.TABLE)));
 
             when(mapFunc.map(user))
@@ -62,13 +62,13 @@ public class PreparedPutTest {
 
         void verifyBehavior(@NonNull PutResult putResult) {
             // put should be called only once
-            verify(bambooStorageDb, times(1)).put();
+            verify(storIODb, times(1)).put();
 
             // object should be mapped to ContentValues only once
             verify(mapFunc, times(1)).map(user);
 
             // putResolver's performPut() should be called only once
-            verify(putResolver, times(1)).performPut(eq(bambooStorageDb), any(ContentValues.class));
+            verify(putResolver, times(1)).performPut(eq(storIODb), any(ContentValues.class));
 
             // putResolver's afterPut() callback should be called only once
             verify(putResolver, times(1)).afterPut(user, putResult);
@@ -81,7 +81,7 @@ public class PreparedPutTest {
     @Test public void putOneBlocking() {
         final PutOneStub putOneStub = new PutOneStub();
 
-        final PutResult putResult = putOneStub.bambooStorageDb
+        final PutResult putResult = putOneStub.storIODb
                 .put()
                 .object(putOneStub.user)
                 .withMapFunc(putOneStub.mapFunc)
@@ -95,7 +95,7 @@ public class PreparedPutTest {
     @Test public void putOneObservable() {
         final PutOneStub putOneStub = new PutOneStub();
 
-        final PutResult putResult = putOneStub.bambooStorageDb
+        final PutResult putResult = putOneStub.storIODb
                 .put()
                 .object(putOneStub.user)
                 .withMapFunc(putOneStub.mapFunc)
@@ -111,8 +111,8 @@ public class PreparedPutTest {
     // stub class to avoid violation of DRY in "putMultiple" tests
     private static class PutMultipleStub {
         final List<User> users;
-        final BambooStorageDb bambooStorageDb;
-        final BambooStorageDb.Internal internal;
+        final StorIODb storIODb;
+        final StorIODb.Internal internal;
         final MapFunc<User, ContentValues> mapFunc;
         final PutResolver<User> putResolver;
         final boolean useTransaction;
@@ -125,22 +125,22 @@ public class PreparedPutTest {
             users.add(new User(null, "2"));
             users.add(new User(null, "3"));
 
-            bambooStorageDb = mock(BambooStorageDb.class);
-            internal = mock(BambooStorageDb.Internal.class);
+            storIODb = mock(StorIODb.class);
+            internal = mock(StorIODb.Internal.class);
 
             when(internal.areTransactionsSupported())
                     .thenReturn(useTransaction);
 
-            when(bambooStorageDb.internal())
+            when(storIODb.internal())
                     .thenReturn(internal);
 
-            when(bambooStorageDb.put())
-                    .thenReturn(new PreparedPut.Builder(bambooStorageDb));
+            when(storIODb.put())
+                    .thenReturn(new PreparedPut.Builder(storIODb));
 
             //noinspection unchecked
             putResolver = (PutResolver<User>) mock(PutResolver.class);
 
-            when(putResolver.performPut(eq(bambooStorageDb), any(ContentValues.class)))
+            when(putResolver.performPut(eq(storIODb), any(ContentValues.class)))
                     .thenReturn(PutResult.newInsertResult(1, Collections.singleton(User.TABLE)));
 
             //noinspection unchecked
@@ -157,11 +157,11 @@ public class PreparedPutTest {
         }
 
         void verifyBehavior(@NonNull PutCollectionResult<User> putCollectionResult) {
-            // only one call to bambooStorageDb.put() should occur
-            verify(bambooStorageDb, times(1)).put();
+            // only one call to storIODb.put() should occur
+            verify(storIODb, times(1)).put();
 
             // number of calls to putResolver's performPut() should be equal to number of objects
-            verify(putResolver, times(users.size())).performPut(eq(bambooStorageDb), any(ContentValues.class));
+            verify(putResolver, times(users.size())).performPut(eq(storIODb), any(ContentValues.class));
 
             for (final User user : users) {
                 // map operation for each object should be called only once
@@ -188,7 +188,7 @@ public class PreparedPutTest {
     @Test public void putMultipleBlocking() {
         final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorageDb
+        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIODb
                 .put()
                 .objects(putMultipleStub.users)
                 .withMapFunc(putMultipleStub.mapFunc)
@@ -202,7 +202,7 @@ public class PreparedPutTest {
     @Test public void putMultipleObservable() {
         final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorageDb
+        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIODb
                 .put()
                 .objects(putMultipleStub.users)
                 .withMapFunc(putMultipleStub.mapFunc)
@@ -218,7 +218,7 @@ public class PreparedPutTest {
     @Test public void putMultipleBlockingWithoutTransaction() {
         final PutMultipleStub putMultipleStub = new PutMultipleStub(false);
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorageDb
+        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIODb
                 .put()
                 .objects(putMultipleStub.users)
                 .withMapFunc(putMultipleStub.mapFunc)
@@ -233,7 +233,7 @@ public class PreparedPutTest {
     @Test public void putMultipleObservableWithoutTransaction() {
         final PutMultipleStub putMultipleStub = new PutMultipleStub(false);
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorageDb
+        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIODb
                 .put()
                 .objects(putMultipleStub.users)
                 .withMapFunc(putMultipleStub.mapFunc)
@@ -250,7 +250,7 @@ public class PreparedPutTest {
     @Test public void putMultipleBlockingWithTransaction() {
         final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorageDb
+        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIODb
                 .put()
                 .objects(putMultipleStub.users)
                 .withMapFunc(putMultipleStub.mapFunc)
@@ -265,7 +265,7 @@ public class PreparedPutTest {
     @Test public void putMultipleObservableWithTransaction() {
         final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.bambooStorageDb
+        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIODb
                 .put()
                 .objects(putMultipleStub.users)
                 .withMapFunc(putMultipleStub.mapFunc)

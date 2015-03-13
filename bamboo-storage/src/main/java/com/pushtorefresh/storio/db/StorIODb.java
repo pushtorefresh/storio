@@ -26,10 +26,10 @@ import rx.Observable;
  * It's an abstract class instead of interface because we want to have ability to add some
  * changes without breaking existing implementations
  */
-public abstract class BambooStorageDb {
+public abstract class StorIODb {
 
     /**
-     * Prepares "execute sql" operation for BambooStorage
+     * Prepares "execute sql" operation for {@link StorIODb}
      * Allows to execute a single SQL statement that is NOT a SELECT/INSERT/UPDATE/DELETE.
      *
      * @return builder for PreparedExecSql
@@ -37,24 +37,24 @@ public abstract class BambooStorageDb {
     @NonNull public abstract PreparedExecSql.Builder execSql();
 
     /**
-     * Prepares "get" operation for BambooStorage
-     * Allows to get information from BambooStorage
+     * Prepares "get" operation for {@link StorIODb}
+     * Allows to get information from {@link StorIODb}
      *
      * @return builder for PreparedGet
      */
     @NonNull public abstract PreparedGet.Builder get();
 
     /**
-     * Prepares "put" operation for BambooStorage
-     * Allows to insert/update information in BambooStorage
+     * Prepares "put" operation for {@link StorIODb}
+     * Allows to insert/update information in {@link StorIODb}
      *
      * @return builder for PreparedPut
      */
     @NonNull public abstract PreparedPut.Builder put();
 
     /**
-     * Prepares "delete" operation for BambooStorage
-     * Allows to delete information from BambooStorage
+     * Prepares "delete" operation for {@link StorIODb}
+     * Allows to delete information from {@link StorIODb}
      *
      * @return builder for PreparedDelete
      */
@@ -81,15 +81,15 @@ public abstract class BambooStorageDb {
     }
 
     /**
-     * Hides some internal operations for BambooStorage to make API of BambooStorage clean and easy to understand
+     * Hides some internal operations for {@link StorIODb} to make API of {@link StorIODb} clean and easy to understand
      *
-     * @return implementation of Internal operations for BambooStorage
+     * @return implementation of Internal operations for {@link StorIODb}
      */
     @NonNull public abstract Internal internal();
 
     /**
-     * Hides some internal operations for BambooStorage
-     * to make API of BambooStorage clean and easy to understand
+     * Hides some internal operations of {@link StorIODb}
+     * to make {@link StorIODb} API clean and easy to understand
      */
     public static abstract class Internal {
 
@@ -143,16 +143,16 @@ public abstract class BambooStorageDb {
         public abstract int delete(@NonNull DeleteQuery deleteQuery);
 
         /**
-         * Notifies subscribers about changes happened in {@link BambooStorageDb}
+         * Notifies subscribers about changes happened in {@link StorIODb}
          * Operations can be executed in transaction or one operation can affect multiple tables, so to reduce number of notifications
          * you can call this method once and provide Changes object
          *
-         * @param changes changes happened in {@link BambooStorageDb}
+         * @param changes changes happened in {@link StorIODb}
          */
         public abstract void notifyAboutChanges(@NonNull Changes changes);
 
         /**
-         * BambooStorage implementation could not provide support for transactions
+         * {@link StorIODb} implementation could not provide support for transactions
          *
          * @return true if transactions are supported, false otherwise
          */

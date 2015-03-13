@@ -21,7 +21,7 @@ public class InsertTest extends BaseTest {
     @Test public void insertOne() {
         final User user = TestFactory.newUser();
 
-        final PutResult putResult = bambooStorageDb
+        final PutResult putResult = storIODb
                 .put()
                 .object(user)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -31,7 +31,7 @@ public class InsertTest extends BaseTest {
 
         assertTrue(putResult.wasInserted());
 
-        // why we created BambooStorage: nobody loves nulls
+        // why we created StorIODb: nobody loves nulls
         final Cursor cursor = db.query(User.TABLE, null, null, null, null, null, null);
 
         // asserting that values was really inserted to db
@@ -49,7 +49,7 @@ public class InsertTest extends BaseTest {
     @Test public void insertCollection() {
         final List<User> users = TestFactory.newUsers(3);
 
-        final PutCollectionResult<User> putResult = bambooStorageDb
+        final PutCollectionResult<User> putResult = storIODb
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
