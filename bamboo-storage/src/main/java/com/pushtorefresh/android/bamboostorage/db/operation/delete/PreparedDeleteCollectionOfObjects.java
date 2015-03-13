@@ -3,6 +3,7 @@ package com.pushtorefresh.android.bamboostorage.db.operation.delete;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.db.query.DeleteQuery;
 
@@ -55,7 +56,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
                 );
 
                 if (!withTransaction) {
-                    internal.notifyAboutChanges(Collections.singleton(deleteQuery.table));
+                    internal.notifyAboutChanges(new Changes(deleteQuery.table));
                 }
             }
 
@@ -76,7 +77,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
                         affectedTables.addAll(results.get(object).affectedTables());
                     }
 
-                    internal.notifyAboutChanges(affectedTables);
+                    internal.notifyAboutChanges(new Changes(affectedTables));
                 }
             }
         }

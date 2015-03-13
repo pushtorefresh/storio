@@ -1,6 +1,7 @@
 package com.pushtorefresh.android.bamboostorage.db.unit_test.operation;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.android.bamboostorage.db.query.RawQuery;
 import com.pushtorefresh.android.bamboostorage.db.query.RawQueryBuilder;
@@ -8,7 +9,6 @@ import com.pushtorefresh.android.bamboostorage.db.query.RawQueryBuilder;
 import org.junit.Test;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anySet;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,7 +46,7 @@ public class PreparedExecSqlTest {
             verify(internal, times(1)).execSql(rawQuery);
 
             // no notifications should occur
-            verify(internal, times(0)).notifyAboutChanges(anySet());
+            verify(internal, times(0)).notifyAboutChanges(any(Changes.class));
         }
     }
 

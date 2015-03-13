@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -24,7 +25,7 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
         );
 
         putResolver.afterPut(contentValues, putResult);
-        bambooStorageDb.internal().notifyAboutChanges(putResult.affectedTables());
+        bambooStorageDb.internal().notifyAboutChanges(new Changes(putResult.affectedTables()));
         return putResult;
     }
 

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.android.bamboostorage.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.android.bamboostorage.db.operation.get.PreparedGet;
@@ -14,6 +15,7 @@ import com.pushtorefresh.android.bamboostorage.db.query.Query;
 import com.pushtorefresh.android.bamboostorage.db.query.RawQuery;
 import com.pushtorefresh.android.bamboostorage.db.query.UpdateQuery;
 
+import java.util.Collections;
 import java.util.Set;
 
 import rx.Observable;
@@ -59,13 +61,24 @@ public abstract class BambooStorageDb {
     @NonNull public abstract PreparedDelete.Builder delete();
 
     /**
-     * Subscribes on changes in required tables
+     * Subscribes to changes in required tables
      *
-     * @param tables set of tables that should be monitored
-     * @return {@link rx.Observable} subscribed on changes in required tables
+     * @param tables set of table names that should be monitored
+     * @return {@link rx.Observable} of {@link Changes} subscribed to changes in required tables
      */
     @NonNull
-    public abstract Observable<Set<String>> subscribeOnChanges(@NonNull Set<String> tables);
+    public abstract Observable<Changes> observeChangesInTables(@NonNull Set<String> tables);
+
+    /**
+     * Subscribes to changes in required table
+     *
+     * @param table table name to monitor
+     * @return {@link rx.Observable} of {@link Changes} subscribed to changes in required table
+     */
+    @NonNull
+    public Observable<Changes> observeChangesInTable(@NonNull String table) {
+        return observeChangesInTables(Collections.singleton(table));
+    }
 
     /**
      * Hides some internal operations for BambooStorage to make API of BambooStorage clean and easy to understand
@@ -130,13 +143,13 @@ public abstract class BambooStorageDb {
         public abstract int delete(@NonNull DeleteQuery deleteQuery);
 
         /**
-         * Notifies subscribers about change in set of tables
-         * One operation can affect multiple tables, to reduce number of notifications
-         * you can call this method once and provide set of tables that were changed
+         * Notifies subscribers about changes happened in {@link BambooStorageDb}
+         * Operations can be executed in transaction or one operation can affect multiple tables, so to reduce number of notifications
+         * you can call this method once and provide Changes object
          *
-         * @param affectedTables set of affected tables
+         * @param changes changes happened in {@link BambooStorageDb}
          */
-        public abstract void notifyAboutChanges(@NonNull Set<String> affectedTables);
+        public abstract void notifyAboutChanges(@NonNull Changes changes);
 
         /**
          * BambooStorage implementation could not provide support for transactions

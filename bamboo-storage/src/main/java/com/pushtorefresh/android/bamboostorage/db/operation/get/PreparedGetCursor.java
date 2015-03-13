@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.android.bamboostorage.db.query.Query;
 import com.pushtorefresh.android.bamboostorage.db.query.RawQuery;
@@ -60,13 +61,13 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
 
         if (tables != null && !tables.isEmpty()) {
             return bambooStorageDb
-                    .subscribeOnChanges(tables)
-                    .map(new Func1<Set<String>, Cursor>() {
-                        @Override public Cursor call(Set<String> affectedTables) {
+                    .observeChangesInTables(tables)
+                    .map(new Func1<Changes, Cursor>() { // each change triggers executeAsBlocking
+                        @Override public Cursor call(Changes changes) {
                             return executeAsBlocking();
                         }
                     })
-                    .startWith(executeAsBlocking());
+                    .startWith(executeAsBlocking()); // start stream with first query result
         } else {
             return createObservable();
         }

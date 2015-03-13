@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.db.operation.put.PreparedPut;
 import com.pushtorefresh.android.bamboostorage.db.operation.put.PutCollectionResult;
@@ -73,7 +74,7 @@ public class PreparedPutTest {
             verify(putResolver, times(1)).afterPut(user, putResult);
 
             // only one notification should be thrown
-            verify(internal, times(1)).notifyAboutChanges(eq(Collections.singleton(User.TABLE)));
+            verify(internal, times(1)).notifyAboutChanges(eq(new Changes(User.TABLE)));
         }
     }
 
@@ -174,12 +175,12 @@ public class PreparedPutTest {
             if (useTransaction) {
                 // if put() operation used transaction, only one notification should be thrown
                 verify(internal, times(1))
-                        .notifyAboutChanges(eq(Collections.singleton(User.TABLE)));
+                        .notifyAboutChanges(eq(new Changes(User.TABLE)));
             } else {
                 // if put() operation didn't use transaction,
                 // number of notifications should be equal to number of objects
                 verify(internal, times(users.size()))
-                        .notifyAboutChanges(eq(Collections.singleton(User.TABLE)));
+                        .notifyAboutChanges(eq(new Changes(User.TABLE)));
             }
         }
     }

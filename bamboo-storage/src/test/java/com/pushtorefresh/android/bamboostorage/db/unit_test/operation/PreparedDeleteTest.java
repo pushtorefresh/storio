@@ -1,6 +1,7 @@
 package com.pushtorefresh.android.bamboostorage.db.unit_test.operation;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.android.bamboostorage.db.query.DeleteQuery;
@@ -9,10 +10,11 @@ import com.pushtorefresh.android.bamboostorage.db.unit_test.design.User;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,8 +44,7 @@ public class PreparedDeleteTest {
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
 
             when(mapFunc.map(user))
-                    .thenReturn(mock(DeleteQuery.class));
-
+                    .thenReturn(User.MAP_TO_DELETE_QUERY.map(user));
         }
 
         void verifyBehavior() {
@@ -54,8 +55,10 @@ public class PreparedDeleteTest {
             verify(mapFunc, times(1)).map(user);
 
             // only one notification should be thrown
-            //noinspection unchecked
-            verify(internal, times(1)).notifyAboutChanges(any(Set.class));
+            verify(internal, times(1)).notifyAboutChanges(any(Changes.class));
+
+            // change should occur only in users table
+            verify(internal, times(1)).notifyAboutChanges(eq(new Changes(User.TABLE)));
         }
     }
 
@@ -121,8 +124,9 @@ public class PreparedDeleteTest {
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
 
             for (int i = 0; i < ITEMS_TO_DELETE_COUNT; i++) {
-                when(mapFunc.map(users.get(i)))
-                        .thenReturn(mock(DeleteQuery.class));
+                final User user = users.get(i);
+                when(mapFunc.map(user))
+                        .thenReturn(User.MAP_TO_DELETE_QUERY.map(user));
             }
         }
 
@@ -137,16 +141,16 @@ public class PreparedDeleteTest {
 
             if (useTransaction) {
                 // if delete() operation used transaction, only one notification should be thrown
+                verify(internal, times(1)).notifyAboutChanges(any(Changes.class));
 
-                //noinspection unchecked
-                verify(internal, times(1)).notifyAboutChanges(any(Set.class));
-
+                verify(internal, times(1)).notifyAboutChanges(eq(new Changes(Collections.singleton(User.TABLE))));
             } else {
                 // if delete() operation didn't use transaction,
                 // number of notifications should be equal to number of objects
+                verify(internal, times(users.size())).notifyAboutChanges(any(Changes.class));
 
-                //noinspection unchecked
-                verify(internal, times(users.size())).notifyAboutChanges(any(Set.class));
+                // number of notifications about changes in users table should be equal to number of users
+                verify(internal, times(users.size())).notifyAboutChanges(eq(new Changes(User.TABLE)));
             }
         }
     }

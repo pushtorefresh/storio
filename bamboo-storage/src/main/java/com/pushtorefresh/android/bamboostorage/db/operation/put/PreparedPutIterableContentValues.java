@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,7 +50,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
                 putResolver.afterPut(contentValues, putResult);
 
                 if (!withTransaction) {
-                    internal.notifyAboutChanges(putResult.affectedTables());
+                    internal.notifyAboutChanges(new Changes(putResult.affectedTables()));
                 }
             }
 
@@ -68,7 +69,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
                         affectedTables.addAll(putResults.get(contentValues).affectedTables());
                     }
 
-                    bambooStorageDb.internal().notifyAboutChanges(affectedTables);
+                    bambooStorageDb.internal().notifyAboutChanges(new Changes(affectedTables));
                 }
             }
         }

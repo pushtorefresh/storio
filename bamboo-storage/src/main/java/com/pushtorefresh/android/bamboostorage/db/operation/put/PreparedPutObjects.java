@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.MapFunc;
 
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
                 putResults.put(object, putResult);
 
                 if (!withTransaction) {
-                    internal.notifyAboutChanges(putResult.affectedTables());
+                    internal.notifyAboutChanges(new Changes(putResult.affectedTables()));
                 }
             }
 
@@ -73,7 +74,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
                         affectedTables.addAll(putResults.get(object).affectedTables());
                     }
 
-                    bambooStorageDb.internal().notifyAboutChanges(affectedTables);
+                    bambooStorageDb.internal().notifyAboutChanges(new Changes(affectedTables));
                 }
             }
         }

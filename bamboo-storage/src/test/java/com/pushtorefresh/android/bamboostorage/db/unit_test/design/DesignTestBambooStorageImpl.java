@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.android.bamboostorage.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.android.bamboostorage.db.operation.get.PreparedGet;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.mock;
 public class DesignTestBambooStorageImpl extends BambooStorageDb {
 
     @NonNull @Override
-    public Observable<Set<String>> subscribeOnChanges(@NonNull Set<String> tables) {
+    public Observable<Changes> observeChangesInTables(@NonNull Set<String> tables) {
         return Observable.empty();
     }
 
@@ -56,7 +57,7 @@ public class DesignTestBambooStorageImpl extends BambooStorageDb {
             return 0;
         }
 
-        @Override public void notifyAboutChanges(@NonNull Set<String> affectedTables) {
+        @Override public void notifyAboutChanges(@NonNull Changes changes) {
             // no impl
         }
 

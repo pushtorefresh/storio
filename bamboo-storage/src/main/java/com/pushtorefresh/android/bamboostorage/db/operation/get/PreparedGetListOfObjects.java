@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.operation.MapFunc;
 import com.pushtorefresh.android.bamboostorage.db.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.android.bamboostorage.db.query.Query;
@@ -82,13 +83,13 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
         if (tables != null && !tables.isEmpty()) {
             return bambooStorageDb
-                    .subscribeOnChanges(tables)
-                    .map(new Func1<Set<String>, List<T>>() {
-                        @Override public List<T> call(Set<String> affectedTables) {
+                    .observeChangesInTables(tables)
+                    .map(new Func1<Changes, List<T>>() { // each change triggers executeAsBlocking
+                        @Override public List<T> call(Changes affectedTables) {
                             return executeAsBlocking();
                         }
                     })
-                    .startWith(executeAsBlocking());
+                    .startWith(executeAsBlocking()); // start stream with first query result
         } else {
             return createObservable();
         }
@@ -98,7 +99,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
         @NonNull private final BambooStorageDb bambooStorageDb;
         @NonNull
-        private final Class<T> type; // currently type not used as object, only for generics
+        private final Class<T> type; // currently type not used as object, only for generic Builder class
 
         private MapFunc<Cursor, T> mapFunc;
         private Query query;

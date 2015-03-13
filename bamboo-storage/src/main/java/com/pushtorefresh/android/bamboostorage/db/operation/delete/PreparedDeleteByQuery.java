@@ -3,6 +3,7 @@ package com.pushtorefresh.android.bamboostorage.db.operation.delete;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.android.bamboostorage.db.BambooStorageDb;
+import com.pushtorefresh.android.bamboostorage.db.operation.Changes;
 import com.pushtorefresh.android.bamboostorage.db.query.DeleteQuery;
 
 import java.util.Collections;
@@ -23,7 +24,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         final BambooStorageDb.Internal internal = bambooStorageDb.internal();
 
         final int countOfDeletedRows = internal.delete(deleteQuery);
-        internal.notifyAboutChanges(Collections.singleton(deleteQuery.table));
+        internal.notifyAboutChanges(new Changes(deleteQuery.table));
 
         return DeleteResult.newDeleteResult(countOfDeletedRows, Collections.singleton(deleteQuery.table));
     }
