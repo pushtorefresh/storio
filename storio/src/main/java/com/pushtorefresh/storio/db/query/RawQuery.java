@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import com.pushtorefresh.storio.db.StorIODb;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 public class RawQuery {
@@ -47,5 +49,51 @@ public class RawQuery {
         result = 31 * result + (args != null ? Arrays.hashCode(args) : 0);
         result = 31 * result + (tables != null ? tables.hashCode() : 0);
         return result;
+    }
+
+    @Override public String toString() {
+        return "RawQuery{" +
+                "query='" + query + '\'' +
+                ", args=" + Arrays.toString(args) +
+                ", tables=" + tables +
+                '}';
+    }
+
+    public static class Builder {
+
+        private String query;
+        private String[] args;
+        private Set<String> tables;
+
+        @NonNull public Builder query(@NonNull String query) {
+            this.query = query;
+            return this;
+        }
+
+        @NonNull public Builder args(@NonNull String... args) {
+            this.args = args;
+            return this;
+        }
+
+        @NonNull public Builder tables(@NonNull String... tables) {
+            if (this.tables == null) {
+                this.tables = new HashSet<>(tables.length);
+            }
+
+            Collections.addAll(this.tables, tables);
+            return this;
+        }
+
+        @NonNull public RawQuery build() {
+            if (query == null || query.length() == 0) {
+                throw new IllegalStateException("Please specify query string");
+            }
+
+            return new RawQuery(
+                    query,
+                    args,
+                    tables
+            );
+        }
     }
 }

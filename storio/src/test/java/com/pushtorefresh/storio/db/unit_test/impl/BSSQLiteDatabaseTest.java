@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.impl.StorIOSQLiteDb;
 import com.pushtorefresh.storio.db.query.RawQuery;
-import com.pushtorefresh.storio.db.query.RawQueryBuilder;
 
 import org.junit.Test;
 
@@ -23,7 +22,7 @@ public class BSSQLiteDatabaseTest {
                 .db(db)
                 .build();
 
-        final RawQuery rawQuery = new RawQueryBuilder().query("ALTER TABLE users").build();
+        final RawQuery rawQuery = new RawQuery.Builder().query("ALTER TABLE users").build();
 
         storIODb.internal().execSql(rawQuery);
 
