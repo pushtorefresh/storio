@@ -34,4 +34,38 @@ public class InsertQuery {
         result = 31 * result + (nullColumnHack != null ? nullColumnHack.hashCode() : 0);
         return result;
     }
+
+    @Override public String toString() {
+        return "InsertQuery{" +
+                "table='" + table + '\'' +
+                ", nullColumnHack='" + nullColumnHack + '\'' +
+                '}';
+    }
+
+    public static class Builder {
+
+        private String table;
+        private String nullColumnHack;
+
+        @NonNull public Builder table(@NonNull String table) {
+            this.table = table;
+            return this;
+        }
+
+        @NonNull public Builder nullColumnHack(@Nullable String nullColumnHack) {
+            this.nullColumnHack = nullColumnHack;
+            return this;
+        }
+
+        @NonNull public InsertQuery build() {
+            if (table == null || table.length() == 0) {
+                throw new IllegalStateException("Please specify table name");
+            }
+
+            return new InsertQuery(
+                    table,
+                    nullColumnHack
+            );
+        }
+    }
 }
