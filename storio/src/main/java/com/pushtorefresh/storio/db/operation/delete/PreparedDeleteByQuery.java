@@ -15,18 +15,18 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     @NonNull private final DeleteQuery deleteQuery;
 
-    protected PreparedDeleteByQuery(@NonNull StorIODb storIODb, @NonNull DeleteQuery deleteQuery) {
-        super(storIODb);
+    PreparedDeleteByQuery(@NonNull StorIODb storIODb, @NonNull DeleteQuery deleteQuery, @NonNull DeleteResolver deleteResolver) {
+        super(storIODb, deleteResolver);
         this.deleteQuery = deleteQuery;
     }
 
     @NonNull @Override public DeleteResult executeAsBlocking() {
         final StorIODb.Internal internal = storIODb.internal();
 
-        final int countOfDeletedRows = internal.delete(deleteQuery);
+        final int numberOfDeletedRows = deleteResolver.performDelete(storIODb, deleteQuery);
         internal.notifyAboutChanges(new Changes(deleteQuery.table));
 
-        return DeleteResult.newDeleteResult(countOfDeletedRows, Collections.singleton(deleteQuery.table));
+        return DeleteResult.newDeleteResult(numberOfDeletedRows, Collections.singleton(deleteQuery.table));
     }
 
     @NonNull @Override public Observable<DeleteResult> createObservable() {
@@ -47,13 +47,24 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         @NonNull private final StorIODb storIODb;
         @NonNull private final DeleteQuery deleteQuery;
 
+        private DeleteResolver deleteResolver;
+
         public Builder(@NonNull StorIODb storIODb, @NonNull DeleteQuery deleteQuery) {
             this.storIODb = storIODb;
             this.deleteQuery = deleteQuery;
         }
 
+        @NonNull public Builder withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+            this.deleteResolver = deleteResolver;
+            return this;
+        }
+
         @NonNull public PreparedDeleteByQuery prepare() {
-            return new PreparedDeleteByQuery(storIODb, deleteQuery);
+            if (deleteResolver == null) {
+                deleteResolver = DefaultDeleteResolver.INSTANCE;
+            }
+
+            return new PreparedDeleteByQuery(storIODb, deleteQuery, deleteResolver);
         }
     }
 }

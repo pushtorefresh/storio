@@ -23,8 +23,8 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
     @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
     private final boolean useTransactionIfPossible;
 
-    protected PreparedDeleteCollectionOfObjects(@NonNull StorIODb storIODb, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible) {
-        super(storIODb);
+    PreparedDeleteCollectionOfObjects(@NonNull StorIODb storIODb, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible, @NonNull DeleteResolver deleteResolver) {
+        super(storIODb, deleteResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
         this.useTransactionIfPossible = useTransactionIfPossible;
@@ -46,12 +46,12 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
         try {
             for (final T object : objects) {
                 final DeleteQuery deleteQuery = mapFunc.map(object);
-                final int countOfDeletedRows = internal.delete(deleteQuery);
+                final int numberOfDeletedRows = deleteResolver.performDelete(storIODb, deleteQuery);
 
                 results.put(
                         object,
                         DeleteResult.newDeleteResult(
-                                countOfDeletedRows,
+                                numberOfDeletedRows,
                                 Collections.singleton(deleteQuery.table))
                 );
 
@@ -107,6 +107,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
 
         private MapFunc<T, DeleteQuery> mapFunc;
         private boolean useTransactionIfPossible = true;
+        private DeleteResolver deleteResolver;
 
         public Builder(@NonNull StorIODb storIODb, @NonNull Collection<T> objects) {
             this.storIODb = storIODb;
@@ -128,12 +129,22 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
             return this;
         }
 
+        @NonNull public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+            this.deleteResolver = deleteResolver;
+            return this;
+        }
+
         @NonNull public PreparedDeleteCollectionOfObjects<T> prepare() {
+            if (deleteResolver == null) {
+                deleteResolver = DefaultDeleteResolver.INSTANCE;
+            }
+
             return new PreparedDeleteCollectionOfObjects<>(
                     storIODb,
                     objects,
                     mapFunc,
-                    useTransactionIfPossible
+                    useTransactionIfPossible,
+                    deleteResolver
             );
         }
     }
