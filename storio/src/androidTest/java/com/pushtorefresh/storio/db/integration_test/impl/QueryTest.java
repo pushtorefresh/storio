@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.integration_test.impl;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.pushtorefresh.storio.db.operation.put.PutCollectionResult;
-import com.pushtorefresh.storio.db.query.QueryBuilder;
+import com.pushtorefresh.storio.db.query.Query;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,7 @@ public class QueryTest extends BaseTest {
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
-                .withQuery(new QueryBuilder()
+                .withQuery(new Query.Builder()
                         .table(User.TABLE)
                         .build())
                 .prepare()

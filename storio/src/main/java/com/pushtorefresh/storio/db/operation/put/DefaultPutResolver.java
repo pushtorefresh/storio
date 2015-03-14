@@ -5,8 +5,8 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.query.InsertQueryBuilder;
-import com.pushtorefresh.storio.db.query.UpdateQueryBuilder;
+import com.pushtorefresh.storio.db.query.InsertQuery;
+import com.pushtorefresh.storio.db.query.UpdateQuery;
 
 import java.util.Collections;
 
@@ -22,7 +22,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
         if (id == null) {
             final long insertedId = storIODb.internal().insert(
-                    new InsertQueryBuilder()
+                    new InsertQuery.Builder()
                             .table(table)
                             .nullColumnHack(null)
                             .build(),
@@ -32,7 +32,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
             return PutResult.newInsertResult(insertedId, Collections.singleton(table));
         } else {
             final int numberOfUpdatedRows = storIODb.internal().update(
-                    new UpdateQueryBuilder()
+                    new UpdateQuery.Builder()
                             .table(table)
                             .where(BaseColumns._ID + "=?")
                             .whereArgs(String.valueOf(id))

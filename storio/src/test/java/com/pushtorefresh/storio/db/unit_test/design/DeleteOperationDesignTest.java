@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.db.unit_test.design;
 
 import com.pushtorefresh.storio.db.operation.delete.DeleteCollectionOfObjectsResult;
 import com.pushtorefresh.storio.db.operation.delete.DeleteResult;
-import com.pushtorefresh.storio.db.query.DeleteQueryBuilder;
+import com.pushtorefresh.storio.db.query.DeleteQuery;
 
 import org.junit.Test;
 
@@ -60,7 +60,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteByQueryBlocking() {
         DeleteResult deleteResult = storIODb()
                 .delete()
-                .byQuery(new DeleteQueryBuilder()
+                .byQuery(new DeleteQuery.Builder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
@@ -72,7 +72,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteByQueryObservable() {
         Observable<DeleteResult> deleteResultObservable = storIODb()
                 .delete()
-                .byQuery(new DeleteQueryBuilder()
+                .byQuery(new DeleteQuery.Builder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")

@@ -2,8 +2,8 @@ package com.pushtorefresh.storio.db.unit_test.design;
 
 import android.database.Cursor;
 
-import com.pushtorefresh.storio.db.query.QueryBuilder;
-import com.pushtorefresh.storio.db.query.RawQueryBuilder;
+import com.pushtorefresh.storio.db.query.Query;
+import com.pushtorefresh.storio.db.query.RawQuery;
 
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
         Cursor cursor = storIODb()
                 .get()
                 .cursor()
-                .withQuery(new QueryBuilder()
+                .withQuery(new Query.Builder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
@@ -31,7 +31,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
-                .withQuery(new QueryBuilder()
+                .withQuery(new Query.Builder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
@@ -44,7 +44,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
         Observable<Cursor> observableCursor = storIODb()
                 .get()
                 .cursor()
-                .withQuery(new QueryBuilder()
+                .withQuery(new Query.Builder()
                         .table("users")
                         .whereArgs("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
@@ -58,7 +58,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
-                .withQuery(new QueryBuilder()
+                .withQuery(new Query.Builder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
@@ -71,7 +71,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
         Cursor cursor = storIODb()
                 .get()
                 .cursor()
-                .withQuery(new RawQueryBuilder()
+                .withQuery(new RawQuery.Builder()
                         .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
                         .args("arg1", "arg2")
                         .build())
@@ -83,7 +83,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
         Observable<Cursor> cursorObservable = storIODb()
                 .get()
                 .cursor()
-                .withQuery(new RawQueryBuilder()
+                .withQuery(new RawQuery.Builder()
                         .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
                         .args("arg1", "arg2")
                         .build())
@@ -96,7 +96,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
-                .withQuery(new RawQueryBuilder()
+                .withQuery(new RawQuery.Builder()
                         .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
                         .args("arg1", "arg2")
                         .build())
@@ -109,7 +109,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
-                .withQuery(new RawQueryBuilder()
+                .withQuery(new RawQuery.Builder()
                         .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
                         .args("arg1", "arg2")
                         .build())
@@ -121,7 +121,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
         Observable<Cursor> usersObservableStream = storIODb()
                 .get()
                 .cursor()
-                .withQuery(new QueryBuilder().table("users").build())
+                .withQuery(new Query.Builder().table("users").build())
                 .prepare()
                 .createObservableStream();
     }
@@ -131,7 +131,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
-                .withQuery(new QueryBuilder().table("users").build())
+                .withQuery(new Query.Builder().table("users").build())
                 .prepare()
                 .createObservableStream();
     }
