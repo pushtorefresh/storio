@@ -18,19 +18,19 @@ import rx.functions.Func1;
 
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
-    PreparedGetCursor(@NonNull StorIODb storIODb, @NonNull Query query) {
-        super(storIODb, query);
+    PreparedGetCursor(@NonNull StorIODb storIODb, @NonNull Query query, @NonNull GetResolver getResolver) {
+        super(storIODb, query, getResolver);
     }
 
-    PreparedGetCursor(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery) {
-        super(storIODb, rawQuery);
+    PreparedGetCursor(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
+        super(storIODb, rawQuery, getResolver);
     }
 
     @NonNull public Cursor executeAsBlocking() {
         if (query != null) {
-            return storIODb.internal().query(query);
+            return getResolver.performGet(storIODb, query);
         } else if (rawQuery != null) {
-            return storIODb.internal().rawQuery(rawQuery);
+            return getResolver.performGet(storIODb, rawQuery);
         } else {
             throw new IllegalStateException("Please specify query");
         }
@@ -79,6 +79,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
 
         private Query query;
         private RawQuery rawQuery;
+        private GetResolver getResolver;
 
         public Builder(@NonNull StorIODb storIODb) {
             this.storIODb = storIODb;
@@ -94,11 +95,20 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
             return this;
         }
 
+        @NonNull public Builder withGetResolver(@NonNull GetResolver getResolver) {
+            this.getResolver = getResolver;
+            return this;
+        }
+
         @NonNull public PreparedOperationWithReactiveStream<Cursor> prepare() {
+            if (getResolver == null) {
+                getResolver = DefaultGetResolver.INSTANCE;
+            }
+
             if (query != null) {
-                return new PreparedGetCursor(storIODb, query);
+                return new PreparedGetCursor(storIODb, query, getResolver);
             } else if (rawQuery != null) {
-                return new PreparedGetCursor(storIODb, rawQuery);
+                return new PreparedGetCursor(storIODb, rawQuery, getResolver);
             } else {
                 throw new IllegalStateException("Please specify query");
             }

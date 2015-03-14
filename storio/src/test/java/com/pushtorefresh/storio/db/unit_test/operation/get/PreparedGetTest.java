@@ -1,9 +1,10 @@
-package com.pushtorefresh.storio.db.unit_test.operation;
+package com.pushtorefresh.storio.db.unit_test.operation.get;
 
 import android.database.Cursor;
 
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.MapFunc;
+import com.pushtorefresh.storio.db.operation.get.GetResolver;
 import com.pushtorefresh.storio.db.operation.get.PreparedGet;
 import com.pushtorefresh.storio.db.query.Query;
 import com.pushtorefresh.storio.db.query.RawQuery;
@@ -14,6 +15,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,67 +25,64 @@ public class PreparedGetTest {
 
     private static class GetStub {
         final StorIODb storIODb;
-        final MapFunc<Cursor, User> mapFunc;
         final Query query;
         final RawQuery rawQuery;
-        final StorIODb.Internal internal;
+        final GetResolver getResolver;
+        final MapFunc<Cursor, User> mapFunc;
+        final int numberOfMockObjects = 3;
 
         GetStub() {
             storIODb = mock(StorIODb.class);
             query = mock(Query.class);
             rawQuery = mock(RawQuery.class);
-            internal = mockInternal();
+            getResolver = mock(GetResolver.class);
+
+            //noinspection unchecked
+            mapFunc = (MapFunc<Cursor, User>) mock(MapFunc.class);
+
+            final Cursor cursorMock = mock(Cursor.class);
+
+            when(cursorMock.moveToNext()).thenAnswer(new Answer<Boolean>() {
+                int invocationsCount = 0;
+
+                @Override public Boolean answer(InvocationOnMock invocation) throws Throwable {
+                    return invocationsCount++ < numberOfMockObjects;
+                }
+            });
 
             when(storIODb.get())
                     .thenReturn(new PreparedGet.Builder(storIODb));
 
-            when(storIODb.internal())
-                    .thenReturn(internal);
+            when(getResolver.performGet(storIODb, query))
+                    .thenReturn(cursorMock);
 
-            //noinspection unchecked
-            mapFunc = (MapFunc<Cursor, User>) mock(MapFunc.class);
+            when(getResolver.performGet(storIODb, rawQuery))
+                    .thenReturn(cursorMock);
 
             when(mapFunc.map(any(Cursor.class)))
                     .thenReturn(mock(User.class));
         }
 
-        private StorIODb.Internal mockInternal() {
-            final int mockObjectsSize = 3;
-            final Cursor cursorStub = mock(Cursor.class);
-            when(cursorStub.moveToNext()).thenAnswer(new Answer<Boolean>() {
-                int invocationsCount = 0;
-
-                @Override public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                    return invocationsCount++ < mockObjectsSize;
-                }
-            });
-
-            StorIODb.Internal internal = mock(StorIODb.Internal.class);
-            when(internal.query(query)).thenReturn(cursorStub);
-            when(internal.rawQuery(rawQuery)).thenReturn(cursorStub);
-            return internal;
-        }
-
         private void verifyQueryBehavior() {
             verify(storIODb, times(1)).get();
-            verify(internal, times(1)).query(any(Query.class));
+            verify(getResolver, times(1)).performGet(eq(storIODb), any(Query.class));
         }
 
         private void verifyQueryBehaviorForList() {
             verify(storIODb, times(1)).get();
-            verify(mapFunc, times(3)).map(any(Cursor.class));
-            verify(internal, times(1)).query(any(Query.class));
+            verify(getResolver, times(1)).performGet(eq(storIODb), any(Query.class));
+            verify(mapFunc, times(numberOfMockObjects)).map(any(Cursor.class));
         }
 
         private void verifyRawQueryBehavior() {
             verify(storIODb, times(1)).get();
-            verify(internal, times(1)).rawQuery(any(RawQuery.class));
+            verify(getResolver, times(1)).performGet(eq(storIODb), any(RawQuery.class));
         }
 
         private void verifyRawQueryBehaviorForList() {
             verify(storIODb, times(1)).get();
-            verify(mapFunc, times(3)).map(any(Cursor.class));
-            verify(internal, times(1)).rawQuery(any(RawQuery.class));
+            verify(getResolver, times(1)).performGet(eq(storIODb), any(RawQuery.class));
+            verify(mapFunc, times(numberOfMockObjects)).map(any(Cursor.class));
         }
 
     }
@@ -95,6 +94,7 @@ public class PreparedGetTest {
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -109,6 +109,7 @@ public class PreparedGetTest {
                 .listOfObjects(User.class)
                 .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -122,6 +123,7 @@ public class PreparedGetTest {
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolver)
                 .prepare()
                 .createObservable()
                 .toBlocking()
@@ -139,6 +141,7 @@ public class PreparedGetTest {
                 .listOfObjects(User.class)
                 .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolver)
                 .prepare()
                 .createObservable()
                 .toBlocking()
@@ -154,6 +157,7 @@ public class PreparedGetTest {
                 .get()
                 .cursor()
                 .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -167,6 +171,7 @@ public class PreparedGetTest {
                 .get()
                 .cursor()
                 .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolver)
                 .prepare()
                 .createObservable()
                 .toBlocking()
@@ -183,6 +188,7 @@ public class PreparedGetTest {
                 .listOfObjects(User.class)
                 .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -197,6 +203,7 @@ public class PreparedGetTest {
                 .listOfObjects(User.class)
                 .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolver)
                 .prepare()
                 .createObservable()
                 .toBlocking()
