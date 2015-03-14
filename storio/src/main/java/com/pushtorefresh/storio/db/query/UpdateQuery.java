@@ -40,4 +40,46 @@ public class UpdateQuery {
         result = 31 * result + (whereArgs != null ? Arrays.hashCode(whereArgs) : 0);
         return result;
     }
+
+    @Override public String toString() {
+        return "UpdateQuery{" +
+                "table='" + table + '\'' +
+                ", where='" + where + '\'' +
+                ", whereArgs=" + Arrays.toString(whereArgs) +
+                '}';
+    }
+
+    public static class Builder {
+
+        private String table;
+        private String where;
+        private String[] whereArgs;
+
+        @NonNull public Builder table(@NonNull String table) {
+            this.table = table;
+            return this;
+        }
+
+        @NonNull public Builder where(@Nullable String where) {
+            this.where = where;
+            return this;
+        }
+
+        @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
+            this.whereArgs = whereArgs;
+            return this;
+        }
+
+        @NonNull public UpdateQuery build() {
+            if (table == null || table.length() == 0) {
+                throw new IllegalStateException("Please specify table name");
+            }
+
+            return new UpdateQuery(
+                    table,
+                    where,
+                    whereArgs
+            );
+        }
+    }
 }
