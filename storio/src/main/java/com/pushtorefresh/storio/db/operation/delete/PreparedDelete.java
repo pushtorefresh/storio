@@ -10,10 +10,12 @@ import java.util.Collection;
 
 public abstract class PreparedDelete<T> implements PreparedOperation<T>{
 
-    @NonNull protected StorIODb storIODb;
+    @NonNull protected final StorIODb storIODb;
+    @NonNull protected final DeleteResolver deleteResolver;
 
-    protected PreparedDelete(@NonNull StorIODb storIODb) {
+    PreparedDelete(@NonNull StorIODb storIODb, @NonNull DeleteResolver deleteResolver) {
         this.storIODb = storIODb;
+        this.deleteResolver = deleteResolver;
     }
 
     public static class Builder {

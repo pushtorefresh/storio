@@ -1,8 +1,9 @@
-package com.pushtorefresh.storio.db.unit_test.operation;
+package com.pushtorefresh.storio.db.unit_test.operation.delete;
 
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.MapFunc;
+import com.pushtorefresh.storio.db.operation.delete.DeleteResolver;
 import com.pushtorefresh.storio.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
 import com.pushtorefresh.storio.db.unit_test.design.User;
@@ -28,11 +29,15 @@ public class PreparedDeleteTest {
         final StorIODb storIODb;
         final StorIODb.Internal internal;
         final MapFunc<User, DeleteQuery> mapFunc;
+        final DeleteResolver deleteResolver;
 
         DeleteOneStub() {
             user = new User(null, "test@example.com");
             storIODb = mock(StorIODb.class);
             internal = mock(StorIODb.Internal.class);
+            //noinspection unchecked
+            mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
+            deleteResolver = mock(DeleteResolver.class);
 
             when(storIODb.internal())
                     .thenReturn(internal);
@@ -40,11 +45,11 @@ public class PreparedDeleteTest {
             when(storIODb.delete())
                     .thenReturn(new PreparedDelete.Builder(storIODb));
 
-            //noinspection unchecked
-            mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
-
             when(mapFunc.map(user))
                     .thenReturn(User.MAP_TO_DELETE_QUERY.map(user));
+
+            when(deleteResolver.performDelete(eq(storIODb), any(DeleteQuery.class)))
+                    .thenReturn(1);
         }
 
         void verifyBehavior() {
@@ -54,11 +59,17 @@ public class PreparedDeleteTest {
             // object should be mapped to ContentValues only once
             verify(mapFunc, times(1)).map(user);
 
+            // should be called once
+            verify(deleteResolver, times(1)).performDelete(eq(storIODb), any(DeleteQuery.class));
+
             // only one notification should be thrown
             verify(internal, times(1)).notifyAboutChanges(any(Changes.class));
 
             // change should occur only in users table
             verify(internal, times(1)).notifyAboutChanges(eq(new Changes(User.TABLE)));
+
+            // we have mock deleteResolver, no real deletes should occur
+            verify(internal, times(0)).delete(any(DeleteQuery.class));
         }
     }
 
@@ -69,6 +80,7 @@ public class PreparedDeleteTest {
                 .delete()
                 .object(deleteOneStub.user)
                 .withMapFunc(deleteOneStub.mapFunc)
+                .withDeleteResolver(deleteOneStub.deleteResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -82,6 +94,7 @@ public class PreparedDeleteTest {
                 .delete()
                 .object(deleteOneStub.user)
                 .withMapFunc(deleteOneStub.mapFunc)
+                .withDeleteResolver(deleteOneStub.deleteResolver)
                 .prepare()
                 .createObservable()
                 .toBlocking()
@@ -92,24 +105,35 @@ public class PreparedDeleteTest {
 
     // stub class to avoid violation of DRY in "deleteMultiple" tests
     private static class DeleteMultipleStub {
-        final List<User> users;
         final StorIODb storIODb;
         final StorIODb.Internal internal;
         final MapFunc<User, DeleteQuery> mapFunc;
         final boolean useTransaction;
+        final DeleteResolver deleteResolver;
 
-        private static final int ITEMS_TO_DELETE_COUNT = 3;
+        final List<User> users;
+        final List<DeleteQuery> deleteQueries;
+
+
+        private static final int NUMBER_OF_ITEMS_TO_DELETE = 3;
 
         DeleteMultipleStub(boolean useTransaction) {
             this.useTransaction = useTransaction;
 
-            users = new ArrayList<>(ITEMS_TO_DELETE_COUNT);
-            for (int i = 0; i < ITEMS_TO_DELETE_COUNT; i++) {
-                users.add(new User(null, String.valueOf(i)));
+            users = new ArrayList<>(NUMBER_OF_ITEMS_TO_DELETE);
+            deleteQueries = new ArrayList<>(NUMBER_OF_ITEMS_TO_DELETE);
+
+            for (int i = 0; i < NUMBER_OF_ITEMS_TO_DELETE; i++) {
+                final User user = new User((long) i, String.valueOf(i));
+                users.add(user);
+                deleteQueries.add(User.MAP_TO_DELETE_QUERY.map(user));
             }
 
             storIODb = mock(StorIODb.class);
             internal = mock(StorIODb.Internal.class);
+            //noinspection unchecked
+            mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
+            deleteResolver = mock(DeleteResolver.class);
 
             when(internal.areTransactionsSupported())
                     .thenReturn(useTransaction);
@@ -120,13 +144,13 @@ public class PreparedDeleteTest {
             when(storIODb.delete())
                     .thenReturn(new PreparedDelete.Builder(storIODb));
 
-            //noinspection unchecked
-            mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
 
-            for (int i = 0; i < ITEMS_TO_DELETE_COUNT; i++) {
-                final User user = users.get(i);
-                when(mapFunc.map(user))
-                        .thenReturn(User.MAP_TO_DELETE_QUERY.map(user));
+            for (int i = 0; i < NUMBER_OF_ITEMS_TO_DELETE; i++) {
+                when(mapFunc.map(users.get(i)))
+                        .thenReturn(deleteQueries.get(i));
+
+                when(deleteResolver.performDelete(storIODb, deleteQueries.get(i)))
+                        .thenReturn(1);
             }
         }
 
@@ -134,15 +158,15 @@ public class PreparedDeleteTest {
             // only one call to storIODb.delete() should occur
             verify(storIODb, times(1)).delete();
 
-            for (final User user : users) {
+            for (int i = 0; i < NUMBER_OF_ITEMS_TO_DELETE; i++) {
                 // map operation for each object should be called only once
-                verify(mapFunc, times(1)).map(user);
+                verify(mapFunc, times(1)).map(users.get(i));
+                verify(deleteResolver, times(1)).performDelete(storIODb, deleteQueries.get(i));
             }
 
             if (useTransaction) {
                 // if delete() operation used transaction, only one notification should be thrown
                 verify(internal, times(1)).notifyAboutChanges(any(Changes.class));
-
                 verify(internal, times(1)).notifyAboutChanges(eq(new Changes(Collections.singleton(User.TABLE))));
             } else {
                 // if delete() operation didn't use transaction,
@@ -152,6 +176,9 @@ public class PreparedDeleteTest {
                 // number of notifications about changes in users table should be equal to number of users
                 verify(internal, times(users.size())).notifyAboutChanges(eq(new Changes(User.TABLE)));
             }
+
+            // no real deletes should occur
+            verify(internal, times(0)).delete(any(DeleteQuery.class));
         }
     }
 
@@ -162,6 +189,7 @@ public class PreparedDeleteTest {
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
+                .withDeleteResolver(deleteMultipleStub.deleteResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -175,6 +203,7 @@ public class PreparedDeleteTest {
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
+                .withDeleteResolver(deleteMultipleStub.deleteResolver)
                 .prepare()
                 .createObservable()
                 .toBlocking()
@@ -190,6 +219,7 @@ public class PreparedDeleteTest {
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
+                .withDeleteResolver(deleteMultipleStub.deleteResolver)
                 .dontUseTransaction()
                 .prepare()
                 .executeAsBlocking();
@@ -204,6 +234,7 @@ public class PreparedDeleteTest {
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
+                .withDeleteResolver(deleteMultipleStub.deleteResolver)
                 .dontUseTransaction()
                 .prepare()
                 .createObservable()
@@ -220,6 +251,7 @@ public class PreparedDeleteTest {
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
+                .withDeleteResolver(deleteMultipleStub.deleteResolver)
                 .useTransactionIfPossible()
                 .prepare()
                 .executeAsBlocking();
@@ -234,6 +266,7 @@ public class PreparedDeleteTest {
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
+                .withDeleteResolver(deleteMultipleStub.deleteResolver)
                 .useTransactionIfPossible()
                 .prepare()
                 .createObservable()
