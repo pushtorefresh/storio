@@ -85,7 +85,7 @@ public class User implements Comparable<User> {
         return id;
     }
 
-    @NonNull public String getEmail() {
+    public String getEmail() {
         return email;
     }
 
@@ -104,8 +104,8 @@ public class User implements Comparable<User> {
 
         User user = (User) o;
 
-        if (!email.equals(user.email)) return false;
         if (id != null ? !id.equals(user.id) : user.id != null) return false;
+        if (email != null ? !email.equals(user.email) : user.email != null) return false;
 
         return true;
     }
@@ -113,11 +113,11 @@ public class User implements Comparable<User> {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + email.hashCode();
+        result = 31 * result + (email != null ? email.hashCode() : 0);
         return result;
     }
 
     @Override public int compareTo(@NonNull User another) {
-        return email.compareTo(another.getEmail());
+        return email == null ? 0 : email.compareTo(another.getEmail());
     }
 }

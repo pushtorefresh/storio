@@ -55,21 +55,13 @@ public class InsertTest extends BaseTest {
         cursor.close();
     }
 
-    @Test public void insertTwice() {
+    @Test public void insertAndDeleteTwice() {
         final User user = TestFactory.newUser();
 
         for (int i = 0; i < 2; i++) {
             putUser(user);
 
-            final List<User> existUsers = storIODb
-                    .get()
-                    .listOfObjects(User.class)
-                    .withMapFunc(User.MAP_FROM_CURSOR)
-                    .withQuery(new Query.Builder()
-                            .table(User.TABLE)
-                            .build())
-                    .prepare()
-                    .executeAsBlocking();
+            final List<User> existUsers = getAllUsers();
 
             assertEquals(1, existUsers.size());
 
@@ -77,14 +69,7 @@ public class InsertTest extends BaseTest {
             assertEquals(1, cursorAfterPut.getCount());
             cursorAfterPut.close();
 
-            final DeleteResult deleteResult = storIODb
-                    .delete()
-                    .object(user)
-                    .withMapFunc(User.MAP_TO_DELETE_QUERY)
-                    .prepare()
-                    .executeAsBlocking();
-
-            assertEquals(1, deleteResult.numberOfDeletedRows());
+            deleteUser(user);
 
             final Cursor cursorAfterDelete = db.query(User.TABLE, null, null, null, null, null, null);
             assertEquals(0, cursorAfterDelete.getCount());

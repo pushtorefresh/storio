@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class DeleteTest extends BaseTest {
@@ -28,14 +27,7 @@ public class DeleteTest extends BaseTest {
         assertEquals(1, cursorAfterInsert.getCount());
         cursorAfterInsert.close();
 
-        final DeleteResult deleteResult = storIODb
-                .delete()
-                .object(user)
-                .withMapFunc(User.MAP_TO_DELETE_QUERY)
-                .prepare()
-                .executeAsBlocking();
-
-        assertEquals(1, deleteResult.numberOfDeletedRows());
+        deleteUser(user);
 
         final Cursor cursorAfterDelete = db.query(User.TABLE, null, null, null, null, null, null);
         assertEquals(0, cursorAfterDelete.getCount());
@@ -57,20 +49,16 @@ public class DeleteTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        final List<User> existUsers = storIODb
-                .get()
-                .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
-                .withQuery(new Query.Builder()
-                        .table(User.TABLE)
-                        .build())
-                .prepare()
-                .executeAsBlocking();
+        final List<User> existUsers = getAllUsers();
 
         for (User user : allUsers) {
-            final boolean deleted = usersToDelete.contains(user);
-            assertEquals(deleteResult.results().containsKey(user), deleted);
-            assertEquals(existUsers.contains(user), !deleted);
+            final boolean shouldBeDeleted = usersToDelete.contains(user);
+
+            // Check if we deleted what we going to.
+            assertEquals(shouldBeDeleted, deleteResult.wasDeleted(user));
+
+            // Check if exist, what we want to save.
+            assertEquals(!shouldBeDeleted, existUsers.contains(user));
         }
     }
 }

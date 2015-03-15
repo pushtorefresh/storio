@@ -6,8 +6,10 @@ import android.support.test.InstrumentationRegistry;
 
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.impl.StorIOSQLiteDb;
+import com.pushtorefresh.storio.db.operation.delete.DeleteResult;
 import com.pushtorefresh.storio.db.operation.put.PutCollectionResult;
 import com.pushtorefresh.storio.db.operation.put.PutResult;
+import com.pushtorefresh.storio.db.query.Query;
 
 import org.junit.Before;
 
@@ -33,6 +35,18 @@ public abstract class BaseTest {
         storIODb
                 .delete()
                 .byQuery(User.DELETE_ALL)
+                .prepare()
+                .executeAsBlocking();
+    }
+
+    @NonNull List<User> getAllUsers() {
+        return storIODb
+                .get()
+                .listOfObjects(User.class)
+                .withMapFunc(User.MAP_FROM_CURSOR)
+                .withQuery(new Query.Builder()
+                        .table(User.TABLE)
+                        .build())
                 .prepare()
                 .executeAsBlocking();
     }
@@ -74,5 +88,18 @@ public abstract class BaseTest {
         assertEquals(users.size(), putResult.numberOfInserts());
 
         return users;
+    }
+
+    @NonNull DeleteResult deleteUser(@NonNull final User user) {
+        final DeleteResult deleteResult = storIODb
+                .delete()
+                .object(user)
+                .withMapFunc(User.MAP_TO_DELETE_QUERY)
+                .prepare()
+                .executeAsBlocking();
+
+        assertEquals(1, deleteResult.numberOfDeletedRows());
+
+        return deleteResult;
     }
 }
