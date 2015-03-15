@@ -1,1 +1,2 @@
 include ':storio'
+include ':storio-sample-app'

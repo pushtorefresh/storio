@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">StorIO Sample</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="tweets_loading">Loading tweets…</string>
+    <string name="tweets_error">Unfortunately, error has occurred :(</string>
+    <string name="button_try_again">Try again</string>
+    <string name="tweets_empty">No tweets :(</string>
+    <string name="tweets_add_tweets">Add tweets</string>
+    <string name="tweets_add_error_toast">Can not add tweets</string>
+    <string name="main_tweets_sample">Tweets — Db sample</string>
+    <string name="main_content_provider_sample">Contacts — ContentProvider sample</string>
+    <string name="tweets_db_sample_label">Tweets — Db Sample</string>
+</resources>

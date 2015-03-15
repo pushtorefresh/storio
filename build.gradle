@@ -1,28 +1,61 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-	repositories {
-		jcenter()
-	}
+    repositories {
+        jcenter()
+    }
 
-	dependencies {
-		// Android Gradle plugin
-        classpath 'com.android.tools.build:gradle:1.1.0'
+    dependencies {
+        // Android Gradle plugin
+        classpath 'com.android.tools.build:gradle:1.1.3'
 
         // Resolves android-sdk dependencies
         classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
 
+        // APT compile-time annotation processing
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
-	}
+    }
 }
 
 allprojects {
     repositories {
         jcenter()
+
+        // Dagger 2 is published to Sonatype SNAPSHOT maven repo
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'
+}
+
+ext {
+    compileSdkVersion = 22
+    buildToolsVersion = '22.0.0'
+
+    supportAnnotations = 'com.android.support:support-annotations:21.0.3'
+    rxJava = 'io.reactivex:rxjava:1.0.8'
+
+    junit = 'junit:junit:4.12'
+    mockitoCore = 'org.mockito:mockito-core:1.10.19'
+    testingSupportLib = 'com.android.support.test:testing-support-lib:0.1'
+
+
+    // Dagger 2 distributed as SNAPSHOT, we don't want to allow it break our builds, so we have local jars
+    dagger = 'com.google.dagger:dagger:2.0-SNAPSHOT' //files('libs/dagger-2.0-20150309.210909-16.jar')
+    daggerCompiler = 'com.google.dagger:dagger-compiler:2.0-SNAPSHOT' //files('libs/dagger-compiler-2.0-20150309.210931-16-jar-with-dependencies.jar')
+    daggerProducers = files('libs/dagger-producers-2.0-20150309.210913-4.jar')
+
+    javaxInject = 'javax.inject:javax.inject:1'
+    javaxAnnotationApi = 'javax.annotation:javax.annotation-api:1.2'
+
+    appCompat = 'com.android.support:appcompat-v7:22.0.0'
+    butterKnife = 'com.jakewharton:butterknife:6.1.0' // Jake, if you are reading it -> Smile ;)
+    recyclerView = 'com.android.support:recyclerview-v7:22.0.0'
+    rxAndroid = 'io.reactivex:rxandroid:0.24.0'
+    timber = 'com.jakewharton.timber:timber:2.7.1'
 }
