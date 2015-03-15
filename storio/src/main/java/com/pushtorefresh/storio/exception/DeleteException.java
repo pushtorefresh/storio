@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.exception;
+package com.pushtorefresh.storio.exception;
 
 import android.support.annotation.NonNull;
 
