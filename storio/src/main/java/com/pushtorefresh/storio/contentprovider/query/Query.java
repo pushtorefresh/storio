@@ -9,6 +9,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}
+ * <p>
+ * Instances of this class are Immutable
+ */
 public class Query {
 
     /**
@@ -27,23 +32,23 @@ public class Query {
     /**
      * A selection criteria to apply when filtering rows. If null then all rows are included.
      */
-    @Nullable public final String selection;
+    @Nullable public final String where;
 
     /**
      * You may include ?s in selection, which will be replaced by the values from selectionArgs, in order that they appear in the selection. The values will be bound as Strings.
      */
-    @Nullable public final List<String> selectionArgs;
+    @Nullable public final List<String> whereArgs;
 
     /**
      * How the rows in the cursor should be sorted. If null then the provider is free to define the sort order.
      */
     @Nullable public final String sortOrder;
 
-    public Query(@NonNull Uri uri, @Nullable List<String> projection, @Nullable String selection, @Nullable List<String> selectionArgs, @Nullable String sortOrder) {
+    private Query(@NonNull Uri uri, @Nullable List<String> projection, @Nullable String where, @Nullable List<String> whereArgs, @Nullable String sortOrder) {
         this.uri = uri;
         this.projection = projection != null ? Collections.unmodifiableList(projection) : null;
-        this.selection = selection;
-        this.selectionArgs = selectionArgs != null ? Collections.unmodifiableList(selectionArgs) : null;
+        this.where = where;
+        this.whereArgs = whereArgs != null ? Collections.unmodifiableList(whereArgs) : null;
         this.sortOrder = sortOrder;
     }
 
@@ -56,9 +61,9 @@ public class Query {
         if (!uri.equals(query.uri)) return false;
         if (projection != null ? !projection.equals(query.projection) : query.projection != null)
             return false;
-        if (selection != null ? !selection.equals(query.selection) : query.selection != null)
+        if (where != null ? !where.equals(query.where) : query.where != null)
             return false;
-        if (selectionArgs != null ? !selectionArgs.equals(query.selectionArgs) : query.selectionArgs != null)
+        if (whereArgs != null ? !whereArgs.equals(query.whereArgs) : query.whereArgs != null)
             return false;
         return !(sortOrder != null ? !sortOrder.equals(query.sortOrder) : query.sortOrder != null);
 
@@ -67,8 +72,8 @@ public class Query {
     @Override public int hashCode() {
         int result = uri.hashCode();
         result = 31 * result + (projection != null ? projection.hashCode() : 0);
-        result = 31 * result + (selection != null ? selection.hashCode() : 0);
-        result = 31 * result + (selectionArgs != null ? selectionArgs.hashCode() : 0);
+        result = 31 * result + (where != null ? where.hashCode() : 0);
+        result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
         result = 31 * result + (sortOrder != null ? sortOrder.hashCode() : 0);
         return result;
     }
@@ -77,8 +82,8 @@ public class Query {
         return "Query{" +
                 "uri=" + uri +
                 ", projection=" + projection +
-                ", selection='" + selection + '\'' +
-                ", selectionArgs=" + selectionArgs +
+                ", where='" + where + '\'' +
+                ", whereArgs=" + whereArgs +
                 ", sortOrder='" + sortOrder + '\'' +
                 '}';
     }
@@ -86,8 +91,8 @@ public class Query {
     public static class Builder {
         private Uri uri;
         private List<String> projection;
-        private String selection;
-        private List<String> selectionArgs;
+        private String where;
+        private List<String> whereArgs;
         private String sortOrder;
 
         /**
@@ -117,24 +122,24 @@ public class Query {
         /**
          * A selection criteria to apply when filtering rows. If null then all rows are included.
          *
-         * @param selection selection
+         * @param where where
          * @return builder
          */
-        @NonNull public Builder selection(@Nullable String selection) {
-            this.selection = selection;
+        @NonNull public Builder where(@Nullable String where) {
+            this.where = where;
             return this;
         }
 
         /**
          * You may include ?s in selection, which will be replaced by the values from selectionArgs, in order that they appear in the selection. The values will be bound as Strings.
          *
-         * @param selectionArgs selection arguments
+         * @param whereArgs selection arguments
          * @return builder
          */
-        @NonNull public Builder selectionArgs(@Nullable String... selectionArgs) {
-            this.selectionArgs = selectionArgs == null || selectionArgs.length == 0
+        @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
+            this.whereArgs = whereArgs == null || whereArgs.length == 0
                     ? null
-                    : new ArrayList<>(Arrays.asList(selectionArgs));
+                    : new ArrayList<>(Arrays.asList(whereArgs));
             return this;
         }
 
@@ -150,9 +155,10 @@ public class Query {
         }
 
         /**
-         * Builds query, can throw {@link IllegalStateException} if something is incorrect
+         * Builds new instance of {@link Query},
+         * can throw {@link IllegalStateException} if something is incorrect
          *
-         * @return query
+         * @return new instance of {@link Query}
          */
         @NonNull public Query build() {
             if (uri == null) {
@@ -162,8 +168,8 @@ public class Query {
             return new Query(
                     uri,
                     projection,
-                    selection,
-                    selectionArgs,
+                    where,
+                    whereArgs,
                     sortOrder
             );
         }
