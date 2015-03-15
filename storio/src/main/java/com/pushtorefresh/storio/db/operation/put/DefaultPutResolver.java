@@ -21,15 +21,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
         final String table = getTable();
 
         if (id == null) {
-            final long insertedId = storIODb.internal().insert(
-                    new InsertQuery.Builder()
-                            .table(table)
-                            .nullColumnHack(null)
-                            .build(),
-                    contentValues
-            );
-
-            return PutResult.newInsertResult(insertedId, Collections.singleton(table));
+            return insert(storIODb, contentValues);
         } else {
             final int numberOfUpdatedRows = storIODb.internal().update(
                     new UpdateQuery.Builder()
@@ -39,8 +31,25 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
                             .build(),
                     contentValues
             );
-
-            return PutResult.newUpdateResult(numberOfUpdatedRows, Collections.singleton(table));
+            if (numberOfUpdatedRows > 0) {
+                return PutResult.newUpdateResult(numberOfUpdatedRows, Collections.singleton(table));
+            } else {
+                return insert(storIODb, contentValues);
+            }
         }
+    }
+
+    @NonNull
+    private PutResult insert(@NonNull StorIODb storIODb, @NonNull ContentValues contentValues) {
+        final String table = getTable();
+
+        final long insertedId = storIODb.internal().insert(
+                new InsertQuery.Builder()
+                        .table(table)
+                        .nullColumnHack(null)
+                        .build(),
+                contentValues
+        );
+        return PutResult.newInsertResult(insertedId, Collections.singleton(table));
     }
 }
