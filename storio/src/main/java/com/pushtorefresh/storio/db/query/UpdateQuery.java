@@ -13,6 +13,9 @@ public class UpdateQuery {
 
     @Nullable public final String[] whereArgs;
 
+    /**
+     * Please use {@link com.pushtorefresh.storio.db.query.UpdateQuery.Builder} instead of constructor
+     */
     public UpdateQuery(@NonNull String table, @Nullable String where, @Nullable String[] whereArgs) {
         this.table = table;
         this.where = where;
