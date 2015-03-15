@@ -79,4 +79,102 @@ public class Query {
         result = 31 * result + (limit != null ? limit.hashCode() : 0);
         return result;
     }
+
+    @Override public String toString() {
+        return "Query{" +
+                "distinct=" + distinct +
+                ", table='" + table + '\'' +
+                ", columns=" + Arrays.toString(columns) +
+                ", selection='" + selection + '\'' +
+                ", where='" + where + '\'' +
+                ", whereArgs=" + Arrays.toString(whereArgs) +
+                ", groupBy='" + groupBy + '\'' +
+                ", having='" + having + '\'' +
+                ", orderBy='" + orderBy + '\'' +
+                ", limit='" + limit + '\'' +
+                '}';
+    }
+
+    public static class Builder {
+
+        private boolean distinct;
+        private String table;
+        private String[] columns;
+        private String selection;
+        private String where;
+        private String[] whereArgs;
+        private String groupBy;
+        private String having;
+        private String orderBy;
+        private String limit;
+
+        @NonNull public Builder distinct(boolean distinct) {
+            this.distinct = distinct;
+            return this;
+        }
+
+        @NonNull public Builder table(@NonNull String table) {
+            this.table = table;
+            return this;
+        }
+
+        @NonNull public Builder columns(@Nullable String... columns) {
+            this.columns = columns;
+            return this;
+        }
+
+        @NonNull public Builder selection(@Nullable String selection) {
+            this.selection = selection;
+            return this;
+        }
+
+        @NonNull public Builder where(@Nullable String where) {
+            this.where = where;
+            return this;
+        }
+
+        @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
+            this.whereArgs = whereArgs;
+            return this;
+        }
+
+        @NonNull public Builder groupBy(@Nullable String groupBy) {
+            this.groupBy = groupBy;
+            return this;
+        }
+
+        @NonNull public Builder having(@Nullable String having) {
+            this.having = having;
+            return this;
+        }
+
+        @NonNull public Builder orderBy(@Nullable String orderBy) {
+            this.orderBy = orderBy;
+            return this;
+        }
+
+        @NonNull public Builder limit(@Nullable String limit) {
+            this.limit = limit;
+            return this;
+        }
+
+        @NonNull public Query build() {
+            if (table == null || table.length() == 0) {
+                throw new IllegalStateException("Please specify table name");
+            }
+
+            return new Query(
+                    distinct,
+                    table,
+                    columns,
+                    selection,
+                    where,
+                    whereArgs,
+                    groupBy,
+                    having,
+                    orderBy,
+                    limit
+            );
+        }
+    }
 }

@@ -23,13 +23,13 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     @NonNull private final MapFunc<Cursor, T> mapFunc;
 
-    PreparedGetListOfObjects(@NonNull StorIODb storIODb, @NonNull Query query, @NonNull MapFunc<Cursor, T> mapFunc) {
-        super(storIODb, query);
+    PreparedGetListOfObjects(@NonNull StorIODb storIODb, @NonNull Query query, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
+        super(storIODb, query, getResolver);
         this.mapFunc = mapFunc;
     }
 
-    PreparedGetListOfObjects(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery, @NonNull MapFunc<Cursor, T> mapFunc) {
-        super(storIODb, rawQuery);
+    PreparedGetListOfObjects(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
+        super(storIODb, rawQuery, getResolver);
         this.mapFunc = mapFunc;
     }
 
@@ -38,9 +38,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         final Cursor cursor;
 
         if (query != null) {
-            cursor = storIODb.internal().query(query);
+            cursor = getResolver.performGet(storIODb, query);
         } else if (rawQuery != null) {
-            cursor = storIODb.internal().rawQuery(rawQuery);
+            cursor = getResolver.performGet(storIODb, rawQuery);
         } else {
             throw new IllegalStateException("Please specify query");
         }
@@ -104,6 +104,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         private MapFunc<Cursor, T> mapFunc;
         private Query query;
         private RawQuery rawQuery;
+        private GetResolver getResolver;
 
         public Builder(@NonNull StorIODb storIODb, @NonNull Class<T> type) {
             this.storIODb = storIODb;
@@ -125,11 +126,20 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             return this;
         }
 
+        @NonNull public Builder withGetResolver(@NonNull GetResolver getResolver) {
+            this.getResolver = getResolver;
+            return this;
+        }
+
         @NonNull public PreparedOperationWithReactiveStream<List<T>> prepare() {
+            if (getResolver == null) {
+                getResolver = DefaultGetResolver.INSTANCE;
+            }
+
             if (query != null) {
-                return new PreparedGetListOfObjects<>(storIODb, query, mapFunc);
+                return new PreparedGetListOfObjects<>(storIODb, query, getResolver, mapFunc);
             } else if (rawQuery != null) {
-                return new PreparedGetListOfObjects<>(storIODb, rawQuery, mapFunc);
+                return new PreparedGetListOfObjects<>(storIODb, rawQuery, getResolver, mapFunc);
             } else {
                 throw new IllegalStateException("Please specify query");
             }

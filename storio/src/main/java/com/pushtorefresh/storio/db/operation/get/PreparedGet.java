@@ -13,16 +13,19 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
     @NonNull  protected final StorIODb storIODb;
     @Nullable protected final Query query;
     @Nullable protected final RawQuery rawQuery;
+    @NonNull  protected final GetResolver getResolver;
 
-    PreparedGet(@NonNull StorIODb storIODb, @NonNull Query query) {
+    PreparedGet(@NonNull StorIODb storIODb, @NonNull Query query, @NonNull GetResolver getResolver) {
         this.storIODb = storIODb;
         this.query = query;
+        this.getResolver = getResolver;
         this.rawQuery = null;
     }
 
-    PreparedGet(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery) {
+    PreparedGet(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
         this.storIODb = storIODb;
         this.rawQuery = rawQuery;
+        this.getResolver = getResolver;
         query = null;
     }
 

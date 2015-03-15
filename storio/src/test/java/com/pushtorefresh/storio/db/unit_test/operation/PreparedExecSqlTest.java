@@ -4,7 +4,6 @@ import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.storio.db.query.RawQuery;
-import com.pushtorefresh.storio.db.query.RawQueryBuilder;
 
 import org.junit.Test;
 
@@ -25,7 +24,7 @@ public class PreparedExecSqlTest {
         Stub() {
             storIODb = mock(StorIODb.class);
             internal = mock(StorIODb.Internal.class);
-            rawQuery = new RawQueryBuilder().query("DROP TABLE users").build();
+            rawQuery = new RawQuery.Builder().query("DROP TABLE users").build();
 
             when(storIODb.internal())
                     .thenReturn(internal);

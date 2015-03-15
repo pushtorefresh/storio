@@ -10,7 +10,6 @@ import com.pushtorefresh.storio.db.operation.put.DefaultPutResolver;
 import com.pushtorefresh.storio.db.operation.put.PutResolver;
 import com.pushtorefresh.storio.db.operation.put.PutResult;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
-import com.pushtorefresh.storio.db.query.DeleteQueryBuilder;
 
 public class User {
 
@@ -25,7 +24,7 @@ public class User {
             COLUMN_EMAIL + " TEXT NOT NULL" +
             ");";
 
-    public static final DeleteQuery DELETE_ALL = new DeleteQueryBuilder()
+    public static final DeleteQuery DELETE_ALL = new DeleteQuery.Builder()
             .table(TABLE)
             .build();
 
@@ -54,7 +53,7 @@ public class User {
     @NonNull
     public static final MapFunc<User, DeleteQuery> MAP_TO_DELETE_QUERY = new MapFunc<User, DeleteQuery>() {
         @Override public DeleteQuery map(User user) {
-            return new DeleteQueryBuilder()
+            return new DeleteQuery.Builder()
                     .table(TABLE)
                     .where(COLUMN_ID + "=?")
                     .whereArgs(String.valueOf(user.id))
