@@ -15,7 +15,10 @@ public class InsertQuery {
      */
     @NonNull public final Uri uri;
 
-    private InsertQuery(@NonNull Uri uri) {
+    /**
+     * Please use {@link com.pushtorefresh.storio.contentprovider.query.InsertQuery.Builder} instead of constructor
+     */
+    public InsertQuery(@NonNull Uri uri) {
         this.uri = uri;
     }
 

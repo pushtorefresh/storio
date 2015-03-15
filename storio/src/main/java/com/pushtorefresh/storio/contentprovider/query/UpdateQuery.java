@@ -30,7 +30,10 @@ public class UpdateQuery {
      */
     @Nullable public final List<String> whereArgs;
 
-    private UpdateQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
+    /**
+     * Please use {@link com.pushtorefresh.storio.contentprovider.query.UpdateQuery.Builder} instead of constructor
+     */
+    public UpdateQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
         this.where = where;
         this.whereArgs = whereArgs != null && !whereArgs.isEmpty()

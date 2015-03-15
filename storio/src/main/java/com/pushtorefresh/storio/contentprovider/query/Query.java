@@ -44,7 +44,10 @@ public class Query {
      */
     @Nullable public final String sortOrder;
 
-    private Query(@NonNull Uri uri, @Nullable List<String> projection, @Nullable String where, @Nullable List<String> whereArgs, @Nullable String sortOrder) {
+    /**
+     * Please use {@link com.pushtorefresh.storio.contentprovider.query.Query.Builder} instead of constructor
+     */
+    public Query(@NonNull Uri uri, @Nullable List<String> projection, @Nullable String where, @Nullable List<String> whereArgs, @Nullable String sortOrder) {
         this.uri = uri;
         this.projection = projection != null ? Collections.unmodifiableList(projection) : null;
         this.where = where;

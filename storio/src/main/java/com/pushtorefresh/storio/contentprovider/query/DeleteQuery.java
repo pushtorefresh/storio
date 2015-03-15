@@ -29,7 +29,10 @@ public class DeleteQuery {
      */
     @Nullable public final List<String> whereArgs;
 
-    private DeleteQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
+    /**
+     * Please use {@link com.pushtorefresh.storio.contentprovider.query.DeleteQuery.Builder} instead of constructor
+     */
+    public DeleteQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
         this.where = where;
         this.whereArgs = whereArgs;
