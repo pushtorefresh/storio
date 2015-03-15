@@ -1,0 +1,36 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".MainActivity">
+
+    <include layout="@layout/toolbar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/main_db_sample"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            style="@style/MainSampleItem"
+            android:background="@drawable/bg_main_tweets_sample"
+            android:text="@string/main_tweets_sample"/>
+
+        <TextView
+            android:id="@+id/main_content_provider_sample"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            style="@style/MainSampleItem"
+            android:background="#3941f9"
+            android:text="@string/main_content_provider_sample"/>
+
+    </LinearLayout>
+
+</LinearLayout>
