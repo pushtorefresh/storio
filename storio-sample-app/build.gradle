@@ -1,0 +1,57 @@
+apply plugin: 'android-sdk-manager'
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        applicationId 'com.pushtorefresh.storio.sample'
+        minSdkVersion 15
+        targetSdkVersion rootProject.ext.compileSdkVersion
+        versionCode 1
+        versionName '1.0'
+    }
+
+    signingConfigs {
+        sample {
+            storeFile file('keystore.jks')
+            storePassword 'sample'
+            keyAlias 'sample'
+            keyPassword 'sample'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.sample
+        }
+
+        release {
+            signingConfig signingConfigs.sample
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        disable 'InvalidPackage' // Dagger
+    }
+}
+
+dependencies {
+    compile project(':storio')
+
+    compile rootProject.ext.dagger
+    apt rootProject.ext.daggerCompiler
+
+    compile rootProject.ext.javaxInject
+    compile rootProject.ext.javaxAnnotationApi
+
+    compile rootProject.ext.appCompat
+    compile rootProject.ext.butterKnife
+    compile rootProject.ext.recyclerView
+    compile rootProject.ext.rxAndroid
+    compile rootProject.ext.timber
+}

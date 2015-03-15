@@ -25,6 +25,9 @@ public class Query {
 
     @Nullable public final String limit;
 
+    /**
+     * Please use {@link com.pushtorefresh.storio.db.query.Query.Builder} instead of constructor
+     */
     public Query(boolean distinct, @NonNull String table, @Nullable String[] columns,
                  @Nullable String where, @Nullable String[] whereArgs,
                  @Nullable String groupBy, @Nullable String having,
