@@ -28,7 +28,7 @@ public class Query {
     /**
      * Please use {@link com.pushtorefresh.storio.db.query.Query.Builder} instead of constructor
      */
-    public Query(boolean distinct, @NonNull String table, @Nullable String[] columns,
+    protected Query(boolean distinct, @NonNull String table, @Nullable String[] columns,
                  @Nullable String where, @Nullable String[] whereArgs,
                  @Nullable String groupBy, @Nullable String having,
                  @Nullable String orderBy, @Nullable String limit) {
@@ -96,7 +96,6 @@ public class Query {
         private boolean distinct;
         private String table;
         private String[] columns;
-        private String selection;
         private String where;
         private String[] whereArgs;
         private String groupBy;
@@ -116,11 +115,6 @@ public class Query {
 
         @NonNull public Builder columns(@Nullable String... columns) {
             this.columns = columns;
-            return this;
-        }
-
-        @NonNull public Builder selection(@Nullable String selection) {
-            this.selection = selection;
             return this;
         }
 
