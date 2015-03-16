@@ -135,7 +135,7 @@ public class PreparedDeleteTest {
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
             deleteResolver = mock(DeleteResolver.class);
 
-            when(internal.areTransactionsSupported())
+            when(internal.transactionsSupported())
                     .thenReturn(useTransaction);
 
             when(storIODb.internal())

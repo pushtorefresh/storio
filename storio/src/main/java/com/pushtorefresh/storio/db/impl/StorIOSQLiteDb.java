@@ -141,7 +141,7 @@ public class StorIOSQLiteDb extends StorIODb {
             changesBus.onNext(changes);
         }
 
-        @Override public boolean areTransactionsSupported() {
+        @Override public boolean transactionsSupported() {
             return true;
         }
 

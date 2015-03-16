@@ -61,7 +61,7 @@ public class DesignTestStorIOImpl extends StorIODb {
             // no impl
         }
 
-        @Override public boolean areTransactionsSupported() {
+        @Override public boolean transactionsSupported() {
             return false;
         }
 

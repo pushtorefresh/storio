@@ -34,7 +34,9 @@ public abstract class StorIODb {
      *
      * @return builder for PreparedExecSql
      */
-    @NonNull public abstract PreparedExecSql.Builder execSql();
+    @NonNull public PreparedExecSql.Builder execSql() {
+        return new PreparedExecSql.Builder(this);
+    }
 
     /**
      * Prepares "get" operation for {@link StorIODb}
@@ -42,7 +44,9 @@ public abstract class StorIODb {
      *
      * @return builder for PreparedGet
      */
-    @NonNull public abstract PreparedGet.Builder get();
+    @NonNull public PreparedGet.Builder get() {
+        return new PreparedGet.Builder(this);
+    }
 
     /**
      * Prepares "put" operation for {@link StorIODb}
@@ -50,7 +54,9 @@ public abstract class StorIODb {
      *
      * @return builder for PreparedPut
      */
-    @NonNull public abstract PreparedPut.Builder put();
+    @NonNull public PreparedPut.Builder put() {
+        return new PreparedPut.Builder(this);
+    }
 
     /**
      * Prepares "delete" operation for {@link StorIODb}
@@ -58,7 +64,9 @@ public abstract class StorIODb {
      *
      * @return builder for PreparedDelete
      */
-    @NonNull public abstract PreparedDelete.Builder delete();
+    @NonNull public PreparedDelete.Builder delete() {
+        return new PreparedDelete.Builder(this);
+    }
 
     /**
      * Subscribes to changes in required tables
@@ -152,11 +160,11 @@ public abstract class StorIODb {
         public abstract void notifyAboutChanges(@NonNull Changes changes);
 
         /**
-         * {@link StorIODb} implementation could not provide support for transactions
+         * Returns true if {@link StorIODb} implementation supports transactions
          *
          * @return true if transactions are supported, false otherwise
          */
-        public abstract boolean areTransactionsSupported();
+        public abstract boolean transactionsSupported();
 
         /**
          * Begins a transaction in EXCLUSIVE mode
