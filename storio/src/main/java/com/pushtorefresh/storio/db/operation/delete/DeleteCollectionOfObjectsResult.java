@@ -17,11 +17,11 @@ public class DeleteCollectionOfObjectsResult<T> {
         return results;
     }
 
-    public boolean wasDeleted(T object) {
+    public boolean wasDeleted(@NonNull T object) {
         return results.containsKey(object);
     }
 
-    public boolean wasNotDeleted(T object) {
+    public boolean wasNotDeleted(@NonNull T object) {
         return !results.containsKey(object);
     }
 }
