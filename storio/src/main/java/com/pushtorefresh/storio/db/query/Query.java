@@ -13,8 +13,6 @@ public class Query {
 
     @Nullable public final String[] columns;
 
-    @Nullable public final String selection;
-
     @Nullable public final String where;
 
     @Nullable public final String[] whereArgs;
@@ -30,14 +28,13 @@ public class Query {
     /**
      * Please use {@link com.pushtorefresh.storio.db.query.Query.Builder} instead of constructor
      */
-    public Query(boolean distinct, @NonNull String table, @Nullable String[] columns,
-                 @Nullable String selection, @Nullable String where, @Nullable String[] whereArgs,
+    protected Query(boolean distinct, @NonNull String table, @Nullable String[] columns,
+                 @Nullable String where, @Nullable String[] whereArgs,
                  @Nullable String groupBy, @Nullable String having,
                  @Nullable String orderBy, @Nullable String limit) {
         this.distinct = distinct;
         this.table = table;
         this.columns = columns;
-        this.selection = selection;
         this.where = where;
         this.whereArgs = whereArgs;
         this.groupBy = groupBy;
@@ -59,8 +56,6 @@ public class Query {
         if (having != null ? !having.equals(query.having) : query.having != null) return false;
         if (limit != null ? !limit.equals(query.limit) : query.limit != null) return false;
         if (orderBy != null ? !orderBy.equals(query.orderBy) : query.orderBy != null) return false;
-        if (selection != null ? !selection.equals(query.selection) : query.selection != null)
-            return false;
         if (!table.equals(query.table)) return false;
         if (where != null ? !where.equals(query.where) : query.where != null) return false;
         if (!Arrays.equals(whereArgs, query.whereArgs)) return false;
@@ -73,7 +68,6 @@ public class Query {
         int result = (distinct ? 1 : 0);
         result = 31 * result + table.hashCode();
         result = 31 * result + (columns != null ? Arrays.hashCode(columns) : 0);
-        result = 31 * result + (selection != null ? selection.hashCode() : 0);
         result = 31 * result + (where != null ? where.hashCode() : 0);
         result = 31 * result + (whereArgs != null ? Arrays.hashCode(whereArgs) : 0);
         result = 31 * result + (groupBy != null ? groupBy.hashCode() : 0);
@@ -88,7 +82,6 @@ public class Query {
                 "distinct=" + distinct +
                 ", table='" + table + '\'' +
                 ", columns=" + Arrays.toString(columns) +
-                ", selection='" + selection + '\'' +
                 ", where='" + where + '\'' +
                 ", whereArgs=" + Arrays.toString(whereArgs) +
                 ", groupBy='" + groupBy + '\'' +
@@ -103,7 +96,6 @@ public class Query {
         private boolean distinct;
         private String table;
         private String[] columns;
-        private String selection;
         private String where;
         private String[] whereArgs;
         private String groupBy;
@@ -123,11 +115,6 @@ public class Query {
 
         @NonNull public Builder columns(@Nullable String... columns) {
             this.columns = columns;
-            return this;
-        }
-
-        @NonNull public Builder selection(@Nullable String selection) {
-            this.selection = selection;
             return this;
         }
 
@@ -170,7 +157,6 @@ public class Query {
                     distinct,
                     table,
                     columns,
-                    selection,
                     where,
                     whereArgs,
                     groupBy,

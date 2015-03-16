@@ -25,7 +25,7 @@ public class RawQuery {
     /**
      * Please use {@link com.pushtorefresh.storio.db.query.RawQuery.Builder} instead of constructor
      */
-    public RawQuery(@NonNull String query, @Nullable String[] args, @Nullable Set<String> tables) {
+    protected RawQuery(@NonNull String query, @Nullable String[] args, @Nullable Set<String> tables) {
         this.query = query;
         this.args = args;
         this.tables = tables;

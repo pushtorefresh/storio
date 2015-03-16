@@ -101,7 +101,7 @@ public class StorIOSQLiteDb extends StorIODb {
                     query.distinct,
                     query.table,
                     query.columns,
-                    query.selection,
+                    query.where,
                     query.whereArgs,
                     query.groupBy,
                     query.having,

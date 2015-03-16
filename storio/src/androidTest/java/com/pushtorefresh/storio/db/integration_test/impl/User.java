@@ -11,7 +11,7 @@ import com.pushtorefresh.storio.db.operation.put.PutResolver;
 import com.pushtorefresh.storio.db.operation.put.PutResult;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
 
-public class User {
+public class User implements Comparable<User> {
 
     // they are open just for test purposes
     static final String TABLE = "users";
@@ -74,7 +74,7 @@ public class User {
     };
 
     @Nullable private volatile Long id;
-    @NonNull private final String email;
+    private String email;
 
     User(@Nullable Long id, @NonNull String email) {
         this.id = id;
@@ -85,8 +85,12 @@ public class User {
         return id;
     }
 
-    @NonNull public String getEmail() {
+    public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public boolean equalsExceptId(@NonNull User other) {
@@ -100,8 +104,8 @@ public class User {
 
         User user = (User) o;
 
-        if (!email.equals(user.email)) return false;
         if (id != null ? !id.equals(user.id) : user.id != null) return false;
+        if (email != null ? !email.equals(user.email) : user.email != null) return false;
 
         return true;
     }
@@ -109,7 +113,11 @@ public class User {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + email.hashCode();
+        result = 31 * result + (email != null ? email.hashCode() : 0);
         return result;
+    }
+
+    @Override public int compareTo(@NonNull User another) {
+        return email == null ? 0 : email.compareTo(another.getEmail());
     }
 }

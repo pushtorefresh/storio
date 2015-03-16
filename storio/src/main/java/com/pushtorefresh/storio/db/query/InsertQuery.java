@@ -12,7 +12,7 @@ public class InsertQuery {
     /**
      * Please use {@link com.pushtorefresh.storio.db.query.InsertQuery.Builder} instead of constructor
      */
-    public InsertQuery(@NonNull String table, @Nullable String nullColumnHack) {
+    protected InsertQuery(@NonNull String table, @Nullable String nullColumnHack) {
         this.table = table;
         this.nullColumnHack = nullColumnHack;
     }

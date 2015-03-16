@@ -33,7 +33,7 @@ public class UpdateQuery {
     /**
      * Please use {@link com.pushtorefresh.storio.contentprovider.query.UpdateQuery.Builder} instead of constructor
      */
-    public UpdateQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
+    protected UpdateQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
         this.where = where;
         this.whereArgs = whereArgs != null && !whereArgs.isEmpty()

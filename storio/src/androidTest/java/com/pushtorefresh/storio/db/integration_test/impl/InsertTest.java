@@ -1,10 +1,13 @@
 package com.pushtorefresh.storio.db.integration_test.impl;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.pushtorefresh.storio.db.operation.delete.DeleteResult;
 import com.pushtorefresh.storio.db.operation.put.PutCollectionResult;
 import com.pushtorefresh.storio.db.operation.put.PutResult;
+import com.pushtorefresh.storio.db.query.Query;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,17 +22,7 @@ import static junit.framework.Assert.assertTrue;
 public class InsertTest extends BaseTest {
 
     @Test public void insertOne() {
-        final User user = TestFactory.newUser();
-
-        final PutResult putResult = storIODb
-                .put()
-                .object(user)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(User.PUT_RESOLVER)
-                .prepare()
-                .executeAsBlocking();
-
-        assertTrue(putResult.wasInserted());
+        final User user = putUser();
 
         // why we created StorIODb: nobody loves nulls
         final Cursor cursor = db.query(User.TABLE, null, null, null, null, null, null);
@@ -47,17 +40,7 @@ public class InsertTest extends BaseTest {
     }
 
     @Test public void insertCollection() {
-        final List<User> users = TestFactory.newUsers(3);
-
-        final PutCollectionResult<User> putResult = storIODb
-                .put()
-                .objects(users)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(User.PUT_RESOLVER)
-                .prepare()
-                .executeAsBlocking();
-
-        assertEquals(users.size(), putResult.numberOfInserts());
+        final List<User> users = putUsers(3);
 
         // asserting that values was really inserted to db
         final Cursor cursor = db.query(User.TABLE, null, null, null, null, null, null);
@@ -70,5 +53,27 @@ public class InsertTest extends BaseTest {
         }
 
         cursor.close();
+    }
+
+    @Test public void insertAndDeleteTwice() {
+        final User user = TestFactory.newUser();
+
+        for (int i = 0; i < 2; i++) {
+            putUser(user);
+
+            final List<User> existUsers = getAllUsers();
+
+            assertEquals(1, existUsers.size());
+
+            final Cursor cursorAfterPut = db.query(User.TABLE, null, null, null, null, null, null);
+            assertEquals(1, cursorAfterPut.getCount());
+            cursorAfterPut.close();
+
+            deleteUser(user);
+
+            final Cursor cursorAfterDelete = db.query(User.TABLE, null, null, null, null, null, null);
+            assertEquals(0, cursorAfterDelete.getCount());
+            cursorAfterDelete.close();
+        }
     }
 }

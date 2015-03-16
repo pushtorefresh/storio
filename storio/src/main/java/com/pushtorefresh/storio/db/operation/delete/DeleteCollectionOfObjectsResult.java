@@ -16,4 +16,12 @@ public class DeleteCollectionOfObjectsResult<T> {
     @NonNull public Map<T, DeleteResult> results() {
         return results;
     }
+
+    public boolean wasDeleted(@NonNull T object) {
+        return results.containsKey(object);
+    }
+
+    public boolean wasNotDeleted(@NonNull T object) {
+        return !results.containsKey(object);
+    }
 }
