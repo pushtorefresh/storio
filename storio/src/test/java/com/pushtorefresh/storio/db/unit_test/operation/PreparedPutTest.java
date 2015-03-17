@@ -128,7 +128,7 @@ public class PreparedPutTest {
             storIODb = mock(StorIODb.class);
             internal = mock(StorIODb.Internal.class);
 
-            when(internal.areTransactionsSupported())
+            when(internal.transactionsSupported())
                     .thenReturn(useTransaction);
 
             when(storIODb.internal())

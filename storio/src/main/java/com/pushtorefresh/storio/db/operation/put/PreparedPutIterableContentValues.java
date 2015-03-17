@@ -35,7 +35,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         final Map<ContentValues, PutResult> putResults = new HashMap<>();
 
         final boolean withTransaction = useTransactionIfPossible
-                && internal.areTransactionsSupported();
+                && internal.transactionsSupported();
 
         if (withTransaction) {
             internal.beginTransaction();

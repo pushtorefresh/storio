@@ -35,7 +35,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
 
         final Map<T, DeleteResult> results = new HashMap<>();
 
-        final boolean withTransaction = useTransactionIfPossible && internal.areTransactionsSupported();
+        final boolean withTransaction = useTransactionIfPossible && internal.transactionsSupported();
 
         if (withTransaction) {
             internal.beginTransaction();

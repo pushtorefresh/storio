@@ -36,7 +36,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
         final Map<T, PutResult> putResults = new HashMap<>();
 
         final boolean withTransaction = useTransactionIfPossible
-                && storIODb.internal().areTransactionsSupported();
+                && storIODb.internal().transactionsSupported();
 
         if (withTransaction) {
             internal.beginTransaction();

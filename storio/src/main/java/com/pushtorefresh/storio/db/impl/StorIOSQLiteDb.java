@@ -8,10 +8,6 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
-import com.pushtorefresh.storio.db.operation.delete.PreparedDelete;
-import com.pushtorefresh.storio.db.operation.exec_sql.PreparedExecSql;
-import com.pushtorefresh.storio.db.operation.get.PreparedGet;
-import com.pushtorefresh.storio.db.operation.put.PreparedPut;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
 import com.pushtorefresh.storio.db.query.InsertQuery;
 import com.pushtorefresh.storio.db.query.Query;
@@ -44,22 +40,6 @@ public class StorIOSQLiteDb extends StorIODb {
 
     protected StorIOSQLiteDb(@NonNull SQLiteDatabase db) {
         this.db = db;
-    }
-
-    @NonNull @Override public PreparedExecSql.Builder execSql() {
-        return new PreparedExecSql.Builder(this);
-    }
-
-    @NonNull @Override public PreparedGet.Builder get() {
-        return new PreparedGet.Builder(this);
-    }
-
-    @NonNull @Override public PreparedPut.Builder put() {
-        return new PreparedPut.Builder(this);
-    }
-
-    @NonNull @Override public PreparedDelete.Builder delete() {
-        return new PreparedDelete.Builder(this);
     }
 
     @Override @NonNull
@@ -141,7 +121,7 @@ public class StorIOSQLiteDb extends StorIODb {
             changesBus.onNext(changes);
         }
 
-        @Override public boolean areTransactionsSupported() {
+        @Override public boolean transactionsSupported() {
             return true;
         }
 
