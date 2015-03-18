@@ -3,7 +3,6 @@
 #####Overview:
 * Powerful set of operations: `Put`, `Get`, `Delete`
 * Convinient builders. Forget about 6-7 `null` in queries
-* Immutability of Queries, Operations and thread-safety
 * No reflection, no annotations, `StorIO` is not ORM
 * Every operation over `StorIO` can be executed as blocking call or as `Observable`
 * `RxJava` as first class citizen, but it's not required dependency!
@@ -16,29 +15,15 @@
 
 ###StorIODb — an API for Database
 
-####Get operation
-
-######Get `Cursor` with blocking call:
-
-```java
-final Cursor tweetsCursor = storIODb
-  .get()
-  .cursor()
-  .withQuery(new Query.Builder()
-    .table("tweets")
-    .build())
-  .prepare()
-  .executeAsBlocking();
-```
-
+####1. Get Operation
 ######Get list of objects with blocking call:
 
 ```java
-// it's a good practice to store MapFunc as public static final field in object class
+// it's a good practice to store MapFunc as public static final field somewhere
 final MapFunc<Cursor, Tweet> mapFunc = new MapFunc<Cursor, Tweet>() {
   @Override public Tweet map(Cursor cursor) {
     // no need to move cursor and close it, StorIO will handle it for you
-    return new Tweet(); // parse values from cursor 
+    return new Tweet(); // fill with values from cursor 
   }
 };
 
@@ -53,7 +38,20 @@ final List<Tweet> tweets = storIODb
   .executeAsBlocking();
 ```
 
-Things getting much more insteresing with `RxJava`!
+######Get `Cursor` via blocking call:
+
+```java
+final Cursor tweetsCursor = storIODb
+  .get()
+  .cursor()
+  .withQuery(new Query.Builder()
+    .table("tweets")
+    .build())
+  .prepare()
+  .executeAsBlocking();
+```
+
+Things become much more insteresing with `RxJava`!
 
 ######Get cursor as `Observable`
 ```java
@@ -113,13 +111,13 @@ storIODb
 
 ```java
 GetResolver getResolver = new GetResolver() {
-  // resolve Get for RawQuery
+  // Performs Get for RawQuery
   @Override @NonNull public Cursor performGet(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery) {
     Cursor cursor = ...; // get result as you want, or add some additional behavior 
     return cursor;
   }
   
-  // resolve Get for Query
+  // Performs Get for Query
   @Override @NonNull public Cursor performGet(@NonNull StorIODb storIODb, @NonNull Query query) {
     Cursor cursor = ...; // get result as you want, or add some additional behavior 
     return cursor;
@@ -142,7 +140,7 @@ Several things about `Get` operation:
 * In `StorIO 1.1.0` we are going to add `Lazy<T>` to allow you skip unneeded computations
 * If you want to `Put` multiple items into `StorIODb`, better to do this in transaction to avoid multiple calls to the listeners (see docs about `Put` operation)
 
-####Put operation
+####Put Operation
 `Put` operation requires `PutResolver` which defines the behavior of `Put` operation (insert or update).
 
 You have two ways of implementing `PutResolver`:
@@ -161,7 +159,7 @@ public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<>()
   }
   
   @Override public void afterPut(@NonNull Tweet tweet, @NonNull PutResult putResult) {
-    // optional callback were you can change object after insert
+    // callback were you can change object after insert
     
     if (putResult.wasInserted()) {
       tweet.setId(putResult.getInsertedId());
@@ -169,19 +167,6 @@ public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<>()
   }
 };
 ```
-
-######Put `ContentValues`
-```java
-ContentValues contentValues = getSomeContentValues(); 
-
-storIODb
-  .put()
-  .contentValues(contentValues) // or Iterable<ContentValues>
-  .withPutResolver(putResolver)
-  .prepare()
-  .executeAsBlocking(); // or createObservable()
-```
-
 ######Put object of some type
 ```java
 Tweet tweet = getSomeTweet();
@@ -208,11 +193,67 @@ storIODb
   .executeAsBlocking(); // or createObservable()
 ```
 
+######Put `ContentValues`
+```java
+ContentValues contentValues = getSomeContentValues(); 
+
+storIODb
+  .put()
+  .contentValues(contentValues)
+  .withPutResolver(putResolver)
+  .prepare()
+  .executeAsBlocking(); // or createObservable()
+```
+
 Several things about `Put` operation:
 * `Put` operation requires `PutResolver`, `StorIO` requires it to avoid reflection
 * `Put` operation can be executed in transaction and by default it will use transaction, you can customize this via `useTransactionIfPossible()` or `dontUseTransaction()`
-* `Put` operation in transaction will produce only one notification to table observers
+* `Put` operation in transaction will produce only one notification to `StorIODb` observers
+* Result of `Put` operation can be useful if you want to know what happened: insert (and insertedId) or update (and number of updated rows)
 
+####Delete Operation
+######Delete object
+```java
+// you can store it as static final field somewhere
+final MapFunc<Tweet, DeleteQuery> mapToDeleteQuery = new MapFunc<Tweet, DeleteQuery>() {
+  @Override public DeleteQuery map(Tweet tweet) {
+    return new DeleteQuery.Builder()
+      .table(Tweet.TABLE)
+      .where(Tweet.COLUMN_ID)
+      .whereArgs(String.valueOf(tweet.getId()))
+      .build();
+  }
+};
+
+
+Tweet tweet = getSomeTweet();
+
+storIODb
+  .delete()
+  .object(tweet)
+  .withMapFunc(mapToDeleteQuery)
+  .prepare()
+  .executeAsBlocking(); // or createObservable()
+``` 
+
+######Delete multiple objects
+```java
+List<Tweet> tweets = getSomeTweets();
+
+storIODb
+  .delete()
+  .objects(tweets)
+  .withMapFunc(mapToDeleteQuery)
+  .prepare()
+  .executeAsBlocking(); // or createObservable()
+```
+
+Several things about `Delete` operation:
+* `Delete` operation of multiple items can be performed in transaction, by default it will use transaction if possible
+* Same rules as for `Put` operation about notifications to `StorIODb` observers: transaction -> one notification, without transaction - multiple notifications
+* Result of `Delete` operation can be useful if you want to know what happened
+
+----
 For more examples, please check our [`Design Tests`](storio/src/test/java/com/pushtorefresh/storio/db/unit_test/design).
 
 ####Architecture:
@@ -221,4 +262,3 @@ For more examples, please check our [`Design Tests`](storio/src/test/java/com/pu
 It means, that you can have your own implementation of `StorIODb` and `StorIOContentProvider` with custom behavior, such as memory caching, verbose logging and so on.
 
 One of the main goals of `StorIO` — clean API which will be easy to use and understand, that's why `StorIODb` and `StorIOContentProvider` have just several methods, but sometimes you need to go under the hood and we allow you to do it: `StorIODb.Internal` and `StorIOContentProvider.Internal` encapsulates low-level methods, you can use them if you need to, but try to avoid it.
-
