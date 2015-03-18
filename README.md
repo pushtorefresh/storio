@@ -253,6 +253,25 @@ Several things about `Delete` operation:
 * Same rules as for `Put` operation about notifications to `StorIODb` observers: transaction -> one notification, without transaction - multiple notifications
 * Result of `Delete` operation can be useful if you want to know what happened
 
+####4. ExecSql Operation
+Sometimes you need to execute raw sql, we allow you to do it with full power of StorIO
+
+```java
+storIODb
+  .execSql()
+  .withQuery(new RawQuery.Builder()
+    .query("DROP TABLE ?")
+    .args("tweets")
+    .tables("tweets") // optional: you can specify affected tables to notify Observers 
+    .build())
+  .prepare()
+  .executeAsBlocking(); // or createObservable()
+```
+
+Several things about `ExecSql`:
+* Use it for non insert/update/query/delete operations
+* Notice that you can set list of tables that will be affected by `RawQuery` and `StorIODb` will notify tables Observers
+
 ----
 For more examples, please check our [`Design Tests`](storio/src/test/java/com/pushtorefresh/storio/db/unit_test/design).
 
