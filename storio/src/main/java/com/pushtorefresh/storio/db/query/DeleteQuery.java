@@ -3,7 +3,9 @@ package com.pushtorefresh.storio.db.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Arrays;
+import com.pushtorefresh.storio.util.QueryUtil;
+
+import java.util.List;
 
 public class DeleteQuery {
 
@@ -11,19 +13,18 @@ public class DeleteQuery {
 
     @Nullable public final String where;
 
-    @Nullable public final String[] whereArgs;
+    @Nullable public final List<String> whereArgs;
 
     /**
      * Please use {@link com.pushtorefresh.storio.db.query.DeleteQuery.Builder} instead of constructor
      */
-    protected DeleteQuery(@NonNull String table, @Nullable String where, @Nullable String[] whereArgs) {
+    protected DeleteQuery(@NonNull String table, @Nullable String where, @Nullable List<String> whereArgs) {
         this.table = table;
         this.where = where;
-        this.whereArgs = whereArgs;
+        this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
     }
 
-    @Override
-    public boolean equals(@Nullable Object o) {
+    @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -31,16 +32,14 @@ public class DeleteQuery {
 
         if (!table.equals(that.table)) return false;
         if (where != null ? !where.equals(that.where) : that.where != null) return false;
-        if (!Arrays.equals(whereArgs, that.whereArgs)) return false;
+        return !(whereArgs != null ? !whereArgs.equals(that.whereArgs) : that.whereArgs != null);
 
-        return true;
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         int result = table.hashCode();
         result = 31 * result + (where != null ? where.hashCode() : 0);
-        result = 31 * result + (whereArgs != null ? Arrays.hashCode(whereArgs) : 0);
+        result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
         return result;
     }
 
@@ -48,7 +47,7 @@ public class DeleteQuery {
         return "DeleteQuery{" +
                 "table='" + table + '\'' +
                 ", where='" + where + '\'' +
-                ", whereArgs=" + Arrays.toString(whereArgs) +
+                ", whereArgs=" + whereArgs +
                 '}';
     }
 
@@ -56,7 +55,7 @@ public class DeleteQuery {
 
         private String table;
         private String where;
-        private String[] whereArgs;
+        private List<String> whereArgs;
 
         @NonNull public Builder table(@NonNull String table) {
             this.table = table;
@@ -69,7 +68,7 @@ public class DeleteQuery {
         }
 
         @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
-            this.whereArgs = whereArgs;
+            this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
 

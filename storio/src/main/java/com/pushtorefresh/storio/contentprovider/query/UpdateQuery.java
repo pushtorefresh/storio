@@ -4,8 +4,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
+import com.pushtorefresh.storio.util.QueryUtil;
+
 import java.util.List;
 
 /**
@@ -36,9 +36,7 @@ public class UpdateQuery {
     protected UpdateQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
         this.where = where;
-        this.whereArgs = whereArgs != null && !whereArgs.isEmpty()
-                ? Collections.unmodifiableList(whereArgs)
-                : null;
+        this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
     }
 
     @Override public boolean equals(Object o) {
@@ -98,10 +96,7 @@ public class UpdateQuery {
          * @return builder
          */
         @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
-            this.whereArgs = whereArgs != null && whereArgs.length != 0
-                    ? Arrays.asList(whereArgs)
-                    : null;
-
+            this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
 

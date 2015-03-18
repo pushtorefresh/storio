@@ -13,7 +13,7 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
 
     @NonNull private final ContentValues contentValues;
 
-    private PreparedPutWithContentValues(@NonNull StorIODb storIODb, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
+    PreparedPutWithContentValues(@NonNull StorIODb storIODb, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
         super(storIODb, putResolver);
         this.contentValues = contentValues;
     }

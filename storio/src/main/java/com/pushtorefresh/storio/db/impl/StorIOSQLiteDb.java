@@ -13,6 +13,7 @@ import com.pushtorefresh.storio.db.query.InsertQuery;
 import com.pushtorefresh.storio.db.query.Query;
 import com.pushtorefresh.storio.db.query.RawQuery;
 import com.pushtorefresh.storio.db.query.UpdateQuery;
+import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.Set;
 
@@ -66,13 +67,13 @@ public class StorIOSQLiteDb extends StorIODb {
     protected class InternalImpl extends Internal {
 
         @Override public void execSql(@NonNull RawQuery rawQuery) {
-            db.execSQL(rawQuery.query, rawQuery.args);
+            db.execSQL(rawQuery.query, QueryUtil.listToArray(rawQuery.args));
         }
 
         @NonNull @Override public Cursor rawQuery(@NonNull RawQuery rawQuery) {
             return db.rawQuery(
                     rawQuery.query,
-                    rawQuery.args
+                    QueryUtil.listToArray(rawQuery.args)
             );
         }
 
@@ -80,9 +81,9 @@ public class StorIOSQLiteDb extends StorIODb {
             return db.query(
                     query.distinct,
                     query.table,
-                    query.columns,
+                    QueryUtil.listToArray(query.columns),
                     query.where,
-                    query.whereArgs,
+                    QueryUtil.listToArray(query.whereArgs),
                     query.groupBy,
                     query.having,
                     query.orderBy,
@@ -105,7 +106,7 @@ public class StorIOSQLiteDb extends StorIODb {
                     updateQuery.table,
                     contentValues,
                     updateQuery.where,
-                    updateQuery.whereArgs
+                    QueryUtil.listToArray(updateQuery.whereArgs)
             );
         }
 
@@ -113,7 +114,7 @@ public class StorIOSQLiteDb extends StorIODb {
             return db.delete(
                     deleteQuery.table,
                     deleteQuery.where,
-                    deleteQuery.whereArgs
+                    QueryUtil.listToArray(deleteQuery.whereArgs)
             );
         }
 

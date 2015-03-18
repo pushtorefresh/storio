@@ -14,7 +14,7 @@ public class PreparedExecSql implements PreparedOperation<Void> {
     @NonNull private final StorIODb storIODb;
     @NonNull private final RawQuery rawQuery;
 
-    public PreparedExecSql(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery) {
+    PreparedExecSql(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery) {
         this.storIODb = storIODb;
         this.rawQuery = rawQuery;
     }

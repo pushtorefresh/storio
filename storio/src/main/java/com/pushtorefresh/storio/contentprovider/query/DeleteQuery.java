@@ -4,7 +4,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Arrays;
+import com.pushtorefresh.storio.util.QueryUtil;
+
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class DeleteQuery {
     protected DeleteQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
         this.where = where;
-        this.whereArgs = whereArgs;
+        this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
     }
 
     @Override public boolean equals(Object o) {
@@ -103,10 +104,7 @@ public class DeleteQuery {
          * @return builder
          */
         @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
-            this.whereArgs = whereArgs != null && whereArgs.length != 0
-                    ? Arrays.asList(whereArgs)
-                    : null;
-
+            this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
 
