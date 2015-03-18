@@ -3,7 +3,9 @@ package com.pushtorefresh.storio.db.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Arrays;
+import com.pushtorefresh.storio.util.QueryUtil;
+
+import java.util.List;
 
 public class Query {
 
@@ -11,11 +13,11 @@ public class Query {
 
     @NonNull public final String table;
 
-    @Nullable public final String[] columns;
+    @Nullable public final List<String> columns;
 
     @Nullable public final String where;
 
-    @Nullable public final String[] whereArgs;
+    @Nullable public final List<String> whereArgs;
 
     @Nullable public final String groupBy;
 
@@ -28,48 +30,46 @@ public class Query {
     /**
      * Please use {@link com.pushtorefresh.storio.db.query.Query.Builder} instead of constructor
      */
-    protected Query(boolean distinct, @NonNull String table, @Nullable String[] columns,
-                 @Nullable String where, @Nullable String[] whereArgs,
+    protected Query(boolean distinct, @NonNull String table, @Nullable List<String> columns,
+                 @Nullable String where, @Nullable List<String> whereArgs,
                  @Nullable String groupBy, @Nullable String having,
                  @Nullable String orderBy, @Nullable String limit) {
         this.distinct = distinct;
         this.table = table;
-        this.columns = columns;
+        this.columns = QueryUtil.listToUnmodifiable(columns);
         this.where = where;
-        this.whereArgs = whereArgs;
+        this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
         this.groupBy = groupBy;
         this.having = having;
         this.orderBy = orderBy;
         this.limit = limit;
     }
 
-    @Override
-    public boolean equals(@Nullable Object o) {
+    @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Query query = (Query) o;
 
         if (distinct != query.distinct) return false;
-        if (!Arrays.equals(columns, query.columns)) return false;
+        if (!table.equals(query.table)) return false;
+        if (columns != null ? !columns.equals(query.columns) : query.columns != null) return false;
+        if (where != null ? !where.equals(query.where) : query.where != null) return false;
+        if (whereArgs != null ? !whereArgs.equals(query.whereArgs) : query.whereArgs != null)
+            return false;
         if (groupBy != null ? !groupBy.equals(query.groupBy) : query.groupBy != null) return false;
         if (having != null ? !having.equals(query.having) : query.having != null) return false;
-        if (limit != null ? !limit.equals(query.limit) : query.limit != null) return false;
         if (orderBy != null ? !orderBy.equals(query.orderBy) : query.orderBy != null) return false;
-        if (!table.equals(query.table)) return false;
-        if (where != null ? !where.equals(query.where) : query.where != null) return false;
-        if (!Arrays.equals(whereArgs, query.whereArgs)) return false;
+        return !(limit != null ? !limit.equals(query.limit) : query.limit != null);
 
-        return true;
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         int result = (distinct ? 1 : 0);
         result = 31 * result + table.hashCode();
-        result = 31 * result + (columns != null ? Arrays.hashCode(columns) : 0);
+        result = 31 * result + (columns != null ? columns.hashCode() : 0);
         result = 31 * result + (where != null ? where.hashCode() : 0);
-        result = 31 * result + (whereArgs != null ? Arrays.hashCode(whereArgs) : 0);
+        result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
         result = 31 * result + (groupBy != null ? groupBy.hashCode() : 0);
         result = 31 * result + (having != null ? having.hashCode() : 0);
         result = 31 * result + (orderBy != null ? orderBy.hashCode() : 0);
@@ -81,9 +81,9 @@ public class Query {
         return "Query{" +
                 "distinct=" + distinct +
                 ", table='" + table + '\'' +
-                ", columns=" + Arrays.toString(columns) +
+                ", columns=" + columns +
                 ", where='" + where + '\'' +
-                ", whereArgs=" + Arrays.toString(whereArgs) +
+                ", whereArgs=" + whereArgs +
                 ", groupBy='" + groupBy + '\'' +
                 ", having='" + having + '\'' +
                 ", orderBy='" + orderBy + '\'' +
@@ -95,9 +95,9 @@ public class Query {
 
         private boolean distinct;
         private String table;
-        private String[] columns;
+        private List<String> columns;
         private String where;
-        private String[] whereArgs;
+        private List<String> whereArgs;
         private String groupBy;
         private String having;
         private String orderBy;
@@ -114,7 +114,7 @@ public class Query {
         }
 
         @NonNull public Builder columns(@Nullable String... columns) {
-            this.columns = columns;
+            this.columns = QueryUtil.varargsToList(columns);
             return this;
         }
 
@@ -124,7 +124,7 @@ public class Query {
         }
 
         @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
-            this.whereArgs = whereArgs;
+            this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
 

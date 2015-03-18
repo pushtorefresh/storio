@@ -19,7 +19,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     @NonNull private final Iterable<ContentValues> contentValuesIterable;
     private final boolean useTransactionIfPossible;
 
-    private PreparedPutIterableContentValues(
+    PreparedPutIterableContentValues(
             @NonNull StorIODb storIODb,
             @NonNull PutResolver<ContentValues> putResolver,
             @NonNull Iterable<ContentValues> contentValuesIterable, boolean useTransactionIfPossible) {

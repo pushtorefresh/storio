@@ -21,7 +21,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
     @NonNull private final MapFunc<T, ContentValues> mapFunc;
     private final boolean useTransactionIfPossible;
 
-    public PreparedPutObjects(@NonNull StorIODb storIODb,
+    PreparedPutObjects(@NonNull StorIODb storIODb,
                               @NonNull PutResolver<T> putResolver,
                               @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc,
                               boolean useTransactionIfPossible) {

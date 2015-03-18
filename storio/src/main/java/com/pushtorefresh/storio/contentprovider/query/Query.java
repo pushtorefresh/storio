@@ -4,9 +4,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import com.pushtorefresh.storio.util.QueryUtil;
+
 import java.util.List;
 
 /**
@@ -49,9 +48,9 @@ public class Query {
      */
     protected Query(@NonNull Uri uri, @Nullable List<String> projection, @Nullable String where, @Nullable List<String> whereArgs, @Nullable String sortOrder) {
         this.uri = uri;
-        this.projection = projection != null ? Collections.unmodifiableList(projection) : null;
+        this.projection = QueryUtil.listToUnmodifiable(projection);
         this.where = where;
-        this.whereArgs = whereArgs != null ? Collections.unmodifiableList(whereArgs) : null;
+        this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
         this.sortOrder = sortOrder;
     }
 
@@ -116,9 +115,7 @@ public class Query {
          * @return builder
          */
         @NonNull public Builder projection(@Nullable String... columns) {
-            projection = columns == null || columns.length == 0
-                    ? null
-                    : new ArrayList<>(Arrays.asList(columns));
+            projection = QueryUtil.varargsToList(columns);
             return this;
         }
 
@@ -140,9 +137,7 @@ public class Query {
          * @return builder
          */
         @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
-            this.whereArgs = whereArgs == null || whereArgs.length == 0
-                    ? null
-                    : new ArrayList<>(Arrays.asList(whereArgs));
+            this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
 

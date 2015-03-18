@@ -4,17 +4,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.db.StorIODb;
+import com.pushtorefresh.storio.util.QueryUtil;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class RawQuery {
 
     @NonNull  public final String query;
 
-    @Nullable public final String[] args;
+    @Nullable public final List<String> args;
 
     /**
      * Set of tables which are participated in {@link #query},
@@ -25,31 +26,27 @@ public class RawQuery {
     /**
      * Please use {@link com.pushtorefresh.storio.db.query.RawQuery.Builder} instead of constructor
      */
-    protected RawQuery(@NonNull String query, @Nullable String[] args, @Nullable Set<String> tables) {
+    protected RawQuery(@NonNull String query, @Nullable List<String> args, @Nullable Set<String> tables) {
         this.query = query;
-        this.args = args;
+        this.args = QueryUtil.listToUnmodifiable(args);
         this.tables = tables;
     }
 
-    @Override
-    public boolean equals(@Nullable Object o) {
+    @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         RawQuery rawQuery = (RawQuery) o;
 
-        if (!Arrays.equals(args, rawQuery.args)) return false;
         if (!query.equals(rawQuery.query)) return false;
-        if (tables != null ? !tables.equals(rawQuery.tables) : rawQuery.tables != null)
-            return false;
+        if (args != null ? !args.equals(rawQuery.args) : rawQuery.args != null) return false;
+        return !(tables != null ? !tables.equals(rawQuery.tables) : rawQuery.tables != null);
 
-        return true;
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         int result = query.hashCode();
-        result = 31 * result + (args != null ? Arrays.hashCode(args) : 0);
+        result = 31 * result + (args != null ? args.hashCode() : 0);
         result = 31 * result + (tables != null ? tables.hashCode() : 0);
         return result;
     }
@@ -57,7 +54,7 @@ public class RawQuery {
     @Override public String toString() {
         return "RawQuery{" +
                 "query='" + query + '\'' +
-                ", args=" + Arrays.toString(args) +
+                ", args=" + args +
                 ", tables=" + tables +
                 '}';
     }
@@ -65,7 +62,7 @@ public class RawQuery {
     public static class Builder {
 
         private String query;
-        private String[] args;
+        private List<String> args;
         private Set<String> tables;
 
         @NonNull public Builder query(@NonNull String query) {
@@ -74,7 +71,7 @@ public class RawQuery {
         }
 
         @NonNull public Builder args(@NonNull String... args) {
-            this.args = args;
+            this.args = QueryUtil.varargsToList(args);
             return this;
         }
 

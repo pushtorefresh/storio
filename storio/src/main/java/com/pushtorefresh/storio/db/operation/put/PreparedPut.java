@@ -13,7 +13,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
     @NonNull protected final StorIODb storIODb;
     @NonNull protected final PutResolver<T> putResolver;
 
-    public PreparedPut(@NonNull StorIODb storIODb, @NonNull PutResolver<T> putResolver) {
+    PreparedPut(@NonNull StorIODb storIODb, @NonNull PutResolver<T> putResolver) {
         this.storIODb = storIODb;
         this.putResolver = putResolver;
     }
