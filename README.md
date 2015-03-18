@@ -140,7 +140,7 @@ Several things about `Get` operation:
 * In `StorIO 1.1.0` we are going to add `Lazy<T>` to allow you skip unneeded computations
 * If you want to `Put` multiple items into `StorIODb`, better to do this in transaction to avoid multiple calls to the listeners (see docs about `Put` operation)
 
-####Put Operation
+####2. Put Operation
 `Put` operation requires `PutResolver` which defines the behavior of `Put` operation (insert or update).
 
 You have two ways of implementing `PutResolver`:
@@ -211,7 +211,7 @@ Several things about `Put` operation:
 * `Put` operation in transaction will produce only one notification to `StorIODb` observers
 * Result of `Put` operation can be useful if you want to know what happened: insert (and insertedId) or update (and number of updated rows)
 
-####Delete Operation
+####3. Delete Operation
 ######Delete object
 ```java
 // you can store it as static final field somewhere
