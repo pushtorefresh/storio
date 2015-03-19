@@ -49,9 +49,10 @@ dependencies {
     compile rootProject.ext.javaxInject
     compile rootProject.ext.javaxAnnotationApi
 
+    compile rootProject.ext.rxJava
+    compile rootProject.ext.rxAndroid
     compile rootProject.ext.appCompat
     compile rootProject.ext.butterKnife
     compile rootProject.ext.recyclerView
-    compile rootProject.ext.rxAndroid
     compile rootProject.ext.timber
 }
