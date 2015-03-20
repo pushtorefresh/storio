@@ -112,34 +112,67 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
         private boolean useTransactionIfPossible = true;
         private DeleteResolver deleteResolver;
 
-        public Builder(@NonNull StorIODb storIODb, @NonNull Collection<T> objects) {
+        Builder(@NonNull StorIODb storIODb, @NonNull Collection<T> objects) {
             this.storIODb = storIODb;
             this.objects = objects;
         }
 
+        /**
+         * Specifies map function to map each object to {@link DeleteQuery}
+         *
+         * @param mapFunc map function to map each object to {@link DeleteQuery}
+         * @return builder
+         */
         @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
 
+        /**
+         * Defines that Delete Operation will use transaction if it is supported by implementation of {@link StorIODb}
+         * By default, transaction will be used
+         *
+         * @return builder
+         */
         @NonNull public Builder<T> useTransactionIfPossible() {
             useTransactionIfPossible = true;
             return this;
         }
 
+        /**
+         * Defines that Delete Operation won't use transaction
+         * By default, transaction will be used
+         *
+         * @return builder
+         */
         @NonNull public Builder<T> dontUseTransaction() {
             useTransactionIfPossible = false;
             return this;
         }
 
+        /**
+         * Optional: Specifies {@link DeleteResolver} for Delete Operation
+         *
+         * @param deleteResolver {@link DeleteResolver} for Delete Operation
+         * @return builder
+         */
         @NonNull public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
             this.deleteResolver = deleteResolver;
             return this;
         }
 
+        /**
+         * Prepares Delete Operation
+         *
+         * @return {@link PreparedDeleteCollectionOfObjects}
+         */
         @NonNull public PreparedDeleteCollectionOfObjects<T> prepare() {
             if (deleteResolver == null) {
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
+            }
+
+            if (mapFunc == null) {
+                throw new IllegalStateException("Please specify map function");
             }
 
             return new PreparedDeleteCollectionOfObjects<>(

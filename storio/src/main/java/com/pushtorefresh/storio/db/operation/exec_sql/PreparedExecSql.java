@@ -50,11 +50,21 @@ public class PreparedExecSql implements PreparedOperation<Void> {
             this.storIODb = storIODb;
         }
 
+        /**
+         * Specifies query for ExecSql Operation
+         *
+         * @param rawQuery query
+         * @return builder
+         */
         @NonNull public Builder withQuery(@NonNull RawQuery rawQuery) {
             this.rawQuery = rawQuery;
             return this;
         }
 
+        /**
+         * Prepares ExecSql Operation
+         * @return {@link PreparedExecSql} instance
+         */
         @NonNull public PreparedExecSql prepare() {
             if (rawQuery == null) {
                 throw new IllegalStateException("Please set query object");

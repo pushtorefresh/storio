@@ -23,9 +23,9 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
     private final boolean useTransactionIfPossible;
 
     PreparedPutObjects(@NonNull StorIODb storIODb,
-                              @NonNull PutResolver<T> putResolver,
-                              @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc,
-                              boolean useTransactionIfPossible) {
+                       @NonNull PutResolver<T> putResolver,
+                       @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc,
+                       boolean useTransactionIfPossible) {
         super(storIODb, putResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
@@ -108,32 +108,69 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
         private PutResolver<T> putResolver;
         private boolean useTransactionIfPossible = true;
 
-        public Builder(@NonNull StorIODb storIODb, @NonNull Iterable<T> objects) {
+        Builder(@NonNull StorIODb storIODb, @NonNull Iterable<T> objects) {
             this.storIODb = storIODb;
             this.objects = objects;
         }
 
+        /**
+         * Specifies map function for Put Operation which will be used to map each object to {@link ContentValues}
+         *
+         * @param mapFunc map function for Put Operation which will be used to map each object to {@link ContentValues}
+         * @return builder
+         */
         @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
 
+        /**
+         * Specifies {@link PutResolver} for Put Operation which allows you to customize behavior of Put Operation
+         *
+         * @param putResolver put resolver
+         * @return builder
+         * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
+         */
         @NonNull public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
             this.putResolver = putResolver;
             return this;
         }
 
+        /**
+         * Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIODb}
+         * By default, transaction will be used
+         *
+         * @return builder
+         */
         @NonNull public Builder<T> useTransactionIfPossible() {
             useTransactionIfPossible = true;
             return this;
         }
 
+        /**
+         * Defines that Put Operation won't use transaction
+         * By default, transaction will be used
+         *
+         * @return builder
+         */
         @NonNull public Builder<T> dontUseTransaction() {
             useTransactionIfPossible = false;
             return this;
         }
 
+        /**
+         * Prepares Put Operation
+         * @return {@link PreparedPutObjects} instance
+         */
         @NonNull public PreparedPutObjects<T> prepare() {
+            if (mapFunc == null) {
+                throw new IllegalStateException("Please specify map function");
+            }
+
+            if (putResolver == null) {
+                throw new IllegalStateException("Please specify put resolver");
+            }
+
             return new PreparedPutObjects<>(
                     storIODb,
                     putResolver,

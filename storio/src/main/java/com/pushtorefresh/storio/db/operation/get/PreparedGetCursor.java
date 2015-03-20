@@ -86,25 +86,47 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         private RawQuery rawQuery;
         private GetResolver getResolver;
 
-        public Builder(@NonNull StorIODb storIODb) {
+        Builder(@NonNull StorIODb storIODb) {
             this.storIODb = storIODb;
         }
 
+        /**
+         * Specifies {@link Query} for Get Operation
+         *
+         * @param query query
+         * @return builder
+         */
         @NonNull public Builder withQuery(@NonNull Query query) {
             this.query = query;
             return this;
         }
 
+        /**
+         * Specifies {@link RawQuery} for Get Operation, you can use it for "joins" and same constructions which are not allowed in {@link Query}
+         *
+         * @param rawQuery query
+         * @return builder
+         */
         @NonNull public Builder withQuery(@NonNull RawQuery rawQuery) {
             this.rawQuery = rawQuery;
             return this;
         }
 
+        /**
+         * Optional: Specifies {@link GetResolver} for Get Operation which allows you to customize behavior of Get Operation
+         *
+         * @param getResolver get resolver
+         * @return builder
+         */
         @NonNull public Builder withGetResolver(@NonNull GetResolver getResolver) {
             this.getResolver = getResolver;
             return this;
         }
 
+        /**
+         * Prepares Get Operation
+         * @return {@link PreparedGetCursor} instance
+         */
         @NonNull public PreparedOperationWithReactiveStream<Cursor> prepare() {
             if (getResolver == null) {
                 getResolver = DefaultGetResolver.INSTANCE;

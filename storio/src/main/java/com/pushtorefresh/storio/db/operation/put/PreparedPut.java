@@ -26,26 +26,68 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
             this.storIODb = storIODb;
         }
 
-        @NonNull public PreparedPutWithContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
+        /**
+         * Prepares Put Operation for one instance of {@link ContentValues}
+         *
+         * @param contentValues content values to put
+         * @return builder
+         */
+        @NonNull
+        public PreparedPutWithContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
             return new PreparedPutWithContentValues.Builder(storIODb, contentValues);
         }
 
-        @NonNull public PreparedPutIterableContentValues.Builder contentValues(@NonNull Iterable<ContentValues> contentValuesIterable) {
+        /**
+         * Prepares Put Operation for multiple {@link ContentValues}
+         *
+         * @param contentValuesIterable content values to put
+         * @return builder
+         */
+        @NonNull
+        public PreparedPutIterableContentValues.Builder contentValues(@NonNull Iterable<ContentValues> contentValuesIterable) {
             return new PreparedPutIterableContentValues.Builder(storIODb, contentValuesIterable);
         }
 
-        @NonNull public PreparedPutIterableContentValues.Builder contentValues(@NonNull ContentValues... contentValuesArray) {
+        /**
+         * Prepares Put Operation for multiple {@link ContentValues}
+         *
+         * @param contentValuesArray content values to put
+         * @return builder
+         */
+        @NonNull
+        public PreparedPutIterableContentValues.Builder contentValues(@NonNull ContentValues... contentValuesArray) {
             return new PreparedPutIterableContentValues.Builder(storIODb, Arrays.asList(contentValuesArray));
         }
 
+        /**
+         * Prepares Put Operation for one object
+         *
+         * @param object object to put
+         * @param <T>    type of object
+         * @return builder
+         */
         @NonNull public <T> PreparedPutWithObject.Builder<T> object(T object) {
             return new PreparedPutWithObject.Builder<>(storIODb, object);
         }
 
+        /**
+         * Prepares Put Operation for multiple objects
+         *
+         * @param objects objects to put
+         * @param <T>     type of objects
+         * @return builder
+         */
         @NonNull public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
             return new PreparedPutObjects.Builder<>(storIODb, objects);
         }
 
+        /**
+         * Prepares Put Operation for multiple objects
+         *
+         * @param objects objects to put
+         * @param <T>     type of objects
+         * @return builder
+         */
         @SafeVarargs
         @NonNull public final <T> PreparedPutObjects.Builder<T> objects(@NonNull T... objects) {
             return new PreparedPutObjects.Builder<>(storIODb, Arrays.asList(objects));

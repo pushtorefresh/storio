@@ -58,24 +58,45 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         private MapFunc<T, DeleteQuery> mapFunc;
         private DeleteResolver deleteResolver;
 
-        public Builder(@NonNull StorIODb storIODb, @NonNull T object) {
+        Builder(@NonNull StorIODb storIODb, @NonNull T object) {
             this.storIODb = storIODb;
             this.object = object;
         }
 
+        /**
+         * Specifies map function to map object to {@link DeleteQuery}
+         *
+         * @param mapFunc map function to map object to {@link DeleteQuery}
+         * @return builder
+         */
         @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
 
+
+        /**
+         * Optional: Specifies {@link DeleteResolver} for Delete Operation
+         *
+         * @param deleteResolver delete resolver
+         * @return builder
+         */
         @NonNull public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
             this.deleteResolver = deleteResolver;
             return this;
         }
 
+        /**
+         * Prepares Delete Operation
+         * @return {@link PreparedDeleteObject} instance
+         */
         @NonNull public PreparedDeleteObject<T> prepare() {
             if (deleteResolver == null) {
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
+            }
+
+            if (mapFunc == null) {
+                throw new IllegalStateException("Please specify map function");
             }
 
             return new PreparedDeleteObject<>(
