@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.PreparedOperation;
 import com.pushtorefresh.storio.db.query.RawQuery;
+import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -25,6 +26,8 @@ public class PreparedExecSql implements PreparedOperation<Void> {
     }
 
     @NonNull @Override public Observable<Void> createObservable() {
+        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override public void call(Subscriber<? super Void> subscriber) {
                 executeAsBlocking();

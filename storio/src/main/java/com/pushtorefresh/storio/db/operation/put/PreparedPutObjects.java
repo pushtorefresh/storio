@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.MapFunc;
+import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -83,6 +84,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
     }
 
     @NonNull @Override public Observable<PutCollectionResult<T>> createObservable() {
+        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
         return Observable.create(new Observable.OnSubscribe<PutCollectionResult<T>>() {
             @Override
             public void call(Subscriber<? super PutCollectionResult<T>> subscriber) {

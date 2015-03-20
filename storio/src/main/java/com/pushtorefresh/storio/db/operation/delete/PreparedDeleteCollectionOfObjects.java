@@ -6,6 +6,7 @@ import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.MapFunc;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
+import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -86,6 +87,8 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
     }
 
     @NonNull @Override public Observable<DeleteCollectionOfObjectsResult<T>> createObservable() {
+        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
         return Observable.create(new Observable.OnSubscribe<DeleteCollectionOfObjectsResult<T>>() {
             @Override
             public void call(Subscriber<? super DeleteCollectionOfObjectsResult<T>> subscriber) {

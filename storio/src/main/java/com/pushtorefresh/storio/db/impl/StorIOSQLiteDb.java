@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
@@ -13,6 +14,7 @@ import com.pushtorefresh.storio.db.query.InsertQuery;
 import com.pushtorefresh.storio.db.query.Query;
 import com.pushtorefresh.storio.db.query.RawQuery;
 import com.pushtorefresh.storio.db.query.UpdateQuery;
+import com.pushtorefresh.storio.util.EnvironmentUtil;
 import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.Set;
@@ -30,9 +32,11 @@ public class StorIOSQLiteDb extends StorIODb {
 
     /**
      * Reactive bus for notifying observers about changes in StorIODb
-     * One change can affect several tables, so we use Set<String> as set of changed tables per event
+     * One change can affect several tables, so we use {@link com.pushtorefresh.storio.db.operation.Changes} as representation of changes
      */
-    @NonNull private final PublishSubject<Changes> changesBus = PublishSubject.create();
+    @Nullable private final PublishSubject<Changes> changesBus = EnvironmentUtil.IS_RX_JAVA_AVAILABLE
+            ? PublishSubject.<Changes>create()
+            : null;
 
     /**
      * Implementation of {@link StorIODb.Internal}
@@ -45,6 +49,10 @@ public class StorIOSQLiteDb extends StorIODb {
 
     @Override @NonNull
     public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
+        if (changesBus == null) {
+            throw EnvironmentUtil.newRxJavaIsNotAvailableException("Observing changes in StorIODb");
+        }
+
         return changesBus
                 .filter(new Func1<Changes, Boolean>() {
                     @Override public Boolean call(Changes changes) {
@@ -119,6 +127,10 @@ public class StorIOSQLiteDb extends StorIODb {
         }
 
         @Override public void notifyAboutChanges(@NonNull Changes changes) {
+            if (changesBus == null) {
+                throw EnvironmentUtil.newRxJavaIsNotAvailableException("Notifying about changes in StorIODb");
+            }
+
             changesBus.onNext(changes);
         }
 

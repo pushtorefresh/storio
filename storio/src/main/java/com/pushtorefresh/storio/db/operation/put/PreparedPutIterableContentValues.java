@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
+import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,6 +79,8 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     }
 
     @NonNull @Override public Observable<PutCollectionResult<ContentValues>> createObservable() {
+        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
         return Observable.create(new Observable.OnSubscribe<PutCollectionResult<ContentValues>>() {
 
             @Override
