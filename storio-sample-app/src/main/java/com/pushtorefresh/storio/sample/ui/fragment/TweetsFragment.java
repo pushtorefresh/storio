@@ -30,6 +30,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -81,7 +82,7 @@ public class TweetsFragment extends BaseFragment {
     void reloadData() {
         uiStateController.setUiStateLoading();
 
-        storIODb
+        final Subscription subscription = storIODb
                 .get()
                 .listOfObjects(Tweet.class)
                 .withMapFunc(Tweet.MAP_FROM_CURSOR)
@@ -111,6 +112,8 @@ public class TweetsFragment extends BaseFragment {
                         // no impl
                     }
                 });
+
+        unsubscribeOnStop(subscription); // preventing memory leak
     }
 
     @OnClick(R.id.tweets_empty_ui_add_tweets_button)
