@@ -34,7 +34,7 @@ public class StorIOSQLiteDb extends StorIODb {
      * Reactive bus for notifying observers about changes in StorIODb
      * One change can affect several tables, so we use {@link com.pushtorefresh.storio.db.operation.Changes} as representation of changes
      */
-    @Nullable private final PublishSubject<Changes> changesBus = EnvironmentUtil.HAS_RX_JAVA
+    @Nullable private final PublishSubject<Changes> changesBus = EnvironmentUtil.IS_RX_JAVA_AVAILABLE
             ? PublishSubject.<Changes>create()
             : null;
 
@@ -50,7 +50,7 @@ public class StorIOSQLiteDb extends StorIODb {
     @Override @NonNull
     public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
         if (changesBus == null) {
-            throw new IllegalStateException("Observing changes requires RxJava, please add it as compile dependency to the application");
+            throw EnvironmentUtil.newRxJavaIsNotAvailableException("Observing changes in StorIODb");
         }
 
         return changesBus
@@ -128,7 +128,7 @@ public class StorIOSQLiteDb extends StorIODb {
 
         @Override public void notifyAboutChanges(@NonNull Changes changes) {
             if (changesBus == null) {
-                throw new IllegalStateException("Notifying about changes requires RxJava, please add it as compile dependency to the application");
+                throw EnvironmentUtil.newRxJavaIsNotAvailableException("Notifying about changes in StorIODb");
             }
 
             changesBus.onNext(changes);

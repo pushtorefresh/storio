@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
+import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -30,6 +31,8 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
     }
 
     @NonNull @Override public Observable<PutResult> createObservable() {
+        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
         return Observable.create(new Observable.OnSubscribe<PutResult>() {
             @Override public void call(Subscriber<? super PutResult> subscriber) {
                 final PutResult putResult = executeAsBlocking();

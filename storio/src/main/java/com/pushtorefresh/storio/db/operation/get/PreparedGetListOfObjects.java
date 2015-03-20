@@ -9,6 +9,7 @@ import com.pushtorefresh.storio.db.operation.MapFunc;
 import com.pushtorefresh.storio.db.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.db.query.Query;
 import com.pushtorefresh.storio.db.query.RawQuery;
+import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -59,6 +60,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     @NonNull public Observable<List<T>> createObservable() {
+        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
         return Observable.create(new Observable.OnSubscribe<List<T>>() {
             @Override public void call(Subscriber<? super List<T>> subscriber) {
                 if (!subscriber.isUnsubscribed()) {
@@ -70,6 +73,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     @NonNull @Override public Observable<List<T>> createObservableStream() {
+        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
+
         final Set<String> tables;
 
         if (query != null) {

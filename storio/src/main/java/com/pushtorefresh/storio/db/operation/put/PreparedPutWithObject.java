@@ -7,6 +7,7 @@ import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.MapFunc;
 import com.pushtorefresh.storio.db.operation.PreparedOperation;
+import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -36,6 +37,8 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
     }
 
     @NonNull public Observable<PutResult> createObservable() {
+        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
         return Observable.create(new Observable.OnSubscribe<PutResult>() {
             @Override
             public void call(Subscriber<? super PutResult> subscriber) {
