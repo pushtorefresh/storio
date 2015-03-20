@@ -1,19 +1,27 @@
 #### StorIO — modern API for SQLiteDatabase and ContentProvider
 
 #####Overview:
-* Powerful set of operations: `Put`, `Get`, `Delete`
+* Powerful set of Operations: `Put`, `Get`, `Delete`
 * Convinient builders. Forget about 6-7 `null` in queries
 * No reflection, no annotations, `StorIO` is not ORM
-* Every operation over `StorIO` can be executed as blocking call or as `Observable`
+* Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`
 * `RxJava` as first class citizen, but it's not required dependency!
-* `Observable` from `Get` operation can observe changes in `StorIO` and receive updates automatically
-* `StorIO` can replace `Loaders`
+* `Observable` from `Get` Operation can observe changes in `StorIO` and receive updates automatically
 * If you don't want to work with `Cursor` and `ContentValue` you don't have to
-* You can customize behavior of every operation via `Resolvers`: `GetResolver`, `PutResolver`, `DeleteResolver`
+* `StorIO` can replace `Loaders`
 * `StorIO` is mockable for testing
 
+###StorIODb — API for Database
 
-###StorIODb — an API for Database
+####0. Create an instance of StorIODb
+
+```java
+StorIODb storIODb = new StorIOSQLiteDb.Builder()
+  .sqliteOpenHelper(yourSqliteOpenHelper) // or .db(db)
+  .build();
+```
+
+It's a good practice to use one instance of `StorIODb` per database.
 
 ####1. Get Operation
 ######Get list of objects with blocking call:
@@ -63,7 +71,7 @@ storIODb
     .build())
   .prepare()
   .createObservable()
-  .subscribeOn(Schedulers.io()) // moving Get operation to other thread
+  .subscribeOn(Schedulers.io()) // moving Get Operation to other thread
   .observeOn(AndroidSchedulers.mainThread()) // observing result on Main thread
   .subscribe(new Action1<Cursor>() {
     @Override public void call(Cursor cursor) {
@@ -122,7 +130,7 @@ storIODb
   .createObservableStream();
 ```
 
-######Customize behavior of `Get` operation with `GetResolver`
+######Customize behavior of `Get` Operation with `GetResolver`
 
 ```java
 GetResolver getResolver = new GetResolver() {
@@ -144,19 +152,19 @@ storIODb
   .listOfObjects(Tweet.class)
   .withMapFunc(Tweet.MAP_FROM_CURSOR)
   .withQuery(Tweet.ALL_TWEETS_QUERY)
-  .withGetResolver(getResolver) // here we set custom GetResolver for Get operation
+  .withGetResolver(getResolver) // here we set custom GetResolver for Get Operation
   .prepare()
   .executeAsBlocking();
 ```
 
-Several things about `Get` operation:
-* There is `DefaultGetResolver` which simply redirects query to `StorIODb`, `Get` operation will use `DefaultGetResolver` if you won't pass your `GetResolver`, in 99% of cases `DefaultGetResolver` will be enough
-* As you can see, results of `Get` operation computed even if you'll apply `RxJava` operators such as `Debounce`, if you want to avoid unneeded computatations, please combine `StorIODb.observeChangesInTable()` with `Get` operation manually.
+Several things about `Get` Operation:
+* There is `DefaultGetResolver` which simply redirects query to `StorIODb`, `Get` Operation will use `DefaultGetResolver` if you won't pass your `GetResolver`, in 99% of cases `DefaultGetResolver` will be enough
+* As you can see, results of `Get` Operation computed even if you'll apply `RxJava` operators such as `Debounce`, if you want to avoid unneeded computatations, please combine `StorIODb.observeChangesInTable()` with `Get` Operation manually.
 * In `StorIO 1.1.0` we are going to add `Lazy<T>` to allow you skip unneeded computations
-* If you want to `Put` multiple items into `StorIODb`, better to do this in transaction to avoid multiple calls to the listeners (see docs about `Put` operation)
+* If you want to `Put` multiple items into `StorIODb`, better to do this in transaction to avoid multiple calls to the listeners (see docs about `Put` Operation)
 
 ####2. Put Operation
-`Put` operation requires `PutResolver` which defines the behavior of `Put` operation (insert or update).
+`Put` Operation requires `PutResolver` which defines the behavior of `Put` Operation (insert or update).
 
 You have two ways of implementing `PutResolver`:
 
@@ -220,11 +228,11 @@ storIODb
   .executeAsBlocking(); // or createObservable()
 ```
 
-Several things about `Put` operation:
-* `Put` operation requires `PutResolver`, `StorIO` requires it to avoid reflection
-* `Put` operation can be executed in transaction and by default it will use transaction, you can customize this via `useTransactionIfPossible()` or `dontUseTransaction()`
-* `Put` operation in transaction will produce only one notification to `StorIODb` observers
-* Result of `Put` operation can be useful if you want to know what happened: insert (and insertedId) or update (and number of updated rows)
+Several things about `Put` Operation:
+* `Put` Operation requires `PutResolver`, `StorIO` requires it to avoid reflection
+* `Put` Operation can be executed in transaction and by default it will use transaction, you can customize this via `useTransactionIfPossible()` or `dontUseTransaction()`
+* `Put` Operation in transaction will produce only one notification to `StorIODb` observers
+* Result of `Put` Operation can be useful if you want to know what happened: insert (and insertedId) or update (and number of updated rows)
 
 ####3. Delete Operation
 ######Delete object
@@ -263,13 +271,13 @@ storIODb
   .executeAsBlocking(); // or createObservable()
 ```
 
-Several things about `Delete` operation:
-* `Delete` operation of multiple items can be performed in transaction, by default it will use transaction if possible
-* Same rules as for `Put` operation about notifications to `StorIODb` observers: transaction -> one notification, without transaction - multiple notifications
-* Result of `Delete` operation can be useful if you want to know what happened
+Several things about `Delete` Operation:
+* `Delete` Operation of multiple items can be performed in transaction, by default it will use transaction if possible
+* Same rules as for `Put` Operation about notifications for `StorIODb` observers: transaction -> one notification, without transaction - multiple notifications
+* Result of `Delete` Operation can be useful if you want to know what happened
 
 ####4. ExecSql Operation
-Sometimes you need to execute raw sql, we allow you to do it with full power of StorIO
+Sometimes you need to execute raw sql, `StorIODb` allows you to do it
 
 ```java
 storIODb
@@ -296,6 +304,12 @@ For more examples, please check our [`Design Tests`](storio/src/test/java/com/pu
 It means, that you can have your own implementation of `StorIODb` and `StorIOContentProvider` with custom behavior, such as memory caching, verbose logging and so on.
 
 One of the main goals of `StorIO` — clean API which will be easy to use and understand, that's why `StorIODb` and `StorIOContentProvider` have just several methods, but sometimes you need to go under the hood and we allow you to do it: `StorIODb.Internal` and `StorIOContentProvider.Internal` encapsulates low-level methods, you can use them if you need to, but try to avoid it.
+
+All `Query` objects are immutable, you can share them safely.
+
+You may notice that each Operation (Get, Put, Delete) should be prepared with `prepare()`. `StorIO` has an entity called `PreparedOperation<T>`, and you can use them to perform group execution of several Prepared Operations or provide `PreparedOperation<T>` as a return type of your API (for example in Model layer) and client will decide how to execute it: `executeAsBlocking()` or `createObservable()` or `createObservableStream()` (if possible). Also, Prepared Operations might be useful for ORMs based on `StorIO`.
+
+You can customize behavior of every Operation via `Resolvers`: `GetResolver`, `PutResolver`, `DeleteResolver`.
 
 ----
 **Made with love** in [Pushtorefresh.com](https://pushtorefresh.com) by [@artem_zin](https://twitter.com/artem_zin) and [@nikitin-da](https://github.com/nikitin-da)
