@@ -57,22 +57,43 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
 
-        public Builder(@NonNull StorIODb storIODb, @NonNull T object) {
+        Builder(@NonNull StorIODb storIODb, @NonNull T object) {
             this.storIODb = storIODb;
             this.object = object;
         }
 
+        /**
+         * Specifies map function for Put Operation which will be used to map object to {@link ContentValues}
+         *
+         * @param mapFunc map function for Put Operation which will be used to map object to {@link ContentValues}
+         * @return builder
+         */
         @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
 
+        /**
+         * Specifies {@link PutResolver} for Put Operation which allows you to customize behavior of Put Operation
+         *
+         * @param putResolver put resolver
+         * @return builder
+         * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
+         */
         @NonNull public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
             this.putResolver = putResolver;
             return this;
         }
 
+        /**
+         * Prepares Put Operation
+         * @return {@link PreparedPutWithObject} instance
+         */
         @NonNull public PreparedOperation<PutResult> prepare() {
+            if (mapFunc == null) {
+                throw new IllegalStateException("Please specify map function");
+            }
+
             return new PreparedPutWithObject<>(
                     storIODb,
                     putResolver,

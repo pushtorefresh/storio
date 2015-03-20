@@ -49,17 +49,32 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
 
         private PutResolver<ContentValues> putResolver;
 
-        public Builder(@NonNull StorIODb storIODb, @NonNull ContentValues contentValues) {
+        Builder(@NonNull StorIODb storIODb, @NonNull ContentValues contentValues) {
             this.storIODb = storIODb;
             this.contentValues = contentValues;
         }
 
+        /**
+         * Specifies {@link PutResolver} for Put Operation which allows you to customize behavior of Put Operation
+         *
+         * @param putResolver put resolver
+         * @return builder
+         * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
+         */
         @NonNull public Builder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
             this.putResolver = putResolver;
             return this;
         }
 
+        /**
+         * Prepares Put Operation
+         * @return {@link PreparedPutWithContentValues} instance
+         */
         @NonNull public PreparedPutWithContentValues prepare() {
+            if (putResolver == null) {
+                throw new IllegalStateException("Please specify put resolver");
+            }
+
             return new PreparedPutWithContentValues(
                     storIODb,
                     putResolver,

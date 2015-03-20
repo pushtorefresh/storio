@@ -106,34 +106,67 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         private RawQuery rawQuery;
         private GetResolver getResolver;
 
-        public Builder(@NonNull StorIODb storIODb, @NonNull Class<T> type) {
+        Builder(@NonNull StorIODb storIODb, @NonNull Class<T> type) {
             this.storIODb = storIODb;
             this.type = type;
         }
 
+        /**
+         * Specifies map function for Get Operation which will map {@link Cursor} to object of required type
+         *
+         * @param mapFunc map function which will map {@link Cursor} to object of required type
+         * @return builder
+         */
         @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
 
+        /**
+         * Specifies {@link Query} for Get Operation
+         *
+         * @param query query
+         * @return builder
+         */
         @NonNull public Builder<T> withQuery(@NonNull Query query) {
             this.query = query;
             return this;
         }
 
+        /**
+         * Specifies {@link RawQuery} for Get Operation, you can use it for "joins" and same constructions which are not allowed in {@link Query}
+         *
+         * @param rawQuery query
+         * @return builder
+         */
         @NonNull public Builder<T> withQuery(@NonNull RawQuery rawQuery) {
             this.rawQuery = rawQuery;
             return this;
         }
 
+        /**
+         * Optional: Specifies {@link GetResolver} for Get Operation which allows you to customize behavior of Get Operation
+         *
+         * @param getResolver get resolver
+         * @return builder
+         */
         @NonNull public Builder withGetResolver(@NonNull GetResolver getResolver) {
             this.getResolver = getResolver;
             return this;
         }
 
+        /**
+         * Prepares Get Operation
+         *
+         * @return {@link PreparedGetListOfObjects} instance
+         */
         @NonNull public PreparedOperationWithReactiveStream<List<T>> prepare() {
             if (getResolver == null) {
                 getResolver = DefaultGetResolver.INSTANCE;
+            }
+
+            if (mapFunc == null) {
+                throw new IllegalStateException("Please specify map function");
             }
 
             if (query != null) {

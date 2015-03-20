@@ -100,27 +100,55 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         private PutResolver<ContentValues> putResolver;
         private boolean useTransactionIfPossible = true;
 
-        public Builder(@NonNull StorIODb storIODb, @NonNull Iterable<ContentValues> contentValuesIterable) {
+        Builder(@NonNull StorIODb storIODb, @NonNull Iterable<ContentValues> contentValuesIterable) {
             this.storIODb = storIODb;
             this.contentValuesIterable = contentValuesIterable;
         }
 
+        /**
+         * Specifies {@link PutResolver} for Put Operation which allows you to customize behavior of Put Operation
+         *
+         * @param putResolver put resolver
+         * @return builder
+         * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
+         */
         @NonNull public Builder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
             this.putResolver = putResolver;
             return this;
         }
 
+        /**
+         * Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIODb}
+         * By default, transaction will be used
+         *
+         * @return builder
+         */
         @NonNull public Builder useTransactionIfPossible() {
             useTransactionIfPossible = true;
             return this;
         }
 
+        /**
+         * Defines that Put Operation won't use transaction
+         * By default, transaction will be used
+         *
+         * @return builder
+         */
         @NonNull public Builder dontUseTransaction() {
             useTransactionIfPossible = false;
             return this;
         }
 
+        /**
+         * Prepares Put Operation
+         *
+         * @return {@link PreparedPutIterableContentValues} instance
+         */
         @NonNull public PreparedPutIterableContentValues prepare() {
+            if (putResolver == null) {
+                throw new IllegalStateException("Please specify put resolver");
+            }
+
             return new PreparedPutIterableContentValues(
                     storIODb,
                     putResolver,

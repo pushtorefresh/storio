@@ -49,16 +49,26 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
         private DeleteResolver deleteResolver;
 
-        public Builder(@NonNull StorIODb storIODb, @NonNull DeleteQuery deleteQuery) {
+        Builder(@NonNull StorIODb storIODb, @NonNull DeleteQuery deleteQuery) {
             this.storIODb = storIODb;
             this.deleteQuery = deleteQuery;
         }
 
+        /**
+         * Optional: Specifies {@link DeleteResolver} for Delete Operation
+         *
+         * @param deleteResolver delete resolver
+         * @return builder
+         */
         @NonNull public Builder withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
             this.deleteResolver = deleteResolver;
             return this;
         }
 
+        /**
+         * Prepares Delete Operation
+         * @return {@link PreparedDeleteByQuery} instance
+         */
         @NonNull public PreparedDeleteByQuery prepare() {
             if (deleteResolver == null) {
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
