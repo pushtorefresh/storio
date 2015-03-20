@@ -107,6 +107,21 @@ storIODb
   });
 ```
 
+######Get result with RawQuery with joins and other SQL things
+
+```java
+storIODb
+  .get()
+  .listOfObjects(TweetAndUser.class)
+  .withMapFunc(TweetAndUser.MAP_FROM_CURSOR)
+  .withQuery(new RawQuery.Builder()
+    .query("SELECT * FROM tweets JOIN users ON tweets.user_name = users.name WHERE tweets.user_name = ?")
+    .args("artem_zin")
+    .build())
+  .prepare()
+  .createObservableStream();
+```
+
 ######Customize behavior of `Get` operation with `GetResolver`
 
 ```java
