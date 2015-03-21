@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.unit_test.operation.get;
 import android.database.Cursor;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.operation.MapFunc;
+import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.db.operation.get.GetResolver;
 import com.pushtorefresh.storio.db.operation.get.PreparedGet;
 import com.pushtorefresh.storio.db.query.Query;

@@ -4,8 +4,8 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.operation.Changes;
-import com.pushtorefresh.storio.db.operation.MapFunc;
+import com.pushtorefresh.storio.db.Changes;
+import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.HashMap;

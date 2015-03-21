@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.integration_test.impl;
 import android.database.Cursor;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.db.operation.MapFunc;
+import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.db.query.Query;
 
 import org.junit.Test;

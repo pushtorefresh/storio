@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.contentprovider.operation.get;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
-import com.pushtorefresh.storio.db.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 
 public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStream<T> {
 

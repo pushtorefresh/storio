@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.operation;
+package com.pushtorefresh.storio.operation;
 
 import android.support.annotation.NonNull;
 
@@ -16,12 +16,14 @@ public interface PreparedOperation<Result> {
      *
      * @return result of operation
      */
-    @NonNull Result executeAsBlocking();
+    @NonNull
+    Result executeAsBlocking();
 
     /**
      * Creates {@link rx.Observable} that emits only ONE result
      *
      * @return observable result of operation with only one {@link rx.Observer#onNext(Object)} call
      */
-    @NonNull Observable<Result> createObservable();
+    @NonNull
+    Observable<Result> createObservable();
 }

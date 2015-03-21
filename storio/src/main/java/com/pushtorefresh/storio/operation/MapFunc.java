@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.operation;
+package com.pushtorefresh.storio.operation;
 
 /**
  * MapFunc defines map operation for converting one data format into another
@@ -14,5 +14,5 @@ public interface MapFunc<From, To> {
      * @param from object to convert
      * @return result of conversion
      */
-    public To map(From from);
+    To map(From from);
 }

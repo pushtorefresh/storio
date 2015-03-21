@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.operation.Changes;
+import com.pushtorefresh.storio.db.Changes;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
 import com.pushtorefresh.storio.db.query.InsertQuery;
 import com.pushtorefresh.storio.db.query.Query;
@@ -32,7 +32,7 @@ public class StorIOSQLiteDb extends StorIODb {
 
     /**
      * Reactive bus for notifying observers about changes in StorIODb
-     * One change can affect several tables, so we use {@link com.pushtorefresh.storio.db.operation.Changes} as representation of changes
+     * One change can affect several tables, so we use {@link Changes} as representation of changes
      */
     @Nullable private final PublishSubject<Changes> changesBus = EnvironmentUtil.IS_RX_JAVA_AVAILABLE
             ? PublishSubject.<Changes>create()

@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.db.operation.MapFunc;
+import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.db.operation.put.DefaultPutResolver;
 import com.pushtorefresh.storio.db.operation.put.PutResolver;
 import com.pushtorefresh.storio.db.operation.put.PutResult;

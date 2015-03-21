@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.operation.Changes;
 import com.pushtorefresh.storio.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.storio.db.operation.get.PreparedGet;
