@@ -4,8 +4,8 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.operation.Changes;
-import com.pushtorefresh.storio.db.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.db.Changes;
+import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.db.query.Query;
 import com.pushtorefresh.storio.db.query.RawQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;

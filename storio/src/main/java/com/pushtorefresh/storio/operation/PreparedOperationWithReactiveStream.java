@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.operation;
+package com.pushtorefresh.storio.operation;
 
 import android.support.annotation.NonNull;
 
@@ -20,5 +20,6 @@ public interface PreparedOperationWithReactiveStream<Result> extends PreparedOpe
      *
      * @return observable result which will be notified about changes of result in future
      */
-    @NonNull Observable<Result> createObservableStream();
+    @NonNull
+    Observable<Result> createObservableStream();
 }

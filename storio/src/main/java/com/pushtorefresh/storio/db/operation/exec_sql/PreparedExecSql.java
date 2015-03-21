@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.operation.exec_sql;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.operation.PreparedOperation;
+import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.db.query.RawQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 

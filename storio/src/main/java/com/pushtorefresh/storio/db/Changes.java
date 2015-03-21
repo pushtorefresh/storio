@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.operation;
+package com.pushtorefresh.storio.db;
 
 import android.support.annotation.NonNull;
 
@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Immutable container of information about one or more changes in tables
+ * Immutable container of information about one or more changes in {@link StorIODb}
  */
 public class Changes {
 

@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.db.operation.delete;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.operation.Changes;
+import com.pushtorefresh.storio.db.Changes;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 

@@ -1,8 +1,8 @@
 package com.pushtorefresh.storio.db.unit_test.operation.delete;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.operation.Changes;
-import com.pushtorefresh.storio.db.operation.MapFunc;
+import com.pushtorefresh.storio.db.Changes;
+import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.db.operation.delete.DeleteResolver;
 import com.pushtorefresh.storio.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
