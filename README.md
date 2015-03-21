@@ -283,9 +283,9 @@ Sometimes you need to execute raw sql, `StorIODb` allows you to do it
 storIODb
   .execSql()
   .withQuery(new RawQuery.Builder()
-    .query("DROP TABLE ?")
-    .args("tweets")
-    .tables("tweets") // optional: you can specify affected tables to notify Observers 
+    .query("ALTER TABLE ? ADD COLUMN ? INTEGER")
+    .args("tweets", "number_of_retweets")
+    .affectedTables("tweets") // optional: you can specify affected tables to notify Observers 
     .build())
   .prepare()
   .executeAsBlocking(); // or createObservable()
