@@ -127,11 +127,10 @@ public class StorIOSQLiteDb extends StorIODb {
         }
 
         @Override public void notifyAboutChanges(@NonNull Changes changes) {
-            if (changesBus == null) {
-                throw EnvironmentUtil.newRxJavaIsNotAvailableException("Notifying about changes in StorIODb");
+            // Notifying about changes requires RxJava, if RxJava is not available -> skip notification
+            if (changesBus != null) {
+                changesBus.onNext(changes);
             }
-
-            changesBus.onNext(changes);
         }
 
         @Override public boolean transactionsSupported() {
