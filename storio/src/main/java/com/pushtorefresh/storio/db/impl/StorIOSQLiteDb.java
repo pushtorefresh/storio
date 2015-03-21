@@ -57,8 +57,8 @@ public class StorIOSQLiteDb extends StorIODb {
                 .filter(new Func1<Changes, Boolean>() {
                     @Override public Boolean call(Changes changes) {
                         // if one of changed tables found in tables for subscription -> notify observer
-                        for (String changedTable : changes.tables()) {
-                            if (tables.contains(changedTable)) {
+                        for (String affectedTable : changes.affectedTables) {
+                            if (tables.contains(affectedTable)) {
                                 return true;
                             }
                         }

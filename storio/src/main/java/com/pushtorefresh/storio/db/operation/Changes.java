@@ -2,52 +2,58 @@ package com.pushtorefresh.storio.db.operation;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.StorIODb;
-
 import java.util.Collections;
 import java.util.Set;
 
 /**
- * Contains information about one or more changed tables in {@link StorIODb}
+ * Immutable container of information about one or more changes in tables
  */
 public class Changes {
 
-    @NonNull private final Set<String> tables;
+    /**
+     * Set of affected tables
+     */
+    @NonNull
+    public final Set<String> affectedTables;
 
-    public Changes(@NonNull Set<String> tables) {
-        this.tables = Collections.unmodifiableSet(tables);
-    }
-
-    public Changes(@NonNull String table) {
-        this(Collections.singleton(table));
+    /**
+     * Creates {@link Changes} container with info about changes
+     *
+     * @param affectedTables set of tables which were affected by these changes
+     */
+    public Changes(@NonNull Set<String> affectedTables) {
+        this.affectedTables = Collections.unmodifiableSet(affectedTables);
     }
 
     /**
-     * Returns set of modified tables
+     * Creates {@link Changes} container with info about changes
      *
-     * @return set of modified tables
+     * @param affectedTable table which was affected by these changes
      */
-    @NonNull public Set<String> tables() {
-        return tables;
+    public Changes(@NonNull String affectedTable) {
+        this(Collections.singleton(affectedTable));
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Changes changes = (Changes) o;
 
-        return tables.equals(changes.tables);
+        return affectedTables.equals(changes.affectedTables);
 
     }
 
-    @Override public int hashCode() {
-        return tables.hashCode();
+    @Override
+    public int hashCode() {
+        return affectedTables.hashCode();
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Changes{" +
-                "tables=" + tables +
+                "affectedTables=" + affectedTables +
                 '}';
     }
 }

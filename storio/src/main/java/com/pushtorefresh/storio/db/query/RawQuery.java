@@ -3,7 +3,6 @@ package com.pushtorefresh.storio.db.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.Collections;
@@ -11,28 +10,41 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Immutable Raw SQL Query
+ */
 public class RawQuery {
 
-    @NonNull  public final String query;
-
-    @Nullable public final List<String> args;
+    /**
+     * SQL query
+     */
+    @NonNull
+    public final String query;
 
     /**
-     * Set of tables which are participated in {@link #query},
-     * they can be used for Reactive Streams in {@link StorIODb#get()} operation
+     * Optional list of arguments for {@link #query}
      */
-    @Nullable public final Set<String> tables;
+    @Nullable
+    public final List<String> args;
+
+    /**
+     * Optional set of tables which will be changed by this query
+     * They will be used to notify observers of that tables
+     */
+    @Nullable
+    public final Set<String> affectedTables;
 
     /**
      * Please use {@link com.pushtorefresh.storio.db.query.RawQuery.Builder} instead of constructor
      */
-    protected RawQuery(@NonNull String query, @Nullable List<String> args, @Nullable Set<String> tables) {
+    protected RawQuery(@NonNull String query, @Nullable List<String> args, @Nullable Set<String> affectedTables) {
         this.query = query;
         this.args = QueryUtil.listToUnmodifiable(args);
-        this.tables = tables;
+        this.affectedTables = affectedTables;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -40,42 +52,70 @@ public class RawQuery {
 
         if (!query.equals(rawQuery.query)) return false;
         if (args != null ? !args.equals(rawQuery.args) : rawQuery.args != null) return false;
-        return !(tables != null ? !tables.equals(rawQuery.tables) : rawQuery.tables != null);
+        return !(affectedTables != null ? !affectedTables.equals(rawQuery.affectedTables) : rawQuery.affectedTables != null);
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = query.hashCode();
         result = 31 * result + (args != null ? args.hashCode() : 0);
-        result = 31 * result + (tables != null ? tables.hashCode() : 0);
+        result = 31 * result + (affectedTables != null ? affectedTables.hashCode() : 0);
         return result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "RawQuery{" +
                 "query='" + query + '\'' +
                 ", args=" + args +
-                ", tables=" + tables +
+                ", affectedTables=" + affectedTables +
                 '}';
     }
 
+    /**
+     * Builder for {@link RawQuery}
+     */
     public static class Builder {
 
         private String query;
         private List<String> args;
         private Set<String> tables;
 
-        @NonNull public Builder query(@NonNull String query) {
+        /**
+         * Specifies SQL query
+         *
+         * @param query SQL query
+         * @return builder
+         */
+        @NonNull
+        public Builder query(@NonNull String query) {
             this.query = query;
             return this;
         }
 
-        @NonNull public Builder args(@NonNull String... args) {
+        /**
+         * Optional: specifies arguments for SQL query,
+         * please use arguments to avoid SQL injections
+         *
+         * @param args arguments fro SQL query
+         * @return builder
+         */
+        @NonNull
+        public Builder args(@NonNull String... args) {
             this.args = QueryUtil.varargsToList(args);
             return this;
         }
 
-        @NonNull public Builder tables(@NonNull String... tables) {
+        /**
+         * Optional: specifies set of tables which will be affected by this query.
+         * They will be used to notify observers of that tables
+         *
+         * @param tables set of tables which will be affected by this query
+         * @return builder
+         */
+        @NonNull
+        public Builder affectedTables(@NonNull String... tables) {
             if (this.tables == null) {
                 this.tables = new HashSet<>(tables.length);
             }
@@ -84,7 +124,13 @@ public class RawQuery {
             return this;
         }
 
-        @NonNull public RawQuery build() {
+        /**
+         * Builds Raw Query
+         *
+         * @return immutable instance of {@link RawQuery}
+         */
+        @NonNull
+        public RawQuery build() {
             if (query == null || query.length() == 0) {
                 throw new IllegalStateException("Please specify query string");
             }
