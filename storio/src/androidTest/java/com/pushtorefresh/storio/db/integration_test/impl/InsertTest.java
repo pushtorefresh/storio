@@ -1,13 +1,7 @@
 package com.pushtorefresh.storio.db.integration_test.impl;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
-
-import com.pushtorefresh.storio.db.operation.delete.DeleteResult;
-import com.pushtorefresh.storio.db.operation.put.PutCollectionResult;
-import com.pushtorefresh.storio.db.operation.put.PutResult;
-import com.pushtorefresh.storio.db.query.Query;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

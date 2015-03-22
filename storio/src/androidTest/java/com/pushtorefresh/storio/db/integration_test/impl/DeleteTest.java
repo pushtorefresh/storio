@@ -4,10 +4,6 @@ import android.database.Cursor;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.pushtorefresh.storio.db.operation.delete.DeleteCollectionOfObjectsResult;
-import com.pushtorefresh.storio.db.operation.delete.DeleteResult;
-import com.pushtorefresh.storio.db.operation.put.PutCollectionResult;
-import com.pushtorefresh.storio.db.operation.put.PutResult;
-import com.pushtorefresh.storio.db.query.Query;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
