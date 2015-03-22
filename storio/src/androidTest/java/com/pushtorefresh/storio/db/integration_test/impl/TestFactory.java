@@ -8,6 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestFactory {
 
+    private TestFactory() {
+    }
+
     private static final AtomicInteger counter = new AtomicInteger(0);
 
     @NonNull public static User newUser() {
