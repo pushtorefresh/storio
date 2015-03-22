@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.impl.StorIOSQLiteDb;
+import com.pushtorefresh.storio.db.impl.StorIOSQLiteDbImpl;
 import com.pushtorefresh.storio.db.operation.delete.DeleteResult;
 import com.pushtorefresh.storio.db.operation.put.PutCollectionResult;
 import com.pushtorefresh.storio.db.operation.put.PutResult;
@@ -27,7 +27,7 @@ public abstract class BaseTest {
         db = new TestSQLiteOpenHelper(InstrumentationRegistry.getContext())
                 .getWritableDatabase();
 
-        storIODb = new StorIOSQLiteDb.Builder()
+        storIODb = new StorIOSQLiteDbImpl.Builder()
                 .db(db)
                 .build();
 

@@ -23,31 +23,46 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 
-public class StorIOSQLiteDb extends StorIODb {
+/**
+ * Implementation of {@link StorIODb} for {@link SQLiteDatabase}
+ * <p/>
+ * We are very sorry for "Impl" postfix in class name, it was made for unification of naming:
+ * <p>
+ * StorIODb & StorIOSQLiteDbImpl
+ * </p>
+ * <p>
+ * StorIOContentProvider & StorIOContentProviderImpl
+ * </p>
+ */
+public class StorIOSQLiteDbImpl extends StorIODb {
 
     /**
      * Real db
      */
-    @NonNull private final SQLiteDatabase db;
+    @NonNull
+    private final SQLiteDatabase db;
 
     /**
      * Reactive bus for notifying observers about changes in StorIODb
      * One change can affect several tables, so we use {@link Changes} as representation of changes
      */
-    @Nullable private final PublishSubject<Changes> changesBus = EnvironmentUtil.IS_RX_JAVA_AVAILABLE
+    @Nullable
+    private final PublishSubject<Changes> changesBus = EnvironmentUtil.IS_RX_JAVA_AVAILABLE
             ? PublishSubject.<Changes>create()
             : null;
 
     /**
      * Implementation of {@link StorIODb.Internal}
      */
-    @NonNull private final Internal internal = new InternalImpl();
+    @NonNull
+    private final Internal internal = new InternalImpl();
 
-    protected StorIOSQLiteDb(@NonNull SQLiteDatabase db) {
+    protected StorIOSQLiteDbImpl(@NonNull SQLiteDatabase db) {
         this.db = db;
     }
 
-    @Override @NonNull
+    @Override
+    @NonNull
     public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
         if (changesBus == null) {
             throw EnvironmentUtil.newRxJavaIsNotAvailableException("Observing changes in StorIODb");
@@ -55,7 +70,8 @@ public class StorIOSQLiteDb extends StorIODb {
 
         return changesBus
                 .filter(new Func1<Changes, Boolean>() {
-                    @Override public Boolean call(Changes changes) {
+                    @Override
+                    public Boolean call(Changes changes) {
                         // if one of changed tables found in tables for subscription -> notify observer
                         for (String affectedTable : changes.affectedTables) {
                             if (tables.contains(affectedTable)) {
@@ -68,24 +84,31 @@ public class StorIOSQLiteDb extends StorIODb {
                 });
     }
 
-    @NonNull @Override public Internal internal() {
+    @NonNull
+    @Override
+    public Internal internal() {
         return internal;
     }
 
     protected class InternalImpl extends Internal {
 
-        @Override public void execSql(@NonNull RawQuery rawQuery) {
+        @Override
+        public void execSql(@NonNull RawQuery rawQuery) {
             db.execSQL(rawQuery.query, QueryUtil.listToArray(rawQuery.args));
         }
 
-        @NonNull @Override public Cursor rawQuery(@NonNull RawQuery rawQuery) {
+        @NonNull
+        @Override
+        public Cursor rawQuery(@NonNull RawQuery rawQuery) {
             return db.rawQuery(
                     rawQuery.query,
                     QueryUtil.listToArray(rawQuery.args)
             );
         }
 
-        @NonNull @Override public Cursor query(@NonNull Query query) {
+        @NonNull
+        @Override
+        public Cursor query(@NonNull Query query) {
             return db.query(
                     query.distinct,
                     query.table,
@@ -118,7 +141,8 @@ public class StorIOSQLiteDb extends StorIODb {
             );
         }
 
-        @Override public int delete(@NonNull DeleteQuery deleteQuery) {
+        @Override
+        public int delete(@NonNull DeleteQuery deleteQuery) {
             return db.delete(
                     deleteQuery.table,
                     deleteQuery.where,
@@ -126,26 +150,31 @@ public class StorIOSQLiteDb extends StorIODb {
             );
         }
 
-        @Override public void notifyAboutChanges(@NonNull Changes changes) {
+        @Override
+        public void notifyAboutChanges(@NonNull Changes changes) {
             // Notifying about changes requires RxJava, if RxJava is not available -> skip notification
             if (changesBus != null) {
                 changesBus.onNext(changes);
             }
         }
 
-        @Override public boolean transactionsSupported() {
+        @Override
+        public boolean transactionsSupported() {
             return true;
         }
 
-        @Override public void beginTransaction() {
+        @Override
+        public void beginTransaction() {
             db.beginTransaction();
         }
 
-        @Override public void setTransactionSuccessful() {
+        @Override
+        public void setTransactionSuccessful() {
             db.setTransactionSuccessful();
         }
 
-        @Override public void endTransaction() {
+        @Override
+        public void endTransaction() {
             db.endTransaction();
         }
     }
@@ -154,22 +183,25 @@ public class StorIOSQLiteDb extends StorIODb {
 
         private SQLiteDatabase db;
 
-        @NonNull public Builder db(@NonNull SQLiteDatabase db) {
+        @NonNull
+        public Builder db(@NonNull SQLiteDatabase db) {
             this.db = db;
             return this;
         }
 
-        @NonNull public Builder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
+        @NonNull
+        public Builder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
             db = sqliteOpenHelper.getWritableDatabase();
             return this;
         }
 
-        @NonNull public StorIOSQLiteDb build() {
+        @NonNull
+        public StorIOSQLiteDbImpl build() {
             if (db == null) {
                 throw new IllegalStateException("Please specify SQLiteDatabase instance");
             }
 
-            return new StorIOSQLiteDb(db);
+            return new StorIOSQLiteDbImpl(db);
         }
     }
 }

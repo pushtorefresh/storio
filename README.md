@@ -2,7 +2,7 @@
 
 #####Overview:
 * Powerful set of Operations: `Put`, `Get`, `Delete`
-* Convinient builders. Forget about 6-7 `null` in queries
+* Convenient builders. Forget about 6-7 `null` in queries
 * No reflection, no annotations, `StorIO` is not ORM
 * Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`
 * `RxJava` as first class citizen, but it's not required dependency!
@@ -16,7 +16,7 @@
 ####0. Create an instance of StorIODb
 
 ```java
-StorIODb storIODb = new StorIOSQLiteDb.Builder()
+StorIODb storIODb = new StorIOSQLiteDbImpl.Builder()
   .sqliteOpenHelper(yourSqliteOpenHelper) // or .db(db)
   .build();
 ```
@@ -59,7 +59,7 @@ final Cursor tweetsCursor = storIODb
   .executeAsBlocking();
 ```
 
-Things become much more insteresing with `RxJava`!
+Things become much more interesting with `RxJava`!
 
 ######Get cursor as `Observable`
 ```java
