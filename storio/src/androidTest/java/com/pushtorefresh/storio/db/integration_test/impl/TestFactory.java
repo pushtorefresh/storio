@@ -8,10 +8,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestFactory {
 
-    private static final AtomicInteger counter = new AtomicInteger(0);
+    private TestFactory() {
+    }
+
+    private static final AtomicInteger COUNTER = new AtomicInteger(0);
 
     @NonNull public static User newUser() {
-        return new User(null, "user" + counter.incrementAndGet() + "@example.com");
+        return new User(null, "user" + COUNTER.incrementAndGet() + "@example.com");
     }
 
     @NonNull public static List<User> newUsers(int quantity) {
