@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -13,9 +14,10 @@ import android.util.Log;
 public class Loggi {
 
     private static final String TAG = "StorIO";
+    
     private volatile boolean isEnabled = BuildConfig.DEBUG;
 
-    private ILogger externalLogger;
+    private LogListener externalLogListener;
 
     public boolean isEnabled() {
         return isEnabled;
@@ -25,230 +27,89 @@ public class Loggi {
         this.isEnabled = isEnabled;
     }
 
+    @NonNull
     private static String getTag() {
         return TAG;
     }
 
-    private static String getTag(String subTag) {
-        return TAG + "/" + subTag;
+    @NonNull
+    private static String getMessageWithTag(@NonNull String message) {
+        return TAG + "/" + message;
     }
 
-    @NonNull public static String classNameAsTag(@NonNull Object o) {
-        return o.getClass().getSimpleName();
+    public void setLogListener(@Nullable LogListener externalLogListener) {
+        this.externalLogListener = externalLogListener;
     }
 
-    public void setExternalLogger(ILogger externalLogger) {
-        this.externalLogger = externalLogger;
-    }
-
-    public void v(String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag();
-        if (externalLogger != null) {
-            externalLogger.v(tag, message);
-        } else {
-            Log.v(tag, message);
+    public void v(@NonNull String message) {
+        if (externalLogListener != null) {
+            externalLogListener.v(getMessageWithTag(message));
+        } else if (isEnabled) {
+            Log.v(getTag(), message);
         }
     }
 
-    public void v(String subTag, String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag(subTag);
-        if (externalLogger != null) {
-            externalLogger.v(tag, message);
-        } else {
-            Log.v(tag, message);
+    public void d(@NonNull String message) {
+        if (externalLogListener != null) {
+            externalLogListener.d(getMessageWithTag(message));
+        } else if (isEnabled) {
+            Log.d(getTag(), message);
         }
     }
 
-    public void d(String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag();
-        if (externalLogger != null) {
-            externalLogger.d(tag, message);
-        } else {
-            Log.d(tag, message);
+    public void i(@NonNull String message) {
+        if (externalLogListener != null) {
+            externalLogListener.i(getMessageWithTag(message));
+        } else if (isEnabled) {
+            Log.i(getTag(), message);
         }
     }
 
-    public void d(String subTag, String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag(subTag);
-        if (externalLogger != null) {
-            externalLogger.d(tag, message);
-        } else {
-            Log.d(tag, message);
+    public void w(@NonNull String message) {
+        if (externalLogListener != null) {
+            externalLogListener.w(getMessageWithTag(message));
+        } else if (isEnabled) {
+            Log.w(getTag(), message);
         }
     }
 
-    public void i(String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag();
-        if (externalLogger != null) {
-            externalLogger.i(tag, message);
-        } else {
-            Log.i(tag, message);
-        }
-    }
-
-    public void i(String subTag, String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag(subTag);
-        if (externalLogger != null) {
-            externalLogger.i(tag, message);
-        } else {
-            Log.i(tag, message);
-        }
-    }
-
-    public void w(String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag();
-        if (externalLogger != null) {
-            externalLogger.w(tag, message);
-        } else {
-            Log.w(tag, message);
-        }
-    }
-
-    public void w(String subTag, String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag(subTag);
-        if (externalLogger != null) {
-            externalLogger.w(tag, message);
-        } else {
-            Log.w(tag, message);
-        }
-    }
-
-    public void w(String message, Throwable e) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag();
+    public void w(@NonNull String message, @Nullable Throwable e) {
         final String fullMessage = message + ", ex: \n" + throwableToString(e);
-        if (externalLogger != null) {
-            externalLogger.w(tag, fullMessage);
-        } else {
-            Log.w(tag, fullMessage);
+        if (externalLogListener != null) {
+            externalLogListener.w(getMessageWithTag(fullMessage));
+        } else if (isEnabled) {
+            Log.w(getTag(), fullMessage);
         }
     }
 
-    public void w(String subTag, String message, Throwable e) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag(subTag);
-        final String fullMessage = message + ", ex: \n" + throwableToString(e);
-        if (externalLogger != null) {
-            externalLogger.w(tag, fullMessage);
-        } else {
-            Log.w(tag, fullMessage);
+    public void e(@NonNull String message) {
+        if (externalLogListener != null) {
+            externalLogListener.e(getMessageWithTag(message));
+        } else if (isEnabled) {
+            Log.e(getTag(), message);
         }
     }
 
-    public void e(String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag();
-        if (externalLogger != null) {
-            externalLogger.e(tag, message);
-        } else {
-            Log.e(tag, message);
-        }
-    }
-
-    public void e(Throwable e) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag();
+    public void e(@NonNull Throwable e) {
         final String message = throwableToString(e);
-        if (externalLogger != null) {
-            externalLogger.e(tag, message);
-        } else {
-            Log.e(tag, message);
+        if (externalLogListener != null) {
+            externalLogListener.e(getMessageWithTag(message));
+        } else if (isEnabled) {
+            Log.e(getTag(), message);
         }
     }
 
-    public void e(String subTag, String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag(subTag);
-        if (externalLogger != null) {
-            externalLogger.e(tag, message);
-        } else {
-            Log.e(tag, message);
+    public void e(@NonNull String message, @Nullable Throwable e) {
+        final String fullMessage = message + ", ex: \n" + throwableToString(e);
+        if (externalLogListener != null) {
+            externalLogListener.e(getMessageWithTag(fullMessage));
+        } else if (isEnabled) {
+            Log.e(getTag(), fullMessage);
         }
     }
 
-    public void e(String message, Throwable e) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag();
-        if (externalLogger != null) {
-            externalLogger.e(tag, message, e);
-        } else {
-            Log.e(tag, message + ", ex: \n" + throwableToString(e));
-        }
-    }
-
-    public void e(String subTag, String message, Throwable e) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag(subTag);
-        if (externalLogger != null) {
-            externalLogger.e(tag, message, e);
-        } else {
-            Log.e(tag, message + ", ex: \n" + throwableToString(e));
-        }
-    }
-
-    public void wtf(String subTag, String message) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag(subTag);
-        if (externalLogger != null) {
-            externalLogger.wtf(tag, message);
-        } else {
-            Log.wtf(tag, message);
-        }
-    }
-
-    public void wtf(String subTag, String message, Throwable e) {
-        if (!isEnabled()) {
-            return;
-        }
-        final String tag = getTag(subTag);
-        if (externalLogger != null) {
-            externalLogger.wtf(tag, message, e);
-        } else {
-            Log.wtf(tag, message + ", ex: \n" + throwableToString(e));
-        }
-    }
-
-    public String throwableToString(Throwable e) {
+    @NonNull
+    private String throwableToString(@Nullable Throwable e) {
         if (e == null) {
             return "exception ref == null";
         }

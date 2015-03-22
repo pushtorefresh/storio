@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.LogListener;
+import com.pushtorefresh.storio.Loggi;
 import com.pushtorefresh.storio.contentprovider.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.contentprovider.operation.get.PreparedGet;
 import com.pushtorefresh.storio.contentprovider.operation.put.PreparedPut;
@@ -19,6 +21,11 @@ import com.pushtorefresh.storio.contentprovider.query.UpdateQuery;
  */
 public abstract class StorIOContentProvider {
 
+    /**
+     * Log wrapper.
+     */
+    private final Loggi loggi = new Loggi();
+
     @NonNull public PreparedGet.Builder get() {
         return new PreparedGet.Builder(this);
     }
@@ -29,6 +36,37 @@ public abstract class StorIOContentProvider {
 
     @NonNull public PreparedDelete.Builder delete() {
         return new PreparedDelete.Builder(this);
+    }
+
+    /**
+     * Set your own logger, and it will be use instead of default.
+     *
+     * @param logListener an logger.
+     * @return this.
+     */
+    public StorIOContentProvider setLogListener(@NonNull final LogListener logListener) {
+        loggi.setLogListener(logListener);
+        return this;
+    }
+
+    /**
+     * Use to turn logs on/off
+     *
+     * @param enabled <code>false</code>, if you want to hide logs.
+     * @return this.
+     */
+    public StorIOContentProvider setLogIsEnabled(final boolean enabled) {
+        loggi.setIsEnabled(enabled);
+        return this;
+    }
+
+    /**
+     * Log wrapper getter.
+     *
+     * @return a log wrapper.
+     */
+    public Loggi getLoggi() {
+        return loggi;
     }
 
     /**

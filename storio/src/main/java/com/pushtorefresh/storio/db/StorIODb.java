@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.ILogger;
+import com.pushtorefresh.storio.LogListener;
 import com.pushtorefresh.storio.Loggi;
 import com.pushtorefresh.storio.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.db.operation.exec_sql.PreparedExecSql;
@@ -32,7 +32,7 @@ public abstract class StorIODb {
     /**
      * Log wrapper.
      */
-    protected final Loggi loggi = new Loggi();
+    private final Loggi loggi = new Loggi();
 
     /**
      * Prepares "execute sql" operation for {@link StorIODb}
@@ -97,11 +97,11 @@ public abstract class StorIODb {
     /**
      * Set your own logger, and it will be use instead of default.
      *
-     * @param externalLogger an logger.
+     * @param logListener an logger.
      * @return this.
      */
-    public StorIODb setLogger(@NonNull final ILogger externalLogger) {
-        loggi.setExternalLogger(externalLogger);
+    public StorIODb setLogListener(@NonNull final LogListener logListener) {
+        loggi.setLogListener(logListener);
         return this;
     }
 
@@ -111,9 +111,18 @@ public abstract class StorIODb {
      * @param enabled <code>false</code>, if you want to hide logs.
      * @return this.
      */
-    public StorIODb setLoggerIsEnabled(final boolean enabled) {
+    public StorIODb setLogIsEnabled(final boolean enabled) {
         loggi.setIsEnabled(enabled);
         return this;
+    }
+
+    /**
+     * Log wrapper getter.
+     *
+     * @return a log wrapper.
+     */
+    public Loggi getLoggi() {
+        return loggi;
     }
 
     /**
