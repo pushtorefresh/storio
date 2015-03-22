@@ -155,6 +155,8 @@ public class StorIOSQLiteDbImpl extends StorIODb {
             // Notifying about changes requires RxJava, if RxJava is not available -> skip notification
             if (changesBus != null) {
                 changesBus.onNext(changes);
+            } else {
+                loggi.d("Changes was occurred, but changesBus is null. " + changes);
             }
         }
 

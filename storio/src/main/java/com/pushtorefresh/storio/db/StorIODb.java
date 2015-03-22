@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.ILogger;
+import com.pushtorefresh.storio.Loggi;
 import com.pushtorefresh.storio.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.storio.db.operation.get.PreparedGet;
@@ -26,6 +28,11 @@ import rx.Observable;
  * changes without breaking existing implementations
  */
 public abstract class StorIODb {
+
+    /**
+     * Log wrapper.
+     */
+    protected final Loggi loggi = new Loggi();
 
     /**
      * Prepares "execute sql" operation for {@link StorIODb}
@@ -85,6 +92,28 @@ public abstract class StorIODb {
     @NonNull
     public Observable<Changes> observeChangesInTable(@NonNull String table) {
         return observeChangesInTables(Collections.singleton(table));
+    }
+
+    /**
+     * Set your own logger, and it will be use instead of default.
+     *
+     * @param externalLogger an logger.
+     * @return this.
+     */
+    public StorIODb setLogger(@NonNull final ILogger externalLogger) {
+        loggi.setExternalLogger(externalLogger);
+        return this;
+    }
+
+    /**
+     * Use to turn logs on/off
+     *
+     * @param enabled <code>false</code>, if you want to hide logs.
+     * @return this.
+     */
+    public StorIODb setLoggerIsEnabled(final boolean enabled) {
+        loggi.setIsEnabled(enabled);
+        return this;
     }
 
     /**
