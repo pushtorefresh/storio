@@ -9,7 +9,7 @@ public class Logger extends LogListenerAdapter {
 
     private static final String TAG = "StorIO-Sample";
 
-    private boolean isEnabled = BuildConfig.DEBUG;
+    private volatile boolean isEnabled = BuildConfig.DEBUG;
 
     @Override public void d(@NonNull String message) {
         if (isEnabled) {
