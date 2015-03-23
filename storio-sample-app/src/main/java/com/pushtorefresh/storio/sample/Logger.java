@@ -5,6 +5,9 @@ import android.util.Log;
 
 import com.pushtorefresh.storio.LogListenerAdapter;
 
+/**
+ * Log Proxy for StorIO
+ */
 public class Logger extends LogListenerAdapter {
 
     private static final String TAG = "StorIO-Sample";
