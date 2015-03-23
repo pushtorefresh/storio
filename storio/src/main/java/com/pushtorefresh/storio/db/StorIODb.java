@@ -32,7 +32,7 @@ public abstract class StorIODb {
     /**
      * Log wrapper.
      */
-    private final Loggi loggi = new Loggi();
+    @NonNull private final Loggi loggi = new Loggi();
 
     /**
      * Prepares "execute sql" operation for {@link StorIODb}
