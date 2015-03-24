@@ -1,14 +1,12 @@
-package com.pushtorefresh.storio.db.unit_test.operation.get;
+package com.pushtorefresh.storio.db.operation.get;
 
 import android.database.Cursor;
 
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.operation.MapFunc;
-import com.pushtorefresh.storio.db.operation.get.GetResolver;
-import com.pushtorefresh.storio.db.operation.get.PreparedGet;
 import com.pushtorefresh.storio.db.query.Query;
 import com.pushtorefresh.storio.db.query.RawQuery;
-import com.pushtorefresh.storio.db.unit_test.design.User;
+import com.pushtorefresh.storio.db.design.User;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;

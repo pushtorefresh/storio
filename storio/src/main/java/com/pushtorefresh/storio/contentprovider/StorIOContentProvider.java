@@ -19,15 +19,18 @@ import com.pushtorefresh.storio.contentprovider.query.UpdateQuery;
  */
 public abstract class StorIOContentProvider {
 
-    @NonNull public PreparedGet.Builder get() {
+    @NonNull
+    public PreparedGet.Builder get() {
         return new PreparedGet.Builder(this);
     }
 
-    @NonNull public PreparedPut.Builder put() {
+    @NonNull
+    public PreparedPut.Builder put() {
         return new PreparedPut.Builder(this);
     }
 
-    @NonNull public PreparedDelete.Builder delete() {
+    @NonNull
+    public PreparedDelete.Builder delete() {
         return new PreparedDelete.Builder(this);
     }
 
@@ -43,7 +46,8 @@ public abstract class StorIOContentProvider {
          * @param query query
          * @return cursor with result data or null
          */
-        @Nullable public abstract Cursor query(@NonNull Query query);
+        @Nullable
+        public abstract Cursor query(@NonNull Query query);
 
         /**
          * Inserts the data to {@link StorIOContentProvider}

@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.unit_test.operation;
+package com.pushtorefresh.storio.db.operation;
 
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.Changes;

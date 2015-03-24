@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.unit_test.design;
+package com.pushtorefresh.storio.db.design;
 
 import android.content.ContentValues;
 import android.database.Cursor;

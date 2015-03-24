@@ -88,7 +88,7 @@ public abstract class StorIODb {
     }
 
     /**
-     * Hides some internal operations for {@link StorIODb} to make API of {@link StorIODb} clean and easy to understand
+     * Hides some internal operations of {@link StorIODb} to make API of {@link StorIODb} clean and easy to understand
      *
      * @return implementation of Internal operations for {@link StorIODb}
      */

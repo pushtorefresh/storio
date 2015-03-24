@@ -1,7 +1,6 @@
-package com.pushtorefresh.storio.db.unit_test.operation.get;
+package com.pushtorefresh.storio.db.operation.get;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.operation.get.DefaultGetResolver;
 import com.pushtorefresh.storio.db.query.Query;
 import com.pushtorefresh.storio.db.query.RawQuery;
 
