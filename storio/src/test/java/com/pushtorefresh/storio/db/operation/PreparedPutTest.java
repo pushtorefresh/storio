@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.unit_test.operation;
+package com.pushtorefresh.storio.db.operation;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
@@ -10,7 +10,7 @@ import com.pushtorefresh.storio.db.operation.put.PreparedPut;
 import com.pushtorefresh.storio.db.operation.put.PutCollectionResult;
 import com.pushtorefresh.storio.db.operation.put.PutResolver;
 import com.pushtorefresh.storio.db.operation.put.PutResult;
-import com.pushtorefresh.storio.db.unit_test.design.User;
+import com.pushtorefresh.storio.db.design.User;
 
 import org.junit.Test;
 

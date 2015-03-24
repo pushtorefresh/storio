@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.unit_test.design;
+package com.pushtorefresh.storio.db.design;
 
 import com.pushtorefresh.storio.db.operation.delete.DeleteCollectionOfObjectsResult;
 import com.pushtorefresh.storio.db.operation.delete.DeleteResult;
