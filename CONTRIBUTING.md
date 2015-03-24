@@ -10,3 +10,5 @@ To build and test the project you need to connect emulator or device and then ex
 sh ci/ci.sh
 # from root project directory
 ```
+
+Testing CI
