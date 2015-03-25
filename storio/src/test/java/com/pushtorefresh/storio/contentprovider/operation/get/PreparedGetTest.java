@@ -10,6 +10,12 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,10 +24,29 @@ import static org.mockito.Mockito.when;
 public class PreparedGetTest {
 
     private static class TestItem {
-        private String someField;
 
-        public String getSomeField() {
-            return someField;
+        private static final AtomicLong COUNTER = new AtomicLong(0);
+
+        private Long id = COUNTER.incrementAndGet();
+
+        public Long getId() {
+            return id;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TestItem testItem = (TestItem) o;
+
+            return !(id != null ? !id.equals(testItem.id) : testItem.id != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return id != null ? id.hashCode() : 0;
         }
     }
 
@@ -31,7 +56,7 @@ public class PreparedGetTest {
         final GetResolver getResolver;
         final MapFunc<Cursor, TestItem> mapFunc;
         final Cursor cursor;
-        final int numberOfMockObjects = 3;
+        final List<TestItem> testItems;
 
         @SuppressWarnings("unchecked")
         GetStub() {
@@ -41,14 +66,20 @@ public class PreparedGetTest {
             mapFunc = (MapFunc<Cursor, TestItem>) mock(MapFunc.class);
             cursor = mock(Cursor.class);
 
-            when(cursor.moveToNext()).thenAnswer(new Answer<Boolean>() {
-                int invocationsCount = 0;
+            testItems = new ArrayList<>();
+            testItems.add(new TestItem());
+            testItems.add(new TestItem());
+            testItems.add(new TestItem());
 
-                @Override
-                public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                    return invocationsCount++ < numberOfMockObjects;
-                }
-            });
+            when(cursor.moveToNext())
+                    .thenAnswer(new Answer<Boolean>() {
+                        int invocationsCount = 0;
+
+                        @Override
+                        public Boolean answer(InvocationOnMock invocation) throws Throwable {
+                            return invocationsCount++ < testItems.size();
+                        }
+                    });
 
             when(storIOContentProvider.get())
                     .thenReturn(new PreparedGet.Builder(storIOContentProvider));
@@ -57,18 +88,29 @@ public class PreparedGetTest {
                     .thenReturn(cursor);
 
             when(mapFunc.map(cursor))
-                    .thenReturn(mock(TestItem.class));
+                    .thenAnswer(new Answer<TestItem>() {
+                        int invocationsCount = 0;
+
+                        @Override
+                        public TestItem answer(InvocationOnMock invocation) throws Throwable {
+                            final TestItem testItem = testItems.get(invocationsCount);
+                            invocationsCount++;
+                            return testItem;
+                        }
+                    });
         }
 
-        void verifyQueryBehavior() {
+        void verifyQueryBehavior(Cursor actualCursor) {
             verify(storIOContentProvider, times(1)).get();
             verify(getResolver, times(1)).performGet(storIOContentProvider, query);
+            assertSame(cursor, actualCursor);
         }
 
-        private void verifyQueryBehaviorForList() {
+        private void verifyQueryBehaviorForList(List<TestItem> actualList) {
             verify(storIOContentProvider, times(1)).get();
             verify(getResolver, times(1)).performGet(storIOContentProvider, query);
-            verify(mapFunc, times(numberOfMockObjects)).map(cursor);
+            verify(mapFunc, times(testItems.size())).map(cursor);
+            assertEquals(testItems, actualList);
         }
     }
 
@@ -76,7 +118,7 @@ public class PreparedGetTest {
     public void getCursorBlocking() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIOContentProvider
+        final Cursor cursor = getStub.storIOContentProvider
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
@@ -84,14 +126,14 @@ public class PreparedGetTest {
                 .prepare()
                 .executeAsBlocking();
 
-        getStub.verifyQueryBehavior();
+        getStub.verifyQueryBehavior(cursor);
     }
 
     @Test
     public void getListOfObjectsBlocking() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIOContentProvider
+        final List<TestItem> testItems = getStub.storIOContentProvider
                 .get()
                 .listOfObjects(TestItem.class)
                 .withMapFunc(getStub.mapFunc)
@@ -100,14 +142,14 @@ public class PreparedGetTest {
                 .prepare()
                 .executeAsBlocking();
 
-        getStub.verifyQueryBehaviorForList();
+        getStub.verifyQueryBehaviorForList(testItems);
     }
 
     @Test
     public void getCursorObservable() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIOContentProvider
+        final Cursor cursor = getStub.storIOContentProvider
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
@@ -117,14 +159,14 @@ public class PreparedGetTest {
                 .toBlocking()
                 .last();
 
-        getStub.verifyQueryBehavior();
+        getStub.verifyQueryBehavior(cursor);
     }
 
     @Test
     public void getListOfObjectsObservable() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIOContentProvider
+        final List<TestItem> testItems = getStub.storIOContentProvider
                 .get()
                 .listOfObjects(TestItem.class)
                 .withMapFunc(getStub.mapFunc)
@@ -135,6 +177,6 @@ public class PreparedGetTest {
                 .toBlocking()
                 .last();
 
-        getStub.verifyQueryBehaviorForList();
+        getStub.verifyQueryBehaviorForList(testItems);
     }
 }

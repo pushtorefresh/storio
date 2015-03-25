@@ -192,7 +192,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * @return builder
          */
         @NonNull
-        public Builder withGetResolver(@NonNull GetResolver getResolver) {
+        public Builder<T> withGetResolver(@NonNull GetResolver getResolver) {
             this.getResolver = getResolver;
             return this;
         }
