@@ -1,7 +1,6 @@
-package com.pushtorefresh.storio.db.unit_test.operation.delete;
+package com.pushtorefresh.storio.db.operation.delete;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.operation.delete.DefaultDeleteResolver;
 import com.pushtorefresh.storio.db.query.DeleteQuery;
 
 import org.junit.Test;

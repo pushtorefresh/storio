@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.unit_test.design;
+package com.pushtorefresh.storio.db.design;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -22,7 +22,7 @@ import rx.Observable;
 
 import static org.mockito.Mockito.mock;
 
-public class DesignTestStorIOImpl extends StorIODb {
+class DesignTestStorIODbImpl extends StorIODb {
 
     @NonNull @Override
     public Observable<Changes> observeChangesInTables(@NonNull Set<String> tables) {

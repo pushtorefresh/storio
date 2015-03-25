@@ -16,6 +16,11 @@ import com.pushtorefresh.storio.contentprovider.query.InsertQuery;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 import com.pushtorefresh.storio.contentprovider.query.UpdateQuery;
 
+import java.util.Collections;
+import java.util.Set;
+
+import rx.Observable;
+
 /**
  * Powerful abstraction over {@link android.content.ContentProvider}
  */
@@ -26,15 +31,24 @@ public abstract class StorIOContentProvider {
      */
     private final Loggi loggi = new Loggi();
 
-    @NonNull public PreparedGet.Builder get() {
+    /**
+     * Prepares "get" operation for {@link StorIOContentProvider}
+     * Allows to get information from {@link StorIOContentProvider}
+     *
+     * @return builder for PreparedGet
+     */
+    @NonNull
+    public PreparedGet.Builder get() {
         return new PreparedGet.Builder(this);
     }
 
-    @NonNull public PreparedPut.Builder put() {
+    @NonNull
+    public PreparedPut.Builder put() {
         return new PreparedPut.Builder(this);
     }
 
-    @NonNull public PreparedDelete.Builder delete() {
+    @NonNull
+    public PreparedDelete.Builder delete() {
         return new PreparedDelete.Builder(this);
     }
 
@@ -70,6 +84,34 @@ public abstract class StorIOContentProvider {
     }
 
     /**
+     * Subscribes to changes of required Uris
+     *
+     * @param uris set of {@link Uri} that should be monitored
+     * @return {@link Observable} of {@link Changes} subscribed to changes of required Uris
+     */
+    @NonNull
+    public abstract Observable<Changes> observeChangesOfUris(@NonNull Set<Uri> uris);
+
+    /**
+     * Subscribes to changes of required Uri
+     *
+     * @param uri {@link Uri} that should be monitored
+     * @return {@link Observable} of {@link Changes} subscribed to changes of required Uri
+     */
+    @NonNull
+    public Observable<Changes> observeChangesOfUri(@NonNull Uri uri) {
+        return observeChangesOfUris(Collections.singleton(uri));
+    }
+
+    /**
+     * Hides some internal operations of {@link StorIOContentProvider} to make API of {@link StorIOContentProvider} clean and easy to understand
+     *
+     * @return implementation of Internal operations for {@link StorIOContentProvider}
+     */
+    @NonNull
+    public abstract Internal internal();
+
+    /**
      * Hides some internal operations of {@link StorIOContentProvider}
      * to make {@link StorIOContentProvider} API clean and easy to understand
      */
@@ -81,7 +123,8 @@ public abstract class StorIOContentProvider {
          * @param query query
          * @return cursor with result data or null
          */
-        @Nullable public abstract Cursor query(@NonNull Query query);
+        @Nullable
+        public abstract Cursor query(@NonNull Query query);
 
         /**
          * Inserts the data to {@link StorIOContentProvider}

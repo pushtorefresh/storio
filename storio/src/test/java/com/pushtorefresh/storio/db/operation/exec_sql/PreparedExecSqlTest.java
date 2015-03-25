@@ -1,8 +1,7 @@
-package com.pushtorefresh.storio.db.unit_test.operation;
+package com.pushtorefresh.storio.db.operation.exec_sql;
 
-import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.Changes;
-import com.pushtorefresh.storio.db.operation.exec_sql.PreparedExecSql;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.query.RawQuery;
 
 import org.junit.Test;

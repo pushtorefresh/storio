@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.db.unit_test.design;
+package com.pushtorefresh.storio.db.design;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -15,6 +15,9 @@ import com.pushtorefresh.storio.db.query.DeleteQuery;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class that represents an object stored in Db
+ */
 public class User {
 
     public  static final String TABLE = "users";

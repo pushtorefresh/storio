@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.operation;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import rx.Observable;
 
@@ -16,7 +17,7 @@ public interface PreparedOperation<Result> {
      *
      * @return result of operation
      */
-    @NonNull
+    @Nullable
     Result executeAsBlocking();
 
     /**

@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * Query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}
- * <p>
+ * <p/>
  * Instances of this class are Immutable
  */
 public class Query {
@@ -21,27 +21,32 @@ public class Query {
      * end in a record number that the implementation should parse and
      * add to a WHERE or HAVING clause, specifying that _id value.
      */
-    @NonNull public final Uri uri;
+    @NonNull
+    public final Uri uri;
 
     /**
      * The list of columns to put into the cursor. If null all columns are included.
      */
-    @Nullable public final List<String> projection;
+    @Nullable
+    public final List<String> projection;
 
     /**
      * A selection criteria to apply when filtering rows. If null then all rows are included.
      */
-    @Nullable public final String where;
+    @Nullable
+    public final String where;
 
     /**
      * You may include ?s in selection, which will be replaced by the values from selectionArgs, in order that they appear in the selection. The values will be bound as Strings.
      */
-    @Nullable public final List<String> whereArgs;
+    @Nullable
+    public final List<String> whereArgs;
 
     /**
      * How the rows in the cursor should be sorted. If null then the provider is free to define the sort order.
      */
-    @Nullable public final String sortOrder;
+    @Nullable
+    public final String sortOrder;
 
     /**
      * Please use {@link com.pushtorefresh.storio.contentprovider.query.Query.Builder} instead of constructor
@@ -54,7 +59,8 @@ public class Query {
         this.sortOrder = sortOrder;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -71,7 +77,8 @@ public class Query {
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = uri.hashCode();
         result = 31 * result + (projection != null ? projection.hashCode() : 0);
         result = 31 * result + (where != null ? where.hashCode() : 0);
@@ -80,7 +87,8 @@ public class Query {
         return result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Query{" +
                 "uri=" + uri +
                 ", projection=" + projection +
@@ -90,7 +98,11 @@ public class Query {
                 '}';
     }
 
+    /**
+     * Builder for {@link Query}
+     */
     public static class Builder {
+
         private Uri uri;
         private List<String> projection;
         private String where;
@@ -98,13 +110,34 @@ public class Query {
         private String sortOrder;
 
         /**
-         * The URI to query. This will be the full URI sent by the client; if the client is requesting a specific record, the URI will end in a record number that the implementation should parse and add to a WHERE or HAVING clause, specifying that _id value.
+         * Specifies URI to query.
+         * This will be the full URI sent by the client;
+         * if the client is requesting a specific record,
+         * the URI will end in a record number that the implementation should parse and add to a WHERE or HAVING clause,
+         * specifying that _id value.
          *
          * @param uri uri
          * @return builder
          */
-        @NonNull public Builder uri(@NonNull Uri uri) {
+        @NonNull
+        public Builder uri(@NonNull Uri uri) {
             this.uri = uri;
+            return this;
+        }
+
+        /**
+         * Specifies URI to query.
+         * This will be the full URI sent by the client;
+         * if the client is requesting a specific record,
+         * the URI will end in a record number that the implementation should parse and add to a WHERE or HAVING clause,
+         * specifying that _id value.
+         *
+         * @param uri uri which will be converted to {@link Uri}
+         * @return builder
+         */
+        @NonNull
+        public Builder uri(@NonNull String uri) {
+            this.uri = Uri.parse(uri);
             return this;
         }
 
@@ -114,7 +147,8 @@ public class Query {
          * @param columns columns
          * @return builder
          */
-        @NonNull public Builder projection(@Nullable String... columns) {
+        @NonNull
+        public Builder projection(@Nullable String... columns) {
             projection = QueryUtil.varargsToList(columns);
             return this;
         }
@@ -125,7 +159,8 @@ public class Query {
          * @param where where
          * @return builder
          */
-        @NonNull public Builder where(@Nullable String where) {
+        @NonNull
+        public Builder where(@Nullable String where) {
             this.where = where;
             return this;
         }
@@ -136,7 +171,8 @@ public class Query {
          * @param whereArgs selection arguments
          * @return builder
          */
-        @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
+        @NonNull
+        public Builder whereArgs(@Nullable String... whereArgs) {
             this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
@@ -147,7 +183,8 @@ public class Query {
          * @param sortOrder sort order
          * @return builder
          */
-        @NonNull public Builder sortOrder(@Nullable String sortOrder) {
+        @NonNull
+        public Builder sortOrder(@Nullable String sortOrder) {
             this.sortOrder = sortOrder;
             return this;
         }
@@ -158,7 +195,8 @@ public class Query {
          *
          * @return new instance of {@link Query}
          */
-        @NonNull public Query build() {
+        @NonNull
+        public Query build() {
             if (uri == null) {
                 throw new IllegalStateException("Please specify uri");
             }
