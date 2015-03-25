@@ -1,11 +1,14 @@
 package com.pushtorefresh.storio.db.operation.get;
 
+import android.database.Cursor;
+
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.query.Query;
 import com.pushtorefresh.storio.db.query.RawQuery;
 
 import org.junit.Test;
 
+import static junit.framework.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -14,41 +17,55 @@ import static org.mockito.Mockito.when;
 
 public class DefaultGetResolverTest {
 
-    @Test public void rawQuery() {
+    @Test
+    public void rawQuery() {
         final StorIODb storIODb = mock(StorIODb.class);
         final StorIODb.Internal internal = mock(StorIODb.Internal.class);
+        final RawQuery rawQuery = mock(RawQuery.class);
+        final Cursor expectedCursor = mock(Cursor.class);
 
         when(storIODb.internal())
                 .thenReturn(internal);
 
-        final DefaultGetResolver defaultGetResolver = new DefaultGetResolver();
-        final RawQuery rawQuery = mock(RawQuery.class);
+        when(internal.rawQuery(rawQuery))
+                .thenReturn(expectedCursor);
 
-        defaultGetResolver.performGet(storIODb, rawQuery);
+        final DefaultGetResolver defaultGetResolver = new DefaultGetResolver();
+
+        final Cursor actualCursor = defaultGetResolver.performGet(storIODb, rawQuery);
 
         // only one request should occur
         verify(internal, times(1)).rawQuery(any(RawQuery.class));
 
         // and this request should be equals to original
         verify(internal, times(1)).rawQuery(rawQuery);
+
+        assertSame(expectedCursor, actualCursor);
     }
 
-    @Test public void query() {
+    @Test
+    public void query() {
         final StorIODb storIODb = mock(StorIODb.class);
         final StorIODb.Internal internal = mock(StorIODb.Internal.class);
+        final Query query = mock(Query.class);
+        final Cursor expectedCursor = mock(Cursor.class);
 
         when(storIODb.internal())
                 .thenReturn(internal);
 
-        final DefaultGetResolver defaultGetResolver = new DefaultGetResolver();
-        final Query query = mock(Query.class);
+        when(internal.query(query))
+                .thenReturn(expectedCursor);
 
-        defaultGetResolver.performGet(storIODb, query);
+        final DefaultGetResolver defaultGetResolver = new DefaultGetResolver();
+
+        final Cursor actualCursor = defaultGetResolver.performGet(storIODb, query);
 
         // only one request should occur
         verify(internal, times(1)).query(any(Query.class));
 
         // and this request should be equals to original
         verify(internal, times(1)).query(query);
+
+        assertSame(expectedCursor, actualCursor);
     }
 }
