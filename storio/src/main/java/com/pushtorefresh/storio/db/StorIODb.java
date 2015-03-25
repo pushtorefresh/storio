@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.LogListener;
+import com.pushtorefresh.storio.Loggi;
 import com.pushtorefresh.storio.db.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.db.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.storio.db.operation.get.PreparedGet;
@@ -88,6 +90,28 @@ public abstract class StorIODb {
     }
 
     /**
+     * Set your own logger, and it will be use instead of default.
+     *
+     * @param logListener an logger.
+     * @return this.
+     */
+    public StorIODb setLogListener(@NonNull final LogListener logListener) {
+        internal().getLoggi().setLogListener(logListener);
+        return this;
+    }
+
+    /**
+     * Use to turn logs on/off
+     *
+     * @param enabled <code>false</code>, if you want to hide logs.
+     * @return this.
+     */
+    public StorIODb setLogIsEnabled(final boolean enabled) {
+        internal().getLoggi().setIsEnabled(enabled);
+        return this;
+    }
+
+    /**
      * Hides some internal operations of {@link StorIODb} to make API of {@link StorIODb} clean and easy to understand
      *
      * @return implementation of Internal operations for {@link StorIODb}
@@ -99,6 +123,11 @@ public abstract class StorIODb {
      * to make {@link StorIODb} API clean and easy to understand
      */
     public static abstract class Internal {
+
+        /**
+         * Log wrapper for internal usage only.
+         */
+        @NonNull private final Loggi loggi = new Loggi();
 
         /**
          * Execute a single SQL statement that is NOT a SELECT/INSERT/UPDATE/DELETE on the database
@@ -179,5 +208,15 @@ public abstract class StorIODb {
          * End a transaction
          */
         public abstract void endTransaction();
+
+        /**
+         * Log wrapper getter.
+         *
+         * @return a log wrapper.
+         */
+        @NonNull
+        public Loggi getLoggi() {
+            return loggi;
+        }
     }
 }
