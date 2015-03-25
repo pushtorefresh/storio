@@ -27,11 +27,6 @@ import rx.Observable;
 public abstract class StorIOContentProvider {
 
     /**
-     * Log wrapper.
-     */
-    private final Loggi loggi = new Loggi();
-
-    /**
      * Prepares "get" operation for {@link StorIOContentProvider}
      * Allows to get information from {@link StorIOContentProvider}
      *
@@ -59,7 +54,7 @@ public abstract class StorIOContentProvider {
      * @return this.
      */
     public StorIOContentProvider setLogListener(@NonNull final LogListener logListener) {
-        loggi.setLogListener(logListener);
+        internal().getLoggi().setLogListener(logListener);
         return this;
     }
 
@@ -70,17 +65,8 @@ public abstract class StorIOContentProvider {
      * @return this.
      */
     public StorIOContentProvider setLogIsEnabled(final boolean enabled) {
-        loggi.setIsEnabled(enabled);
+        internal().getLoggi().setIsEnabled(enabled);
         return this;
-    }
-
-    /**
-     * Log wrapper getter.
-     *
-     * @return a log wrapper.
-     */
-    public Loggi getLoggi() {
-        return loggi;
     }
 
     /**
@@ -118,6 +104,12 @@ public abstract class StorIOContentProvider {
     public static abstract class Internal {
 
         /**
+         * Log wrapper for internal usage only.
+         */
+        @NonNull
+        private final Loggi loggi = new Loggi();
+
+        /**
          * Gets the data from {@link StorIOContentProvider}
          *
          * @param query query
@@ -152,5 +144,15 @@ public abstract class StorIOContentProvider {
          * @return number of rows deleted
          */
         public abstract int delete(@NonNull DeleteQuery deleteQuery);
+
+        /**
+         * Log wrapper getter.
+         *
+         * @return a log wrapper.
+         */
+        @NonNull
+        public Loggi getLoggi() {
+            return loggi;
+        }
     }
 }

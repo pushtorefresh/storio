@@ -15,7 +15,7 @@ public class Loggi {
 
     private static final String TAG = "StorIO";
     
-    private volatile boolean isEnabled = BuildConfig.DEBUG;
+    private volatile boolean isEnabled = false;
 
     private LogListener externalLogListener;
 

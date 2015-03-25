@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.db.operation.delete;
 
+import com.pushtorefresh.storio.Loggi;
 import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.Changes;
 import com.pushtorefresh.storio.operation.MapFunc;
@@ -48,6 +49,8 @@ public class PreparedDeleteTest {
 
             when(deleteResolver.performDelete(eq(storIODb), any(DeleteQuery.class)))
                     .thenReturn(1);
+
+            when(internal.getLoggi()).thenReturn(mock(Loggi.class));
         }
 
         void verifyBehavior() {

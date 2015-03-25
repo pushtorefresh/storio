@@ -30,11 +30,6 @@ import rx.Observable;
 public abstract class StorIODb {
 
     /**
-     * Log wrapper.
-     */
-    @NonNull private final Loggi loggi = new Loggi();
-
-    /**
      * Prepares "execute sql" operation for {@link StorIODb}
      * Allows to execute a single SQL statement that is NOT a SELECT/INSERT/UPDATE/DELETE.
      *
@@ -101,7 +96,7 @@ public abstract class StorIODb {
      * @return this.
      */
     public StorIODb setLogListener(@NonNull final LogListener logListener) {
-        loggi.setLogListener(logListener);
+        internal().getLoggi().setLogListener(logListener);
         return this;
     }
 
@@ -112,17 +107,8 @@ public abstract class StorIODb {
      * @return this.
      */
     public StorIODb setLogIsEnabled(final boolean enabled) {
-        loggi.setIsEnabled(enabled);
+        internal().getLoggi().setIsEnabled(enabled);
         return this;
-    }
-
-    /**
-     * Log wrapper getter.
-     *
-     * @return a log wrapper.
-     */
-    public Loggi getLoggi() {
-        return loggi;
     }
 
     /**
@@ -137,6 +123,11 @@ public abstract class StorIODb {
      * to make {@link StorIODb} API clean and easy to understand
      */
     public static abstract class Internal {
+
+        /**
+         * Log wrapper for internal usage only.
+         */
+        @NonNull private final Loggi loggi = new Loggi();
 
         /**
          * Execute a single SQL statement that is NOT a SELECT/INSERT/UPDATE/DELETE on the database
@@ -217,5 +208,15 @@ public abstract class StorIODb {
          * End a transaction
          */
         public abstract void endTransaction();
+
+        /**
+         * Log wrapper getter.
+         *
+         * @return a log wrapper.
+         */
+        @NonNull
+        public Loggi getLoggi() {
+            return loggi;
+        }
     }
 }

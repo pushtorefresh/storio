@@ -30,7 +30,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
         final int numberOfDeletedRows = deleteResolver.performDelete(storIODb, deleteQuery);
 
-        storIODb.getLoggi().v(numberOfDeletedRows + " object(s) deleted");
+        internal.getLoggi().v(numberOfDeletedRows + " object(s) deleted");
 
         internal.notifyAboutChanges(new Changes(deleteQuery.table));
 
