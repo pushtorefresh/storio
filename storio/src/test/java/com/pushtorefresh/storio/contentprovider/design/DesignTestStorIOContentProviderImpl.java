@@ -6,11 +6,16 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.contentprovider.Changes;
 import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
 import com.pushtorefresh.storio.contentprovider.query.DeleteQuery;
 import com.pushtorefresh.storio.contentprovider.query.InsertQuery;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 import com.pushtorefresh.storio.contentprovider.query.UpdateQuery;
+
+import java.util.Set;
+
+import rx.Observable;
 
 import static org.mockito.Mockito.mock;
 
@@ -18,6 +23,12 @@ class DesignTestStorIOContentProviderImpl extends StorIOContentProvider {
 
     @NonNull
     private final Internal internal = new InternalImpl();
+
+    @NonNull
+    @Override
+    public Observable<Changes> observeChangesOfUris(@NonNull Set<Uri> uris) {
+        return Observable.empty();
+    }
 
     @NonNull
     @Override

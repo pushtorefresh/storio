@@ -4,18 +4,25 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.contentprovider.Changes;
 import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.util.EnvironmentUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.Subscriber;
+import rx.functions.Func1;
 
 /**
  * Represents an Operation for {@link StorIOContentProvider} which performs query that retrieves data as list of objects
  * from {@link android.content.ContentProvider}
+ *
+ * @param <T> type of result
  */
 public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
@@ -31,22 +38,79 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         this.query = query;
     }
 
+    /**
+     * Executes Prepared Operation immediately in current thread
+     *
+     * @return non-null list with mapped results, can be empty
+     */
     @Nullable
     @Override
     public List<T> executeAsBlocking() {
-        return null;
+        final Cursor cursor = getResolver.performGet(storIOContentProvider, query);
+
+        try {
+            if (cursor == null) {
+                return new ArrayList<>(0);
+            } else {
+                final List<T> list = new ArrayList<>(cursor.getCount());
+
+                while (cursor.moveToNext()) {
+                    list.add(mapFunc.map(cursor));
+                }
+
+                return list;
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
+    /**
+     * Creates an {@link Observable} which will emit result of operation
+     *
+     * @return non-null {@link Observable} which will emit non-null list with mapped results, list can be empty
+     */
     @NonNull
     @Override
     public Observable<List<T>> createObservable() {
-        return null;
+        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
+        return Observable.create(new Observable.OnSubscribe<List<T>>() {
+            @Override
+            public void call(Subscriber<? super List<T>> subscriber) {
+                if (!subscriber.isUnsubscribed()) {
+                    subscriber.onNext(executeAsBlocking());
+                    subscriber.onCompleted();
+                }
+            }
+        });
     }
 
+    /**
+     * Creates an {@link Observable} which will be subscribed to changes of {@link #query} Uri
+     * and will emit result each time change occurs
+     * <p/>
+     * First result will be emitted immediately,
+     * other emissions will occur only if changes of {@link #query} Uri will occur
+     *
+     * @return non-null {@link Observable} which will emit non-null list with mapped results and will be subscribed to changes of {@link #query} Uri
+     */
     @NonNull
     @Override
     public Observable<List<T>> createObservableStream() {
-        return null;
+        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
+        return storIOContentProvider
+                .observeChangesOfUri(query.uri)
+                .map(new Func1<Changes, List<T>>() {
+                    @Override
+                    public List<T> call(Changes changes) { // each change triggers executeAsBlocking
+                        return executeAsBlocking();
+                    }
+                })
+                .startWith(executeAsBlocking());  // start stream with first query result
     }
 
     /**

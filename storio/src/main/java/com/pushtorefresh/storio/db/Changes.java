@@ -11,7 +11,7 @@ import java.util.Set;
 public class Changes {
 
     /**
-     * Set of affected tables
+     * Immutable set of affected tables
      */
     @NonNull
     public final Set<String> affectedTables;

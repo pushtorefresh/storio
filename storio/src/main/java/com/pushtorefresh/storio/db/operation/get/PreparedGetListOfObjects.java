@@ -3,16 +3,16 @@ package com.pushtorefresh.storio.db.operation.get;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.Changes;
-import com.pushtorefresh.storio.operation.MapFunc;
-import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.db.StorIODb;
 import com.pushtorefresh.storio.db.query.Query;
 import com.pushtorefresh.storio.db.query.RawQuery;
+import com.pushtorefresh.storio.operation.MapFunc;
+import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -20,9 +20,16 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
 
+/**
+ * Represents an Operation for {@link StorIODb} which performs query that retrieves data as list of objects
+ * from {@link StorIODb}
+ *
+ * @param <T> type of result
+ */
 public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
-    @NonNull private final MapFunc<Cursor, T> mapFunc;
+    @NonNull
+    private final MapFunc<Cursor, T> mapFunc;
 
     PreparedGetListOfObjects(@NonNull StorIODb storIODb, @NonNull Query query, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
         super(storIODb, query, getResolver);
@@ -34,8 +41,14 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         this.mapFunc = mapFunc;
     }
 
+    /**
+     * Executes Prepared Operation immediately in current thread
+     *
+     * @return non-null list with mapped results, can be empty
+     */
     @SuppressWarnings("TryFinallyCanBeTryWithResources") // Min SDK :(
-    @NonNull public List<T> executeAsBlocking() {
+    @NonNull
+    public List<T> executeAsBlocking() {
         final Cursor cursor;
 
         if (query != null) {
@@ -59,11 +72,18 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
     }
 
-    @NonNull public Observable<List<T>> createObservable() {
+    /**
+     * Creates an {@link Observable} which will emit result of operation
+     *
+     * @return non-null {@link Observable} which will emit non-null list with mapped results, list can be empty
+     */
+    @NonNull
+    public Observable<List<T>> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<List<T>>() {
-            @Override public void call(Subscriber<? super List<T>> subscriber) {
+            @Override
+            public void call(Subscriber<? super List<T>> subscriber) {
                 if (!subscriber.isUnsubscribed()) {
                     subscriber.onNext(executeAsBlocking());
                     subscriber.onCompleted();
@@ -72,14 +92,24 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         });
     }
 
-    @NonNull @Override public Observable<List<T>> createObservableStream() {
+    /**
+     * Creates an {@link Observable} which will be subscribed to changes of query tables
+     * and will emit result each time change occurs
+     * <p/>
+     * First result will be emitted immediately,
+     * other emissions will occur only if changes of query tables will occur
+     *
+     * @return non-null {@link Observable} which will emit non-null list with mapped results and will be subscribed to changes of query tables
+     */
+    @NonNull
+    @Override
+    public Observable<List<T>> createObservableStream() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
 
         final Set<String> tables;
 
         if (query != null) {
-            tables = new HashSet<>(1);
-            tables.add(query.table);
+            tables = Collections.singleton(query.table);
         } else if (rawQuery != null) {
             tables = rawQuery.affectedTables;
         } else {
@@ -90,7 +120,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             return storIODb
                     .observeChangesInTables(tables)
                     .map(new Func1<Changes, List<T>>() { // each change triggers executeAsBlocking
-                        @Override public List<T> call(Changes affectedTables) {
+                        @Override
+                        public List<T> call(Changes affectedTables) {
                             return executeAsBlocking();
                         }
                     })
@@ -102,7 +133,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     public static class Builder<T> {
 
-        @NonNull private final StorIODb storIODb;
+        @NonNull
+        private final StorIODb storIODb;
 
         @NonNull
         private final Class<T> type; // currently type not used as object, only for generic Builder class
@@ -123,7 +155,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * @param mapFunc map function which will map {@link Cursor} to object of required type
          * @return builder
          */
-        @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
+        @NonNull
+        public Builder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
@@ -134,7 +167,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * @param query query
          * @return builder
          */
-        @NonNull public Builder<T> withQuery(@NonNull Query query) {
+        @NonNull
+        public Builder<T> withQuery(@NonNull Query query) {
             this.query = query;
             return this;
         }
@@ -145,7 +179,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * @param rawQuery query
          * @return builder
          */
-        @NonNull public Builder<T> withQuery(@NonNull RawQuery rawQuery) {
+        @NonNull
+        public Builder<T> withQuery(@NonNull RawQuery rawQuery) {
             this.rawQuery = rawQuery;
             return this;
         }
@@ -156,7 +191,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * @param getResolver get resolver
          * @return builder
          */
-        @NonNull public Builder withGetResolver(@NonNull GetResolver getResolver) {
+        @NonNull
+        public Builder withGetResolver(@NonNull GetResolver getResolver) {
             this.getResolver = getResolver;
             return this;
         }
@@ -166,7 +202,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          *
          * @return {@link PreparedGetListOfObjects} instance
          */
-        @NonNull public PreparedOperationWithReactiveStream<List<T>> prepare() {
+        @NonNull
+        public PreparedOperationWithReactiveStream<List<T>> prepare() {
             if (getResolver == null) {
                 getResolver = DefaultGetResolver.INSTANCE;
             }

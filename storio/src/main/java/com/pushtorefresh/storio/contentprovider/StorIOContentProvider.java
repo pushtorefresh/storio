@@ -14,6 +14,11 @@ import com.pushtorefresh.storio.contentprovider.query.InsertQuery;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 import com.pushtorefresh.storio.contentprovider.query.UpdateQuery;
 
+import java.util.Collections;
+import java.util.Set;
+
+import rx.Observable;
+
 /**
  * Powerful abstraction over {@link android.content.ContentProvider}
  */
@@ -38,6 +43,26 @@ public abstract class StorIOContentProvider {
     @NonNull
     public PreparedDelete.Builder delete() {
         return new PreparedDelete.Builder(this);
+    }
+
+    /**
+     * Subscribes to changes of required Uris
+     *
+     * @param uris set of {@link Uri} that should be monitored
+     * @return {@link Observable} of {@link Changes} subscribed to changes of required Uris
+     */
+    @NonNull
+    public abstract Observable<Changes> observeChangesOfUris(@NonNull Set<Uri> uris);
+
+    /**
+     * Subscribes to changes of required Uri
+     *
+     * @param uri {@link Uri} that should be monitored
+     * @return {@link Observable} of {@link Changes} subscribed to changes of required Uri
+     */
+    @NonNull
+    public Observable<Changes> observeChangesOfUri(@NonNull Uri uri) {
+        return observeChangesOfUris(Collections.singleton(uri));
     }
 
     /**
