@@ -10,10 +10,17 @@ import com.pushtorefresh.storio.db.query.RawQuery;
 
 public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStream<T> {
 
-    @NonNull  protected final StorIODb storIODb;
-    @Nullable protected final Query query;
-    @Nullable protected final RawQuery rawQuery;
-    @NonNull  protected final GetResolver getResolver;
+    @NonNull
+    protected final StorIODb storIODb;
+
+    @Nullable
+    protected final Query query;
+
+    @Nullable
+    protected final RawQuery rawQuery;
+
+    @NonNull
+    protected final GetResolver getResolver;
 
     PreparedGet(@NonNull StorIODb storIODb, @NonNull Query query, @NonNull GetResolver getResolver) {
         this.storIODb = storIODb;
@@ -31,17 +38,20 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
 
     public static class Builder {
 
-        @NonNull private final StorIODb storIODb;
+        @NonNull
+        private final StorIODb storIODb;
 
         public Builder(@NonNull StorIODb storIODb) {
             this.storIODb = storIODb;
         }
 
-        @NonNull public PreparedGetCursor.Builder cursor() {
+        @NonNull
+        public PreparedGetCursor.Builder cursor() {
             return new PreparedGetCursor.Builder(storIODb);
         }
 
-        @NonNull public <T> PreparedGetListOfObjects.Builder<T> listOfObjects(@NonNull Class<T> type) {
+        @NonNull
+        public <T> PreparedGetListOfObjects.Builder<T> listOfObjects(@NonNull Class<T> type) {
             return new PreparedGetListOfObjects.Builder<>(storIODb, type);
         }
     }

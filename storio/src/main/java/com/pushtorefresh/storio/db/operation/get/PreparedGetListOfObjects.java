@@ -103,6 +103,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     public static class Builder<T> {
 
         @NonNull private final StorIODb storIODb;
+
         @NonNull
         private final Class<T> type; // currently type not used as object, only for generic Builder class
 
