@@ -12,7 +12,9 @@ import com.pushtorefresh.storio.db.query.RawQuery;
  */
 public interface GetResolver {
 
-    @NonNull Cursor performGet(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery);
+    @NonNull
+    Cursor performGet(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery);
 
-    @NonNull Cursor performGet(@NonNull StorIODb storIODb, @NonNull Query query);
+    @NonNull
+    Cursor performGet(@NonNull StorIODb storIODb, @NonNull Query query);
 }

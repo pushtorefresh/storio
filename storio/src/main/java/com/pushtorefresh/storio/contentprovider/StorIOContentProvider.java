@@ -19,6 +19,12 @@ import com.pushtorefresh.storio.contentprovider.query.UpdateQuery;
  */
 public abstract class StorIOContentProvider {
 
+    /**
+     * Prepares "get" operation for {@link StorIOContentProvider}
+     * Allows to get information from {@link StorIOContentProvider}
+     *
+     * @return builder for PreparedGet
+     */
     @NonNull
     public PreparedGet.Builder get() {
         return new PreparedGet.Builder(this);
@@ -33,6 +39,14 @@ public abstract class StorIOContentProvider {
     public PreparedDelete.Builder delete() {
         return new PreparedDelete.Builder(this);
     }
+
+    /**
+     * Hides some internal operations of {@link StorIOContentProvider} to make API of {@link StorIOContentProvider} clean and easy to understand
+     *
+     * @return implementation of Internal operations for {@link StorIOContentProvider}
+     */
+    @NonNull
+    public abstract Internal internal();
 
     /**
      * Hides some internal operations of {@link StorIOContentProvider}

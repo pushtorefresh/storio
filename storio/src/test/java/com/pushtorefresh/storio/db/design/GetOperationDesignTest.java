@@ -13,7 +13,8 @@ import rx.Observable;
 
 public class GetOperationDesignTest extends OperationDesignTest {
 
-    @Test public void getCursorBlocking() {
+    @Test
+    public void getCursorBlocking() {
         Cursor cursor = storIODb()
                 .get()
                 .cursor()
@@ -26,7 +27,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void getListOfObjectsBlocking() {
+    @Test
+    public void getListOfObjectsBlocking() {
         List<User> users = storIODb()
                 .get()
                 .listOfObjects(User.class)
@@ -40,7 +42,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void getCursorObservable() {
+    @Test
+    public void getCursorObservable() {
         Observable<Cursor> observableCursor = storIODb()
                 .get()
                 .cursor()
@@ -53,7 +56,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void getListOfObjectsObservable() {
+    @Test
+    public void getListOfObjectsObservable() {
         Observable<List<User>> observableUsers = storIODb()
                 .get()
                 .listOfObjects(User.class)
@@ -67,7 +71,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void getCursorWithRawQueryBlocking() {
+    @Test
+    public void getCursorWithRawQueryBlocking() {
         Cursor cursor = storIODb()
                 .get()
                 .cursor()
@@ -79,7 +84,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void getCursorWithRawQueryObservable() {
+    @Test
+    public void getCursorWithRawQueryObservable() {
         Observable<Cursor> cursorObservable = storIODb()
                 .get()
                 .cursor()
@@ -91,7 +97,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void getListOfObjectsWithRawQueryBlocking() {
+    @Test
+    public void getListOfObjectsWithRawQueryBlocking() {
         List<User> users = storIODb()
                 .get()
                 .listOfObjects(User.class)
@@ -104,7 +111,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void getListOfObjectsWithRawQueryObservable() {
+    @Test
+    public void getListOfObjectsWithRawQueryObservable() {
         Observable<List<User>> usersObservable = storIODb()
                 .get()
                 .listOfObjects(User.class)
@@ -117,7 +125,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void getCursorObservableStream() {
+    @Test
+    public void getCursorObservableStream() {
         Observable<Cursor> usersObservableStream = storIODb()
                 .get()
                 .cursor()
@@ -126,7 +135,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .createObservableStream();
     }
 
-    @Test public void getListOfObjectsObservableStream() {
+    @Test
+    public void getListOfObjectsObservableStream() {
         Observable<List<User>> usersObservableStream = storIODb()
                 .get()
                 .listOfObjects(User.class)

@@ -6,11 +6,11 @@ import com.pushtorefresh.storio.db.StorIODb;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class OperationDesignTest {
+abstract class OperationDesignTest {
 
     private static final AtomicInteger COUNTER = new AtomicInteger(0);
 
-    @NonNull private final StorIODb storIODb = new DesignTestStorIOImpl();
+    @NonNull private final StorIODb storIODb = new DesignTestStorIODbImpl();
 
     @NonNull protected StorIODb storIODb() {
         return storIODb;
