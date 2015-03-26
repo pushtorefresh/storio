@@ -3,7 +3,6 @@ package com.pushtorefresh.storio.db.operation.get;
 import android.database.Cursor;
 
 import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.design.User;
 import com.pushtorefresh.storio.db.query.Query;
 import com.pushtorefresh.storio.db.query.RawQuery;
 import com.pushtorefresh.storio.operation.MapFunc;
@@ -12,6 +11,12 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -20,14 +25,41 @@ import static org.mockito.Mockito.when;
 
 public class PreparedGetTest {
 
+    private static class TestItem {
+
+        private static final AtomicLong COUNTER = new AtomicLong(0);
+
+        private Long id = COUNTER.incrementAndGet();
+
+        public Long getId() {
+            return id;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TestItem testItem = (TestItem) o;
+
+            return !(id != null ? !id.equals(testItem.id) : testItem.id != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return id != null ? id.hashCode() : 0;
+        }
+    }
+
     private static class GetStub {
         final StorIODb storIODb;
         final Query query;
         final RawQuery rawQuery;
         final GetResolver getResolver;
-        final MapFunc<Cursor, User> mapFunc;
+        final MapFunc<Cursor, TestItem> mapFunc;
         final Cursor cursor;
-        final int numberOfMockObjects = 3;
+        final List<TestItem> testItems;
 
         @SuppressWarnings("unchecked")
         GetStub() {
@@ -35,15 +67,20 @@ public class PreparedGetTest {
             query = mock(Query.class);
             rawQuery = mock(RawQuery.class);
             getResolver = mock(GetResolver.class);
-            mapFunc = (MapFunc<Cursor, User>) mock(MapFunc.class);
+            mapFunc = (MapFunc<Cursor, TestItem>) mock(MapFunc.class);
             cursor = mock(Cursor.class);
+
+            testItems = new ArrayList<>();
+            testItems.add(new TestItem());
+            testItems.add(new TestItem());
+            testItems.add(new TestItem());
 
             when(cursor.moveToNext()).thenAnswer(new Answer<Boolean>() {
                 int invocationsCount = 0;
 
                 @Override
                 public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                    return invocationsCount++ < numberOfMockObjects;
+                    return invocationsCount++ < testItems.size();
                 }
             });
 
@@ -57,37 +94,50 @@ public class PreparedGetTest {
                     .thenReturn(cursor);
 
             when(mapFunc.map(any(Cursor.class)))
-                    .thenReturn(mock(User.class));
+                    .thenAnswer(new Answer<TestItem>() {
+                        int invocationsCount = 0;
+
+                        @Override
+                        public TestItem answer(InvocationOnMock invocation) throws Throwable {
+                            final TestItem testItem = testItems.get(invocationsCount);
+                            invocationsCount++;
+                            return testItem;
+                        }
+                    });
         }
 
-        private void verifyQueryBehavior() {
+        private void verifyQueryBehavior(Cursor actualCursor) {
             verify(storIODb, times(1)).get();
             verify(getResolver, times(1)).performGet(storIODb, query);
+            assertSame(cursor, actualCursor);
         }
 
-        private void verifyQueryBehaviorForList() {
+        private void verifyQueryBehaviorForList(List<TestItem> actualList) {
             verify(storIODb, times(1)).get();
             verify(getResolver, times(1)).performGet(storIODb, query);
-            verify(mapFunc, times(numberOfMockObjects)).map(cursor);
+            verify(mapFunc, times(testItems.size())).map(cursor);
+            assertEquals(testItems, actualList);
         }
 
-        private void verifyRawQueryBehavior() {
+        private void verifyRawQueryBehavior(Cursor actualCursor) {
             verify(storIODb, times(1)).get();
             verify(getResolver, times(1)).performGet(storIODb, rawQuery);
+            assertSame(cursor, actualCursor);
         }
 
-        private void verifyRawQueryBehaviorForList() {
+        private void verifyRawQueryBehaviorForList(List<TestItem> actualList) {
             verify(storIODb, times(1)).get();
             verify(getResolver, times(1)).performGet(storIODb, rawQuery);
-            verify(mapFunc, times(numberOfMockObjects)).map(cursor);
+            verify(mapFunc, times(testItems.size())).map(cursor);
+            assertEquals(testItems, actualList);
         }
-
     }
 
-    @Test public void getCursorBlocking() {
+    @Test
+    public void getCursorBlocking() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIODb
+        final Cursor cursor = getStub.storIODb
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
@@ -95,28 +145,30 @@ public class PreparedGetTest {
                 .prepare()
                 .executeAsBlocking();
 
-        getStub.verifyQueryBehavior();
+        getStub.verifyQueryBehavior(cursor);
     }
 
-    @Test public void getListOfObjectsBlocking() {
+    @Test
+    public void getListOfObjectsBlocking() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIODb
+        final List<TestItem> testItems = getStub.storIODb
                 .get()
-                .listOfObjects(User.class)
+                .listOfObjects(TestItem.class)
                 .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.query)
                 .withGetResolver(getStub.getResolver)
                 .prepare()
                 .executeAsBlocking();
 
-        getStub.verifyQueryBehaviorForList();
+        getStub.verifyQueryBehaviorForList(testItems);
     }
 
-    @Test public void getCursorObservable() {
+    @Test
+    public void getCursorObservable() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIODb
+        final Cursor cursor = getStub.storIODb
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
@@ -126,16 +178,17 @@ public class PreparedGetTest {
                 .toBlocking()
                 .last();
 
-        getStub.verifyQueryBehavior();
+        getStub.verifyQueryBehavior(cursor);
     }
 
 
-    @Test public void getListOfObjectsObservable() {
+    @Test
+    public void getListOfObjectsObservable() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIODb
+        final List<TestItem> testItems = getStub.storIODb
                 .get()
-                .listOfObjects(User.class)
+                .listOfObjects(TestItem.class)
                 .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.query)
                 .withGetResolver(getStub.getResolver)
@@ -144,13 +197,14 @@ public class PreparedGetTest {
                 .toBlocking()
                 .last();
 
-        getStub.verifyQueryBehaviorForList();
+        getStub.verifyQueryBehaviorForList(testItems);
     }
 
-    @Test public void getCursorWithRawQueryBlocking() {
+    @Test
+    public void getCursorWithRawQueryBlocking() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIODb
+        final Cursor cursor = getStub.storIODb
                 .get()
                 .cursor()
                 .withQuery(getStub.rawQuery)
@@ -158,13 +212,14 @@ public class PreparedGetTest {
                 .prepare()
                 .executeAsBlocking();
 
-        getStub.verifyRawQueryBehavior();
+        getStub.verifyRawQueryBehavior(cursor);
     }
 
-    @Test public void getCursorWithRawQueryObservable() {
+    @Test
+    public void getCursorWithRawQueryObservable() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIODb
+        final Cursor cursor = getStub.storIODb
                 .get()
                 .cursor()
                 .withQuery(getStub.rawQuery)
@@ -174,30 +229,32 @@ public class PreparedGetTest {
                 .toBlocking()
                 .last();
 
-        getStub.verifyRawQueryBehavior();
+        getStub.verifyRawQueryBehavior(cursor);
     }
 
-    @Test public void getListOfObjectsWithRawQueryBlocking() {
+    @Test
+    public void getListOfObjectsWithRawQueryBlocking() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIODb
+        final List<TestItem> testItems = getStub.storIODb
                 .get()
-                .listOfObjects(User.class)
+                .listOfObjects(TestItem.class)
                 .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.rawQuery)
                 .withGetResolver(getStub.getResolver)
                 .prepare()
                 .executeAsBlocking();
 
-        getStub.verifyRawQueryBehaviorForList();
+        getStub.verifyRawQueryBehaviorForList(testItems);
     }
 
-    @Test public void getListOfObjectsWithRawQueryObservable() {
+    @Test
+    public void getListOfObjectsWithRawQueryObservable() {
         final GetStub getStub = new GetStub();
 
-        getStub.storIODb
+        final List<TestItem> testItems = getStub.storIODb
                 .get()
-                .listOfObjects(User.class)
+                .listOfObjects(TestItem.class)
                 .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.rawQuery)
                 .withGetResolver(getStub.getResolver)
@@ -206,6 +263,6 @@ public class PreparedGetTest {
                 .toBlocking()
                 .last();
 
-        getStub.verifyRawQueryBehaviorForList();
+        getStub.verifyRawQueryBehaviorForList(testItems);
     }
 }
