@@ -68,7 +68,7 @@ public class User implements Comparable<User> {
 
         @Override public void afterPut(@NonNull User user, @NonNull PutResult putResult) {
             if (putResult.wasInserted()) {
-                user.id = putResult.getInsertedId();
+                user.id = putResult.insertedId();
             }
         }
     };

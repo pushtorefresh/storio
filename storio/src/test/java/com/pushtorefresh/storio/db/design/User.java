@@ -65,7 +65,7 @@ public class User {
 
         @Override public void afterPut(@NonNull User object, @NonNull PutResult putResult) {
             if (putResult.wasInserted()) {
-                object.id = putResult.getInsertedId(); // setting id after insert
+                object.id = putResult.insertedId(); // setting id after insert
             }
         }
     };

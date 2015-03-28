@@ -51,7 +51,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
                 putResolver.afterPut(contentValues, putResult);
 
                 if (!withTransaction) {
-                    internal.notifyAboutChanges(new Changes(putResult.affectedTables()));
+                    internal.notifyAboutChanges(new Changes(putResult.affectedTable()));
                 }
             }
 
@@ -67,7 +67,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
                     final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be 1 table
 
                     for (final ContentValues contentValues : putResults.keySet()) {
-                        affectedTables.addAll(putResults.get(contentValues).affectedTables());
+                        affectedTables.add(putResults.get(contentValues).affectedTable());
                     }
 
                     storIODb.internal().notifyAboutChanges(new Changes(affectedTables));
