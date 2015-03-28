@@ -16,7 +16,7 @@
 ####0. Create an instance of StorIODb
 
 ```java
-StorIODb storIODb = new StorIOSQLiteDbImpl.Builder()
+StorIODb storIOSQLiteDb = new StorIOSQLiteDbImpl.Builder()
   .sqliteOpenHelper(yourSqliteOpenHelper) // or .db(db)
   .build();
 ```
@@ -35,7 +35,7 @@ final MapFunc<Cursor, Tweet> mapFunc = new MapFunc<Cursor, Tweet>() {
   }
 };
 
-final List<Tweet> tweets = storIODb
+final List<Tweet> tweets = storIOSQLiteDb
   .get()
   .listOfObjects(Tweet.class)
   .withMapFunc(mapFunc)
@@ -49,7 +49,7 @@ final List<Tweet> tweets = storIODb
 ######Get `Cursor` via blocking call:
 
 ```java
-final Cursor tweetsCursor = storIODb
+final Cursor tweetsCursor = storIOSQLiteDb
   .get()
   .cursor()
   .withQuery(new Query.Builder()
@@ -63,7 +63,7 @@ Things become much more interesting with `RxJava`!
 
 ######Get cursor as `Observable`
 ```java
-storIODb
+storIOSQLiteDb
   .get()
   .cursor()
   .withQuery(new Query.Builder()
@@ -86,7 +86,7 @@ storIODb
 ######First-case: Receive updates to `Observable` on each change in tables from `Query` 
 
 ```java
-storIODb
+storIOSQLiteDb
   .get()
   .listOfObjects(Tweet.class)
   .withMapFunc(Tweet.MAP_FROM_CURSOR)
@@ -108,7 +108,7 @@ storIODb
 ######Second case: Handle changes manually
 
 ```java
-storIODb
+storIOSQLiteDb
   .observeChangesInTable("tweets")
   .subscribe(new Action1<Changes>() { // or apply RxJava Operators
     // do what you want!
@@ -118,7 +118,7 @@ storIODb
 ######Get result with RawQuery with joins and other SQL things
 
 ```java
-storIODb
+storIOSQLiteDb
   .get()
   .listOfObjects(TweetAndUser.class)
   .withMapFunc(TweetAndUser.MAP_FROM_CURSOR)
@@ -135,19 +135,19 @@ storIODb
 ```java
 GetResolver getResolver = new GetResolver() {
   // Performs Get for RawQuery
-  @Override @NonNull public Cursor performGet(@NonNull StorIODb storIODb, @NonNull RawQuery rawQuery) {
+  @Override @NonNull public Cursor performGet(@NonNull StorIODb storIOSQLiteDb, @NonNull RawQuery rawQuery) {
     Cursor cursor = ...; // get result as you want, or add some additional behavior 
     return cursor;
   }
   
   // Performs Get for Query
-  @Override @NonNull public Cursor performGet(@NonNull StorIODb storIODb, @NonNull Query query) {
+  @Override @NonNull public Cursor performGet(@NonNull StorIODb storIOSQLiteDb, @NonNull Query query) {
     Cursor cursor = ...; // get result as you want, or add some additional behavior 
     return cursor;
   }
 };
 
-storIODb
+storIOSQLiteDb
   .get()
   .listOfObjects(Tweet.class)
   .withMapFunc(Tweet.MAP_FROM_CURSOR)
@@ -194,7 +194,7 @@ public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<>()
 ```java
 Tweet tweet = getSomeTweet();
 
-storIODb
+storIOSQLiteDb
   .put()
   .object(tweet)
   .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
@@ -207,7 +207,7 @@ storIODb
 ```java
 List<Tweet> tweets = getSomeTweets();
 
-storIODb
+storIOSQLiteDb
   .put()
   .objects(tweets)
   .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
@@ -220,7 +220,7 @@ storIODb
 ```java
 ContentValues contentValues = getSomeContentValues(); 
 
-storIODb
+storIOSQLiteDb
   .put()
   .contentValues(contentValues)
   .withPutResolver(putResolver)
@@ -251,7 +251,7 @@ final MapFunc<Tweet, DeleteQuery> mapToDeleteQuery = new MapFunc<Tweet, DeleteQu
 
 Tweet tweet = getSomeTweet();
 
-storIODb
+storIOSQLiteDb
   .delete()
   .object(tweet)
   .withMapFunc(mapToDeleteQuery)
@@ -263,7 +263,7 @@ storIODb
 ```java
 List<Tweet> tweets = getSomeTweets();
 
-storIODb
+storIOSQLiteDb
   .delete()
   .objects(tweets)
   .withMapFunc(mapToDeleteQuery)
@@ -280,7 +280,7 @@ Several things about `Delete` Operation:
 Sometimes you need to execute raw sql, `StorIODb` allows you to do it
 
 ```java
-storIODb
+storIOSQLiteDb
   .execSql()
   .withQuery(new RawQuery.Builder()
     .query("ALTER TABLE ? ADD COLUMN ? INTEGER")
