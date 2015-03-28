@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    compile project(':storio-common')
+    compile project(':storio-sqlitedb')
 
     compile rootProject.ext.dagger
     apt rootProject.ext.daggerCompiler

@@ -1,3 +1,4 @@
 include ':storio-common'
+include ':storio-sqlitedb'
 include ':storio-contentprovider'
 include ':storio-sample-app'
