@@ -31,7 +31,7 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
         );
 
         putResolver.afterPut(object, putResult);
-        storIODb.internal().notifyAboutChanges(new Changes(putResult.affectedTables()));
+        storIODb.internal().notifyAboutChanges(new Changes(putResult.affectedTable()));
 
         return putResult;
     }

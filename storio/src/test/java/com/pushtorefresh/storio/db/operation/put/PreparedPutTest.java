@@ -11,7 +11,6 @@ import com.pushtorefresh.storio.operation.MapFunc;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
@@ -21,6 +20,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+// TODO don't use User class
 public class PreparedPutTest {
 
     // stub class to avoid violation of DRY in "putOne" tests
@@ -49,7 +49,7 @@ public class PreparedPutTest {
             putResolver = (PutResolver<User>) mock(PutResolver.class);
 
             when(putResolver.performPut(eq(storIODb), any(ContentValues.class)))
-                    .thenReturn(PutResult.newInsertResult(1, Collections.singleton(User.TABLE)));
+                    .thenReturn(PutResult.newInsertResult(1, User.TABLE));
 
             when(mapFunc.map(user))
                     .thenReturn(mock(ContentValues.class));
@@ -137,7 +137,7 @@ public class PreparedPutTest {
             putResolver = (PutResolver<User>) mock(PutResolver.class);
 
             when(putResolver.performPut(eq(storIODb), any(ContentValues.class)))
-                    .thenReturn(PutResult.newInsertResult(1, Collections.singleton(User.TABLE)));
+                    .thenReturn(PutResult.newInsertResult(1, User.TABLE));
 
             //noinspection unchecked
             mapFunc = (MapFunc<User, ContentValues>) mock(MapFunc.class);

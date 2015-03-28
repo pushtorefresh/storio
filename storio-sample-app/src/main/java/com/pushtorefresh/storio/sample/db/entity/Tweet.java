@@ -64,7 +64,7 @@ public class Tweet {
 
         @Override public void afterPut(@NonNull Tweet object, @NonNull PutResult putResult) {
             if (putResult.wasInserted()) {
-                object.id = putResult.getInsertedId();
+                object.id = putResult.insertedId();
             }
         }
     };
