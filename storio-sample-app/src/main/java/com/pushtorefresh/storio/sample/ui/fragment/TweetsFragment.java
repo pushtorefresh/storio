@@ -10,8 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pushtorefresh.storio.db.StorIODb;
-import com.pushtorefresh.storio.db.operation.put.PutCollectionResult;
+import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlitedb.operation.put.PutCollectionResult;
 import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.SampleApp;
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
@@ -36,7 +36,8 @@ import rx.schedulers.Schedulers;
 
 public class TweetsFragment extends BaseFragment {
 
-    @Inject StorIODb storIODb;
+    @Inject
+    StorIOSQLiteDb storIOSQLiteDb;
 
     UiStateController uiStateController;
 
@@ -82,7 +83,7 @@ public class TweetsFragment extends BaseFragment {
     void reloadData() {
         uiStateController.setUiStateLoading();
 
-        final Subscription subscription = storIODb
+        final Subscription subscription = storIOSQLiteDb
                 .get()
                 .listOfObjects(Tweet.class)
                 .withMapFunc(Tweet.MAP_FROM_CURSOR)
@@ -130,7 +131,7 @@ public class TweetsFragment extends BaseFragment {
         tweets.add(Tweet.newTweet("AndroidWeekly", "Special issue #1: StorIO — forget about SQLiteDatabase, ContentProvider APIs, ORMs sucks!"));
         tweets.add(Tweet.newTweet("Apple", "Yosemite update: fixes for Wifi issues, yosemite-wifi-patch#142"));
 
-        storIODb
+        storIOSQLiteDb
                 .put()
                 .objects(tweets)
                 .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)

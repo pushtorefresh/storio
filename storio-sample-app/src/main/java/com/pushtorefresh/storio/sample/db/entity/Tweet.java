@@ -7,10 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.operation.MapFunc;
-import com.pushtorefresh.storio.db.operation.put.DefaultPutResolver;
-import com.pushtorefresh.storio.db.operation.put.PutResolver;
-import com.pushtorefresh.storio.db.operation.put.PutResult;
-import com.pushtorefresh.storio.db.query.Query;
+import com.pushtorefresh.storio.sqlitedb.operation.put.DefaultPutResolver;
+import com.pushtorefresh.storio.sqlitedb.operation.put.PutResolver;
+import com.pushtorefresh.storio.sqlitedb.operation.put.PutResult;
+import com.pushtorefresh.storio.sqlitedb.query.Query;
 
 /**
  * Just for demonstration, real Tweet structure is much more complex
