@@ -111,19 +111,4 @@ public abstract class BaseTest {
 
         return deleteResult;
     }
-
-    void checkNotEmptyAndEquals(@Nullable final List<User> first,
-                                @Nullable final List<User> second) {
-        assertNotNull(first);
-        assertNotNull(second);
-        assertEquals(first.size(), second.size());
-
-        for (User userFromFirst : first) {
-            assertTrue(second.contains(userFromFirst));
-        }
-
-        for (User userFromSecond : second) {
-            assertTrue(first.contains(userFromSecond));
-        }
-    }
 }

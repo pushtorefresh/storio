@@ -311,13 +311,12 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        checkNotEmptyAndEquals(usersWithLongName, usersFromQuery);
+        assertEquals(usersWithLongName, usersFromQuery);
     }
 
     @Test public void queryWithRawQueryAndArguments() {
 
-        final String TEST_USER_NAME = "TEST_USER_NAME";
-        final User testUser = new User(null, TEST_USER_NAME);
+        final User testUser = new User(null, "testUserName");
 
         final List<User> users = TestFactory.newUsers(10);
         users.add(testUser);
@@ -332,7 +331,7 @@ public class QueryTest extends BaseTest {
                 .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new RawQuery.Builder()
                         .query(query)
-                        .args(TEST_USER_NAME)
+                        .args(testUser.getEmail())
                         .build())
                 .prepare()
                 .executeAsBlocking();
@@ -360,6 +359,6 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        checkNotEmptyAndEquals(users, getAllUsers());
+        assertEquals(users, getAllUsers());
     }
 }
