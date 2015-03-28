@@ -3,16 +3,20 @@ package com.pushtorefresh.storio.db.integration_test.impl;
 import android.database.Cursor;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.pushtorefresh.storio.db.query.RawQuery;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.db.query.Query;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -42,6 +46,7 @@ public class QueryTest extends BaseTest {
                     .prepare()
                     .executeAsBlocking();
 
+            assertNotNull(usersFromQuery);
             assertEquals(usersFromQuery.size(), 1);
             assertEquals(usersFromQuery.get(0), user);
         }
@@ -66,6 +71,7 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
+        assertNotNull(usersFromQueryOrdered);
         assertEquals(users.size(), usersFromQueryOrdered.size());
 
         // Sorting by email for check ordering.
@@ -95,6 +101,7 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
+        assertNotNull(usersFromQueryOrdered);
         assertEquals(users.size(), usersFromQueryOrdered.size());
 
         // Reverse sorting by email for check ordering.
@@ -120,6 +127,7 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
+        assertNotNull(usersFromQuery);
         assertEquals(usersFromQuery.size(), limit);
     }
 
@@ -140,6 +148,7 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
+        assertNotNull(usersFromQuery);
         assertEquals(Math.min(limit, users.size() - offset), usersFromQuery.size());
 
         Collections.sort(users);
@@ -177,6 +186,7 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
+        assertNotNull(groupsOfUsers);
         assertEquals(2, groupsOfUsers.size());
     }
 
@@ -210,6 +220,7 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
+        assertNotNull(groupsOfUsers);
         assertEquals(1, groupsOfUsers.size());
     }
 
@@ -234,6 +245,7 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
+        assertNotNull(uniqueUsersFromQuery);
         assertEquals(1, uniqueUsersFromQuery.size());
 
         final List<User> allUsersFromQuery = storIODb
@@ -248,6 +260,7 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
+        assertNotNull(allUsersFromQuery);
         assertEquals(users.size(), allUsersFromQuery.size());
     }
 
@@ -256,4 +269,97 @@ public class QueryTest extends BaseTest {
             return new User(null, cursor.getString(cursor.getColumnIndex(User.COLUMN_EMAIL)));
         }
     };
+
+    @Test public void queryWithRawQuery() {
+
+        final List<User> users = TestFactory.newUsers(20);
+
+        int counter = 1;
+        for (User user : users) {
+
+            char[] chars = new char[counter++];
+            Arrays.fill(chars, '*');
+            user.setEmail(new String(chars));
+        }
+
+        putUsers(users);
+
+        final List<User> usersWithLongName = new ArrayList<>(users.size());
+
+        int lengthSum = 0;
+        for (User user : users) {
+            lengthSum += user.getEmail().length();
+        }
+        final int avrLength = lengthSum / users.size();
+        for (User user : users) {
+            if (user.getEmail().length() > avrLength) {
+                usersWithLongName.add(user);
+            }
+        }
+
+        final String query = "Select * from " + User.TABLE
+                + " where length(" + User.COLUMN_EMAIL + ") > "
+                + "(select avg(length(" + User.COLUMN_EMAIL + ")) from users)";
+
+        final List<User> usersFromQuery = storIODb
+                .get()
+                .listOfObjects(User.class)
+                .withMapFunc(User.MAP_FROM_CURSOR)
+                .withQuery(new RawQuery.Builder()
+                        .query(query)
+                        .build())
+                .prepare()
+                .executeAsBlocking();
+
+        checkNotEmptyAndEquals(usersWithLongName, usersFromQuery);
+    }
+
+    @Test public void queryWithRawQueryAndArguments() {
+
+        final String TEST_USER_NAME = "TEST_USER_NAME";
+        final User testUser = new User(null, TEST_USER_NAME);
+
+        final List<User> users = TestFactory.newUsers(10);
+        users.add(testUser);
+        putUsers(users);
+
+        final String query = "Select * from " + User.TABLE
+                + " where " + User.COLUMN_EMAIL + " like ?";
+
+        final List<User> usersFromQuery = storIODb
+                .get()
+                .listOfObjects(User.class)
+                .withMapFunc(User.MAP_FROM_CURSOR)
+                .withQuery(new RawQuery.Builder()
+                        .query(query)
+                        .args(TEST_USER_NAME)
+                        .build())
+                .prepare()
+                .executeAsBlocking();
+
+        assertNotNull(usersFromQuery);
+        assertEquals(1, usersFromQuery.size());
+        assertEquals(testUser, usersFromQuery.get(0));
+    }
+
+    @Test public void queryWithRawQuerySqlInjection() {
+
+        final List<User> users = putUsers(10);
+
+        final String query = "Select * from " + User.TABLE
+                + " where " + User.COLUMN_EMAIL + " like ?";
+        final String arg = "(delete from " + User.TABLE + ")";
+
+        storIODb.get()
+                .listOfObjects(User.class)
+                .withMapFunc(User.MAP_FROM_CURSOR)
+                .withQuery(new RawQuery.Builder()
+                        .query(query)
+                        .args(arg)
+                        .build())
+                .prepare()
+                .executeAsBlocking();
+
+        checkNotEmptyAndEquals(users, getAllUsers());
+    }
 }

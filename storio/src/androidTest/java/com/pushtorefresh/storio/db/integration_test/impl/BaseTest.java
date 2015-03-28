@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.db.integration_test.impl;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 
 import com.pushtorefresh.storio.db.StorIODb;
@@ -16,6 +17,7 @@ import org.junit.Before;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 public abstract class BaseTest {
@@ -39,7 +41,8 @@ public abstract class BaseTest {
                 .executeAsBlocking();
     }
 
-    @NonNull List<User> getAllUsers() {
+    @Nullable
+    List<User> getAllUsers() {
         return storIODb
                 .get()
                 .listOfObjects(User.class)
@@ -51,12 +54,14 @@ public abstract class BaseTest {
                 .executeAsBlocking();
     }
 
-    @NonNull User putUser() {
+    @NonNull
+    User putUser() {
         final User user = TestFactory.newUser();
         return putUser(user);
     }
 
-    @NonNull User putUser(@NonNull final User user) {
+    @NonNull
+    User putUser(@NonNull final User user) {
 
         final PutResult putResult = storIODb
                 .put()
@@ -66,16 +71,19 @@ public abstract class BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
+        assertNotNull(putResult);
         assertTrue(putResult.wasInserted());
         return user;
     }
 
-    @NonNull List<User> putUsers(final int size) {
+    @NonNull
+    List<User> putUsers(final int size) {
         final List<User> users = TestFactory.newUsers(size);
         return putUsers(users);
     }
 
-    @NonNull List<User> putUsers(@NonNull final List<User> users) {
+    @NonNull
+    List<User> putUsers(@NonNull final List<User> users) {
 
         final PutCollectionResult<User> putResult = storIODb
                 .put()
@@ -90,7 +98,8 @@ public abstract class BaseTest {
         return users;
     }
 
-    @NonNull DeleteResult deleteUser(@NonNull final User user) {
+    @NonNull
+    DeleteResult deleteUser(@NonNull final User user) {
         final DeleteResult deleteResult = storIODb
                 .delete()
                 .object(user)
@@ -101,5 +110,20 @@ public abstract class BaseTest {
         assertEquals(1, deleteResult.numberOfDeletedRows());
 
         return deleteResult;
+    }
+
+    void checkNotEmptyAndEquals(@Nullable final List<User> first,
+                                @Nullable final List<User> second) {
+        assertNotNull(first);
+        assertNotNull(second);
+        assertEquals(first.size(), second.size());
+
+        for (User userFromFirst : first) {
+            assertTrue(second.contains(userFromFirst));
+        }
+
+        for (User userFromSecond : second) {
+            assertTrue(first.contains(userFromSecond));
+        }
     }
 }
