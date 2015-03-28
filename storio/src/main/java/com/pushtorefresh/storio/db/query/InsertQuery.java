@@ -3,6 +3,9 @@ package com.pushtorefresh.storio.db.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+/**
+ * Immutable query which describes Insert operation for {@link com.pushtorefresh.storio.db.StorIODb}
+ */
 public class InsertQuery {
 
     @NonNull public final String table;

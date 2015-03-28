@@ -56,7 +56,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
                 putResults.put(object, putResult);
 
                 if (!withTransaction) {
-                    internal.notifyAboutChanges(new Changes(putResult.affectedTables()));
+                    internal.notifyAboutChanges(new Changes(putResult.affectedTable()));
                 }
             }
 
@@ -72,7 +72,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
                     final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be 1 table
 
                     for (final T object : putResults.keySet()) {
-                        affectedTables.addAll(putResults.get(object).affectedTables());
+                        affectedTables.add(putResults.get(object).affectedTable());
                     }
 
                     storIODb.internal().notifyAboutChanges(new Changes(affectedTables));
