@@ -3,8 +3,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
 
 android {
-	compileSdkVersion rootProject.ext.compileSdkVersion
-	buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 8
@@ -20,6 +20,8 @@ android {
 }
 
 dependencies {
+    compile project(':storio-common')
+
     provided rootProject.ext.supportAnnotations
     provided rootProject.ext.rxJava
 
@@ -33,7 +35,7 @@ task checkstyle(type: Checkstyle) {
     description 'Analyzing project and creating report with bad things in the code'
 
     ignoreFailures = false
-    configFile file('config/checkstyle/checkstyle.xml')
+    configFile file('../checkstyle/checkstyle.xml')
 
     source 'src'
     include '**/*.java'

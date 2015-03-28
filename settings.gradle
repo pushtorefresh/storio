@@ -1,2 +1,3 @@
-include ':storio'
+include ':storio-common'
+include ':storio-contentprovider'
 include ':storio-sample-app'

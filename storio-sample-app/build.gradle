@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    compile project(':storio')
+    compile project(':storio-common')
 
     compile rootProject.ext.dagger
     apt rootProject.ext.daggerCompiler
