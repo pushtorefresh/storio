@@ -42,6 +42,12 @@ public abstract class BaseTest {
                 .byQuery(User.DELETE_ALL)
                 .prepare()
                 .executeAsBlocking();
+
+        storIOSQLiteDb
+                .delete()
+                .byQuery(Tweet.DELETE_ALL)
+                .prepare()
+                .executeAsBlocking();
     }
 
     @Nullable

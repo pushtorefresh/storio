@@ -3,6 +3,8 @@ package com.pushtorefresh.storio.sqlitedb.impl;
 import android.database.Cursor;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.pushtorefresh.storio.sqlitedb.operation.put.PutResult;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -57,6 +59,7 @@ public class InsertTest extends BaseTest {
 
             final List<User> existUsers = getAllUsers();
 
+            assertNotNull(existUsers);
             assertEquals(1, existUsers.size());
 
             final Cursor cursorAfterPut = db.query(User.TABLE, null, null, null, null, null, null);
@@ -69,5 +72,37 @@ public class InsertTest extends BaseTest {
             assertEquals(0, cursorAfterDelete.getCount());
             cursorAfterDelete.close();
         }
+    }
+
+    /**
+     * Check inserting item with custom internal id field name
+     */
+    @Test public void insertCollectionWithCustomId() {
+        final List<User> users = putUsers(1);
+        final User user = users.get(0);
+
+        assertNotNull(user.getId());
+
+        final Tweet tweet = TestFactory.newTweet(user.getId());
+
+        final PutResult putResult = storIOSQLiteDb
+                .put()
+                .object(tweet)
+                .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(Tweet.PUT_RESOLVER)
+                .prepare()
+                .executeAsBlocking();
+
+        assertNotNull(putResult);
+        assertEquals(true, putResult.wasInserted());
+
+        final Cursor cursor = db.query(Tweet.TABLE, null, null, null, null, null, null);
+
+        assertEquals(1, cursor.getCount());
+
+        assertTrue(cursor.moveToNext());
+        assertEquals(tweet, Tweet.MAP_FROM_CURSOR.map(cursor));
+
+        cursor.close();
     }
 }

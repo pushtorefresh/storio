@@ -38,7 +38,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     @Override
     @NonNull
     public PutResult performPut(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull ContentValues contentValues) {
-        final Long id = contentValues.getAsLong(BaseColumns._ID);
+        final Long id = contentValues.getAsLong(getIdFieldName());
         final String table = getTable();
 
         return id == null
@@ -65,7 +65,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
         final int numberOfUpdatedRows = storIOSQLiteDb.internal().update(
                 new UpdateQuery.Builder()
                         .table(table)
-                        .where(BaseColumns._ID + "=?")
+                        .where(getIdFieldName() + "=?")
                         .whereArgs(String.valueOf(id))
                         .build(),
                 contentValues
@@ -74,5 +74,10 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
         return numberOfUpdatedRows > 0
                 ? PutResult.newUpdateResult(numberOfUpdatedRows, table)
                 : insert(storIOSQLiteDb, contentValues);
+    }
+
+    @NonNull
+    protected String getIdFieldName() {
+        return BaseColumns._ID;
     }
 }
