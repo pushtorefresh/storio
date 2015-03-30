@@ -32,7 +32,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
      * @return column name to store internal id.
      */
     @NonNull
-    protected String getIdColumnName(@NonNull ContentValues contentValues) {
+    protected String getIdColumnName() {
         return BaseColumns._ID;
     }
 
@@ -51,7 +51,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     @Override
     public PutResult performPut(@NonNull StorIOContentProvider storIOContentProvider, @NonNull ContentValues contentValues) {
         final Uri uri = getUri(contentValues);
-        final String idColumnName = getIdColumnName(contentValues);
+        final String idColumnName = getIdColumnName();
 
         final Object idObject = contentValues.get(idColumnName);
         final String idAsString = idObject != null ? idObject.toString() : null;
