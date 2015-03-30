@@ -12,14 +12,14 @@ public class PutResult {
     private final Long insertedId;
 
     @Nullable
-    private final Integer numberOfUpdatedRows;
+    private final Integer numberOfRowsUpdated;
 
     @NonNull
     private final String affectedTable;
 
-    private PutResult(@Nullable Long insertedId, @Nullable Integer numberOfUpdatedRows, @NonNull String affectedTable) {
+    private PutResult(@Nullable Long insertedId, @Nullable Integer numberOfRowsUpdated, @NonNull String affectedTable) {
         this.insertedId = insertedId;
-        this.numberOfUpdatedRows = numberOfUpdatedRows;
+        this.numberOfRowsUpdated = numberOfRowsUpdated;
         this.affectedTable = affectedTable;
     }
 
@@ -38,13 +38,13 @@ public class PutResult {
     /**
      * Creates {@link PutResult} for update
      *
-     * @param numberOfUpdatedRows number of rows that were updated
+     * @param numberOfRowsUpdated number of rows that were updated
      * @param affectedTable       affected table
      * @return new {@link PutResult} instance
      */
     @NonNull
-    public static PutResult newUpdateResult(int numberOfUpdatedRows, @NonNull String affectedTable) {
-        return new PutResult(null, numberOfUpdatedRows, affectedTable);
+    public static PutResult newUpdateResult(int numberOfRowsUpdated, @NonNull String affectedTable) {
+        return new PutResult(null, numberOfRowsUpdated, affectedTable);
     }
 
     /**
@@ -71,7 +71,7 @@ public class PutResult {
      * @return true if something was updated in {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}, false otherwise
      */
     public boolean wasUpdated() {
-        return numberOfUpdatedRows != null;
+        return numberOfRowsUpdated != null;
     }
 
     /**
@@ -94,13 +94,13 @@ public class PutResult {
     }
 
     /**
-     * Gets number of updated rows
+     * Gets number of rows updated
      *
      * @return null if nothing was updated or number of updated rows
      */
     @Nullable
-    public Integer numberOfUpdatedRows() {
-        return numberOfUpdatedRows;
+    public Integer numberOfRowsUpdated() {
+        return numberOfRowsUpdated;
     }
 
     /**
@@ -122,16 +122,15 @@ public class PutResult {
 
         if (insertedId != null ? !insertedId.equals(putResult.insertedId) : putResult.insertedId != null)
             return false;
-        if (numberOfUpdatedRows != null ? !numberOfUpdatedRows.equals(putResult.numberOfUpdatedRows) : putResult.numberOfUpdatedRows != null)
+        if (numberOfRowsUpdated != null ? !numberOfRowsUpdated.equals(putResult.numberOfRowsUpdated) : putResult.numberOfRowsUpdated != null)
             return false;
         return affectedTable.equals(putResult.affectedTable);
-
     }
 
     @Override
     public int hashCode() {
         int result = insertedId != null ? insertedId.hashCode() : 0;
-        result = 31 * result + (numberOfUpdatedRows != null ? numberOfUpdatedRows.hashCode() : 0);
+        result = 31 * result + (numberOfRowsUpdated != null ? numberOfRowsUpdated.hashCode() : 0);
         result = 31 * result + affectedTable.hashCode();
         return result;
     }
@@ -140,7 +139,7 @@ public class PutResult {
     public String toString() {
         return "PutResult{" +
                 "insertedId=" + insertedId +
-                ", numberOfUpdatedRows=" + numberOfUpdatedRows +
+                ", numberOfRowsUpdated=" + numberOfRowsUpdated +
                 ", affectedTable='" + affectedTable + '\'' +
                 '}';
     }

@@ -131,7 +131,7 @@ public class DefaultPutResolverTest {
         assertFalse(putResult.wasUpdated());
 
         assertEquals(expectedInsertedId, putResult.insertedId());
-        assertNull(putResult.numberOfUpdatedRows());
+        assertNull(putResult.numberOfRowsUpdated());
     }
 
     /**
@@ -191,7 +191,7 @@ public class DefaultPutResolverTest {
         assertTrue(putResult.wasUpdated());
         assertFalse(putResult.wasInserted());
 
-        assertEquals(Integer.valueOf(1), putResult.numberOfUpdatedRows());
+        assertEquals(Integer.valueOf(1), putResult.numberOfRowsUpdated());
         assertNull(putResult.insertedId());
     }
 
@@ -268,6 +268,6 @@ public class DefaultPutResolverTest {
         assertFalse(putResult.wasUpdated());
 
         assertEquals(expectedInsertId, putResult.insertedId());
-        assertNull(putResult.numberOfUpdatedRows());
+        assertNull(putResult.numberOfRowsUpdated());
     }
 }
