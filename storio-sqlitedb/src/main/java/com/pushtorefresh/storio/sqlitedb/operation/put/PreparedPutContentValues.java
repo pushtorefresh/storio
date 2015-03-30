@@ -10,11 +10,11 @@ import com.pushtorefresh.storio.util.EnvironmentUtil;
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedPutWithContentValues extends PreparedPut<ContentValues, PutResult> {
+public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResult> {
 
     @NonNull private final ContentValues contentValues;
 
-    PreparedPutWithContentValues(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
+    PreparedPutContentValues(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
         super(storIOSQLiteDb, putResolver);
         this.contentValues = contentValues;
     }
@@ -71,14 +71,14 @@ public class PreparedPutWithContentValues extends PreparedPut<ContentValues, Put
 
         /**
          * Prepares Put Operation
-         * @return {@link PreparedPutWithContentValues} instance
+         * @return {@link PreparedPutContentValues} instance
          */
-        @NonNull public PreparedPutWithContentValues prepare() {
+        @NonNull public PreparedPutContentValues prepare() {
             if (putResolver == null) {
                 throw new IllegalStateException("Please specify put resolver");
             }
 
-            return new PreparedPutWithContentValues(
+            return new PreparedPutContentValues(
                     storIOSQLiteDb,
                     putResolver,
                     contentValues

@@ -16,7 +16,7 @@ import com.pushtorefresh.storio.sqlitedb.query.UpdateQuery;
 public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
     /**
-     * Resolves table name to perform insert or update for it
+     * Resolves table name to perform insert or update
      *
      * @return table name
      */
@@ -26,13 +26,13 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     /**
      * Performs insert or update of {@link ContentValues} into {@link StorIOSQLiteDb}
      * <p>
-     * By default, it will perform insert if content values does not contain {@link BaseColumns#_ID} field with non-null long
-     * or update if content values contains {@link BaseColumns#_ID} field and value
-     *
+     * By default, it will perform insert if content values does not contain {@link BaseColumns#_ID} field with non-null value
+     * or update if content values contains {@link BaseColumns#_ID} field and value is not null
+     * <p>
      * But, if it will decide to perform update and no rows will be updated, it will perform insert!
      *
-     * @param storIOSQLiteDb      instance of {@link StorIOSQLiteDb}
-     * @param contentValues content values to put
+     * @param storIOSQLiteDb instance of {@link StorIOSQLiteDb}
+     * @param contentValues  content values to put
      * @return non-null result of put operation
      */
     @Override
@@ -42,14 +42,12 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
         final String table = getTable();
 
         return id == null
-                ? insert(storIOSQLiteDb, contentValues)
+                ? insert(storIOSQLiteDb, contentValues, table)
                 : updateOrInsert(storIOSQLiteDb, contentValues, table, id);
     }
 
     @NonNull
-    private PutResult insert(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull ContentValues contentValues) {
-        final String table = getTable();
-
+    private PutResult insert(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull ContentValues contentValues, @NonNull String table) {
         final long insertedId = storIOSQLiteDb.internal().insert(
                 new InsertQuery.Builder()
                         .table(table)
@@ -57,6 +55,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
                         .build(),
                 contentValues
         );
+
         return PutResult.newInsertResult(insertedId, table);
     }
 
@@ -73,7 +72,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
         return numberOfUpdatedRows > 0
                 ? PutResult.newUpdateResult(numberOfUpdatedRows, table)
-                : insert(storIOSQLiteDb, contentValues);
+                : insert(storIOSQLiteDb, contentValues, table);
     }
 
     @NonNull

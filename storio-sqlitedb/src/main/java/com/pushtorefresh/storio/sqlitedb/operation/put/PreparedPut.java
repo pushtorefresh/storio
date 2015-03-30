@@ -8,19 +8,32 @@ import com.pushtorefresh.storio.operation.PreparedOperation;
 
 import java.util.Arrays;
 
+/**
+ * Represents an Operation for {@link StorIOSQLiteDb} which performs insert or update data
+ * in {@link StorIOSQLiteDb}
+ *
+ * @param <T> type of data you want to put
+ */
 public abstract class PreparedPut<T, Result> implements PreparedOperation<Result> {
 
-    @NonNull protected final StorIOSQLiteDb storIOSQLiteDb;
-    @NonNull protected final PutResolver<T> putResolver;
+    @NonNull
+    protected final StorIOSQLiteDb storIOSQLiteDb;
+
+    @NonNull
+    protected final PutResolver<T> putResolver;
 
     PreparedPut(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull PutResolver<T> putResolver) {
         this.storIOSQLiteDb = storIOSQLiteDb;
         this.putResolver = putResolver;
     }
 
+    /**
+     * Builder for {@link PreparedPut}
+     */
     public static class Builder {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull
+        private final StorIOSQLiteDb storIOSQLiteDb;
 
         public Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb) {
             this.storIOSQLiteDb = storIOSQLiteDb;
@@ -33,8 +46,8 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          * @return builder
          */
         @NonNull
-        public PreparedPutWithContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
-            return new PreparedPutWithContentValues.Builder(storIOSQLiteDb, contentValues);
+        public PreparedPutContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
+            return new PreparedPutContentValues.Builder(storIOSQLiteDb, contentValues);
         }
 
         /**
@@ -66,8 +79,9 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          * @param <T>    type of object
          * @return builder
          */
-        @NonNull public <T> PreparedPutWithObject.Builder<T> object(T object) {
-            return new PreparedPutWithObject.Builder<>(storIOSQLiteDb, object);
+        @NonNull
+        public <T> PreparedPutObject.Builder<T> object(T object) {
+            return new PreparedPutObject.Builder<>(storIOSQLiteDb, object);
         }
 
         /**
@@ -77,7 +91,8 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          * @param <T>     type of objects
          * @return builder
          */
-        @NonNull public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
+        @NonNull
+        public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
             return new PreparedPutObjects.Builder<>(storIOSQLiteDb, objects);
         }
 
@@ -89,7 +104,8 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          * @return builder
          */
         @SafeVarargs
-        @NonNull public final <T> PreparedPutObjects.Builder<T> objects(@NonNull T... objects) {
+        @NonNull
+        public final <T> PreparedPutObjects.Builder<T> objects(@NonNull T... objects) {
             return new PreparedPutObjects.Builder<>(storIOSQLiteDb, Arrays.asList(objects));
         }
     }

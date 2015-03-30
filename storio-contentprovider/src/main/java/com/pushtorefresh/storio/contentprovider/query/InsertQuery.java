@@ -13,7 +13,8 @@ public class InsertQuery {
     /**
      * The content:// URI of the insertion request.
      */
-    @NonNull public final Uri uri;
+    @NonNull
+    public final Uri uri;
 
     /**
      * Please use {@link com.pushtorefresh.storio.contentprovider.query.InsertQuery.Builder} instead of constructor
@@ -22,7 +23,8 @@ public class InsertQuery {
         this.uri = uri;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -32,11 +34,13 @@ public class InsertQuery {
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return uri.hashCode();
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "InsertQuery{" +
                 "uri=" + uri +
                 '}';
@@ -57,7 +61,8 @@ public class InsertQuery {
          *
          * @param uri content:// URI of the insertion request
          */
-        @NonNull public Builder uri(@NonNull Uri uri) {
+        @NonNull
+        public Builder uri(@NonNull Uri uri) {
             this.uri = uri;
             return this;
         }
@@ -68,7 +73,8 @@ public class InsertQuery {
          *
          * @return new {@link Query} instance
          */
-        @NonNull InsertQuery build() {
+        @NonNull
+        public InsertQuery build() {
             if (uri == null) {
                 throw new IllegalStateException("Please specify uri");
             }

@@ -14,7 +14,8 @@ import rx.Observable;
 
 public class PutOperationDesignTest extends OperationDesignTest {
 
-    @Test public void putObjectBlocking() {
+    @Test
+    public void putObjectBlocking() {
         User user = newUser();
 
         PutResult putResult = storIODb()
@@ -26,7 +27,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void putObjectObservable() {
+    @Test
+    public void putObjectObservable() {
         User user = newUser();
 
         Observable<PutResult> observablePutResult = storIODb()
@@ -38,7 +40,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void putObjectsIterableBlocking() {
+    @Test
+    public void putObjectsIterableBlocking() {
         Iterable<User> users = new ArrayList<>();
 
         PutCollectionResult<User> putResult = storIODb()
@@ -50,7 +53,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void putObjectsIterableObservable() {
+    @Test
+    public void putObjectsIterableObservable() {
         Iterable<User> users = new ArrayList<>();
 
         Observable<PutCollectionResult<User>> putResultObservable = storIODb()
@@ -62,7 +66,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void putObjectsArrayBlocking() {
+    @Test
+    public void putObjectsArrayBlocking() {
         User[] users = new User[]{};
 
         PutCollectionResult<User> putResult = storIODb()
@@ -74,7 +79,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void putObjectsArrayObservable() {
+    @Test
+    public void putObjectsArrayObservable() {
         User[] users = new User[]{};
 
         Observable<PutCollectionResult<User>> putResultObservable = storIODb()
@@ -86,7 +92,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void putContentValuesBlocking() {
+    @Test
+    public void putContentValuesBlocking() {
         ContentValues contentValues = User.MAP_TO_CONTENT_VALUES.map(newUser());
 
         PutResult putResult = storIODb()
@@ -97,7 +104,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void putContentValuesObservable() {
+    @Test
+    public void putContentValuesObservable() {
         ContentValues contentValues = User.MAP_TO_CONTENT_VALUES.map(newUser());
 
         Observable<PutResult> putResult = storIODb()
@@ -108,7 +116,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void putContentValuesIterableBlocking() {
+    @Test
+    public void putContentValuesIterableBlocking() {
         Iterable<ContentValues> contentValuesIterable
                 = Arrays.asList(User.MAP_TO_CONTENT_VALUES.map(newUser()));
 
@@ -120,7 +129,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void putContentValuesIterableObservable() {
+    @Test
+    public void putContentValuesIterableObservable() {
         Iterable<ContentValues> contentValuesIterable
                 = Arrays.asList(User.MAP_TO_CONTENT_VALUES.map(newUser()));
 
@@ -132,7 +142,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .createObservable();
     }
 
-    @Test public void putContentValuesArrayBlocking() {
+    @Test
+    public void putContentValuesArrayBlocking() {
         ContentValues[] contentValuesArray = {User.MAP_TO_CONTENT_VALUES.map(newUser())};
 
         PutCollectionResult<ContentValues> putResult = storIODb()
@@ -143,7 +154,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .executeAsBlocking();
     }
 
-    @Test public void putContentValuesArrayObservable() {
+    @Test
+    public void putContentValuesArrayObservable() {
         ContentValues[] contentValuesArray = {User.MAP_TO_CONTENT_VALUES.map(newUser())};
 
         Observable<PutCollectionResult<ContentValues>> putResult = storIODb()
