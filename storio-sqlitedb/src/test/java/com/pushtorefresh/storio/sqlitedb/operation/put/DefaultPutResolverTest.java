@@ -1,7 +1,6 @@
 package com.pushtorefresh.storio.sqlitedb.operation.put;
 
 import android.content.ContentValues;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -49,7 +48,7 @@ public class DefaultPutResolverTest {
                 } else {
                     final ContentValues contentValues = mock(ContentValues.class);
 
-                    when(contentValues.getAsLong(BaseColumns._ID))
+                    when(contentValues.get(ID_COLUMN_NAME))
                             .thenReturn(testItem.id);
 
                     map.put(testItem, contentValues); // storing pair of mapping
@@ -175,7 +174,7 @@ public class DefaultPutResolverTest {
 
         final UpdateQuery expectedUpdateQuery = new UpdateQuery.Builder()
                 .table(TestItem.TABLE)
-                .where(BaseColumns._ID + "=?")
+                .where(TestItem.ID_COLUMN_NAME + "=?")
                 .whereArgs(String.valueOf(testItem.getId()))
                 .build();
 
@@ -243,7 +242,7 @@ public class DefaultPutResolverTest {
 
         final UpdateQuery expectedUpdateQuery = new UpdateQuery.Builder()
                 .table(TestItem.TABLE)
-                .where(BaseColumns._ID + "=?")
+                .where(TestItem.ID_COLUMN_NAME + "=?")
                 .whereArgs(String.valueOf(testItem.getId()))
                 .build();
 
