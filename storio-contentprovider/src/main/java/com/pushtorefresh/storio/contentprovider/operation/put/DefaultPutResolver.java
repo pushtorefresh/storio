@@ -28,7 +28,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     /**
      * Provides field name that uses for store internal identifier.
      * You can override this to use your custom name.
-     * <p>
+     * <p/>
      * Default value is <code>BaseColumns._ID</code>
      *
      * @return column name to store internal id.
@@ -40,10 +40,10 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
     /**
      * Performs Put Operation of some {@link ContentValues} into {@link StorIOContentProvider}
-     * <p>
+     * <p/>
      * By default, it will perform insert if content values does not contain {@link BaseColumns#_ID} field with non-null value
      * or update if content values contains {@link BaseColumns#_ID} field and value is not null
-     * <p>
+     * <p/>
      * But, if it will decide to perform update and no rows will be updated, it will perform insert!
      *
      * @param storIOContentProvider instance of {@link StorIOContentProvider}
@@ -55,9 +55,9 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
         final Uri uri = getUri(contentValues);
         final String idColumnName = getIdColumnName();
 
-        final Object idObject = contentValues.get(idColumnName);
-        final String idAsString = idObject != null
-                ? idObject.toString()
+        final Object idAsObject = contentValues.get(idColumnName);
+        final String idAsString = idAsObject != null
+                ? idAsObject.toString()
                 : null;
 
         return idAsString == null
@@ -100,7 +100,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     /**
      * Useful callback which will be called in same thread that performed Put Operation right after
      * execution of {@link #performPut(StorIOContentProvider, ContentValues)}
-     * <p>
+     * <p/>
      * You can, for example, set object Uri after insert
      *
      * @param object,   that was "put" in {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}
