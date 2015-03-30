@@ -27,8 +27,8 @@ public final class QueryUtil {
         } else {
             final List<String> list = new ArrayList<>(args.length);
 
-            for (Object arg : args) {
-                list.add(arg.toString());
+            for (int i = 0; i < args.length; i++) {
+                list.add(args[i].toString());
             }
 
             return list;
