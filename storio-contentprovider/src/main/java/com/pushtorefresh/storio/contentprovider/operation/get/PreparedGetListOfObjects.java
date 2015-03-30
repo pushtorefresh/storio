@@ -9,6 +9,7 @@ import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.ArrayList;
@@ -176,13 +177,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          */
         @NonNull
         public PreparedOperationWithReactiveStream<List<T>> prepare() {
-            if (mapFunc == null) {
-                throw new IllegalStateException("Please specify map function");
-            }
-
-            if (query == null) {
-                throw new IllegalStateException("Please specify query");
-            }
+            Checks.checkNotNull(mapFunc, "Please specify map function");
+            Checks.checkNotNull(query, "Please specify query");
 
             if (getResolver == null) {
                 getResolver = DefaultGetResolver.INSTANCE;

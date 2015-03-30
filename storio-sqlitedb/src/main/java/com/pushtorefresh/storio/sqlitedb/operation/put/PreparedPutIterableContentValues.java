@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.Changes;
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.HashMap;
@@ -160,9 +161,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
          */
         @NonNull
         public PreparedPutIterableContentValues prepare() {
-            if (putResolver == null) {
-                throw new IllegalStateException("Please specify put resolver");
-            }
+            Checks.checkNotNull(putResolver, "Please specify put resolver");
 
             return new PreparedPutIterableContentValues(
                     storIOSQLiteDb,

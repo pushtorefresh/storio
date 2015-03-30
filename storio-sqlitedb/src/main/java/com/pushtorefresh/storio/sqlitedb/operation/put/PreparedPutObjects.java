@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.Changes;
 import com.pushtorefresh.storio.operation.MapFunc;
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.HashMap;
@@ -163,13 +164,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
          * @return {@link PreparedPutObjects} instance
          */
         @NonNull public PreparedPutObjects<T> prepare() {
-            if (mapFunc == null) {
-                throw new IllegalStateException("Please specify map function");
-            }
-
-            if (putResolver == null) {
-                throw new IllegalStateException("Please specify put resolver");
-            }
+            Checks.checkNotNull(mapFunc, "Please specify map function");
+            Checks.checkNotNull(putResolver, "Please specify put resolver");
 
             return new PreparedPutObjects<>(
                     storIOSQLiteDb,

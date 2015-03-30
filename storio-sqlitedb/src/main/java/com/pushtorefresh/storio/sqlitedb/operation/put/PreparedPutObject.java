@@ -7,6 +7,7 @@ import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.Changes;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.PreparedOperation;
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
@@ -100,9 +101,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
          */
         @NonNull
         public PreparedOperation<PutResult> prepare() {
-            if (mapFunc == null) {
-                throw new IllegalStateException("Please specify map function");
-            }
+            Checks.checkNotNull(mapFunc, "Please specify map function");
 
             return new PreparedPutObject<>(
                     storIOSQLiteDb,

@@ -14,6 +14,7 @@ import com.pushtorefresh.storio.sqlitedb.query.InsertQuery;
 import com.pushtorefresh.storio.sqlitedb.query.Query;
 import com.pushtorefresh.storio.sqlitedb.query.RawQuery;
 import com.pushtorefresh.storio.sqlitedb.query.UpdateQuery;
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 import com.pushtorefresh.storio.util.QueryUtil;
 
@@ -197,9 +198,7 @@ public class StorIOSQLiteDbImpl extends StorIOSQLiteDb {
 
         @NonNull
         public StorIOSQLiteDbImpl build() {
-            if (db == null) {
-                throw new IllegalStateException("Please specify SQLiteDatabase instance");
-            }
+            Checks.checkNotNull(db, "Please specify SQLiteDatabase instance");
 
             return new StorIOSQLiteDbImpl(db);
         }

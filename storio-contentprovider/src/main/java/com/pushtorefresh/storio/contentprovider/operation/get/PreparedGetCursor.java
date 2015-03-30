@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
@@ -102,9 +103,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public PreparedOperationWithReactiveStream<Cursor> prepare() {
-            if (query == null) {
-                throw new IllegalStateException("Please specify query");
-            }
+            Checks.checkNotNull(query, "Please specify query");
 
             if (getResolver == null) {
                 getResolver = DefaultGetResolver.INSTANCE;

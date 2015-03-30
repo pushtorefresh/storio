@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.sqlitedb.query.RawQuery;
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
@@ -66,9 +67,7 @@ public class PreparedExecSql implements PreparedOperation<Void> {
          * @return {@link PreparedExecSql} instance
          */
         @NonNull public PreparedExecSql prepare() {
-            if (rawQuery == null) {
-                throw new IllegalStateException("Please set query object");
-            }
+            Checks.checkNotNull(rawQuery, "Please set query object");
 
             return new PreparedExecSql(
                     storIOSQLiteDb,

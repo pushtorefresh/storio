@@ -9,6 +9,7 @@ import com.pushtorefresh.storio.sqlitedb.query.Query;
 import com.pushtorefresh.storio.sqlitedb.query.RawQuery;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.ArrayList;
@@ -208,9 +209,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
                 getResolver = DefaultGetResolver.INSTANCE;
             }
 
-            if (mapFunc == null) {
-                throw new IllegalStateException("Please specify map function");
-            }
+            Checks.checkNotNull(mapFunc, "Please specify map function");
 
             if (query != null) {
                 return new PreparedGetListOfObjects<>(storIOSQLiteDb, query, getResolver, mapFunc);

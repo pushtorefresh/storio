@@ -6,6 +6,7 @@ import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.Changes;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlitedb.query.DeleteQuery;
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.Collection;
@@ -171,9 +172,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
             }
 
-            if (mapFunc == null) {
-                throw new IllegalStateException("Please specify map function");
-            }
+            Checks.checkNotNull(mapFunc, "Please specify map function");
 
             return new PreparedDeleteCollectionOfObjects<>(
                     storIOSQLiteDb,
