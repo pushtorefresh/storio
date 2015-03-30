@@ -7,33 +7,95 @@ import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.List;
 
+/**
+ * Get query for {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}
+ * <p/>
+ * Instances of this class are Immutable
+ */
 public class Query {
 
+    /**
+     * True if you want each row to be unique, false otherwise
+     */
     public final boolean distinct;
 
-    @NonNull public final String table;
+    /**
+     * Table name
+     */
+    @NonNull
+    public final String table;
 
-    @Nullable public final List<String> columns;
+    /**
+     * Optional list of columns that should be received.
+     * <p/>
+     * If list will be null or empty -> all columns will be received
+     */
+    @Nullable
+    public final List<String> columns;
 
-    @Nullable public final String where;
+    /**
+     * Optional filter declaring which rows to return
+     * <p/>
+     * Formatted as an SQL WHERE clause (excluding the WHERE itself).
+     * <p/>
+     * Passing null will return all rows for the given table
+     */
+    @Nullable
+    public final String where;
 
-    @Nullable public final List<String> whereArgs;
+    /**
+     * Optional list of arguments for {@link #where} clause
+     */
+    @Nullable
+    public final List<String> whereArgs;
 
-    @Nullable public final String groupBy;
+    /**
+     * Optional filter declaring how to group rows.
+     * <p/>
+     * Formatted as an SQL GROUP BY clause (excluding the GROUP BY itself).
+     * <p/>
+     * Passing null will cause the rows to not be grouped
+     */
+    @Nullable
+    public final String groupBy;
 
-    @Nullable public final String having;
+    /**
+     * Optional filter declare which row groups to include in the cursor, if row grouping is being used.
+     * <p/>
+     * Formatted as an SQL HAVING clause (excluding the HAVING itself).
+     * <p/>
+     * Passing null will cause all row groups to be included, and is required when row grouping is not being used
+     */
+    @Nullable
+    public final String having;
 
-    @Nullable public final String orderBy;
+    /**
+     * Optional specifier to how to order the rows.
+     * <p/>
+     * Formatted as an SQL ORDER BY clause (excluding the ORDER BY itself).
+     * <p/>
+     * Passing null will use the default sort order, which may be unordered
+     */
+    @Nullable
+    public final String orderBy;
 
-    @Nullable public final String limit;
+    /**
+     * Optional specifier that limits the number of rows returned by the query.
+     * <p/>
+     * Formatted as LIMIT clause.
+     * <p/>
+     * Passing null denotes no LIMIT clause
+     */
+    @Nullable
+    public final String limit;
 
     /**
      * Please use {@link com.pushtorefresh.storio.sqlitedb.query.Query.Builder} instead of constructor
      */
     protected Query(boolean distinct, @NonNull String table, @Nullable List<String> columns,
-                 @Nullable String where, @Nullable List<String> whereArgs,
-                 @Nullable String groupBy, @Nullable String having,
-                 @Nullable String orderBy, @Nullable String limit) {
+                    @Nullable String where, @Nullable List<String> whereArgs,
+                    @Nullable String groupBy, @Nullable String having,
+                    @Nullable String orderBy, @Nullable String limit) {
         this.distinct = distinct;
         this.table = table;
         this.columns = QueryUtil.listToUnmodifiable(columns);
@@ -45,7 +107,8 @@ public class Query {
         this.limit = limit;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -64,7 +127,8 @@ public class Query {
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = (distinct ? 1 : 0);
         result = 31 * result + table.hashCode();
         result = 31 * result + (columns != null ? columns.hashCode() : 0);
@@ -77,7 +141,8 @@ public class Query {
         return result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Query{" +
                 "distinct=" + distinct +
                 ", table='" + table + '\'' +
@@ -91,6 +156,9 @@ public class Query {
                 '}';
     }
 
+    /**
+     * Builder for {@link Query}
+     */
     public static class Builder {
 
         private boolean distinct;
@@ -103,52 +171,175 @@ public class Query {
         private String orderBy;
         private String limit;
 
-        @NonNull public Builder distinct(boolean distinct) {
+        /**
+         * Optional: Specifies distinct option
+         * <p/>
+         * True if you want each row to be unique, false otherwise
+         * <p/>
+         * Default value is <code>false</code>
+         *
+         * @param distinct distinct option
+         * @return builder
+         */
+        @NonNull
+        public Builder distinct(boolean distinct) {
             this.distinct = distinct;
             return this;
         }
 
-        @NonNull public Builder table(@NonNull String table) {
+        /**
+         * Required: Specifies table name
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param table table name
+         * @return builder
+         */
+        @NonNull
+        public Builder table(@NonNull String table) {
             this.table = table;
             return this;
         }
 
-        @NonNull public Builder columns(@Nullable String... columns) {
+        /**
+         * Optional: Specifies list of columns that should be received.
+         * <p/>
+         * If list will be null or empty -> all columns will be received
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param columns list of columns to receive
+         * @return builder
+         */
+        @NonNull
+        public Builder columns(@Nullable String... columns) {
             this.columns = QueryUtil.varargsToList(columns);
             return this;
         }
 
-        @NonNull public Builder where(@Nullable String where) {
+        /**
+         * Optional: Specifies where clause
+         * <p/>
+         * Optional filter declaring which rows to return
+         * <p/>
+         * Formatted as an SQL WHERE clause (excluding the WHERE itself).
+         * <p/>
+         * Passing null will RETURN all rows for the given table
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param where where clause
+         * @return builder
+         */
+        @NonNull
+        public Builder where(@Nullable String where) {
             this.where = where;
             return this;
         }
 
-        @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
+        /**
+         * Optional: Specifies arguments for where clause
+         * <p/>
+         * Passed objects will be immediately converted to {@link String} via calling {@link Object#toString()}
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param whereArgs list of arguments for where clause
+         * @return builder
+         */
+        @NonNull
+        public Builder whereArgs(@Nullable Object... whereArgs) {
             this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
 
-        @NonNull public Builder groupBy(@Nullable String groupBy) {
+        /**
+         * Optional: Specifies group by clause
+         * <p/>
+         * Optional filter declaring how to group rows.
+         * <p/>
+         * Formatted as an SQL GROUP BY clause (excluding the GROUP BY itself).
+         * <p/>
+         * Passing null will cause the rows to not be grouped
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param groupBy group by clause
+         * @return builder
+         */
+        @NonNull
+        public Builder groupBy(@Nullable String groupBy) {
             this.groupBy = groupBy;
             return this;
         }
 
-        @NonNull public Builder having(@Nullable String having) {
+        /**
+         * Optional: Specifies having clause
+         * <p/>
+         * Optional filter declare which row groups to include in the cursor, if row grouping is being used.
+         * <p/>
+         * Formatted as an SQL HAVING clause (excluding the HAVING itself).
+         * <p/>
+         * Passing null will cause all row groups to be included, and is required when row grouping is not being used
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param having having clause
+         * @return builder
+         */
+        @NonNull
+        public Builder having(@Nullable String having) {
             this.having = having;
             return this;
         }
 
-        @NonNull public Builder orderBy(@Nullable String orderBy) {
+        /**
+         * Optional: Specifies order by clause
+         * <p/>
+         * Optional specifier to how to order the rows.
+         * <p/>
+         * Formatted as an SQL ORDER BY clause (excluding the ORDER BY itself).
+         * <p/>
+         * Passing null will use the default sort order, which may be unordered
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param orderBy order by clause
+         * @return builder
+         */
+        @NonNull
+        public Builder orderBy(@Nullable String orderBy) {
             this.orderBy = orderBy;
             return this;
         }
 
-        @NonNull public Builder limit(@Nullable String limit) {
+        /**
+         * Optional: Specifies limit clause
+         * <p/>
+         * Optional specifier that limits the number of rows returned by the query.
+         * <p/>
+         * Formatted as LIMIT clause.
+         * <p/>
+         * Passing null denotes no LIMIT clause
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param limit limit clause
+         * @return builder
+         */
+        @NonNull
+        public Builder limit(@Nullable String limit) {
             this.limit = limit;
             return this;
         }
 
-        @NonNull public Query build() {
+        /**
+         * Builds immutable instance of {@link Query}
+         *
+         * @return immutable instance of {@link Query}
+         */
+        @NonNull
+        public Query build() {
             if (table == null || table.length() == 0) {
                 throw new IllegalStateException("Please specify table name");
             }

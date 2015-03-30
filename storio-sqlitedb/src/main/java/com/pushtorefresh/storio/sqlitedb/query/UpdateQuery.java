@@ -7,13 +7,34 @@ import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.List;
 
+/**
+ * Update query for {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}
+ * <p/>
+ * Instances of this class are Immutable
+ */
 public class UpdateQuery {
 
-    @NonNull public final String table;
+    /**
+     * Table name
+     */
+    @NonNull
+    public final String table;
 
-    @Nullable public final String where;
+    /**
+     * Optional filter declaring which rows to return
+     * <p/>
+     * Formatted as an SQL WHERE clause (excluding the WHERE itself).
+     * <p/>
+     * Passing null will return all rows for the given table
+     */
+    @Nullable
+    public final String where;
 
-    @Nullable public final List<String> whereArgs;
+    /**
+     * Optional list of arguments for {@link #where} clause
+     */
+    @Nullable
+    public final List<String> whereArgs;
 
     /**
      * Please use {@link com.pushtorefresh.storio.sqlitedb.query.UpdateQuery.Builder} instead of constructor
@@ -24,7 +45,8 @@ public class UpdateQuery {
         this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -36,14 +58,16 @@ public class UpdateQuery {
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = table.hashCode();
         result = 31 * result + (where != null ? where.hashCode() : 0);
         result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
         return result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "UpdateQuery{" +
                 "table='" + table + '\'' +
                 ", where='" + where + '\'' +
@@ -51,28 +75,72 @@ public class UpdateQuery {
                 '}';
     }
 
+    /**
+     * Builder for {@link UpdateQuery}
+     */
     public static class Builder {
 
         private String table;
         private String where;
         private List<String> whereArgs;
 
-        @NonNull public Builder table(@NonNull String table) {
+        /**
+         * Required: Specifies table name
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param table non-null table name
+         * @return builder
+         */
+        @NonNull
+        public Builder table(@NonNull String table) {
             this.table = table;
             return this;
         }
 
-        @NonNull public Builder where(@Nullable String where) {
+        /**
+         * Optional: Specifies where clause
+         * <p/>
+         * Optional filter declaring which rows to return
+         * <p/>
+         * Formatted as an SQL WHERE clause (excluding the WHERE itself).
+         * <p/>
+         * Passing null will UPDATE all rows for the given table
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param where where clause
+         * @return builder
+         */
+        @NonNull
+        public Builder where(@Nullable String where) {
             this.where = where;
             return this;
         }
 
-        @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
+        /**
+         * Optional: Specifies arguments for where clause
+         * <p/>
+         * Passed objects will be immediately converted to {@link String} via calling {@link Object#toString()}
+         * <p/>
+         * Default value is <code>null</code>
+         *
+         * @param whereArgs list of arguments for where clause
+         * @return builder
+         */
+        @NonNull
+        public Builder whereArgs(@Nullable String... whereArgs) {
             this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
 
-        @NonNull public UpdateQuery build() {
+        /**
+         * Builds immutable instance of {@link UpdateQuery}
+         *
+         * @return immutable instance of {@link UpdateQuery}
+         */
+        @NonNull
+        public UpdateQuery build() {
             if (table == null || table.length() == 0) {
                 throw new IllegalStateException("Please specify table name");
             }

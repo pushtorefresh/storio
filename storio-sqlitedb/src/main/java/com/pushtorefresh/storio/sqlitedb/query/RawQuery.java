@@ -11,12 +11,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Immutable Raw SQL Query
+ * Get query for {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}
+ * <p/>
+ * Instances of this class are Immutable
  */
 public class RawQuery {
 
     /**
-     * SQL query
+     * Raw SQL query
      */
     @NonNull
     public final String query;
@@ -28,7 +30,7 @@ public class RawQuery {
     public final List<String> args;
 
     /**
-     * Optional set of tables which will be changed by this query
+     * Optional set of tables which will be affected by this query
      * They will be used to notify observers of that tables
      */
     @Nullable
@@ -83,7 +85,9 @@ public class RawQuery {
         private Set<String> tables;
 
         /**
-         * Specifies SQL query
+         * Required: Specifies SQL query
+         * <p/>
+         * Default value is <code>null</code>
          *
          * @param query SQL query
          * @return builder
@@ -95,21 +99,27 @@ public class RawQuery {
         }
 
         /**
-         * Optional: specifies arguments for SQL query,
+         * Optional: Specifies arguments for SQL query,
          * please use arguments to avoid SQL injections
+         * <p/>
+         * Passed objects will be immediately converted to {@link String} via calling {@link Object#toString()}
+         * <p/>
+         * Default value is <code>null</code>
          *
          * @param args arguments fro SQL query
          * @return builder
          */
         @NonNull
-        public Builder args(@NonNull String... args) {
+        public Builder args(@NonNull Object... args) {
             this.args = QueryUtil.varargsToList(args);
             return this;
         }
 
         /**
-         * Optional: specifies set of tables which will be affected by this query.
+         * Optional: Specifies set of tables which will be affected by this query.
          * They will be used to notify observers of that tables
+         * <p/>
+         * Default value is <code>null</code>
          *
          * @param tables set of tables which will be affected by this query
          * @return builder
@@ -125,7 +135,7 @@ public class RawQuery {
         }
 
         /**
-         * Builds Raw Query
+         * Builds immutable instance of {@link RawQuery}
          *
          * @return immutable instance of {@link RawQuery}
          */
