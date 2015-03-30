@@ -82,14 +82,14 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     private PutResult updateOrInsert(@NonNull StorIOSQLiteDb storIOSQLiteDb,
                                      @NonNull ContentValues contentValues,
                                      @NonNull String table,
-                                     @NonNull final String idFieldName,
-                                     @NonNull Object id) {
+                                     @NonNull String idFieldName,
+                                     @NonNull String id) {
 
         final int numberOfUpdatedRows = storIOSQLiteDb.internal().update(
                 new UpdateQuery.Builder()
                         .table(table)
                         .where(idFieldName + "=?")
-                        .whereArgs(String.valueOf(id))
+                        .whereArgs(id)
                         .build(),
                 contentValues
         );
