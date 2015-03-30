@@ -4,13 +4,28 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * Immutable query which describes Insert operation for {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}
+ * Insert query for {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}
+ * <p/>
+ * Instances of this class are Immutable
  */
 public class InsertQuery {
 
-    @NonNull public final String table;
+    /**
+     * Table name
+     */
+    @NonNull
+    public final String table;
 
-    @Nullable public final String nullColumnHack;
+    /**
+     * Tricky-wiki hack for null columns in {@link android.database.sqlite.SQLiteDatabase}
+     * <p/>
+     * SQL doesn't allow inserting a completely empty row without naming at least one column name.
+     * If your provided values are empty, no column names are known and an empty row can't be inserted.
+     * If not set to null, the nullColumnHack parameter provides the name of nullable column name
+     * to explicitly insert a NULL into in the case where your values is empty.
+     */
+    @Nullable
+    public final String nullColumnHack;
 
     /**
      * Please use {@link com.pushtorefresh.storio.sqlitedb.query.InsertQuery.Builder} instead of constructor
@@ -41,29 +56,58 @@ public class InsertQuery {
         return result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "InsertQuery{" +
                 "table='" + table + '\'' +
                 ", nullColumnHack='" + nullColumnHack + '\'' +
                 '}';
     }
 
+    /**
+     * Builder for {@link InsertQuery}
+     */
     public static class Builder {
 
         private String table;
         private String nullColumnHack;
 
-        @NonNull public Builder table(@NonNull String table) {
+        /**
+         * Specifies table name
+         *
+         * @param table table name
+         * @return builder
+         */
+        @NonNull
+        public Builder table(@NonNull String table) {
             this.table = table;
             return this;
         }
 
-        @NonNull public Builder nullColumnHack(@Nullable String nullColumnHack) {
+        /**
+         * Specifies optional null column hack
+         * <p/>
+         * SQL doesn't allow inserting a completely empty row without naming at least one column name.
+         * If your provided values are empty, no column names are known and an empty row can't be inserted.
+         * If not set to null, the nullColumnHack parameter provides the name of nullable column name
+         * to explicitly insert a NULL into in the case where your values is empty.
+         *
+         * @param nullColumnHack optional null column hack
+         * @return builder
+         */
+        @NonNull
+        public Builder nullColumnHack(@Nullable String nullColumnHack) {
             this.nullColumnHack = nullColumnHack;
             return this;
         }
 
-        @NonNull public InsertQuery build() {
+        /**
+         * Builds immutable instance of {@link InsertQuery}
+         *
+         * @return immutable instance of {@link InsertQuery}
+         */
+        @NonNull
+        public InsertQuery build() {
             if (table == null || table.length() == 0) {
                 throw new IllegalStateException("Please specify table name");
             }

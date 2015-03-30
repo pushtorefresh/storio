@@ -12,18 +12,22 @@ import static junit.framework.Assert.assertTrue;
 
 public class QueryUtilTest {
 
-    @SuppressWarnings("ConstantConditions") @Test public void nullVarargsToList() {
-        String[] varargs = null;
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void nullVarargsToList() {
+        Object[] varargs = null;
         assertEquals(null, QueryUtil.varargsToList(varargs));
     }
 
-    @Test public void emptyVarargsToList() {
-        String[] varargs = {};
+    @Test
+    public void emptyVarargsToList() {
+        Object[] varargs = {};
         assertEquals(null, QueryUtil.varargsToList(varargs));
     }
 
-    @Test public void nonEmptyVarargsToList() {
-        String[] varargs = {"1", "2", "3"};
+    @Test
+    public void nonEmptyVarargsToList() {
+        Object[] varargs = {"1", "2", "3"};
         List<String> list = QueryUtil.varargsToList(varargs);
 
         assertNotNull(list);
@@ -34,17 +38,27 @@ public class QueryUtilTest {
         }
     }
 
-    @SuppressWarnings("ConstantConditions") @Test public void nullListToUnmodifiable() {
+    @Test(expected = NullPointerException.class)
+    public void oneOfItemsIsNullVarargsToList() {
+        Object[] varargs = {"1", null, "3"};
+        QueryUtil.varargsToList(varargs);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void nullListToUnmodifiable() {
         List<String> list = null;
         assertEquals(null, QueryUtil.listToUnmodifiable(list));
     }
 
-    @Test public void emptyListToUnmodifiable() {
+    @Test
+    public void emptyListToUnmodifiable() {
         List<String> list = new ArrayList<>();
         assertEquals(null, QueryUtil.listToUnmodifiable(list));
     }
 
-    @Test public void nonEmptyListToUnmodifiable() {
+    @Test
+    public void nonEmptyListToUnmodifiable() {
         List<String> list = Arrays.asList("1", "2", "3");
         List<String> unmodifiableList = QueryUtil.listToUnmodifiable(list);
 
@@ -57,7 +71,9 @@ public class QueryUtilTest {
         }
     }
 
-    @SuppressWarnings("ConstantConditions") @Test public void listToUnmodifiableIsReallyUnmodifiable() {
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void listToUnmodifiableIsReallyUnmodifiable() {
         List<String> unmodifiableList = QueryUtil.listToUnmodifiable(Arrays.asList("1", "2", "3"));
 
         // UnmodifiableCollection is private class :(
@@ -65,17 +81,21 @@ public class QueryUtilTest {
         assertTrue(className.equals("UnmodifiableRandomAccessList") || className.equals("UnmodifiableList"));
     }
 
-    @SuppressWarnings("ConstantConditions") @Test public void nullListOfStringsToArray() {
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void nullListOfStringsToArray() {
         List<String> list = null;
         assertEquals(null, QueryUtil.listToArray(list));
     }
 
-    @Test public void emptyListOfStringsToArray() {
+    @Test
+    public void emptyListOfStringsToArray() {
         List<String> list = new ArrayList<>();
         assertEquals(null, QueryUtil.listToArray(list));
     }
 
-    @Test public void nonEmptyListOfStringsToArray() {
+    @Test
+    public void nonEmptyListOfStringsToArray() {
         List<String> list = Arrays.asList("1", "2", "3");
         String[] array = QueryUtil.listToArray(list);
 
