@@ -12,23 +12,23 @@ import com.pushtorefresh.storio.util.EnvironmentUtil;
 import rx.Observable;
 import rx.Subscriber;
 
-public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
+public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
 
-    @NonNull private final T object;
-    @NonNull private final MapFunc<T, ContentValues> mapFunc;
+    @NonNull
+    private final T object;
+    @NonNull
+    private final MapFunc<T, ContentValues> mapFunc;
 
-    PreparedPutWithObject(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull PutResolver<T> putResolver,
-                          @NonNull T object, @NonNull MapFunc<T, ContentValues> mapFunc) {
+    PreparedPutObject(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull PutResolver<T> putResolver,
+                      @NonNull T object, @NonNull MapFunc<T, ContentValues> mapFunc) {
         super(storIOSQLiteDb, putResolver);
         this.object = object;
         this.mapFunc = mapFunc;
     }
 
-    @NonNull public PutResult executeAsBlocking() {
-        final PutResult putResult = putResolver.performPut(
-                storIOSQLiteDb,
-                mapFunc.map(object)
-        );
+    @NonNull
+    public PutResult executeAsBlocking() {
+        final PutResult putResult = putResolver.performPut(storIOSQLiteDb, mapFunc.map(object));
 
         putResolver.afterPut(object, putResult);
         storIOSQLiteDb.internal().notifyAboutChanges(new Changes(putResult.affectedTable()));
@@ -36,7 +36,8 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
         return putResult;
     }
 
-    @NonNull public Observable<PutResult> createObservable() {
+    @NonNull
+    public Observable<PutResult> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<PutResult>() {
@@ -54,8 +55,10 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
 
     public static class Builder<T> {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
-        @NonNull private final T object;
+        @NonNull
+        private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull
+        private final T object;
 
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
@@ -71,7 +74,8 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
          * @param mapFunc map function for Put Operation which will be used to map object to {@link ContentValues}
          * @return builder
          */
-        @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
+        @NonNull
+        public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
@@ -83,21 +87,24 @@ public class PreparedPutWithObject<T> extends PreparedPut<T, PutResult> {
          * @return builder
          * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
          */
-        @NonNull public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
+        @NonNull
+        public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
             this.putResolver = putResolver;
             return this;
         }
 
         /**
          * Prepares Put Operation
-         * @return {@link PreparedPutWithObject} instance
+         *
+         * @return {@link PreparedPutObject} instance
          */
-        @NonNull public PreparedOperation<PutResult> prepare() {
+        @NonNull
+        public PreparedOperation<PutResult> prepare() {
             if (mapFunc == null) {
                 throw new IllegalStateException("Please specify map function");
             }
 
-            return new PreparedPutWithObject<>(
+            return new PreparedPutObject<>(
                     storIOSQLiteDb,
                     putResolver,
                     object,
