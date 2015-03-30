@@ -102,7 +102,7 @@ public class RawQuery {
          * Optional: Specifies arguments for SQL query,
          * please use arguments to avoid SQL injections
          * <p/>
-         * Passed objects will be immediately converted to {@link String} via calling {@link Object#toString()}
+         * Passed objects will be immediately converted to list of {@link String} via calling {@link Object#toString()}
          * <p/>
          * Default value is <code>null</code>
          *

@@ -18,17 +18,20 @@ public class UpdateQuery {
     /**
      * The URI to query. This can potentially have a record ID if this is an update request for a specific record
      */
-    @NonNull public final Uri uri;
+    @NonNull
+    public final Uri uri;
 
     /**
      * An optional filter to match rows to update.
      */
-    @Nullable public final String where;
+    @Nullable
+    public final String where;
 
     /**
      * Arguments for {@link #where}
      */
-    @Nullable public final List<String> whereArgs;
+    @Nullable
+    public final List<String> whereArgs;
 
     /**
      * Please use {@link com.pushtorefresh.storio.contentprovider.query.UpdateQuery.Builder} instead of constructor
@@ -39,7 +42,8 @@ public class UpdateQuery {
         this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -51,7 +55,8 @@ public class UpdateQuery {
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = uri.hashCode();
         result = 31 * result + (where != null ? where.hashCode() : 0);
         result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
@@ -73,7 +78,8 @@ public class UpdateQuery {
          * @param uri URI to query. This can potentially have a record ID if this is an update request for a specific record
          * @return builder
          */
-        @NonNull public Builder uri(@NonNull Uri uri) {
+        @NonNull
+        public Builder uri(@NonNull Uri uri) {
             this.uri = uri;
             return this;
         }
@@ -84,18 +90,24 @@ public class UpdateQuery {
          * @param where an optional filter to match rows to update.
          * @return builder
          */
-        @NonNull public Builder where(@Nullable String where) {
+        @NonNull
+        public Builder where(@Nullable String where) {
             this.where = where;
             return this;
         }
 
         /**
-         * Specifies arguments for where clause
+         * Optional: Specifies arguments for where clause
+         * <p>
+         * Passed objects will be immediately converted to list {@link String} via calling {@link Object#toString()}
+         * <p>
+         * Default value is <code>null</code>
          *
          * @param whereArgs arguments for {@link UpdateQuery#where}
          * @return builder
          */
-        @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
+        @NonNull
+        public Builder whereArgs(@Nullable Object... whereArgs) {
             this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
@@ -106,7 +118,8 @@ public class UpdateQuery {
          *
          * @return new instance of {@link UpdateQuery}
          */
-        @NonNull public UpdateQuery build() {
+        @NonNull
+        public UpdateQuery build() {
             if (uri == null) {
                 throw new IllegalStateException("Please specify uri");
             }
