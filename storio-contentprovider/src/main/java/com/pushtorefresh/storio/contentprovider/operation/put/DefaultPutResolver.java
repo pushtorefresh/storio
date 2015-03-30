@@ -25,6 +25,12 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     @NonNull
     protected abstract Uri getUri(@NonNull ContentValues contentValues);
 
+    /**
+     * Provides field name that uses for store internal identifier.
+     * You can override this to use your custom name.
+     *
+     * @return column name to store internal id.
+     */
     @NonNull
     protected String getIdColumnName(@NonNull ContentValues contentValues) {
         return BaseColumns._ID;

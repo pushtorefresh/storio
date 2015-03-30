@@ -12,6 +12,7 @@ class TestSQLiteOpenHelper extends SQLiteOpenHelper {
 
     @Override public void onCreate(@NonNull SQLiteDatabase db) {
         db.execSQL(User.CREATE_TABLE);
+        db.execSQL(Tweet.CREATE_TABLE);
     }
 
     @Override
