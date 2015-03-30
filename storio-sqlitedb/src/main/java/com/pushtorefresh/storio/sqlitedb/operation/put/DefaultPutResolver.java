@@ -24,6 +24,17 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     protected abstract String getTable();
 
     /**
+     * Provides field name that uses for store internal identifier.
+     * You can override this to use your custom name.
+     *
+     * @return column name to store internal id.
+     */
+    @NonNull
+    protected String getIdColumnName(@NonNull ContentValues contentValues) {
+        return BaseColumns._ID;
+    }
+
+    /**
      * Performs insert or update of {@link ContentValues} into {@link StorIOSQLiteDb}
      * <p>
      * By default, it will perform insert if content values does not contain {@link BaseColumns#_ID} field with non-null value
@@ -38,12 +49,13 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     @Override
     @NonNull
     public PutResult performPut(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull ContentValues contentValues) {
-        final Long id = contentValues.getAsLong(getIdFieldName());
+        final String idColumnName = getIdColumnName(contentValues);
+        final Object id = contentValues.get(idColumnName);
         final String table = getTable();
 
         return id == null
                 ? insert(storIOSQLiteDb, contentValues, table)
-                : updateOrInsert(storIOSQLiteDb, contentValues, table, id);
+                : updateOrInsert(storIOSQLiteDb, contentValues, table, idColumnName, id);
     }
 
     @NonNull
@@ -60,11 +72,16 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     }
 
     @NonNull
-    private PutResult updateOrInsert(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull ContentValues contentValues, @NonNull String table, @NonNull Long id) {
+    private PutResult updateOrInsert(@NonNull StorIOSQLiteDb storIOSQLiteDb,
+                                     @NonNull ContentValues contentValues,
+                                     @NonNull String table,
+                                     @NonNull final String idFieldName,
+                                     @NonNull Object id) {
+
         final int numberOfUpdatedRows = storIOSQLiteDb.internal().update(
                 new UpdateQuery.Builder()
                         .table(table)
-                        .where(getIdFieldName() + "=?")
+                        .where(idFieldName + "=?")
                         .whereArgs(String.valueOf(id))
                         .build(),
                 contentValues
@@ -73,10 +90,5 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
         return numberOfUpdatedRows > 0
                 ? PutResult.newUpdateResult(numberOfUpdatedRows, table)
                 : insert(storIOSQLiteDb, contentValues, table);
-    }
-
-    @NonNull
-    protected String getIdFieldName() {
-        return BaseColumns._ID;
     }
 }

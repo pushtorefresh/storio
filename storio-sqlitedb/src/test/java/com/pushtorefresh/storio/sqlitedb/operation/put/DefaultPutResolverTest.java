@@ -31,6 +31,9 @@ public class DefaultPutResolverTest {
 
     private static class TestItem {
 
+        final static String TABLE = "someTable";
+        final static String ID_COLUMN_NAME = "customIdColumnName";
+
         static final MapFunc<TestItem, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<TestItem, ContentValues>() {
 
             // ContentValues should be mocked for usage in tests (damn you Android...)
@@ -85,10 +88,8 @@ public class DefaultPutResolverTest {
         when(internal.insert(any(InsertQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedInsertedId);
 
-        final String table = "someTable";
-
         final InsertQuery expectedInsertQuery = new InsertQuery.Builder()
-                .table(table)
+                .table(TestItem.TABLE)
                 .nullColumnHack(null)
                 .build();
 
@@ -96,7 +97,13 @@ public class DefaultPutResolverTest {
             @NonNull
             @Override
             protected String getTable() {
-                return table;
+                return TestItem.TABLE;
+            }
+
+            @NonNull
+            @Override
+            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+                return TestItem.ID_COLUMN_NAME;
             }
 
             @Override
@@ -142,13 +149,17 @@ public class DefaultPutResolverTest {
         when(internal.update(any(UpdateQuery.class), any(ContentValues.class)))
                 .thenReturn(1);
 
-        final String table = "someTable";
-
         final PutResolver<TestItem> putResolver = new DefaultPutResolver<TestItem>() {
             @NonNull
             @Override
             protected String getTable() {
-                return table;
+                return TestItem.TABLE;
+            }
+
+            @NonNull
+            @Override
+            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+                return TestItem.ID_COLUMN_NAME;
             }
 
             @Override
@@ -163,7 +174,7 @@ public class DefaultPutResolverTest {
         final PutResult putResult = putResolver.performPut(storIOSQLiteDb, expectedContentValues);
 
         final UpdateQuery expectedUpdateQuery = new UpdateQuery.Builder()
-                .table(table)
+                .table(TestItem.TABLE)
                 .where(BaseColumns._ID + "=?")
                 .whereArgs(String.valueOf(testItem.getId()))
                 .build();
@@ -206,13 +217,17 @@ public class DefaultPutResolverTest {
         when(internal.insert(any(InsertQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedInsertId);
 
-        final String table = "someTable";
-
         final PutResolver<TestItem> putResolver = new DefaultPutResolver<TestItem>() {
             @NonNull
             @Override
             protected String getTable() {
-                return table;
+                return TestItem.TABLE;
+            }
+
+            @NonNull
+            @Override
+            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+                return TestItem.ID_COLUMN_NAME;
             }
 
             @Override
@@ -227,13 +242,13 @@ public class DefaultPutResolverTest {
         final PutResult putResult = putResolver.performPut(storIOSQLiteDb, expectedContentValues);
 
         final UpdateQuery expectedUpdateQuery = new UpdateQuery.Builder()
-                .table(table)
+                .table(TestItem.TABLE)
                 .where(BaseColumns._ID + "=?")
                 .whereArgs(String.valueOf(testItem.getId()))
                 .build();
 
         final InsertQuery expectedInsertQuery = new InsertQuery.Builder()
-                .table(table)
+                .table(TestItem.TABLE)
                 .nullColumnHack(null)
                 .build();
 

@@ -94,7 +94,7 @@ public class InsertTest extends BaseTest {
                 .executeAsBlocking();
 
         assertNotNull(putResult);
-        assertEquals(true, putResult.wasInserted());
+        assertTrue(putResult.wasInserted());
 
         final Cursor cursor = db.query(Tweet.TABLE, null, null, null, null, null, null);
 
