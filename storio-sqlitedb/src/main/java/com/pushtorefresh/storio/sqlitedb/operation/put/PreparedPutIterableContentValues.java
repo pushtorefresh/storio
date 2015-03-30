@@ -17,7 +17,9 @@ import rx.Subscriber;
 
 public class PreparedPutIterableContentValues extends PreparedPut<ContentValues, PutCollectionResult<ContentValues>> {
 
-    @NonNull private final Iterable<ContentValues> contentValuesIterable;
+    @NonNull
+    private final Iterable<ContentValues> contentValuesIterable;
+
     private final boolean useTransactionIfPossible;
 
     PreparedPutIterableContentValues(
@@ -30,7 +32,9 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
-    @NonNull @Override public PutCollectionResult<ContentValues> executeAsBlocking() {
+    @NonNull
+    @Override
+    public PutCollectionResult<ContentValues> executeAsBlocking() {
         final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
 
         final Map<ContentValues, PutResult> putResults = new HashMap<>();
@@ -78,7 +82,9 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         return new PutCollectionResult<>(putResults);
     }
 
-    @NonNull @Override public Observable<PutCollectionResult<ContentValues>> createObservable() {
+    @NonNull
+    @Override
+    public Observable<PutCollectionResult<ContentValues>> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<PutCollectionResult<ContentValues>>() {
@@ -97,8 +103,10 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
 
     public static class Builder {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
-        @NonNull private final Iterable<ContentValues> contentValuesIterable;
+        @NonNull
+        private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull
+        private final Iterable<ContentValues> contentValuesIterable;
 
         private PutResolver<ContentValues> putResolver;
         private boolean useTransactionIfPossible = true;
@@ -115,7 +123,8 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
          * @return builder
          * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
          */
-        @NonNull public Builder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
+        @NonNull
+        public Builder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
             this.putResolver = putResolver;
             return this;
         }
@@ -126,7 +135,8 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
          *
          * @return builder
          */
-        @NonNull public Builder useTransactionIfPossible() {
+        @NonNull
+        public Builder useTransactionIfPossible() {
             useTransactionIfPossible = true;
             return this;
         }
@@ -137,7 +147,8 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
          *
          * @return builder
          */
-        @NonNull public Builder dontUseTransaction() {
+        @NonNull
+        public Builder dontUseTransaction() {
             useTransactionIfPossible = false;
             return this;
         }
@@ -147,7 +158,8 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
          *
          * @return {@link PreparedPutIterableContentValues} instance
          */
-        @NonNull public PreparedPutIterableContentValues prepare() {
+        @NonNull
+        public PreparedPutIterableContentValues prepare() {
             if (putResolver == null) {
                 throw new IllegalStateException("Please specify put resolver");
             }

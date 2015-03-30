@@ -1,13 +1,13 @@
-package com.pushtorefresh.storio.sqlitedb.operation.put;
+package com.pushtorefresh.storio.contentprovider.operation.put;
 
 import android.content.ContentValues;
-import android.provider.BaseColumns;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
-import com.pushtorefresh.storio.sqlitedb.query.InsertQuery;
-import com.pushtorefresh.storio.sqlitedb.query.UpdateQuery;
+import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.query.InsertQuery;
+import com.pushtorefresh.storio.contentprovider.query.UpdateQuery;
 import com.pushtorefresh.storio.operation.MapFunc;
 
 import org.junit.Test;
@@ -31,6 +31,8 @@ public class DefaultPutResolverTest {
 
     private static class TestItem {
 
+        static final String COLUMN_ID = "custom_id"; // why not?
+
         static final MapFunc<TestItem, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<TestItem, ContentValues>() {
 
             // ContentValues should be mocked for usage in tests (damn you Android...)
@@ -46,7 +48,7 @@ public class DefaultPutResolverTest {
                 } else {
                     final ContentValues contentValues = mock(ContentValues.class);
 
-                    when(contentValues.getAsLong(BaseColumns._ID))
+                    when(contentValues.get(COLUMN_ID))
                             .thenReturn(testItem.id);
 
                     map.put(testItem, contentValues); // storing pair of mapping
@@ -74,29 +76,25 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void insert() {
-        final StorIOSQLiteDb storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-        final StorIOSQLiteDb.Internal internal = mock(StorIOSQLiteDb.Internal.class);
+        final StorIOContentProvider storIOContentProvider = mock(StorIOContentProvider.class);
+        final StorIOContentProvider.Internal internal = mock(StorIOContentProvider.Internal.class);
 
-        when(storIOSQLiteDb.internal())
+        when(storIOContentProvider.internal())
                 .thenReturn(internal);
 
-        final Long expectedInsertedId = 24L;
-
-        when(internal.insert(any(InsertQuery.class), any(ContentValues.class)))
-                .thenReturn(expectedInsertedId);
-
-        final String table = "someTable";
-
-        final InsertQuery expectedInsertQuery = new InsertQuery.Builder()
-                .table(table)
-                .nullColumnHack(null)
-                .build();
+        final Uri uri = mock(Uri.class);
 
         final PutResolver<TestItem> putResolver = new DefaultPutResolver<TestItem>() {
             @NonNull
             @Override
-            protected String getTable() {
-                return table;
+            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+                return TestItem.COLUMN_ID;
+            }
+
+            @NonNull
+            @Override
+            protected Uri getUri(@NonNull ContentValues contentValues) {
+                return uri;
             }
 
             @Override
@@ -108,8 +106,17 @@ public class DefaultPutResolverTest {
         final TestItem testItem = new TestItem(null); // item without id, should be inserted
         final ContentValues expectedContentValues = TestItem.MAP_TO_CONTENT_VALUES.map(testItem);
 
+        final InsertQuery expectedInsertQuery = new InsertQuery.Builder()
+                .uri(uri)
+                .build();
+
+        final Uri expectedInsertedUri = mock(Uri.class);
+
+        when(internal.insert(expectedInsertQuery, expectedContentValues))
+                .thenReturn(expectedInsertedUri);
+
         // Performing Put that should "insert"
-        final PutResult putResult = putResolver.performPut(storIOSQLiteDb, TestItem.MAP_TO_CONTENT_VALUES.map(testItem));
+        final PutResult putResult = putResolver.performPut(storIOContentProvider, expectedContentValues);
 
         // checks that required insert was performed
         verify(internal, times(1)).insert(eq(expectedInsertQuery), eq(expectedContentValues));
@@ -124,8 +131,8 @@ public class DefaultPutResolverTest {
         assertTrue(putResult.wasInserted());
         assertFalse(putResult.wasUpdated());
 
-        assertEquals(expectedInsertedId, putResult.insertedId());
-        assertNull(putResult.numberOfUpdatedRows());
+        assertEquals(expectedInsertedUri, putResult.insertedUri());
+        assertNull(putResult.numberOfRowsUpdated());
     }
 
     /**
@@ -133,22 +140,25 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void update() {
-        final StorIOSQLiteDb storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-        final StorIOSQLiteDb.Internal internal = mock(StorIOSQLiteDb.Internal.class);
+        final StorIOContentProvider storIOContentProvider = mock(StorIOContentProvider.class);
+        final StorIOContentProvider.Internal internal = mock(StorIOContentProvider.Internal.class);
 
-        when(storIOSQLiteDb.internal())
+        when(storIOContentProvider.internal())
                 .thenReturn(internal);
 
-        when(internal.update(any(UpdateQuery.class), any(ContentValues.class)))
-                .thenReturn(1);
-
-        final String table = "someTable";
+        final Uri uri = mock(Uri.class);
 
         final PutResolver<TestItem> putResolver = new DefaultPutResolver<TestItem>() {
             @NonNull
             @Override
-            protected String getTable() {
-                return table;
+            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+                return TestItem.COLUMN_ID;
+            }
+
+            @NonNull
+            @Override
+            protected Uri getUri(@NonNull ContentValues contentValues) {
+                return uri;
             }
 
             @Override
@@ -157,21 +167,29 @@ public class DefaultPutResolverTest {
             }
         };
 
-        final TestItem testItem = new TestItem(1234L); // item with some id will be updated
+        final Long itemId = 24L;
+
+        final TestItem testItem = new TestItem(itemId); // item with some id, should be updated
         final ContentValues expectedContentValues = TestItem.MAP_TO_CONTENT_VALUES.map(testItem);
 
-        final PutResult putResult = putResolver.performPut(storIOSQLiteDb, expectedContentValues);
-
         final UpdateQuery expectedUpdateQuery = new UpdateQuery.Builder()
-                .table(table)
-                .where(BaseColumns._ID + "=?")
-                .whereArgs(String.valueOf(testItem.getId()))
+                .uri(uri)
+                .where(TestItem.COLUMN_ID + "=?")
+                .whereArgs(String.valueOf(itemId))
                 .build();
+
+        final Integer expectedNumberOfRowsUpdated = 2;
+
+        when(internal.update(eq(expectedUpdateQuery), eq(expectedContentValues)))
+                .thenReturn(expectedNumberOfRowsUpdated);
+
+        // Performing Put that should "update"
+        final PutResult putResult = putResolver.performPut(storIOContentProvider, expectedContentValues);
 
         // checks that required update was performed
         verify(internal, times(1)).update(eq(expectedUpdateQuery), eq(expectedContentValues));
 
-        // only one update should occur
+        // only one call to update should occur
         verify(internal, times(1)).update(any(UpdateQuery.class), any(ContentValues.class));
 
         // no inserts should occur
@@ -181,8 +199,8 @@ public class DefaultPutResolverTest {
         assertTrue(putResult.wasUpdated());
         assertFalse(putResult.wasInserted());
 
-        assertEquals(Integer.valueOf(1), putResult.numberOfUpdatedRows());
-        assertNull(putResult.insertedId());
+        assertEquals(expectedNumberOfRowsUpdated, putResult.numberOfRowsUpdated());
+        assertNull(putResult.insertedUri());
     }
 
     /**
@@ -192,27 +210,25 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void insertAfterFailedUpdate() {
-        final StorIOSQLiteDb storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-        final StorIOSQLiteDb.Internal internal = mock(StorIOSQLiteDb.Internal.class);
+        final StorIOContentProvider storIOContentProvider = mock(StorIOContentProvider.class);
+        final StorIOContentProvider.Internal internal = mock(StorIOContentProvider.Internal.class);
 
-        when(storIOSQLiteDb.internal())
+        when(storIOContentProvider.internal())
                 .thenReturn(internal);
 
-        when(internal.update(any(UpdateQuery.class), any(ContentValues.class)))
-                .thenReturn(0);
-
-        final Long expectedInsertId = 24L;
-
-        when(internal.insert(any(InsertQuery.class), any(ContentValues.class)))
-                .thenReturn(expectedInsertId);
-
-        final String table = "someTable";
+        final Uri uri = mock(Uri.class);
 
         final PutResolver<TestItem> putResolver = new DefaultPutResolver<TestItem>() {
             @NonNull
             @Override
-            protected String getTable() {
-                return table;
+            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+                return TestItem.COLUMN_ID;
+            }
+
+            @NonNull
+            @Override
+            protected Uri getUri(@NonNull ContentValues contentValues) {
+                return uri;
             }
 
             @Override
@@ -221,26 +237,38 @@ public class DefaultPutResolverTest {
             }
         };
 
-        final TestItem testItem = new TestItem(123L);
+        final Long itemId = 24L;
+
+        final TestItem testItem = new TestItem(itemId); // item with some id, should be updated
         final ContentValues expectedContentValues = TestItem.MAP_TO_CONTENT_VALUES.map(testItem);
 
-        final PutResult putResult = putResolver.performPut(storIOSQLiteDb, expectedContentValues);
-
         final UpdateQuery expectedUpdateQuery = new UpdateQuery.Builder()
-                .table(table)
-                .where(BaseColumns._ID + "=?")
-                .whereArgs(String.valueOf(testItem.getId()))
+                .uri(uri)
+                .where(TestItem.COLUMN_ID + "=?")
+                .whereArgs(String.valueOf(itemId))
                 .build();
+
+        final Integer expectedNumberOfRowsUpdated = 0;
+
+        when(internal.update(eq(expectedUpdateQuery), eq(expectedContentValues)))
+                .thenReturn(expectedNumberOfRowsUpdated);
 
         final InsertQuery expectedInsertQuery = new InsertQuery.Builder()
-                .table(table)
-                .nullColumnHack(null)
+                .uri(uri)
                 .build();
+
+        final Uri expectedInsertedUri = mock(Uri.class);
+
+        when(internal.insert(eq(expectedInsertQuery), eq(expectedContentValues)))
+                .thenReturn(expectedInsertedUri);
+
+        // Performing Put that should "update", then "insert"
+        final PutResult putResult = putResolver.performPut(storIOContentProvider, expectedContentValues);
 
         // checks that required update was performed
         verify(internal, times(1)).update(eq(expectedUpdateQuery), eq(expectedContentValues));
 
-        // only one update should occur
+        // only one call to update should occur
         verify(internal, times(1)).update(any(UpdateQuery.class), any(ContentValues.class));
 
         // then one insert should occur
@@ -253,7 +281,7 @@ public class DefaultPutResolverTest {
         assertTrue(putResult.wasInserted());
         assertFalse(putResult.wasUpdated());
 
-        assertEquals(expectedInsertId, putResult.insertedId());
-        assertNull(putResult.numberOfUpdatedRows());
+        assertEquals(expectedInsertedUri, putResult.insertedUri());
+        assertNull(putResult.numberOfRowsUpdated());
     }
 }
