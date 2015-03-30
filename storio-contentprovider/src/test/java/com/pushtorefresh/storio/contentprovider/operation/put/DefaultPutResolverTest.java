@@ -87,7 +87,7 @@ public class DefaultPutResolverTest {
         final PutResolver<TestItem> putResolver = new DefaultPutResolver<TestItem>() {
             @NonNull
             @Override
-            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+            protected String getIdColumnName() {
                 return TestItem.COLUMN_ID;
             }
 
@@ -151,7 +151,7 @@ public class DefaultPutResolverTest {
         final PutResolver<TestItem> putResolver = new DefaultPutResolver<TestItem>() {
             @NonNull
             @Override
-            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+            protected String getIdColumnName() {
                 return TestItem.COLUMN_ID;
             }
 
@@ -221,7 +221,7 @@ public class DefaultPutResolverTest {
         final PutResolver<TestItem> putResolver = new DefaultPutResolver<TestItem>() {
             @NonNull
             @Override
-            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+            protected String getIdColumnName() {
                 return TestItem.COLUMN_ID;
             }
 
