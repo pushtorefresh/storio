@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlitedb.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.Collections;
@@ -141,9 +142,7 @@ public class RawQuery {
          */
         @NonNull
         public RawQuery build() {
-            if (query == null || query.length() == 0) {
-                throw new IllegalStateException("Please specify query string");
-            }
+            Checks.checkNotEmpty(query, "Please specify query string");
 
             return new RawQuery(
                     query,

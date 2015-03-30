@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlitedb.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.List;
@@ -141,9 +142,7 @@ public class UpdateQuery {
          */
         @NonNull
         public UpdateQuery build() {
-            if (table == null || table.length() == 0) {
-                throw new IllegalStateException("Please specify table name");
-            }
+            Checks.checkNotEmpty(table, "Please specify table name");
 
             return new UpdateQuery(
                     table,

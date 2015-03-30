@@ -3,6 +3,8 @@ package com.pushtorefresh.storio.sqlitedb.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.util.Checks;
+
 /**
  * Insert query for {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}
  * <p/>
@@ -108,9 +110,7 @@ public class InsertQuery {
          */
         @NonNull
         public InsertQuery build() {
-            if (table == null || table.length() == 0) {
-                throw new IllegalStateException("Please specify table name");
-            }
+            Checks.checkNotEmpty(table, "Please specify table name");
 
             return new InsertQuery(
                     table,

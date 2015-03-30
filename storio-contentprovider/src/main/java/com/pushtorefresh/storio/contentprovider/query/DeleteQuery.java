@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.List;
@@ -115,9 +116,7 @@ public class DeleteQuery {
          * @return new instance of {@link DeleteQuery}
          */
         @NonNull public DeleteQuery build() {
-            if (uri == null) {
-                throw new IllegalStateException("Please specify uri");
-            }
+            Checks.checkNotNull(uri, "Please specify uri");
 
             return new DeleteQuery(
                     uri,

@@ -21,4 +21,18 @@ public final class Checks {
             throw new NullPointerException(message);
         }
     }
+
+    /**
+     * Checks that passed string is not null and not empty,
+     * throws {@link IllegalStateException} with passed message
+     * if string is null or empty.
+     *
+     * @param value   a string to check
+     * @param message exception message if object is null
+     */
+    public static void checkNotEmpty(@Nullable String value, @NonNull String message) {
+        if (value == null || value.length() == 0) {
+            throw new IllegalStateException(message);
+        }
+    }
 }
