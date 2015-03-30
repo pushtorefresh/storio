@@ -101,7 +101,7 @@ public class DefaultPutResolverTest {
 
             @NonNull
             @Override
-            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+            protected String getIdColumnName() {
                 return TestItem.ID_COLUMN_NAME;
             }
 
@@ -157,7 +157,7 @@ public class DefaultPutResolverTest {
 
             @NonNull
             @Override
-            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+            protected String getIdColumnName() {
                 return TestItem.ID_COLUMN_NAME;
             }
 
@@ -225,7 +225,7 @@ public class DefaultPutResolverTest {
 
             @NonNull
             @Override
-            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+            protected String getIdColumnName() {
                 return TestItem.ID_COLUMN_NAME;
             }
 

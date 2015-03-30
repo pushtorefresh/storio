@@ -69,7 +69,7 @@ public class Tweet {
 
         @NonNull
         @Override
-        protected String getIdColumnName(@NonNull ContentValues contentValues) {
+        protected String getIdColumnName() {
             return COLUMN_ID;   //  Specific internal id field name.
         }
     };
