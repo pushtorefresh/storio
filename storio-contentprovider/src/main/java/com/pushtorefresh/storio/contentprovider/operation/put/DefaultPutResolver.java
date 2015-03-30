@@ -28,6 +28,8 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     /**
      * Provides field name that uses for store internal identifier.
      * You can override this to use your custom name.
+     * <p>
+     * Default value is <code>BaseColumns._ID</code>
      *
      * @return column name to store internal id.
      */
@@ -54,7 +56,9 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
         final String idColumnName = getIdColumnName();
 
         final Object idObject = contentValues.get(idColumnName);
-        final String idAsString = idObject != null ? idObject.toString() : null;
+        final String idAsString = idObject != null
+                ? idObject.toString()
+                : null;
 
         return idAsString == null
                 ? insert(storIOContentProvider, contentValues, uri)

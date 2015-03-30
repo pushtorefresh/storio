@@ -26,11 +26,13 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     /**
      * Provides field name that uses for store internal identifier.
      * You can override this to use your custom name.
+     * <p>
+     * Default value is <code>BaseColumns._ID</code>
      *
      * @return column name to store internal id.
      */
     @NonNull
-    protected String getIdColumnName(@NonNull ContentValues contentValues) {
+    protected String getIdColumnName() {
         return BaseColumns._ID;
     }
 
@@ -49,13 +51,18 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     @Override
     @NonNull
     public PutResult performPut(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull ContentValues contentValues) {
-        final String idColumnName = getIdColumnName(contentValues);
-        final Object id = contentValues.get(idColumnName);
+        final String idColumnName = getIdColumnName();
+
+        final Object idObject = contentValues.get(idColumnName);
+        final String idAsString = idObject != null
+                ? idObject.toString()
+                : null;
+
         final String table = getTable();
 
-        return id == null
+        return idAsString == null
                 ? insert(storIOSQLiteDb, contentValues, table)
-                : updateOrInsert(storIOSQLiteDb, contentValues, table, idColumnName, id);
+                : updateOrInsert(storIOSQLiteDb, contentValues, table, idColumnName, idAsString);
     }
 
     @NonNull
