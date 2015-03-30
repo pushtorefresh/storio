@@ -7,7 +7,7 @@ import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.List;
 
-import static com.pushtorefresh.storio.util.Checks.*;
+import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
 
 /**
  * Delete query for {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}
