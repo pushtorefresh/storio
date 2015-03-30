@@ -9,7 +9,6 @@ import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
-import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.ArrayList;
@@ -18,6 +17,8 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
  * Represents an Operation for {@link StorIOContentProvider} which performs query that retrieves data as list of objects
@@ -177,8 +178,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          */
         @NonNull
         public PreparedOperationWithReactiveStream<List<T>> prepare() {
-            Checks.checkNotNull(mapFunc, "Please specify map function");
-            Checks.checkNotNull(query, "Please specify query");
+            checkNotNull(mapFunc, "Please specify map function");
+            checkNotNull(query, "Please specify query");
 
             if (getResolver == null) {
                 getResolver = DefaultGetResolver.INSTANCE;

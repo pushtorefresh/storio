@@ -3,15 +3,16 @@ package com.pushtorefresh.storio.sqlitedb.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
-import com.pushtorefresh.storio.sqlitedb.Changes;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.PreparedOperation;
-import com.pushtorefresh.storio.util.Checks;
+import com.pushtorefresh.storio.sqlitedb.Changes;
+import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
 import rx.Subscriber;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
 
@@ -101,7 +102,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
          */
         @NonNull
         public PreparedOperation<PutResult> prepare() {
-            Checks.checkNotNull(mapFunc, "Please specify map function");
+            checkNotNull(mapFunc, "Please specify map function");
 
             return new PreparedPutObject<>(
                     storIOSQLiteDb,

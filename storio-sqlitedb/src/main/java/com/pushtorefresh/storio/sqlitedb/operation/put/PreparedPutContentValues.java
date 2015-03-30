@@ -3,13 +3,14 @@ package com.pushtorefresh.storio.sqlitedb.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.Changes;
-import com.pushtorefresh.storio.util.Checks;
+import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
 import rx.Subscriber;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResult> {
 
@@ -75,7 +76,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
          * @return {@link PreparedPutContentValues} instance
          */
         @NonNull public PreparedPutContentValues prepare() {
-            Checks.checkNotNull(putResolver, "Please specify put resolver");
+            checkNotNull(putResolver, "Please specify put resolver");
 
             return new PreparedPutContentValues(
                     storIOSQLiteDb,

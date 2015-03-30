@@ -3,10 +3,11 @@ package com.pushtorefresh.storio.sqlitedb.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.List;
+
+import static com.pushtorefresh.storio.util.Checks.*;
 
 /**
  * Delete query for {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}
@@ -142,7 +143,7 @@ public class DeleteQuery {
          */
         @NonNull
         public DeleteQuery build() {
-            Checks.checkNotEmpty(table, "Please specify table name");
+            checkNotEmpty(table, "Please specify table name");
 
             return new DeleteQuery(
                     table,

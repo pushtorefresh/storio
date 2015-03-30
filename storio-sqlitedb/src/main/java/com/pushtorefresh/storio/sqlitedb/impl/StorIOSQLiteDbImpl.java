@@ -7,14 +7,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.Changes;
+import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.query.DeleteQuery;
 import com.pushtorefresh.storio.sqlitedb.query.InsertQuery;
 import com.pushtorefresh.storio.sqlitedb.query.Query;
 import com.pushtorefresh.storio.sqlitedb.query.RawQuery;
 import com.pushtorefresh.storio.sqlitedb.query.UpdateQuery;
-import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 import com.pushtorefresh.storio.util.QueryUtil;
 
@@ -23,6 +22,8 @@ import java.util.Set;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.subjects.PublishSubject;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
  * Implementation of {@link StorIOSQLiteDb} for {@link SQLiteDatabase}
@@ -198,7 +199,7 @@ public class StorIOSQLiteDbImpl extends StorIOSQLiteDb {
 
         @NonNull
         public StorIOSQLiteDbImpl build() {
-            Checks.checkNotNull(db, "Please specify SQLiteDatabase instance");
+            checkNotNull(db, "Please specify SQLiteDatabase instance");
 
             return new StorIOSQLiteDbImpl(db);
         }

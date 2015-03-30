@@ -4,10 +4,11 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.List;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
  * Delete query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}
@@ -130,7 +131,7 @@ public class DeleteQuery {
          */
         @NonNull
         public DeleteQuery build() {
-            Checks.checkNotNull(uri, "Please specify uri");
+            checkNotNull(uri, "Please specify uri");
 
             return new DeleteQuery(
                     uri,

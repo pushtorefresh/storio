@@ -3,13 +3,12 @@ package com.pushtorefresh.storio.sqlitedb.operation.get;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.operation.MapFunc;
+import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.sqlitedb.Changes;
 import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.query.Query;
 import com.pushtorefresh.storio.sqlitedb.query.RawQuery;
-import com.pushtorefresh.storio.operation.MapFunc;
-import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
-import com.pushtorefresh.storio.util.Checks;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.ArrayList;
@@ -20,6 +19,8 @@ import java.util.Set;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
  * Represents an Operation for {@link StorIOSQLiteDb} which performs query that retrieves data as list of objects
@@ -209,7 +210,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
                 getResolver = DefaultGetResolver.INSTANCE;
             }
 
-            Checks.checkNotNull(mapFunc, "Please specify map function");
+            checkNotNull(mapFunc, "Please specify map function");
 
             if (query != null) {
                 return new PreparedGetListOfObjects<>(storIOSQLiteDb, query, getResolver, mapFunc);

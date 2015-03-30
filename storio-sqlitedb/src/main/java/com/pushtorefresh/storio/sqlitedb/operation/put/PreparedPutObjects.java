@@ -3,10 +3,9 @@ package com.pushtorefresh.storio.sqlitedb.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
-import com.pushtorefresh.storio.sqlitedb.Changes;
 import com.pushtorefresh.storio.operation.MapFunc;
-import com.pushtorefresh.storio.util.Checks;
+import com.pushtorefresh.storio.sqlitedb.Changes;
+import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.HashMap;
@@ -16,6 +15,8 @@ import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>> {
 
@@ -164,8 +165,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
          * @return {@link PreparedPutObjects} instance
          */
         @NonNull public PreparedPutObjects<T> prepare() {
-            Checks.checkNotNull(mapFunc, "Please specify map function");
-            Checks.checkNotNull(putResolver, "Please specify put resolver");
+            checkNotNull(mapFunc, "Please specify map function");
+            checkNotNull(putResolver, "Please specify put resolver");
 
             return new PreparedPutObjects<>(
                     storIOSQLiteDb,

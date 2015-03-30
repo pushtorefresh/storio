@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.contentprovider.query;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.util.Checks;
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
  * Insert query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}
@@ -77,7 +77,7 @@ public class InsertQuery {
          */
         @NonNull
         public InsertQuery build() {
-            Checks.checkNotNull(uri, "Please specify uri");
+            checkNotNull(uri, "Please specify uri");
 
             return new InsertQuery(
                     uri
