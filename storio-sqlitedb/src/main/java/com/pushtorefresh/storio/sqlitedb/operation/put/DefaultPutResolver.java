@@ -78,7 +78,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
                                      @NonNull final String idFieldName,
                                      @NonNull Object id) {
 
-        final int numberOfUpdatedRows = storIOSQLiteDb.internal().update(
+        final int numberOfRowsUpdated = storIOSQLiteDb.internal().update(
                 new UpdateQuery.Builder()
                         .table(table)
                         .where(idFieldName + "=?")
@@ -87,8 +87,8 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
                 contentValues
         );
 
-        return numberOfUpdatedRows > 0
-                ? PutResult.newUpdateResult(numberOfUpdatedRows, table)
+        return numberOfRowsUpdated > 0
+                ? PutResult.newUpdateResult(numberOfRowsUpdated, table)
                 : insert(storIOSQLiteDb, contentValues, table);
     }
 }
