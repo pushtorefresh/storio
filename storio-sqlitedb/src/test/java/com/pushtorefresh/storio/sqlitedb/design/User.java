@@ -74,11 +74,6 @@ public class User {
         @NonNull @Override protected String getTable() {
             return TABLE;
         }
-
-        @Override
-        public void afterPut(@NonNull ContentValues object, @NonNull PutResult putResult) {
-            // do nothing
-        }
     };
 
     private Long id;

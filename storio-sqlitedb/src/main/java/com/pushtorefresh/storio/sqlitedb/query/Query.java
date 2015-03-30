@@ -241,7 +241,7 @@ public class Query {
         /**
          * Optional: Specifies arguments for where clause
          * <p/>
-         * Passed objects will be immediately converted to {@link String} via calling {@link Object#toString()}
+         * Passed objects will be immediately converted list of to {@link String} via calling {@link Object#toString()}
          * <p/>
          * Default value is <code>null</code>
          *

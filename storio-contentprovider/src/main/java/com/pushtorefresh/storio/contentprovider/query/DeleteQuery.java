@@ -19,17 +19,20 @@ public class DeleteQuery {
     /**
      * The full URI to query, including a row ID (if a specific record is requested)
      */
-    @NonNull public final Uri uri;
+    @NonNull
+    public final Uri uri;
 
     /**
      * An optional restriction to apply to rows when deleting
      */
-    @Nullable public final String where;
+    @Nullable
+    public final String where;
 
     /**
      * Arguments for {@link #where}
      */
-    @Nullable public final List<String> whereArgs;
+    @Nullable
+    public final List<String> whereArgs;
 
     /**
      * Please use {@link com.pushtorefresh.storio.contentprovider.query.DeleteQuery.Builder} instead of constructor
@@ -40,7 +43,8 @@ public class DeleteQuery {
         this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -52,14 +56,16 @@ public class DeleteQuery {
 
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = uri.hashCode();
         result = 31 * result + (where != null ? where.hashCode() : 0);
         result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
         return result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "DeleteQuery{" +
                 "uri=" + uri +
                 ", where='" + where + '\'' +
@@ -82,7 +88,8 @@ public class DeleteQuery {
          * @param uri full URI to query, including a row ID (if a specific record is requested)
          * @return builder
          */
-        @NonNull public Builder uri(@NonNull Uri uri) {
+        @NonNull
+        public Builder uri(@NonNull Uri uri) {
             this.uri = uri;
             return this;
         }
@@ -93,18 +100,24 @@ public class DeleteQuery {
          * @param where optional restriction to apply to rows when deleting
          * @return builder
          */
-        @NonNull public Builder where(@Nullable String where) {
+        @NonNull
+        public Builder where(@Nullable String where) {
             this.where = where;
             return this;
         }
 
         /**
-         * Specifies where args
+         * Optional: Specifies arguments for where clause
+         * <p>
+         * Passed objects will be immediately converted to list of {@link String} via calling {@link Object#toString()}
+         * <p>
+         * Default value is <code>null</code>
          *
          * @param whereArgs arguments for {@link DeleteQuery#where}
          * @return builder
          */
-        @NonNull public Builder whereArgs(@Nullable String... whereArgs) {
+        @NonNull
+        public Builder whereArgs(@Nullable Object... whereArgs) {
             this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
@@ -115,7 +128,8 @@ public class DeleteQuery {
          *
          * @return new instance of {@link DeleteQuery}
          */
-        @NonNull public DeleteQuery build() {
+        @NonNull
+        public DeleteQuery build() {
             Checks.checkNotNull(uri, "Please specify uri");
 
             return new DeleteQuery(

@@ -101,7 +101,7 @@ public class DefaultPutResolverTest {
 
             @NonNull
             @Override
-            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+            protected String getIdColumnName() {
                 return TestItem.ID_COLUMN_NAME;
             }
 
@@ -131,7 +131,7 @@ public class DefaultPutResolverTest {
         assertFalse(putResult.wasUpdated());
 
         assertEquals(expectedInsertedId, putResult.insertedId());
-        assertNull(putResult.numberOfUpdatedRows());
+        assertNull(putResult.numberOfRowsUpdated());
     }
 
     /**
@@ -157,7 +157,7 @@ public class DefaultPutResolverTest {
 
             @NonNull
             @Override
-            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+            protected String getIdColumnName() {
                 return TestItem.ID_COLUMN_NAME;
             }
 
@@ -191,7 +191,7 @@ public class DefaultPutResolverTest {
         assertTrue(putResult.wasUpdated());
         assertFalse(putResult.wasInserted());
 
-        assertEquals(Integer.valueOf(1), putResult.numberOfUpdatedRows());
+        assertEquals(Integer.valueOf(1), putResult.numberOfRowsUpdated());
         assertNull(putResult.insertedId());
     }
 
@@ -225,7 +225,7 @@ public class DefaultPutResolverTest {
 
             @NonNull
             @Override
-            protected String getIdColumnName(@NonNull ContentValues contentValues) {
+            protected String getIdColumnName() {
                 return TestItem.ID_COLUMN_NAME;
             }
 
@@ -268,6 +268,6 @@ public class DefaultPutResolverTest {
         assertFalse(putResult.wasUpdated());
 
         assertEquals(expectedInsertId, putResult.insertedId());
-        assertNull(putResult.numberOfUpdatedRows());
+        assertNull(putResult.numberOfRowsUpdated());
     }
 }

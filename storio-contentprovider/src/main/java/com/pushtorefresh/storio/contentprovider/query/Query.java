@@ -167,13 +167,17 @@ public class Query {
         }
 
         /**
-         * You may include ?s in selection, which will be replaced by the values from selectionArgs, in order that they appear in the selection. The values will be bound as Strings.
+         * Optional: Specifies arguments for where clause
+         * <p/>
+         * Passed objects will be immediately converted to list {@link String} via calling {@link Object#toString()}
+         * <p/>
+         * Default value is <code>null</code>
          *
          * @param whereArgs selection arguments
          * @return builder
          */
         @NonNull
-        public Builder whereArgs(@Nullable String... whereArgs) {
+        public Builder whereArgs(@Nullable Object... whereArgs) {
             this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
