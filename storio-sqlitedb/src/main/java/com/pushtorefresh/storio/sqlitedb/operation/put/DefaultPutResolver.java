@@ -98,4 +98,18 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
                 ? PutResult.newUpdateResult(numberOfRowsUpdated, table)
                 : insert(storIOSQLiteDb, contentValues, table);
     }
+
+    /**
+     * Useful callback which will be called in same thread that performed Put Operation right after
+     * execution of {@link #performPut(StorIOSQLiteDb, ContentValues)}
+     * <p>
+     * You can, for example, set object id after insert
+     *
+     * @param object    object, that was "put" in {@link StorIOSQLiteDb}
+     * @param putResult result of put operation
+     */
+    @Override
+    public void afterPut(@NonNull T object, @NonNull PutResult putResult) {
+
+    }
 }
