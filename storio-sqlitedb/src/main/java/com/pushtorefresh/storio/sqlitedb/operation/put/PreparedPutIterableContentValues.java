@@ -81,7 +81,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
             }
         }
 
-        return new PutCollectionResult<>(putResults);
+        return PutCollectionResult.newInstance(putResults);
     }
 
     @NonNull

@@ -36,9 +36,28 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
             this.storIOContentProvider = storIOContentProvider;
         }
 
+        /**
+         * Prepares Put Operation that should put one object
+         *
+         * @param object object to put
+         * @param <T>    type of object
+         * @return builder for {@link PreparedPutObject}
+         */
         @NonNull
         public <T> PreparedPutObject.Builder<T> object(@NonNull T object) {
             return new PreparedPutObject.Builder<>(storIOContentProvider, object);
+        }
+
+        /**
+         * Prepares Put Operation that should put multiple objects
+         *
+         * @param objects objects to put
+         * @param <T>     type of objects
+         * @return builder for {@link PreparedPutObjects}
+         */
+        @NonNull
+        public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
+            return new PreparedPutObjects.Builder<>(storIOContentProvider, objects);
         }
     }
 }

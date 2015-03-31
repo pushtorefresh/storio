@@ -20,14 +20,11 @@ android {
 }
 
 dependencies {
-    compile project(':storio-common')
-
     provided rootProject.ext.supportAnnotations
     provided rootProject.ext.rxJava
 
     testCompile rootProject.ext.junit
     testCompile rootProject.ext.mockitoCore
-    testCompile project(':storio-test-common')
 
     androidTestCompile rootProject.ext.testingSupportLib
 }

@@ -82,7 +82,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
             }
         }
 
-        return new PutCollectionResult<>(putResults);
+        return PutCollectionResult.newInstance(putResults);
     }
 
     @NonNull @Override public Observable<PutCollectionResult<T>> createObservable() {
