@@ -8,6 +8,8 @@ import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.List;
 
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+
 /**
  * Update query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}
  * <p>
@@ -120,9 +122,7 @@ public class UpdateQuery {
          */
         @NonNull
         public UpdateQuery build() {
-            if (uri == null) {
-                throw new IllegalStateException("Please specify uri");
-            }
+            checkNotNull(uri, "Please specify uri");
 
             return new UpdateQuery(
                     uri,

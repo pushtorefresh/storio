@@ -3,8 +3,8 @@ package com.pushtorefresh.storio.sqlitedb.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.Changes;
+import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.HashMap;
@@ -14,6 +14,8 @@ import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedPutIterableContentValues extends PreparedPut<ContentValues, PutCollectionResult<ContentValues>> {
 
@@ -160,9 +162,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
          */
         @NonNull
         public PreparedPutIterableContentValues prepare() {
-            if (putResolver == null) {
-                throw new IllegalStateException("Please specify put resolver");
-            }
+            checkNotNull(putResolver, "Please specify put resolver");
 
             return new PreparedPutIterableContentValues(
                     storIOSQLiteDb,

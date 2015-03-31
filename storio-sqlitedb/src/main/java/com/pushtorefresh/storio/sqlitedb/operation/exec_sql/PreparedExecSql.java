@@ -2,13 +2,15 @@ package com.pushtorefresh.storio.sqlitedb.operation.exec_sql;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.operation.PreparedOperation;
+import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.query.RawQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
 import rx.Subscriber;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedExecSql implements PreparedOperation<Void> {
 
@@ -66,9 +68,7 @@ public class PreparedExecSql implements PreparedOperation<Void> {
          * @return {@link PreparedExecSql} instance
          */
         @NonNull public PreparedExecSql prepare() {
-            if (rawQuery == null) {
-                throw new IllegalStateException("Please set query object");
-            }
+            checkNotNull(rawQuery, "Please set query object");
 
             return new PreparedExecSql(
                     storIOSQLiteDb,

@@ -18,6 +18,8 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
 
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+
 /**
  * Represents an Operation for {@link StorIOContentProvider} which performs query that retrieves data as list of objects
  * from {@link android.content.ContentProvider}
@@ -176,13 +178,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          */
         @NonNull
         public PreparedOperationWithReactiveStream<List<T>> prepare() {
-            if (mapFunc == null) {
-                throw new IllegalStateException("Please specify map function");
-            }
-
-            if (query == null) {
-                throw new IllegalStateException("Please specify query");
-            }
+            checkNotNull(mapFunc, "Please specify map function");
+            checkNotNull(query, "Please specify query");
 
             if (getResolver == null) {
                 getResolver = DefaultGetResolver.INSTANCE;

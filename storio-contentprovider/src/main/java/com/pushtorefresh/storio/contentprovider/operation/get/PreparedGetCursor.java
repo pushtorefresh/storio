@@ -12,6 +12,8 @@ import com.pushtorefresh.storio.util.EnvironmentUtil;
 import rx.Observable;
 import rx.Subscriber;
 
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+
 /**
  * Represents an Operation for {@link StorIOContentProvider} which performs query that retrieves data as {@link Cursor}
  * from {@link android.content.ContentProvider}
@@ -102,9 +104,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public PreparedOperationWithReactiveStream<Cursor> prepare() {
-            if (query == null) {
-                throw new IllegalStateException("Please specify query");
-            }
+            checkNotNull(query, "Please specify query");
 
             if (getResolver == null) {
                 getResolver = DefaultGetResolver.INSTANCE;

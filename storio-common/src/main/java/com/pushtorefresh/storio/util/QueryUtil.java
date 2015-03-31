@@ -21,7 +21,7 @@ public final class QueryUtil {
      * @return null if varargs array is null or empty or list of items from varargs
      */
     @Nullable
-    public static List<String> varargsToList(@Nullable Object... args) {
+    public static List<String> varargsToList(@Nullable Object[] args) {
         if (args == null || args.length == 0) {
             return null;
         } else {

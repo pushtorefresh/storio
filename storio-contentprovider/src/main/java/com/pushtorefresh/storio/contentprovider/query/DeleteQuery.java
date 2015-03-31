@@ -8,6 +8,8 @@ import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.List;
 
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+
 /**
  * Delete query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}
  * <p>
@@ -129,9 +131,7 @@ public class DeleteQuery {
          */
         @NonNull
         public DeleteQuery build() {
-            if (uri == null) {
-                throw new IllegalStateException("Please specify uri");
-            }
+            checkNotNull(uri, "Please specify uri");
 
             return new DeleteQuery(
                     uri,

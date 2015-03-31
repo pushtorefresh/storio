@@ -7,6 +7,8 @@ import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.List;
 
+import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
+
 /**
  * Get query for {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}
  * <p/>
@@ -340,9 +342,7 @@ public class Query {
          */
         @NonNull
         public Query build() {
-            if (table == null || table.length() == 0) {
-                throw new IllegalStateException("Please specify table name");
-            }
+            checkNotEmpty(table, "Please specify table name");
 
             return new Query(
                     distinct,

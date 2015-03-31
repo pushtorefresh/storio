@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
+
 /**
  * Get query for {@link com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb}
  * <p/>
@@ -141,9 +143,7 @@ public class RawQuery {
          */
         @NonNull
         public RawQuery build() {
-            if (query == null || query.length() == 0) {
-                throw new IllegalStateException("Please specify query string");
-            }
+            checkNotEmpty(query, "Please specify query string");
 
             return new RawQuery(
                     query,

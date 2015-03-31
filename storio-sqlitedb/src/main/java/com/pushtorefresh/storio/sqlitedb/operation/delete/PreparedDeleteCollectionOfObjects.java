@@ -2,9 +2,9 @@ package com.pushtorefresh.storio.sqlitedb.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
-import com.pushtorefresh.storio.sqlitedb.Changes;
 import com.pushtorefresh.storio.operation.MapFunc;
+import com.pushtorefresh.storio.sqlitedb.Changes;
+import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.query.DeleteQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
@@ -17,6 +17,8 @@ import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteCollectionOfObjectsResult<T>> {
 
@@ -171,9 +173,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
             }
 
-            if (mapFunc == null) {
-                throw new IllegalStateException("Please specify map function");
-            }
+            checkNotNull(mapFunc, "Please specify map function");
 
             return new PreparedDeleteCollectionOfObjects<>(
                     storIOSQLiteDb,
