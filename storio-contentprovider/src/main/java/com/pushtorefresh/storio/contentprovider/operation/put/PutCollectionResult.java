@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.sqlitedb.operation.put;
+package com.pushtorefresh.storio.contentprovider.operation.put;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
