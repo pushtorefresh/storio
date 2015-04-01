@@ -1,11 +1,11 @@
-package com.pushtorefresh.storio.contentprovider.operation.put;
+package com.pushtorefresh.storio.sqlitedb.operation.put;
 
 import android.content.ContentValues;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
 import com.pushtorefresh.storio.operation.MapFunc;
+import com.pushtorefresh.storio.sqlitedb.Changes;
+import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import java.util.ArrayList;
@@ -25,68 +25,89 @@ import static org.mockito.Mockito.when;
 
 // stub class to avoid violation of DRY in tests
 class PutStub {
-
-    final List<TestItem> items;
-    final StorIOContentProvider storIOContentProvider;
-    final StorIOContentProvider.Internal internal;
+    final List<TestItem> testItems;
+    final StorIOSQLiteDb storIOSQLiteDb;
+    final StorIOSQLiteDb.Internal internal;
     final MapFunc<TestItem, ContentValues> mapFunc;
     final PutResolver<TestItem> putResolver;
+    final boolean useTransaction;
 
     @NonNull
-    public static PutStub newPutStubForOneItem() {
-        return new PutStub(1);
+    static PutStub newPutStubForOneItem() {
+        return new PutStub(false, 1);
     }
 
     @NonNull
-    public static PutStub newPutStubForMultipleItems() {
-        return new PutStub(3);
+    static PutStub newPutStubForMultipleItems() {
+        return new PutStub(true, 3);
     }
 
-    private PutStub(int numberOfTestItems) {
-        items = new ArrayList<>(numberOfTestItems);
+    @NonNull
+    static PutStub newPutStubForMultipleItems(boolean useTransaction) {
+        return new PutStub(useTransaction, 3);
+    }
 
-        for (int i = 0; i < numberOfTestItems; i++) {
-            items.add(TestItem.newInstance());
+    private PutStub(boolean useTransaction, int numberOfItems) {
+        this.useTransaction = useTransaction;
+
+        testItems = new ArrayList<>(numberOfItems);
+
+        for (int i = 0; i < numberOfItems; i++) {
+            testItems.add(TestItem.newInstance());
         }
 
-        storIOContentProvider = mock(StorIOContentProvider.class);
-        internal = mock(StorIOContentProvider.Internal.class);
+        storIOSQLiteDb = mock(StorIOSQLiteDb.class);
+        internal = mock(StorIOSQLiteDb.Internal.class);
 
-        when(storIOContentProvider.internal())
+        when(internal.transactionsSupported())
+                .thenReturn(useTransaction);
+
+        when(storIOSQLiteDb.internal())
                 .thenReturn(internal);
 
-        when(storIOContentProvider.put())
-                .thenReturn(new PreparedPut.Builder(storIOContentProvider));
+        when(storIOSQLiteDb.put())
+                .thenReturn(new PreparedPut.Builder(storIOSQLiteDb));
 
         //noinspection unchecked
         putResolver = (PutResolver<TestItem>) mock(PutResolver.class);
 
-        when(putResolver.performPut(eq(storIOContentProvider), any(ContentValues.class)))
-                .thenReturn(PutResult.newInsertResult(mock(Uri.class), TestItem.CONTENT_URI));
+        when(putResolver.performPut(eq(storIOSQLiteDb), any(ContentValues.class)))
+                .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE));
 
         //noinspection unchecked
         mapFunc = (MapFunc<TestItem, ContentValues>) mock(MapFunc.class);
 
-        for (final TestItem item : items) {
-            when(mapFunc.map(item))
+        for (TestItem testItem : testItems) {
+            when(mapFunc.map(testItem))
                     .thenReturn(mock(ContentValues.class));
         }
     }
 
     void verifyBehaviorForMultiple(@NonNull PutCollectionResult<TestItem> putCollectionResult) {
-        // only one call to storIOContentProvider.put() should occur
-        verify(storIOContentProvider, times(1)).put();
+        // only one call to storIOSQLiteDb.put() should occur
+        verify(storIOSQLiteDb, times(1)).put();
 
         // number of calls to putResolver's performPut() should be equal to number of objects
-        verify(putResolver, times(items.size())).performPut(eq(storIOContentProvider), any(ContentValues.class));
+        verify(putResolver, times(testItems.size())).performPut(eq(storIOSQLiteDb), any(ContentValues.class));
 
-        for (final TestItem item : items) {
+        for (final TestItem testItem : testItems) {
             // map operation for each object should be called only once
-            verify(mapFunc, times(1)).map(item);
+            verify(mapFunc, times(1)).map(testItem);
 
             // putResolver's afterPut() callback should be called only once for each object
             verify(putResolver, times(1))
-                    .afterPut(item, putCollectionResult.results().get(item));
+                    .afterPut(testItem, putCollectionResult.results().get(testItem));
+        }
+
+        if (useTransaction) {
+            // if put() operation used transaction, only one notification should be thrown
+            verify(internal, times(1))
+                    .notifyAboutChanges(eq(new Changes(TestItem.TABLE)));
+        } else {
+            // if put() operation didn't use transaction,
+            // number of notifications should be equal to number of objects
+            verify(internal, times(testItems.size()))
+                    .notifyAboutChanges(eq(new Changes(TestItem.TABLE)));
         }
     }
 
@@ -96,17 +117,16 @@ class PutStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Action1<PutCollectionResult<TestItem>>() {
                     @Override
-                    public void call(PutCollectionResult<TestItem> putCollectionResult) {
-                        verifyBehaviorForMultiple(putCollectionResult);
+                    public void call(PutCollectionResult<TestItem> testItemPutCollectionResult) {
+                        verifyBehaviorForMultiple(testItemPutCollectionResult);
                     }
                 })
                 .checkBehaviorOfObservable();
     }
 
-    // for first item
     void verifyBehaviorForOne(@NonNull PutResult putResult) {
-        Map<TestItem, PutResult> putResultMap = new HashMap<>(1);
-        putResultMap.put(items.get(0), putResult);
+        final Map<TestItem, PutResult> putResultMap = new HashMap<>(1);
+        putResultMap.put(testItems.get(0), putResult);
         verifyBehaviorForMultiple(PutCollectionResult.newInstance(putResultMap));
     }
 
