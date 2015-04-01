@@ -1,108 +1,102 @@
 package com.pushtorefresh.storio.sqlitedb.operation.put;
 
-import com.pushtorefresh.storio.sqlitedb.design.User;
-
 import org.junit.Test;
+
+import rx.Observable;
 
 public class PreparedPutObjectsTest {
 
     @Test
     public void putMultipleBlocking() {
-        final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
+        final PutStub putStub = PutStub.newPutStubForMultipleItems();
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIOSQLiteDb
+        final PutCollectionResult<TestItem> putCollectionResult = putStub.storIOSQLiteDb
                 .put()
-                .objects(putMultipleStub.users)
-                .withMapFunc(putMultipleStub.mapFunc)
-                .withPutResolver(putMultipleStub.putResolver)
+                .objects(putStub.testItems)
+                .withMapFunc(putStub.mapFunc)
+                .withPutResolver(putStub.putResolver)
                 .prepare()
                 .executeAsBlocking();
 
-        putMultipleStub.verifyBehavior(putCollectionResult);
+        putStub.verifyBehaviorForMultiple(putCollectionResult);
     }
 
     @Test
     public void putMultipleObservable() {
-        final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
+        final PutStub putStub = PutStub.newPutStubForMultipleItems();
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIOSQLiteDb
+        final Observable<PutCollectionResult<TestItem>> putCollectionResultObservable = putStub.storIOSQLiteDb
                 .put()
-                .objects(putMultipleStub.users)
-                .withMapFunc(putMultipleStub.mapFunc)
-                .withPutResolver(putMultipleStub.putResolver)
+                .objects(putStub.testItems)
+                .withMapFunc(putStub.mapFunc)
+                .withPutResolver(putStub.putResolver)
                 .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
+                .createObservable();
 
-        putMultipleStub.verifyBehavior(putCollectionResult);
+        putStub.verifyBehaviorForMultiple(putCollectionResultObservable);
     }
 
     @Test
     public void putMultipleBlockingWithoutTransaction() {
-        final PutMultipleStub putMultipleStub = new PutMultipleStub(false);
+        final PutStub putStub = PutStub.newPutStubForMultipleItems(false);
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIOSQLiteDb
+        final PutCollectionResult<TestItem> putCollectionResult = putStub.storIOSQLiteDb
                 .put()
-                .objects(putMultipleStub.users)
-                .withMapFunc(putMultipleStub.mapFunc)
-                .withPutResolver(putMultipleStub.putResolver)
+                .objects(putStub.testItems)
+                .withMapFunc(putStub.mapFunc)
+                .withPutResolver(putStub.putResolver)
                 .dontUseTransaction()
                 .prepare()
                 .executeAsBlocking();
 
-        putMultipleStub.verifyBehavior(putCollectionResult);
+        putStub.verifyBehaviorForMultiple(putCollectionResult);
     }
 
     @Test
     public void putMultipleObservableWithoutTransaction() {
-        final PutMultipleStub putMultipleStub = new PutMultipleStub(false);
+        final PutStub putStub = PutStub.newPutStubForMultipleItems(false);
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIOSQLiteDb
+        final Observable<PutCollectionResult<TestItem>> putCollectionResultObservable = putStub.storIOSQLiteDb
                 .put()
-                .objects(putMultipleStub.users)
-                .withMapFunc(putMultipleStub.mapFunc)
-                .withPutResolver(putMultipleStub.putResolver)
+                .objects(putStub.testItems)
+                .withMapFunc(putStub.mapFunc)
+                .withPutResolver(putStub.putResolver)
                 .dontUseTransaction()
                 .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
+                .createObservable();
 
-        putMultipleStub.verifyBehavior(putCollectionResult);
+        putStub.verifyBehaviorForMultiple(putCollectionResultObservable);
     }
 
     @Test
     public void putMultipleBlockingWithTransaction() {
-        final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
+        final PutStub putStub = PutStub.newPutStubForMultipleItems(true);
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIOSQLiteDb
+        final PutCollectionResult<TestItem> putCollectionResult = putStub.storIOSQLiteDb
                 .put()
-                .objects(putMultipleStub.users)
-                .withMapFunc(putMultipleStub.mapFunc)
-                .withPutResolver(putMultipleStub.putResolver)
+                .objects(putStub.testItems)
+                .withMapFunc(putStub.mapFunc)
+                .withPutResolver(putStub.putResolver)
                 .useTransactionIfPossible()
                 .prepare()
                 .executeAsBlocking();
 
-        putMultipleStub.verifyBehavior(putCollectionResult);
+        putStub.verifyBehaviorForMultiple(putCollectionResult);
     }
 
     @Test
     public void putMultipleObservableWithTransaction() {
-        final PutMultipleStub putMultipleStub = new PutMultipleStub(true);
+        final PutStub putStub = PutStub.newPutStubForMultipleItems(true);
 
-        final PutCollectionResult<User> putCollectionResult = putMultipleStub.storIOSQLiteDb
+        final Observable<PutCollectionResult<TestItem>> putCollectionResultObservable = putStub.storIOSQLiteDb
                 .put()
-                .objects(putMultipleStub.users)
-                .withMapFunc(putMultipleStub.mapFunc)
-                .withPutResolver(putMultipleStub.putResolver)
+                .objects(putStub.testItems)
+                .withMapFunc(putStub.mapFunc)
+                .withPutResolver(putStub.putResolver)
                 .useTransactionIfPossible()
                 .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
+                .createObservable();
 
-        putMultipleStub.verifyBehavior(putCollectionResult);
+        putStub.verifyBehaviorForMultiple(putCollectionResultObservable);
     }
 }

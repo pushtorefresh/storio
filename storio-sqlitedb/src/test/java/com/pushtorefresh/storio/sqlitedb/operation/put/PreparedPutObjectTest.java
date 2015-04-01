@@ -2,37 +2,37 @@ package com.pushtorefresh.storio.sqlitedb.operation.put;
 
 import org.junit.Test;
 
+import rx.Observable;
+
 public class PreparedPutObjectTest {
 
     @Test
     public void putObjectBlocking() {
-        final PutOneStub putOneStub = new PutOneStub();
+        final PutStub putStub = PutStub.newPutStubForOneItem();
 
-        final PutResult putResult = putOneStub.storIOSQLiteDb
+        final PutResult putResult = putStub.storIOSQLiteDb
                 .put()
-                .object(putOneStub.user)
-                .withMapFunc(putOneStub.mapFunc)
-                .withPutResolver(putOneStub.putResolver)
+                .object(putStub.testItems.get(0))
+                .withMapFunc(putStub.mapFunc)
+                .withPutResolver(putStub.putResolver)
                 .prepare()
                 .executeAsBlocking();
 
-        putOneStub.verifyBehavior(putResult);
+        putStub.verifyBehaviorForOne(putResult);
     }
 
     @Test
     public void putObjectObservable() {
-        final PutOneStub putOneStub = new PutOneStub();
+        final PutStub putStub = PutStub.newPutStubForOneItem();
 
-        final PutResult putResult = putOneStub.storIOSQLiteDb
+        final Observable<PutResult> putResultObservable = putStub.storIOSQLiteDb
                 .put()
-                .object(putOneStub.user)
-                .withMapFunc(putOneStub.mapFunc)
-                .withPutResolver(putOneStub.putResolver)
+                .object(putStub.testItems.get(0))
+                .withMapFunc(putStub.mapFunc)
+                .withPutResolver(putStub.putResolver)
                 .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
+                .createObservable();
 
-        putOneStub.verifyBehavior(putResult);
+        putStub.verifyBehaviorForOne(putResultObservable);
     }
 }

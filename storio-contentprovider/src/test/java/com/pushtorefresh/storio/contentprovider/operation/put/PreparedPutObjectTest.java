@@ -3,15 +3,12 @@ package com.pushtorefresh.storio.contentprovider.operation.put;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.functions.Action1;
-
-import static com.pushtorefresh.storio.test.StorIOAssert.assertThatObservableEmitsOnce;
 
 public class PreparedPutObjectTest {
 
     @Test
     public void putObjectBlocking() {
-        final PutStub putStub = new PutStub(1);
+        final PutStub putStub = PutStub.newPutStubForOneItem();
 
         final PutResult putResult = putStub.storIOContentProvider
                 .put()
@@ -21,12 +18,12 @@ public class PreparedPutObjectTest {
                 .prepare()
                 .executeAsBlocking();
 
-        putStub.verifyBehavior(putResult);
+        putStub.verifyBehaviorForOne(putResult);
     }
 
     @Test
     public void putObjectObservable() {
-        final PutStub putStub = new PutStub(1);
+        final PutStub putStub = PutStub.newPutStubForOneItem();
 
         final Observable<PutResult> putResultObservable = putStub.storIOContentProvider
                 .put()
@@ -36,11 +33,6 @@ public class PreparedPutObjectTest {
                 .prepare()
                 .createObservable();
 
-        assertThatObservableEmitsOnce(putResultObservable, new Action1<PutResult>() {
-            @Override
-            public void call(PutResult putResult) {
-                putStub.verifyBehavior(putResult);
-            }
-        });
+        putStub.verifyBehaviorForOne(putResultObservable);
     }
 }
