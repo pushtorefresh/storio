@@ -40,24 +40,21 @@ ext {
     supportAnnotations = 'com.android.support:support-annotations:21.0.3'
     rxJava = 'io.reactivex:rxjava:1.0.8'
 
-    junit = 'junit:junit:4.12'
-    mockitoCore = 'org.mockito:mockito-core:1.10.19'
-    testingSupportLib = 'com.android.support.test:testing-support-lib:0.1'
-
-
-    // Dagger 2 distributed as SNAPSHOT, we don't want to allow it break our builds, so we have local jars
-    dagger = 'com.google.dagger:dagger:2.0-SNAPSHOT' //files('libs/dagger-2.0-20150309.210909-16.jar')
-    daggerCompiler = 'com.google.dagger:dagger-compiler:2.0-SNAPSHOT' //files('libs/dagger-compiler-2.0-20150309.210931-16-jar-with-dependencies.jar')
-    daggerProducers = files('libs/dagger-producers-2.0-20150309.210913-4.jar')
+    dagger = 'com.google.dagger:dagger:2.0-SNAPSHOT'
+    daggerCompiler = 'com.google.dagger:dagger-compiler:2.0-SNAPSHOT'
 
     javaxInject = 'javax.inject:javax.inject:1'
     javaxAnnotationApi = 'javax.annotation:javax.annotation-api:1.2'
 
     appCompat = 'com.android.support:appcompat-v7:22.0.0'
-    butterKnife = 'com.jakewharton:butterknife:6.1.0' // Jake, if you are reading it -> Smile ;)
+    butterKnife = 'com.jakewharton:butterknife:6.1.0'
     recyclerView = 'com.android.support:recyclerview-v7:22.0.0'
     rxAndroid = 'io.reactivex:rxandroid:0.24.0'
     timber = 'com.jakewharton.timber:timber:2.7.1'
+
+    junit = 'junit:junit:4.12'
+    mockitoCore = 'org.mockito:mockito-core:1.10.19'
+    testingSupportLib = 'com.android.support.test:testing-support-lib:0.1'
 }
 
 // Option to disable Pre-Dexing on CI env
