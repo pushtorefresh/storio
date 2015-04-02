@@ -24,11 +24,11 @@ import rx.Observable;
 /**
  * Powerful abstraction over {@link android.content.ContentProvider}
  */
-public abstract class StorIOContentProvider {
+public abstract class StorIOContentResolver {
 
     /**
-     * Prepares "get" operation for {@link StorIOContentProvider}
-     * Allows to get information from {@link StorIOContentProvider}
+     * Prepares "get" operation for {@link StorIOContentResolver}
+     * Allows to get information from {@link StorIOContentResolver}
      *
      * @return builder for PreparedGet
      */
@@ -53,7 +53,7 @@ public abstract class StorIOContentProvider {
      * @param logListener an logger.
      * @return this.
      */
-    public StorIOContentProvider setLogListener(@NonNull final LogListener logListener) {
+    public StorIOContentResolver setLogListener(@NonNull final LogListener logListener) {
         internal().getLoggi().setLogListener(logListener);
         return this;
     }
@@ -64,7 +64,7 @@ public abstract class StorIOContentProvider {
      * @param enabled <code>false</code>, if you want to hide logs.
      * @return this.
      */
-    public StorIOContentProvider setLogIsEnabled(final boolean enabled) {
+    public StorIOContentResolver setLogIsEnabled(final boolean enabled) {
         internal().getLoggi().setIsEnabled(enabled);
         return this;
     }
@@ -90,16 +90,16 @@ public abstract class StorIOContentProvider {
     }
 
     /**
-     * Hides some internal operations of {@link StorIOContentProvider} to make API of {@link StorIOContentProvider} clean and easy to understand
+     * Hides some internal operations of {@link StorIOContentResolver} to make API of {@link StorIOContentResolver} clean and easy to understand
      *
-     * @return implementation of Internal operations for {@link StorIOContentProvider}
+     * @return implementation of Internal operations for {@link StorIOContentResolver}
      */
     @NonNull
     public abstract Internal internal();
 
     /**
-     * Hides some internal operations of {@link StorIOContentProvider}
-     * to make {@link StorIOContentProvider} API clean and easy to understand
+     * Hides some internal operations of {@link StorIOContentResolver}
+     * to make {@link StorIOContentResolver} API clean and easy to understand
      */
     public static abstract class Internal {
 
@@ -110,7 +110,7 @@ public abstract class StorIOContentProvider {
         private final Loggi loggi = new Loggi();
 
         /**
-         * Gets the data from {@link StorIOContentProvider}
+         * Gets the data from {@link StorIOContentResolver}
          *
          * @param query query
          * @return cursor with result data or null
@@ -119,7 +119,7 @@ public abstract class StorIOContentProvider {
         public abstract Cursor query(@NonNull Query query);
 
         /**
-         * Inserts the data to {@link StorIOContentProvider}
+         * Inserts the data to {@link StorIOContentResolver}
          *
          * @param insertQuery   query
          * @param contentValues data
@@ -129,7 +129,7 @@ public abstract class StorIOContentProvider {
         public abstract Uri insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues);
 
         /**
-         * Updates data in {@link StorIOContentProvider}
+         * Updates data in {@link StorIOContentResolver}
          *
          * @param updateQuery   query
          * @param contentValues data
@@ -138,7 +138,7 @@ public abstract class StorIOContentProvider {
         public abstract int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues);
 
         /**
-         * Deletes the data from {@link StorIOContentProvider}
+         * Deletes the data from {@link StorIOContentResolver}
          *
          * @param deleteQuery query
          * @return number of rows deleted

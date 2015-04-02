@@ -11,7 +11,7 @@ import java.util.List;
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
- * Update query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}
+ * Update query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentResolver}
  * <p>
  * Instances of this class are Immutable
  */

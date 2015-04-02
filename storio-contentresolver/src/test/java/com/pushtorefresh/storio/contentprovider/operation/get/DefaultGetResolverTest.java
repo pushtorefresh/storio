@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.contentprovider.operation.get;
 
 import android.database.Cursor;
 
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 
 import org.junit.Test;
@@ -18,8 +18,8 @@ public class DefaultGetResolverTest {
 
     @Test
     public void query() {
-        final StorIOContentProvider storIOContentProvider = mock(StorIOContentProvider.class);
-        final StorIOContentProvider.Internal internal = mock(StorIOContentProvider.Internal.class);
+        final StorIOContentResolver storIOContentProvider = mock(StorIOContentResolver.class);
+        final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
         final Query query = mock(Query.class);
         final Cursor expectedCursor = mock(Cursor.class);
 

@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.MapFunc;
 
 import rx.Observable;
@@ -20,7 +20,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     @NonNull
     private final MapFunc<T, ContentValues> mapFunc;
 
-    protected PreparedPutObject(@NonNull StorIOContentProvider storIOContentProvider,
+    protected PreparedPutObject(@NonNull StorIOContentResolver storIOContentProvider,
                                 @NonNull PutResolver<T> putResolver,
                                 @NonNull T object, @NonNull MapFunc<T, ContentValues> mapFunc) {
         super(storIOContentProvider, putResolver);
@@ -63,7 +63,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     public static class Builder<T> {
 
         @NonNull
-        private final StorIOContentProvider storIOContentProvider;
+        private final StorIOContentResolver storIOContentProvider;
 
         @NonNull
         private final T object;
@@ -72,7 +72,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
 
         private PutResolver<T> putResolver;
 
-        public Builder(@NonNull StorIOContentProvider storIOContentProvider, @NonNull T object) {
+        public Builder(@NonNull StorIOContentResolver storIOContentProvider, @NonNull T object) {
             this.storIOContentProvider = storIOContentProvider;
             this.object = object;
         }

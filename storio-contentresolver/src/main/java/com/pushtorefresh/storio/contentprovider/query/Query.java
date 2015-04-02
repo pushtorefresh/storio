@@ -11,8 +11,8 @@ import java.util.List;
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
- * Query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}
- * <p/>
+ * Query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentResolver}
+ * <p>
  * Instances of this class are Immutable
  */
 public class Query {
@@ -169,9 +169,9 @@ public class Query {
 
         /**
          * Optional: Specifies arguments for where clause
-         * <p/>
+         * <p>
          * Passed objects will be immediately converted to list {@link String} via calling {@link Object#toString()}
-         * <p/>
+         * <p>
          * Default value is <code>null</code>
          *
          * @param whereArgs selection arguments

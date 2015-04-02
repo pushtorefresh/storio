@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.contentprovider.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.MapFunc;
 
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
     @NonNull
     private final MapFunc<T, ContentValues> mapFunc;
 
-    PreparedPutObjects(@NonNull StorIOContentProvider storIOContentProvider, @NonNull PutResolver<T> putResolver, @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc) {
+    PreparedPutObjects(@NonNull StorIOContentResolver storIOContentProvider, @NonNull PutResolver<T> putResolver, @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc) {
         super(storIOContentProvider, putResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
@@ -81,7 +81,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
     public static class Builder<T> {
 
         @NonNull
-        private final StorIOContentProvider storIOContentProvider;
+        private final StorIOContentResolver storIOContentProvider;
 
         @NonNull
         private final Iterable<T> objects;
@@ -90,7 +90,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
 
         private PutResolver<T> putResolver;
 
-        public Builder(@NonNull StorIOContentProvider storIOContentProvider, @NonNull Iterable<T> objects) {
+        public Builder(@NonNull StorIOContentResolver storIOContentProvider, @NonNull Iterable<T> objects) {
             this.storIOContentProvider = storIOContentProvider;
             this.objects = objects;
         }

@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
@@ -15,7 +15,7 @@ import rx.Subscriber;
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
- * Represents an Operation for {@link StorIOContentProvider} which performs query that retrieves data as {@link Cursor}
+ * Represents an Operation for {@link StorIOContentResolver} which performs query that retrieves data as {@link Cursor}
  * from {@link android.content.ContentProvider}
  */
 public class PreparedGetCursor extends PreparedGet<Cursor> {
@@ -23,7 +23,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     @NonNull
     protected final Query query;
 
-    PreparedGetCursor(@NonNull StorIOContentProvider storIOContentProvider, @NonNull GetResolver getResolver, @NonNull Query query) {
+    PreparedGetCursor(@NonNull StorIOContentResolver storIOContentProvider, @NonNull GetResolver getResolver, @NonNull Query query) {
         super(storIOContentProvider, getResolver);
         this.query = query;
     }
@@ -63,13 +63,13 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     public static class Builder {
 
         @NonNull
-        private final StorIOContentProvider storIOContentProvider;
+        private final StorIOContentResolver storIOContentProvider;
 
         private Query query;
 
         private GetResolver getResolver;
 
-        public Builder(@NonNull StorIOContentProvider storIOContentProvider) {
+        public Builder(@NonNull StorIOContentResolver storIOContentProvider) {
             this.storIOContentProvider = storIOContentProvider;
         }
 

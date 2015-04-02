@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.contentprovider.operation.get;
 
 import android.database.Cursor;
 
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 import com.pushtorefresh.storio.operation.MapFunc;
 
@@ -51,7 +51,7 @@ public class PreparedGetTest {
     }
 
     private static class GetStub {
-        final StorIOContentProvider storIOContentProvider;
+        final StorIOContentResolver storIOContentProvider;
         final Query query;
         final GetResolver getResolver;
         final MapFunc<Cursor, TestItem> mapFunc;
@@ -60,7 +60,7 @@ public class PreparedGetTest {
 
         @SuppressWarnings("unchecked")
         GetStub() {
-            storIOContentProvider = mock(StorIOContentProvider.class);
+            storIOContentProvider = mock(StorIOContentResolver.class);
             query = mock(Query.class);
             getResolver = mock(GetResolver.class);
             mapFunc = (MapFunc<Cursor, TestItem>) mock(MapFunc.class);

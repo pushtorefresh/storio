@@ -51,7 +51,7 @@ public class PutResult {
     /**
      * Checks whether result of Put Operation was "insert"
      *
-     * @return true if something was inserted into {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}, false otherwise
+     * @return true if something was inserted into {@link com.pushtorefresh.storio.contentprovider.StorIOContentResolver}, false otherwise
      */
     public boolean wasInserted() {
         return insertedUri != null;
@@ -60,7 +60,7 @@ public class PutResult {
     /**
      * Checks whether result of Put Operation was NOT "insert"
      *
-     * @return true if nothing was inserted into {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}, false if something was inserted
+     * @return true if nothing was inserted into {@link com.pushtorefresh.storio.contentprovider.StorIOContentResolver}, false if something was inserted
      */
     public boolean wasNotInserted() {
         return !wasInserted();
@@ -69,7 +69,7 @@ public class PutResult {
     /**
      * Checks whether result of Put Operation was "update"
      *
-     * @return true if something was updated in {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}, false otherwise
+     * @return true if something was updated in {@link com.pushtorefresh.storio.contentprovider.StorIOContentResolver}, false otherwise
      */
     public boolean wasUpdated() {
         return numberOfRowsUpdated != null;
@@ -78,7 +78,7 @@ public class PutResult {
     /**
      * Checks whether result of Put Operation was NOT "update"
      *
-     * @return true if nothing was updated in {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}, false if something was updated
+     * @return true if nothing was updated in {@link com.pushtorefresh.storio.contentprovider.StorIOContentResolver}, false if something was updated
      */
     public boolean wasNotUpdated() {
         return !wasUpdated();

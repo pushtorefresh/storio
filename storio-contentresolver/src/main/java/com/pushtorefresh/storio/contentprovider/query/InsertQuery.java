@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
- * Insert query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentProvider}
+ * Insert query for {@link com.pushtorefresh.storio.contentprovider.StorIOContentResolver}
  * <p>
  * Instances of this class are Immutable
  */

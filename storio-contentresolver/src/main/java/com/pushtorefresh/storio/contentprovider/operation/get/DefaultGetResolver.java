@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 
 /**
@@ -17,7 +17,7 @@ public class DefaultGetResolver implements GetResolver {
 
     @Nullable
     @Override
-    public Cursor performGet(@NonNull StorIOContentProvider storIOContentProvider, @NonNull Query query) {
+    public Cursor performGet(@NonNull StorIOContentResolver storIOContentProvider, @NonNull Query query) {
         return storIOContentProvider.internal().query(query);
     }
 }

@@ -2,15 +2,15 @@ package com.pushtorefresh.storio.contentprovider.design;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 
 abstract class OperationDesignTest {
 
     @NonNull
-    private final StorIOContentProvider storIOContentProvider = new DesignTestStorIOContentProviderImpl();
+    private final StorIOContentResolver storIOContentProvider = new DesignTestStorIOContentProviderImpl();
 
     @NonNull
-    protected StorIOContentProvider storIOContentProvider() {
+    protected StorIOContentResolver storIOContentProvider() {
         return storIOContentProvider;
     }
 }

@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 import com.pushtorefresh.storio.contentprovider.query.InsertQuery;
 import com.pushtorefresh.storio.contentprovider.query.UpdateQuery;
 import com.pushtorefresh.storio.operation.MapFunc;
@@ -76,8 +76,8 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void insert() {
-        final StorIOContentProvider storIOContentProvider = mock(StorIOContentProvider.class);
-        final StorIOContentProvider.Internal internal = mock(StorIOContentProvider.Internal.class);
+        final StorIOContentResolver storIOContentProvider = mock(StorIOContentResolver.class);
+        final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
 
         when(storIOContentProvider.internal())
                 .thenReturn(internal);
@@ -140,8 +140,8 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void update() {
-        final StorIOContentProvider storIOContentProvider = mock(StorIOContentProvider.class);
-        final StorIOContentProvider.Internal internal = mock(StorIOContentProvider.Internal.class);
+        final StorIOContentResolver storIOContentProvider = mock(StorIOContentResolver.class);
+        final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
 
         when(storIOContentProvider.internal())
                 .thenReturn(internal);
@@ -210,8 +210,8 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void insertAfterFailedUpdate() {
-        final StorIOContentProvider storIOContentProvider = mock(StorIOContentProvider.class);
-        final StorIOContentProvider.Internal internal = mock(StorIOContentProvider.Internal.class);
+        final StorIOContentResolver storIOContentProvider = mock(StorIOContentResolver.class);
+        final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
 
         when(storIOContentProvider.internal())
                 .thenReturn(internal);

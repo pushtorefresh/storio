@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentprovider.Changes;
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 import com.pushtorefresh.storio.contentprovider.query.Query;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
@@ -21,7 +21,7 @@ import rx.functions.Func1;
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
- * Represents an Operation for {@link StorIOContentProvider} which performs query that retrieves data as list of objects
+ * Represents an Operation for {@link StorIOContentResolver} which performs query that retrieves data as list of objects
  * from {@link android.content.ContentProvider}
  *
  * @param <T> type of result
@@ -34,7 +34,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @NonNull
     private final Query query;
 
-    PreparedGetListOfObjects(@NonNull StorIOContentProvider storIOContentProvider, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc, @NonNull Query query) {
+    PreparedGetListOfObjects(@NonNull StorIOContentResolver storIOContentProvider, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc, @NonNull Query query) {
         super(storIOContentProvider, getResolver);
         this.mapFunc = mapFunc;
         this.query = query;
@@ -121,7 +121,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     public static class Builder<T> {
 
         @NonNull
-        private final StorIOContentProvider storIOContentProvider;
+        private final StorIOContentResolver storIOContentProvider;
 
         @NonNull
         private final Class<T> type; // currently type not used as object, only for generic Builder class
@@ -130,7 +130,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         private Query query;
         private GetResolver getResolver;
 
-        public Builder(@NonNull StorIOContentProvider storIOContentProvider, @NonNull Class<T> type) {
+        public Builder(@NonNull StorIOContentResolver storIOContentProvider, @NonNull Class<T> type) {
             this.storIOContentProvider = storIOContentProvider;
             this.type = type;
         }

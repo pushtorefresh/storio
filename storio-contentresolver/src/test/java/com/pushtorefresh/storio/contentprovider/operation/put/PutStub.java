@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
@@ -27,8 +27,8 @@ import static org.mockito.Mockito.when;
 class PutStub {
 
     final List<TestItem> items;
-    final StorIOContentProvider storIOContentProvider;
-    final StorIOContentProvider.Internal internal;
+    final StorIOContentResolver storIOContentProvider;
+    final StorIOContentResolver.Internal internal;
     final MapFunc<TestItem, ContentValues> mapFunc;
     final PutResolver<TestItem> putResolver;
 
@@ -49,8 +49,8 @@ class PutStub {
             items.add(TestItem.newInstance());
         }
 
-        storIOContentProvider = mock(StorIOContentProvider.class);
-        internal = mock(StorIOContentProvider.Internal.class);
+        storIOContentProvider = mock(StorIOContentResolver.class);
+        internal = mock(StorIOContentResolver.Internal.class);
 
         when(storIOContentProvider.internal())
                 .thenReturn(internal);

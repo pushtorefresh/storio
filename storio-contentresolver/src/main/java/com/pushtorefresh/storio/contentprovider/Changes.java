@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Immutable container of information about one or more changes in {@link StorIOContentProvider}
+ * Immutable container of information about one or more changes in {@link StorIOContentResolver}
  */
 public class Changes {
 

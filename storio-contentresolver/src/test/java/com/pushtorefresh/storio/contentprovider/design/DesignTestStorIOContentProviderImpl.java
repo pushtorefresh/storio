@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentprovider.Changes;
-import com.pushtorefresh.storio.contentprovider.StorIOContentProvider;
+import com.pushtorefresh.storio.contentprovider.StorIOContentResolver;
 import com.pushtorefresh.storio.contentprovider.query.DeleteQuery;
 import com.pushtorefresh.storio.contentprovider.query.InsertQuery;
 import com.pushtorefresh.storio.contentprovider.query.Query;
@@ -19,7 +19,7 @@ import rx.Observable;
 
 import static org.mockito.Mockito.mock;
 
-class DesignTestStorIOContentProviderImpl extends StorIOContentProvider {
+class DesignTestStorIOContentProviderImpl extends StorIOContentResolver {
 
     @NonNull
     private final Internal internal = new InternalImpl();
