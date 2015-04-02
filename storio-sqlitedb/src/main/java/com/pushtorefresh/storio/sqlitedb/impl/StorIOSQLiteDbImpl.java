@@ -27,14 +27,6 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
  * Implementation of {@link StorIOSQLiteDb} for {@link SQLiteDatabase}
- * <p/>
- * We are very sorry for "Impl" postfix in class name, it was made for unification of naming:
- * <p>
- * StorIOSQLiteDb & StorIOSQLiteDbImpl
- * </p>
- * <p>
- * StorIOContentProvider & StorIOContentProviderImpl
- * </p>
  */
 public class StorIOSQLiteDbImpl extends StorIOSQLiteDb {
 

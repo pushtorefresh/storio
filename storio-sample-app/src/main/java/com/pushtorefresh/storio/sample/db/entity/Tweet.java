@@ -27,7 +27,7 @@ public class Tweet {
     public static final String COLUMN_AUTHOR = "author";
 
     /**
-     * For example: "Check out StorIO — modern API for SQLiteDatabase & ContentProvider #androiddev"
+     * For example: "Check out StorIO — modern API for SQLiteDatabase & ContentResolver #androiddev"
      */
     public static final String COLUMN_CONTENT = "content";
 

@@ -26,8 +26,8 @@ public class MainActivity extends BaseActivity {
         startActivity(new Intent(this, TweetsSampleActivity.class));
     }
 
-    @OnClick(R.id.main_content_provider_sample)
-    void openContentProviderSample() {
+    @OnClick(R.id.main_content_resolver_sample)
+    void openContentResolverSample() {
         ToastHelper.safeShowShortToast(this, "Not implemented :(");
     }
 }

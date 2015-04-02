@@ -23,7 +23,7 @@
             android:text="@string/main_tweets_sample"/>
 
         <TextView
-            android:id="@+id/main_content_provider_sample"
+            android:id="@+id/main_content_resolver_sample"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
