@@ -30,11 +30,11 @@ public class PreparedDeleteTest {
         final MapFunc<User, DeleteQuery> mapFunc;
         final DeleteResolver deleteResolver;
 
+        @SuppressWarnings("unchecked")
         DeleteOneStub() {
             user = new User(null, "test@example.com");
             storIOSQLiteDb = mock(StorIOSQLiteDb.class);
             internal = mock(StorIOSQLiteDb.Internal.class);
-            //noinspection unchecked
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
             deleteResolver = mock(DeleteResolver.class);
 
@@ -118,6 +118,7 @@ public class PreparedDeleteTest {
 
         private static final int NUMBER_OF_ITEMS_TO_DELETE = 3;
 
+        @SuppressWarnings("unchecked")
         DeleteMultipleStub(boolean useTransaction) {
             this.useTransaction = useTransaction;
 
@@ -132,7 +133,6 @@ public class PreparedDeleteTest {
 
             storIOSQLiteDb = mock(StorIOSQLiteDb.class);
             internal = mock(StorIOSQLiteDb.Internal.class);
-            //noinspection unchecked
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
             deleteResolver = mock(DeleteResolver.class);
 

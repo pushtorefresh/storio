@@ -21,7 +21,7 @@ public class ObservableBehaviorCheckerTest {
         final Observable<String> testObservable = Observable.just(testString);
         final Action1<String> testAction = mock(Action1.class);
 
-        new ObservableBehaviorChecker()
+        new ObservableBehaviorChecker<String>()
                 .observable(testObservable)
                 .expectedNumberOfEmissions(1)
                 .testAction(testAction)

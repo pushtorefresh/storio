@@ -47,6 +47,7 @@ class PutStub {
         return new PutStub(useTransaction, 3);
     }
 
+    @SuppressWarnings("unchecked")
     private PutStub(boolean useTransaction, int numberOfItems) {
         this.useTransaction = useTransaction;
 
@@ -68,13 +69,11 @@ class PutStub {
         when(storIOSQLiteDb.put())
                 .thenReturn(new PreparedPut.Builder(storIOSQLiteDb));
 
-        //noinspection unchecked
         putResolver = (PutResolver<TestItem>) mock(PutResolver.class);
 
         when(putResolver.performPut(eq(storIOSQLiteDb), any(ContentValues.class)))
                 .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE));
 
-        //noinspection unchecked
         mapFunc = (MapFunc<TestItem, ContentValues>) mock(MapFunc.class);
 
         for (TestItem testItem : testItems) {

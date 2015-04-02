@@ -103,7 +103,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          * @param <T>     type of objects
          * @return builder
          */
-        @SafeVarargs
+        @SuppressWarnings("unchecked")
         @NonNull
         public final <T> PreparedPutObjects.Builder<T> objects(@NonNull T... objects) {
             return new PreparedPutObjects.Builder<>(storIOSQLiteDb, Arrays.asList(objects));

@@ -66,8 +66,21 @@ subprojects {
                 || "com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
             project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
 
-            // treating all lint warning in all modules as errors
+            // treat all Android Lint warning in all sub-projects as errors
             project.android.lintOptions.warningsAsErrors = true
+        }
+    }
+
+    project.afterEvaluate {
+        // StorIO Sample App uses Dagger's annotations and Java Compiler throws warning:
+        // 'warning: No processor claimed any of these annotations suppress'
+        // Unfortunately this warning can not be ignored
+        // Please feel free to suggest workaround for this problem
+        if (!'storio-sample-app'.equals(project.name)) {
+            tasks.withType(JavaCompile) {
+                // treat all Java Compiler warnings as errors
+                options.compilerArgs << "-Xlint:all" << "-Werror"
+            }
         }
     }
 }
