@@ -15,7 +15,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getCursorBlocking() {
-        Cursor cursor = storIODb()
+        Cursor cursor = storIOSQLiteDb()
                 .get()
                 .cursor()
                 .withQuery(new Query.Builder()
@@ -29,7 +29,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getListOfObjectsBlocking() {
-        List<User> users = storIODb()
+        List<User> users = storIOSQLiteDb()
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -44,7 +44,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getCursorObservable() {
-        Observable<Cursor> observableCursor = storIODb()
+        Observable<Cursor> observableCursor = storIOSQLiteDb()
                 .get()
                 .cursor()
                 .withQuery(new Query.Builder()
@@ -58,7 +58,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getListOfObjectsObservable() {
-        Observable<List<User>> observableUsers = storIODb()
+        Observable<List<User>> observableUsers = storIOSQLiteDb()
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -73,7 +73,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getCursorWithRawQueryBlocking() {
-        Cursor cursor = storIODb()
+        Cursor cursor = storIOSQLiteDb()
                 .get()
                 .cursor()
                 .withQuery(new RawQuery.Builder()
@@ -86,7 +86,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getCursorWithRawQueryObservable() {
-        Observable<Cursor> cursorObservable = storIODb()
+        Observable<Cursor> cursorObservable = storIOSQLiteDb()
                 .get()
                 .cursor()
                 .withQuery(new RawQuery.Builder()
@@ -99,7 +99,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getListOfObjectsWithRawQueryBlocking() {
-        List<User> users = storIODb()
+        List<User> users = storIOSQLiteDb()
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -113,7 +113,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getListOfObjectsWithRawQueryObservable() {
-        Observable<List<User>> usersObservable = storIODb()
+        Observable<List<User>> usersObservable = storIOSQLiteDb()
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -127,7 +127,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getCursorObservableStream() {
-        Observable<Cursor> usersObservableStream = storIODb()
+        Observable<Cursor> usersObservableStream = storIOSQLiteDb()
                 .get()
                 .cursor()
                 .withQuery(new Query.Builder().table("users").build())
@@ -137,7 +137,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getListOfObjectsObservableStream() {
-        Observable<List<User>> usersObservableStream = storIODb()
+        Observable<List<User>> usersObservableStream = storIOSQLiteDb()
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)

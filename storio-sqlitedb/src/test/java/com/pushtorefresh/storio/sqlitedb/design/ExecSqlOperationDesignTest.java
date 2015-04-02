@@ -9,7 +9,7 @@ import rx.Observable;
 public class ExecSqlOperationDesignTest extends OperationDesignTest {
 
     @Test public void execSqlBlocking() {
-        Void nothing = storIODb()
+        Void nothing = storIOSQLiteDb()
                 .execSql()
                 .withQuery(new RawQuery.Builder().query("ALTER TABLE users ...").build())
                 .prepare()
@@ -17,7 +17,7 @@ public class ExecSqlOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void execSqlObservable() {
-        Observable<Void> observable = storIODb()
+        Observable<Void> observable = storIOSQLiteDb()
                 .execSql()
                 .withQuery(new RawQuery.Builder().query("DROP TABLE users").build())
                 .prepare()

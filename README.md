@@ -1,4 +1,4 @@
-#### StorIO — modern API for SQLiteDatabase and ContentProvider
+#### StorIO — modern API for SQLiteDatabase and ContentResolver
 
 #####Overview:
 * Powerful set of Operations: `Put`, `Get`, `Delete`
@@ -299,14 +299,14 @@ Several things about `ExecSql`:
 For more examples, please check our `Design Tests`:
 
 * [`StorIOSQLiteDb` Design tests](storio-sqlitedb/src/test/java/com/pushtorefresh/storio/sqlitedb/design)
-* [`StorIOContentProvider` Design tests](storio-contentprovider/src/test/java/com/pushtorefresh/storio/contentprovider/design)
+* [`StorIOContentResolver` Design tests](storio-contentresolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
 
 ####Architecture:
-`StorIOSQLiteDb` and `StorIOContentProvider` — are abstractions with default implementations: `StorIOSQLiteDbImpl` and `StorIOContentProviderImpl`. 
+`StorIOSQLiteDb` and `StorIOContentResolver` — are abstractions with default implementations: `StorIOSQLiteDbImpl` and `DefaultStorIOContentResolver`.
 
-It means, that you can have your own implementation of `StorIOSQLiteDb` and `StorIOContentProvider` with custom behavior, such as memory caching, verbose logging and so on.
+It means, that you can have your own implementation of `StorIOSQLiteDb` and `StorIOContentResolver` with custom behavior, such as memory caching, verbose logging and so on.
 
-One of the main goals of `StorIO` — clean API which will be easy to use and understand, that's why `StorIOSQLiteDb` and `StorIOContentProvider` have just several methods, but we understand that sometimes you need to go under the hood and `StorIO` allows you to do it: `StorIOSQLiteDb.Internal` and `StorIOContentProvider.Internal` encapsulates low-level methods, you can use them if you need, but please try to avoid it.
+One of the main goals of `StorIO` — clean API which will be easy to use and understand, that's why `StorIOSQLiteDb` and `StorIOContentResolver` have just several methods, but we understand that sometimes you need to go under the hood and `StorIO` allows you to do it: `StorIOSQLiteDb.Internal` and `StorIOContentResolver.Internal` encapsulates low-level methods, you can use them if you need, but please try to avoid it.
 
 ####Queries
 
