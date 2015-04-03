@@ -19,7 +19,7 @@ import rx.Observable;
 
 import static org.mockito.Mockito.mock;
 
-class DesignTestStorIOContentResolverImpl extends StorIOContentResolver {
+class DesignTestStorIOContentResolver extends StorIOContentResolver {
 
     @NonNull
     private final Internal internal = new InternalImpl();
