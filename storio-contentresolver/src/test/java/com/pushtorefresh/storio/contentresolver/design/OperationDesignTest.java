@@ -7,7 +7,7 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 abstract class OperationDesignTest {
 
     @NonNull
-    private final StorIOContentResolver storIOContentResolver = new DesignTestStorIOContentResolverImpl();
+    private final StorIOContentResolver storIOContentResolver = new DesignTestStorIOContentResolver();
 
     @NonNull
     protected StorIOContentResolver storIOContentResolver() {

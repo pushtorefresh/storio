@@ -32,7 +32,7 @@ public abstract class BaseTest {
         db = new TestSQLiteOpenHelper(InstrumentationRegistry.getContext())
                 .getWritableDatabase();
 
-        storIOSQLiteDb = new StorIOSQLiteDbImpl.Builder()
+        storIOSQLiteDb = new DefaultStorIOSQLiteDb.Builder()
                 .db(db)
                 .build();
 

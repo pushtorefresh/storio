@@ -16,7 +16,7 @@
 ####0. Create an instance of StorIOSQLiteDb
 
 ```java
-StorIOSQLiteDb storIOSQLiteDb = new StorIOSQLiteDbImpl.Builder()
+StorIOSQLiteDb storIOSQLiteDb = new DefaultStorIOSQLiteDb.Builder()
   .sqliteOpenHelper(yourSqliteOpenHelper) // or .db(db)
   .build();
 ```
@@ -159,7 +159,7 @@ storIOSQLiteDb
 
 Several things about `Get` Operation:
 * There is `DefaultGetResolver` which simply redirects query to `StorIOSQLiteDb`, `Get` Operation will use `DefaultGetResolver` if you won't pass your `GetResolver`, in 99% of cases `DefaultGetResolver` will be enough
-* As you can see, results of `Get` Operation computed even if you'll apply `RxJava` operators such as `Debounce`, if you want to avoid unneeded computatations, please combine `StorIOSQLiteDb.observeChangesInTable()` with `Get` Operation manually.
+* As you can see, results of `Get` Operation computed even if you'll apply `RxJava` operators such as `Debounce`, if you want to avoid unneeded computations, please combine `StorIOSQLiteDb.observeChangesInTable()` with `Get` Operation manually.
 * In `StorIO 1.1.0` we are going to add `Lazy<T>` to allow you skip unneeded computations
 * If you want to `Put` multiple items into `StorIOSQLiteDb`, better to do this in transaction to avoid multiple calls to the listeners (see docs about `Put` Operation)
 
@@ -302,7 +302,7 @@ For more examples, please check our `Design Tests`:
 * [`StorIOContentResolver` Design tests](storio-contentresolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
 
 ####Architecture:
-`StorIOSQLiteDb` and `StorIOContentResolver` — are abstractions with default implementations: `StorIOSQLiteDbImpl` and `DefaultStorIOContentResolver`.
+`StorIOSQLiteDb` and `StorIOContentResolver` — are abstractions with default implementations: `DefaultStorIOSQLiteDb` and `DefaultStorIOContentResolver`.
 
 It means, that you can have your own implementation of `StorIOSQLiteDb` and `StorIOContentResolver` with custom behavior, such as memory caching, verbose logging and so on.
 

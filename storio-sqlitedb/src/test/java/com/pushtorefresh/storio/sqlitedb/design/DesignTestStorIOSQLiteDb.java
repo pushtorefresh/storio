@@ -22,7 +22,7 @@ import rx.Observable;
 
 import static org.mockito.Mockito.mock;
 
-class DesignTestStorIOSQLiteDbImpl extends StorIOSQLiteDb {
+class DesignTestStorIOSQLiteDb extends StorIOSQLiteDb {
 
     @NonNull @Override
     public Observable<Changes> observeChangesInTables(@NonNull Set<String> tables) {

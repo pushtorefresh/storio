@@ -26,9 +26,11 @@ import rx.subjects.PublishSubject;
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
- * Implementation of {@link StorIOSQLiteDb} for {@link SQLiteDatabase}
+ * Default implementation of {@link StorIOSQLiteDb} for {@link SQLiteDatabase}
+ * <p>
+ * Thread safe
  */
-public class StorIOSQLiteDbImpl extends StorIOSQLiteDb {
+public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
 
     /**
      * Real db
@@ -51,7 +53,7 @@ public class StorIOSQLiteDbImpl extends StorIOSQLiteDb {
     @NonNull
     private final Internal internal = new InternalImpl();
 
-    protected StorIOSQLiteDbImpl(@NonNull SQLiteDatabase db) {
+    protected DefaultStorIOSQLiteDb(@NonNull SQLiteDatabase db) {
         this.db = db;
     }
 
@@ -190,10 +192,10 @@ public class StorIOSQLiteDbImpl extends StorIOSQLiteDb {
         }
 
         @NonNull
-        public StorIOSQLiteDbImpl build() {
+        public DefaultStorIOSQLiteDb build() {
             checkNotNull(db, "Please specify SQLiteDatabase instance");
 
-            return new StorIOSQLiteDbImpl(db);
+            return new DefaultStorIOSQLiteDb(db);
         }
     }
 }
