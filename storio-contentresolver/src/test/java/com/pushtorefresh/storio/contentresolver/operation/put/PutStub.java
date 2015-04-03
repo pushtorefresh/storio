@@ -42,6 +42,7 @@ class PutStub {
         return new PutStub(3);
     }
 
+    @SuppressWarnings("unchecked")
     private PutStub(int numberOfTestItems) {
         items = new ArrayList<>(numberOfTestItems);
 
@@ -58,13 +59,11 @@ class PutStub {
         when(storIOContentResolver.put())
                 .thenReturn(new PreparedPut.Builder(storIOContentResolver));
 
-        //noinspection unchecked
         putResolver = (PutResolver<TestItem>) mock(PutResolver.class);
 
         when(putResolver.performPut(eq(storIOContentResolver), any(ContentValues.class)))
                 .thenReturn(PutResult.newInsertResult(mock(Uri.class), TestItem.CONTENT_URI));
 
-        //noinspection unchecked
         mapFunc = (MapFunc<TestItem, ContentValues>) mock(MapFunc.class);
 
         for (final TestItem item : items) {
