@@ -9,7 +9,6 @@ import com.pushtorefresh.storio.sqlitedb.query.DeleteQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,20 +19,20 @@ import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
-public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteCollectionOfObjectsResult<T>> {
+public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
     @NonNull private final Collection<T> objects;
     @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
     private final boolean useTransactionIfPossible;
 
-    PreparedDeleteCollectionOfObjects(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible, @NonNull DeleteResolver deleteResolver) {
+    PreparedDeleteObjects(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible, @NonNull DeleteResolver deleteResolver) {
         super(storIOSQLiteDb, deleteResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
-    @NonNull @Override public DeleteCollectionOfObjectsResult<T> executeAsBlocking() {
+    @NonNull @Override public DeleteResults<T> executeAsBlocking() {
         final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
 
         final Map<T, DeleteResult> results = new HashMap<>();
@@ -53,9 +52,9 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
 
                 results.put(
                         object,
-                        DeleteResult.newDeleteResult(
+                        DeleteResult.newInstance(
                                 numberOfDeletedRows,
-                                Collections.singleton(deleteQuery.table))
+                                deleteQuery.table)
                 );
 
                 if (!withTransaction) {
@@ -77,7 +76,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
                     final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be one table
 
                     for (final T object : results.keySet()) {
-                        affectedTables.addAll(results.get(object).affectedTables());
+                        affectedTables.add(results.get(object).affectedTable());
                     }
 
                     internal.notifyAboutChanges(new Changes(affectedTables));
@@ -85,20 +84,20 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
             }
         }
 
-        return new DeleteCollectionOfObjectsResult<>(results);
+        return DeleteResults.newInstance(results);
     }
 
-    @NonNull @Override public Observable<DeleteCollectionOfObjectsResult<T>> createObservable() {
+    @NonNull @Override public Observable<DeleteResults<T>> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
-        return Observable.create(new Observable.OnSubscribe<DeleteCollectionOfObjectsResult<T>>() {
+        return Observable.create(new Observable.OnSubscribe<DeleteResults<T>>() {
             @Override
-            public void call(Subscriber<? super DeleteCollectionOfObjectsResult<T>> subscriber) {
-                DeleteCollectionOfObjectsResult<T> deleteCollectionOfObjectsResult
+            public void call(Subscriber<? super DeleteResults<T>> subscriber) {
+                DeleteResults<T> deleteCollectionResults
                         = executeAsBlocking();
 
                 if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(deleteCollectionOfObjectsResult);
+                    subscriber.onNext(deleteCollectionResults);
                     subscriber.onCompleted();
                 }
             }
@@ -166,16 +165,16 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteC
         /**
          * Prepares Delete Operation
          *
-         * @return {@link PreparedDeleteCollectionOfObjects}
+         * @return {@link PreparedDeleteObjects}
          */
-        @NonNull public PreparedDeleteCollectionOfObjects<T> prepare() {
+        @NonNull public PreparedDeleteObjects<T> prepare() {
             if (deleteResolver == null) {
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
             }
 
             checkNotNull(mapFunc, "Please specify map function");
 
-            return new PreparedDeleteCollectionOfObjects<>(
+            return new PreparedDeleteObjects<>(
                     storIOSQLiteDb,
                     objects,
                     mapFunc,

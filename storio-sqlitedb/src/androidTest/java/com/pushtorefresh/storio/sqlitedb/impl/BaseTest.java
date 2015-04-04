@@ -116,7 +116,7 @@ public abstract class BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(1, deleteResult.numberOfDeletedRows());
+        assertEquals(1, deleteResult.numberOfRowsDeleted());
 
         return deleteResult;
     }

@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlitedb.impl;
 import android.database.Cursor;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.sqlitedb.operation.delete.DeleteCollectionOfObjectsResult;
+import com.pushtorefresh.storio.sqlitedb.operation.delete.DeleteResults;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ public class DeleteTest extends BaseTest {
             usersToDelete.add(allUsers.get(i));
         }
 
-        final DeleteCollectionOfObjectsResult<User> deleteResult = storIOSQLiteDb
+        final DeleteResults<User> deleteResult = storIOSQLiteDb
                 .delete()
                 .objects(usersToDelete)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
