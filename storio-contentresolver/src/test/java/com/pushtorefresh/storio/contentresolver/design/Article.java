@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
  */
 class Article {
 
-    static final Uri URI = mock(Uri.class);
+    static final Uri CONTENT_URI = mock(Uri.class);
 
     static final MapFunc<Cursor, Article> MAP_FROM_CURSOR = new MapFunc<Cursor, Article>() {
         @Override
@@ -44,7 +44,15 @@ class Article {
         @NonNull
         @Override
         protected Uri getUri(@NonNull ContentValues contentValues) {
-            return URI;
+            return CONTENT_URI;
+        }
+    };
+
+    static final PutResolver<ContentValues> PUT_RESOLVER_FOR_CONTENT_VALUES = new DefaultPutResolver<ContentValues>() {
+        @NonNull
+        @Override
+        protected Uri getUri(@NonNull ContentValues contentValues) {
+            return CONTENT_URI;
         }
     };
 

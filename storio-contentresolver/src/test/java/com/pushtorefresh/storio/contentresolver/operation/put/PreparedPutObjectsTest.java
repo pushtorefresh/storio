@@ -8,31 +8,31 @@ public class PreparedPutObjectsTest {
 
     @Test
     public void putObjectsBlocking() {
-        final PutStub putStub = PutStub.newPutStubForMultipleItems();
+        final PutStub putStub = PutStub.newPutStubForMultipleObjects();
 
         final PutCollectionResult<TestItem> putCollectionResult = putStub.storIOContentResolver
                 .put()
-                .objects(putStub.items)
+                .objects(putStub.testItems)
                 .withMapFunc(putStub.mapFunc)
-                .withPutResolver(putStub.putResolver)
+                .withPutResolver(putStub.putResolverForObjects)
                 .prepare()
                 .executeAsBlocking();
 
-        putStub.verifyBehaviorForMultiple(putCollectionResult);
+        putStub.verifyBehaviorForMultipleObjects(putCollectionResult);
     }
 
     @Test
     public void putObjectsObservable() {
-        final PutStub putStub = PutStub.newPutStubForMultipleItems();
+        final PutStub putStub = PutStub.newPutStubForMultipleObjects();
 
         final Observable<PutCollectionResult<TestItem>> putCollectionResultObservable = putStub.storIOContentResolver
                 .put()
-                .objects(putStub.items)
+                .objects(putStub.testItems)
                 .withMapFunc(putStub.mapFunc)
-                .withPutResolver(putStub.putResolver)
+                .withPutResolver(putStub.putResolverForObjects)
                 .prepare()
                 .createObservable();
 
-        putStub.verifyBehaviorForMultiple(putCollectionResultObservable);
+        putStub.verifyBehaviorForMultipleObjects(putCollectionResultObservable);
     }
 }
