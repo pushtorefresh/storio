@@ -117,6 +117,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     /**
      * Builder for {@link PreparedGetListOfObjects}
+
+     * @param <T> type of objects for query
      */
     public static class Builder<T> {
 
@@ -136,7 +138,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Specifies map function for Get Operation which will map {@link Cursor} to object of required type
+         * Required: Specifies map function for Get Operation
+         * which will map {@link Cursor} to object of required type
          *
          * @param mapFunc map function which will map {@link Cursor} to object of required type
          * @return builder
@@ -148,7 +151,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Specifies {@link Query} for Get Operation
+         * Required: Specifies {@link Query} for Get Operation
          *
          * @param query query
          * @return builder
@@ -160,7 +163,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Optional: Specifies {@link GetResolver} for Get Operation which allows you to customize behavior of Get Operation
+         * Optional: Specifies {@link GetResolver} for Get Operation
+         * which allows you to customize behavior of Get Operation
          *
          * @param getResolver get resolver
          * @return builder

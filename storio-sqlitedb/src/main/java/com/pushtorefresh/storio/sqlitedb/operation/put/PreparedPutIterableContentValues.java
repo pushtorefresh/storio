@@ -103,6 +103,9 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         });
     }
 
+    /**
+     * Builder for {@link PreparedPutIterableContentValues}
+     */
     public static class Builder {
 
         @NonNull
@@ -119,7 +122,8 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         }
 
         /**
-         * Specifies {@link PutResolver} for Put Operation which allows you to customize behavior of Put Operation
+         * Required: Specifies {@link PutResolver} for Put Operation
+         * which allows you to customize behavior of Put Operation
          *
          * @param putResolver put resolver
          * @return builder
@@ -132,7 +136,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         }
 
         /**
-         * Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIOSQLiteDb}
+         * Optional: Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIOSQLiteDb}
          * By default, transaction will be used
          *
          * @return builder
@@ -144,7 +148,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         }
 
         /**
-         * Defines that Put Operation won't use transaction
+         * Optional: Defines that Put Operation won't use transaction
          * By default, transaction will be used
          *
          * @return builder

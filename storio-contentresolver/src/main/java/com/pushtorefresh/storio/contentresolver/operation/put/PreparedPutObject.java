@@ -77,18 +77,36 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
             this.object = object;
         }
 
+        /**
+         * Required: Specifies map function that should map object to {@link ContentValues}
+         *
+         * @param mapFunc map function
+         * @return builder
+         */
         @NonNull
         public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
 
+        /**
+         * Required: Specifies resolver for Put Operation
+         * that should define behavior of Put Operation: insert or update of the {@link ContentValues}
+         *
+         * @param putResolver resolver for Put Operation
+         * @return builder
+         */
         @NonNull
         public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
             this.putResolver = putResolver;
             return this;
         }
 
+        /**
+         * Builds instance of {@link PreparedPutObject}
+         *
+         * @return instance of {@link PreparedPutObject}
+         */
         @SuppressWarnings("unchecked")
         @NonNull
         public PreparedPutObject<T> prepare() {

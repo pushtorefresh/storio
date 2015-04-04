@@ -12,7 +12,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
  * Update query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
- * <p>
+ * <p/>
  * Instances of this class are Immutable
  */
 public class UpdateQuery {
@@ -75,7 +75,7 @@ public class UpdateQuery {
         private List<String> whereArgs;
 
         /**
-         * Specifies uri
+         * Required: Specifies uri
          *
          * @param uri URI to query. This can potentially have a record ID if this is an update request for a specific record
          * @return builder
@@ -87,7 +87,7 @@ public class UpdateQuery {
         }
 
         /**
-         * Specifies where clause
+         * Optional: Specifies where clause
          *
          * @param where an optional filter to match rows to update.
          * @return builder
@@ -115,8 +115,7 @@ public class UpdateQuery {
         }
 
         /**
-         * Builds new instance of {@link UpdateQuery},
-         * can throw {@link IllegalStateException} if something is incorrect
+         * Builds new instance of {@link UpdateQuery}
          *
          * @return new instance of {@link UpdateQuery}
          */

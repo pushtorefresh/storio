@@ -42,6 +42,9 @@ public class PreparedExecSql implements PreparedOperation<Void> {
         });
     }
 
+    /**
+     * Builder for {@link PreparedExecSql}
+     */
     public static class Builder {
 
         @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
@@ -53,7 +56,7 @@ public class PreparedExecSql implements PreparedOperation<Void> {
         }
 
         /**
-         * Specifies query for ExecSql Operation
+         * Required: Specifies query for ExecSql Operation
          *
          * @param rawQuery query
          * @return builder
@@ -65,6 +68,7 @@ public class PreparedExecSql implements PreparedOperation<Void> {
 
         /**
          * Prepares ExecSql Operation
+         *
          * @return {@link PreparedExecSql} instance
          */
         @NonNull public PreparedExecSql prepare() {

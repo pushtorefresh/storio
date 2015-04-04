@@ -101,6 +101,11 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         });
     }
 
+    /**
+     * Builder for {@link PreparedPutObjects}
+     *
+     * @param <T> type of objects to put
+     */
     public static class Builder<T> {
 
         @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
@@ -116,7 +121,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         }
 
         /**
-         * Specifies map function for Put Operation which will be used to map each object to {@link ContentValues}
+         * Required: Specifies map function for Put Operation
+         * which will be used to map each object to {@link ContentValues}
          *
          * @param mapFunc map function for Put Operation which will be used to map each object to {@link ContentValues}
          * @return builder
@@ -127,7 +133,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         }
 
         /**
-         * Specifies {@link PutResolver} for Put Operation which allows you to customize behavior of Put Operation
+         * Required: Specifies {@link PutResolver} for Put Operation
+         * which allows you to customize behavior of Put Operation
          *
          * @param putResolver put resolver
          * @return builder
@@ -139,7 +146,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         }
 
         /**
-         * Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIOSQLiteDb}
+         * Optional: Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIOSQLiteDb}
          * By default, transaction will be used
          *
          * @return builder
@@ -150,7 +157,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         }
 
         /**
-         * Defines that Put Operation won't use transaction
+         * Optional: Defines that Put Operation won't use transaction
          * By default, transaction will be used
          *
          * @return builder

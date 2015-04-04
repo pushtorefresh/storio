@@ -47,6 +47,9 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
         });
     }
 
+    /**
+     * Builder for {@link PreparedPutContentValues}
+     */
     public static class Builder {
 
         @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
@@ -60,7 +63,8 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
         }
 
         /**
-         * Specifies {@link PutResolver} for Put Operation which allows you to customize behavior of Put Operation
+         * Required: Specifies {@link PutResolver} for Put Operation
+         * which allows you to customize behavior of Put Operation
          *
          * @param putResolver put resolver
          * @return builder

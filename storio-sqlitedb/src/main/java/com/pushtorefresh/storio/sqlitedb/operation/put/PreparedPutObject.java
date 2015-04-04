@@ -55,6 +55,11 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         });
     }
 
+    /**
+     * Builder for {@link PreparedOperation}
+     *
+     * @param <T> type of object to put
+     */
     public static class Builder<T> {
 
         @NonNull
@@ -71,7 +76,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         }
 
         /**
-         * Specifies map function for Put Operation which will be used to map object to {@link ContentValues}
+         * Required: Specifies map function for Put Operation which will be used to map object to {@link ContentValues}
          *
          * @param mapFunc map function for Put Operation which will be used to map object to {@link ContentValues}
          * @return builder
@@ -83,7 +88,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         }
 
         /**
-         * Specifies {@link PutResolver} for Put Operation which allows you to customize behavior of Put Operation
+         * Optional: Specifies {@link PutResolver} for Put Operation which allows you to customize behavior of Put Operation
          *
          * @param putResolver put resolver
          * @return builder

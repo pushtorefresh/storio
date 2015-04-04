@@ -84,7 +84,7 @@ public class DeleteQuery {
         private List<String> whereArgs;
 
         /**
-         * Specifies uri
+         * Required: Specifies uri
          *
          * @param uri full URI to query, including a row ID (if a specific record is requested)
          * @return builder
@@ -96,8 +96,8 @@ public class DeleteQuery {
         }
 
         /**
-         * Specifies where clause
-         *
+         * Optional: Specifies where clause
+         * <p>
          * @param where optional restriction to apply to rows when deleting
          * @return builder
          */
@@ -124,8 +124,7 @@ public class DeleteQuery {
         }
 
         /**
-         * Builds new instance of {@link DeleteQuery},
-         * can throw {@link IllegalStateException} if something is incorrect
+         * Builds new instance of {@link DeleteQuery}
          *
          * @return new instance of {@link DeleteQuery}
          */

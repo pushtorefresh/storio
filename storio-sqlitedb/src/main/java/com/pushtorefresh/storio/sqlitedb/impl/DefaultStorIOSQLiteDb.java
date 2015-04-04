@@ -175,21 +175,46 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
         }
     }
 
+    /**
+     * Builder for {@link DefaultStorIOSQLiteDb}
+     */
     public static class Builder {
 
         private SQLiteDatabase db;
 
+        /**
+         * Specifies database for internal usage.
+         * You should provide this or {@link SQLiteOpenHelper}
+         * @see {@link #sqliteOpenHelper(SQLiteOpenHelper)}
+         *
+         * @param db a real database for internal usage
+         * @return builder
+         */
         @NonNull
         public Builder db(@NonNull SQLiteDatabase db) {
             this.db = db;
             return this;
         }
 
+        /**
+         * Specifies SqLite helper for internal usage
+         * You should provide this or {@link SQLiteDatabase}
+         * @see {@link #db(SQLiteDatabase)}
+         *
+         * @param sqliteOpenHelper a SqLite helper for internal usage
+         * @return builder
+         */
         @NonNull
         public Builder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
             db = sqliteOpenHelper.getWritableDatabase();
             return this;
         }
+
+        /**
+         * Builds {@link DefaultStorIOSQLiteDb} instance with required params
+         *
+         * @return new {@link DefaultStorIOSQLiteDb} instance
+         */
 
         @NonNull
         public DefaultStorIOSQLiteDb build() {

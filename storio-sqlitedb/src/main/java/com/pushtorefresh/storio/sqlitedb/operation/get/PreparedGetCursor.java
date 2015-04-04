@@ -78,6 +78,9 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         }
     }
 
+    /**
+     * Builder for {@link PreparedOperationWithReactiveStream}
+     */
     public static class Builder {
 
         @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
@@ -125,6 +128,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
 
         /**
          * Prepares Get Operation
+         *
          * @return {@link PreparedGetCursor} instance
          */
         @NonNull public PreparedOperationWithReactiveStream<Cursor> prepare() {
