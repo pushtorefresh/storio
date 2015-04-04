@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.contentresolver.operation.put;
 
+import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
@@ -58,6 +59,17 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         @NonNull
         public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
             return new PreparedPutObjects.Builder<>(storIOContentResolver, objects);
+        }
+
+        /**
+         * Prepares Put Operation that should put one instance of {@link ContentValues}
+         *
+         * @param contentValues content values to put
+         * @return builder for {@link PreparedPutContentValues}
+         */
+        @NonNull
+        public PreparedPutContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
+            return new PreparedPutContentValues.Builder(storIOContentResolver, contentValues);
         }
     }
 }
