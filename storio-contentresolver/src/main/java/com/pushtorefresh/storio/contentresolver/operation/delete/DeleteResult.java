@@ -1,12 +1,12 @@
-package com.pushtorefresh.storio.sqlitedb.operation.delete;
+package com.pushtorefresh.storio.contentresolver.operation.delete;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
- * Immutable container for result of Delete Operation
+ * Immutable container for results of Delete Operation
  * <p>
  * Instances of this class are Immutable
  */
@@ -15,26 +15,24 @@ public class DeleteResult {
     private final int numberOfRowsDeleted;
 
     @NonNull
-    private final String affectedTable;
+    private final Uri affectedUri;
 
-    private DeleteResult(int numberOfRowsDeleted, @NonNull String affectedTable) {
-        checkNotNull(affectedTable, "Please specify affected table");
-
+    private DeleteResult(int numberOfRowsDeleted, @NonNull Uri affectedUri) {
         this.numberOfRowsDeleted = numberOfRowsDeleted;
-        this.affectedTable = affectedTable;
+        this.affectedUri = affectedUri;
     }
 
     /**
      * Creates new instance of immutable container for results of Delete Operation
      *
      * @param numberOfRowsDeleted number of rows that were deleted
-     * @param affectedTable       table that was affected
-     * @return new instance of immutable container for result of Delete Operation
+     * @param affectedUri         non-null Uri that was affected
+     * @return new instance of immutable container for results of Delete Operation
      */
     @NonNull
-    public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull String affectedTable) {
-        checkNotEmpty(affectedTable, "Please specify affected table");
-        return new DeleteResult(numberOfRowsDeleted, affectedTable);
+    public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull Uri affectedUri) {
+        checkNotNull(affectedUri, "Please specify affected Uri");
+        return new DeleteResult(numberOfRowsDeleted, affectedUri);
     }
 
     /**
@@ -47,13 +45,13 @@ public class DeleteResult {
     }
 
     /**
-     * Gets name of the table that was affected by Delete Operation
+     * Gets affected Uri
      *
-     * @return name of affected table
+     * @return affected Uri
      */
     @NonNull
-    public String affectedTable() {
-        return affectedTable;
+    public Uri affectedUri() {
+        return affectedUri;
     }
 
     @Override
@@ -64,13 +62,13 @@ public class DeleteResult {
         DeleteResult that = (DeleteResult) o;
 
         if (numberOfRowsDeleted != that.numberOfRowsDeleted) return false;
-        return affectedTable.equals(that.affectedTable);
+        return affectedUri.equals(that.affectedUri);
     }
 
     @Override
     public int hashCode() {
         int result = numberOfRowsDeleted;
-        result = 31 * result + affectedTable.hashCode();
+        result = 31 * result + affectedUri.hashCode();
         return result;
     }
 
@@ -78,7 +76,7 @@ public class DeleteResult {
     public String toString() {
         return "DeleteResult{" +
                 "numberOfRowsDeleted=" + numberOfRowsDeleted +
-                ", affectedTable='" + affectedTable + '\'' +
+                ", affectedUri=" + affectedUri +
                 '}';
     }
 }

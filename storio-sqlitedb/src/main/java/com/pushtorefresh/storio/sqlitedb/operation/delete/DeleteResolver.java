@@ -6,7 +6,7 @@ import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.query.DeleteQuery;
 
 /**
- * Resolves Delete operation
+ * Defines behavior of Delete Operation
  */
 public interface DeleteResolver {
 
