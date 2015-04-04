@@ -74,7 +74,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         }
 
         /**
-         * Specifies {@link Query} for Get Operation
+         * Required: Specifies {@link Query} for Get Operation
          *
          * @param query query
          * @return builder
@@ -86,7 +86,8 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         }
 
         /**
-         * Optional: Specifies {@link GetResolver} for Get Operation which allows you to customize behavior of Get Operation
+         * Optional: Specifies {@link GetResolver} for Get Operation
+         * which allows you to customize behavior of Get Operation
          *
          * @param getResolver get resolver
          * @return builder

@@ -77,6 +77,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
 
     /**
      * Builder for {@link PreparedPutObjects}
+     *
+     * @param <T> type of objects to put
      */
     public static class Builder<T> {
 

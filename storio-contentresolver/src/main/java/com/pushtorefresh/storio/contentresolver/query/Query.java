@@ -12,7 +12,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
  * Query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
- * <p>
+ * <p/>
  * Instances of this class are Immutable
  */
 public class Query {
@@ -128,7 +128,7 @@ public class Query {
         }
 
         /**
-         * Specifies URI to query.
+         * Required: Specifies URI to query.
          * This will be the full URI sent by the client;
          * if the client is requesting a specific record,
          * the URI will end in a record number that the implementation should parse and add to a WHERE or HAVING clause,
@@ -156,7 +156,7 @@ public class Query {
         }
 
         /**
-         * A selection criteria to apply when filtering rows. If null then all rows are included.
+         * Optional: A selection criteria to apply when filtering rows. If null then all rows are included.
          *
          * @param where where
          * @return builder
@@ -184,7 +184,8 @@ public class Query {
         }
 
         /**
-         * How the rows in the cursor should be sorted. If null then the provider is free to define the sort order.
+         * Optional: Specifies how the rows in the cursor should be sorted.
+         * If null then the provider is free to define the sort order.
          *
          * @param sortOrder sort order
          * @return builder

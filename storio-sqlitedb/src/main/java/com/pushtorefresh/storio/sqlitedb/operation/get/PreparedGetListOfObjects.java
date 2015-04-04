@@ -133,6 +133,11 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
     }
 
+    /**
+     * Builder for {@link PreparedOperationWithReactiveStream}
+     *
+     * @param <T> type of object for query
+     */
     public static class Builder<T> {
 
         @NonNull
@@ -152,7 +157,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Specifies map function for Get Operation which will map {@link Cursor} to object of required type
+         * Required: Specifies map function for Get Operation which will map {@link Cursor} to object of required type
          *
          * @param mapFunc map function which will map {@link Cursor} to object of required type
          * @return builder

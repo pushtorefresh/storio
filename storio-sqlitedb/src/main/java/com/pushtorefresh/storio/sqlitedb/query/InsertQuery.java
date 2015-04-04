@@ -75,7 +75,7 @@ public class InsertQuery {
         private String nullColumnHack;
 
         /**
-         * Specifies table name
+         * Required: Specifies table name
          *
          * @param table table name
          * @return builder
@@ -87,7 +87,7 @@ public class InsertQuery {
         }
 
         /**
-         * Specifies optional null column hack
+         * Optional: Specifies null column hack
          * <p/>
          * SQL doesn't allow inserting a completely empty row without naming at least one column name.
          * If your provided values are empty, no column names are known and an empty row can't be inserted.

@@ -104,6 +104,11 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         });
     }
 
+    /**
+     * Builder for {@link PreparedDeleteObjects}
+
+     * @param <T> type of objects to delete
+     */
     public static class Builder<T> {
 
         @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
@@ -119,7 +124,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         }
 
         /**
-         * Specifies map function to map each object to {@link DeleteQuery}
+         * Required: Specifies map function to map each object to {@link DeleteQuery}
          *
          * @param mapFunc map function to map each object to {@link DeleteQuery}
          * @return builder
@@ -130,7 +135,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         }
 
         /**
-         * Defines that Delete Operation will use transaction if it is supported by implementation of {@link StorIOSQLiteDb}
+         * Optional: Defines that Delete Operation will use transaction if it is supported by implementation of {@link StorIOSQLiteDb}
          * By default, transaction will be used
          *
          * @return builder
@@ -141,7 +146,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         }
 
         /**
-         * Defines that Delete Operation won't use transaction
+         * Optional: Defines that Delete Operation won't use transaction
          * By default, transaction will be used
          *
          * @return builder
