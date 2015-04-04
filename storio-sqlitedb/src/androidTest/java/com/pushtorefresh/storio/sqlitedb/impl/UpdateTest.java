@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlitedb.impl;
 import android.database.Cursor;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.sqlitedb.operation.put.PutCollectionResult;
+import com.pushtorefresh.storio.sqlitedb.operation.put.PutResults;
 import com.pushtorefresh.storio.sqlitedb.operation.put.PutResult;
 
 import org.junit.Test;
@@ -60,7 +60,7 @@ public class UpdateTest extends BaseTest {
     @Test public void updateCollection() {
         final List<User> usersForInsert = TestFactory.newUsers(3);
 
-        final PutCollectionResult<User> insertResult = storIOSQLiteDb
+        final PutResults<User> insertResults = storIOSQLiteDb
                 .put()
                 .objects(usersForInsert)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -68,7 +68,7 @@ public class UpdateTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(usersForInsert.size(), insertResult.numberOfInserts());
+        assertEquals(usersForInsert.size(), insertResults.numberOfInserts());
 
         final List<User> usersForUpdate = new ArrayList<>(usersForInsert.size());
 
@@ -76,7 +76,7 @@ public class UpdateTest extends BaseTest {
             usersForUpdate.add(new User(usersForInsert.get(i).getId(), "new" + i + "@email.com" + i));
         }
 
-        final PutCollectionResult<User> updateResult = storIOSQLiteDb
+        final PutResults<User> updateResults = storIOSQLiteDb
                 .put()
                 .objects(usersForUpdate)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -84,7 +84,7 @@ public class UpdateTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(usersForUpdate.size(), updateResult.numberOfUpdates());
+        assertEquals(usersForUpdate.size(), updateResults.numberOfUpdates());
 
         final Cursor cursor = db.query(User.TABLE, null, null, null, null, null, null);
 
