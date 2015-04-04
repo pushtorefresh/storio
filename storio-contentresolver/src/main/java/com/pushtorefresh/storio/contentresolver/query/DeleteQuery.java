@@ -124,8 +124,7 @@ public class DeleteQuery {
         }
 
         /**
-         * Builds new instance of {@link DeleteQuery},
-         * can throw {@link IllegalStateException} if something is incorrect
+         * Builds new instance of {@link DeleteQuery}
          *
          * @return new instance of {@link DeleteQuery}
          */

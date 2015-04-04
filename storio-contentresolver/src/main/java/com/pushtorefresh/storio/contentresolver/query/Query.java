@@ -197,8 +197,7 @@ public class Query {
         }
 
         /**
-         * Builds new instance of {@link Query},
-         * can throw {@link IllegalStateException} if something is incorrect
+         * Builds new instance of {@link Query}
          *
          * @return new instance of {@link Query}
          */

@@ -70,8 +70,7 @@ public class InsertQuery {
         }
 
         /**
-         * Builds {@link InsertQuery} instance with required params,
-         * can throw {@link NullPointerException} if one of required params wasn't specify
+         * Builds {@link InsertQuery} instance with required params
          *
          * @return new {@link InsertQuery} instance
          */

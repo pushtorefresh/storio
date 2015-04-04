@@ -188,6 +188,7 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
          * @see {@link #sqliteOpenHelper(SQLiteOpenHelper)}
          *
          * @param db a real database for internal usage
+         * @return builder
          */
         @NonNull
         public Builder db(@NonNull SQLiteDatabase db) {
@@ -201,6 +202,7 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
          * @see {@link #db(SQLiteDatabase)}
          *
          * @param sqliteOpenHelper a SqLite helper for internal usage
+         * @return builder
          */
         @NonNull
         public Builder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
@@ -209,8 +211,7 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
         }
 
         /**
-         * Builds {@link DefaultStorIOSQLiteDb} instance with required params,
-         * can throw {@link NullPointerException} if required parameter missed
+         * Builds {@link DefaultStorIOSQLiteDb} instance with required params
          *
          * @return new {@link DefaultStorIOSQLiteDb} instance
          */

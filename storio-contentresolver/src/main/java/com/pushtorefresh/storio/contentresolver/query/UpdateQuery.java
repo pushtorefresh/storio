@@ -115,8 +115,7 @@ public class UpdateQuery {
         }
 
         /**
-         * Builds new instance of {@link UpdateQuery},
-         * can throw {@link IllegalStateException} if something is incorrect
+         * Builds new instance of {@link UpdateQuery}
          *
          * @return new instance of {@link UpdateQuery}
          */
