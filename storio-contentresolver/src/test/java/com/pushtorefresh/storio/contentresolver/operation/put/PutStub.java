@@ -103,7 +103,7 @@ class PutStub {
         }
     }
 
-    void verifyBehaviorForMultipleObjects(@NonNull PutCollectionResult<TestItem> putCollectionResult) {
+    void verifyBehaviorForMultipleObjects(@NonNull PutResults<TestItem> putResults) {
         // only one call to storIOContentResolver.put() should occur
         verify(storIOContentResolver, times(1)).put();
 
@@ -116,27 +116,27 @@ class PutStub {
 
             // callback after Put Operation should be called once for each item
             verify(putResolverForObjects, times(1))
-                    .afterPut(testItem, putCollectionResult.results().get(testItem));
+                    .afterPut(testItem, putResults.results().get(testItem));
         }
     }
 
-    void verifyBehaviorForMultipleObjects(@NonNull Observable<PutCollectionResult<TestItem>> putCollectionResultObservable) {
-        new ObservableBehaviorChecker<PutCollectionResult<TestItem>>()
-                .observable(putCollectionResultObservable)
+    void verifyBehaviorForMultipleObjects(@NonNull Observable<PutResults<TestItem>> putResultsObservable) {
+        new ObservableBehaviorChecker<PutResults<TestItem>>()
+                .observable(putResultsObservable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutCollectionResult<TestItem>>() {
+                .testAction(new Action1<PutResults<TestItem>>() {
                     @Override
-                    public void call(PutCollectionResult<TestItem> putCollectionResult) {
-                        verifyBehaviorForMultipleObjects(putCollectionResult);
+                    public void call(PutResults<TestItem> putResults) {
+                        verifyBehaviorForMultipleObjects(putResults);
                     }
                 })
                 .checkBehaviorOfObservable();
     }
 
     void verifyBehaviorForOneObject(@NonNull PutResult putResult) {
-        Map<TestItem, PutResult> putResultMap = new HashMap<>(1);
-        putResultMap.put(testItems.get(0), putResult);
-        verifyBehaviorForMultipleObjects(PutCollectionResult.newInstance(putResultMap));
+        Map<TestItem, PutResult> putResultsMap = new HashMap<>(1);
+        putResultsMap.put(testItems.get(0), putResult);
+        verifyBehaviorForMultipleObjects(PutResults.newInstance(putResultsMap));
     }
 
     void verifyBehaviorForOneObject(@NonNull Observable<PutResult> putResultObservable) {
@@ -152,7 +152,7 @@ class PutStub {
                 .checkBehaviorOfObservable();
     }
 
-    void verifyBehaviorForMultipleContentValues(@NonNull PutCollectionResult<ContentValues> putCollectionResult) {
+    void verifyBehaviorForMultipleContentValues(@NonNull PutResults<ContentValues> putResults) {
         // only one call to storIOContentResolver.put() should occur
         verify(storIOContentResolver, times(1)).put();
 
@@ -168,27 +168,27 @@ class PutStub {
 
             // callback after Put Operation should be called once for each item
             verify(putResolverForContentValues, times(1))
-                    .afterPut(contentValues, putCollectionResult.results().get(contentValues));
+                    .afterPut(contentValues, putResults.results().get(contentValues));
         }
     }
 
-    void verifyBehaviorForMultipleContentValues(@NonNull Observable<PutCollectionResult<ContentValues>> putCollectionResultObservable) {
-        new ObservableBehaviorChecker<PutCollectionResult<ContentValues>>()
-                .observable(putCollectionResultObservable)
+    void verifyBehaviorForMultipleContentValues(@NonNull Observable<PutResults<ContentValues>> putResultsObservable) {
+        new ObservableBehaviorChecker<PutResults<ContentValues>>()
+                .observable(putResultsObservable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutCollectionResult<ContentValues>>() {
+                .testAction(new Action1<PutResults<ContentValues>>() {
                     @Override
-                    public void call(PutCollectionResult<ContentValues> putCollectionResult) {
-                        verifyBehaviorForMultipleContentValues(putCollectionResult);
+                    public void call(PutResults<ContentValues> putResults) {
+                        verifyBehaviorForMultipleContentValues(putResults);
                     }
                 })
                 .checkBehaviorOfObservable();
     }
 
     void verifyBehaviorForOneContentValues(@NonNull PutResult putResult) {
-        Map<ContentValues, PutResult> putResultMap = new HashMap<>(1);
-        putResultMap.put(mapFunc.map(testItems.get(0)), putResult);
-        verifyBehaviorForMultipleContentValues(PutCollectionResult.newInstance(putResultMap));
+        Map<ContentValues, PutResult> putResultsMap = new HashMap<>(1);
+        putResultsMap.put(mapFunc.map(testItems.get(0)), putResult);
+        verifyBehaviorForMultipleContentValues(PutResults.newInstance(putResultsMap));
     }
 
     void verifyBehaviorForOneContentValues(@NonNull Observable<PutResult> putResultObservable) {

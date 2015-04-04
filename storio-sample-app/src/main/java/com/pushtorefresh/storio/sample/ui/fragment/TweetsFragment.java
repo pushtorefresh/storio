@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
-import com.pushtorefresh.storio.sqlitedb.operation.put.PutCollectionResult;
+import com.pushtorefresh.storio.sqlitedb.operation.put.PutResults;
 import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.SampleApp;
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
@@ -140,13 +140,13 @@ public class TweetsFragment extends BaseFragment {
                 .createObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<PutCollectionResult<Tweet>>() {
+                .subscribe(new Observer<PutResults<Tweet>>() {
                     @Override public void onError(Throwable e) {
                         ToastHelper.safeShowShortToast(getActivity(), R.string.tweets_add_error_toast);
                     }
 
                     @Override
-                    public void onNext(PutCollectionResult<Tweet> tweetPutCollectionResult) {
+                    public void onNext(PutResults<Tweet> putResults) {
                         // handled via reactive stream! see reloadData()
                     }
 

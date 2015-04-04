@@ -18,7 +18,7 @@ import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
-public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>> {
+public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
     @NonNull private final Iterable<T> objects;
     @NonNull private final MapFunc<T, ContentValues> mapFunc;
@@ -34,7 +34,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
-    @NonNull @Override public PutCollectionResult<T> executeAsBlocking() {
+    @NonNull @Override public PutResults<T> executeAsBlocking() {
         final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
         final Map<T, PutResult> putResults = new HashMap<>();
 
@@ -82,16 +82,16 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
             }
         }
 
-        return PutCollectionResult.newInstance(putResults);
+        return PutResults.newInstance(putResults);
     }
 
-    @NonNull @Override public Observable<PutCollectionResult<T>> createObservable() {
+    @NonNull @Override public Observable<PutResults<T>> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
-        return Observable.create(new Observable.OnSubscribe<PutCollectionResult<T>>() {
+        return Observable.create(new Observable.OnSubscribe<PutResults<T>>() {
             @Override
-            public void call(Subscriber<? super PutCollectionResult<T>> subscriber) {
-                PutCollectionResult<T> putResults = executeAsBlocking();
+            public void call(Subscriber<? super PutResults<T>> subscriber) {
+                PutResults<T> putResults = executeAsBlocking();
 
                 if (!subscriber.isUnsubscribed()) {
                     subscriber.onNext(putResults);

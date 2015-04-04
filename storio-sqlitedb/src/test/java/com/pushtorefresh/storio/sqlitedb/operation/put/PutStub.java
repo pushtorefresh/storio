@@ -82,7 +82,7 @@ class PutStub {
         }
     }
 
-    void verifyBehaviorForMultiple(@NonNull PutCollectionResult<TestItem> putCollectionResult) {
+    void verifyBehaviorForMultiple(@NonNull PutResults<TestItem> putResults) {
         // only one call to storIOSQLiteDb.put() should occur
         verify(storIOSQLiteDb, times(1)).put();
 
@@ -95,7 +95,7 @@ class PutStub {
 
             // putResolver's afterPut() callback should be called only once for each object
             verify(putResolver, times(1))
-                    .afterPut(testItem, putCollectionResult.results().get(testItem));
+                    .afterPut(testItem, putResults.results().get(testItem));
         }
 
         if (useTransaction) {
@@ -110,23 +110,23 @@ class PutStub {
         }
     }
 
-    void verifyBehaviorForMultiple(@NonNull Observable<PutCollectionResult<TestItem>> putCollectionResultObservable) {
-        new ObservableBehaviorChecker<PutCollectionResult<TestItem>>()
-                .observable(putCollectionResultObservable)
+    void verifyBehaviorForMultiple(@NonNull Observable<PutResults<TestItem>> putResultsObservable) {
+        new ObservableBehaviorChecker<PutResults<TestItem>>()
+                .observable(putResultsObservable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutCollectionResult<TestItem>>() {
+                .testAction(new Action1<PutResults<TestItem>>() {
                     @Override
-                    public void call(PutCollectionResult<TestItem> testItemPutCollectionResult) {
-                        verifyBehaviorForMultiple(testItemPutCollectionResult);
+                    public void call(PutResults<TestItem> testItemPutResults) {
+                        verifyBehaviorForMultiple(testItemPutResults);
                     }
                 })
                 .checkBehaviorOfObservable();
     }
 
     void verifyBehaviorForOne(@NonNull PutResult putResult) {
-        final Map<TestItem, PutResult> putResultMap = new HashMap<>(1);
-        putResultMap.put(testItems.get(0), putResult);
-        verifyBehaviorForMultiple(PutCollectionResult.newInstance(putResultMap));
+        final Map<TestItem, PutResult> putResultsMap = new HashMap<>(1);
+        putResultsMap.put(testItems.get(0), putResult);
+        verifyBehaviorForMultiple(PutResults.newInstance(putResultsMap));
     }
 
     void verifyBehaviorForOne(@NonNull Observable<PutResult> putResultObservable) {

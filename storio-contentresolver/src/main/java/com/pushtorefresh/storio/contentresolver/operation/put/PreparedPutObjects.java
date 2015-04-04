@@ -19,7 +19,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
  *
  * @param <T> type of objects
  */
-public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>> {
+public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
     @NonNull
     private final Iterable<T> objects;
@@ -40,7 +40,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
      */
     @NonNull
     @Override
-    public PutCollectionResult<T> executeAsBlocking() {
+    public PutResults<T> executeAsBlocking() {
 
         final Map<T, PutResult> putResults = new HashMap<>();
 
@@ -51,7 +51,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
             putResults.put(object, putResult);
         }
 
-        return PutCollectionResult.newInstance(putResults);
+        return PutResults.newInstance(putResults);
     }
 
     /**
@@ -61,14 +61,14 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutCollectionResult<T>
      */
     @NonNull
     @Override
-    public Observable<PutCollectionResult<T>> createObservable() {
-        return Observable.create(new Observable.OnSubscribe<PutCollectionResult<T>>() {
+    public Observable<PutResults<T>> createObservable() {
+        return Observable.create(new Observable.OnSubscribe<PutResults<T>>() {
             @Override
-            public void call(Subscriber<? super PutCollectionResult<T>> subscriber) {
-                PutCollectionResult<T> putCollectionResult = executeAsBlocking();
+            public void call(Subscriber<? super PutResults<T>> subscriber) {
+                final PutResults<T> putResults = executeAsBlocking();
 
                 if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(putCollectionResult);
+                    subscriber.onNext(putResults);
                     subscriber.onCompleted();
                 }
             }

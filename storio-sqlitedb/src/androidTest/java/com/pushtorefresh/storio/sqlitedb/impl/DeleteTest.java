@@ -38,7 +38,7 @@ public class DeleteTest extends BaseTest {
             usersToDelete.add(allUsers.get(i));
         }
 
-        final DeleteResults<User> deleteResult = storIOSQLiteDb
+        final DeleteResults<User> deleteResults = storIOSQLiteDb
                 .delete()
                 .objects(usersToDelete)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -51,7 +51,7 @@ public class DeleteTest extends BaseTest {
             final boolean shouldBeDeleted = usersToDelete.contains(user);
 
             // Check if we deleted what we going to.
-            assertEquals(shouldBeDeleted, deleteResult.wasDeleted(user));
+            assertEquals(shouldBeDeleted, deleteResults.wasDeleted(user));
 
             // Check if exist, what we want to save.
             assertEquals(!shouldBeDeleted, existUsers.contains(user));

@@ -17,7 +17,7 @@ import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
-public class PreparedPutIterableContentValues extends PreparedPut<ContentValues, PutCollectionResult<ContentValues>> {
+public class PreparedPutIterableContentValues extends PreparedPut<ContentValues, PutResults<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValuesIterable;
@@ -36,7 +36,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
 
     @NonNull
     @Override
-    public PutCollectionResult<ContentValues> executeAsBlocking() {
+    public PutResults<ContentValues> executeAsBlocking() {
         final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
 
         final Map<ContentValues, PutResult> putResults = new HashMap<>();
@@ -81,22 +81,22 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
             }
         }
 
-        return PutCollectionResult.newInstance(putResults);
+        return PutResults.newInstance(putResults);
     }
 
     @NonNull
     @Override
-    public Observable<PutCollectionResult<ContentValues>> createObservable() {
+    public Observable<PutResults<ContentValues>> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
-        return Observable.create(new Observable.OnSubscribe<PutCollectionResult<ContentValues>>() {
+        return Observable.create(new Observable.OnSubscribe<PutResults<ContentValues>>() {
 
             @Override
-            public void call(Subscriber<? super PutCollectionResult<ContentValues>> subscriber) {
-                final PutCollectionResult<ContentValues> putCollectionResult = executeAsBlocking();
+            public void call(Subscriber<? super PutResults<ContentValues>> subscriber) {
+                final PutResults<ContentValues> putResults = executeAsBlocking();
 
                 if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(putCollectionResult);
+                    subscriber.onNext(putResults);
                     subscriber.onCompleted();
                 }
             }

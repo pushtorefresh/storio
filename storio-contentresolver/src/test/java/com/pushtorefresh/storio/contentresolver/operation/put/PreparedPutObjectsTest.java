@@ -10,7 +10,7 @@ public class PreparedPutObjectsTest {
     public void putObjectsBlocking() {
         final PutStub putStub = PutStub.newPutStubForMultipleObjects();
 
-        final PutCollectionResult<TestItem> putCollectionResult = putStub.storIOContentResolver
+        final PutResults<TestItem> putResults = putStub.storIOContentResolver
                 .put()
                 .objects(putStub.testItems)
                 .withMapFunc(putStub.mapFunc)
@@ -18,14 +18,14 @@ public class PreparedPutObjectsTest {
                 .prepare()
                 .executeAsBlocking();
 
-        putStub.verifyBehaviorForMultipleObjects(putCollectionResult);
+        putStub.verifyBehaviorForMultipleObjects(putResults);
     }
 
     @Test
     public void putObjectsObservable() {
         final PutStub putStub = PutStub.newPutStubForMultipleObjects();
 
-        final Observable<PutCollectionResult<TestItem>> putCollectionResultObservable = putStub.storIOContentResolver
+        final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOContentResolver
                 .put()
                 .objects(putStub.testItems)
                 .withMapFunc(putStub.mapFunc)
@@ -33,6 +33,6 @@ public class PreparedPutObjectsTest {
                 .prepare()
                 .createObservable();
 
-        putStub.verifyBehaviorForMultipleObjects(putCollectionResultObservable);
+        putStub.verifyBehaviorForMultipleObjects(putResultsObservable);
     }
 }

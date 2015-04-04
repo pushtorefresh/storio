@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 
 /**
- * Implements Put Operation behavior (insert or update)
+ * Defines behavior of Put Operation (insert or update)
  *
  * @param <T> type of objects to put
  * @see {@link DefaultPutResolver} default implementation
