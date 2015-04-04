@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.sqlitedb.design;
 
-import com.pushtorefresh.storio.sqlitedb.operation.delete.DeleteCollectionOfObjectsResult;
+import com.pushtorefresh.storio.sqlitedb.operation.delete.DeleteResults;
 import com.pushtorefresh.storio.sqlitedb.operation.delete.DeleteResult;
 import com.pushtorefresh.storio.sqlitedb.query.DeleteQuery;
 
@@ -38,7 +38,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteCollectionOfObjectsBlocking() {
         List<User> users = new ArrayList<>();
 
-        DeleteCollectionOfObjectsResult<User> deleteResult = storIOSQLiteDb()
+        DeleteResults<User> deleteResult = storIOSQLiteDb()
                 .delete()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -49,7 +49,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteCollectionOfObjectsObservable() {
         List<User> users = new ArrayList<>();
 
-        Observable<DeleteCollectionOfObjectsResult<User>> deleteResultObservable = storIOSQLiteDb()
+        Observable<DeleteResults<User>> deleteResultObservable = storIOSQLiteDb()
                 .delete()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)

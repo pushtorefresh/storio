@@ -2,12 +2,10 @@ package com.pushtorefresh.storio.sqlitedb.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.Changes;
+import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.query.DeleteQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
-
-import java.util.Collections;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -27,7 +25,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLiteDb, deleteQuery);
         internal.notifyAboutChanges(new Changes(deleteQuery.table));
 
-        return DeleteResult.newDeleteResult(numberOfDeletedRows, Collections.singleton(deleteQuery.table));
+        return DeleteResult.newInstance(numberOfDeletedRows, deleteQuery.table);
     }
 
     @NonNull @Override public Observable<DeleteResult> createObservable() {
