@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.sqlitedb.design;
 
 import android.content.ContentValues;
 
-import com.pushtorefresh.storio.sqlitedb.operation.put.PutCollectionResult;
+import com.pushtorefresh.storio.sqlitedb.operation.put.PutResults;
 import com.pushtorefresh.storio.sqlitedb.operation.put.PutResult;
 
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectsIterableBlocking() {
         Iterable<User> users = new ArrayList<>();
 
-        PutCollectionResult<User> putResult = storIOSQLiteDb()
+        PutResults<User> putResults = storIOSQLiteDb()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -57,7 +57,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectsIterableObservable() {
         Iterable<User> users = new ArrayList<>();
 
-        Observable<PutCollectionResult<User>> putResultObservable = storIOSQLiteDb()
+        Observable<PutResults<User>> putResultsObservable = storIOSQLiteDb()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -70,7 +70,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectsArrayBlocking() {
         User[] users = new User[]{};
 
-        PutCollectionResult<User> putResult = storIOSQLiteDb()
+        PutResults<User> putResults = storIOSQLiteDb()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -83,7 +83,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectsArrayObservable() {
         User[] users = new User[]{};
 
-        Observable<PutCollectionResult<User>> putResultObservable = storIOSQLiteDb()
+        Observable<PutResults<User>> putResultsObservable = storIOSQLiteDb()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -121,7 +121,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Iterable<ContentValues> contentValuesIterable
                 = Arrays.asList(User.MAP_TO_CONTENT_VALUES.map(newUser()));
 
-        PutCollectionResult<ContentValues> putResult = storIOSQLiteDb()
+        PutResults<ContentValues> putResults = storIOSQLiteDb()
                 .put()
                 .contentValues(contentValuesIterable)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -134,7 +134,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Iterable<ContentValues> contentValuesIterable
                 = Arrays.asList(User.MAP_TO_CONTENT_VALUES.map(newUser()));
 
-        Observable<PutCollectionResult<ContentValues>> putResult = storIOSQLiteDb()
+        Observable<PutResults<ContentValues>> putResults = storIOSQLiteDb()
                 .put()
                 .contentValues(contentValuesIterable)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -146,7 +146,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putContentValuesArrayBlocking() {
         ContentValues[] contentValuesArray = {User.MAP_TO_CONTENT_VALUES.map(newUser())};
 
-        PutCollectionResult<ContentValues> putResult = storIOSQLiteDb()
+        PutResults<ContentValues> putResults = storIOSQLiteDb()
                 .put()
                 .contentValues(contentValuesArray)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -158,7 +158,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putContentValuesArrayObservable() {
         ContentValues[] contentValuesArray = {User.MAP_TO_CONTENT_VALUES.map(newUser())};
 
-        Observable<PutCollectionResult<ContentValues>> putResult = storIOSQLiteDb()
+        Observable<PutResults<ContentValues>> putResults = storIOSQLiteDb()
                 .put()
                 .contentValues(contentValuesArray)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)

@@ -93,11 +93,10 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         return Observable.create(new Observable.OnSubscribe<DeleteResults<T>>() {
             @Override
             public void call(Subscriber<? super DeleteResults<T>> subscriber) {
-                DeleteResults<T> deleteCollectionResults
-                        = executeAsBlocking();
+                final DeleteResults<T> deleteResults = executeAsBlocking();
 
                 if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(deleteCollectionResults);
+                    subscriber.onNext(deleteResults);
                     subscriber.onCompleted();
                 }
             }

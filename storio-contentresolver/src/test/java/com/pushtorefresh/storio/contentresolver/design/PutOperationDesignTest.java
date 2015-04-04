@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.contentresolver.design;
 
 import android.content.ContentValues;
 
-import com.pushtorefresh.storio.contentresolver.operation.put.PutCollectionResult;
+import com.pushtorefresh.storio.contentresolver.operation.put.PutResults;
 import com.pushtorefresh.storio.contentresolver.operation.put.PutResult;
 
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectsBlocking() {
         Iterable<Article> articles = new ArrayList<>();
 
-        PutCollectionResult<Article> putCollectionResult = storIOContentResolver()
+        PutResults<Article> putResults = storIOContentResolver()
                 .put()
                 .objects(articles)
                 .withMapFunc(Article.MAP_TO_CONTENT_VALUES)
@@ -58,7 +58,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectsObservable() {
         Iterable<Article> articles = new ArrayList<>();
 
-        Observable<PutCollectionResult<Article>> putCollectionResultObservable = storIOContentResolver()
+        Observable<PutResults<Article>> putResultsObservable = storIOContentResolver()
                 .put()
                 .objects(articles)
                 .withMapFunc(Article.MAP_TO_CONTENT_VALUES)

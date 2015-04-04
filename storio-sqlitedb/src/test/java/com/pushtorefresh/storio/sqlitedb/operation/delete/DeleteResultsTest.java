@@ -20,8 +20,8 @@ public class DeleteResultsTest {
     @Test
     public void results() {
         final Map<Object, DeleteResult> results = new HashMap<>();
-        final DeleteResults<Object> deleteCollectionResults = DeleteResults.newInstance(results);
-        assertEquals(results, deleteCollectionResults.results());
+        final DeleteResults<Object> deleteResults = DeleteResults.newInstance(results);
+        assertEquals(results, deleteResults.results());
     }
 
     @Test
@@ -29,12 +29,12 @@ public class DeleteResultsTest {
         final Map<String, DeleteResult> results = new HashMap<>();
         results.put("testString", DeleteResult.newInstance(1, "test_table"));
 
-        final DeleteResults<String> deleteCollectionResults = DeleteResults.newInstance(results);
+        final DeleteResults<String> deleteResults = DeleteResults.newInstance(results);
 
-        assertTrue(deleteCollectionResults.wasDeleted("testString"));
-        assertFalse(deleteCollectionResults.wasDeleted("should not be deleted"));
+        assertTrue(deleteResults.wasDeleted("testString"));
+        assertFalse(deleteResults.wasDeleted("should not be deleted"));
 
-        assertFalse(deleteCollectionResults.wasNotDeleted("testString"));
-        assertTrue(deleteCollectionResults.wasNotDeleted("should not be deleted"));
+        assertFalse(deleteResults.wasNotDeleted("testString"));
+        assertTrue(deleteResults.wasNotDeleted("should not be deleted"));
     }
 }

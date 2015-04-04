@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.sqlitedb.operation.put;
+package com.pushtorefresh.storio.contentresolver.operation.put;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,12 +8,12 @@ import java.util.Map;
 
 /**
  * Representation of result of Put Operation for collection of objects
- * <p/>
+ * <p>
  * Instances of this class are Immutable
  *
  * @param <T> type of objects
  */
-public class PutCollectionResult<T> {
+public class PutResults<T> {
 
     @NonNull
     private final Map<T, PutResult> results;
@@ -24,20 +24,20 @@ public class PutCollectionResult<T> {
     @Nullable
     private volatile Integer numberOfUpdatesCache;
 
-    private PutCollectionResult(@NonNull Map<T, PutResult> putResults) {
+    private PutResults(@NonNull Map<T, PutResult> putResults) {
         this.results = Collections.unmodifiableMap(putResults);
     }
 
     /**
-     * Creates new instance of {@link PutCollectionResult}
+     * Creates new instance of {@link PutResults}
      *
      * @param putResults results of Put Operation
      * @param <T>        type of objects
-     * @return immutable instance of {@link PutCollectionResult}
+     * @return immutable instance of {@link PutResults}
      */
     @NonNull
-    public static <T> PutCollectionResult<T> newInstance(@NonNull Map<T, PutResult> putResults) {
-        return new PutCollectionResult<>(putResults);
+    public static <T> PutResults<T> newInstance(@NonNull Map<T, PutResult> putResults) {
+        return new PutResults<>(putResults);
     }
 
     /**
@@ -80,7 +80,6 @@ public class PutCollectionResult<T> {
      *
      * @return number of updates from all {@link #results()}
      */
-    @SuppressWarnings("ConstantConditions")
     public int numberOfUpdates() {
         final Integer cachedValue = numberOfUpdatesCache;
 

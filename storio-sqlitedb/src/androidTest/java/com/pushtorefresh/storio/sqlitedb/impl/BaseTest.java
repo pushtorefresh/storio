@@ -7,7 +7,7 @@ import android.support.test.InstrumentationRegistry;
 
 import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.sqlitedb.operation.delete.DeleteResult;
-import com.pushtorefresh.storio.sqlitedb.operation.put.PutCollectionResult;
+import com.pushtorefresh.storio.sqlitedb.operation.put.PutResults;
 import com.pushtorefresh.storio.sqlitedb.operation.put.PutResult;
 import com.pushtorefresh.storio.sqlitedb.query.Query;
 
@@ -94,7 +94,7 @@ public abstract class BaseTest {
     @NonNull
     List<User> putUsers(@NonNull final List<User> users) {
 
-        final PutCollectionResult<User> putResult = storIOSQLiteDb
+        final PutResults<User> putResults = storIOSQLiteDb
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -102,7 +102,7 @@ public abstract class BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(users.size(), putResult.numberOfInserts());
+        assertEquals(users.size(), putResults.numberOfInserts());
 
         return users;
     }
