@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
+import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import rx.functions.Action1;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,6 +30,7 @@ class DeleteStub {
     final Map<TestItem, DeleteQuery> testItemToDeleteQueryMap;
     final StorIOContentResolver storIOContentResolver;
     final DeleteResolver deleteResolver;
+    final MapFunc<TestItem, DeleteQuery> mapFunc;
     private final Map<DeleteQuery, DeleteResult> deleteQueryToDeleteResultMap;
 
     @NonNull
@@ -35,6 +38,12 @@ class DeleteStub {
         return new DeleteStub(1);
     }
 
+    @NonNull
+    static DeleteStub newInstanceForDeleteMultipleObjects() {
+        return new DeleteStub(3);
+    }
+
+    @SuppressWarnings("unchecked")
     private DeleteStub(int numberOfTestItems) {
         storIOContentResolver = mock(StorIOContentResolver.class);
 
@@ -42,6 +51,8 @@ class DeleteStub {
                 .thenReturn(new PreparedDelete.Builder(storIOContentResolver));
 
         deleteResolver = mock(DeleteResolver.class);
+
+        mapFunc = (MapFunc<TestItem, DeleteQuery>) mock(MapFunc.class);
 
         testItems = new ArrayList<>(numberOfTestItems);
         testItemToDeleteQueryMap = new HashMap<>(numberOfTestItems);
@@ -53,6 +64,9 @@ class DeleteStub {
             testItems.add(testItem);
             testItemToDeleteQueryMap.put(testItem, deleteQuery);
 
+            when(mapFunc.map(testItem))
+                    .thenReturn(deleteQuery);
+
             final DeleteResult deleteResult = mock(DeleteResult.class);
             deleteQueryToDeleteResultMap.put(deleteQuery, deleteResult);
 
@@ -61,7 +75,7 @@ class DeleteStub {
         }
     }
 
-    void verifyBehaviorForOneObject(@NonNull DeleteResult deleteResult) {
+    void verifyBehaviorForDeleteByQuery(@NonNull DeleteResult deleteResult) {
         final TestItem testItem = testItems.get(0);
         final DeleteQuery expectedDeleteQuery = testItemToDeleteQueryMap.get(testItem);
 
@@ -76,14 +90,46 @@ class DeleteStub {
         assertEquals(expectedDeleteResult, deleteResult);
     }
 
-    void verifyBehaviorForOneObject(@NonNull Observable<DeleteResult> deleteResultObservable) {
+    void verifyBehaviorForDeleteByQuery(@NonNull Observable<DeleteResult> deleteResultObservable) {
         new ObservableBehaviorChecker<DeleteResult>()
                 .observable(deleteResultObservable)
                 .expectedNumberOfEmissions(1)
                 .testAction(new Action1<DeleteResult>() {
                     @Override
                     public void call(DeleteResult deleteResult) {
-                        verifyBehaviorForOneObject(deleteResult);
+                        verifyBehaviorForDeleteByQuery(deleteResult);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForDeleteMultipleObjects(@NonNull DeleteResults<TestItem> deleteResults) {
+        // checks that delete was performed same amount of times as count of items
+        verify(deleteResolver, times(testItems.size())).performDelete(eq(storIOContentResolver), any(DeleteQuery.class));
+
+        for (final TestItem testItem : testItems) {
+            final DeleteQuery expectedDeleteQuery = testItemToDeleteQueryMap.get(testItem);
+
+            // checks that delete was performed for each item
+            verify(deleteResolver, times(1)).performDelete(storIOContentResolver, expectedDeleteQuery);
+
+            final DeleteResult expectedDeleteResult = deleteQueryToDeleteResultMap.get(expectedDeleteQuery);
+
+            // checks that delete results contains result of deletion of each item
+            assertEquals(expectedDeleteResult, deleteResults.results().get(testItem));
+        }
+
+        assertEquals(testItems.size(), deleteResults.results().size());
+    }
+
+    void verifyBehaviorForDeleteMultipleObjects(@NonNull Observable<DeleteResults<TestItem>> deleteResultsObservable) {
+        new ObservableBehaviorChecker<DeleteResults<TestItem>>()
+                .observable(deleteResultsObservable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<DeleteResults<TestItem>>() {
+                    @Override
+                    public void call(DeleteResults<TestItem> deleteResults) {
+                        verifyBehaviorForDeleteMultipleObjects(deleteResults);
                     }
                 })
                 .checkBehaviorOfObservable();

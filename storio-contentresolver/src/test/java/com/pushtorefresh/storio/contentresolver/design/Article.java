@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentresolver.operation.put.DefaultPutResolver;
 import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
+import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.operation.MapFunc;
 
 import static org.mockito.Mockito.mock;
@@ -37,6 +38,13 @@ class Article {
                     .thenReturn(article.getId());
 
             return contentValues;
+        }
+    };
+
+    static final MapFunc<Article, DeleteQuery> MAP_TO_DELETE_QUERY = new MapFunc<Article, DeleteQuery>() {
+        @Override
+        public DeleteQuery map(Article article) {
+            return mock(DeleteQuery.class);
         }
     };
 
