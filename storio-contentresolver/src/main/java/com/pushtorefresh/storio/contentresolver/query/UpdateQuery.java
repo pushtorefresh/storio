@@ -88,6 +88,8 @@ public class UpdateQuery {
 
         /**
          * Optional: Specifies where clause
+         * <p>
+         * Default value is <code>null</code>
          *
          * @param where an optional filter to match rows to update.
          * @return builder

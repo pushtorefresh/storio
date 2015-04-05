@@ -98,6 +98,8 @@ public class DeleteQuery {
         /**
          * Optional: Specifies where clause
          * <p>
+         * Default value is <code>null</code>
+         *
          * @param where optional restriction to apply to rows when deleting
          * @return builder
          */

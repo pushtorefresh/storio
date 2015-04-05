@@ -62,6 +62,7 @@ public class InsertQuery {
          * Required: Specifies uri
          *
          * @param uri content:// URI of the insertion request
+         * @return builder
          */
         @NonNull
         public Builder uri(@NonNull Uri uri) {

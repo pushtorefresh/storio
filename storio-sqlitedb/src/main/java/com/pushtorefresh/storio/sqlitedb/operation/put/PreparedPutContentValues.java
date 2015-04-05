@@ -77,6 +77,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
 
         /**
          * Prepares Put Operation
+         *
          * @return {@link PreparedPutContentValues} instance
          */
         @NonNull public PreparedPutContentValues prepare() {

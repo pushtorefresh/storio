@@ -84,6 +84,8 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
         /**
          * Optional: Specifies {@link DeleteResolver} for Delete Operation
+         * <p>
+         * Default value is instance of {@link DefaultDeleteResolver}
          *
          * @param deleteResolver delete resolver
          * @return builder
@@ -95,6 +97,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
         /**
          * Prepares Delete Operation
+         *
          * @return {@link PreparedDeleteObject} instance
          */
         @NonNull public PreparedDeleteObject<T> prepare() {
