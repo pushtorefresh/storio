@@ -55,6 +55,11 @@ class PutStub {
         return new PutStub(TypeOfItems.CONTENT_VALUES, 1);
     }
 
+    @NonNull
+    public static PutStub newPutStubForMultipleContentValues() {
+        return new PutStub(TypeOfItems.CONTENT_VALUES, 3);
+    }
+
     @SuppressWarnings("unchecked")
     private PutStub(@NonNull TypeOfItems typeOfItems, int numberOfTestItems) {
         this.typeOfItems = typeOfItems;

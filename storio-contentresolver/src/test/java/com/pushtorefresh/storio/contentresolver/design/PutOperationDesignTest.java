@@ -2,12 +2,13 @@ package com.pushtorefresh.storio.contentresolver.design;
 
 import android.content.ContentValues;
 
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResults;
 import com.pushtorefresh.storio.contentresolver.operation.put.PutResult;
+import com.pushtorefresh.storio.contentresolver.operation.put.PutResults;
 
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 
@@ -86,6 +87,30 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResult> putResultObservable = storIOContentResolver()
                 .put()
                 .contentValues(contentValues)
+                .withPutResolver(Article.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .prepare()
+                .createObservable();
+    }
+
+    @Test
+    public void putContentValuesIterableBlocking() {
+        List<ContentValues> contentValuesList = new ArrayList<>();
+
+        PutResults<ContentValues> putResults = storIOContentResolver()
+                .put()
+                .contentValues(contentValuesList)
+                .withPutResolver(Article.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .prepare()
+                .executeAsBlocking();
+    }
+
+    @Test
+    public void putContentValuesIterableObservable() {
+        List<ContentValues> contentValuesList = new ArrayList<>();
+
+        Observable<PutResults<ContentValues>> putResultsObservable = storIOContentResolver()
+                .put()
+                .contentValues(contentValuesList)
                 .withPutResolver(Article.PUT_RESOLVER_FOR_CONTENT_VALUES)
                 .prepare()
                 .createObservable();
