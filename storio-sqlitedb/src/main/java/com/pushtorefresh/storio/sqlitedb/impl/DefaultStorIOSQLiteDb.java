@@ -20,7 +20,6 @@ import com.pushtorefresh.storio.util.QueryUtil;
 import java.util.Set;
 
 import rx.Observable;
-import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
@@ -64,20 +63,8 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
             throw EnvironmentUtil.newRxJavaIsNotAvailableException("Observing changes in StorIOSQLiteDb");
         }
 
-        return changesBus
-                .filter(new Func1<Changes, Boolean>() {
-                    @Override
-                    public Boolean call(Changes changes) {
-                        // if one of changed tables found in tables for subscription -> notify observer
-                        for (String affectedTable : changes.affectedTables()) {
-                            if (tables.contains(affectedTable)) {
-                                return true;
-                            }
-                        }
-
-                        return false;
-                    }
-                });
+        // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
+        return ChangesFilter.apply(changesBus, tables);
     }
 
     @NonNull
@@ -215,7 +202,6 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
          *
          * @return new {@link DefaultStorIOSQLiteDb} instance
          */
-
         @NonNull
         public DefaultStorIOSQLiteDb build() {
             checkNotNull(db, "Please specify SQLiteDatabase instance");
