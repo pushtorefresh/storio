@@ -64,12 +64,23 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         /**
          * Prepares Put Operation that should put one instance of {@link ContentValues}
          *
-         * @param contentValues content values to put
+         * @param contentValues non-null content values to put
          * @return builder for {@link PreparedPutContentValues}
          */
         @NonNull
         public PreparedPutContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
             return new PreparedPutContentValues.Builder(storIOContentResolver, contentValues);
+        }
+
+        /**
+         * Prepares Put Operation that should put several instances of {@link ContentValues}
+         *
+         * @param contentValues non-null collection of {@link ContentValues}
+         * @return builder for {@link PreparedPutContentValuesIterable}
+         */
+        @NonNull
+        public PreparedPutContentValuesIterable.Builder contentValues(@NonNull Iterable<ContentValues> contentValues) {
+            return new PreparedPutContentValuesIterable.Builder(storIOContentResolver, contentValues);
         }
     }
 }
