@@ -28,7 +28,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
         );
 
         putResolver.afterPut(contentValues, putResult);
-        storIOSQLiteDb.internal().notifyAboutChanges(new Changes(putResult.affectedTable()));
+        storIOSQLiteDb.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTable()));
         return putResult;
     }
 

@@ -67,7 +67,7 @@ public class PreparedDeleteTest {
             verify(internal, times(1)).notifyAboutChanges(any(Changes.class));
 
             // change should occur only in users table
-            verify(internal, times(1)).notifyAboutChanges(eq(new Changes(User.TABLE)));
+            verify(internal, times(1)).notifyAboutChanges(eq(Changes.newInstance(User.TABLE)));
 
             // we have mock deleteResolver, no real deletes should occur
             verify(internal, times(0)).delete(any(DeleteQuery.class));
@@ -168,14 +168,14 @@ public class PreparedDeleteTest {
             if (useTransaction) {
                 // if delete() operation used transaction, only one notification should be thrown
                 verify(internal, times(1)).notifyAboutChanges(any(Changes.class));
-                verify(internal, times(1)).notifyAboutChanges(eq(new Changes(Collections.singleton(User.TABLE))));
+                verify(internal, times(1)).notifyAboutChanges(eq(Changes.newInstance(Collections.singleton(User.TABLE))));
             } else {
                 // if delete() operation didn't use transaction,
                 // number of notifications should be equal to number of objects
                 verify(internal, times(users.size())).notifyAboutChanges(any(Changes.class));
 
                 // number of notifications about changes in users table should be equal to number of users
-                verify(internal, times(users.size())).notifyAboutChanges(eq(new Changes(User.TABLE)));
+                verify(internal, times(users.size())).notifyAboutChanges(eq(Changes.newInstance(User.TABLE)));
             }
 
             // no real deletes should occur

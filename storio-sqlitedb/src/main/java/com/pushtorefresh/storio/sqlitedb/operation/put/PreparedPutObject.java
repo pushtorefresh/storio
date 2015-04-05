@@ -33,7 +33,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         final PutResult putResult = putResolver.performPut(storIOSQLiteDb, mapFunc.map(object));
 
         putResolver.afterPut(object, putResult);
-        storIOSQLiteDb.internal().notifyAboutChanges(new Changes(putResult.affectedTable()));
+        storIOSQLiteDb.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTable()));
 
         return putResult;
     }
