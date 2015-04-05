@@ -44,7 +44,9 @@ class Article {
     static final MapFunc<Article, DeleteQuery> MAP_TO_DELETE_QUERY = new MapFunc<Article, DeleteQuery>() {
         @Override
         public DeleteQuery map(Article article) {
-            return mock(DeleteQuery.class);
+            return new DeleteQuery.Builder()
+                    .uri(mock(Uri.class))
+                    .build();
         }
     };
 

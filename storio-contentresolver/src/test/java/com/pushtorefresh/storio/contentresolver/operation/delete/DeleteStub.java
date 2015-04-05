@@ -43,6 +43,11 @@ class DeleteStub {
         return new DeleteStub(3);
     }
 
+    @NonNull
+    static DeleteStub newInstanceForDeleteOneObject() {
+        return new DeleteStub(1);
+    }
+
     @SuppressWarnings("unchecked")
     private DeleteStub(int numberOfTestItems) {
         storIOContentResolver = mock(StorIOContentResolver.class);
@@ -130,6 +135,25 @@ class DeleteStub {
                     @Override
                     public void call(DeleteResults<TestItem> deleteResults) {
                         verifyBehaviorForDeleteMultipleObjects(deleteResults);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForDeleteOneObject(@NonNull DeleteResult deleteResult) {
+        Map<TestItem, DeleteResult> deleteResultsMap = new HashMap<>(1);
+        deleteResultsMap.put(testItems.get(0), deleteResult);
+        verifyBehaviorForDeleteMultipleObjects(DeleteResults.newInstance(deleteResultsMap));
+    }
+
+    void verifyBehaviorForDeleteOneObject(@NonNull Observable<DeleteResult> deleteResultObservable) {
+        new ObservableBehaviorChecker<DeleteResult>()
+                .observable(deleteResultObservable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<DeleteResult>() {
+                    @Override
+                    public void call(DeleteResult deleteResult) {
+                        verifyBehaviorForDeleteOneObject(deleteResult);
                     }
                 })
                 .checkBehaviorOfObservable();
