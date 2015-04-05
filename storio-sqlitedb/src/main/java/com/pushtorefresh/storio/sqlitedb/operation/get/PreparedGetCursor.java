@@ -80,10 +80,14 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
 
     /**
      * Builder for {@link PreparedOperationWithReactiveStream}
+     * <p>
+     * Required: You should specify query by call
+     * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull
+        private final StorIOSQLiteDb storIOSQLiteDb;
 
         private Query query;
         private RawQuery rawQuery;
@@ -99,9 +103,10 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          * @param query query
          * @return builder
          */
-        @NonNull public Builder withQuery(@NonNull Query query) {
+        @NonNull
+        public CompleteBuilder withQuery(@NonNull Query query) {
             this.query = query;
-            return this;
+            return new CompleteBuilder(this);
         }
 
         /**
@@ -111,9 +116,10 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          * @param rawQuery query
          * @return builder
          */
-        @NonNull public Builder withQuery(@NonNull RawQuery rawQuery) {
+        @NonNull
+        public CompleteBuilder withQuery(@NonNull RawQuery rawQuery) {
             this.rawQuery = rawQuery;
-            return this;
+            return new CompleteBuilder(this);
         }
 
         /**
@@ -125,17 +131,19 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          * @param getResolver get resolver
          * @return builder
          */
-        @NonNull public Builder withGetResolver(@NonNull GetResolver getResolver) {
+        @NonNull
+        public Builder withGetResolver(@NonNull GetResolver getResolver) {
             this.getResolver = getResolver;
             return this;
         }
 
         /**
-         * Prepares Get Operation
+         * Hidden method for prepares Get Operation
          *
          * @return {@link PreparedGetCursor} instance
          */
-        @NonNull public PreparedOperationWithReactiveStream<Cursor> prepare() {
+        @NonNull
+        private PreparedOperationWithReactiveStream<Cursor> prepare() {
             if (getResolver == null) {
                 getResolver = DefaultGetResolver.INSTANCE;
             }
@@ -147,6 +155,43 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
             } else {
                 throw new IllegalStateException("Please specify query");
             }
+        }
+    }
+
+    /**
+     * Builder for {@link PreparedOperationWithReactiveStream}
+     */
+     public static class CompleteBuilder {
+
+        private final Builder incompleteBuilder;
+
+        CompleteBuilder(@NonNull Builder builder) {
+            this.incompleteBuilder = builder;
+        }
+
+        /**
+         * Optional: Specifies {@link GetResolver} for Get Operation
+         * which allows you to customize behavior of Get Operation
+         * <p>
+         * Default value is instance of {@link DefaultGetResolver}
+         *
+         * @param getResolver get resolver
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder withGetResolver(@NonNull GetResolver getResolver) {
+            incompleteBuilder.withGetResolver(getResolver);
+            return this;
+        }
+
+        /**
+         * Prepares Get Operation
+         *
+         * @return {@link PreparedGetCursor} instance
+         */
+        @NonNull
+        public PreparedOperationWithReactiveStream<Cursor> prepare() {
+            return incompleteBuilder.prepare();
         }
     }
 }
