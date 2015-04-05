@@ -70,4 +70,28 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                 .prepare()
                 .createObservable();
     }
+
+    @Test
+    public void deleteObjectBlocking() {
+        Article article = mock(Article.class);
+
+        DeleteResult deleteResult = storIOContentResolver()
+                .delete()
+                .object(article)
+                .withMapFunc(Article.MAP_TO_DELETE_QUERY)
+                .prepare()
+                .executeAsBlocking();
+    }
+
+    @Test
+    public void deleteObjectObservable() {
+        Article article = mock(Article.class);
+
+        Observable<DeleteResult> deleteResultObservable = storIOContentResolver()
+                .delete()
+                .object(article)
+                .withMapFunc(Article.MAP_TO_DELETE_QUERY)
+                .prepare()
+                .createObservable();
+    }
 }
