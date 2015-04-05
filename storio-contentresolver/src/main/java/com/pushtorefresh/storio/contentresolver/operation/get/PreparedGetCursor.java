@@ -88,6 +88,8 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         /**
          * Optional: Specifies {@link GetResolver} for Get Operation
          * which allows you to customize behavior of Get Operation
+         * <p>
+         * Default value is instance of {@link DefaultGetResolver}
          *
          * @param getResolver get resolver
          * @return builder

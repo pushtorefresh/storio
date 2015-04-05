@@ -191,8 +191,6 @@ public class Query {
 
         /**
          * Required: Specifies table name
-         * <p/>
-         * Default value is <code>null</code>
          *
          * @param table table name
          * @return builder

@@ -43,6 +43,9 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         });
     }
 
+    /**
+     * Builder for {@link PreparedDeleteByQuery}
+     */
     public static class Builder {
 
         @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
@@ -57,6 +60,8 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
         /**
          * Optional: Specifies {@link DeleteResolver} for Delete Operation
+         * <p>
+         * Default value is instance of {@link DefaultDeleteResolver}
          *
          * @param deleteResolver delete resolver
          * @return builder
@@ -68,6 +73,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
         /**
          * Prepares Delete Operation
+         *
          * @return {@link PreparedDeleteByQuery} instance
          */
         @NonNull public PreparedDeleteByQuery prepare() {

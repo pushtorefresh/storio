@@ -93,6 +93,8 @@ public class InsertQuery {
          * If your provided values are empty, no column names are known and an empty row can't be inserted.
          * If not set to null, the nullColumnHack parameter provides the name of nullable column name
          * to explicitly insert a NULL into in the case where your values is empty.
+         * <p/>
+         * Default value is <code>null</code>
          *
          * @param nullColumnHack optional null column hack
          * @return builder

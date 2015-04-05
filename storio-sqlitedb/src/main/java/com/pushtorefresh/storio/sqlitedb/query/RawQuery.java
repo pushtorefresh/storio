@@ -88,8 +88,6 @@ public class RawQuery {
 
         /**
          * Required: Specifies SQL query
-         * <p/>
-         * Default value is <code>null</code>
          *
          * @param query SQL query
          * @return builder

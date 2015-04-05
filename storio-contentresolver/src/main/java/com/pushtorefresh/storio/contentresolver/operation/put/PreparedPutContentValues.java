@@ -87,8 +87,6 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
         /**
          * Required: Specifies resolver for Put Operation
          * that should define behavior of Put Operation: insert or update of the {@link ContentValues}
-         * <p>
-         * Default value is <code>null</code>
          *
          * @param putResolver resolver for Put Operation
          * @return builder

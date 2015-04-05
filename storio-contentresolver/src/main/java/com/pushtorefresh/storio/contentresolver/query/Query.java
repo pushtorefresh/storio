@@ -144,7 +144,10 @@ public class Query {
         }
 
         /**
-         * The list of columns to put into the cursor. If null all columns are included.
+         * The list of columns to put into the cursor.
+         * If <code>null</code> all columns are included.
+         * <p>
+         * Default value is <code>null</code>
          *
          * @param columns columns
          * @return builder
@@ -156,7 +159,10 @@ public class Query {
         }
 
         /**
-         * Optional: A selection criteria to apply when filtering rows. If null then all rows are included.
+         * Optional: A selection criteria to apply when filtering rows.
+         * If <code>null</code> then all rows are included.
+         * <p>
+         * Default value is <code>null</code>
          *
          * @param where where
          * @return builder
@@ -185,7 +191,9 @@ public class Query {
 
         /**
          * Optional: Specifies how the rows in the cursor should be sorted.
-         * If null then the provider is free to define the sort order.
+         * If <code>null</code> then the provider is free to define the sort order.
+         * <p>
+         * Default value is <code>null</code>
          *
          * @param sortOrder sort order
          * @return builder

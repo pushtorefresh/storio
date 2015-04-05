@@ -136,7 +136,9 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         }
 
         /**
-         * Optional: Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIOSQLiteDb}
+         * Optional: Defines that Put Operation will use transaction
+         * if it is supported by implementation of {@link StorIOSQLiteDb}
+         * <p>
          * By default, transaction will be used
          *
          * @return builder
@@ -149,6 +151,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
 
         /**
          * Optional: Defines that Put Operation won't use transaction
+         * <p>
          * By default, transaction will be used
          *
          * @return builder

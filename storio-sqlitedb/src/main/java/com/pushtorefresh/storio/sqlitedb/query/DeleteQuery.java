@@ -88,8 +88,6 @@ public class DeleteQuery {
 
         /**
          * Required: Specifies table name
-         * <p/>
-         * Default value is <code>null</code>
          *
          * @param table non-null table name
          * @return builder

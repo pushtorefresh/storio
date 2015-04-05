@@ -122,8 +122,6 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
         /**
          * Required: Specifies map function that should map each object to {@link DeleteQuery}
-         * <p>
-         * Default value is <code>null</code>
          *
          * @param mapFunc map function
          * @return builder

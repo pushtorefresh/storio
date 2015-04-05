@@ -147,6 +147,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
         /**
          * Optional: Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIOSQLiteDb}
+         * <p>
          * By default, transaction will be used
          *
          * @return builder
@@ -158,6 +159,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
         /**
          * Optional: Defines that Put Operation won't use transaction
+         * <p>
          * By default, transaction will be used
          *
          * @return builder
@@ -169,6 +171,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
         /**
          * Prepares Put Operation
+         *
          * @return {@link PreparedPutObjects} instance
          */
         @NonNull public PreparedPutObjects<T> prepare() {

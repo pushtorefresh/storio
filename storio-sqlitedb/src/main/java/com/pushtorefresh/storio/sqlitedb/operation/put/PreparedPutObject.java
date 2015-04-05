@@ -76,7 +76,8 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         }
 
         /**
-         * Required: Specifies map function for Put Operation which will be used to map object to {@link ContentValues}
+         * Required: Specifies map function for Put Operation
+         * which will be used to map object to {@link ContentValues}
          *
          * @param mapFunc map function for Put Operation which will be used to map object to {@link ContentValues}
          * @return builder
@@ -88,7 +89,8 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         }
 
         /**
-         * Optional: Specifies {@link PutResolver} for Put Operation which allows you to customize behavior of Put Operation
+         * Required: Specifies {@link PutResolver} for Put Operation
+         * which allows you to customize behavior of Put Operation
          *
          * @param putResolver put resolver
          * @return builder
@@ -108,6 +110,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         @NonNull
         public PreparedOperation<PutResult> prepare() {
             checkNotNull(mapFunc, "Please specify map function");
+            checkNotNull(putResolver, "Please specify put resolver");
 
             return new PreparedPutObject<>(
                     storIOSQLiteDb,

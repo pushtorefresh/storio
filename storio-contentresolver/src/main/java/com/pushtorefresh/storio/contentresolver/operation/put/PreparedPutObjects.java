@@ -99,8 +99,6 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
         /**
          * Required: Specifies map function that should map each object to {@link ContentValues}
-         * <p/>
-         * Default value is <code>null</code>
          *
          * @param mapFunc map function
          * @return builder
@@ -114,8 +112,6 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         /**
          * Required: Specifies resolver for Put Operation
          * that should define behavior of Put Operation: insert or update of the {@link ContentValues}
-         * <p/>
-         * Default value is <code>null</code>
          *
          * @param putResolver resolver for Put Operation
          * @return builder
