@@ -69,7 +69,7 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
                     @Override
                     public Boolean call(Changes changes) {
                         // if one of changed tables found in tables for subscription -> notify observer
-                        for (String affectedTable : changes.affectedTables) {
+                        for (String affectedTable : changes.affectedTables()) {
                             if (tables.contains(affectedTable)) {
                                 return true;
                             }

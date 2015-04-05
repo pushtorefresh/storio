@@ -32,7 +32,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
         internal.getLoggi().v(numberOfDeletedRows + " object(s) deleted");
 
-        internal.notifyAboutChanges(new Changes(deleteQuery.table));
+        internal.notifyAboutChanges(Changes.newInstance(deleteQuery.table));
 
         return DeleteResult.newInstance(numberOfDeletedRows, deleteQuery.table);
     }

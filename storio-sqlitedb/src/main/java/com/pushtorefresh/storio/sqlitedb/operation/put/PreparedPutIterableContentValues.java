@@ -57,7 +57,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
                 putResolver.afterPut(contentValues, putResult);
 
                 if (!withTransaction) {
-                    internal.notifyAboutChanges(new Changes(putResult.affectedTable()));
+                    internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTable()));
                 }
             }
 
@@ -76,7 +76,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
                         affectedTables.add(putResults.get(contentValues).affectedTable());
                     }
 
-                    storIOSQLiteDb.internal().notifyAboutChanges(new Changes(affectedTables));
+                    storIOSQLiteDb.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
                 }
             }
         }

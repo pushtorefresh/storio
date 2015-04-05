@@ -58,7 +58,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
                 );
 
                 if (!withTransaction) {
-                    internal.notifyAboutChanges(new Changes(deleteQuery.table));
+                    internal.notifyAboutChanges(Changes.newInstance(deleteQuery.table));
                 }
             }
 
@@ -79,7 +79,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
                         affectedTables.add(results.get(object).affectedTable());
                     }
 
-                    internal.notifyAboutChanges(new Changes(affectedTables));
+                    internal.notifyAboutChanges(Changes.newInstance(affectedTables));
                 }
             }
         }

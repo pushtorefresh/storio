@@ -23,7 +23,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
 
         final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLiteDb, deleteQuery);
-        internal.notifyAboutChanges(new Changes(deleteQuery.table));
+        internal.notifyAboutChanges(Changes.newInstance(deleteQuery.table));
 
         return DeleteResult.newInstance(numberOfDeletedRows, deleteQuery.table);
     }

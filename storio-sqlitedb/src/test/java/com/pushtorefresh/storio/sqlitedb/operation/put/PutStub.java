@@ -101,12 +101,12 @@ class PutStub {
         if (useTransaction) {
             // if put() operation used transaction, only one notification should be thrown
             verify(internal, times(1))
-                    .notifyAboutChanges(eq(new Changes(TestItem.TABLE)));
+                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE)));
         } else {
             // if put() operation didn't use transaction,
             // number of notifications should be equal to number of objects
             verify(internal, times(testItems.size()))
-                    .notifyAboutChanges(eq(new Changes(TestItem.TABLE)));
+                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE)));
         }
     }
 
