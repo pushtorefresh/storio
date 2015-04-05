@@ -98,6 +98,11 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
             return this;
         }
 
+        /**
+         * Builds instance of {@link PreparedDeleteByQuery}
+         *
+         * @return instance of {@link PreparedDeleteByQuery}
+         */
         @NonNull
         public PreparedDeleteByQuery prepare() {
             if (deleteResolver == null) {

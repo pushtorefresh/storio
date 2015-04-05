@@ -3,9 +3,13 @@ package com.pushtorefresh.storio.contentresolver.design;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResult;
+import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResults;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 
@@ -39,6 +43,30 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
         Observable<DeleteResult> deleteResultObservable = storIOContentResolver()
                 .delete()
                 .byQuery(deleteQuery)
+                .prepare()
+                .createObservable();
+    }
+
+    @Test
+    public void deleteObjectsBlocking() {
+        final List<Article> articles = new ArrayList<>();
+
+        DeleteResults<Article> deleteResults = storIOContentResolver()
+                .delete()
+                .objects(articles)
+                .withMapFunc(Article.MAP_TO_DELETE_QUERY)
+                .prepare()
+                .executeAsBlocking();
+    }
+
+    @Test
+    public void deleteObjectsObservable() {
+        final List<Article> articles = new ArrayList<>();
+
+        Observable<DeleteResults<Article>> deleteResultsObservable = storIOContentResolver()
+                .delete()
+                .objects(articles)
+                .withMapFunc(Article.MAP_TO_DELETE_QUERY)
                 .prepare()
                 .createObservable();
     }

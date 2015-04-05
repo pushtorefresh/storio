@@ -17,7 +17,7 @@ public class PreparedDeleteByQueryTest {
                 .prepare()
                 .executeAsBlocking();
 
-        deleteStub.verifyBehaviorForOneObject(deleteResult);
+        deleteStub.verifyBehaviorForDeleteByQuery(deleteResult);
     }
 
     @Test
@@ -31,6 +31,6 @@ public class PreparedDeleteByQueryTest {
                 .prepare()
                 .createObservable();
 
-        deleteStub.verifyBehaviorForOneObject(deleteResultObservable);
+        deleteStub.verifyBehaviorForDeleteByQuery(deleteResultObservable);
     }
 }
