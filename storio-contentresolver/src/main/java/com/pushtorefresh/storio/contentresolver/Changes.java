@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import java.util.Collections;
 import java.util.Set;
 
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+
 /**
  * Immutable container of information about one or more changes in {@link StorIOContentResolver}
  */
@@ -15,24 +17,49 @@ public class Changes {
      * Immutable set of affected Uris
      */
     @NonNull
-    public final Set<Uri> affectedUris;
+    private final Set<Uri> affectedUris;
 
     /**
      * Creates {@link Changes} container with info about changes
      *
      * @param affectedUris set of Uris which were affected by these changes
      */
-    public Changes(@NonNull Set<Uri> affectedUris) {
+    private Changes(@NonNull Set<Uri> affectedUris) {
         this.affectedUris = Collections.unmodifiableSet(affectedUris);
     }
 
     /**
-     * Creates {@link Changes} container with info about changes
+     * Creates immutable container of information about one or more changes in {@link StorIOContentResolver}
      *
-     * @param affectedUri Uri which was affected by these changes
+     * @param affectedUris non-null set of affected Uris
+     * @return new immutable instance of {@link Changes}
      */
-    public Changes(@NonNull Uri affectedUri) {
-        this(Collections.singleton(affectedUri));
+    @NonNull
+    public static Changes newInstance(@NonNull Set<Uri> affectedUris) {
+        checkNotNull(affectedUris, "Please specify affected Uris");
+        return new Changes(affectedUris);
+    }
+
+    /**
+     * Creates immutable container of information about one or more changes in {@link StorIOContentResolver}
+     *
+     * @param affectedUri non-null Uri that was affected
+     * @return new immutable instance of {@link Changes}
+     */
+    @NonNull
+    public static Changes newInstance(@NonNull Uri affectedUri) {
+        checkNotNull(affectedUri, "Please specify affected Uri");
+        return new Changes(Collections.singleton(affectedUri));
+    }
+
+    /**
+     * Gets immutable set of affected Uris
+     *
+     * @return immutable set of affected Uris
+     */
+    @NonNull
+    public Set<Uri> affectedUris() {
+        return affectedUris;
     }
 
     @Override
@@ -43,7 +70,6 @@ public class Changes {
         Changes changes = (Changes) o;
 
         return affectedUris.equals(changes.affectedUris);
-
     }
 
     @Override
