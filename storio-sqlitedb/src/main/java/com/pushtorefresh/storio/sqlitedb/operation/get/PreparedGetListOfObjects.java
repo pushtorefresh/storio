@@ -135,6 +135,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     /**
      * Builder for {@link PreparedOperationWithReactiveStream}
+     * <p>
+     * Required: You should specify query by call
+     * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
      *
      * @param <T> type of object for query
      */
@@ -176,9 +179,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * @return builder
          */
         @NonNull
-        public Builder<T> withQuery(@NonNull Query query) {
+        public CompleteBuilder<T> withQuery(@NonNull Query query) {
             this.query = query;
-            return this;
+            return new CompleteBuilder<>(this);
         }
 
         /**
@@ -189,9 +192,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * @return builder
          */
         @NonNull
-        public Builder<T> withQuery(@NonNull RawQuery rawQuery) {
+        public CompleteBuilder<T> withQuery(@NonNull RawQuery rawQuery) {
             this.rawQuery = rawQuery;
-            return this;
+            return new CompleteBuilder<>(this);
         }
 
         /**
@@ -210,12 +213,12 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Prepares Get Operation
+         * Hidden method for prepare Get Operation
          *
          * @return {@link PreparedGetListOfObjects} instance
          */
         @NonNull
-        public PreparedOperationWithReactiveStream<List<T>> prepare() {
+        private PreparedOperationWithReactiveStream<List<T>> prepare() {
             if (getResolver == null) {
                 getResolver = DefaultGetResolver.INSTANCE;
             }
@@ -229,6 +232,58 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             } else {
                 throw new IllegalStateException("Please specify query");
             }
+        }
+    }
+
+    /**
+     * Builder for {@link PreparedOperationWithReactiveStream}
+     *
+     * @param <T> type of object for query
+     */
+    public static class CompleteBuilder<T> {
+
+        private Builder<T> incompleteBuilder;
+
+        public CompleteBuilder(@NonNull final Builder<T> builder) {
+            this.incompleteBuilder = builder;
+        }
+
+        /**
+         * Required: Specifies map function for Get Operation
+         * which will map {@link Cursor} to object of required type
+         *
+         * @param mapFunc map function which will map {@link Cursor} to object of required type
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
+            incompleteBuilder.withMapFunc(mapFunc);
+            return this;
+        }
+
+        /**
+         * Optional: Specifies {@link GetResolver} for Get Operation
+         * which allows you to customize behavior of Get Operation
+         * <p>
+         * Default value is instance of {@link DefaultGetResolver}
+         *
+         * @param getResolver get resolver
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder<T> withGetResolver(@NonNull GetResolver getResolver) {
+            incompleteBuilder.withGetResolver(getResolver);
+            return this;
+        }
+
+        /**
+         * Prepares Get Operation
+         *
+         * @return {@link PreparedGetListOfObjects} instance
+         */
+        @NonNull
+        public PreparedOperationWithReactiveStream<List<T>> prepare() {
+            return incompleteBuilder.prepare();
         }
     }
 }
