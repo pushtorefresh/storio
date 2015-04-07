@@ -136,8 +136,8 @@ public class PreparedGetTest {
         final List<TestItem> testItems = getStub.storIOContentResolver
                 .get()
                 .listOfObjects(TestItem.class)
-                .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.query)
+                .withMapFunc(getStub.mapFunc)
                 .withGetResolver(getStub.getResolver)
                 .prepare()
                 .executeAsBlocking();
@@ -169,8 +169,8 @@ public class PreparedGetTest {
         final List<TestItem> testItems = getStub.storIOContentResolver
                 .get()
                 .listOfObjects(TestItem.class)
-                .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.query)
+                .withMapFunc(getStub.mapFunc)
                 .withGetResolver(getStub.getResolver)
                 .prepare()
                 .createObservable()
