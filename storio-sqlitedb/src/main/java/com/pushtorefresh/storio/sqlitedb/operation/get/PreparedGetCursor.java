@@ -78,13 +78,28 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         }
     }
 
+    interface CommonBuilder<T> {
+
+        /**
+         * Optional: Specifies {@link GetResolver} for Get Operation
+         * which allows you to customize behavior of Get Operation
+         * <p>
+         * Default value is instance of {@link DefaultGetResolver}
+         *
+         * @param getResolver get resolver
+         * @return builder
+         */
+        @NonNull
+        T withGetResolver(@NonNull GetResolver getResolver);
+    }
+
     /**
      * Builder for {@link PreparedOperationWithReactiveStream}
      * <p>
      * Required: You should specify query by call
      * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
      */
-    public static class Builder {
+    public static class Builder implements CommonBuilder<Builder> {
 
         @NonNull
         private final StorIOSQLiteDb storIOSQLiteDb;
@@ -122,15 +137,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
             return new CompleteBuilder(this);
         }
 
-        /**
-         * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
-         * <p>
-         * Default value is instance of {@link DefaultGetResolver}
-         *
-         * @param getResolver get resolver
-         * @return builder
-         */
+        @Override
         @NonNull
         public Builder withGetResolver(@NonNull GetResolver getResolver) {
             this.getResolver = getResolver;
@@ -161,7 +168,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     /**
      * Builder for {@link PreparedOperationWithReactiveStream}
      */
-     public static class CompleteBuilder {
+     public static class CompleteBuilder implements CommonBuilder<CompleteBuilder> {
 
         private final Builder incompleteBuilder;
 
@@ -169,15 +176,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
             this.incompleteBuilder = builder;
         }
 
-        /**
-         * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
-         * <p>
-         * Default value is instance of {@link DefaultGetResolver}
-         *
-         * @param getResolver get resolver
-         * @return builder
-         */
+        @Override
         @NonNull
         public CompleteBuilder withGetResolver(@NonNull GetResolver getResolver) {
             incompleteBuilder.withGetResolver(getResolver);
