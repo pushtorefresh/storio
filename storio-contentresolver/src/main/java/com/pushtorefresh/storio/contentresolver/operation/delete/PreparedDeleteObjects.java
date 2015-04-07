@@ -76,20 +76,22 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
     /**
      * Builder for {@link PreparedDeleteObjects}
+     * <p>
+     * Required: You should specify map function see {@link #withMapFunc(MapFunc)}
      *
      * @param <T> type of objects
      */
     public static class Builder<T> {
 
         @NonNull
-        private final StorIOContentResolver storIOContentResolver;
+        final StorIOContentResolver storIOContentResolver;
 
         @NonNull
-        private final Iterable<T> objects;
+        final Iterable<T> objects;
 
-        private DeleteResolver deleteResolver;
+        DeleteResolver deleteResolver;
 
-        private MapFunc<T, DeleteQuery> mapFunc;
+        MapFunc<T, DeleteQuery> mapFunc;
 
         /**
          * Creates builder for {@link PreparedDeleteObjects}
@@ -127,8 +129,42 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
          * @return builder
          */
         @NonNull
-        public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
+        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
             this.mapFunc = mapFunc;
+            return new CompleteBuilder<>(this);
+        }
+    }
+
+    /**
+     * Builder for {@link PreparedDeleteObjects}
+     *
+     * @param <T> type of objects
+     */
+    public static class CompleteBuilder<T> extends Builder<T> {
+
+        CompleteBuilder(@NonNull final Builder<T> builder) {
+            super(builder.storIOContentResolver, builder.objects);
+            deleteResolver = builder.deleteResolver;
+            mapFunc = builder.mapFunc;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+            super.withDeleteResolver(deleteResolver);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
+            super.withMapFunc(mapFunc);
             return this;
         }
 
