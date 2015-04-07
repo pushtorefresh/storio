@@ -153,7 +153,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
          */
         @NonNull
         @Override
-        public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+        public CompleteBuilder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
             super.withDeleteResolver(deleteResolver);
             return this;
         }
