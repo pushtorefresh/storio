@@ -136,8 +136,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     /**
      * Builder for {@link PreparedOperationWithReactiveStream}
      * <p>
-     * Required: You should specify query by call
-     * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
+     * Required: Firstly you should specify map function
      *
      * @param <T> type of object for query
      */
@@ -167,34 +166,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * @return builder
          */
         @NonNull
-        public Builder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
+        public QueryBuilder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
             this.mapFunc = mapFunc;
-            return this;
-        }
-
-        /**
-         * Specifies {@link Query} for Get Operation
-         *
-         * @param query query
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder<T> withQuery(@NonNull Query query) {
-            this.query = query;
-            return new CompleteBuilder<>(this);
-        }
-
-        /**
-         * Specifies {@link RawQuery} for Get Operation,
-         * you can use it for "joins" and same constructions which are not allowed in {@link Query}
-         *
-         * @param rawQuery query
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder<T> withQuery(@NonNull RawQuery rawQuery) {
-            this.rawQuery = rawQuery;
-            return new CompleteBuilder<>(this);
+            return new QueryBuilder<>(this);
         }
 
         /**
@@ -237,28 +211,81 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     /**
      * Builder for {@link PreparedOperationWithReactiveStream}
+     * <p>
+     * Required: You should specify query by call
+     * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
+     *
+     * @param <T> type of object for query
+     */
+    public static class QueryBuilder<T> {
+
+        private Builder<T> incompleteBuilder;
+
+        public QueryBuilder(@NonNull final Builder<T> builder) {
+            this.incompleteBuilder = builder;
+        }
+        /**
+         * Specifies {@link Query} for Get Operation
+         *
+         * @param query query
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder<T> withQuery(@NonNull Query query) {
+            incompleteBuilder.query = query;
+            return new CompleteBuilder<>(this);
+        }
+
+        /**
+         * Specifies {@link RawQuery} for Get Operation,
+         * you can use it for "joins" and same constructions which are not allowed in {@link Query}
+         *
+         * @param rawQuery query
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder<T> withQuery(@NonNull RawQuery rawQuery) {
+            incompleteBuilder.rawQuery = rawQuery;
+            return new CompleteBuilder<>(this);
+        }
+
+        /**
+         * Optional: Specifies {@link GetResolver} for Get Operation
+         * which allows you to customize behavior of Get Operation
+         * <p>
+         * Default value is instance of {@link DefaultGetResolver}
+         *
+         * @param getResolver get resolver
+         * @return builder
+         */
+        @NonNull
+        public QueryBuilder<T> withGetResolver(@NonNull GetResolver getResolver) {
+            incompleteBuilder.withGetResolver(getResolver);
+            return this;
+        }
+
+        /**
+         * Hidden method for prepare Get Operation
+         *
+         * @return {@link PreparedGetListOfObjects} instance
+         */
+        @NonNull
+        private PreparedOperationWithReactiveStream<List<T>> prepare() {
+            return incompleteBuilder.prepare();
+        }
+    }
+
+    /**
+     * Builder for {@link PreparedOperationWithReactiveStream}
      *
      * @param <T> type of object for query
      */
     public static class CompleteBuilder<T> {
 
-        private Builder<T> incompleteBuilder;
+        private QueryBuilder<T> queryBuilder;
 
-        public CompleteBuilder(@NonNull final Builder<T> builder) {
-            this.incompleteBuilder = builder;
-        }
-
-        /**
-         * Required: Specifies map function for Get Operation
-         * which will map {@link Cursor} to object of required type
-         *
-         * @param mapFunc map function which will map {@link Cursor} to object of required type
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
-            incompleteBuilder.withMapFunc(mapFunc);
-            return this;
+        public CompleteBuilder(@NonNull final QueryBuilder<T> builder) {
+            this.queryBuilder = builder;
         }
 
         /**
@@ -272,7 +299,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          */
         @NonNull
         public CompleteBuilder<T> withGetResolver(@NonNull GetResolver getResolver) {
-            incompleteBuilder.withGetResolver(getResolver);
+            queryBuilder.withGetResolver(getResolver);
             return this;
         }
 
@@ -283,7 +310,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          */
         @NonNull
         public PreparedOperationWithReactiveStream<List<T>> prepare() {
-            return incompleteBuilder.prepare();
+            return queryBuilder.prepare();
         }
     }
 }
