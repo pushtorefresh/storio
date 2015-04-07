@@ -30,8 +30,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
         List<Article> articles = storIOContentResolver()
                 .get()
                 .listOfObjects(Article.class)
-                .withMapFunc(Article.MAP_FROM_CURSOR)
                 .withQuery(mock(Query.class))
+                .withMapFunc(Article.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
     }

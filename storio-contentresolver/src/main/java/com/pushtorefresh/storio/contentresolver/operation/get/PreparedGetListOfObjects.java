@@ -117,37 +117,26 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     /**
      * Builder for {@link PreparedGetListOfObjects}
-
+     * <p>
+     * Required: You should specify query see {@link #withQuery(Query)}
+     *
      * @param <T> type of objects for query
      */
     public static class Builder<T> {
 
         @NonNull
-        private final StorIOContentResolver storIOContentResolver;
+        final StorIOContentResolver storIOContentResolver;
 
         @NonNull
-        private final Class<T> type; // currently type not used as object, only for generic Builder class
+        final Class<T> type; // currently type not used as object, only for generic Builder class
 
-        private MapFunc<Cursor, T> mapFunc;
-        private Query query;
-        private GetResolver getResolver;
+        MapFunc<Cursor, T> mapFunc;
+        Query query;
+        GetResolver getResolver;
 
         public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Class<T> type) {
             this.storIOContentResolver = storIOContentResolver;
             this.type = type;
-        }
-
-        /**
-         * Required: Specifies map function for Get Operation
-         * which will map {@link Cursor} to object of required type
-         *
-         * @param mapFunc map function which will map {@link Cursor} to object of required type
-         * @return builder
-         */
-        @NonNull
-        public Builder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
-            this.mapFunc = mapFunc;
-            return this;
         }
 
         /**
@@ -157,9 +146,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * @return builder
          */
         @NonNull
-        public Builder<T> withQuery(@NonNull Query query) {
+        public MapFuncBuilder<T> withQuery(@NonNull Query query) {
             this.query = query;
-            return this;
+            return new MapFuncBuilder<>(this);
         }
 
         /**
@@ -174,6 +163,99 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         @NonNull
         public Builder<T> withGetResolver(@Nullable GetResolver getResolver) {
             this.getResolver = getResolver;
+            return this;
+        }
+    }
+
+    /**
+     * Builder for {@link PreparedGetListOfObjects}
+     * <p>
+     * Required: You should specify map function see {@link #withMapFunc(MapFunc)}
+     *
+     * @param <T> type of objects for query
+     */
+    public static class MapFuncBuilder<T> extends Builder<T> {
+
+        MapFuncBuilder(@NonNull final Builder<T> builder) {
+            super(builder.storIOContentResolver, builder.type);
+
+            query = builder.query;
+            getResolver = builder.getResolver;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public MapFuncBuilder<T> withQuery(@NonNull Query query) {
+            super.withQuery(query);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public MapFuncBuilder<T> withGetResolver(@Nullable GetResolver getResolver) {
+            super.withGetResolver(getResolver);
+            return this;
+        }
+
+        /**
+         * Required: Specifies map function for Get Operation
+         * which will map {@link Cursor} to object of required type
+         *
+         * @param mapFunc map function which will map {@link Cursor} to object of required type
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
+            this.mapFunc = mapFunc;
+            return new CompleteBuilder<>(this);
+        }
+    }
+
+    /**
+     * Builder for {@link PreparedGetListOfObjects}
+
+     * @param <T> type of objects for query
+     */
+    public static class CompleteBuilder<T> extends MapFuncBuilder<T> {
+
+        CompleteBuilder(@NonNull final Builder<T> builder) {
+            super(builder);
+
+            mapFunc = builder.mapFunc;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
+            super.withMapFunc(mapFunc);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override public CompleteBuilder<T> withQuery(@NonNull Query query) {
+            super.withQuery(query);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder<T> withGetResolver(@Nullable GetResolver getResolver) {
+            super.withGetResolver(getResolver);
             return this;
         }
 
