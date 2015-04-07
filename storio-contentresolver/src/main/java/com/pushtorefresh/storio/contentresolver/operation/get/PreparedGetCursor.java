@@ -59,15 +59,17 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
 
     /**
      * Builder for {@link PreparedGetCursor}
+     * <p>
+     * Required: You should specify query see {@link #withQuery(Query)}
      */
     public static class Builder {
 
         @NonNull
-        private final StorIOContentResolver storIOContentResolver;
+        final StorIOContentResolver storIOContentResolver;
 
-        private Query query;
+        Query query;
 
-        private GetResolver getResolver;
+        GetResolver getResolver;
 
         public Builder(@NonNull StorIOContentResolver storIOContentResolver) {
             this.storIOContentResolver = storIOContentResolver;
@@ -80,9 +82,9 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          * @return builder
          */
         @NonNull
-        public Builder withQuery(@NonNull Query query) {
+        public CompleteBuilder withQuery(@NonNull Query query) {
             this.query = query;
-            return this;
+            return new CompleteBuilder(this);
         }
 
         /**
@@ -97,6 +99,38 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         @NonNull
         public Builder withGetResolver(@Nullable GetResolver getResolver) {
             this.getResolver = getResolver;
+            return this;
+        }
+    }
+
+    /**
+     * Builder for {@link PreparedGetCursor}
+     */
+    public static class CompleteBuilder extends Builder {
+
+        CompleteBuilder(@NonNull final Builder builder) {
+            super(builder.storIOContentResolver);
+            query = builder.query;
+            getResolver = builder.getResolver;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder withQuery(@NonNull Query query) {
+            super.withQuery(query);
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder withGetResolver(@Nullable GetResolver getResolver) {
+            super.withGetResolver(getResolver);
             return this;
         }
 
