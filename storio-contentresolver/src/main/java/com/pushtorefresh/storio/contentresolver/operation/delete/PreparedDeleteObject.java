@@ -134,6 +134,20 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
             mapFunc = builder.mapFunc;
         }
 
+        @NonNull
+        @Override
+        public CompleteBuilder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+            super.withDeleteResolver(deleteResolver);
+            return this;
+        }
+
+        @NonNull
+        @Override
+        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
+            super.withMapFunc(mapFunc);
+            return this;
+        }
+
         /**
          * Builds instance of {@link PreparedDeleteObject}
          *
