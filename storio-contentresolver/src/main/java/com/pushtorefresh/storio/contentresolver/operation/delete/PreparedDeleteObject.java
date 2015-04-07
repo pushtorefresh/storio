@@ -134,6 +134,9 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
             mapFunc = builder.mapFunc;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @NonNull
         @Override
         public CompleteBuilder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
@@ -141,6 +144,9 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
             return this;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @NonNull
         @Override
         public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
