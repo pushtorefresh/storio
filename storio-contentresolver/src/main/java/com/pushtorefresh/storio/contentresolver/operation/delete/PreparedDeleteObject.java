@@ -60,20 +60,22 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
     /**
      * Builder for {@link PreparedDeleteObject}
+     * <p>
+     * Required: You should specify map function see {@link #withMapFunc(MapFunc)}
      *
      * @param <T> type of object to delete
      */
     public static class Builder<T> {
 
         @NonNull
-        private final StorIOContentResolver storIOContentResolver;
+        final StorIOContentResolver storIOContentResolver;
 
         @NonNull
-        private final T object;
+        final T object;
 
-        private DeleteResolver deleteResolver;
+        DeleteResolver deleteResolver;
 
-        private MapFunc<T, DeleteQuery> mapFunc;
+        MapFunc<T, DeleteQuery> mapFunc;
 
         /**
          * Creates builder for {@link PreparedDeleteObject}
@@ -113,9 +115,23 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
          * @return builder
          */
         @NonNull
-        public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
+        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
             this.mapFunc = mapFunc;
-            return this;
+            return new CompleteBuilder<>(this);
+        }
+    }
+
+    /**
+     * Builder for {@link PreparedDeleteObject}
+     *
+     * @param <T> type of object to delete
+     */
+    public static class CompleteBuilder<T> extends Builder<T> {
+
+        CompleteBuilder(@NonNull final Builder<T> builder) {
+            super(builder.storIOContentResolver, builder.object);
+            deleteResolver = builder.deleteResolver;
+            mapFunc = builder.mapFunc;
         }
 
         /**
