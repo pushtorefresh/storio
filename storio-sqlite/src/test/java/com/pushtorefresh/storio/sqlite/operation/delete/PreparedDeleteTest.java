@@ -25,7 +25,7 @@ public class PreparedDeleteTest {
     // stub class to avoid violation of DRY in "deleteOne" tests
     private static class DeleteOneStub {
         final User user;
-        final StorIOSQLite storIOSQLiteDb;
+        final StorIOSQLite storIOSQLite;
         final StorIOSQLite.Internal internal;
         final MapFunc<User, DeleteQuery> mapFunc;
         final DeleteResolver deleteResolver;
@@ -33,21 +33,21 @@ public class PreparedDeleteTest {
         @SuppressWarnings("unchecked")
         DeleteOneStub() {
             user = new User(null, "test@example.com");
-            storIOSQLiteDb = mock(StorIOSQLite.class);
+            storIOSQLite = mock(StorIOSQLite.class);
             internal = mock(StorIOSQLite.Internal.class);
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
             deleteResolver = mock(DeleteResolver.class);
 
-            when(storIOSQLiteDb.internal())
+            when(storIOSQLite.internal())
                     .thenReturn(internal);
 
-            when(storIOSQLiteDb.delete())
-                    .thenReturn(new PreparedDelete.Builder(storIOSQLiteDb));
+            when(storIOSQLite.delete())
+                    .thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
             when(mapFunc.map(user))
                     .thenReturn(User.MAP_TO_DELETE_QUERY.map(user));
 
-            when(deleteResolver.performDelete(eq(storIOSQLiteDb), any(DeleteQuery.class)))
+            when(deleteResolver.performDelete(eq(storIOSQLite), any(DeleteQuery.class)))
                     .thenReturn(1);
 
             when(internal.getLoggi()).thenReturn(mock(Loggi.class));
@@ -55,13 +55,13 @@ public class PreparedDeleteTest {
 
         void verifyBehavior() {
             // delete should be called only once
-            verify(storIOSQLiteDb, times(1)).delete();
+            verify(storIOSQLite, times(1)).delete();
 
             // object should be mapped to ContentValues only once
             verify(mapFunc, times(1)).map(user);
 
             // should be called once
-            verify(deleteResolver, times(1)).performDelete(eq(storIOSQLiteDb), any(DeleteQuery.class));
+            verify(deleteResolver, times(1)).performDelete(eq(storIOSQLite), any(DeleteQuery.class));
 
             // only one notification should be thrown
             verify(internal, times(1)).notifyAboutChanges(any(Changes.class));
@@ -77,7 +77,7 @@ public class PreparedDeleteTest {
     @Test public void deleteOneBlocking() {
         final DeleteOneStub deleteOneStub = new DeleteOneStub();
 
-        deleteOneStub.storIOSQLiteDb
+        deleteOneStub.storIOSQLite
                 .delete()
                 .object(deleteOneStub.user)
                 .withMapFunc(deleteOneStub.mapFunc)
@@ -91,7 +91,7 @@ public class PreparedDeleteTest {
     @Test public void deleteOneObservable() {
         final DeleteOneStub deleteOneStub = new DeleteOneStub();
 
-        deleteOneStub.storIOSQLiteDb
+        deleteOneStub.storIOSQLite
                 .delete()
                 .object(deleteOneStub.user)
                 .withMapFunc(deleteOneStub.mapFunc)
@@ -106,7 +106,7 @@ public class PreparedDeleteTest {
 
     // stub class to avoid violation of DRY in "deleteMultiple" tests
     private static class DeleteMultipleStub {
-        final StorIOSQLite storIOSQLiteDb;
+        final StorIOSQLite storIOSQLite;
         final StorIOSQLite.Internal internal;
         final MapFunc<User, DeleteQuery> mapFunc;
         final boolean useTransaction;
@@ -131,7 +131,7 @@ public class PreparedDeleteTest {
                 deleteQueries.add(User.MAP_TO_DELETE_QUERY.map(user));
             }
 
-            storIOSQLiteDb = mock(StorIOSQLite.class);
+            storIOSQLite = mock(StorIOSQLite.class);
             internal = mock(StorIOSQLite.Internal.class);
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
             deleteResolver = mock(DeleteResolver.class);
@@ -139,30 +139,30 @@ public class PreparedDeleteTest {
             when(internal.transactionsSupported())
                     .thenReturn(useTransaction);
 
-            when(storIOSQLiteDb.internal())
+            when(storIOSQLite.internal())
                     .thenReturn(internal);
 
-            when(storIOSQLiteDb.delete())
-                    .thenReturn(new PreparedDelete.Builder(storIOSQLiteDb));
+            when(storIOSQLite.delete())
+                    .thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
 
             for (int i = 0; i < NUMBER_OF_ITEMS_TO_DELETE; i++) {
                 when(mapFunc.map(users.get(i)))
                         .thenReturn(deleteQueries.get(i));
 
-                when(deleteResolver.performDelete(storIOSQLiteDb, deleteQueries.get(i)))
+                when(deleteResolver.performDelete(storIOSQLite, deleteQueries.get(i)))
                         .thenReturn(1);
             }
         }
 
         void verifyBehavior() {
-            // only one call to storIOSQLiteDb.delete() should occur
-            verify(storIOSQLiteDb, times(1)).delete();
+            // only one call to storIOSQLite.delete() should occur
+            verify(storIOSQLite, times(1)).delete();
 
             for (int i = 0; i < NUMBER_OF_ITEMS_TO_DELETE; i++) {
                 // map operation for each object should be called only once
                 verify(mapFunc, times(1)).map(users.get(i));
-                verify(deleteResolver, times(1)).performDelete(storIOSQLiteDb, deleteQueries.get(i));
+                verify(deleteResolver, times(1)).performDelete(storIOSQLite, deleteQueries.get(i));
             }
 
             if (useTransaction) {
@@ -186,7 +186,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleBlocking() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(true);
 
-        deleteMultipleStub.storIOSQLiteDb
+        deleteMultipleStub.storIOSQLite
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
@@ -200,7 +200,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleObservable() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(true);
 
-        deleteMultipleStub.storIOSQLiteDb
+        deleteMultipleStub.storIOSQLite
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
@@ -216,7 +216,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleBlockingWithoutTransaction() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(false);
 
-        deleteMultipleStub.storIOSQLiteDb
+        deleteMultipleStub.storIOSQLite
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
@@ -231,7 +231,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleObservableWithoutTransaction() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(false);
 
-        deleteMultipleStub.storIOSQLiteDb
+        deleteMultipleStub.storIOSQLite
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
@@ -248,7 +248,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleBlockingWithTransaction() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(true);
 
-        deleteMultipleStub.storIOSQLiteDb
+        deleteMultipleStub.storIOSQLite
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
@@ -263,7 +263,7 @@ public class PreparedDeleteTest {
     @Test public void deleteMultipleObservableWithTransaction() {
         final DeleteMultipleStub deleteMultipleStub = new DeleteMultipleStub(true);
 
-        deleteMultipleStub.storIOSQLiteDb
+        deleteMultipleStub.storIOSQLite
                 .delete()
                 .objects(deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)

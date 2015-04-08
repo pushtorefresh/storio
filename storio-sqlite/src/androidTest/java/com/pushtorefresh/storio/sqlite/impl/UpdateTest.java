@@ -21,7 +21,7 @@ public class UpdateTest extends BaseTest {
     @Test public void updateOne() {
         final User userForInsert = TestFactory.newUser();
 
-        final PutResult insertResult = storIOSQLiteDb
+        final PutResult insertResult = storIOSQLite
                 .put()
                 .object(userForInsert)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -36,7 +36,7 @@ public class UpdateTest extends BaseTest {
                 "new@email.com" // new value
         );
 
-        final PutResult updateResult = storIOSQLiteDb
+        final PutResult updateResult = storIOSQLite
                 .put()
                 .object(userForUpdate)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -60,7 +60,7 @@ public class UpdateTest extends BaseTest {
     @Test public void updateCollection() {
         final List<User> usersForInsert = TestFactory.newUsers(3);
 
-        final PutResults<User> insertResults = storIOSQLiteDb
+        final PutResults<User> insertResults = storIOSQLite
                 .put()
                 .objects(usersForInsert)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -76,7 +76,7 @@ public class UpdateTest extends BaseTest {
             usersForUpdate.add(new User(usersForInsert.get(i).getId(), "new" + i + "@email.com" + i));
         }
 
-        final PutResults<User> updateResults = storIOSQLiteDb
+        final PutResults<User> updateResults = storIOSQLite
                 .put()
                 .objects(usersForUpdate)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)

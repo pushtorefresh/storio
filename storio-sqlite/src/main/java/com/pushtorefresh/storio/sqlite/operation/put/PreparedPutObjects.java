@@ -24,22 +24,22 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     @NonNull private final MapFunc<T, ContentValues> mapFunc;
     private final boolean useTransactionIfPossible;
 
-    PreparedPutObjects(@NonNull StorIOSQLite storIOSQLiteDb,
+    PreparedPutObjects(@NonNull StorIOSQLite storIOSQLite,
                        @NonNull PutResolver<T> putResolver,
                        @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc,
                        boolean useTransactionIfPossible) {
-        super(storIOSQLiteDb, putResolver);
+        super(storIOSQLite, putResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
     @NonNull @Override public PutResults<T> executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLiteDb.internal();
+        final StorIOSQLite.Internal internal = storIOSQLite.internal();
         final Map<T, PutResult> putResults = new HashMap<T, PutResult>();
 
         final boolean withTransaction = useTransactionIfPossible
-                && storIOSQLiteDb.internal().transactionsSupported();
+                && storIOSQLite.internal().transactionsSupported();
 
         if (withTransaction) {
             internal.beginTransaction();
@@ -50,7 +50,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         try {
             for (T object : objects) {
                 final PutResult putResult = putResolver.performPut(
-                        storIOSQLiteDb,
+                        storIOSQLite,
                         mapFunc.map(object)
                 );
 
@@ -63,12 +63,12 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
             }
 
             if (withTransaction) {
-                storIOSQLiteDb.internal().setTransactionSuccessful();
+                storIOSQLite.internal().setTransactionSuccessful();
                 transactionSuccessful = true;
             }
         } finally {
             if (withTransaction) {
-                storIOSQLiteDb.internal().endTransaction();
+                storIOSQLite.internal().endTransaction();
 
                 if (transactionSuccessful) {
                     final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
@@ -77,7 +77,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
                         affectedTables.add(putResults.get(object).affectedTable());
                     }
 
-                    storIOSQLiteDb.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                    storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
                 }
             }
         }
@@ -108,15 +108,15 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
      */
     public static class Builder<T> {
 
-        @NonNull private final StorIOSQLite storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLite;
         @NonNull private final Iterable<T> objects;
 
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
         private boolean useTransactionIfPossible = true;
 
-        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Iterable<T> objects) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Iterable<T> objects) {
+            this.storIOSQLite = storIOSQLite;
             this.objects = objects;
         }
 
@@ -179,7 +179,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
             checkNotNull(putResolver, "Please specify put resolver");
 
             return new PreparedPutObjects<T>(
-                    storIOSQLiteDb,
+                    storIOSQLite,
                     putResolver,
                     objects,
                     mapFunc,

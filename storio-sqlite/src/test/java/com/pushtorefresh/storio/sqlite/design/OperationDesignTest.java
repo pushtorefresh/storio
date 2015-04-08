@@ -11,11 +11,11 @@ abstract class OperationDesignTest {
     private static final AtomicInteger COUNTER = new AtomicInteger(0);
 
     @NonNull
-    private final StorIOSQLite storIOSQLiteDb = new DesignTestStorIOSQLite();
+    private final StorIOSQLite storIOSQLite = new DesignTestStorIOSQLite();
 
     @NonNull
-    protected StorIOSQLite storIOSQLiteDb() {
-        return storIOSQLiteDb;
+    protected StorIOSQLite storIOSQLite() {
+        return storIOSQLite;
     }
 
     @NonNull

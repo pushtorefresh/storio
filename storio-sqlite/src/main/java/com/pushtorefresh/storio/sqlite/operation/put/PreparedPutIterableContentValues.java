@@ -25,11 +25,11 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     private final boolean useTransactionIfPossible;
 
     PreparedPutIterableContentValues(
-            @NonNull StorIOSQLite storIOSQLiteDb,
+            @NonNull StorIOSQLite storIOSQLite,
             @NonNull PutResolver<ContentValues> putResolver,
             @NonNull Iterable<ContentValues> contentValuesIterable, boolean useTransactionIfPossible) {
 
-        super(storIOSQLiteDb, putResolver);
+        super(storIOSQLite, putResolver);
         this.contentValuesIterable = contentValuesIterable;
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
@@ -37,7 +37,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     @NonNull
     @Override
     public PutResults<ContentValues> executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLiteDb.internal();
+        final StorIOSQLite.Internal internal = storIOSQLite.internal();
 
         final Map<ContentValues, PutResult> putResults = new HashMap<ContentValues, PutResult>();
 
@@ -52,7 +52,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
 
         try {
             for (ContentValues contentValues : contentValuesIterable) {
-                final PutResult putResult = putResolver.performPut(storIOSQLiteDb, contentValues);
+                final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
                 putResults.put(contentValues, putResult);
                 putResolver.afterPut(contentValues, putResult);
 
@@ -62,12 +62,12 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
             }
 
             if (withTransaction) {
-                storIOSQLiteDb.internal().setTransactionSuccessful();
+                storIOSQLite.internal().setTransactionSuccessful();
                 transactionSuccessful = true;
             }
         } finally {
             if (withTransaction) {
-                storIOSQLiteDb.internal().endTransaction();
+                storIOSQLite.internal().endTransaction();
 
                 if (transactionSuccessful) {
                     final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
@@ -76,7 +76,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
                         affectedTables.add(putResults.get(contentValues).affectedTable());
                     }
 
-                    storIOSQLiteDb.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                    storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
                 }
             }
         }
@@ -109,15 +109,15 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     public static class Builder {
 
         @NonNull
-        private final StorIOSQLite storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLite;
         @NonNull
         private final Iterable<ContentValues> contentValuesIterable;
 
         private PutResolver<ContentValues> putResolver;
         private boolean useTransactionIfPossible = true;
 
-        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Iterable<ContentValues> contentValuesIterable) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Iterable<ContentValues> contentValuesIterable) {
+            this.storIOSQLite = storIOSQLite;
             this.contentValuesIterable = contentValuesIterable;
         }
 
@@ -172,7 +172,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
             checkNotNull(putResolver, "Please specify put resolver");
 
             return new PreparedPutIterableContentValues(
-                    storIOSQLiteDb,
+                    storIOSQLite,
                     putResolver,
                     contentValuesIterable,
                     useTransactionIfPossible

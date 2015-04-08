@@ -16,11 +16,11 @@ public class DefaultGetResolver implements GetResolver {
     static final DefaultGetResolver INSTANCE = new DefaultGetResolver();
 
     @NonNull @Override
-    public Cursor performGet(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery) {
-        return storIOSQLiteDb.internal().rawQuery(rawQuery);
+    public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
+        return storIOSQLite.internal().rawQuery(rawQuery);
     }
 
-    @NonNull @Override public Cursor performGet(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Query query) {
-        return storIOSQLiteDb.internal().query(query);
+    @NonNull @Override public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
+        return storIOSQLite.internal().query(query);
     }
 }

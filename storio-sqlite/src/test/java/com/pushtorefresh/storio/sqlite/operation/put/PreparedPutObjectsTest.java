@@ -10,7 +10,7 @@ public class PreparedPutObjectsTest {
     public void putMultipleBlocking() {
         final PutStub putStub = PutStub.newPutStubForMultipleItems();
 
-        final PutResults<TestItem> putResults = putStub.storIOSQLiteDb
+        final PutResults<TestItem> putResults = putStub.storIOSQLite
                 .put()
                 .objects(putStub.testItems)
                 .withMapFunc(putStub.mapFunc)
@@ -25,7 +25,7 @@ public class PreparedPutObjectsTest {
     public void putMultipleObservable() {
         final PutStub putStub = PutStub.newPutStubForMultipleItems();
 
-        final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOSQLiteDb
+        final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOSQLite
                 .put()
                 .objects(putStub.testItems)
                 .withMapFunc(putStub.mapFunc)
@@ -40,7 +40,7 @@ public class PreparedPutObjectsTest {
     public void putMultipleBlockingWithoutTransaction() {
         final PutStub putStub = PutStub.newPutStubForMultipleItems(false);
 
-        final PutResults<TestItem> putResults = putStub.storIOSQLiteDb
+        final PutResults<TestItem> putResults = putStub.storIOSQLite
                 .put()
                 .objects(putStub.testItems)
                 .withMapFunc(putStub.mapFunc)
@@ -56,7 +56,7 @@ public class PreparedPutObjectsTest {
     public void putMultipleObservableWithoutTransaction() {
         final PutStub putStub = PutStub.newPutStubForMultipleItems(false);
 
-        final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOSQLiteDb
+        final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOSQLite
                 .put()
                 .objects(putStub.testItems)
                 .withMapFunc(putStub.mapFunc)
@@ -72,7 +72,7 @@ public class PreparedPutObjectsTest {
     public void putMultipleBlockingWithTransaction() {
         final PutStub putStub = PutStub.newPutStubForMultipleItems(true);
 
-        final PutResults<TestItem> putResults = putStub.storIOSQLiteDb
+        final PutResults<TestItem> putResults = putStub.storIOSQLite
                 .put()
                 .objects(putStub.testItems)
                 .withMapFunc(putStub.mapFunc)
@@ -88,7 +88,7 @@ public class PreparedPutObjectsTest {
     public void putMultipleObservableWithTransaction() {
         final PutStub putStub = PutStub.newPutStubForMultipleItems(true);
 
-        final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOSQLiteDb
+        final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOSQLite
                 .put()
                 .objects(putStub.testItems)
                 .withMapFunc(putStub.mapFunc)

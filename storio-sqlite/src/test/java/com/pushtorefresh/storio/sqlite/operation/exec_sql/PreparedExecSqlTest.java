@@ -16,31 +16,31 @@ public class PreparedExecSqlTest {
 
     static class Stub {
 
-        private final StorIOSQLite storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLite;
         private final StorIOSQLite.Internal internal;
         private final RawQuery rawQuery;
 
         Stub() {
-            storIOSQLiteDb = mock(StorIOSQLite.class);
+            storIOSQLite = mock(StorIOSQLite.class);
             internal = mock(StorIOSQLite.Internal.class);
             rawQuery = new RawQuery.Builder().query("DROP TABLE users").build();
 
-            when(storIOSQLiteDb.internal())
+            when(storIOSQLite.internal())
                     .thenReturn(internal);
 
-            when(storIOSQLiteDb.execSql())
-                    .thenReturn(new PreparedExecSql.Builder(storIOSQLiteDb));
+            when(storIOSQLite.execSql())
+                    .thenReturn(new PreparedExecSql.Builder(storIOSQLite));
 
         }
 
         @SuppressWarnings("unchecked") void verifyBehavior() {
-            // storIOSQLiteDb.execSql() should be called once
-            verify(storIOSQLiteDb, times(1)).execSql();
+            // storIOSQLite.execSql() should be called once
+            verify(storIOSQLite, times(1)).execSql();
 
-            // storIOSQLiteDb.internal.execSql() should be called once for ANY RawQuery
+            // storIOSQLite.internal.execSql() should be called once for ANY RawQuery
             verify(internal, times(1)).execSql(any(RawQuery.class));
 
-            // storIOSQLiteDb.internal.execSql() should be called once for required RawQuery
+            // storIOSQLite.internal.execSql() should be called once for required RawQuery
             verify(internal, times(1)).execSql(rawQuery);
 
             // no notifications should occur
@@ -51,7 +51,7 @@ public class PreparedExecSqlTest {
     @Test public void blocking() {
         final Stub stub = new Stub();
 
-        stub.storIOSQLiteDb
+        stub.storIOSQLite
                 .execSql()
                 .withQuery(stub.rawQuery)
                 .prepare()
@@ -63,7 +63,7 @@ public class PreparedExecSqlTest {
     @Test public void observable() {
         final Stub stub = new Stub();
 
-        stub.storIOSQLiteDb
+        stub.storIOSQLite
                 .execSql()
                 .withQuery(stub.rawQuery)
                 .prepare()

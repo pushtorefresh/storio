@@ -11,7 +11,7 @@ import com.pushtorefresh.storio.sqlite.query.RawQuery;
 public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStream<T> {
 
     @NonNull
-    protected final StorIOSQLite storIOSQLiteDb;
+    protected final StorIOSQLite storIOSQLite;
 
     @Nullable
     protected final Query query;
@@ -22,15 +22,15 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
     @NonNull
     protected final GetResolver getResolver;
 
-    PreparedGet(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Query query, @NonNull GetResolver getResolver) {
-        this.storIOSQLiteDb = storIOSQLiteDb;
+    PreparedGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver getResolver) {
+        this.storIOSQLite = storIOSQLite;
         this.query = query;
         this.getResolver = getResolver;
         this.rawQuery = null;
     }
 
-    PreparedGet(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
-        this.storIOSQLiteDb = storIOSQLiteDb;
+    PreparedGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
+        this.storIOSQLite = storIOSQLite;
         this.rawQuery = rawQuery;
         this.getResolver = getResolver;
         query = null;
@@ -39,20 +39,20 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
     public static class Builder {
 
         @NonNull
-        private final StorIOSQLite storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLite;
 
-        public Builder(@NonNull StorIOSQLite storIOSQLiteDb) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        public Builder(@NonNull StorIOSQLite storIOSQLite) {
+            this.storIOSQLite = storIOSQLite;
         }
 
         @NonNull
         public PreparedGetCursor.Builder cursor() {
-            return new PreparedGetCursor.Builder(storIOSQLiteDb);
+            return new PreparedGetCursor.Builder(storIOSQLite);
         }
 
         @NonNull
         public <T> PreparedGetListOfObjects.Builder<T> listOfObjects(@NonNull Class<T> type) {
-            return new PreparedGetListOfObjects.Builder<T>(storIOSQLiteDb, type);
+            return new PreparedGetListOfObjects.Builder<T>(storIOSQLite, type);
         }
     }
 

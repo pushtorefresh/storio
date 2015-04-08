@@ -18,7 +18,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectBlocking() {
         User user = newUser();
 
-        PutResult putResult = storIOSQLiteDb()
+        PutResult putResult = storIOSQLite()
                 .put()
                 .object(user)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -31,7 +31,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectObservable() {
         User user = newUser();
 
-        Observable<PutResult> observablePutResult = storIOSQLiteDb()
+        Observable<PutResult> observablePutResult = storIOSQLite()
                 .put()
                 .object(user)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -44,7 +44,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectsIterableBlocking() {
         Iterable<User> users = new ArrayList<User>();
 
-        PutResults<User> putResults = storIOSQLiteDb()
+        PutResults<User> putResults = storIOSQLite()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -57,7 +57,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectsIterableObservable() {
         Iterable<User> users = new ArrayList<User>();
 
-        Observable<PutResults<User>> putResultsObservable = storIOSQLiteDb()
+        Observable<PutResults<User>> putResultsObservable = storIOSQLite()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -70,7 +70,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectsArrayBlocking() {
         User[] users = new User[]{};
 
-        PutResults<User> putResults = storIOSQLiteDb()
+        PutResults<User> putResults = storIOSQLite()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -83,7 +83,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putObjectsArrayObservable() {
         User[] users = new User[]{};
 
-        Observable<PutResults<User>> putResultsObservable = storIOSQLiteDb()
+        Observable<PutResults<User>> putResultsObservable = storIOSQLite()
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -96,7 +96,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putContentValuesBlocking() {
         ContentValues contentValues = User.MAP_TO_CONTENT_VALUES.map(newUser());
 
-        PutResult putResult = storIOSQLiteDb()
+        PutResult putResult = storIOSQLite()
                 .put()
                 .contentValues(contentValues)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -108,7 +108,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putContentValuesObservable() {
         ContentValues contentValues = User.MAP_TO_CONTENT_VALUES.map(newUser());
 
-        Observable<PutResult> putResult = storIOSQLiteDb()
+        Observable<PutResult> putResult = storIOSQLite()
                 .put()
                 .contentValues(contentValues)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -121,7 +121,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Iterable<ContentValues> contentValuesIterable
                 = Arrays.asList(User.MAP_TO_CONTENT_VALUES.map(newUser()));
 
-        PutResults<ContentValues> putResults = storIOSQLiteDb()
+        PutResults<ContentValues> putResults = storIOSQLite()
                 .put()
                 .contentValues(contentValuesIterable)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -134,7 +134,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Iterable<ContentValues> contentValuesIterable
                 = Arrays.asList(User.MAP_TO_CONTENT_VALUES.map(newUser()));
 
-        Observable<PutResults<ContentValues>> putResults = storIOSQLiteDb()
+        Observable<PutResults<ContentValues>> putResults = storIOSQLite()
                 .put()
                 .contentValues(contentValuesIterable)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -146,7 +146,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putContentValuesArrayBlocking() {
         ContentValues[] contentValuesArray = {User.MAP_TO_CONTENT_VALUES.map(newUser())};
 
-        PutResults<ContentValues> putResults = storIOSQLiteDb()
+        PutResults<ContentValues> putResults = storIOSQLite()
                 .put()
                 .contentValues(contentValuesArray)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
@@ -158,7 +158,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
     public void putContentValuesArrayObservable() {
         ContentValues[] contentValuesArray = {User.MAP_TO_CONTENT_VALUES.map(newUser())};
 
-        Observable<PutResults<ContentValues>> putResults = storIOSQLiteDb()
+        Observable<PutResults<ContentValues>> putResults = storIOSQLite()
                 .put()
                 .contentValues(contentValuesArray)
                 .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)

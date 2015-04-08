@@ -13,8 +13,8 @@ import com.pushtorefresh.storio.sqlite.query.RawQuery;
 public interface GetResolver {
 
     @NonNull
-    Cursor performGet(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery);
+    Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery);
 
     @NonNull
-    Cursor performGet(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Query query);
+    Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query);
 }

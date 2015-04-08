@@ -17,13 +17,13 @@ import java.util.Arrays;
 public abstract class PreparedPut<T, Result> implements PreparedOperation<Result> {
 
     @NonNull
-    protected final StorIOSQLite storIOSQLiteDb;
+    protected final StorIOSQLite storIOSQLite;
 
     @NonNull
     protected final PutResolver<T> putResolver;
 
-    PreparedPut(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull PutResolver<T> putResolver) {
-        this.storIOSQLiteDb = storIOSQLiteDb;
+    PreparedPut(@NonNull StorIOSQLite storIOSQLite, @NonNull PutResolver<T> putResolver) {
+        this.storIOSQLite = storIOSQLite;
         this.putResolver = putResolver;
     }
 
@@ -33,10 +33,10 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
     public static class Builder {
 
         @NonNull
-        private final StorIOSQLite storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLite;
 
-        public Builder(@NonNull StorIOSQLite storIOSQLiteDb) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        public Builder(@NonNull StorIOSQLite storIOSQLite) {
+            this.storIOSQLite = storIOSQLite;
         }
 
         /**
@@ -47,7 +47,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          */
         @NonNull
         public PreparedPutContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
-            return new PreparedPutContentValues.Builder(storIOSQLiteDb, contentValues);
+            return new PreparedPutContentValues.Builder(storIOSQLite, contentValues);
         }
 
         /**
@@ -58,7 +58,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          */
         @NonNull
         public PreparedPutIterableContentValues.Builder contentValues(@NonNull Iterable<ContentValues> contentValuesIterable) {
-            return new PreparedPutIterableContentValues.Builder(storIOSQLiteDb, contentValuesIterable);
+            return new PreparedPutIterableContentValues.Builder(storIOSQLite, contentValuesIterable);
         }
 
         /**
@@ -69,7 +69,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          */
         @NonNull
         public PreparedPutIterableContentValues.Builder contentValues(@NonNull ContentValues... contentValuesArray) {
-            return new PreparedPutIterableContentValues.Builder(storIOSQLiteDb, Arrays.asList(contentValuesArray));
+            return new PreparedPutIterableContentValues.Builder(storIOSQLite, Arrays.asList(contentValuesArray));
         }
 
         /**
@@ -81,7 +81,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          */
         @NonNull
         public <T> PreparedPutObject.Builder<T> object(T object) {
-            return new PreparedPutObject.Builder<T>(storIOSQLiteDb, object);
+            return new PreparedPutObject.Builder<T>(storIOSQLite, object);
         }
 
         /**
@@ -93,7 +93,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          */
         @NonNull
         public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
-            return new PreparedPutObjects.Builder<T>(storIOSQLiteDb, objects);
+            return new PreparedPutObjects.Builder<T>(storIOSQLite, objects);
         }
 
         /**
@@ -106,7 +106,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         @SuppressWarnings("unchecked")
         @NonNull
         public final <T> PreparedPutObjects.Builder<T> objects(@NonNull T... objects) {
-            return new PreparedPutObjects.Builder<T>(storIOSQLiteDb, Arrays.asList(objects));
+            return new PreparedPutObjects.Builder<T>(storIOSQLite, Arrays.asList(objects));
         }
     }
 }

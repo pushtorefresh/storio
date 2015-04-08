@@ -10,11 +10,11 @@ import java.util.Collection;
 
 public abstract class PreparedDelete<T> implements PreparedOperation<T> {
 
-    @NonNull protected final StorIOSQLite storIOSQLiteDb;
+    @NonNull protected final StorIOSQLite storIOSQLite;
     @NonNull protected final DeleteResolver deleteResolver;
 
-    PreparedDelete(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull DeleteResolver deleteResolver) {
-        this.storIOSQLiteDb = storIOSQLiteDb;
+    PreparedDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteResolver deleteResolver) {
+        this.storIOSQLite = storIOSQLite;
         this.deleteResolver = deleteResolver;
     }
 
@@ -23,10 +23,10 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLite storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLite;
 
-        public Builder(@NonNull StorIOSQLite storIOSQLiteDb) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        public Builder(@NonNull StorIOSQLite storIOSQLite) {
+            this.storIOSQLite = storIOSQLite;
         }
 
         /**
@@ -36,7 +36,7 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
          * @return builder
          */
         @NonNull public PreparedDeleteByQuery.Builder byQuery(@NonNull DeleteQuery deleteQuery) {
-            return new PreparedDeleteByQuery.Builder(storIOSQLiteDb, deleteQuery);
+            return new PreparedDeleteByQuery.Builder(storIOSQLite, deleteQuery);
         }
 
         /**
@@ -47,7 +47,7 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
          * @return builder
          */
         @NonNull public <T> PreparedDeleteObject.Builder<T> object(@NonNull T object) {
-            return new PreparedDeleteObject.Builder<T>(storIOSQLiteDb, object);
+            return new PreparedDeleteObject.Builder<T>(storIOSQLite, object);
         }
 
         /**
@@ -59,7 +59,7 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
          */
         @NonNull
         public <T> PreparedDeleteObjects.Builder<T> objects(@NonNull Collection<T> objects) {
-            return new PreparedDeleteObjects.Builder<T>(storIOSQLiteDb, objects);
+            return new PreparedDeleteObjects.Builder<T>(storIOSQLite, objects);
         }
     }
 }

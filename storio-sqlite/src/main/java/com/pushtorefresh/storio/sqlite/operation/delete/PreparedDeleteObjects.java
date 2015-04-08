@@ -25,15 +25,15 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
     @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
     private final boolean useTransactionIfPossible;
 
-    PreparedDeleteObjects(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible, @NonNull DeleteResolver deleteResolver) {
-        super(storIOSQLiteDb, deleteResolver);
+    PreparedDeleteObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible, @NonNull DeleteResolver deleteResolver) {
+        super(storIOSQLite, deleteResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
     @NonNull @Override public DeleteResults<T> executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLiteDb.internal();
+        final StorIOSQLite.Internal internal = storIOSQLite.internal();
 
         final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>();
 
@@ -48,7 +48,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         try {
             for (final T object : objects) {
                 final DeleteQuery deleteQuery = mapFunc.map(object);
-                final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLiteDb, deleteQuery);
+                final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLite, deleteQuery);
 
                 results.put(
                         object,
@@ -110,15 +110,15 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
      */
     public static class Builder<T> {
 
-        @NonNull private final StorIOSQLite storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLite;
         @NonNull private final Collection<T> objects;
 
         private MapFunc<T, DeleteQuery> mapFunc;
         private boolean useTransactionIfPossible = true;
         private DeleteResolver deleteResolver;
 
-        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Collection<T> objects) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects) {
+            this.storIOSQLite = storIOSQLite;
             this.objects = objects;
         }
 
@@ -184,7 +184,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
             checkNotNull(mapFunc, "Please specify map function");
 
             return new PreparedDeleteObjects<T>(
-                    storIOSQLiteDb,
+                    storIOSQLite,
                     objects,
                     mapFunc,
                     useTransactionIfPossible,

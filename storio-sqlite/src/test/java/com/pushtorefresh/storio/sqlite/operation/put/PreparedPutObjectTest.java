@@ -10,7 +10,7 @@ public class PreparedPutObjectTest {
     public void putObjectBlocking() {
         final PutStub putStub = PutStub.newPutStubForOneItem();
 
-        final PutResult putResult = putStub.storIOSQLiteDb
+        final PutResult putResult = putStub.storIOSQLite
                 .put()
                 .object(putStub.testItems.get(0))
                 .withMapFunc(putStub.mapFunc)
@@ -25,7 +25,7 @@ public class PreparedPutObjectTest {
     public void putObjectObservable() {
         final PutStub putStub = PutStub.newPutStubForOneItem();
 
-        final Observable<PutResult> putResultObservable = putStub.storIOSQLiteDb
+        final Observable<PutResult> putResultObservable = putStub.storIOSQLite
                 .put()
                 .object(putStub.testItems.get(0))
                 .withMapFunc(putStub.mapFunc)

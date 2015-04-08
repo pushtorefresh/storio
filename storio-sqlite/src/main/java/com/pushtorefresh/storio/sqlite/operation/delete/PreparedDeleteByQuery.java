@@ -14,15 +14,15 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     @NonNull private final DeleteQuery deleteQuery;
 
-    PreparedDeleteByQuery(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull DeleteQuery deleteQuery, @NonNull DeleteResolver deleteResolver) {
-        super(storIOSQLiteDb, deleteResolver);
+    PreparedDeleteByQuery(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery, @NonNull DeleteResolver deleteResolver) {
+        super(storIOSQLite, deleteResolver);
         this.deleteQuery = deleteQuery;
     }
 
     @NonNull @Override public DeleteResult executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLiteDb.internal();
+        final StorIOSQLite.Internal internal = storIOSQLite.internal();
 
-        final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLiteDb, deleteQuery);
+        final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLite, deleteQuery);
         internal.notifyAboutChanges(Changes.newInstance(deleteQuery.table));
 
         return DeleteResult.newInstance(numberOfDeletedRows, deleteQuery.table);
@@ -48,13 +48,13 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLite storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLite;
         @NonNull private final DeleteQuery deleteQuery;
 
         private DeleteResolver deleteResolver;
 
-        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull DeleteQuery deleteQuery) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery) {
+            this.storIOSQLite = storIOSQLite;
             this.deleteQuery = deleteQuery;
         }
 
@@ -81,7 +81,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
             }
 
-            return new PreparedDeleteByQuery(storIOSQLiteDb, deleteQuery, deleteResolver);
+            return new PreparedDeleteByQuery(storIOSQLite, deleteQuery, deleteResolver);
         }
     }
 }

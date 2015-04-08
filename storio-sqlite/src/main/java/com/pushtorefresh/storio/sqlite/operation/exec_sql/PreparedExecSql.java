@@ -14,16 +14,16 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedExecSql implements PreparedOperation<Void> {
 
-    @NonNull private final StorIOSQLite storIOSQLiteDb;
+    @NonNull private final StorIOSQLite storIOSQLite;
     @NonNull private final RawQuery rawQuery;
 
-    PreparedExecSql(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery) {
-        this.storIOSQLiteDb = storIOSQLiteDb;
+    PreparedExecSql(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
+        this.storIOSQLite = storIOSQLite;
         this.rawQuery = rawQuery;
     }
 
     @NonNull @Override public Void executeAsBlocking() {
-        storIOSQLiteDb.internal().execSql(rawQuery);
+        storIOSQLite.internal().execSql(rawQuery);
         return null;
     }
 
@@ -47,12 +47,12 @@ public class PreparedExecSql implements PreparedOperation<Void> {
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLite storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLite;
 
         private RawQuery rawQuery;
 
-        public Builder(@NonNull StorIOSQLite storIOSQLiteDb) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        public Builder(@NonNull StorIOSQLite storIOSQLite) {
+            this.storIOSQLite = storIOSQLite;
         }
 
         /**
@@ -75,7 +75,7 @@ public class PreparedExecSql implements PreparedOperation<Void> {
             checkNotNull(rawQuery, "Please set query object");
 
             return new PreparedExecSql(
-                    storIOSQLiteDb,
+                    storIOSQLite,
                     rawQuery
             );
         }

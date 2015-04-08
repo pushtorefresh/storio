@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 
-public class DefaultStorIOSQLiteDbTest {
+public class DefaultStorIOSQLiteTest {
 
     @Test
     public void instantiateWithoutRxJava() {

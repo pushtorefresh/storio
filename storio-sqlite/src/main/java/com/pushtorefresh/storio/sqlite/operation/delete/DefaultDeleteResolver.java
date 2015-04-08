@@ -14,7 +14,7 @@ public class DefaultDeleteResolver implements DeleteResolver {
     static final DefaultDeleteResolver INSTANCE = new DefaultDeleteResolver();
 
     @Override
-    public int performDelete(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull DeleteQuery deleteQuery) {
-        return storIOSQLiteDb.internal().delete(deleteQuery);
+    public int performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery) {
+        return storIOSQLite.internal().delete(deleteQuery);
     }
 }

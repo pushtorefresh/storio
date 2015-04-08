@@ -53,7 +53,7 @@ public class PreparedGetTest {
     }
 
     private static class GetStub {
-        final StorIOSQLite storIOSQLiteDb;
+        final StorIOSQLite storIOSQLite;
         final Query query;
         final RawQuery rawQuery;
         final GetResolver getResolver;
@@ -63,7 +63,7 @@ public class PreparedGetTest {
 
         @SuppressWarnings("unchecked")
         GetStub() {
-            storIOSQLiteDb = mock(StorIOSQLite.class);
+            storIOSQLite = mock(StorIOSQLite.class);
             query = mock(Query.class);
             rawQuery = mock(RawQuery.class);
             getResolver = mock(GetResolver.class);
@@ -84,13 +84,13 @@ public class PreparedGetTest {
                 }
             });
 
-            when(storIOSQLiteDb.get())
-                    .thenReturn(new PreparedGet.Builder(storIOSQLiteDb));
+            when(storIOSQLite.get())
+                    .thenReturn(new PreparedGet.Builder(storIOSQLite));
 
-            when(getResolver.performGet(storIOSQLiteDb, query))
+            when(getResolver.performGet(storIOSQLite, query))
                     .thenReturn(cursor);
 
-            when(getResolver.performGet(storIOSQLiteDb, rawQuery))
+            when(getResolver.performGet(storIOSQLite, rawQuery))
                     .thenReturn(cursor);
 
             when(mapFunc.map(any(Cursor.class)))
@@ -107,27 +107,27 @@ public class PreparedGetTest {
         }
 
         private void verifyQueryBehavior(Cursor actualCursor) {
-            verify(storIOSQLiteDb, times(1)).get();
-            verify(getResolver, times(1)).performGet(storIOSQLiteDb, query);
+            verify(storIOSQLite, times(1)).get();
+            verify(getResolver, times(1)).performGet(storIOSQLite, query);
             assertSame(cursor, actualCursor);
         }
 
         private void verifyQueryBehaviorForList(List<TestItem> actualList) {
-            verify(storIOSQLiteDb, times(1)).get();
-            verify(getResolver, times(1)).performGet(storIOSQLiteDb, query);
+            verify(storIOSQLite, times(1)).get();
+            verify(getResolver, times(1)).performGet(storIOSQLite, query);
             verify(mapFunc, times(testItems.size())).map(cursor);
             assertEquals(testItems, actualList);
         }
 
         private void verifyRawQueryBehavior(Cursor actualCursor) {
-            verify(storIOSQLiteDb, times(1)).get();
-            verify(getResolver, times(1)).performGet(storIOSQLiteDb, rawQuery);
+            verify(storIOSQLite, times(1)).get();
+            verify(getResolver, times(1)).performGet(storIOSQLite, rawQuery);
             assertSame(cursor, actualCursor);
         }
 
         private void verifyRawQueryBehaviorForList(List<TestItem> actualList) {
-            verify(storIOSQLiteDb, times(1)).get();
-            verify(getResolver, times(1)).performGet(storIOSQLiteDb, rawQuery);
+            verify(storIOSQLite, times(1)).get();
+            verify(getResolver, times(1)).performGet(storIOSQLite, rawQuery);
             verify(mapFunc, times(testItems.size())).map(cursor);
             assertEquals(testItems, actualList);
         }
@@ -137,7 +137,7 @@ public class PreparedGetTest {
     public void getCursorBlocking() {
         final GetStub getStub = new GetStub();
 
-        final Cursor cursor = getStub.storIOSQLiteDb
+        final Cursor cursor = getStub.storIOSQLite
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
@@ -152,7 +152,7 @@ public class PreparedGetTest {
     public void getListOfObjectsBlocking() {
         final GetStub getStub = new GetStub();
 
-        final List<TestItem> testItems = getStub.storIOSQLiteDb
+        final List<TestItem> testItems = getStub.storIOSQLite
                 .get()
                 .listOfObjects(TestItem.class)
                 .withMapFunc(getStub.mapFunc)
@@ -168,7 +168,7 @@ public class PreparedGetTest {
     public void getCursorObservable() {
         final GetStub getStub = new GetStub();
 
-        final Cursor cursor = getStub.storIOSQLiteDb
+        final Cursor cursor = getStub.storIOSQLite
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
@@ -186,7 +186,7 @@ public class PreparedGetTest {
     public void getListOfObjectsObservable() {
         final GetStub getStub = new GetStub();
 
-        final List<TestItem> testItems = getStub.storIOSQLiteDb
+        final List<TestItem> testItems = getStub.storIOSQLite
                 .get()
                 .listOfObjects(TestItem.class)
                 .withMapFunc(getStub.mapFunc)
@@ -204,7 +204,7 @@ public class PreparedGetTest {
     public void getCursorWithRawQueryBlocking() {
         final GetStub getStub = new GetStub();
 
-        final Cursor cursor = getStub.storIOSQLiteDb
+        final Cursor cursor = getStub.storIOSQLite
                 .get()
                 .cursor()
                 .withQuery(getStub.rawQuery)
@@ -219,7 +219,7 @@ public class PreparedGetTest {
     public void getCursorWithRawQueryObservable() {
         final GetStub getStub = new GetStub();
 
-        final Cursor cursor = getStub.storIOSQLiteDb
+        final Cursor cursor = getStub.storIOSQLite
                 .get()
                 .cursor()
                 .withQuery(getStub.rawQuery)
@@ -236,7 +236,7 @@ public class PreparedGetTest {
     public void getListOfObjectsWithRawQueryBlocking() {
         final GetStub getStub = new GetStub();
 
-        final List<TestItem> testItems = getStub.storIOSQLiteDb
+        final List<TestItem> testItems = getStub.storIOSQLite
                 .get()
                 .listOfObjects(TestItem.class)
                 .withMapFunc(getStub.mapFunc)
@@ -252,7 +252,7 @@ public class PreparedGetTest {
     public void getListOfObjectsWithRawQueryObservable() {
         final GetStub getStub = new GetStub();
 
-        final List<TestItem> testItems = getStub.storIOSQLiteDb
+        final List<TestItem> testItems = getStub.storIOSQLite
                 .get()
                 .listOfObjects(TestItem.class)
                 .withMapFunc(getStub.mapFunc)

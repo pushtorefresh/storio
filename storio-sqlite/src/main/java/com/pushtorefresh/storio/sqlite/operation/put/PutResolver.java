@@ -16,12 +16,12 @@ public interface PutResolver<T> {
     /**
      * Performs Put Operation of some {@link ContentValues} into {@link StorIOSQLite}
      *
-     * @param storIOSQLiteDb      instance of {@link StorIOSQLite}
+     * @param storIOSQLite      instance of {@link StorIOSQLite}
      * @param contentValues some {@link ContentValues} to put
      * @return non-null result of Put Operation
      */
     @NonNull
-    PutResult performPut(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull ContentValues contentValues);
+    PutResult performPut(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues);
 
     /**
      * Useful callback which will be called in same thread that performed Put Operation right after

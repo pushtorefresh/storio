@@ -19,12 +19,12 @@ public class DefaultGetResolverTest {
 
     @Test
     public void rawQuery() {
-        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
         final RawQuery rawQuery = mock(RawQuery.class);
         final Cursor expectedCursor = mock(Cursor.class);
 
-        when(storIOSQLiteDb.internal())
+        when(storIOSQLite.internal())
                 .thenReturn(internal);
 
         when(internal.rawQuery(rawQuery))
@@ -32,7 +32,7 @@ public class DefaultGetResolverTest {
 
         final DefaultGetResolver defaultGetResolver = new DefaultGetResolver();
 
-        final Cursor actualCursor = defaultGetResolver.performGet(storIOSQLiteDb, rawQuery);
+        final Cursor actualCursor = defaultGetResolver.performGet(storIOSQLite, rawQuery);
 
         // only one request should occur
         verify(internal, times(1)).rawQuery(any(RawQuery.class));
@@ -45,12 +45,12 @@ public class DefaultGetResolverTest {
 
     @Test
     public void query() {
-        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
         final Query query = mock(Query.class);
         final Cursor expectedCursor = mock(Cursor.class);
 
-        when(storIOSQLiteDb.internal())
+        when(storIOSQLite.internal())
                 .thenReturn(internal);
 
         when(internal.query(query))
@@ -58,7 +58,7 @@ public class DefaultGetResolverTest {
 
         final DefaultGetResolver defaultGetResolver = new DefaultGetResolver();
 
-        final Cursor actualCursor = defaultGetResolver.performGet(storIOSQLiteDb, query);
+        final Cursor actualCursor = defaultGetResolver.performGet(storIOSQLite, query);
 
         // only one request should occur
         verify(internal, times(1)).query(any(Query.class));

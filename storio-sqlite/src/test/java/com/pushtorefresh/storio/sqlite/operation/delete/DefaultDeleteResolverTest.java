@@ -15,18 +15,18 @@ import static org.mockito.Mockito.when;
 public class DefaultDeleteResolverTest {
 
     @Test public void performDelete() {
-        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
         final DeleteQuery deleteQuery = mock(DeleteQuery.class);
 
-        when(storIOSQLiteDb.internal())
+        when(storIOSQLite.internal())
                 .thenReturn(internal);
 
         when(internal.delete(deleteQuery))
                 .thenReturn(1);
 
         final DefaultDeleteResolver defaultDeleteResolver = new DefaultDeleteResolver();
-        final int result = defaultDeleteResolver.performDelete(storIOSQLiteDb, deleteQuery);
+        final int result = defaultDeleteResolver.performDelete(storIOSQLite, deleteQuery);
 
         verify(internal, times(1)).delete(any(DeleteQuery.class));
         verify(internal, times(1)).delete(deleteQuery);

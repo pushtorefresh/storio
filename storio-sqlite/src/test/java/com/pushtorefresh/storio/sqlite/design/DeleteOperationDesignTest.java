@@ -16,7 +16,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteObjectBlocking() {
         User user = newUser();
 
-        DeleteResult deleteResult = storIOSQLiteDb()
+        DeleteResult deleteResult = storIOSQLite()
                 .delete()
                 .object(user)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -27,7 +27,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteObjectObservable() {
         User user = newUser();
 
-        Observable<DeleteResult> deleteResultObservable = storIOSQLiteDb()
+        Observable<DeleteResult> deleteResultObservable = storIOSQLite()
                 .delete()
                 .object(user)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -38,7 +38,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteCollectionOfObjectsBlocking() {
         List<User> users = new ArrayList<User>();
 
-        DeleteResults<User> deleteResult = storIOSQLiteDb()
+        DeleteResults<User> deleteResult = storIOSQLite()
                 .delete()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -49,7 +49,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     @Test public void deleteCollectionOfObjectsObservable() {
         List<User> users = new ArrayList<User>();
 
-        Observable<DeleteResults<User>> deleteResultObservable = storIOSQLiteDb()
+        Observable<DeleteResults<User>> deleteResultObservable = storIOSQLite()
                 .delete()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
@@ -58,7 +58,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void deleteByQueryBlocking() {
-        DeleteResult deleteResult = storIOSQLiteDb()
+        DeleteResult deleteResult = storIOSQLite()
                 .delete()
                 .byQuery(new DeleteQuery.Builder()
                         .table("users")
@@ -70,7 +70,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test public void deleteByQueryObservable() {
-        Observable<DeleteResult> deleteResultObservable = storIOSQLiteDb()
+        Observable<DeleteResult> deleteResultObservable = storIOSQLite()
                 .delete()
                 .byQuery(new DeleteQuery.Builder()
                         .table("users")

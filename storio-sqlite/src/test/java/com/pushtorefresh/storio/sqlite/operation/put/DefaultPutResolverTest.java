@@ -76,10 +76,10 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void insert() {
-        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLiteDb.internal())
+        when(storIOSQLite.internal())
                 .thenReturn(internal);
 
         final Long expectedInsertedId = 24L;
@@ -115,7 +115,7 @@ public class DefaultPutResolverTest {
         final ContentValues expectedContentValues = TestItem.MAP_TO_CONTENT_VALUES.map(testItem);
 
         // Performing Put that should "insert"
-        final PutResult putResult = putResolver.performPut(storIOSQLiteDb, TestItem.MAP_TO_CONTENT_VALUES.map(testItem));
+        final PutResult putResult = putResolver.performPut(storIOSQLite, TestItem.MAP_TO_CONTENT_VALUES.map(testItem));
 
         // checks that required insert was performed
         verify(internal, times(1)).insert(eq(expectedInsertQuery), eq(expectedContentValues));
@@ -139,10 +139,10 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void update() {
-        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLiteDb.internal())
+        when(storIOSQLite.internal())
                 .thenReturn(internal);
 
         when(internal.update(any(UpdateQuery.class), any(ContentValues.class)))
@@ -170,7 +170,7 @@ public class DefaultPutResolverTest {
         final TestItem testItem = new TestItem(1234L); // item with some id will be updated
         final ContentValues expectedContentValues = TestItem.MAP_TO_CONTENT_VALUES.map(testItem);
 
-        final PutResult putResult = putResolver.performPut(storIOSQLiteDb, expectedContentValues);
+        final PutResult putResult = putResolver.performPut(storIOSQLite, expectedContentValues);
 
         final UpdateQuery expectedUpdateQuery = new UpdateQuery.Builder()
                 .table(TestItem.TABLE)
@@ -202,10 +202,10 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void insertAfterFailedUpdate() {
-        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLiteDb.internal())
+        when(storIOSQLite.internal())
                 .thenReturn(internal);
 
         when(internal.update(any(UpdateQuery.class), any(ContentValues.class)))
@@ -238,7 +238,7 @@ public class DefaultPutResolverTest {
         final TestItem testItem = new TestItem(123L);
         final ContentValues expectedContentValues = TestItem.MAP_TO_CONTENT_VALUES.map(testItem);
 
-        final PutResult putResult = putResolver.performPut(storIOSQLiteDb, expectedContentValues);
+        final PutResult putResult = putResolver.performPut(storIOSQLite, expectedContentValues);
 
         final UpdateQuery expectedUpdateQuery = new UpdateQuery.Builder()
                 .table(TestItem.TABLE)

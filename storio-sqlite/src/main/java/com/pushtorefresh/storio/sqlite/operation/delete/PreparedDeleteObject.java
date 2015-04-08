@@ -18,17 +18,17 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     @NonNull private final T object;
     @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
 
-    PreparedDeleteObject(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull T object, @NonNull MapFunc<T, DeleteQuery> mapFunc, @NonNull DeleteResolver deleteResolver) {
-        super(storIOSQLiteDb, deleteResolver);
+    PreparedDeleteObject(@NonNull StorIOSQLite storIOSQLite, @NonNull T object, @NonNull MapFunc<T, DeleteQuery> mapFunc, @NonNull DeleteResolver deleteResolver) {
+        super(storIOSQLite, deleteResolver);
         this.object = object;
         this.mapFunc = mapFunc;
     }
 
     @NonNull @Override public DeleteResult executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLiteDb.internal();
+        final StorIOSQLite.Internal internal = storIOSQLite.internal();
         final DeleteQuery deleteQuery = mapFunc.map(object);
 
-        final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLiteDb, deleteQuery);
+        final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLite, deleteQuery);
 
         internal.getLoggi().v(numberOfDeletedRows + " object(s) deleted");
 
@@ -59,14 +59,14 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
      */
     public static class Builder<T> {
 
-        @NonNull private final StorIOSQLite storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLite;
         @NonNull private final T object;
 
         private MapFunc<T, DeleteQuery> mapFunc;
         private DeleteResolver deleteResolver;
 
-        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull T object) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull T object) {
+            this.storIOSQLite = storIOSQLite;
             this.object = object;
         }
 
@@ -108,7 +108,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
             checkNotNull(mapFunc, "Please specify map function");
 
             return new PreparedDeleteObject<T>(
-                    storIOSQLiteDb,
+                    storIOSQLite,
                     object,
                     mapFunc,
                     deleteResolver

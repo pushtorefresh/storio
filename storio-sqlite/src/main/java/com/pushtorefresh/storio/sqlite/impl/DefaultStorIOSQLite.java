@@ -39,7 +39,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     private final SQLiteDatabase db;
 
     /**
-     * Reactive bus for notifying observers about changes in StorIOSQLiteDb
+     * Reactive bus for notifying observers about changes in StorIOSQLite
      * One change can affect several tables, so we use {@link Changes} as representation of changes
      */
     @Nullable
@@ -64,7 +64,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @NonNull
     public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
         if (changesBus == null) {
-            throw newRxJavaIsNotAvailableException("Observing changes in StorIOSQLiteDb");
+            throw newRxJavaIsNotAvailableException("Observing changes in StorIOSQLite");
         }
 
         // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath

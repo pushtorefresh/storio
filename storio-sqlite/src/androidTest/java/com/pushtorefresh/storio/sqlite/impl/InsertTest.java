@@ -20,7 +20,7 @@ public class InsertTest extends BaseTest {
     @Test public void insertOne() {
         final User user = putUser();
 
-        // why we created StorIOSQLiteDb: nobody loves nulls
+        // why we created StorIOSQLite: nobody loves nulls
         final Cursor cursor = db.query(User.TABLE, null, null, null, null, null, null);
 
         // asserting that values was really inserted to db
@@ -85,7 +85,7 @@ public class InsertTest extends BaseTest {
 
         final Tweet tweet = TestFactory.newTweet(user.getId());
 
-        final PutResult putResult = storIOSQLiteDb
+        final PutResult putResult = storIOSQLite
                 .put()
                 .object(tweet)
                 .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)

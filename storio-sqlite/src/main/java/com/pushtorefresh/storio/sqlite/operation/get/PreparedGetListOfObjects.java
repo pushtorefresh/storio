@@ -33,13 +33,13 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @NonNull
     private final MapFunc<Cursor, T> mapFunc;
 
-    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Query query, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
-        super(storIOSQLiteDb, query, getResolver);
+    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
+        super(storIOSQLite, query, getResolver);
         this.mapFunc = mapFunc;
     }
 
-    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
-        super(storIOSQLiteDb, rawQuery, getResolver);
+    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
+        super(storIOSQLite, rawQuery, getResolver);
         this.mapFunc = mapFunc;
     }
 
@@ -54,9 +54,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         final Cursor cursor;
 
         if (query != null) {
-            cursor = getResolver.performGet(storIOSQLiteDb, query);
+            cursor = getResolver.performGet(storIOSQLite, query);
         } else if (rawQuery != null) {
-            cursor = getResolver.performGet(storIOSQLiteDb, rawQuery);
+            cursor = getResolver.performGet(storIOSQLite, rawQuery);
         } else {
             throw new IllegalStateException("Please specify query");
         }
@@ -119,7 +119,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         if (tables != null && !tables.isEmpty()) {
-            return storIOSQLiteDb
+            return storIOSQLite
                     .observeChangesInTables(tables)
                     .map(new Func1<Changes, List<T>>() { // each change triggers executeAsBlocking
                         @Override
@@ -143,7 +143,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     public static class Builder<T> {
 
         @NonNull
-        private final StorIOSQLite storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLite;
 
         @NonNull
         private final Class<T> type; // currently type not used as object, only for generic Builder class
@@ -153,8 +153,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         private RawQuery rawQuery;
         private GetResolver getResolver;
 
-        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Class<T> type) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type) {
+            this.storIOSQLite = storIOSQLite;
             this.type = type;
         }
 
@@ -200,9 +200,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             checkNotNull(mapFunc, "Please specify map function");
 
             if (query != null) {
-                return new PreparedGetListOfObjects<T>(storIOSQLiteDb, query, getResolver, mapFunc);
+                return new PreparedGetListOfObjects<T>(storIOSQLite, query, getResolver, mapFunc);
             } else if (rawQuery != null) {
-                return new PreparedGetListOfObjects<T>(storIOSQLiteDb, rawQuery, getResolver, mapFunc);
+                return new PreparedGetListOfObjects<T>(storIOSQLite, rawQuery, getResolver, mapFunc);
             } else {
                 throw new IllegalStateException("Please specify query");
             }

@@ -34,7 +34,7 @@ public class QueryTest extends BaseTest {
         final List<User> users = putUsers(3);
 
         for (User user : users) {
-            final List<User> usersFromQuery = storIOSQLiteDb
+            final List<User> usersFromQuery = storIOSQLite
                     .get()
                     .listOfObjects(User.class)
                     .withMapFunc(User.MAP_FROM_CURSOR)
@@ -60,7 +60,7 @@ public class QueryTest extends BaseTest {
 
         putUsers(users);
 
-        final List<User> usersFromQueryOrdered = storIOSQLiteDb
+        final List<User> usersFromQueryOrdered = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -90,7 +90,7 @@ public class QueryTest extends BaseTest {
 
         putUsers(users);
 
-        final List<User> usersFromQueryOrdered = storIOSQLiteDb
+        final List<User> usersFromQueryOrdered = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -116,7 +116,7 @@ public class QueryTest extends BaseTest {
         putUsers(10);
 
         final int limit = 8;
-        final List<User> usersFromQuery = storIOSQLiteDb
+        final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -136,7 +136,7 @@ public class QueryTest extends BaseTest {
 
         final int offset = 5;
         final int limit = 3;
-        final List<User> usersFromQuery = storIOSQLiteDb
+        final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -174,7 +174,7 @@ public class QueryTest extends BaseTest {
 
         putUsers(users);
 
-        final List<User> groupsOfUsers = storIOSQLiteDb
+        final List<User> groupsOfUsers = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(mapFuncOnlyEmail)
@@ -207,7 +207,7 @@ public class QueryTest extends BaseTest {
 
         final int bigGroupThreshold = 5;
 
-        final List<User> groupsOfUsers = storIOSQLiteDb
+        final List<User> groupsOfUsers = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(mapFuncOnlyEmail)
@@ -233,7 +233,7 @@ public class QueryTest extends BaseTest {
 
         putUsers(users);
 
-        final List<User> uniqueUsersFromQuery = storIOSQLiteDb
+        final List<User> uniqueUsersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(mapFuncOnlyEmail)
@@ -248,7 +248,7 @@ public class QueryTest extends BaseTest {
         assertNotNull(uniqueUsersFromQuery);
         assertEquals(1, uniqueUsersFromQuery.size());
 
-        final List<User> allUsersFromQuery = storIOSQLiteDb
+        final List<User> allUsersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(mapFuncOnlyEmail)
@@ -301,7 +301,7 @@ public class QueryTest extends BaseTest {
                 + " where length(" + User.COLUMN_EMAIL + ") > "
                 + "(select avg(length(" + User.COLUMN_EMAIL + ")) from users)";
 
-        final List<User> usersFromQuery = storIOSQLiteDb
+        final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -325,7 +325,7 @@ public class QueryTest extends BaseTest {
         final String query = "Select * from " + User.TABLE
                 + " where " + User.COLUMN_EMAIL + " like ?";
 
-        final List<User> usersFromQuery = storIOSQLiteDb
+        final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -349,7 +349,7 @@ public class QueryTest extends BaseTest {
                 + " where " + User.COLUMN_EMAIL + " like ?";
         final String arg = "(delete from " + User.TABLE + ")";
 
-        storIOSQLiteDb.get()
+        storIOSQLite.get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new RawQuery.Builder()

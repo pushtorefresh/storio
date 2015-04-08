@@ -16,19 +16,19 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
 
     @NonNull private final ContentValues contentValues;
 
-    PreparedPutContentValues(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
-        super(storIOSQLiteDb, putResolver);
+    PreparedPutContentValues(@NonNull StorIOSQLite storIOSQLite, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
+        super(storIOSQLite, putResolver);
         this.contentValues = contentValues;
     }
 
     @NonNull @Override public PutResult executeAsBlocking() {
         final PutResult putResult = putResolver.performPut(
-                storIOSQLiteDb,
+                storIOSQLite,
                 contentValues
         );
 
         putResolver.afterPut(contentValues, putResult);
-        storIOSQLiteDb.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTable()));
+        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTable()));
         return putResult;
     }
 
@@ -52,13 +52,13 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLite storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLite;
         @NonNull private final ContentValues contentValues;
 
         private PutResolver<ContentValues> putResolver;
 
-        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull ContentValues contentValues) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues) {
+            this.storIOSQLite = storIOSQLite;
             this.contentValues = contentValues;
         }
 
@@ -84,7 +84,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
             checkNotNull(putResolver, "Please specify put resolver");
 
             return new PreparedPutContentValues(
-                    storIOSQLiteDb,
+                    storIOSQLite,
                     putResolver,
                     contentValues
             );

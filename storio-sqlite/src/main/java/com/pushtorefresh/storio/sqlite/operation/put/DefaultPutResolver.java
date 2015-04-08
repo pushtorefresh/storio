@@ -44,13 +44,13 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
      * <p/>
      * But, if it will decide to perform update and no rows will be updated, it will perform insert!
      *
-     * @param storIOSQLiteDb instance of {@link StorIOSQLite}
+     * @param storIOSQLite instance of {@link StorIOSQLite}
      * @param contentValues  content values to put
      * @return non-null result of put operation
      */
     @Override
     @NonNull
-    public PutResult performPut(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull ContentValues contentValues) {
+    public PutResult performPut(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues) {
         final String idColumnName = getIdColumnName();
 
         final Object idAsObject = contentValues.get(idColumnName);
@@ -61,13 +61,13 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
         final String table = getTable();
 
         return idAsString == null
-                ? insert(storIOSQLiteDb, contentValues, table)
-                : updateOrInsert(storIOSQLiteDb, contentValues, table, idColumnName, idAsString);
+                ? insert(storIOSQLite, contentValues, table)
+                : updateOrInsert(storIOSQLite, contentValues, table, idColumnName, idAsString);
     }
 
     @NonNull
-    private PutResult insert(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull ContentValues contentValues, @NonNull String table) {
-        final long insertedId = storIOSQLiteDb.internal().insert(
+    private PutResult insert(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues, @NonNull String table) {
+        final long insertedId = storIOSQLite.internal().insert(
                 new InsertQuery.Builder()
                         .table(table)
                         .nullColumnHack(null)
@@ -79,13 +79,13 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     }
 
     @NonNull
-    private PutResult updateOrInsert(@NonNull StorIOSQLite storIOSQLiteDb,
+    private PutResult updateOrInsert(@NonNull StorIOSQLite storIOSQLite,
                                      @NonNull ContentValues contentValues,
                                      @NonNull String table,
                                      @NonNull String idFieldName,
                                      @NonNull String id) {
 
-        final int numberOfRowsUpdated = storIOSQLiteDb.internal().update(
+        final int numberOfRowsUpdated = storIOSQLite.internal().update(
                 new UpdateQuery.Builder()
                         .table(table)
                         .where(idFieldName + "=?")
@@ -96,7 +96,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
         return numberOfRowsUpdated > 0
                 ? PutResult.newUpdateResult(numberOfRowsUpdated, table)
-                : insert(storIOSQLiteDb, contentValues, table);
+                : insert(storIOSQLite, contentValues, table);
     }
 
     /**

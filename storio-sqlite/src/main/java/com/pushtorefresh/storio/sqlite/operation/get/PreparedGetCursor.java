@@ -19,19 +19,19 @@ import rx.functions.Func1;
 
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
-    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Query query, @NonNull GetResolver getResolver) {
-        super(storIOSQLiteDb, query, getResolver);
+    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver getResolver) {
+        super(storIOSQLite, query, getResolver);
     }
 
-    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
-        super(storIOSQLiteDb, rawQuery, getResolver);
+    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
+        super(storIOSQLite, rawQuery, getResolver);
     }
 
     @NonNull public Cursor executeAsBlocking() {
         if (query != null) {
-            return getResolver.performGet(storIOSQLiteDb, query);
+            return getResolver.performGet(storIOSQLite, query);
         } else if (rawQuery != null) {
-            return getResolver.performGet(storIOSQLiteDb, rawQuery);
+            return getResolver.performGet(storIOSQLite, rawQuery);
         } else {
             throw new IllegalStateException("Please specify query");
         }
@@ -65,7 +65,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         }
 
         if (tables != null && !tables.isEmpty()) {
-            return storIOSQLiteDb
+            return storIOSQLite
                     .observeChangesInTables(tables)
                     .map(new Func1<Changes, Cursor>() { // each change triggers executeAsBlocking
                         @Override public Cursor call(Changes changes) {
@@ -102,14 +102,14 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     public static class Builder implements CommonBuilder<Builder> {
 
         @NonNull
-        private final StorIOSQLite storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLite;
 
         private Query query;
         private RawQuery rawQuery;
         private GetResolver getResolver;
 
-        Builder(@NonNull StorIOSQLite storIOSQLiteDb) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        Builder(@NonNull StorIOSQLite storIOSQLite) {
+            this.storIOSQLite = storIOSQLite;
         }
 
         /**
@@ -156,9 +156,9 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
             }
 
             if (query != null) {
-                return new PreparedGetCursor(storIOSQLiteDb, query, getResolver);
+                return new PreparedGetCursor(storIOSQLite, query, getResolver);
             } else if (rawQuery != null) {
-                return new PreparedGetCursor(storIOSQLiteDb, rawQuery, getResolver);
+                return new PreparedGetCursor(storIOSQLite, rawQuery, getResolver);
             } else {
                 throw new IllegalStateException("Please specify query");
             }

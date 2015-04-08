@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertTrue;
 public abstract class BaseTest {
 
     @NonNull
-    protected StorIOSQLite storIOSQLiteDb;
+    protected StorIOSQLite storIOSQLite;
 
     @NonNull
     protected SQLiteDatabase db;
@@ -32,18 +32,18 @@ public abstract class BaseTest {
         db = new TestSQLiteOpenHelper(InstrumentationRegistry.getContext())
                 .getWritableDatabase();
 
-        storIOSQLiteDb = new DefaultStorIOSQLite.Builder()
+        storIOSQLite = new DefaultStorIOSQLite.Builder()
                 .db(db)
                 .build();
 
         // clearing db before each test case
-        storIOSQLiteDb
+        storIOSQLite
                 .delete()
                 .byQuery(User.DELETE_ALL)
                 .prepare()
                 .executeAsBlocking();
 
-        storIOSQLiteDb
+        storIOSQLite
                 .delete()
                 .byQuery(Tweet.DELETE_ALL)
                 .prepare()
@@ -52,7 +52,7 @@ public abstract class BaseTest {
 
     @Nullable
     List<User> getAllUsers() {
-        return storIOSQLiteDb
+        return storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withMapFunc(User.MAP_FROM_CURSOR)
@@ -72,7 +72,7 @@ public abstract class BaseTest {
     @NonNull
     User putUser(@NonNull final User user) {
 
-        final PutResult putResult = storIOSQLiteDb
+        final PutResult putResult = storIOSQLite
                 .put()
                 .object(user)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -94,7 +94,7 @@ public abstract class BaseTest {
     @NonNull
     List<User> putUsers(@NonNull final List<User> users) {
 
-        final PutResults<User> putResults = storIOSQLiteDb
+        final PutResults<User> putResults = storIOSQLite
                 .put()
                 .objects(users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
@@ -109,7 +109,7 @@ public abstract class BaseTest {
 
     @NonNull
     DeleteResult deleteUser(@NonNull final User user) {
-        final DeleteResult deleteResult = storIOSQLiteDb
+        final DeleteResult deleteResult = storIOSQLite
                 .delete()
                 .object(user)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)

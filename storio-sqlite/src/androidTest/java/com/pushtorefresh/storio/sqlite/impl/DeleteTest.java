@@ -38,7 +38,7 @@ public class DeleteTest extends BaseTest {
             usersToDelete.add(allUsers.get(i));
         }
 
-        final DeleteResults<User> deleteResults = storIOSQLiteDb
+        final DeleteResults<User> deleteResults = storIOSQLite
                 .delete()
                 .objects(usersToDelete)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)

@@ -20,19 +20,19 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     @NonNull
     private final MapFunc<T, ContentValues> mapFunc;
 
-    PreparedPutObject(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull PutResolver<T> putResolver,
+    PreparedPutObject(@NonNull StorIOSQLite storIOSQLite, @NonNull PutResolver<T> putResolver,
                       @NonNull T object, @NonNull MapFunc<T, ContentValues> mapFunc) {
-        super(storIOSQLiteDb, putResolver);
+        super(storIOSQLite, putResolver);
         this.object = object;
         this.mapFunc = mapFunc;
     }
 
     @NonNull
     public PutResult executeAsBlocking() {
-        final PutResult putResult = putResolver.performPut(storIOSQLiteDb, mapFunc.map(object));
+        final PutResult putResult = putResolver.performPut(storIOSQLite, mapFunc.map(object));
 
         putResolver.afterPut(object, putResult);
-        storIOSQLiteDb.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTable()));
+        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTable()));
 
         return putResult;
     }
@@ -62,15 +62,15 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     public static class Builder<T> {
 
         @NonNull
-        private final StorIOSQLite storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLite;
         @NonNull
         private final T object;
 
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
 
-        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull T object) {
-            this.storIOSQLiteDb = storIOSQLiteDb;
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull T object) {
+            this.storIOSQLite = storIOSQLite;
             this.object = object;
         }
 
@@ -112,7 +112,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
             checkNotNull(putResolver, "Please specify put resolver");
 
             return new PreparedPutObject<T>(
-                    storIOSQLiteDb,
+                    storIOSQLite,
                     putResolver,
                     object,
                     mapFunc

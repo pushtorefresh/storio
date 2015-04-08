@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 // stub class to avoid violation of DRY in tests
 class PutStub {
     final List<TestItem> testItems;
-    final StorIOSQLite storIOSQLiteDb;
+    final StorIOSQLite storIOSQLite;
     final StorIOSQLite.Internal internal;
     final MapFunc<TestItem, ContentValues> mapFunc;
     final PutResolver<TestItem> putResolver;
@@ -57,21 +57,21 @@ class PutStub {
             testItems.add(TestItem.newInstance());
         }
 
-        storIOSQLiteDb = mock(StorIOSQLite.class);
+        storIOSQLite = mock(StorIOSQLite.class);
         internal = mock(StorIOSQLite.Internal.class);
 
         when(internal.transactionsSupported())
                 .thenReturn(useTransaction);
 
-        when(storIOSQLiteDb.internal())
+        when(storIOSQLite.internal())
                 .thenReturn(internal);
 
-        when(storIOSQLiteDb.put())
-                .thenReturn(new PreparedPut.Builder(storIOSQLiteDb));
+        when(storIOSQLite.put())
+                .thenReturn(new PreparedPut.Builder(storIOSQLite));
 
         putResolver = (PutResolver<TestItem>) mock(PutResolver.class);
 
-        when(putResolver.performPut(eq(storIOSQLiteDb), any(ContentValues.class)))
+        when(putResolver.performPut(eq(storIOSQLite), any(ContentValues.class)))
                 .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE));
 
         mapFunc = (MapFunc<TestItem, ContentValues>) mock(MapFunc.class);
@@ -83,11 +83,11 @@ class PutStub {
     }
 
     void verifyBehaviorForMultiple(@NonNull PutResults<TestItem> putResults) {
-        // only one call to storIOSQLiteDb.put() should occur
-        verify(storIOSQLiteDb, times(1)).put();
+        // only one call to storIOSQLite.put() should occur
+        verify(storIOSQLite, times(1)).put();
 
         // number of calls to putResolver's performPut() should be equal to number of objects
-        verify(putResolver, times(testItems.size())).performPut(eq(storIOSQLiteDb), any(ContentValues.class));
+        verify(putResolver, times(testItems.size())).performPut(eq(storIOSQLite), any(ContentValues.class));
 
         for (final TestItem testItem : testItems) {
             // map operation for each object should be called only once

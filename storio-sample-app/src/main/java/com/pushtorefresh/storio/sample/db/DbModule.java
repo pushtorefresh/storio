@@ -19,7 +19,7 @@ public class DbModule {
     @Provides
     @NonNull
     @Singleton
-    public StorIOSQLite provideStorIOSQLiteDb(@NonNull SQLiteDatabase db) {
+    public StorIOSQLite provideStorIOSQLite(@NonNull SQLiteDatabase db) {
         return new DefaultStorIOSQLite.Builder()
                 .db(db)
                 .build()
