@@ -21,7 +21,7 @@ android {
 
 dependencies {
     compile project(':storio-contentresolver')
-    compile project(':storio-sqlitedb')
+    compile project(':storio-sqlite')
 
     provided rootProject.ext.supportAnnotations
 
