@@ -19,14 +19,14 @@ public class DeleteResultsTest {
 
     @Test
     public void results() {
-        final Map<Object, DeleteResult> results = new HashMap<>();
+        final Map<Object, DeleteResult> results = new HashMap<Object, DeleteResult>();
         final DeleteResults<Object> deleteResults = DeleteResults.newInstance(results);
         assertEquals(results, deleteResults.results());
     }
 
     @Test
     public void wasDeleted() {
-        final Map<String, DeleteResult> results = new HashMap<>();
+        final Map<String, DeleteResult> results = new HashMap<String, DeleteResult>();
         results.put("testString", DeleteResult.newInstance(1, "test_table"));
 
         final DeleteResults<String> deleteResults = DeleteResults.newInstance(results);

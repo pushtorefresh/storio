@@ -70,7 +70,7 @@ public class UpdateTest extends BaseTest {
 
         assertEquals(usersForInsert.size(), insertResults.numberOfInserts());
 
-        final List<User> usersForUpdate = new ArrayList<>(usersForInsert.size());
+        final List<User> usersForUpdate = new ArrayList<User>(usersForInsert.size());
 
         for (int i = 0; i < usersForInsert.size(); i++) {
             usersForUpdate.add(new User(usersForInsert.get(i).getId(), "new" + i + "@email.com" + i));

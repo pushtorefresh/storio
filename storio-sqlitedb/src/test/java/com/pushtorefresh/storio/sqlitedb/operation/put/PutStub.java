@@ -51,7 +51,7 @@ class PutStub {
     private PutStub(boolean useTransaction, int numberOfItems) {
         this.useTransaction = useTransaction;
 
-        testItems = new ArrayList<>(numberOfItems);
+        testItems = new ArrayList<TestItem>(numberOfItems);
 
         for (int i = 0; i < numberOfItems; i++) {
             testItems.add(TestItem.newInstance());
@@ -124,7 +124,7 @@ class PutStub {
     }
 
     void verifyBehaviorForOne(@NonNull PutResult putResult) {
-        final Map<TestItem, PutResult> putResultsMap = new HashMap<>(1);
+        final Map<TestItem, PutResult> putResultsMap = new HashMap<TestItem, PutResult>(1);
         putResultsMap.put(testItems.get(0), putResult);
         verifyBehaviorForMultiple(PutResults.newInstance(putResultsMap));
     }

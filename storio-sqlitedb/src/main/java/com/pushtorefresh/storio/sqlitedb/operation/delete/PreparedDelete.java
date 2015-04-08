@@ -47,7 +47,7 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
          * @return builder
          */
         @NonNull public <T> PreparedDeleteObject.Builder<T> object(@NonNull T object) {
-            return new PreparedDeleteObject.Builder<>(storIOSQLiteDb, object);
+            return new PreparedDeleteObject.Builder<T>(storIOSQLiteDb, object);
         }
 
         /**
@@ -59,7 +59,7 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
          */
         @NonNull
         public <T> PreparedDeleteObjects.Builder<T> objects(@NonNull Collection<T> objects) {
-            return new PreparedDeleteObjects.Builder<>(storIOSQLiteDb, objects);
+            return new PreparedDeleteObjects.Builder<T>(storIOSQLiteDb, objects);
         }
     }
 }

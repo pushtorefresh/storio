@@ -81,7 +81,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          */
         @NonNull
         public <T> PreparedPutObject.Builder<T> object(T object) {
-            return new PreparedPutObject.Builder<>(storIOSQLiteDb, object);
+            return new PreparedPutObject.Builder<T>(storIOSQLiteDb, object);
         }
 
         /**
@@ -93,7 +93,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          */
         @NonNull
         public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
-            return new PreparedPutObjects.Builder<>(storIOSQLiteDb, objects);
+            return new PreparedPutObjects.Builder<T>(storIOSQLiteDb, objects);
         }
 
         /**
@@ -106,7 +106,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         @SuppressWarnings("unchecked")
         @NonNull
         public final <T> PreparedPutObjects.Builder<T> objects(@NonNull T... objects) {
-            return new PreparedPutObjects.Builder<>(storIOSQLiteDb, Arrays.asList(objects));
+            return new PreparedPutObjects.Builder<T>(storIOSQLiteDb, Arrays.asList(objects));
         }
     }
 }

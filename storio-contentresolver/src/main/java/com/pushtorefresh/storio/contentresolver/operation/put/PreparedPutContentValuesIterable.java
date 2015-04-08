@@ -34,7 +34,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
     @NonNull
     @Override
     public PutResults<ContentValues> executeAsBlocking() {
-        final Map<ContentValues, PutResult> putResultsMap = new HashMap<>();
+        final Map<ContentValues, PutResult> putResultsMap = new HashMap<ContentValues, PutResult>();
 
         for (final ContentValues cv : contentValues) {
             final PutResult putResult = putResolver.performPut(storIOContentResolver, cv);

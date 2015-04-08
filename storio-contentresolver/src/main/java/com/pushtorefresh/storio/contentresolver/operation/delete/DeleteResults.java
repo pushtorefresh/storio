@@ -24,7 +24,7 @@ public final class DeleteResults<T> {
     @NonNull
     public static <T> DeleteResults<T> newInstance(@NonNull Map<T, DeleteResult> results) {
         checkNotNull(results, "Please specify delete results map");
-        return new DeleteResults<>(results);
+        return new DeleteResults<T>(results);
     }
 
     /**

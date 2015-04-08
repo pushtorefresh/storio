@@ -284,7 +284,7 @@ public class QueryTest extends BaseTest {
 
         putUsers(users);
 
-        final List<User> usersWithLongName = new ArrayList<>(users.size());
+        final List<User> usersWithLongName = new ArrayList<User>(users.size());
 
         int lengthSum = 0;
         for (User user : users) {

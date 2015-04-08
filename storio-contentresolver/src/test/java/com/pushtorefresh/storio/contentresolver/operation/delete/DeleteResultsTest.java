@@ -18,7 +18,7 @@ public class DeleteResultsTest {
 
     @Test
     public void results() {
-        final Map<String, DeleteResult> results = new HashMap<>();
+        final Map<String, DeleteResult> results = new HashMap<String, DeleteResult>();
         results.put("testString", mock(DeleteResult.class));
         results.put("testString", mock(DeleteResult.class));
 

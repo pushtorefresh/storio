@@ -59,9 +59,9 @@ class DeleteStub {
 
         mapFunc = (MapFunc<TestItem, DeleteQuery>) mock(MapFunc.class);
 
-        testItems = new ArrayList<>(numberOfTestItems);
-        testItemToDeleteQueryMap = new HashMap<>(numberOfTestItems);
-        deleteQueryToDeleteResultMap = new HashMap<>(numberOfTestItems);
+        testItems = new ArrayList<TestItem>(numberOfTestItems);
+        testItemToDeleteQueryMap = new HashMap<TestItem, DeleteQuery>(numberOfTestItems);
+        deleteQueryToDeleteResultMap = new HashMap<DeleteQuery, DeleteResult>(numberOfTestItems);
 
         for (int i = 0; i < numberOfTestItems; i++) {
             final TestItem testItem = TestItem.newInstance();
@@ -141,7 +141,7 @@ class DeleteStub {
     }
 
     void verifyBehaviorForDeleteOneObject(@NonNull DeleteResult deleteResult) {
-        Map<TestItem, DeleteResult> deleteResultsMap = new HashMap<>(1);
+        Map<TestItem, DeleteResult> deleteResultsMap = new HashMap<TestItem, DeleteResult>(1);
         deleteResultsMap.put(testItems.get(0), deleteResult);
         verifyBehaviorForDeleteMultipleObjects(DeleteResults.newInstance(deleteResultsMap));
     }

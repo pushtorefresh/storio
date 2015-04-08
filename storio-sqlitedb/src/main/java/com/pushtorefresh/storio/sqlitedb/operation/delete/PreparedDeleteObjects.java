@@ -35,7 +35,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
     @NonNull @Override public DeleteResults<T> executeAsBlocking() {
         final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
 
-        final Map<T, DeleteResult> results = new HashMap<>();
+        final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>();
 
         final boolean withTransaction = useTransactionIfPossible && internal.transactionsSupported();
 
@@ -73,7 +73,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
                 if (transactionSuccessful) {
                     // if delete was in transaction and it was successful -> notify about changes
 
-                    final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be one table
+                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be one table
 
                     for (final T object : results.keySet()) {
                         affectedTables.add(results.get(object).affectedTable());
@@ -183,7 +183,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
             checkNotNull(mapFunc, "Please specify map function");
 
-            return new PreparedDeleteObjects<>(
+            return new PreparedDeleteObjects<T>(
                     storIOSQLiteDb,
                     objects,
                     mapFunc,

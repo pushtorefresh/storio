@@ -25,7 +25,7 @@ public final class QueryUtil {
         if (args == null || args.length == 0) {
             return null;
         } else {
-            final List<String> list = new ArrayList<>(args.length);
+            final List<String> list = new ArrayList<String>(args.length);
 
             for (int i = 0; i < args.length; i++) {
                 list.add(args[i].toString());
