@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
@@ -11,6 +12,7 @@ import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
@@ -50,11 +52,29 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         });
     }
 
+    /**
+     * Creates an {@link Observable} which will be subscribed to changes of {@link #query} Uri
+     * and will emit result each time change occurs
+     * <p>
+     * First result will be emitted immediately,
+     * other emissions will occur only if changes of {@link #query} Uri will occur
+     *
+     * @return non-null {@link Observable} which will emit non-null list with mapped results and will be subscribed to changes of {@link #query} Uri
+     */
     @NonNull
     @Override
     public Observable<Cursor> createObservableStream() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
-        throw new IllegalStateException("Not implemented");
+
+        return storIOContentResolver
+                .observeChangesOfUri(query.uri)
+                .map(new Func1<Changes, Cursor>() {
+                    @Override
+                    public Cursor call(Changes changes) {
+                        return executeAsBlocking();
+                    }
+                })
+                .startWith(executeAsBlocking()); // start stream with first query result
     }
 
     /**

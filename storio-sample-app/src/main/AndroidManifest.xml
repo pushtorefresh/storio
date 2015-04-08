@@ -22,6 +22,11 @@
         <activity android:name=".ui.activity.db.TweetsSampleActivity"
             android:label="@string/tweets_db_sample_label"/>
 
+        <provider
+            android:authorities="com.pushtorefresh.storio.sample_provider"
+            android:name=".provider.SampleContentProvider"
+            android:exported="false"/>
+        
     </application>
 
 </manifest>
