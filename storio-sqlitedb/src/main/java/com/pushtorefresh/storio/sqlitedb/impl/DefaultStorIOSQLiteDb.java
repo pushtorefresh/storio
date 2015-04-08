@@ -23,6 +23,7 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.util.EnvironmentUtil.newRxJavaIsNotAvailableException;
 
 /**
  * Default implementation of {@link StorIOSQLiteDb} for {@link SQLiteDatabase}
@@ -56,17 +57,23 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
         this.db = db;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NonNull
     public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
         if (changesBus == null) {
-            throw EnvironmentUtil.newRxJavaIsNotAvailableException("Observing changes in StorIOSQLiteDb");
+            throw newRxJavaIsNotAvailableException("Observing changes in StorIOSQLiteDb");
         }
 
         // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
         return ChangesFilter.apply(changesBus, tables);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Internal internal() {
@@ -75,11 +82,17 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
 
     protected class InternalImpl extends Internal {
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void execSql(@NonNull RawQuery rawQuery) {
             db.execSQL(rawQuery.query, QueryUtil.listToArray(rawQuery.args));
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @NonNull
         @Override
         public Cursor rawQuery(@NonNull RawQuery rawQuery) {
@@ -89,6 +102,9 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
             );
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @NonNull
         @Override
         public Cursor query(@NonNull Query query) {
@@ -105,6 +121,9 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
             );
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
             return db.insertOrThrow(
@@ -114,6 +133,9 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
             );
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
             return db.update(
@@ -124,6 +146,9 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
             );
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int delete(@NonNull DeleteQuery deleteQuery) {
             return db.delete(
@@ -133,6 +158,9 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
             );
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void notifyAboutChanges(@NonNull Changes changes) {
             // Notifying about changes requires RxJava, if RxJava is not available -> skip notification
@@ -141,21 +169,33 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean transactionsSupported() {
             return true;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void beginTransaction() {
             db.beginTransaction();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void setTransactionSuccessful() {
             db.setTransactionSuccessful();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void endTransaction() {
             db.endTransaction();
