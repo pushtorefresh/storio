@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sample.db;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.Logger;
@@ -18,10 +19,18 @@ public class DbModule {
     @Provides
     @NonNull
     @Singleton
-    public StorIOSQLiteDb provideStorIOSQLiteDb(@NonNull Context context) {
+    public StorIOSQLiteDb provideStorIOSQLiteDb(@NonNull SQLiteDatabase db) {
         return new DefaultStorIOSQLiteDb.Builder()
-                .sqliteOpenHelper(new DbOpenHelper(context))
+                .db(db)
                 .build()
                 .setLogListener(new Logger());
+    }
+
+    @Provides
+    @NonNull
+    @Singleton
+    public SQLiteDatabase provideSQLiteDatabase(@NonNull Context context) {
+        return new DbOpenHelper(context)
+                .getWritableDatabase();
     }
 }

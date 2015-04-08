@@ -23,7 +23,7 @@ class ChangesFilter implements Func1<Changes, Boolean> {
     }
 
     @NonNull
-    public static Observable<Changes> apply(@NonNull PublishSubject<Changes> publishSubject, @NonNull Set<String> tables) {
+    static Observable<Changes> apply(@NonNull PublishSubject<Changes> publishSubject, @NonNull Set<String> tables) {
         return publishSubject.filter(new ChangesFilter(tables));
     }
 
