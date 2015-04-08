@@ -37,7 +37,7 @@ public class PutResults<T> {
      */
     @NonNull
     public static <T> PutResults<T> newInstance(@NonNull Map<T, PutResult> putResults) {
-        return new PutResults<>(putResults);
+        return new PutResults<T>(putResults);
     }
 
     /**

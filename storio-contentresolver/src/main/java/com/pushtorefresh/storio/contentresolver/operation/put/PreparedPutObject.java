@@ -115,7 +115,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
             checkNotNull(mapFunc, "Please specify map function");
             checkNotNull(putResolver, "Please specify put resolver");
 
-            return new PreparedPutObject<>(
+            return new PreparedPutObject<T>(
                     storIOContentResolver,
                     putResolver,
                     object,

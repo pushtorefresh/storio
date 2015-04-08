@@ -62,7 +62,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         try {
-            final List<T> list = new ArrayList<>(cursor.getCount());
+            final List<T> list = new ArrayList<T>(cursor.getCount());
 
             while (cursor.moveToNext()) {
                 list.add(mapFunc.map(cursor));
@@ -168,7 +168,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         @NonNull
         public QueryBuilder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
             this.mapFunc = mapFunc;
-            return new QueryBuilder<>(this);
+            return new QueryBuilder<T>(this);
         }
 
         /**
@@ -200,9 +200,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             checkNotNull(mapFunc, "Please specify map function");
 
             if (query != null) {
-                return new PreparedGetListOfObjects<>(storIOSQLiteDb, query, getResolver, mapFunc);
+                return new PreparedGetListOfObjects<T>(storIOSQLiteDb, query, getResolver, mapFunc);
             } else if (rawQuery != null) {
-                return new PreparedGetListOfObjects<>(storIOSQLiteDb, rawQuery, getResolver, mapFunc);
+                return new PreparedGetListOfObjects<T>(storIOSQLiteDb, rawQuery, getResolver, mapFunc);
             } else {
                 throw new IllegalStateException("Please specify query");
             }
@@ -233,7 +233,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         @NonNull
         public CompleteBuilder<T> withQuery(@NonNull Query query) {
             incompleteBuilder.query = query;
-            return new CompleteBuilder<>(this);
+            return new CompleteBuilder<T>(this);
         }
 
         /**
@@ -246,7 +246,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         @NonNull
         public CompleteBuilder<T> withQuery(@NonNull RawQuery rawQuery) {
             incompleteBuilder.rawQuery = rawQuery;
-            return new CompleteBuilder<>(this);
+            return new CompleteBuilder<T>(this);
         }
 
         /**

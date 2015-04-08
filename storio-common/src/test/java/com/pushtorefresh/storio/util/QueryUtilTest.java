@@ -53,7 +53,7 @@ public class QueryUtilTest {
 
     @Test
     public void emptyListToUnmodifiable() {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<String>();
         assertEquals(null, QueryUtil.listToUnmodifiable(list));
     }
 
@@ -90,7 +90,7 @@ public class QueryUtilTest {
 
     @Test
     public void emptyListOfStringsToArray() {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<String>();
         assertEquals(null, QueryUtil.listToArray(list));
     }
 

@@ -119,7 +119,7 @@ public class TweetsFragment extends BaseFragment {
 
     @OnClick(R.id.tweets_empty_ui_add_tweets_button)
     void addTweets() {
-        final List<Tweet> tweets = new ArrayList<>();
+        final List<Tweet> tweets = new ArrayList<Tweet>();
 
         tweets.add(Tweet.newTweet("artem_zin", "Checkout StorIO — modern API for SQLiteDatabase & ContentResolver"));
         tweets.add(Tweet.newTweet("HackerNews", "It's revolution! Dolphins can write news on HackerNews with our new app!"));

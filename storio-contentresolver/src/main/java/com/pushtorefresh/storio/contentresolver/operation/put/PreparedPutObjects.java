@@ -42,7 +42,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     @Override
     public PutResults<T> executeAsBlocking() {
 
-        final Map<T, PutResult> putResults = new HashMap<>();
+        final Map<T, PutResult> putResults = new HashMap<T, PutResult>();
 
         for (T object : objects) {
             final PutResult putResult = putResolver.performPut(storIOContentResolver, mapFunc.map(object));
@@ -134,7 +134,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
             checkNotNull(mapFunc, "Please specify map function");
             checkNotNull(putResolver, "Please specify put resolver");
 
-            return new PreparedPutObjects<>(
+            return new PreparedPutObjects<T>(
                     storIOContentResolver,
                     putResolver,
                     objects,

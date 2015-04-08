@@ -15,7 +15,7 @@ public class PreparedPutContentValuesIterableTest {
     public void putContentValuesIterableBlocking() {
         final PutStub putStub = PutStub.newPutStubForMultipleContentValues();
 
-        final List<ContentValues> contentValuesList = new ArrayList<>();
+        final List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
 
         for (final TestItem testItem : putStub.testItems) {
             contentValuesList.add(putStub.mapFunc.map(testItem));
@@ -35,7 +35,7 @@ public class PreparedPutContentValuesIterableTest {
     public void putContentValuesIterableObservable() {
         final PutStub putStub = PutStub.newPutStubForMultipleContentValues();
 
-        final List<ContentValues> contentValuesList = new ArrayList<>();
+        final List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
 
         for (final TestItem testItem : putStub.testItems) {
             contentValuesList.add(putStub.mapFunc.map(testItem));

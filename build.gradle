@@ -61,10 +61,16 @@ subprojects {
     project.plugins.whenPluginAdded { plugin ->
         if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name)
                 || "com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
+
+            // enable or disable pre-dexing
             project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
 
             // treat all Android Lint warning in all sub-projects as errors
             project.android.lintOptions.warningsAsErrors = true
+
+            // StorIO should support Java 6
+            project.android.compileOptions.sourceCompatibility = JavaVersion.VERSION_1_6
+            project.android.compileOptions.targetCompatibility = JavaVersion.VERSION_1_6
         }
     }
 

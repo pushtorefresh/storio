@@ -52,9 +52,9 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
         try {
             if (cursor == null) {
-                return new ArrayList<>(0);
+                return new ArrayList<T>(0);
             } else {
-                final List<T> list = new ArrayList<>(cursor.getCount());
+                final List<T> list = new ArrayList<T>(cursor.getCount());
 
                 while (cursor.moveToNext()) {
                     list.add(mapFunc.map(cursor));
@@ -148,7 +148,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         @NonNull
         public MapFuncBuilder<T> withQuery(@NonNull Query query) {
             this.query = query;
-            return new MapFuncBuilder<>(this);
+            return new MapFuncBuilder<T>(this);
         }
 
         /**
@@ -213,7 +213,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         @NonNull
         public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
             this.mapFunc = mapFunc;
-            return new CompleteBuilder<>(this);
+            return new CompleteBuilder<T>(this);
         }
     }
 
@@ -273,7 +273,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
                 getResolver = DefaultGetResolver.INSTANCE;
             }
 
-            return new PreparedGetListOfObjects<>(
+            return new PreparedGetListOfObjects<T>(
                     storIOContentResolver,
                     getResolver,
                     mapFunc,

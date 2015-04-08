@@ -46,7 +46,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          */
         @NonNull
         public <T> PreparedPutObject.Builder<T> object(@NonNull T object) {
-            return new PreparedPutObject.Builder<>(storIOContentResolver, object);
+            return new PreparedPutObject.Builder<T>(storIOContentResolver, object);
         }
 
         /**
@@ -58,7 +58,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          */
         @NonNull
         public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
-            return new PreparedPutObjects.Builder<>(storIOContentResolver, objects);
+            return new PreparedPutObjects.Builder<T>(storIOContentResolver, objects);
         }
 
         /**

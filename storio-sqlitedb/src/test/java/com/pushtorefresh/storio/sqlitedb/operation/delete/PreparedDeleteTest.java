@@ -122,8 +122,8 @@ public class PreparedDeleteTest {
         DeleteMultipleStub(boolean useTransaction) {
             this.useTransaction = useTransaction;
 
-            users = new ArrayList<>(NUMBER_OF_ITEMS_TO_DELETE);
-            deleteQueries = new ArrayList<>(NUMBER_OF_ITEMS_TO_DELETE);
+            users = new ArrayList<User>(NUMBER_OF_ITEMS_TO_DELETE);
+            deleteQueries = new ArrayList<DeleteQuery>(NUMBER_OF_ITEMS_TO_DELETE);
 
             for (int i = 0; i < NUMBER_OF_ITEMS_TO_DELETE; i++) {
                 final User user = new User((long) i, String.valueOf(i));

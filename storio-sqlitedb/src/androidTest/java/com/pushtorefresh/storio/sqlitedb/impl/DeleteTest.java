@@ -33,7 +33,7 @@ public class DeleteTest extends BaseTest {
     @Test public void deleteCollection() {
         final List<User> allUsers = putUsers(10);
 
-        final List<User> usersToDelete = new ArrayList<>();
+        final List<User> usersToDelete = new ArrayList<User>();
         for (int i = 0; i < allUsers.size(); i += 2) {  // I will delete every second
             usersToDelete.add(allUsers.get(i));
         }

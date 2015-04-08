@@ -127,7 +127,7 @@ public class RawQuery {
         @NonNull
         public Builder affectedTables(@NonNull String... tables) {
             if (this.tables == null) {
-                this.tables = new HashSet<>(tables.length);
+                this.tables = new HashSet<String>(tables.length);
             }
 
             Collections.addAll(this.tables, tables);

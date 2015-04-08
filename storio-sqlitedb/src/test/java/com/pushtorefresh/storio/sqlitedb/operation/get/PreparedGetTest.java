@@ -70,7 +70,7 @@ public class PreparedGetTest {
             mapFunc = (MapFunc<Cursor, TestItem>) mock(MapFunc.class);
             cursor = mock(Cursor.class);
 
-            testItems = new ArrayList<>();
+            testItems = new ArrayList<TestItem>();
             testItems.add(new TestItem());
             testItems.add(new TestItem());
             testItems.add(new TestItem());

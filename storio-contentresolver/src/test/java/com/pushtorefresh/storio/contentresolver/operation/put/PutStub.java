@@ -64,8 +64,8 @@ class PutStub {
     private PutStub(@NonNull TypeOfItems typeOfItems, int numberOfTestItems) {
         this.typeOfItems = typeOfItems;
 
-        testItems = new ArrayList<>(numberOfTestItems);
-        testItemsToContentValuesMap = new HashMap<>(numberOfTestItems);
+        testItems = new ArrayList<TestItem>(numberOfTestItems);
+        testItemsToContentValuesMap = new HashMap<TestItem, ContentValues>(numberOfTestItems);
 
         for (int i = 0; i < numberOfTestItems; i++) {
             final TestItem testItem = TestItem.newInstance();
@@ -139,7 +139,7 @@ class PutStub {
     }
 
     void verifyBehaviorForOneObject(@NonNull PutResult putResult) {
-        Map<TestItem, PutResult> putResultsMap = new HashMap<>(1);
+        Map<TestItem, PutResult> putResultsMap = new HashMap<TestItem, PutResult>(1);
         putResultsMap.put(testItems.get(0), putResult);
         verifyBehaviorForMultipleObjects(PutResults.newInstance(putResultsMap));
     }
@@ -191,7 +191,7 @@ class PutStub {
     }
 
     void verifyBehaviorForOneContentValues(@NonNull PutResult putResult) {
-        Map<ContentValues, PutResult> putResultsMap = new HashMap<>(1);
+        Map<ContentValues, PutResult> putResultsMap = new HashMap<ContentValues, PutResult>(1);
         putResultsMap.put(mapFunc.map(testItems.get(0)), putResult);
         verifyBehaviorForMultipleContentValues(PutResults.newInstance(putResultsMap));
     }

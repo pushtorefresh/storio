@@ -33,7 +33,7 @@ public class DeleteResults<T> {
      */
     @NonNull
     public static <T> DeleteResults<T> newInstance(@NonNull Map<T, DeleteResult> results) {
-        return new DeleteResults<>(results);
+        return new DeleteResults<T>(results);
     }
 
     /**
