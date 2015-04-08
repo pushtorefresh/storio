@@ -1,8 +1,7 @@
-package com.pushtorefresh.storio.sample.db.entity;
+package com.pushtorefresh.storio.sqlite.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -10,32 +9,36 @@ import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.operation.put.DefaultPutResolver;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResult;
-import com.pushtorefresh.storio.sqlite.query.Query;
+import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 
 /**
- * Just for demonstration, real Tweet structure is much more complex
+ * Test class with custom internal id field name.
  */
 public class Tweet {
 
     public static final String TABLE = "tweets";
 
-    public static final String COLUMN_ID = BaseColumns._ID;
+    // Custom internal id field name, that used instead of "_id".
+    public static final String COLUMN_ID = "tweet_internal_id";
 
-    /**
-     * For example: "artem_zin" without "@"
-     */
-    public static final String COLUMN_AUTHOR = "author";
-
-    /**
-     * For example: "Check out StorIO — modern API for SQLiteDatabase & ContentResolver #androiddev"
-     */
+    public static final String COLUMN_AUTHOR_ID = "author_id";
     public static final String COLUMN_CONTENT = "content";
+
+    public static final String CREATE_TABLE = "CREATE TABLE " + TABLE + "(" +
+            COLUMN_ID + " INTEGER PRIMARY KEY, " +
+            COLUMN_AUTHOR_ID + " INTEGER NOT NULL, " +
+            COLUMN_CONTENT + " TEXT NOT NULL" +
+            ");";
+
+    public static final DeleteQuery DELETE_ALL = new DeleteQuery.Builder()
+            .table(TABLE)
+            .build();
 
     public static final MapFunc<Cursor, Tweet> MAP_FROM_CURSOR = new MapFunc<Cursor, Tweet>() {
         @Override public Tweet map(Cursor cursor) {
             return new Tweet(
                     cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-                    cursor.getString(cursor.getColumnIndex(COLUMN_AUTHOR)),
+                    cursor.getLong(cursor.getColumnIndex(COLUMN_AUTHOR_ID)),
                     cursor.getString(cursor.getColumnIndex(COLUMN_CONTENT))
             );
         }
@@ -43,19 +46,15 @@ public class Tweet {
 
     public static final MapFunc<Tweet, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<Tweet, ContentValues>() {
         @Override public ContentValues map(Tweet tweet) {
-            final ContentValues contentValues = new ContentValues(3); // wow, such optimization
+            final ContentValues contentValues = new ContentValues(3);
 
             contentValues.put(COLUMN_ID, tweet.id);
-            contentValues.put(COLUMN_AUTHOR, tweet.author);
+            contentValues.put(COLUMN_AUTHOR_ID, tweet.authorId);
             contentValues.put(COLUMN_CONTENT, tweet.content);
 
             return contentValues;
         }
     };
-
-    public static final Query GET_ALL_QUERY = new Query.Builder()
-            .table(TABLE)
-            .build();
 
     public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<Tweet>() {
         @NonNull @Override protected String getTable() {
@@ -67,35 +66,52 @@ public class Tweet {
                 object.id = putResult.insertedId();
             }
         }
+
+        @NonNull
+        @Override
+        protected String getIdColumnName() {
+            return COLUMN_ID;   //  Specific internal id field name.
+        }
     };
 
-    // if object was not inserted into db, id will be null
     @Nullable private volatile Long id;
-
-    @NonNull private final String author;
+    @NonNull private final Long authorId;
     @NonNull private final String content;
 
-    private Tweet(Long id, @NonNull String author, @NonNull String content) {
+    public Tweet(@Nullable Long id, @NonNull Long authorId, @NonNull String content) {
         this.id = id;
-        this.author = author;
+        this.authorId = authorId;
         this.content = content;
-    }
-
-    @NonNull public static Tweet newTweet(@NonNull String author, @NonNull String content) {
-        return new Tweet(null, author, content);
     }
 
     @Nullable public Long getId() {
         return id;
     }
 
-    @NonNull public String getAuthor() {
-        return author;
+    @NonNull public Long getAuthorId() {
+        return authorId;
     }
 
     @NonNull public String getContent() {
         return content;
     }
 
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Tweet tweet = (Tweet) o;
+
+        if (id != null ? !id.equals(tweet.id) : tweet.id != null) return false;
+        if (!authorId.equals(tweet.authorId)) return false;
+        return content.equals(tweet.content);
+
+    }
+
+    @Override public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + authorId.hashCode();
+        result = 31 * result + content.hashCode();
+        return result;
+    }
 }

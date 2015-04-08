@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.test_without_rxjava.sqlite;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.pushtorefresh.storio.sqlitedb.impl.DefaultStorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLiteDb;
 
 import org.junit.Test;
 

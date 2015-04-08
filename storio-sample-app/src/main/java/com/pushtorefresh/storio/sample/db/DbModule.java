@@ -5,8 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.Logger;
-import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
-import com.pushtorefresh.storio.sqlitedb.impl.DefaultStorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLiteDb;
 
 import javax.inject.Singleton;
 
