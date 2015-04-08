@@ -23,9 +23,6 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-
-        // Dagger 2 is published to Sonatype SNAPSHOT maven repo
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 }
 
@@ -40,8 +37,8 @@ ext {
     supportAnnotations = 'com.android.support:support-annotations:21.0.3'
     rxJava = 'io.reactivex:rxjava:1.0.8'
 
-    dagger = 'com.google.dagger:dagger:2.0-SNAPSHOT'
-    daggerCompiler = 'com.google.dagger:dagger-compiler:2.0-SNAPSHOT'
+    dagger = 'com.google.dagger:dagger:2.0'
+    daggerCompiler = 'com.google.dagger:dagger-compiler:2.0'
 
     javaxInject = 'javax.inject:javax.inject:1'
     javaxAnnotationApi = 'javax.annotation:javax.annotation-api:1.2'

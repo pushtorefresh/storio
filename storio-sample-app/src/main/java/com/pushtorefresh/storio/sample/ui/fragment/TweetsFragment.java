@@ -48,7 +48,7 @@ public class TweetsFragment extends BaseFragment {
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SampleApp.get(getActivity()).getDependencyGraph().inject(this);
+        SampleApp.get(getActivity()).getAppComponent().inject(this);
         tweetsAdapter = new TweetsAdapter();
     }
 

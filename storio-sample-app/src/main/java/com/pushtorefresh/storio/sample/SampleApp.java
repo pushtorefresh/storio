@@ -10,12 +10,14 @@ import timber.log.Timber;
 
 public class SampleApp extends Application {
 
-    @NonNull private DependencyGraph dependencyGraph;
+    @NonNull
+    private AppComponent appComponent;
 
-    @Override public void onCreate() {
+    @Override
+    public void onCreate() {
         super.onCreate();
 
-        dependencyGraph = Dagger_DependencyGraph
+        appComponent = DaggerAppComponent
                 .builder()
                 .appModule(new AppModule(this))
                 .dbModule(new DbModule())
@@ -24,11 +26,13 @@ public class SampleApp extends Application {
         Timber.plant(new Timber.DebugTree());
     }
 
-    @NonNull public static SampleApp get(@NonNull Context context) {
+    @NonNull
+    public static SampleApp get(@NonNull Context context) {
         return (SampleApp) context.getApplicationContext();
     }
 
-    @NonNull public DependencyGraph getDependencyGraph() {
-        return dependencyGraph;
+    @NonNull
+    public AppComponent getAppComponent() {
+        return appComponent;
     }
 }
