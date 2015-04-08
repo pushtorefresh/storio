@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
@@ -23,8 +23,8 @@ import rx.functions.Func1;
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
- * Represents an Operation for {@link StorIOSQLiteDb} which performs query that retrieves data as list of objects
- * from {@link StorIOSQLiteDb}
+ * Represents an Operation for {@link StorIOSQLite} which performs query that retrieves data as list of objects
+ * from {@link StorIOSQLite}
  *
  * @param <T> type of result
  */
@@ -33,12 +33,12 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @NonNull
     private final MapFunc<Cursor, T> mapFunc;
 
-    PreparedGetListOfObjects(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Query query, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
+    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Query query, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
         super(storIOSQLiteDb, query, getResolver);
         this.mapFunc = mapFunc;
     }
 
-    PreparedGetListOfObjects(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
+    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
         super(storIOSQLiteDb, rawQuery, getResolver);
         this.mapFunc = mapFunc;
     }
@@ -143,7 +143,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     public static class Builder<T> {
 
         @NonNull
-        private final StorIOSQLiteDb storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLiteDb;
 
         @NonNull
         private final Class<T> type; // currently type not used as object, only for generic Builder class
@@ -153,7 +153,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         private RawQuery rawQuery;
         private GetResolver getResolver;
 
-        Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Class<T> type) {
+        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Class<T> type) {
             this.storIOSQLiteDb = storIOSQLiteDb;
             this.type = type;
         }

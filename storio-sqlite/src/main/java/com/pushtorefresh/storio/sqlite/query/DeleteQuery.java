@@ -10,7 +10,7 @@ import java.util.List;
 import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
 
 /**
- * Delete query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLiteDb}
+ * Delete query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
  * <p/>
  * Instances of this class are Immutable
  */

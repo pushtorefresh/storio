@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.InsertQuery;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 import com.pushtorefresh.storio.operation.MapFunc;
@@ -76,8 +76,8 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void insert() {
-        final StorIOSQLiteDb storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-        final StorIOSQLiteDb.Internal internal = mock(StorIOSQLiteDb.Internal.class);
+        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
         when(storIOSQLiteDb.internal())
                 .thenReturn(internal);
@@ -139,8 +139,8 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void update() {
-        final StorIOSQLiteDb storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-        final StorIOSQLiteDb.Internal internal = mock(StorIOSQLiteDb.Internal.class);
+        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
         when(storIOSQLiteDb.internal())
                 .thenReturn(internal);
@@ -202,8 +202,8 @@ public class DefaultPutResolverTest {
      */
     @Test
     public void insertAfterFailedUpdate() {
-        final StorIOSQLiteDb storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-        final StorIOSQLiteDb.Internal internal = mock(StorIOSQLiteDb.Internal.class);
+        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
         when(storIOSQLiteDb.internal())
                 .thenReturn(internal);

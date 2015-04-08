@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
 import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.SampleApp;
@@ -37,7 +37,7 @@ import rx.schedulers.Schedulers;
 public class TweetsFragment extends BaseFragment {
 
     @Inject
-    StorIOSQLiteDb storIOSQLiteDb;
+    StorIOSQLite storIOSQLiteDb;
 
     UiStateController uiStateController;
 

@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
@@ -16,7 +16,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
 
     @NonNull private final ContentValues contentValues;
 
-    PreparedPutContentValues(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
+    PreparedPutContentValues(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
         super(storIOSQLiteDb, putResolver);
         this.contentValues = contentValues;
     }
@@ -52,12 +52,12 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLiteDb;
         @NonNull private final ContentValues contentValues;
 
         private PutResolver<ContentValues> putResolver;
 
-        Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull ContentValues contentValues) {
+        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull ContentValues contentValues) {
             this.storIOSQLiteDb = storIOSQLiteDb;
             this.contentValues = contentValues;
         }

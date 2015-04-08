@@ -1,7 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operation.exec_sql;
 
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 
 import org.junit.Test;
@@ -16,13 +16,13 @@ public class PreparedExecSqlTest {
 
     static class Stub {
 
-        private final StorIOSQLiteDb storIOSQLiteDb;
-        private final StorIOSQLiteDb.Internal internal;
+        private final StorIOSQLite storIOSQLiteDb;
+        private final StorIOSQLite.Internal internal;
         private final RawQuery rawQuery;
 
         Stub() {
-            storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-            internal = mock(StorIOSQLiteDb.Internal.class);
+            storIOSQLiteDb = mock(StorIOSQLite.class);
+            internal = mock(StorIOSQLite.Internal.class);
             rawQuery = new RawQuery.Builder().query("DROP TABLE users").build();
 
             when(storIOSQLiteDb.internal())

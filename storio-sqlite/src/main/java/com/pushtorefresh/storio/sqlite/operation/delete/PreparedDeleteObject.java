@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
@@ -18,14 +18,14 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     @NonNull private final T object;
     @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
 
-    PreparedDeleteObject(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull T object, @NonNull MapFunc<T, DeleteQuery> mapFunc, @NonNull DeleteResolver deleteResolver) {
+    PreparedDeleteObject(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull T object, @NonNull MapFunc<T, DeleteQuery> mapFunc, @NonNull DeleteResolver deleteResolver) {
         super(storIOSQLiteDb, deleteResolver);
         this.object = object;
         this.mapFunc = mapFunc;
     }
 
     @NonNull @Override public DeleteResult executeAsBlocking() {
-        final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
+        final StorIOSQLite.Internal internal = storIOSQLiteDb.internal();
         final DeleteQuery deleteQuery = mapFunc.map(object);
 
         final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLiteDb, deleteQuery);
@@ -59,13 +59,13 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
      */
     public static class Builder<T> {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLiteDb;
         @NonNull private final T object;
 
         private MapFunc<T, DeleteQuery> mapFunc;
         private DeleteResolver deleteResolver;
 
-        Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull T object) {
+        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull T object) {
             this.storIOSQLiteDb = storIOSQLiteDb;
             this.object = object;
         }

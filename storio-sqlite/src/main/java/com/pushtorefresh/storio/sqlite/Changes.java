@@ -8,7 +8,7 @@ import java.util.Set;
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
- * Immutable container of information about one or more changes in {@link StorIOSQLiteDb}
+ * Immutable container of information about one or more changes in {@link StorIOSQLite}
  */
 public class Changes {
 

@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResult;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResult;
@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertTrue;
 public abstract class BaseTest {
 
     @NonNull
-    protected StorIOSQLiteDb storIOSQLiteDb;
+    protected StorIOSQLite storIOSQLiteDb;
 
     @NonNull
     protected SQLiteDatabase db;
@@ -32,7 +32,7 @@ public abstract class BaseTest {
         db = new TestSQLiteOpenHelper(InstrumentationRegistry.getContext())
                 .getWritableDatabase();
 
-        storIOSQLiteDb = new DefaultStorIOSQLiteDb.Builder()
+        storIOSQLiteDb = new DefaultStorIOSQLite.Builder()
                 .db(db)
                 .build();
 

@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 
 import android.database.Cursor;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 import com.pushtorefresh.storio.operation.MapFunc;
@@ -53,7 +53,7 @@ public class PreparedGetTest {
     }
 
     private static class GetStub {
-        final StorIOSQLiteDb storIOSQLiteDb;
+        final StorIOSQLite storIOSQLiteDb;
         final Query query;
         final RawQuery rawQuery;
         final GetResolver getResolver;
@@ -63,7 +63,7 @@ public class PreparedGetTest {
 
         @SuppressWarnings("unchecked")
         GetStub() {
-            storIOSQLiteDb = mock(StorIOSQLiteDb.class);
+            storIOSQLiteDb = mock(StorIOSQLite.class);
             query = mock(Query.class);
             rawQuery = mock(RawQuery.class);
             getResolver = mock(GetResolver.class);

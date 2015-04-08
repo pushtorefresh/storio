@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 
 import android.database.Cursor;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 
@@ -19,8 +19,8 @@ public class DefaultGetResolverTest {
 
     @Test
     public void rawQuery() {
-        final StorIOSQLiteDb storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-        final StorIOSQLiteDb.Internal internal = mock(StorIOSQLiteDb.Internal.class);
+        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
         final RawQuery rawQuery = mock(RawQuery.class);
         final Cursor expectedCursor = mock(Cursor.class);
 
@@ -45,8 +45,8 @@ public class DefaultGetResolverTest {
 
     @Test
     public void query() {
-        final StorIOSQLiteDb storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-        final StorIOSQLiteDb.Internal internal = mock(StorIOSQLiteDb.Internal.class);
+        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
         final Query query = mock(Query.class);
         final Cursor expectedCursor = mock(Cursor.class);
 

@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 import com.pushtorefresh.storio.sqlite.query.InsertQuery;
 import com.pushtorefresh.storio.sqlite.query.Query;
@@ -26,11 +26,11 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 import static com.pushtorefresh.storio.util.EnvironmentUtil.newRxJavaIsNotAvailableException;
 
 /**
- * Default implementation of {@link StorIOSQLiteDb} for {@link SQLiteDatabase}
+ * Default implementation of {@link StorIOSQLite} for {@link SQLiteDatabase}
  * <p>
  * Thread safe
  */
-public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
+public class DefaultStorIOSQLite extends StorIOSQLite {
 
     /**
      * Real db
@@ -48,12 +48,12 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
             : null;
 
     /**
-     * Implementation of {@link StorIOSQLiteDb.Internal}
+     * Implementation of {@link StorIOSQLite.Internal}
      */
     @NonNull
     private final Internal internal = new InternalImpl();
 
-    protected DefaultStorIOSQLiteDb(@NonNull SQLiteDatabase db) {
+    protected DefaultStorIOSQLite(@NonNull SQLiteDatabase db) {
         this.db = db;
     }
 
@@ -203,7 +203,7 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
     }
 
     /**
-     * Builder for {@link DefaultStorIOSQLiteDb}
+     * Builder for {@link DefaultStorIOSQLite}
      */
     public static class Builder {
 
@@ -238,15 +238,15 @@ public class DefaultStorIOSQLiteDb extends StorIOSQLiteDb {
         }
 
         /**
-         * Builds {@link DefaultStorIOSQLiteDb} instance with required params
+         * Builds {@link DefaultStorIOSQLite} instance with required params
          *
-         * @return new {@link DefaultStorIOSQLiteDb} instance
+         * @return new {@link DefaultStorIOSQLite} instance
          */
         @NonNull
-        public DefaultStorIOSQLiteDb build() {
+        public DefaultStorIOSQLite build() {
             checkNotNull(db, "Please specify SQLiteDatabase instance");
 
-            return new DefaultStorIOSQLiteDb(db);
+            return new DefaultStorIOSQLite(db);
         }
     }
 }

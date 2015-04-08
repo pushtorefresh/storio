@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.operation.exec_sql;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.operation.PreparedOperation;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
@@ -14,10 +14,10 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedExecSql implements PreparedOperation<Void> {
 
-    @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
+    @NonNull private final StorIOSQLite storIOSQLiteDb;
     @NonNull private final RawQuery rawQuery;
 
-    PreparedExecSql(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull RawQuery rawQuery) {
+    PreparedExecSql(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery) {
         this.storIOSQLiteDb = storIOSQLiteDb;
         this.rawQuery = rawQuery;
     }
@@ -47,11 +47,11 @@ public class PreparedExecSql implements PreparedOperation<Void> {
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLiteDb;
 
         private RawQuery rawQuery;
 
-        public Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb) {
+        public Builder(@NonNull StorIOSQLite storIOSQLiteDb) {
             this.storIOSQLiteDb = storIOSQLiteDb;
         }
 

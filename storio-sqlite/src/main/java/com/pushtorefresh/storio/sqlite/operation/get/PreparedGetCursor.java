@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.sqlite.query.Query;
@@ -19,11 +19,11 @@ import rx.functions.Func1;
 
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
-    PreparedGetCursor(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Query query, @NonNull GetResolver getResolver) {
+    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Query query, @NonNull GetResolver getResolver) {
         super(storIOSQLiteDb, query, getResolver);
     }
 
-    PreparedGetCursor(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
+    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
         super(storIOSQLiteDb, rawQuery, getResolver);
     }
 
@@ -102,13 +102,13 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     public static class Builder implements CommonBuilder<Builder> {
 
         @NonNull
-        private final StorIOSQLiteDb storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLiteDb;
 
         private Query query;
         private RawQuery rawQuery;
         private GetResolver getResolver;
 
-        Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb) {
+        Builder(@NonNull StorIOSQLite storIOSQLiteDb) {
             this.storIOSQLiteDb = storIOSQLiteDb;
         }
 

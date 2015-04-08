@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.sqlite.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 
@@ -10,10 +10,10 @@ import java.util.Collection;
 
 public abstract class PreparedDelete<T> implements PreparedOperation<T> {
 
-    @NonNull protected final StorIOSQLiteDb storIOSQLiteDb;
+    @NonNull protected final StorIOSQLite storIOSQLiteDb;
     @NonNull protected final DeleteResolver deleteResolver;
 
-    PreparedDelete(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull DeleteResolver deleteResolver) {
+    PreparedDelete(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull DeleteResolver deleteResolver) {
         this.storIOSQLiteDb = storIOSQLiteDb;
         this.deleteResolver = deleteResolver;
     }
@@ -23,9 +23,9 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLiteDb;
 
-        public Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb) {
+        public Builder(@NonNull StorIOSQLite storIOSQLiteDb) {
             this.storIOSQLiteDb = storIOSQLiteDb;
         }
 

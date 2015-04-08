@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import java.util.ArrayList;
@@ -26,8 +26,8 @@ import static org.mockito.Mockito.when;
 // stub class to avoid violation of DRY in tests
 class PutStub {
     final List<TestItem> testItems;
-    final StorIOSQLiteDb storIOSQLiteDb;
-    final StorIOSQLiteDb.Internal internal;
+    final StorIOSQLite storIOSQLiteDb;
+    final StorIOSQLite.Internal internal;
     final MapFunc<TestItem, ContentValues> mapFunc;
     final PutResolver<TestItem> putResolver;
     final boolean useTransaction;
@@ -57,8 +57,8 @@ class PutStub {
             testItems.add(TestItem.newInstance());
         }
 
-        storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-        internal = mock(StorIOSQLiteDb.Internal.class);
+        storIOSQLiteDb = mock(StorIOSQLite.class);
+        internal = mock(StorIOSQLite.Internal.class);
 
         when(internal.transactionsSupported())
                 .thenReturn(useTransaction);

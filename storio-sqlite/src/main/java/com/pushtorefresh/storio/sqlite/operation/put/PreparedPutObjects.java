@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     @NonNull private final MapFunc<T, ContentValues> mapFunc;
     private final boolean useTransactionIfPossible;
 
-    PreparedPutObjects(@NonNull StorIOSQLiteDb storIOSQLiteDb,
+    PreparedPutObjects(@NonNull StorIOSQLite storIOSQLiteDb,
                        @NonNull PutResolver<T> putResolver,
                        @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc,
                        boolean useTransactionIfPossible) {
@@ -35,7 +35,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     }
 
     @NonNull @Override public PutResults<T> executeAsBlocking() {
-        final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
+        final StorIOSQLite.Internal internal = storIOSQLiteDb.internal();
         final Map<T, PutResult> putResults = new HashMap<T, PutResult>();
 
         final boolean withTransaction = useTransactionIfPossible
@@ -108,14 +108,14 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
      */
     public static class Builder<T> {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLiteDb;
         @NonNull private final Iterable<T> objects;
 
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
         private boolean useTransactionIfPossible = true;
 
-        Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Iterable<T> objects) {
+        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Iterable<T> objects) {
             this.storIOSQLiteDb = storIOSQLiteDb;
             this.objects = objects;
         }
@@ -146,7 +146,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         }
 
         /**
-         * Optional: Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIOSQLiteDb}
+         * Optional: Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIOSQLite}
          * <p>
          * By default, transaction will be used
          *

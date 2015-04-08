@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
@@ -20,7 +20,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     @NonNull
     private final MapFunc<T, ContentValues> mapFunc;
 
-    PreparedPutObject(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull PutResolver<T> putResolver,
+    PreparedPutObject(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull PutResolver<T> putResolver,
                       @NonNull T object, @NonNull MapFunc<T, ContentValues> mapFunc) {
         super(storIOSQLiteDb, putResolver);
         this.object = object;
@@ -62,14 +62,14 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     public static class Builder<T> {
 
         @NonNull
-        private final StorIOSQLiteDb storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLiteDb;
         @NonNull
         private final T object;
 
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
 
-        Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull T object) {
+        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull T object) {
             this.storIOSQLiteDb = storIOSQLiteDb;
             this.object = object;
         }

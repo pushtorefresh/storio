@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.operation.delete;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
@@ -14,13 +14,13 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     @NonNull private final DeleteQuery deleteQuery;
 
-    PreparedDeleteByQuery(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull DeleteQuery deleteQuery, @NonNull DeleteResolver deleteResolver) {
+    PreparedDeleteByQuery(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull DeleteQuery deleteQuery, @NonNull DeleteResolver deleteResolver) {
         super(storIOSQLiteDb, deleteResolver);
         this.deleteQuery = deleteQuery;
     }
 
     @NonNull @Override public DeleteResult executeAsBlocking() {
-        final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
+        final StorIOSQLite.Internal internal = storIOSQLiteDb.internal();
 
         final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLiteDb, deleteQuery);
         internal.notifyAboutChanges(Changes.newInstance(deleteQuery.table));
@@ -48,12 +48,12 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLiteDb;
         @NonNull private final DeleteQuery deleteQuery;
 
         private DeleteResolver deleteResolver;
 
-        Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull DeleteQuery deleteQuery) {
+        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull DeleteQuery deleteQuery) {
             this.storIOSQLiteDb = storIOSQLiteDb;
             this.deleteQuery = deleteQuery;
         }

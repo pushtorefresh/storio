@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.sqlite.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 
 /**
@@ -14,7 +14,7 @@ public class DefaultDeleteResolver implements DeleteResolver {
     static final DefaultDeleteResolver INSTANCE = new DefaultDeleteResolver();
 
     @Override
-    public int performDelete(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull DeleteQuery deleteQuery) {
+    public int performDelete(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull DeleteQuery deleteQuery) {
         return storIOSQLiteDb.internal().delete(deleteQuery);
     }
 }

@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     private final boolean useTransactionIfPossible;
 
     PreparedPutIterableContentValues(
-            @NonNull StorIOSQLiteDb storIOSQLiteDb,
+            @NonNull StorIOSQLite storIOSQLiteDb,
             @NonNull PutResolver<ContentValues> putResolver,
             @NonNull Iterable<ContentValues> contentValuesIterable, boolean useTransactionIfPossible) {
 
@@ -37,7 +37,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     @NonNull
     @Override
     public PutResults<ContentValues> executeAsBlocking() {
-        final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
+        final StorIOSQLite.Internal internal = storIOSQLiteDb.internal();
 
         final Map<ContentValues, PutResult> putResults = new HashMap<ContentValues, PutResult>();
 
@@ -109,14 +109,14 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     public static class Builder {
 
         @NonNull
-        private final StorIOSQLiteDb storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLiteDb;
         @NonNull
         private final Iterable<ContentValues> contentValuesIterable;
 
         private PutResolver<ContentValues> putResolver;
         private boolean useTransactionIfPossible = true;
 
-        Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Iterable<ContentValues> contentValuesIterable) {
+        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Iterable<ContentValues> contentValuesIterable) {
             this.storIOSQLiteDb = storIOSQLiteDb;
             this.contentValuesIterable = contentValuesIterable;
         }
@@ -137,7 +137,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
 
         /**
          * Optional: Defines that Put Operation will use transaction
-         * if it is supported by implementation of {@link StorIOSQLiteDb}
+         * if it is supported by implementation of {@link StorIOSQLite}
          * <p>
          * By default, transaction will be used
          *

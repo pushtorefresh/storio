@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
 
 /**
- * Insert query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLiteDb}
+ * Insert query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
  * <p/>
  * Instances of this class are Immutable
  */

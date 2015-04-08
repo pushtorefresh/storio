@@ -1,7 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operation.delete;
 
 import com.pushtorefresh.storio.Loggi;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
@@ -25,16 +25,16 @@ public class PreparedDeleteTest {
     // stub class to avoid violation of DRY in "deleteOne" tests
     private static class DeleteOneStub {
         final User user;
-        final StorIOSQLiteDb storIOSQLiteDb;
-        final StorIOSQLiteDb.Internal internal;
+        final StorIOSQLite storIOSQLiteDb;
+        final StorIOSQLite.Internal internal;
         final MapFunc<User, DeleteQuery> mapFunc;
         final DeleteResolver deleteResolver;
 
         @SuppressWarnings("unchecked")
         DeleteOneStub() {
             user = new User(null, "test@example.com");
-            storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-            internal = mock(StorIOSQLiteDb.Internal.class);
+            storIOSQLiteDb = mock(StorIOSQLite.class);
+            internal = mock(StorIOSQLite.Internal.class);
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
             deleteResolver = mock(DeleteResolver.class);
 
@@ -106,8 +106,8 @@ public class PreparedDeleteTest {
 
     // stub class to avoid violation of DRY in "deleteMultiple" tests
     private static class DeleteMultipleStub {
-        final StorIOSQLiteDb storIOSQLiteDb;
-        final StorIOSQLiteDb.Internal internal;
+        final StorIOSQLite storIOSQLiteDb;
+        final StorIOSQLite.Internal internal;
         final MapFunc<User, DeleteQuery> mapFunc;
         final boolean useTransaction;
         final DeleteResolver deleteResolver;
@@ -131,8 +131,8 @@ public class PreparedDeleteTest {
                 deleteQueries.add(User.MAP_TO_DELETE_QUERY.map(user));
             }
 
-            storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-            internal = mock(StorIOSQLiteDb.Internal.class);
+            storIOSQLiteDb = mock(StorIOSQLite.class);
+            internal = mock(StorIOSQLite.Internal.class);
             mapFunc = (MapFunc<User, DeleteQuery>) mock(MapFunc.class);
             deleteResolver = mock(DeleteResolver.class);
 

@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
@@ -11,7 +11,7 @@ import com.pushtorefresh.storio.sqlite.query.RawQuery;
 public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStream<T> {
 
     @NonNull
-    protected final StorIOSQLiteDb storIOSQLiteDb;
+    protected final StorIOSQLite storIOSQLiteDb;
 
     @Nullable
     protected final Query query;
@@ -22,14 +22,14 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
     @NonNull
     protected final GetResolver getResolver;
 
-    PreparedGet(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Query query, @NonNull GetResolver getResolver) {
+    PreparedGet(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Query query, @NonNull GetResolver getResolver) {
         this.storIOSQLiteDb = storIOSQLiteDb;
         this.query = query;
         this.getResolver = getResolver;
         this.rawQuery = null;
     }
 
-    PreparedGet(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
+    PreparedGet(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
         this.storIOSQLiteDb = storIOSQLiteDb;
         this.rawQuery = rawQuery;
         this.getResolver = getResolver;
@@ -39,9 +39,9 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
     public static class Builder {
 
         @NonNull
-        private final StorIOSQLiteDb storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLiteDb;
 
-        public Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb) {
+        public Builder(@NonNull StorIOSQLite storIOSQLiteDb) {
             this.storIOSQLiteDb = storIOSQLiteDb;
         }
 

@@ -13,7 +13,7 @@ import java.util.Set;
 import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
 
 /**
- * Get query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLiteDb}
+ * Get query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
  * <p/>
  * Instances of this class are Immutable
  */

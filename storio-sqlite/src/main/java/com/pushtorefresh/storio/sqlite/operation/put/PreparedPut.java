@@ -3,26 +3,26 @@ package com.pushtorefresh.storio.sqlite.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.operation.PreparedOperation;
 
 import java.util.Arrays;
 
 /**
- * Represents an Operation for {@link StorIOSQLiteDb} which performs insert or update data
- * in {@link StorIOSQLiteDb}
+ * Represents an Operation for {@link StorIOSQLite} which performs insert or update data
+ * in {@link StorIOSQLite}
  *
  * @param <T> type of data you want to put
  */
 public abstract class PreparedPut<T, Result> implements PreparedOperation<Result> {
 
     @NonNull
-    protected final StorIOSQLiteDb storIOSQLiteDb;
+    protected final StorIOSQLite storIOSQLiteDb;
 
     @NonNull
     protected final PutResolver<T> putResolver;
 
-    PreparedPut(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull PutResolver<T> putResolver) {
+    PreparedPut(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull PutResolver<T> putResolver) {
         this.storIOSQLiteDb = storIOSQLiteDb;
         this.putResolver = putResolver;
     }
@@ -33,9 +33,9 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
     public static class Builder {
 
         @NonNull
-        private final StorIOSQLiteDb storIOSQLiteDb;
+        private final StorIOSQLite storIOSQLiteDb;
 
-        public Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb) {
+        public Builder(@NonNull StorIOSQLite storIOSQLiteDb) {
             this.storIOSQLiteDb = storIOSQLiteDb;
         }
 

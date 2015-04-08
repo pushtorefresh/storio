@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.InsertQuery;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
@@ -37,20 +37,20 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     }
 
     /**
-     * Performs insert or update of {@link ContentValues} into {@link StorIOSQLiteDb}
+     * Performs insert or update of {@link ContentValues} into {@link StorIOSQLite}
      * <p/>
      * By default, it will perform insert if content values does not contain {@link BaseColumns#_ID} field with non-null value
      * or update if content values contains {@link BaseColumns#_ID} field and value is not null
      * <p/>
      * But, if it will decide to perform update and no rows will be updated, it will perform insert!
      *
-     * @param storIOSQLiteDb instance of {@link StorIOSQLiteDb}
+     * @param storIOSQLiteDb instance of {@link StorIOSQLite}
      * @param contentValues  content values to put
      * @return non-null result of put operation
      */
     @Override
     @NonNull
-    public PutResult performPut(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull ContentValues contentValues) {
+    public PutResult performPut(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull ContentValues contentValues) {
         final String idColumnName = getIdColumnName();
 
         final Object idAsObject = contentValues.get(idColumnName);
@@ -66,7 +66,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     }
 
     @NonNull
-    private PutResult insert(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull ContentValues contentValues, @NonNull String table) {
+    private PutResult insert(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull ContentValues contentValues, @NonNull String table) {
         final long insertedId = storIOSQLiteDb.internal().insert(
                 new InsertQuery.Builder()
                         .table(table)
@@ -79,7 +79,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
     }
 
     @NonNull
-    private PutResult updateOrInsert(@NonNull StorIOSQLiteDb storIOSQLiteDb,
+    private PutResult updateOrInsert(@NonNull StorIOSQLite storIOSQLiteDb,
                                      @NonNull ContentValues contentValues,
                                      @NonNull String table,
                                      @NonNull String idFieldName,
@@ -101,11 +101,11 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
     /**
      * Useful callback which will be called in same thread that performed Put Operation right after
-     * execution of {@link #performPut(StorIOSQLiteDb, ContentValues)}
+     * execution of {@link #performPut(StorIOSQLite, ContentValues)}
      * <p>
      * You can, for example, set object id after insert
      *
-     * @param object    object, that was "put" in {@link StorIOSQLiteDb}
+     * @param object    object, that was "put" in {@link StorIOSQLite}
      * @param putResult result of put operation
      */
     @Override

@@ -5,8 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.Logger;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
-import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
 
 import javax.inject.Singleton;
 
@@ -19,8 +19,8 @@ public class DbModule {
     @Provides
     @NonNull
     @Singleton
-    public StorIOSQLiteDb provideStorIOSQLiteDb(@NonNull SQLiteDatabase db) {
-        return new DefaultStorIOSQLiteDb.Builder()
+    public StorIOSQLite provideStorIOSQLiteDb(@NonNull SQLiteDatabase db) {
+        return new DefaultStorIOSQLite.Builder()
                 .db(db)
                 .build()
                 .setLogListener(new Logger());

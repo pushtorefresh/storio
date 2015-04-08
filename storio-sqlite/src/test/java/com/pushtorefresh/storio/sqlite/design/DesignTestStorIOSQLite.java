@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.sqlite.operation.exec_sql.PreparedExecSql;
@@ -22,7 +22,7 @@ import rx.Observable;
 
 import static org.mockito.Mockito.mock;
 
-class DesignTestStorIOSQLiteDb extends StorIOSQLiteDb {
+class DesignTestStorIOSQLite extends StorIOSQLite {
 
     @NonNull @Override
     public Observable<Changes> observeChangesInTables(@NonNull Set<String> tables) {

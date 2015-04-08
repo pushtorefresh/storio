@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 
@@ -16,11 +16,11 @@ public class DefaultGetResolver implements GetResolver {
     static final DefaultGetResolver INSTANCE = new DefaultGetResolver();
 
     @NonNull @Override
-    public Cursor performGet(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull RawQuery rawQuery) {
+    public Cursor performGet(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull RawQuery rawQuery) {
         return storIOSQLiteDb.internal().rawQuery(rawQuery);
     }
 
-    @NonNull @Override public Cursor performGet(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Query query) {
+    @NonNull @Override public Cursor performGet(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Query query) {
         return storIOSQLiteDb.internal().query(query);
     }
 }

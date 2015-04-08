@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.sqlite.design;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,10 +11,10 @@ abstract class OperationDesignTest {
     private static final AtomicInteger COUNTER = new AtomicInteger(0);
 
     @NonNull
-    private final StorIOSQLiteDb storIOSQLiteDb = new DesignTestStorIOSQLiteDb();
+    private final StorIOSQLite storIOSQLiteDb = new DesignTestStorIOSQLite();
 
     @NonNull
-    protected StorIOSQLiteDb storIOSQLiteDb() {
+    protected StorIOSQLite storIOSQLiteDb() {
         return storIOSQLiteDb;
     }
 

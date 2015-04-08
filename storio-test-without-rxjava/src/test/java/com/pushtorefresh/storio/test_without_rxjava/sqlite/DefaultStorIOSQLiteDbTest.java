@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.test_without_rxjava.sqlite;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
 
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ public class DefaultStorIOSQLiteDbTest {
     @Test
     public void instantiateWithoutRxJava() {
         // Should not fail
-        new DefaultStorIOSQLiteDb.Builder()
+        new DefaultStorIOSQLite.Builder()
                 .db(mock(SQLiteDatabase.class))
                 .build();
     }

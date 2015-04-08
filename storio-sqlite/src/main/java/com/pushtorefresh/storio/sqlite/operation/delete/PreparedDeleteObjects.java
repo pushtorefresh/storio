@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
@@ -25,7 +25,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
     @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
     private final boolean useTransactionIfPossible;
 
-    PreparedDeleteObjects(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible, @NonNull DeleteResolver deleteResolver) {
+    PreparedDeleteObjects(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible, @NonNull DeleteResolver deleteResolver) {
         super(storIOSQLiteDb, deleteResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
@@ -33,7 +33,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
     }
 
     @NonNull @Override public DeleteResults<T> executeAsBlocking() {
-        final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
+        final StorIOSQLite.Internal internal = storIOSQLiteDb.internal();
 
         final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>();
 
@@ -110,14 +110,14 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
      */
     public static class Builder<T> {
 
-        @NonNull private final StorIOSQLiteDb storIOSQLiteDb;
+        @NonNull private final StorIOSQLite storIOSQLiteDb;
         @NonNull private final Collection<T> objects;
 
         private MapFunc<T, DeleteQuery> mapFunc;
         private boolean useTransactionIfPossible = true;
         private DeleteResolver deleteResolver;
 
-        Builder(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Collection<T> objects) {
+        Builder(@NonNull StorIOSQLite storIOSQLiteDb, @NonNull Collection<T> objects) {
             this.storIOSQLiteDb = storIOSQLiteDb;
             this.objects = objects;
         }
@@ -135,7 +135,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
         /**
          * Optional: Defines that Delete Operation will use transaction
-         * if it is supported by implementation of {@link StorIOSQLiteDb}
+         * if it is supported by implementation of {@link StorIOSQLite}
          * <p>
          * By default, transaction will be used
          *

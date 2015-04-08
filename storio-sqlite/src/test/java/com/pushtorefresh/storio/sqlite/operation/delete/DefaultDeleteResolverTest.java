@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.sqlite.operation.delete;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLiteDb;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 
 import org.junit.Test;
@@ -15,8 +15,8 @@ import static org.mockito.Mockito.when;
 public class DefaultDeleteResolverTest {
 
     @Test public void performDelete() {
-        final StorIOSQLiteDb storIOSQLiteDb = mock(StorIOSQLiteDb.class);
-        final StorIOSQLiteDb.Internal internal = mock(StorIOSQLiteDb.Internal.class);
+        final StorIOSQLite storIOSQLiteDb = mock(StorIOSQLite.class);
+        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
         final DeleteQuery deleteQuery = mock(DeleteQuery.class);
 
         when(storIOSQLiteDb.internal())
