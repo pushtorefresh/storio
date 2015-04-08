@@ -23,9 +23,6 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-
-        // Dagger 2 is published to Sonatype SNAPSHOT maven repo
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 }
 
@@ -40,8 +37,8 @@ ext {
     supportAnnotations = 'com.android.support:support-annotations:21.0.3'
     rxJava = 'io.reactivex:rxjava:1.0.8'
 
-    dagger = 'com.google.dagger:dagger:2.0-SNAPSHOT'
-    daggerCompiler = 'com.google.dagger:dagger-compiler:2.0-SNAPSHOT'
+    dagger = 'com.google.dagger:dagger:2.0'
+    daggerCompiler = 'com.google.dagger:dagger-compiler:2.0'
 
     javaxInject = 'javax.inject:javax.inject:1'
     javaxAnnotationApi = 'javax.annotation:javax.annotation-api:1.2'
@@ -64,10 +61,16 @@ subprojects {
     project.plugins.whenPluginAdded { plugin ->
         if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name)
                 || "com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
+
+            // enable or disable pre-dexing
             project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
 
             // treat all Android Lint warning in all sub-projects as errors
             project.android.lintOptions.warningsAsErrors = true
+
+            // StorIO should support Java 6
+            project.android.compileOptions.sourceCompatibility = JavaVersion.VERSION_1_6
+            project.android.compileOptions.targetCompatibility = JavaVersion.VERSION_1_6
         }
     }
 

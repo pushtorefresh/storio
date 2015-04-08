@@ -35,7 +35,7 @@ public class ChangesTest {
 
     @Test
     public void newInstanceMultipleAffectedUris() {
-        final Set<Uri> affectedUris = new HashSet<>();
+        final Set<Uri> affectedUris = new HashSet<Uri>();
         affectedUris.add(mock(Uri.class));
         affectedUris.add(mock(Uri.class));
         affectedUris.add(mock(Uri.class));

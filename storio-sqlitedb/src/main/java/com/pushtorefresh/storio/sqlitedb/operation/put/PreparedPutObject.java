@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.operation.MapFunc;
-import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.sqlitedb.Changes;
 import com.pushtorefresh.storio.sqlitedb.StorIOSQLiteDb;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
@@ -56,7 +55,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     }
 
     /**
-     * Builder for {@link PreparedOperation}
+     * Builder for {@link PreparedPutObject}
      *
      * @param <T> type of object to put
      */
@@ -108,11 +107,11 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
          * @return {@link PreparedPutObject} instance
          */
         @NonNull
-        public PreparedOperation<PutResult> prepare() {
+        public PreparedPutObject<T> prepare() {
             checkNotNull(mapFunc, "Please specify map function");
             checkNotNull(putResolver, "Please specify put resolver");
 
-            return new PreparedPutObject<>(
+            return new PreparedPutObject<T>(
                     storIOSQLiteDb,
                     putResolver,
                     object,

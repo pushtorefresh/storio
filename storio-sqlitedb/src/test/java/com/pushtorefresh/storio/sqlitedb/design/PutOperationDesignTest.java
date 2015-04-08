@@ -42,7 +42,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void putObjectsIterableBlocking() {
-        Iterable<User> users = new ArrayList<>();
+        Iterable<User> users = new ArrayList<User>();
 
         PutResults<User> putResults = storIOSQLiteDb()
                 .put()
@@ -55,7 +55,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void putObjectsIterableObservable() {
-        Iterable<User> users = new ArrayList<>();
+        Iterable<User> users = new ArrayList<User>();
 
         Observable<PutResults<User>> putResultsObservable = storIOSQLiteDb()
                 .put()

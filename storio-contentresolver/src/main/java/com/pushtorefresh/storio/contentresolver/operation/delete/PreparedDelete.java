@@ -64,7 +64,7 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
          */
         @NonNull
         public <T> PreparedDeleteObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
-            return new PreparedDeleteObjects.Builder<>(storIOContentResolver, objects);
+            return new PreparedDeleteObjects.Builder<T>(storIOContentResolver, objects);
         }
 
         /**
@@ -76,7 +76,7 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
          */
         @NonNull
         public <T> PreparedDeleteObject.Builder<T> object(@NonNull T object) {
-            return new PreparedDeleteObject.Builder<>(storIOContentResolver, object);
+            return new PreparedDeleteObject.Builder<T>(storIOContentResolver, object);
         }
     }
 }

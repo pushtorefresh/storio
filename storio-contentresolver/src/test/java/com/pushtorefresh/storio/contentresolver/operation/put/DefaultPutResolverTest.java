@@ -39,7 +39,7 @@ public class DefaultPutResolverTest {
             // but we can not mock equals() method
             // so, we will return SAME ContentValues for object and assertEquals() will pass
             @NonNull
-            private final Map<TestItem, ContentValues> map = new HashMap<>();
+            private final Map<TestItem, ContentValues> map = new HashMap<TestItem, ContentValues>();
 
             @Override
             public ContentValues map(TestItem testItem) {

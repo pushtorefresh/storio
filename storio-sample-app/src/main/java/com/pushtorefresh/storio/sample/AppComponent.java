@@ -17,7 +17,7 @@ import dagger.Component;
                 DbModule.class
         }
 )
-public interface DependencyGraph {
+public interface AppComponent {
     void inject(@NonNull TweetsFragment fragment);
     void inject(@NonNull SampleContentProvider sampleContentProvider);
 }

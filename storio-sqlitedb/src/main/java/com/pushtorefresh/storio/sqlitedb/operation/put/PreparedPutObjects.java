@@ -36,7 +36,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
     @NonNull @Override public PutResults<T> executeAsBlocking() {
         final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
-        final Map<T, PutResult> putResults = new HashMap<>();
+        final Map<T, PutResult> putResults = new HashMap<T, PutResult>();
 
         final boolean withTransaction = useTransactionIfPossible
                 && storIOSQLiteDb.internal().transactionsSupported();
@@ -71,7 +71,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
                 storIOSQLiteDb.internal().endTransaction();
 
                 if (transactionSuccessful) {
-                    final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be 1 table
+                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
 
                     for (final T object : putResults.keySet()) {
                         affectedTables.add(putResults.get(object).affectedTable());
@@ -178,7 +178,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
             checkNotNull(mapFunc, "Please specify map function");
             checkNotNull(putResolver, "Please specify put resolver");
 
-            return new PreparedPutObjects<>(
+            return new PreparedPutObjects<T>(
                     storIOSQLiteDb,
                     putResolver,
                     objects,

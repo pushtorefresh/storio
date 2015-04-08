@@ -19,7 +19,7 @@ public class TestFactory {
     }
 
     @NonNull public static List<User> newUsers(int quantity) {
-        final List<User> users = new ArrayList<>(quantity);
+        final List<User> users = new ArrayList<User>(quantity);
 
         for (int i = 0; i < quantity; i++) {
             users.add(newUser());

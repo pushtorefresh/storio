@@ -41,7 +41,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
     @NonNull
     @Override
     public DeleteResults<T> executeAsBlocking() {
-        final Map<T, DeleteResult> deleteResultsMap = new HashMap<>();
+        final Map<T, DeleteResult> deleteResultsMap = new HashMap<T, DeleteResult>();
 
         for (final T object : objects) {
             final DeleteQuery deleteQuery = mapFunc.map(object);
@@ -131,7 +131,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         @NonNull
         public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
             this.mapFunc = mapFunc;
-            return new CompleteBuilder<>(this);
+            return new CompleteBuilder<T>(this);
         }
     }
 
@@ -181,7 +181,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
             }
 
-            return new PreparedDeleteObjects<>(
+            return new PreparedDeleteObjects<T>(
                     storIOContentResolver,
                     deleteResolver,
                     objects,

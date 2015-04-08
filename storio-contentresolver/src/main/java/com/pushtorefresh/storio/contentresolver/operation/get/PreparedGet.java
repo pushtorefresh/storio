@@ -53,7 +53,7 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
          */
         @NonNull
         public <T> PreparedGetListOfObjects.Builder<T> listOfObjects(@NonNull Class<T> type) {
-            return new PreparedGetListOfObjects.Builder<>(storIOContentResolver, type);
+            return new PreparedGetListOfObjects.Builder<T>(storIOContentResolver, type);
         }
     }
 }

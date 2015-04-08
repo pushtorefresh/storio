@@ -107,7 +107,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
             checkNotNull(mapFunc, "Please specify map function");
 
-            return new PreparedDeleteObject<>(
+            return new PreparedDeleteObject<T>(
                     storIOSQLiteDb,
                     object,
                     mapFunc,

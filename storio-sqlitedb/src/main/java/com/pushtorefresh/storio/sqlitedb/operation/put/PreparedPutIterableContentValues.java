@@ -39,7 +39,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     public PutResults<ContentValues> executeAsBlocking() {
         final StorIOSQLiteDb.Internal internal = storIOSQLiteDb.internal();
 
-        final Map<ContentValues, PutResult> putResults = new HashMap<>();
+        final Map<ContentValues, PutResult> putResults = new HashMap<ContentValues, PutResult>();
 
         final boolean withTransaction = useTransactionIfPossible
                 && internal.transactionsSupported();
@@ -70,7 +70,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
                 storIOSQLiteDb.internal().endTransaction();
 
                 if (transactionSuccessful) {
-                    final Set<String> affectedTables = new HashSet<>(1); // in most cases it will be 1 table
+                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
 
                     for (final ContentValues contentValues : putResults.keySet()) {
                         affectedTables.add(putResults.get(contentValues).affectedTable());

@@ -44,7 +44,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void putObjectsBlocking() {
-        Iterable<Article> articles = new ArrayList<>();
+        Iterable<Article> articles = new ArrayList<Article>();
 
         PutResults<Article> putResults = storIOContentResolver()
                 .put()
@@ -57,7 +57,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void putObjectsObservable() {
-        Iterable<Article> articles = new ArrayList<>();
+        Iterable<Article> articles = new ArrayList<Article>();
 
         Observable<PutResults<Article>> putResultsObservable = storIOContentResolver()
                 .put()
@@ -94,7 +94,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void putContentValuesIterableBlocking() {
-        List<ContentValues> contentValuesList = new ArrayList<>();
+        List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
 
         PutResults<ContentValues> putResults = storIOContentResolver()
                 .put()
@@ -106,7 +106,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void putContentValuesIterableObservable() {
-        List<ContentValues> contentValuesList = new ArrayList<>();
+        List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
 
         Observable<PutResults<ContentValues>> putResultsObservable = storIOContentResolver()
                 .put()

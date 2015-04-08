@@ -36,7 +36,7 @@ public class ChangesTest {
 
     @Test
     public void newInstanceMultipleAffectedTables() {
-        final Set<String> affectedTables = new HashSet<>();
+        final Set<String> affectedTables = new HashSet<String>();
         affectedTables.add("test_table_1");
         affectedTables.add("test_table_2");
         affectedTables.add("test_table_3");

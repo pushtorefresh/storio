@@ -117,7 +117,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         @NonNull
         public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
             this.mapFunc = mapFunc;
-            return new CompleteBuilder<>(this);
+            return new CompleteBuilder<T>(this);
         }
     }
 
@@ -167,7 +167,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
             }
 
-            return new PreparedDeleteObject<>(
+            return new PreparedDeleteObject<T>(
                     storIOContentResolver,
                     deleteResolver,
                     object,

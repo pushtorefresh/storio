@@ -49,7 +49,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void deleteObjectsBlocking() {
-        final List<Article> articles = new ArrayList<>();
+        final List<Article> articles = new ArrayList<Article>();
 
         DeleteResults<Article> deleteResults = storIOContentResolver()
                 .delete()
@@ -61,7 +61,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void deleteObjectsObservable() {
-        final List<Article> articles = new ArrayList<>();
+        final List<Article> articles = new ArrayList<Article>();
 
         Observable<DeleteResults<Article>> deleteResultsObservable = storIOContentResolver()
                 .delete()
