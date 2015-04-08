@@ -107,6 +107,8 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
 
         CompleteBuilder(@NonNull final Builder builder) {
             super(builder.storIOContentResolver, builder.contentValues);
+
+            putResolver = builder.putResolver;
         }
 
         /**
