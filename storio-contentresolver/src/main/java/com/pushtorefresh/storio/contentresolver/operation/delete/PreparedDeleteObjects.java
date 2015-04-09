@@ -136,7 +136,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
     }
 
     /**
-     * Builder for {@link PreparedDeleteObjects}
+     * Compile-time safe part of builder for {@link PreparedDeleteObjects}
      *
      * @param <T> type of objects
      */

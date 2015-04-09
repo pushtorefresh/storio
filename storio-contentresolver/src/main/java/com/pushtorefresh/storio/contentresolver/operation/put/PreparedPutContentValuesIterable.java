@@ -68,18 +68,22 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
 
     /**
      * Builder for {@link PreparedPutContentValuesIterable}
+     * <p>
+     * Required: You should specify query see {@link #withPutResolver(PutResolver)}
      */
     public static class Builder {
 
         @NonNull
-        private final StorIOContentResolver storIOContentResolver;
+        final StorIOContentResolver storIOContentResolver;
 
         @NonNull
-        private final Iterable<ContentValues> contentValues;
+        final Iterable<ContentValues> contentValues;
 
-        private PutResolver<ContentValues> putResolver;
+        PutResolver<ContentValues> putResolver;
 
-        public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Iterable<ContentValues> contentValues) {
+        public Builder(
+                @NonNull StorIOContentResolver storIOContentResolver,
+                @NonNull Iterable<ContentValues> contentValues) {
             this.storIOContentResolver = storIOContentResolver;
             this.contentValues = contentValues;
         }
@@ -92,8 +96,30 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
          * @return builder
          */
         @NonNull
-        public Builder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
+        public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
             this.putResolver = putResolver;
+            return new CompleteBuilder(this);
+        }
+    }
+
+    /**
+     * Compile-time safe part of builder for {@link PreparedPutContentValuesIterable}
+     */
+    public static class CompleteBuilder extends Builder {
+
+        CompleteBuilder(@NonNull final Builder builder) {
+            super(builder.storIOContentResolver, builder.contentValues);
+
+            putResolver = builder.putResolver;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
+            super.withPutResolver(putResolver);
             return this;
         }
 

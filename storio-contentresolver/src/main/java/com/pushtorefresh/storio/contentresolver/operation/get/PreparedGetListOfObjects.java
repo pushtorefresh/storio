@@ -168,7 +168,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Builder for {@link PreparedGetListOfObjects}
+     * Compile-time safe part of builder for {@link PreparedGetListOfObjects}
+     * with specified query
      * <p>
      * Required: You should specify map function see {@link #withMapFunc(MapFunc)}
      *
@@ -218,8 +219,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Builder for {@link PreparedGetListOfObjects}
-
+     * Compile-time safe part of builder for {@link PreparedGetListOfObjects}
+     *
      * @param <T> type of objects for query
      */
     public static class CompleteBuilder<T> extends MapFuncBuilder<T> {

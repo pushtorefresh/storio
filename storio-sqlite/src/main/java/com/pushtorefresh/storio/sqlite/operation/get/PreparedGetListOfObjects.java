@@ -191,7 +191,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Builder for {@link PreparedOperationWithReactiveStream}
+     * Compile-time safe part of builder for {@link PreparedOperationWithReactiveStream}
+     * with specified map function
      * <p>
      * Required: You should specify query by call
      * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
@@ -257,7 +258,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Builder for {@link PreparedOperationWithReactiveStream}
+     * Compile-time safe part of builder for {@link PreparedOperationWithReactiveStream}
      *
      * @param <T> type of object for query
      */
