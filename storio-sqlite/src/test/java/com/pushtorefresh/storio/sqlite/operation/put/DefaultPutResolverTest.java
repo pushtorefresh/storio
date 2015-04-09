@@ -41,8 +41,9 @@ public class DefaultPutResolverTest {
             @NonNull
             private final Map<TestItem, ContentValues> map = new HashMap<TestItem, ContentValues>();
 
+            @NonNull
             @Override
-            public ContentValues map(TestItem testItem) {
+            public ContentValues map(@NonNull TestItem testItem) {
                 if (map.containsKey(testItem)) {
                     return map.get(testItem);
                 } else {

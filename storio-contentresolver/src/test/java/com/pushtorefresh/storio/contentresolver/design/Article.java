@@ -24,14 +24,16 @@ class Article {
 
     static final MapFunc<Cursor, Article> MAP_FROM_CURSOR = new MapFunc<Cursor, Article>() {
         @Override
-        public Article map(Cursor cursor) {
+        @NonNull
+        public Article map(@NonNull Cursor cursor) {
             return new Article(); // parse cursor here
         }
     };
 
     static final MapFunc<Article, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<Article, ContentValues>() {
+        @NonNull
         @Override
-        public ContentValues map(Article article) {
+        public ContentValues map(@NonNull Article article) {
             final ContentValues contentValues = mock(ContentValues.class);
 
             when(contentValues.get(BaseColumns._ID))
@@ -42,8 +44,9 @@ class Article {
     };
 
     static final MapFunc<Article, DeleteQuery> MAP_TO_DELETE_QUERY = new MapFunc<Article, DeleteQuery>() {
+        @NonNull
         @Override
-        public DeleteQuery map(Article article) {
+        public DeleteQuery map(@NonNull Article article) {
             return new DeleteQuery.Builder()
                     .uri(mock(Uri.class))
                     .build();

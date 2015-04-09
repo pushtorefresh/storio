@@ -32,7 +32,8 @@ public class Tweet {
     public static final String COLUMN_CONTENT = "content";
 
     public static final MapFunc<Cursor, Tweet> MAP_FROM_CURSOR = new MapFunc<Cursor, Tweet>() {
-        @Override public Tweet map(Cursor cursor) {
+        @NonNull
+        @Override public Tweet map(@NonNull Cursor cursor) {
             return new Tweet(
                     cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
                     cursor.getString(cursor.getColumnIndex(COLUMN_AUTHOR)),
@@ -42,7 +43,8 @@ public class Tweet {
     };
 
     public static final MapFunc<Tweet, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<Tweet, ContentValues>() {
-        @Override public ContentValues map(Tweet tweet) {
+        @NonNull
+        @Override public ContentValues map(@NonNull Tweet tweet) {
             final ContentValues contentValues = new ContentValues(3); // wow, such optimization
 
             contentValues.put(COLUMN_ID, tweet.id);

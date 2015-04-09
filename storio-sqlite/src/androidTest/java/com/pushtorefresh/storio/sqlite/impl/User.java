@@ -30,7 +30,8 @@ public class User implements Comparable<User> {
 
     @NonNull
     public static final MapFunc<User, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<User, ContentValues>() {
-        @Override public ContentValues map(User user) {
+        @NonNull
+        @Override public ContentValues map(@NonNull User user) {
             final ContentValues contentValues = new ContentValues(2);
 
             contentValues.put(COLUMN_ID, user.id);
@@ -42,7 +43,8 @@ public class User implements Comparable<User> {
 
     @NonNull
     public static final MapFunc<Cursor, User> MAP_FROM_CURSOR = new MapFunc<Cursor, User>() {
-        @Override public User map(Cursor cursor) {
+        @NonNull
+        @Override public User map(@NonNull Cursor cursor) {
             return new User(
                     cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
                     cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL))
@@ -52,7 +54,8 @@ public class User implements Comparable<User> {
 
     @NonNull
     public static final MapFunc<User, DeleteQuery> MAP_TO_DELETE_QUERY = new MapFunc<User, DeleteQuery>() {
-        @Override public DeleteQuery map(User user) {
+        @NonNull
+        @Override public DeleteQuery map(@NonNull User user) {
             return new DeleteQuery.Builder()
                     .table(TABLE)
                     .where(COLUMN_ID + "=?")
