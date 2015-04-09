@@ -2,16 +2,19 @@ package com.pushtorefresh.storio.sqlite.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.operation.PreparedOperation;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 
 import java.util.Collection;
 
 public abstract class PreparedDelete<T> implements PreparedOperation<T> {
 
-    @NonNull protected final StorIOSQLite storIOSQLite;
-    @NonNull protected final DeleteResolver deleteResolver;
+    @NonNull
+    protected final StorIOSQLite storIOSQLite;
+
+    @NonNull
+    protected final DeleteResolver deleteResolver;
 
     PreparedDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteResolver deleteResolver) {
         this.storIOSQLite = storIOSQLite;
@@ -23,7 +26,8 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLite storIOSQLite;
+        @NonNull
+        private final StorIOSQLite storIOSQLite;
 
         public Builder(@NonNull StorIOSQLite storIOSQLite) {
             this.storIOSQLite = storIOSQLite;
@@ -35,7 +39,8 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
          * @param deleteQuery query that specifies which rows should be deleted
          * @return builder
          */
-        @NonNull public PreparedDeleteByQuery.Builder byQuery(@NonNull DeleteQuery deleteQuery) {
+        @NonNull
+        public PreparedDeleteByQuery.Builder byQuery(@NonNull DeleteQuery deleteQuery) {
             return new PreparedDeleteByQuery.Builder(storIOSQLite, deleteQuery);
         }
 
@@ -46,7 +51,8 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
          * @param <T>    type of the object
          * @return builder
          */
-        @NonNull public <T> PreparedDeleteObject.Builder<T> object(@NonNull T object) {
+        @NonNull
+        public <T> PreparedDeleteObject.Builder<T> object(@NonNull T object) {
             return new PreparedDeleteObject.Builder<T>(storIOSQLite, object);
         }
 

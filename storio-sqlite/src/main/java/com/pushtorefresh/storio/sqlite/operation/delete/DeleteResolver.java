@@ -13,9 +13,10 @@ public interface DeleteResolver {
     /**
      * Performs delete operation
      *
-     * @param storIOSQLite    {@link StorIOSQLite} instance to perform delete on
-     * @param deleteQuery delete query
-     * @return number of deleted rows
+     * @param storIOSQLite {@link StorIOSQLite} instance to perform delete on
+     * @param deleteQuery  delete query
+     * @return non-null result of Delete Operation
      */
-    int performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery);
+    @NonNull
+    DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery);
 }

@@ -27,7 +27,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Executes Prepared Operation immediately in current thread
+     * Executes Get Operation immediately in current thread
      *
      * @return non-null {@link Cursor}, can be empty
      */

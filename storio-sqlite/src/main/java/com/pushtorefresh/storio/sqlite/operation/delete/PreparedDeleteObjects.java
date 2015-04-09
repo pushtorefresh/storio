@@ -21,8 +21,12 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
-    @NonNull private final Collection<T> objects;
-    @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
+    @NonNull
+    private final Collection<T> objects;
+
+    @NonNull
+    private final MapFunc<T, DeleteQuery> mapFunc;
+
     private final boolean useTransactionIfPossible;
 
     PreparedDeleteObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible, @NonNull DeleteResolver deleteResolver) {
@@ -32,7 +36,14 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
-    @NonNull @Override public DeleteResults<T> executeAsBlocking() {
+    /**
+     * Executes Delete Operation immediately in current thread
+     *
+     * @return non-null results of Delete Operation
+     */
+    @NonNull
+    @Override
+    public DeleteResults<T> executeAsBlocking() {
         final StorIOSQLite.Internal internal = storIOSQLite.internal();
 
         final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>();
@@ -48,13 +59,11 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         try {
             for (final T object : objects) {
                 final DeleteQuery deleteQuery = mapFunc.map(object);
-                final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLite, deleteQuery);
+                final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
 
                 results.put(
                         object,
-                        DeleteResult.newInstance(
-                                numberOfDeletedRows,
-                                deleteQuery.table)
+                        deleteResult
                 );
 
                 if (!withTransaction) {
@@ -87,7 +96,14 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         return DeleteResults.newInstance(results);
     }
 
-    @NonNull @Override public Observable<DeleteResults<T>> createObservable() {
+    /**
+     * Creates an {@link Observable} which will emit results of Delete Operation
+     *
+     * @return non-null {@link Observable} which will emit non-null results of Delete Operation
+     */
+    @NonNull
+    @Override
+    public Observable<DeleteResults<T>> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<DeleteResults<T>>() {
@@ -105,13 +121,15 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
     /**
      * Builder for {@link PreparedDeleteObjects}
-
+     *
      * @param <T> type of objects to delete
      */
     public static class Builder<T> {
 
-        @NonNull private final StorIOSQLite storIOSQLite;
-        @NonNull private final Collection<T> objects;
+        @NonNull
+        private final StorIOSQLite storIOSQLite;
+        @NonNull
+        private final Collection<T> objects;
 
         private MapFunc<T, DeleteQuery> mapFunc;
         private boolean useTransactionIfPossible = true;
@@ -128,7 +146,8 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
          * @param mapFunc map function to map each object to {@link DeleteQuery}
          * @return builder
          */
-        @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
+        @NonNull
+        public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
@@ -141,7 +160,8 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
          *
          * @return builder
          */
-        @NonNull public Builder<T> useTransactionIfPossible() {
+        @NonNull
+        public Builder<T> useTransactionIfPossible() {
             useTransactionIfPossible = true;
             return this;
         }
@@ -153,7 +173,8 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
          *
          * @return builder
          */
-        @NonNull public Builder<T> dontUseTransaction() {
+        @NonNull
+        public Builder<T> dontUseTransaction() {
             useTransactionIfPossible = false;
             return this;
         }
@@ -166,7 +187,8 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
          * @param deleteResolver {@link DeleteResolver} for Delete Operation
          * @return builder
          */
-        @NonNull public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+        @NonNull
+        public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
             this.deleteResolver = deleteResolver;
             return this;
         }
@@ -176,7 +198,8 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
          *
          * @return {@link PreparedDeleteObjects}
          */
-        @NonNull public PreparedDeleteObjects<T> prepare() {
+        @NonNull
+        public PreparedDeleteObjects<T> prepare() {
             if (deleteResolver == null) {
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
             }

@@ -17,7 +17,11 @@ public class DefaultDeleteResolverTest {
     @Test public void performDelete() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
-        final DeleteQuery deleteQuery = mock(DeleteQuery.class);
+
+        final String testTable = "test_table";
+        final DeleteQuery deleteQuery = new DeleteQuery.Builder()
+                .table(testTable)
+                .build();
 
         when(storIOSQLite.internal())
                 .thenReturn(internal);
@@ -26,11 +30,12 @@ public class DefaultDeleteResolverTest {
                 .thenReturn(1);
 
         final DefaultDeleteResolver defaultDeleteResolver = new DefaultDeleteResolver();
-        final int result = defaultDeleteResolver.performDelete(storIOSQLite, deleteQuery);
+        final DeleteResult deleteResult = defaultDeleteResolver.performDelete(storIOSQLite, deleteQuery);
 
         verify(internal, times(1)).delete(any(DeleteQuery.class));
         verify(internal, times(1)).delete(deleteQuery);
 
-        assertEquals(1, result);
+        assertEquals(1, deleteResult.numberOfRowsDeleted());
+        assertEquals(testTable, deleteResult.affectedTable());
     }
 }

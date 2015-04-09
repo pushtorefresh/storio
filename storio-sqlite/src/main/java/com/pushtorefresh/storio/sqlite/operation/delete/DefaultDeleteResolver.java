@@ -10,11 +10,12 @@ import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
  */
 public class DefaultDeleteResolver implements DeleteResolver {
 
-    // to prevent unneeded allocations
+    // shared instance for internal usage
     static final DefaultDeleteResolver INSTANCE = new DefaultDeleteResolver();
 
     @Override
-    public int performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery) {
-        return storIOSQLite.internal().delete(deleteQuery);
+    @NonNull
+    public DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery) {
+        return DeleteResult.newInstance(storIOSQLite.internal().delete(deleteQuery), deleteQuery.table);
     }
 }

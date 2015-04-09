@@ -13,10 +13,18 @@ import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
+/**
+ * Prepared Delete Operation for {@link StorIOSQLite}
+ *
+ * @param <T> type of object to delete
+ */
 public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
-    @NonNull private final T object;
-    @NonNull private final MapFunc<T, DeleteQuery> mapFunc;
+    @NonNull
+    private final T object;
+
+    @NonNull
+    private final MapFunc<T, DeleteQuery> mapFunc;
 
     PreparedDeleteObject(@NonNull StorIOSQLite storIOSQLite, @NonNull T object, @NonNull MapFunc<T, DeleteQuery> mapFunc, @NonNull DeleteResolver deleteResolver) {
         super(storIOSQLite, deleteResolver);
@@ -24,24 +32,39 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         this.mapFunc = mapFunc;
     }
 
-    @NonNull @Override public DeleteResult executeAsBlocking() {
+    /**
+     * Executes Delete Operation immediately in current thread
+     *
+     * @return non-null result of Delete Operation
+     */
+    @NonNull
+    @Override
+    public DeleteResult executeAsBlocking() {
         final StorIOSQLite.Internal internal = storIOSQLite.internal();
         final DeleteQuery deleteQuery = mapFunc.map(object);
 
-        final int numberOfDeletedRows = deleteResolver.performDelete(storIOSQLite, deleteQuery);
+        final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
 
-        internal.getLoggi().v(numberOfDeletedRows + " object(s) deleted");
+        internal.getLoggi().v(deleteResult.numberOfRowsDeleted() + " object(s) deleted");
 
         internal.notifyAboutChanges(Changes.newInstance(deleteQuery.table));
 
-        return DeleteResult.newInstance(numberOfDeletedRows, deleteQuery.table);
+        return deleteResult;
     }
 
-    @NonNull @Override public Observable<DeleteResult> createObservable() {
+    /**
+     * Creates an {@link Observable} which will emit result of Delete Operation
+     *
+     * @return non-null {@link Observable} which will emit non-null result of Delete Operation
+     */
+    @NonNull
+    @Override
+    public Observable<DeleteResult> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<DeleteResult>() {
-            @Override public void call(Subscriber<? super DeleteResult> subscriber) {
+            @Override
+            public void call(Subscriber<? super DeleteResult> subscriber) {
                 final DeleteResult deleteResult = executeAsBlocking();
 
                 if (!subscriber.isUnsubscribed()) {
@@ -59,8 +82,11 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
      */
     public static class Builder<T> {
 
-        @NonNull private final StorIOSQLite storIOSQLite;
-        @NonNull private final T object;
+        @NonNull
+        private final StorIOSQLite storIOSQLite;
+
+        @NonNull
+        private final T object;
 
         private MapFunc<T, DeleteQuery> mapFunc;
         private DeleteResolver deleteResolver;
@@ -76,7 +102,8 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
          * @param mapFunc map function to map object to {@link DeleteQuery}
          * @return builder
          */
-        @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
+        @NonNull
+        public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
@@ -90,7 +117,8 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
          * @param deleteResolver delete resolver
          * @return builder
          */
-        @NonNull public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+        @NonNull
+        public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
             this.deleteResolver = deleteResolver;
             return this;
         }
@@ -100,7 +128,8 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
          *
          * @return {@link PreparedDeleteObject} instance
          */
-        @NonNull public PreparedDeleteObject<T> prepare() {
+        @NonNull
+        public PreparedDeleteObject<T> prepare() {
             if (deleteResolver == null) {
                 deleteResolver = DefaultDeleteResolver.INSTANCE;
             }
