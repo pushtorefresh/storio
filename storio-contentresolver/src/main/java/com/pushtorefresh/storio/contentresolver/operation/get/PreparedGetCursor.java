@@ -124,7 +124,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Builder for {@link PreparedGetCursor}
+     * Compile-time safe part of builder for {@link PreparedGetCursor}
      */
     public static class CompleteBuilder extends Builder {
 

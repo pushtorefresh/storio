@@ -122,7 +122,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     }
 
     /**
-     * Builder for {@link PreparedDeleteObject}
+     * Compile-time safe part of builder for {@link PreparedDeleteObject}
      *
      * @param <T> type of object to delete
      */

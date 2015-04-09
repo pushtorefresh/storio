@@ -177,7 +177,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Builder for {@link PreparedOperationWithReactiveStream}
+     * Compile-time safe part of builder for {@link PreparedOperationWithReactiveStream}
      */
     public static class CompleteBuilder implements CommonBuilder<CompleteBuilder> {
 

@@ -101,7 +101,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
     }
 
     /**
-     * Builder for {@link PreparedPutContentValues}
+     * Compile-time safe part of builder for {@link PreparedPutContentValues}
      */
     public static class CompleteBuilder extends Builder {
 
