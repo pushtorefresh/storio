@@ -48,7 +48,7 @@ public class PreparedDeleteTest {
                     .thenReturn(User.MAP_TO_DELETE_QUERY.map(user));
 
             when(deleteResolver.performDelete(eq(storIOSQLite), any(DeleteQuery.class)))
-                    .thenReturn(1);
+                    .thenReturn(DeleteResult.newInstance(1, User.TABLE));
 
             when(internal.getLoggi()).thenReturn(mock(Loggi.class));
         }
@@ -151,7 +151,7 @@ public class PreparedDeleteTest {
                         .thenReturn(deleteQueries.get(i));
 
                 when(deleteResolver.performDelete(storIOSQLite, deleteQueries.get(i)))
-                        .thenReturn(1);
+                        .thenReturn(DeleteResult.newInstance(1, deleteQueries.get(i).table));
             }
         }
 
