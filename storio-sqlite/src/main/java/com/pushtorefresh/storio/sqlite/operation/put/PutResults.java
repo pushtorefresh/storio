@@ -122,8 +122,6 @@ public class PutResults<T> {
     public String toString() {
         return "PutResults{" +
                 "results=" + results +
-                ", numberOfInsertsCache=" + numberOfInsertsCache +
-                ", numberOfUpdatesCache=" + numberOfUpdatesCache +
                 '}';
     }
 }
