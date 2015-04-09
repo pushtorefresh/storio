@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.impl;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
@@ -265,7 +266,8 @@ public class QueryTest extends BaseTest {
     }
 
     private final MapFunc<Cursor, User> mapFuncOnlyEmail = new MapFunc<Cursor, User>() {
-        @Override public User map(Cursor cursor) {
+        @NonNull
+        @Override public User map(@NonNull Cursor cursor) {
             return new User(null, cursor.getString(cursor.getColumnIndex(User.COLUMN_EMAIL)));
         }
     };

@@ -25,7 +25,8 @@ public class User {
     private static final String COLUMN_EMAIL = "email";
 
     public static final MapFunc<Cursor, User> MAP_FROM_CURSOR = new MapFunc<Cursor, User>() {
-        @Override public User map(Cursor cursor) {
+        @NonNull
+        @Override public User map(@NonNull Cursor cursor) {
             return new User(
                     cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
                     cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL))
@@ -34,7 +35,8 @@ public class User {
     };
 
     public static final MapFunc<User, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<User, ContentValues>() {
-        @Override public ContentValues map(User user) {
+        @NonNull
+        @Override public ContentValues map(@NonNull User user) {
             // unfortunately ContentValues is corrupted by Android Gradle Plugin (test)
             final ContentValues contentValues = mock(ContentValues.class);
 
@@ -49,7 +51,8 @@ public class User {
     };
 
     public static final MapFunc<User, DeleteQuery> MAP_TO_DELETE_QUERY = new MapFunc<User, DeleteQuery>() {
-        @Override public DeleteQuery map(User user) {
+        @NonNull
+        @Override public DeleteQuery map(@NonNull User user) {
             return new DeleteQuery.Builder()
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")

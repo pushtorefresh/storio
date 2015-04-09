@@ -1,5 +1,7 @@
 package com.pushtorefresh.storio.operation;
 
+import android.support.annotation.NonNull;
+
 /**
  * MapFunc defines map operation for converting one data format into another
  *
@@ -14,5 +16,6 @@ public interface MapFunc<From, To> {
      * @param from object to convert
      * @return result of conversion
      */
-    To map(From from);
+    @NonNull
+    To map(@NonNull From from);
 }
