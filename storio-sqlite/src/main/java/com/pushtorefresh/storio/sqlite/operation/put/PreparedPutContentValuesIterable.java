@@ -17,14 +17,14 @@ import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
-public class PreparedPutIterableContentValues extends PreparedPut<ContentValues, PutResults<ContentValues>> {
+public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues, PutResults<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValuesIterable;
 
     private final boolean useTransactionIfPossible;
 
-    PreparedPutIterableContentValues(
+    PreparedPutContentValuesIterable(
             @NonNull StorIOSQLite storIOSQLite,
             @NonNull PutResolver<ContentValues> putResolver,
             @NonNull Iterable<ContentValues> contentValuesIterable, boolean useTransactionIfPossible) {
@@ -104,7 +104,7 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
     }
 
     /**
-     * Builder for {@link PreparedPutIterableContentValues}
+     * Builder for {@link PreparedPutContentValuesIterable}
      */
     public static class Builder {
 
@@ -165,13 +165,13 @@ public class PreparedPutIterableContentValues extends PreparedPut<ContentValues,
         /**
          * Prepares Put Operation
          *
-         * @return {@link PreparedPutIterableContentValues} instance
+         * @return {@link PreparedPutContentValuesIterable} instance
          */
         @NonNull
-        public PreparedPutIterableContentValues prepare() {
+        public PreparedPutContentValuesIterable prepare() {
             checkNotNull(putResolver, "Please specify put resolver");
 
-            return new PreparedPutIterableContentValues(
+            return new PreparedPutContentValuesIterable(
                     storIOSQLite,
                     putResolver,
                     contentValuesIterable,
