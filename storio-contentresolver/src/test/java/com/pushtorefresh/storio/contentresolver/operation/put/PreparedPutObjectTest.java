@@ -13,8 +13,8 @@ public class PreparedPutObjectTest {
         final PutResult putResult = putStub.storIOContentResolver
                 .put()
                 .object(putStub.testItems.get(0))
-                .withMapFunc(putStub.mapFunc)
                 .withPutResolver(putStub.putResolverForObjects)
+                .withMapFunc(putStub.mapFunc)
                 .prepare()
                 .executeAsBlocking();
 
@@ -28,8 +28,8 @@ public class PreparedPutObjectTest {
         final Observable<PutResult> putResultObservable = putStub.storIOContentResolver
                 .put()
                 .object(putStub.testItems.get(0))
-                .withMapFunc(putStub.mapFunc)
                 .withPutResolver(putStub.putResolverForObjects)
+                .withMapFunc(putStub.mapFunc)
                 .prepare()
                 .createObservable();
 
