@@ -36,4 +36,26 @@ public final class DeleteResults<T> {
     public Map<T, DeleteResult> results() {
         return results;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DeleteResults<?> that = (DeleteResults<?>) o;
+
+        return results.equals(that.results);
+    }
+
+    @Override
+    public int hashCode() {
+        return results.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "DeleteResults{" +
+                "results=" + results +
+                '}';
+    }
 }
