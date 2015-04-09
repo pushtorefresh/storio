@@ -1,15 +1,16 @@
 #### StorIO — modern API for SQLiteDatabase and ContentResolver
 
 #####Overview:
-* Powerful set of Operations: `Put`, `Get`, `Delete`
-* Convenient builders. Forget about 6-7 `null` in queries
+* Powerful & Simple set of Operations: `Put`, `Get`, `Delete`
+* Convenient builders with compile-time guarantees. Forget about 6-7 `null` in queries
 * No reflection, no annotations, `StorIO` is not ORM
 * Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`
 * `RxJava` as first class citizen, but it's not required dependency!
 * `Observable` from `Get` Operation can observe changes in `StorIO` and receive updates automatically
 * If you don't want to work with `Cursor` and `ContentValue` you don't have to
-* `StorIO` can replace `Loaders`
-* `StorIO` is mockable for testing
+* `StorIO` is replacements for `SQLiteDatabase` and `ContentResolver`
+* `StorIO` + `RxJava` is replacement for `Loaders`
+* We are working on `MockStorIO` for easy unit testing
 
 ###StorIOSQLite — API for SQLite Database
 
