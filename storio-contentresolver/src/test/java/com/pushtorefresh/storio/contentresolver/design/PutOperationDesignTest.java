@@ -49,8 +49,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResults<Article> putResults = storIOContentResolver()
                 .put()
                 .objects(articles)
-                .withMapFunc(Article.MAP_TO_CONTENT_VALUES)
                 .withPutResolver(Article.PUT_RESOLVER)
+                .withMapFunc(Article.MAP_TO_CONTENT_VALUES)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -62,8 +62,8 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResults<Article>> putResultsObservable = storIOContentResolver()
                 .put()
                 .objects(articles)
-                .withMapFunc(Article.MAP_TO_CONTENT_VALUES)
                 .withPutResolver(Article.PUT_RESOLVER)
+                .withMapFunc(Article.MAP_TO_CONTENT_VALUES)
                 .prepare()
                 .createObservable();
     }
