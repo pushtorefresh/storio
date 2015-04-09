@@ -25,7 +25,7 @@ public class EnvironmentUtil {
     /**
      * Creates exception for notifying about "No RxJava in classpath"
      *
-     * @param messagePrefix first part of exception message, for example: "Observing changes in StorIOSQLiteDbImpl"
+     * @param messagePrefix first part of exception message, for example: "Observing changes in StorIOSQLiteImpl"
      * @return RuntimeException with message about "No RxJava in classpath"
      */
     @NonNull

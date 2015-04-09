@@ -11,17 +11,17 @@
 * `StorIO` can replace `Loaders`
 * `StorIO` is mockable for testing
 
-###StorIOSQLiteDb — API for SQLite Database
+###StorIOSQLite — API for SQLite Database
 
-####0. Create an instance of StorIOSQLiteDb
+####0. Create an instance of StorIOSQLite
 
 ```java
-StorIOSQLiteDb storIOSQLiteDb = new DefaultStorIOSQLiteDb.Builder()
+StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
   .sqliteOpenHelper(yourSqliteOpenHelper) // or .db(db)
   .build();
 ```
 
-It's a good practice to use one instance of `StorIOSQLiteDb` per database.
+It's a good practice to use one instance of `StorIOSQLite` per database.
 
 ####1. Get Operation
 ######Get list of objects with blocking call:
@@ -35,7 +35,7 @@ final MapFunc<Cursor, Tweet> mapFunc = new MapFunc<Cursor, Tweet>() {
   }
 };
 
-final List<Tweet> tweets = storIOSQLiteDb
+final List<Tweet> tweets = storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
   .withMapFunc(mapFunc)
@@ -49,7 +49,7 @@ final List<Tweet> tweets = storIOSQLiteDb
 ######Get `Cursor` via blocking call:
 
 ```java
-final Cursor tweetsCursor = storIOSQLiteDb
+final Cursor tweetsCursor = storIOSQLite
   .get()
   .cursor()
   .withQuery(new Query.Builder()
@@ -63,7 +63,7 @@ Things become much more interesting with `RxJava`!
 
 ######Get cursor as `Observable`
 ```java
-storIOSQLiteDb
+storIOSQLite
   .get()
   .cursor()
   .withQuery(new Query.Builder()
@@ -81,12 +81,12 @@ storIOSQLiteDb
   });
 ```
 
-#####What if you want to observe changes in `StorIOSQLiteDb`? 
+#####What if you want to observe changes in `StorIOSQLite`?
 
 ######First-case: Receive updates to `Observable` on each change in tables from `Query` 
 
 ```java
-storIOSQLiteDb
+storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
   .withMapFunc(Tweet.MAP_FROM_CURSOR)
@@ -108,7 +108,7 @@ storIOSQLiteDb
 ######Second case: Handle changes manually
 
 ```java
-storIOSQLiteDb
+storIOSQLite
   .observeChangesInTable("tweets")
   .subscribe(new Action1<Changes>() { // or apply RxJava Operators
     // do what you want!
@@ -118,7 +118,7 @@ storIOSQLiteDb
 ######Get result with RawQuery with joins and other SQL things
 
 ```java
-storIOSQLiteDb
+storIOSQLite
   .get()
   .listOfObjects(TweetAndUser.class)
   .withMapFunc(TweetAndUser.MAP_FROM_CURSOR)
@@ -135,19 +135,19 @@ storIOSQLiteDb
 ```java
 GetResolver getResolver = new GetResolver() {
   // Performs Get for RawQuery
-  @Override @NonNull public Cursor performGet(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull RawQuery rawQuery) {
+  @Override @NonNull public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
     Cursor cursor = ...; // get result as you want, or add some additional behavior 
     return cursor;
   }
   
   // Performs Get for Query
-  @Override @NonNull public Cursor performGet(@NonNull StorIOSQLiteDb storIOSQLiteDb, @NonNull Query query) {
+  @Override @NonNull public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
     Cursor cursor = ...; // get result as you want, or add some additional behavior 
     return cursor;
   }
 };
 
-storIOSQLiteDb
+storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
   .withMapFunc(Tweet.MAP_FROM_CURSOR)
@@ -158,10 +158,10 @@ storIOSQLiteDb
 ```
 
 Several things about `Get` Operation:
-* There is `DefaultGetResolver` which simply redirects query to `StorIOSQLiteDb`, `Get` Operation will use `DefaultGetResolver` if you won't pass your `GetResolver`, in 99% of cases `DefaultGetResolver` will be enough
-* As you can see, results of `Get` Operation computed even if you'll apply `RxJava` operators such as `Debounce`, if you want to avoid unneeded computations, please combine `StorIOSQLiteDb.observeChangesInTable()` with `Get` Operation manually.
+* There is `DefaultGetResolver` which simply redirects query to `StorIOSQLite`, `Get` Operation will use `DefaultGetResolver` if you won't pass your `GetResolver`, in 99% of cases `DefaultGetResolver` will be enough
+* As you can see, results of `Get` Operation computed even if you'll apply `RxJava` operators such as `Debounce`, if you want to avoid unneeded computations, please combine `StorIOSQLite.observeChangesInTable()` with `Get` Operation manually.
 * In `StorIO 1.1.0` we are going to add `Lazy<T>` to allow you skip unneeded computations
-* If you want to `Put` multiple items into `StorIOSQLiteDb`, better to do this in transaction to avoid multiple calls to the listeners (see docs about `Put` Operation)
+* If you want to `Put` multiple items into `StorIOSQLite`, better to do this in transaction to avoid multiple calls to the listeners (see docs about `Put` Operation)
 
 ####2. Put Operation
 `Put` Operation requires `PutResolver` which defines the behavior of `Put` Operation (insert or update).
@@ -194,7 +194,7 @@ public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<>()
 ```java
 Tweet tweet = getSomeTweet();
 
-storIOSQLiteDb
+storIOSQLite
   .put()
   .object(tweet)
   .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
@@ -207,7 +207,7 @@ storIOSQLiteDb
 ```java
 List<Tweet> tweets = getSomeTweets();
 
-storIOSQLiteDb
+storIOSQLite
   .put()
   .objects(tweets)
   .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
@@ -220,7 +220,7 @@ storIOSQLiteDb
 ```java
 ContentValues contentValues = getSomeContentValues(); 
 
-storIOSQLiteDb
+storIOSQLite
   .put()
   .contentValues(contentValues)
   .withPutResolver(putResolver)
@@ -231,7 +231,7 @@ storIOSQLiteDb
 Several things about `Put` Operation:
 * `Put` Operation requires `PutResolver`, `StorIO` requires it to avoid reflection
 * `Put` Operation can be executed in transaction and by default it will use transaction, you can customize this via `useTransactionIfPossible()` or `dontUseTransaction()`
-* `Put` Operation in transaction will produce only one notification to `StorIOSQLiteDb` observers
+* `Put` Operation in transaction will produce only one notification to `StorIOSQLite` observers
 * Result of `Put` Operation can be useful if you want to know what happened: insert (and insertedId) or update (and number of updated rows)
 
 ####3. Delete Operation
@@ -251,7 +251,7 @@ final MapFunc<Tweet, DeleteQuery> mapToDeleteQuery = new MapFunc<Tweet, DeleteQu
 
 Tweet tweet = getSomeTweet();
 
-storIOSQLiteDb
+storIOSQLite
   .delete()
   .object(tweet)
   .withMapFunc(mapToDeleteQuery)
@@ -263,7 +263,7 @@ storIOSQLiteDb
 ```java
 List<Tweet> tweets = getSomeTweets();
 
-storIOSQLiteDb
+storIOSQLite
   .delete()
   .objects(tweets)
   .withMapFunc(mapToDeleteQuery)
@@ -273,14 +273,14 @@ storIOSQLiteDb
 
 Several things about `Delete` Operation:
 * `Delete` Operation of multiple items can be performed in transaction, by default it will use transaction if possible
-* Same rules as for `Put` Operation about notifications for `StorIOSQLiteDb` observers: transaction -> one notification, without transaction - multiple notifications
+* Same rules as for `Put` Operation about notifications for `StorIOSQLite` observers: transaction -> one notification, without transaction - multiple notifications
 * Result of `Delete` Operation can be useful if you want to know what happened
 
 ####4. ExecSql Operation
-Sometimes you need to execute raw sql, `StorIOSQLiteDb` allows you to do it
+Sometimes you need to execute raw sql, `StorIOSQLite` allows you to do it
 
 ```java
-storIOSQLiteDb
+storIOSQLite
   .execSql()
   .withQuery(new RawQuery.Builder()
     .query("ALTER TABLE ? ADD COLUMN ? INTEGER")
@@ -293,20 +293,20 @@ storIOSQLiteDb
 
 Several things about `ExecSql`:
 * Use it for non insert/update/query/delete operations
-* Notice that you can set list of tables that will be affected by `RawQuery` and `StorIOSQLiteDb` will notify tables Observers
+* Notice that you can set list of tables that will be affected by `RawQuery` and `StorIOSQLite` will notify tables Observers
 
 ----
 For more examples, please check our `Design Tests`:
 
-* [`StorIOSQLiteDb` Design tests](storio-sqlitedb/src/test/java/com/pushtorefresh/storio/sqlitedb/design)
+* [`StorIOSQLite` Design tests](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
 * [`StorIOContentResolver` Design tests](storio-contentresolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
 
 ####Architecture:
-`StorIOSQLiteDb` and `StorIOContentResolver` — are abstractions with default implementations: `DefaultStorIOSQLiteDb` and `DefaultStorIOContentResolver`.
+`StorIOSQLite` and `StorIOContentResolver` — are abstractions with default implementations: `DefaultStorIOSQLite` and `DefaultStorIOContentResolver`.
 
-It means, that you can have your own implementation of `StorIOSQLiteDb` and `StorIOContentResolver` with custom behavior, such as memory caching, verbose logging and so on.
+It means, that you can have your own implementation of `StorIOSQLite` and `StorIOContentResolver` with custom behavior, such as memory caching, verbose logging and so on.
 
-One of the main goals of `StorIO` — clean API which will be easy to use and understand, that's why `StorIOSQLiteDb` and `StorIOContentResolver` have just several methods, but we understand that sometimes you need to go under the hood and `StorIO` allows you to do it: `StorIOSQLiteDb.Internal` and `StorIOContentResolver.Internal` encapsulates low-level methods, you can use them if you need, but please try to avoid it.
+One of the main goals of `StorIO` — clean API which will be easy to use and understand, that's why `StorIOSQLite` and `StorIOContentResolver` have just several methods, but we understand that sometimes you need to go under the hood and `StorIO` allows you to do it: `StorIOSQLite.Internal` and `StorIOContentResolver.Internal` encapsulates low-level methods, you can use them if you need, but please try to avoid it.
 
 ####Queries
 

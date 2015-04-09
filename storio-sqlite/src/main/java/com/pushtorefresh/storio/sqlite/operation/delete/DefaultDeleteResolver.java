@@ -1,0 +1,20 @@
+package com.pushtorefresh.storio.sqlite.operation.delete;
+
+import android.support.annotation.NonNull;
+
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
+
+/**
+ * Default implementation for {@link DeleteResolver}, thread-safe
+ */
+public class DefaultDeleteResolver implements DeleteResolver {
+
+    // to prevent unneeded allocations
+    static final DefaultDeleteResolver INSTANCE = new DefaultDeleteResolver();
+
+    @Override
+    public int performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery) {
+        return storIOSQLite.internal().delete(deleteQuery);
+    }
+}

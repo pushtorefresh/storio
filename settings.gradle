@@ -1,6 +1,6 @@
 include ':storio-common'
 include ':storio-test-common'
-include ':storio-sqlitedb'
+include ':storio-sqlite'
 include ':storio-contentresolver'
 include ':storio-sample-app'
 include ':storio-test-without-rxjava'
