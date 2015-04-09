@@ -3,9 +3,10 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
@@ -14,8 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Func1;
 
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
@@ -27,7 +26,13 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         super(storIOSQLite, rawQuery, getResolver);
     }
 
-    @NonNull public Cursor executeAsBlocking() {
+    /**
+     * Executes Prepared Operation immediately in current thread
+     *
+     * @return non-null {@link Cursor}, can be empty
+     */
+    @NonNull
+    public Cursor executeAsBlocking() {
         if (query != null) {
             return getResolver.performGet(storIOSQLite, query);
         } else if (rawQuery != null) {
@@ -37,20 +42,30 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         }
     }
 
-    @NonNull @Override public Observable<Cursor> createObservable() {
+    /**
+     * Creates an {@link Observable} which will emit result of operation
+     *
+     * @return non-null {@link Observable} which will emit non-null {@link Cursor}, can be empty
+     */
+    @NonNull
+    @Override
+    public Observable<Cursor> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-
-        return Observable.create(new Observable.OnSubscribe<Cursor>() {
-            @Override public void call(Subscriber<? super Cursor> subscriber) {
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(executeAsBlocking());
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
-    @NonNull @Override public Observable<Cursor> createObservableStream() {
+    /**
+     * Creates an {@link Observable} which will be subscribed to changes of query tables
+     * and will emit result each time change occurs
+     * <p/>
+     * First result will be emitted immediately after subscription,
+     * other emissions will occur only if changes of query tables will occur
+     *
+     * @return non-null {@link Observable} which will emit {@link Cursor} and will be subscribed to changes of query tables
+     */
+    @NonNull
+    @Override
+    public Observable<Cursor> createObservableStream() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
 
         final Set<String> tables;
@@ -66,12 +81,8 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
 
         if (tables != null && !tables.isEmpty()) {
             return storIOSQLite
-                    .observeChangesInTables(tables)
-                    .map(new Func1<Changes, Cursor>() { // each change triggers executeAsBlocking
-                        @Override public Cursor call(Changes changes) {
-                            return executeAsBlocking();
-                        }
-                    })
+                    .observeChangesInTables(tables) // each change triggers executeAsBlocking
+                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                     .startWith(executeAsBlocking()); // start stream with first query result
         } else {
             return createObservable();
@@ -168,7 +179,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     /**
      * Builder for {@link PreparedOperationWithReactiveStream}
      */
-     public static class CompleteBuilder implements CommonBuilder<CompleteBuilder> {
+    public static class CompleteBuilder implements CommonBuilder<CompleteBuilder> {
 
         private final Builder incompleteBuilder;
 

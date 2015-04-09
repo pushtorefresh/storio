@@ -5,7 +5,8 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
-import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
@@ -17,8 +18,6 @@ import java.util.List;
 import java.util.Set;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Func1;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
@@ -82,16 +81,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @NonNull
     public Observable<List<T>> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-
-        return Observable.create(new Observable.OnSubscribe<List<T>>() {
-            @Override
-            public void call(Subscriber<? super List<T>> subscriber) {
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(executeAsBlocking());
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**
@@ -120,13 +110,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
         if (tables != null && !tables.isEmpty()) {
             return storIOSQLite
-                    .observeChangesInTables(tables)
-                    .map(new Func1<Changes, List<T>>() { // each change triggers executeAsBlocking
-                        @Override
-                        public List<T> call(Changes affectedTables) {
-                            return executeAsBlocking();
-                        }
-                    })
+                    .observeChangesInTables(tables) // each change triggers executeAsBlocking
+                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                     .startWith(executeAsBlocking()); // start stream with first query result
         } else {
             return createObservable();
@@ -145,9 +130,6 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         @NonNull
         private final StorIOSQLite storIOSQLite;
 
-        @NonNull
-        private final Class<T> type; // currently type not used as object, only for generic Builder class
-
         private MapFunc<Cursor, T> mapFunc;
         private Query query;
         private RawQuery rawQuery;
@@ -155,7 +137,6 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type) {
             this.storIOSQLite = storIOSQLite;
-            this.type = type;
         }
 
         /**
