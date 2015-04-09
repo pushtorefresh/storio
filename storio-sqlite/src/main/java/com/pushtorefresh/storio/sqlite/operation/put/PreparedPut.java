@@ -57,8 +57,8 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          * @return builder
          */
         @NonNull
-        public PreparedPutIterableContentValues.Builder contentValues(@NonNull Iterable<ContentValues> contentValuesIterable) {
-            return new PreparedPutIterableContentValues.Builder(storIOSQLite, contentValuesIterable);
+        public PreparedPutContentValuesIterable.Builder contentValues(@NonNull Iterable<ContentValues> contentValuesIterable) {
+            return new PreparedPutContentValuesIterable.Builder(storIOSQLite, contentValuesIterable);
         }
 
         /**
@@ -68,8 +68,8 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          * @return builder
          */
         @NonNull
-        public PreparedPutIterableContentValues.Builder contentValues(@NonNull ContentValues... contentValuesArray) {
-            return new PreparedPutIterableContentValues.Builder(storIOSQLite, Arrays.asList(contentValuesArray));
+        public PreparedPutContentValuesIterable.Builder contentValues(@NonNull ContentValues... contentValuesArray) {
+            return new PreparedPutContentValuesIterable.Builder(storIOSQLite, Arrays.asList(contentValuesArray));
         }
 
         /**
