@@ -126,7 +126,6 @@ public class PutResult {
         if (numberOfRowsUpdated != null ? !numberOfRowsUpdated.equals(putResult.numberOfRowsUpdated) : putResult.numberOfRowsUpdated != null)
             return false;
         return affectedUri.equals(putResult.affectedUri);
-
     }
 
     @Override

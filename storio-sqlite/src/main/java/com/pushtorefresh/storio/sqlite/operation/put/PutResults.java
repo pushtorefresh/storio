@@ -102,4 +102,28 @@ public class PutResults<T> {
 
         return numberOfUpdates;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PutResults<?> that = (PutResults<?>) o;
+
+        return results.equals(that.results);
+    }
+
+    @Override
+    public int hashCode() {
+        return results.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "PutResults{" +
+                "results=" + results +
+                ", numberOfInsertsCache=" + numberOfInsertsCache +
+                ", numberOfUpdatesCache=" + numberOfUpdatesCache +
+                '}';
+    }
 }
