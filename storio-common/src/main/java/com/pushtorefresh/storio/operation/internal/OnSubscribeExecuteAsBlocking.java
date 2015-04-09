@@ -36,8 +36,10 @@ public class OnSubscribeExecuteAsBlocking<Result> implements Observable.OnSubscr
 
     @Override
     public void call(Subscriber<? super Result> subscriber) {
+        final Result result = preparedOperation.executeAsBlocking();
+
         if (!subscriber.isUnsubscribed()) {
-            subscriber.onNext(preparedOperation.executeAsBlocking());
+            subscriber.onNext(result);
             subscriber.onCompleted();
         }
     }
