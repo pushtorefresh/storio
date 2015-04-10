@@ -54,7 +54,6 @@ public class UpdateQuery {
         if (!uri.equals(that.uri)) return false;
         if (where != null ? !where.equals(that.where) : that.where != null) return false;
         return !(whereArgs != null ? !whereArgs.equals(that.whereArgs) : that.whereArgs != null);
-
     }
 
     @Override
@@ -107,6 +106,26 @@ public class UpdateQuery {
 
         CompleteBuilder(@NonNull Builder builder) {
             uri = builder.uri;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder uri(@NonNull Uri uri) {
+            this.uri = uri;
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder uri(@NonNull String uri) {
+            this.uri = Uri.parse(uri);
+            return this;
         }
 
         /**
