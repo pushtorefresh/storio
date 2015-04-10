@@ -39,10 +39,10 @@ final MapFunc<Cursor, Tweet> mapFunc = new MapFunc<Cursor, Tweet>() {
 final List<Tweet> tweets = storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
-  .withMapFunc(mapFunc)
   .withQuery(new Query.Builder()
     .table("tweets")
     .build())
+  .withMapFunc(mapFunc)
   .prepare()
   .executeAsBlocking();
 ```
@@ -90,8 +90,8 @@ storIOSQLite
 storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
-  .withMapFunc(Tweet.MAP_FROM_CURSOR)
   .withQuery(Tweet.ALL_TWEETS_QUERY)
+  .withMapFunc(Tweet.MAP_FROM_CURSOR)
   .prepare()
   .createObservableStream() // here is the magic! It will be subscribed to changes in tables from Query
   .subscribeOn(Schedulers.io())
@@ -122,11 +122,11 @@ storIOSQLite
 storIOSQLite
   .get()
   .listOfObjects(TweetAndUser.class)
-  .withMapFunc(TweetAndUser.MAP_FROM_CURSOR)
   .withQuery(new RawQuery.Builder()
     .query("SELECT * FROM tweets JOIN users ON tweets.user_name = users.name WHERE tweets.user_name = ?")
     .args("artem_zin")
     .build())
+  .withMapFunc(TweetAndUser.MAP_FROM_CURSOR)
   .prepare()
   .createObservableStream();
 ```
@@ -151,8 +151,8 @@ GetResolver getResolver = new GetResolver() {
 storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
-  .withMapFunc(Tweet.MAP_FROM_CURSOR)
   .withQuery(Tweet.ALL_TWEETS_QUERY)
+  .withMapFunc(Tweet.MAP_FROM_CURSOR)
   .withGetResolver(getResolver) // here we set custom GetResolver for Get Operation
   .prepare()
   .executeAsBlocking();
@@ -198,8 +198,8 @@ Tweet tweet = getSomeTweet();
 storIOSQLite
   .put()
   .object(tweet)
-  .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
   .withPutResolver(Tweet.PUT_RESOLVER)
+  .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
   .prepare()
   .executeAsBlocking(); // or createObservable()
 ```
@@ -211,8 +211,8 @@ List<Tweet> tweets = getSomeTweets();
 storIOSQLite
   .put()
   .objects(tweets)
-  .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
   .withPutResolver(Tweet.PUT_RESOLVER)
+  .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
   .prepare()
   .executeAsBlocking(); // or createObservable()
 ```
