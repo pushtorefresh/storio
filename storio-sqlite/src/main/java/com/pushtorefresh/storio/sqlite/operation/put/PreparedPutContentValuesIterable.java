@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlite.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
@@ -13,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
-import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
@@ -34,6 +34,11 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
+    /**
+     * Executes Put Operation immediately in current thread
+     *
+     * @return non-null results of Put Operation
+     */
     @NonNull
     @Override
     public PutResults<ContentValues> executeAsBlocking() {
@@ -84,23 +89,16 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
         return PutResults.newInstance(putResults);
     }
 
+    /**
+     * Creates {@link Observable} which will perform Put Operation and send results to observer
+     *
+     * @return non-null {@link Observable} which will perform Put Operation and send results to observer
+     */
     @NonNull
     @Override
     public Observable<PutResults<ContentValues>> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-
-        return Observable.create(new Observable.OnSubscribe<PutResults<ContentValues>>() {
-
-            @Override
-            public void call(Subscriber<? super PutResults<ContentValues>> subscriber) {
-                final PutResults<ContentValues> putResults = executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(putResults);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**
