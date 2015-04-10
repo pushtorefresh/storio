@@ -124,7 +124,7 @@ public class DeleteQuery {
         @Override
         public CompleteBuilder uri(@NonNull Uri uri) {
             this.uri = uri;
-            return this
+            return this;
         }
 
         /**
