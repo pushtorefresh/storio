@@ -1,10 +1,12 @@
 package com.pushtorefresh.storio.test_without_rxjava.sqlite;
 
+import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
+import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
 import com.pushtorefresh.storio.sqlite.query.Query;
 
 import org.junit.Test;
@@ -44,6 +46,18 @@ public class DefaultStorIOSQLiteTest {
                 .withGetResolver(mock(GetResolver.class))
                 .withMapFunc(mock(MapFunc.class))
                 .withQuery(mock(Query.class))
+                .prepare();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void instantiatePutContentValues() {
+        new DefaultStorIOSQLite.Builder()
+                .db(mock(SQLiteDatabase.class))
+                .build()
+                .put()
+                .contentValues(mock(ContentValues.class))
+                .withPutResolver(mock(PutResolver.class))
                 .prepare();
     }
 }
