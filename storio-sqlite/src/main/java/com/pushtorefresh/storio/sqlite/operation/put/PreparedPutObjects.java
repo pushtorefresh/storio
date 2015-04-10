@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.operation.MapFunc;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
@@ -14,14 +15,15 @@ import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
-import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
-    @NonNull private final Iterable<T> objects;
-    @NonNull private final MapFunc<T, ContentValues> mapFunc;
+    @NonNull
+    private final Iterable<T> objects;
+    @NonNull
+    private final MapFunc<T, ContentValues> mapFunc;
     private final boolean useTransactionIfPossible;
 
     PreparedPutObjects(@NonNull StorIOSQLite storIOSQLite,
@@ -34,7 +36,14 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         this.useTransactionIfPossible = useTransactionIfPossible;
     }
 
-    @NonNull @Override public PutResults<T> executeAsBlocking() {
+    /**
+     * Executes Put Operation immediately in current thread
+     *
+     * @return non-null results of Put Operation
+     */
+    @NonNull
+    @Override
+    public PutResults<T> executeAsBlocking() {
         final StorIOSQLite.Internal internal = storIOSQLite.internal();
         final Map<T, PutResult> putResults = new HashMap<T, PutResult>();
 
@@ -85,20 +94,16 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         return PutResults.newInstance(putResults);
     }
 
-    @NonNull @Override public Observable<PutResults<T>> createObservable() {
+    /**
+     * Creates {@link Observable} which will perform Put Operation and send results to observer
+     *
+     * @return non-null {@link Observable} which will perform Put Operation and send results to observer
+     */
+    @NonNull
+    @Override
+    public Observable<PutResults<T>> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-
-        return Observable.create(new Observable.OnSubscribe<PutResults<T>>() {
-            @Override
-            public void call(Subscriber<? super PutResults<T>> subscriber) {
-                PutResults<T> putResults = executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(putResults);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**
@@ -108,8 +113,11 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
      */
     public static class Builder<T> {
 
-        @NonNull private final StorIOSQLite storIOSQLite;
-        @NonNull private final Iterable<T> objects;
+        @NonNull
+        private final StorIOSQLite storIOSQLite;
+
+        @NonNull
+        private final Iterable<T> objects;
 
         private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
@@ -127,7 +135,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          * @param mapFunc map function for Put Operation which will be used to map each object to {@link ContentValues}
          * @return builder
          */
-        @NonNull public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
+        @NonNull
+        public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
@@ -140,7 +149,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          * @return builder
          * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
          */
-        @NonNull public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
+        @NonNull
+        public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
             this.putResolver = putResolver;
             return this;
         }
@@ -152,7 +162,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          *
          * @return builder
          */
-        @NonNull public Builder<T> useTransactionIfPossible() {
+        @NonNull
+        public Builder<T> useTransactionIfPossible() {
             useTransactionIfPossible = true;
             return this;
         }
@@ -164,7 +175,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          *
          * @return builder
          */
-        @NonNull public Builder<T> dontUseTransaction() {
+        @NonNull
+        public Builder<T> dontUseTransaction() {
             useTransactionIfPossible = false;
             return this;
         }
@@ -174,7 +186,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          *
          * @return {@link PreparedPutObjects} instance
          */
-        @NonNull public PreparedPutObjects<T> prepare() {
+        @NonNull
+        public PreparedPutObjects<T> prepare() {
             checkNotNull(mapFunc, "Please specify map function");
             checkNotNull(putResolver, "Please specify put resolver");
 

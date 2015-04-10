@@ -60,4 +60,67 @@ public class DefaultStorIOSQLiteTest {
                 .withPutResolver(mock(PutResolver.class))
                 .prepare();
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void instantiatePutContentValuesIterable() {
+        new DefaultStorIOSQLite.Builder()
+                .db(mock(SQLiteDatabase.class))
+                .build()
+                .put()
+                .contentValues(mock(Iterable.class))
+                .withPutResolver(mock(PutResolver.class))
+                .prepare();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void instantiatePutContentValuesVarArgs() {
+        new DefaultStorIOSQLite.Builder()
+                .db(mock(SQLiteDatabase.class))
+                .build()
+                .put()
+                .contentValues(mock(ContentValues.class), mock(ContentValues.class))
+                .withPutResolver(mock(PutResolver.class))
+                .prepare();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void instantiatePutObject() {
+        new DefaultStorIOSQLite.Builder()
+                .db(mock(SQLiteDatabase.class))
+                .build()
+                .put()
+                .object(mock(Object.class))
+                .withPutResolver(mock(PutResolver.class))
+                .withMapFunc(mock(MapFunc.class))
+                .prepare();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void instantiatePutObjectsIterable() {
+        new DefaultStorIOSQLite.Builder()
+                .db(mock(SQLiteDatabase.class))
+                .build()
+                .put()
+                .objects(mock(Iterable.class))
+                .withPutResolver(mock(PutResolver.class))
+                .withMapFunc(mock(MapFunc.class))
+                .prepare();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void instantiatePutObjectsVarArgs() {
+        new DefaultStorIOSQLite.Builder()
+                .db(mock(SQLiteDatabase.class))
+                .build()
+                .put()
+                .objects(mock(Object.class), mock(Object.class))
+                .withPutResolver(mock(PutResolver.class))
+                .withMapFunc(mock(MapFunc.class))
+                .prepare();
+    }
 }
