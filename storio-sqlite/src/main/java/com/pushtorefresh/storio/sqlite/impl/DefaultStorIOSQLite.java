@@ -207,32 +207,62 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      */
     public static class Builder {
 
-        private SQLiteDatabase db;
+        SQLiteDatabase db;
 
         /**
          * Specifies database for internal usage.
          * You should provide this or {@link SQLiteOpenHelper}
-         * @see {@link #sqliteOpenHelper(SQLiteOpenHelper)}
          *
          * @param db a real database for internal usage
          * @return builder
+         * @see {@link #sqliteOpenHelper(SQLiteOpenHelper)}
          */
         @NonNull
-        public Builder db(@NonNull SQLiteDatabase db) {
+        public CompleteBuilder db(@NonNull SQLiteDatabase db) {
             this.db = db;
-            return this;
+            return new CompleteBuilder(this);
         }
 
         /**
          * Specifies SqLite helper for internal usage
          * You should provide this or {@link SQLiteDatabase}
-         * @see {@link #db(SQLiteDatabase)}
          *
          * @param sqliteOpenHelper a SqLite helper for internal usage
          * @return builder
+         * @see {@link #db(SQLiteDatabase)}
          */
         @NonNull
-        public Builder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
+        public CompleteBuilder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
+            db = sqliteOpenHelper.getWritableDatabase();
+            return new CompleteBuilder(this);
+        }
+    }
+
+    /**
+     * Compile-time safe part of builder for {@link DeleteQuery}
+     */
+    public static class CompleteBuilder extends Builder {
+
+        CompleteBuilder(@NonNull Builder builder) {
+            db = builder.db;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder db(@NonNull SQLiteDatabase db) {
+            this.db = db;
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
             db = sqliteOpenHelper.getWritableDatabase();
             return this;
         }
@@ -245,7 +275,6 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @NonNull
         public DefaultStorIOSQLite build() {
             checkNotNull(db, "Please specify SQLiteDatabase instance");
-
             return new DefaultStorIOSQLite(db);
         }
     }
