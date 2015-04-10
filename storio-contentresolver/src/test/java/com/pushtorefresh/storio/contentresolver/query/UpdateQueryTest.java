@@ -9,20 +9,20 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
-public class DeleteQueryTest {
+public class UpdateQueryTest {
 
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void nullUri() {
-        new DeleteQuery.Builder()
-                .uri((Uri) null) // LOL, via overload we disable null uri without specifying Type!
+        new UpdateQuery.Builder()
+                .uri((Uri) null)
                 .build();
     }
 
     @SuppressWarnings("ConstantConditions")
-    @Test(expected = RuntimeException.class) // Uri#parse() not mocked
+    @Test(expected = RuntimeException.class)
     public void nullUriString() {
-        new DeleteQuery.Builder()
+        new UpdateQuery.Builder()
                 .uri((String) null)
                 .build();
     }
@@ -33,14 +33,14 @@ public class DeleteQueryTest {
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
 
-        final DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        final UpdateQuery updateQuery = new UpdateQuery.Builder()
                 .uri(uri)
                 .where(where)
                 .whereArgs(whereArgs)
                 .build();
 
-        assertEquals(uri, deleteQuery.uri);
-        assertEquals(where, deleteQuery.where);
-        assertEquals(Arrays.asList(whereArgs), deleteQuery.whereArgs);
+        assertEquals(uri, updateQuery.uri);
+        assertEquals(where, updateQuery.where);
+        assertEquals(Arrays.asList(whereArgs), updateQuery.whereArgs);
     }
 }

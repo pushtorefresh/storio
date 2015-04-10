@@ -155,6 +155,26 @@ public class Query {
         }
 
         /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder uri(@NonNull Uri uri) {
+            this.uri = uri;
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder uri(@NonNull String uri) {
+            this.uri = Uri.parse(uri);
+            return this;
+        }
+
+        /**
          * The list of columns to put into the cursor.
          * If <code>null</code> all columns are included.
          * <p>
