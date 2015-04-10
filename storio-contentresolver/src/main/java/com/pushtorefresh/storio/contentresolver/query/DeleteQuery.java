@@ -92,6 +92,18 @@ public class DeleteQuery {
             this.uri = uri;
             return new CompleteBuilder(this);
         }
+
+        /**
+         * Required: Specifies uri
+         *
+         * @param uri full URI to query, including a row ID (if a specific record is requested)
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder uri(@NonNull String uri) {
+            this.uri = Uri.parse(uri);
+            return new CompleteBuilder(this);
+        }
     }
 
     /**
