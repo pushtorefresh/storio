@@ -54,7 +54,6 @@ public class DeleteQuery {
         if (!uri.equals(that.uri)) return false;
         if (where != null ? !where.equals(that.where) : that.where != null) return false;
         return !(whereArgs != null ? !whereArgs.equals(that.whereArgs) : that.whereArgs != null);
-
     }
 
     @Override
@@ -80,8 +79,6 @@ public class DeleteQuery {
     public static class Builder {
 
         Uri uri;
-        String where;
-        List<String> whereArgs;
 
         /**
          * Required: Specifies uri
@@ -96,6 +93,51 @@ public class DeleteQuery {
         }
 
         /**
+         * Required: Specifies uri
+         *
+         * @param uri full URI to query, including a row ID (if a specific record is requested)
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder uri(@NonNull String uri) {
+            this.uri = Uri.parse(uri);
+            return new CompleteBuilder(this);
+        }
+    }
+
+    /**
+     * Compile-time safe part of builder for {@link DeleteQuery}
+     */
+    public static class CompleteBuilder extends Builder {
+
+        private String where;
+        private List<String> whereArgs;
+
+        CompleteBuilder(@NonNull final Builder builder) {
+            uri = builder.uri;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder uri(@NonNull Uri uri) {
+            this.uri = uri;
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder uri(@NonNull String uri) {
+            this.uri = Uri.parse(uri);
+            return this;
+        }
+
+        /**
          * Optional: Specifies where clause
          * <p>
          * Default value is <code>null</code>
@@ -104,7 +146,7 @@ public class DeleteQuery {
          * @return builder
          */
         @NonNull
-        public Builder where(@Nullable String where) {
+        public CompleteBuilder where(@Nullable String where) {
             this.where = where;
             return this;
         }
@@ -120,50 +162,8 @@ public class DeleteQuery {
          * @return builder
          */
         @NonNull
-        public Builder whereArgs(@Nullable Object... whereArgs) {
-            this.whereArgs = QueryUtil.varargsToList(whereArgs);
-            return this;
-        }
-    }
-
-    /**
-     * Compile-time safe part of builder for {@link DeleteQuery}
-     */
-    public static class CompleteBuilder extends Builder {
-
-        CompleteBuilder(@NonNull final Builder builder) {
-            uri = builder.uri;
-            where = builder.where;
-            whereArgs = builder.whereArgs;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder uri(@NonNull Uri uri) {
-            super.uri(uri);
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder where(@Nullable String where) {
-            super.where(where);
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
-            super.whereArgs(whereArgs);
+            this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
 
