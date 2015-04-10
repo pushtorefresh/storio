@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 public final class Checks {
 
     private Checks() {
-
+        throw new IllegalStateException("No instances please");
     }
 
     /**
@@ -24,14 +24,16 @@ public final class Checks {
 
     /**
      * Checks that passed string is not null and not empty,
-     * throws {@link IllegalStateException} with passed message
+     * throws {@link NullPointerException} or {@link IllegalStateException} with passed message
      * if string is null or empty.
      *
      * @param value   a string to check
      * @param message exception message if object is null
      */
     public static void checkNotEmpty(@Nullable String value, @NonNull String message) {
-        if (value == null || value.length() == 0) {
+        if (value == null) {
+            throw new NullPointerException(message);
+        } else if (value.length() == 0) {
             throw new IllegalStateException(message);
         }
     }

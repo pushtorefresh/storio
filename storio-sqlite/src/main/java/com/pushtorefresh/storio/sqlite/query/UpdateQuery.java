@@ -57,7 +57,6 @@ public class UpdateQuery {
         if (!table.equals(that.table)) return false;
         if (where != null ? !where.equals(that.where) : that.where != null) return false;
         return !(whereArgs != null ? !whereArgs.equals(that.whereArgs) : that.whereArgs != null);
-
     }
 
     @Override
@@ -82,9 +81,7 @@ public class UpdateQuery {
      */
     public static class Builder {
 
-        private String table;
-        private String where;
-        private List<String> whereArgs;
+        String table;
 
         /**
          * Required: Specifies table name
@@ -93,7 +90,30 @@ public class UpdateQuery {
          * @return builder
          */
         @NonNull
-        public Builder table(@NonNull String table) {
+        public CompleteBuilder table(@NonNull String table) {
+            this.table = table;
+            return new CompleteBuilder(this);
+        }
+    }
+
+    /**
+     * Compile-time safe part of builder for {@link DeleteQuery}
+     */
+    public static class CompleteBuilder extends Builder {
+
+        private String where;
+        private List<String> whereArgs;
+
+        CompleteBuilder(@NonNull Builder builder) {
+            table = builder.table;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder table(@NonNull String table) {
             this.table = table;
             return this;
         }
@@ -113,7 +133,7 @@ public class UpdateQuery {
          * @return builder
          */
         @NonNull
-        public Builder where(@Nullable String where) {
+        public CompleteBuilder where(@Nullable String where) {
             this.where = where;
             return this;
         }
@@ -129,7 +149,7 @@ public class UpdateQuery {
          * @return builder
          */
         @NonNull
-        public Builder whereArgs(@Nullable String... whereArgs) {
+        public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
             this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
