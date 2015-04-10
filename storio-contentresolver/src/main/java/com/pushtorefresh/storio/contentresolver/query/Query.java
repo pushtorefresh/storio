@@ -105,11 +105,7 @@ public class Query {
      */
     public static class Builder {
 
-        private Uri uri;
-        private List<String> projection;
-        private String where;
-        private List<String> whereArgs;
-        private String sortOrder;
+        Uri uri;
 
         /**
          * Specifies URI to query.
@@ -122,9 +118,9 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder uri(@NonNull Uri uri) {
+        public CompleteBuilder uri(@NonNull Uri uri) {
             this.uri = uri;
-            return this;
+            return new CompleteBuilder(this);
         }
 
         /**
@@ -138,9 +134,24 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder uri(@NonNull String uri) {
+        public CompleteBuilder uri(@NonNull String uri) {
             this.uri = Uri.parse(uri);
-            return this;
+            return new CompleteBuilder(this);
+        }
+    }
+
+    /**
+     * Compile-time safe part of builder for {@link DeleteQuery}
+     */
+    public static class CompleteBuilder extends Builder {
+
+        List<String> projection;
+        String where;
+        List<String> whereArgs;
+        String sortOrder;
+
+        CompleteBuilder(@NonNull Builder builder) {
+            uri = builder.uri;
         }
 
         /**
