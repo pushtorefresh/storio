@@ -70,9 +70,7 @@ public class UpdateQuery {
      */
     public static class Builder {
 
-        private Uri uri;
-        private String where;
-        private List<String> whereArgs;
+        Uri uri;
 
         /**
          * Required: Specifies uri
@@ -81,9 +79,34 @@ public class UpdateQuery {
          * @return builder
          */
         @NonNull
-        public Builder uri(@NonNull Uri uri) {
+        public CompleteBuilder uri(@NonNull Uri uri) {
             this.uri = uri;
-            return this;
+            return new CompleteBuilder(this);
+        }
+
+        /**
+         * Required: Specifies uri
+         *
+         * @param uri URI to query. This can potentially have a record ID if this is an update request for a specific record
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder uri(@NonNull String uri) {
+            this.uri = Uri.parse(uri);
+            return new CompleteBuilder(this);
+        }
+    }
+
+    /**
+     * Compile-time safe part of {@link Builder}
+     */
+    public static class CompleteBuilder extends Builder {
+
+        private String where;
+        private List<String> whereArgs;
+
+        CompleteBuilder(@NonNull Builder builder) {
+            uri = builder.uri;
         }
 
         /**
@@ -95,7 +118,7 @@ public class UpdateQuery {
          * @return builder
          */
         @NonNull
-        public Builder where(@Nullable String where) {
+        public CompleteBuilder where(@Nullable String where) {
             this.where = where;
             return this;
         }
@@ -111,7 +134,7 @@ public class UpdateQuery {
          * @return builder
          */
         @NonNull
-        public Builder whereArgs(@Nullable Object... whereArgs) {
+        public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
             this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
