@@ -68,6 +68,18 @@ public class InsertQuery {
             this.uri = uri;
             return new CompleteBuilder(this);
         }
+
+        /**
+         * Required: Specifies uri
+         *
+         * @param uri content:// URI of the insertion request
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder uri(@NonNull String uri) {
+            this.uri = Uri.parse(uri);
+            return new CompleteBuilder(this);
+        }
     }
 
     /**
@@ -85,7 +97,18 @@ public class InsertQuery {
         @NonNull
         @Override
         public CompleteBuilder uri(@NonNull Uri uri) {
-            return super.uri(uri);
+            this.uri = uri;
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder uri(@NonNull String uri) {
+            this.uri = Uri.parse(uri);
+            return this;
         }
 
         /**

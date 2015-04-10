@@ -9,20 +9,20 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
-public class DeleteQueryTest {
+public class QueryTest {
 
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void nullUri() {
-        new DeleteQuery.Builder()
-                .uri((Uri) null) // LOL, via overload we disable null uri without specifying Type!
+        new Query.Builder()
+                .uri((Uri) null)
                 .build();
     }
 
     @SuppressWarnings("ConstantConditions")
-    @Test(expected = RuntimeException.class) // Uri#parse() not mocked
+    @Test(expected = RuntimeException.class)
     public void nullUriString() {
-        new DeleteQuery.Builder()
+        new Query.Builder()
                 .uri((String) null)
                 .build();
     }
@@ -30,17 +30,23 @@ public class DeleteQueryTest {
     @Test
     public void build() {
         final Uri uri = mock(Uri.class);
+        final String[] projection = {"1", "2", "3"};
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+        final String sortOrder = "test_order";
 
-        final DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        final Query query = new Query.Builder()
                 .uri(uri)
+                .projection(projection)
                 .where(where)
                 .whereArgs(whereArgs)
+                .sortOrder(sortOrder)
                 .build();
 
-        assertEquals(uri, deleteQuery.uri);
-        assertEquals(where, deleteQuery.where);
-        assertEquals(Arrays.asList(whereArgs), deleteQuery.whereArgs);
+        assertEquals(uri, query.uri);
+        assertEquals(Arrays.asList(projection), query.projection);
+        assertEquals(where, query.where);
+        assertEquals(Arrays.asList(whereArgs), query.whereArgs);
+        assertEquals(sortOrder, query.sortOrder);
     }
 }
