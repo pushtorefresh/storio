@@ -20,8 +20,6 @@ android {
 }
 
 dependencies {
-    compile project(':storio-common')
-
     provided rootProject.ext.supportAnnotations
     provided rootProject.ext.rxJava
 

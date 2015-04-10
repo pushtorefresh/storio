@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import rx.Observable;
 import rx.functions.Action1;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-
 /**
  * Helps with checking behavior of {@link Observable}
  *
@@ -15,7 +13,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 public class ObservableBehaviorChecker<T> {
 
     private Observable<T> observable;
-    private Integer expectedNumberOfEmission;
+    private Integer expectedNumberOfEmissions;
     private Action1<T> testAction;
 
     /**
@@ -44,7 +42,7 @@ public class ObservableBehaviorChecker<T> {
      */
     @NonNull
     public ObservableBehaviorChecker<T> expectedNumberOfEmissions(int expectedNumberOfEmission) {
-        this.expectedNumberOfEmission = expectedNumberOfEmission;
+        this.expectedNumberOfEmissions = expectedNumberOfEmission;
         return this;
     }
 
@@ -68,9 +66,9 @@ public class ObservableBehaviorChecker<T> {
      * Checks that behavior of the {@link Observable} is good
      */
     public void checkBehaviorOfObservable() {
-        checkNotNull(observable, "Please specify Observable");
-        checkNotNull(expectedNumberOfEmission, "Please specify expected number of emissions");
-        checkNotNull(testAction, "Please specify test action");
+        if (observable == null || expectedNumberOfEmissions == null || testAction == null) {
+            throw new NullPointerException("Please specify fields");
+        }
 
         final Iterable<T> iterableEmission = observable
                 .toBlocking()
@@ -81,7 +79,7 @@ public class ObservableBehaviorChecker<T> {
         for (T emission : iterableEmission) {
             numberOfEmissions++;
 
-            if (numberOfEmissions > expectedNumberOfEmission) {
+            if (numberOfEmissions > expectedNumberOfEmissions) {
                 throw new IllegalStateException("Observable should emit result once");
             }
 
