@@ -33,7 +33,6 @@ public class InsertQuery {
         InsertQuery that = (InsertQuery) o;
 
         return uri.equals(that.uri);
-
     }
 
     @Override
@@ -56,7 +55,7 @@ public class InsertQuery {
      */
     public static class Builder {
 
-        private Uri uri;
+        Uri uri;
 
         /**
          * Required: Specifies uri
@@ -65,9 +64,28 @@ public class InsertQuery {
          * @return builder
          */
         @NonNull
-        public Builder uri(@NonNull Uri uri) {
+        public CompleteBuilder uri(@NonNull Uri uri) {
             this.uri = uri;
-            return this;
+            return new CompleteBuilder(this);
+        }
+    }
+
+    /**
+     * Compile-time safe part of builder for {@link DeleteQuery}
+     */
+    public static class CompleteBuilder extends Builder {
+
+        CompleteBuilder(@NonNull Builder builder) {
+            uri = builder.uri;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder uri(@NonNull Uri uri) {
+            return super.uri(uri);
         }
 
         /**
