@@ -164,7 +164,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder projection(@Nullable String... columns) {
+        public CompleteBuilder projection(@Nullable String... columns) {
             projection = QueryUtil.varargsToList(columns);
             return this;
         }
@@ -179,7 +179,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder where(@Nullable String where) {
+        public CompleteBuilder where(@Nullable String where) {
             this.where = where;
             return this;
         }
@@ -195,7 +195,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder whereArgs(@Nullable Object... whereArgs) {
+        public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
             this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
@@ -210,7 +210,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder sortOrder(@Nullable String sortOrder) {
+        public CompleteBuilder sortOrder(@Nullable String sortOrder) {
             this.sortOrder = sortOrder;
             return this;
         }
