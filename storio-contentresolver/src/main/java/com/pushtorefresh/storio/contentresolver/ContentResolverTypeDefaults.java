@@ -1,24 +1,24 @@
-package com.pushtorefresh.storio.sqlite;
+package com.pushtorefresh.storio.contentresolver;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResolver;
+import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
+import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
+import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.operation.MapFunc;
-import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResolver;
-import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
-import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
- * SQLite Type default values for object mapping
+ * ContentResolver Type default values for object mapping
  *
  * @param <T> type
  */
-public class SQLiteTypeDefaults<T> {
+public class ContentResolverTypeDefaults<T> {
 
     @NonNull
     public final MapFunc<T, ContentValues> mapToContentValues;
@@ -38,12 +38,7 @@ public class SQLiteTypeDefaults<T> {
     @Nullable
     public final DeleteResolver deleteResolver;
 
-    SQLiteTypeDefaults(@NonNull MapFunc<T, ContentValues> mapToContentValues,
-                       @NonNull MapFunc<Cursor, T> mapFromCursor,
-                       @NonNull PutResolver<T> putResolver,
-                       @NonNull MapFunc<T, DeleteQuery> mapToDeleteQuery,
-                       @Nullable GetResolver getResolver,
-                       @Nullable DeleteResolver deleteResolver) {
+    private ContentResolverTypeDefaults(@NonNull MapFunc<T, ContentValues> mapToContentValues, @NonNull MapFunc<Cursor, T> mapFromCursor, @NonNull PutResolver<T> putResolver, @NonNull MapFunc<T, DeleteQuery> mapToDeleteQuery, GetResolver getResolver, DeleteResolver deleteResolver) {
         this.mapToContentValues = mapToContentValues;
         this.mapFromCursor = mapFromCursor;
         this.putResolver = putResolver;
@@ -53,7 +48,7 @@ public class SQLiteTypeDefaults<T> {
     }
 
     /**
-     * Builder for {@link SQLiteTypeDefaults}
+     * Builder for {@link ContentResolverTypeDefaults}
      */
     public static class Builder<T> {
 
@@ -70,7 +65,7 @@ public class SQLiteTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}
+     * Compile-time safe part of builder for {@link ContentResolverTypeDefaults}
      *
      * @param <T> type
      */
@@ -95,7 +90,7 @@ public class SQLiteTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}
+     * Compile-time safe part of builder for {@link ContentResolverTypeDefaults}
      *
      * @param <T> type
      */
@@ -104,8 +99,7 @@ public class SQLiteTypeDefaults<T> {
         private final MapFunc<T, ContentValues> mapToContentValues;
         private final MapFunc<Cursor, T> mapFromCursor;
 
-        MapFromCursorBuilder(MapFunc<T, ContentValues> mapToContentValues,
-                             MapFunc<Cursor, T> mapFromCursor) {
+        MapFromCursorBuilder(MapFunc<T, ContentValues> mapToContentValues, MapFunc<Cursor, T> mapFromCursor) {
             this.mapToContentValues = mapToContentValues;
             this.mapFromCursor = mapFromCursor;
         }
@@ -118,16 +112,21 @@ public class SQLiteTypeDefaults<T> {
          */
         @NonNull
         public PutResolverBuilder<T> putResolver(@NonNull PutResolver<T> putResolver) {
-            return new PutResolverBuilder<T>(mapToContentValues, mapFromCursor, putResolver);
+            return new PutResolverBuilder<T>(
+                    mapToContentValues,
+                    mapFromCursor,
+                    putResolver
+            );
         }
     }
 
     /**
-     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}
+     * Compile-time safe part of builder for {@link ContentResolverTypeDefaults}
      *
      * @param <T> type
      */
     public static class PutResolverBuilder<T> {
+
         private final MapFunc<T, ContentValues> mapToContentValues;
         private final MapFunc<Cursor, T> mapFromCursor;
         private final PutResolver<T> putResolver;
@@ -155,6 +154,11 @@ public class SQLiteTypeDefaults<T> {
         }
     }
 
+    /**
+     * Compile-time safe part of builder for {@link ContentResolverTypeDefaults}
+     *
+     * @param <T> type
+     */
     public static class CompleteBuilder<T> {
 
         private final MapFunc<T, ContentValues> mapToContentValues;
@@ -165,10 +169,7 @@ public class SQLiteTypeDefaults<T> {
         private GetResolver getResolver;
         private DeleteResolver deleteResolver;
 
-        CompleteBuilder(MapFunc<T, ContentValues> mapToContentValues,
-                        MapFunc<Cursor, T> mapFromCursor,
-                        PutResolver<T> putResolver,
-                        MapFunc<T, DeleteQuery> mapToDeleteQuery) {
+        CompleteBuilder(MapFunc<T, ContentValues> mapToContentValues, MapFunc<Cursor, T> mapFromCursor, PutResolver<T> putResolver, MapFunc<T, DeleteQuery> mapToDeleteQuery) {
             this.mapToContentValues = mapToContentValues;
             this.mapFromCursor = mapFromCursor;
             this.putResolver = putResolver;
@@ -194,30 +195,31 @@ public class SQLiteTypeDefaults<T> {
          * @return builder
          */
         @NonNull
-        public CompleteBuilder<T> deleteResolver(@Nullable DeleteResolver deleteResolver) {
+        public CompleteBuilder<T> deleteResolver(@NonNull DeleteResolver deleteResolver) {
             this.deleteResolver = deleteResolver;
             return this;
         }
 
         /**
-         * Builds new immutable instance of {@link SQLiteTypeDefaults}
+         * Builds new immutable instance of {@link ContentResolverTypeDefaults}
          *
-         * @return new immutable instance of {@link SQLiteTypeDefaults}
+         * @return new immutable instance of {@link ContentResolverTypeDefaults}
          */
         @NonNull
-        public SQLiteTypeDefaults<T> build() {
+        public ContentResolverTypeDefaults<T> build() {
             checkNotNull(mapToContentValues, "Please specify mapping to ContentValues");
             checkNotNull(mapFromCursor, "Please specify mapping from Cursor");
             checkNotNull(putResolver, "Please specify PutResolver");
             checkNotNull(mapToDeleteQuery, "Please specify mapping to DeleteQuery");
 
-            return new SQLiteTypeDefaults<T>(
+            return new ContentResolverTypeDefaults<T>(
                     mapToContentValues,
                     mapFromCursor,
                     putResolver,
                     mapToDeleteQuery,
-                    getResolver, deleteResolver);
+                    getResolver,
+                    deleteResolver
+            );
         }
     }
-
 }

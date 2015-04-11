@@ -5,10 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentresolver.Changes;
+import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.operation.MapFunc;
-import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.ArrayList;
@@ -116,23 +116,17 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Builder for {@link PreparedGetListOfObjects}
-     * <p>
-     * Required: You should specify query see {@link #withQuery(Query)}
+     * Compile-time safe part of builder for {@link PreparedGetListOfObjects}
      *
      * @param <T> type of objects for query
      */
     public static class Builder<T> {
 
         @NonNull
-        final StorIOContentResolver storIOContentResolver;
+        private final StorIOContentResolver storIOContentResolver;
 
         @NonNull
-        final Class<T> type; // currently type not used as object, only for generic Builder class
-
-        MapFunc<Cursor, T> mapFunc;
-        Query query;
-        GetResolver getResolver;
+        private final Class<T> type;
 
         public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Class<T> type) {
             this.storIOContentResolver = storIOContentResolver;
@@ -146,133 +140,93 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * @return builder
          */
         @NonNull
-        public MapFuncBuilder<T> withQuery(@NonNull Query query) {
-            this.query = query;
-            return new MapFuncBuilder<T>(this);
-        }
-
-        /**
-         * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
-         * <p>
-         * Default value is instance of {@link DefaultGetResolver}
-         *
-         * @param getResolver get resolver
-         * @return builder
-         */
-        @NonNull
-        public Builder<T> withGetResolver(@Nullable GetResolver getResolver) {
-            this.getResolver = getResolver;
-            return this;
+        public CompleteBuilder<T> withQuery(@NonNull Query query) {
+            checkNotNull(query, "Please specify query");
+            return new CompleteBuilder<T>(storIOContentResolver, type, query);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link PreparedGetListOfObjects}
-     * with specified query
-     * <p>
-     * Required: You should specify map function see {@link #withMapFunc(MapFunc)}
      *
      * @param <T> type of objects for query
      */
-    public static class MapFuncBuilder<T> extends Builder<T> {
+    public static class CompleteBuilder<T> {
 
-        MapFuncBuilder(@NonNull final Builder<T> builder) {
-            super(builder.storIOContentResolver, builder.type);
-
-            query = builder.query;
-            getResolver = builder.getResolver;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
         @NonNull
-        @Override
-        public MapFuncBuilder<T> withQuery(@NonNull Query query) {
-            super.withQuery(query);
-            return this;
-        }
+        private final StorIOContentResolver storIOContentResolver;
 
-        /**
-         * {@inheritDoc}
-         */
         @NonNull
-        @Override
-        public MapFuncBuilder<T> withGetResolver(@Nullable GetResolver getResolver) {
-            super.withGetResolver(getResolver);
-            return this;
+        private final Class<T> type;
+
+        @NonNull
+        private final Query query;
+
+        private MapFunc<Cursor, T> mapFunc;
+        private GetResolver getResolver;
+
+        CompleteBuilder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Class<T> type, @NonNull Query query) {
+            this.storIOContentResolver = storIOContentResolver;
+            this.type = type;
+            this.query = query;
         }
 
         /**
-         * Required: Specifies map function for Get Operation
+         * Optional: Specifies map function for Get Operation
          * which will map {@link Cursor} to object of required type
+         * <p/>
+         * Can be set via {@link ContentResolverTypeDefaults},
+         * if value is not set via {@link ContentResolverTypeDefaults} or explicitly exception will be thrown
          *
          * @param mapFunc map function which will map {@link Cursor} to object of required type
          * @return builder
          */
         @NonNull
-        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
+        public CompleteBuilder<T> withMapFunc(@Nullable MapFunc<Cursor, T> mapFunc) {
             this.mapFunc = mapFunc;
-            return new CompleteBuilder<T>(this);
-        }
-    }
-
-    /**
-     * Compile-time safe part of builder for {@link PreparedGetListOfObjects}
-     *
-     * @param <T> type of objects for query
-     */
-    public static class CompleteBuilder<T> extends MapFuncBuilder<T> {
-
-        CompleteBuilder(@NonNull final Builder<T> builder) {
-            super(builder);
-
-            mapFunc = builder.mapFunc;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
-            super.withMapFunc(mapFunc);
             return this;
         }
 
         /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override public CompleteBuilder<T> withQuery(@NonNull Query query) {
-            super.withQuery(query);
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder<T> withGetResolver(@Nullable GetResolver getResolver) {
-            super.withGetResolver(getResolver);
-            return this;
-        }
-
-        /**
-         * Prepares Get Operation
+         * Optional: Specifies {@link GetResolver} for Get Operation
+         * which allows you to customize behavior of Get Operation
+         * <p/>
+         * Can be set via {@link ContentResolverTypeDefaults},
+         * If value is not set via {@link ContentResolverTypeDefaults}, instance of {@link DefaultGetResolver}
          *
-         * @return {@link PreparedGetListOfObjects} instance
+         * @param getResolver get resolver
+         * @return builder
          */
         @NonNull
-        public PreparedOperationWithReactiveStream<List<T>> prepare() {
+        public CompleteBuilder<T> withGetResolver(@Nullable GetResolver getResolver) {
+            this.getResolver = getResolver;
+            return this;
+        }
+
+        /**
+         * Builds new instance of {@link PreparedGetListOfObjects}
+         *
+         * @return new instance of {@link PreparedGetListOfObjects}
+         */
+        @NonNull
+        public PreparedGetListOfObjects<T> prepare() {
+            final ContentResolverTypeDefaults<T> typeDefaults = storIOContentResolver.internal().typeDefaults(type);
+
+            if (mapFunc == null && typeDefaults != null) {
+                mapFunc = typeDefaults.mapFromCursor;
+            }
+
             checkNotNull(mapFunc, "Please specify map function");
-            checkNotNull(query, "Please specify query");
 
             if (getResolver == null) {
-                getResolver = DefaultGetResolver.INSTANCE;
+                if (typeDefaults != null && typeDefaults.getResolver != null) {
+                    getResolver = typeDefaults.getResolver;
+                } else {
+                    getResolver = DefaultGetResolver.INSTANCE;
+                }
             }
+
+            checkNotNull(getResolver, "Please specify Get Resolver");
 
             return new PreparedGetListOfObjects<T>(
                     storIOContentResolver,

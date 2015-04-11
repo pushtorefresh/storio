@@ -12,7 +12,7 @@ public class PreparedPutObjectsTest {
 
         final PutResults<TestItem> putResults = putStub.storIOContentResolver
                 .put()
-                .objects(putStub.testItems)
+                .objects(TestItem.class, putStub.testItems)
                 .withPutResolver(putStub.putResolverForObjects)
                 .withMapFunc(putStub.mapFunc)
                 .prepare()
@@ -27,7 +27,7 @@ public class PreparedPutObjectsTest {
 
         final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOContentResolver
                 .put()
-                .objects(putStub.testItems)
+                .objects(TestItem.class, putStub.testItems)
                 .withPutResolver(putStub.putResolverForObjects)
                 .withMapFunc(putStub.mapFunc)
                 .prepare()

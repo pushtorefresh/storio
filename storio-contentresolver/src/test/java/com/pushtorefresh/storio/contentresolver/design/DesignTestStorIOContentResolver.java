@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentresolver.Changes;
+import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
@@ -37,6 +38,13 @@ class DesignTestStorIOContentResolver extends StorIOContentResolver {
     }
 
     private class InternalImpl extends Internal {
+
+        @Nullable
+        @Override
+        public <T> ContentResolverTypeDefaults<T> typeDefaults(@NonNull Class<T> type) {
+            // no impl
+            return null;
+        }
 
         @Nullable
         @Override

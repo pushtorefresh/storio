@@ -29,6 +29,7 @@ class DeleteStub {
     final List<TestItem> testItems;
     final Map<TestItem, DeleteQuery> testItemToDeleteQueryMap;
     final StorIOContentResolver storIOContentResolver;
+    private final StorIOContentResolver.Internal internal;
     final DeleteResolver deleteResolver;
     final MapFunc<TestItem, DeleteQuery> mapFunc;
     private final Map<DeleteQuery, DeleteResult> deleteQueryToDeleteResultMap;
@@ -51,6 +52,10 @@ class DeleteStub {
     @SuppressWarnings("unchecked")
     private DeleteStub(int numberOfTestItems) {
         storIOContentResolver = mock(StorIOContentResolver.class);
+        internal = mock(StorIOContentResolver.Internal.class);
+
+        when(storIOContentResolver.internal())
+                .thenReturn(internal);
 
         when(storIOContentResolver.delete())
                 .thenReturn(new PreparedDelete.Builder(storIOContentResolver));

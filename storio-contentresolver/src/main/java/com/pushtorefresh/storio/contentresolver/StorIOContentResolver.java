@@ -110,6 +110,18 @@ public abstract class StorIOContentResolver {
         private final Loggi loggi = new Loggi();
 
         /**
+         * Gets {@link ContentResolverTypeDefaults} for required type
+         * <p/>
+         * Result can be null
+         *
+         * @param type type
+         * @param <T>  type
+         * @return {@link ContentResolverTypeDefaults} for required type or null
+         */
+        @Nullable
+        public abstract <T> ContentResolverTypeDefaults<T> typeDefaults(@NonNull Class<T> type);
+
+        /**
          * Gets the data from {@link StorIOContentResolver}
          *
          * @param query query

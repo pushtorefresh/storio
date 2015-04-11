@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentresolver.Changes;
+import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
@@ -18,6 +19,9 @@ import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
 import com.pushtorefresh.storio.util.QueryUtil;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
@@ -33,7 +37,7 @@ import static com.pushtorefresh.storio.util.EnvironmentUtil.newRxJavaIsNotAvaila
 public class DefaultStorIOContentResolver extends StorIOContentResolver {
 
     @NonNull
-    private final Internal internal = new InternalImpl();
+    private final Internal internal;
 
     @NonNull
     private final ContentResolver contentResolver;
@@ -47,8 +51,9 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     @Nullable
     private final ContentObserver contentObserver;
 
-    protected DefaultStorIOContentResolver(@NonNull ContentResolver contentResolver) {
+    protected DefaultStorIOContentResolver(@NonNull ContentResolver contentResolver, @Nullable Map<Class<?>, ContentResolverTypeDefaults<?>> typesDefaultsMap) {
         this.contentResolver = contentResolver;
+        internal = new InternalImpl(typesDefaultsMap);
 
         if (IS_RX_JAVA_AVAILABLE) {
             final HandlerThread handlerThread = new HandlerThread("StorIOContentResolverNotificationsThread");
@@ -105,6 +110,27 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     }
 
     protected class InternalImpl extends Internal {
+
+        @Nullable
+        private final Map<Class<?>, ContentResolverTypeDefaults<?>> typesDefaultsMap;
+
+        protected InternalImpl(@Nullable Map<Class<?>, ContentResolverTypeDefaults<?>> typesDefaultsMap) {
+            this.typesDefaultsMap = typesDefaultsMap != null
+                    ? Collections.unmodifiableMap(typesDefaultsMap)
+                    : null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        @Nullable
+        @Override
+        public <T> ContentResolverTypeDefaults<T> typeDefaults(@NonNull Class<T> type) {
+            return typesDefaultsMap != null
+                    ? (ContentResolverTypeDefaults<T>) typesDefaultsMap.get(type)
+                    : null;
+        }
 
         /**
          * {@inheritDoc}
@@ -169,7 +195,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
 
         /**
          * Required: Specifies {@link ContentResolver} for {@link StorIOContentResolver}
-         * <p>
+         * <p/>
          * You can get in from any {@link android.content.Context} instance: <code>context.getContentResolver()</code>
          * It's safe to use {@link android.app.Activity} as {@link android.content.Context}
          *
@@ -188,6 +214,8 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
      */
     public static class CompleteBuilder extends Builder {
 
+        private Map<Class<?>, ContentResolverTypeDefaults<?>> typesDefaultsMap;
+
         CompleteBuilder(@NonNull Builder builder) {
             contentResolver = builder.contentResolver;
         }
@@ -203,6 +231,32 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         }
 
         /**
+         * Adds {@link ContentResolverTypeDefaults} for some type
+         *
+         * @param type         type
+         * @param typeDefaults defaults for type
+         * @param <T>          type
+         * @return builder
+         */
+        @NonNull
+        public <T> CompleteBuilder addDefaultsForType(@NonNull Class<T> type, ContentResolverTypeDefaults<T> typeDefaults) {
+            checkNotNull(type, "Please specify type");
+            checkNotNull(typeDefaults, "Please specify type defaults");
+
+            if (typesDefaultsMap == null) {
+                typesDefaultsMap = new HashMap<Class<?>, ContentResolverTypeDefaults<?>>();
+            }
+
+            if (typesDefaultsMap.containsKey(type)) {
+                throw new IllegalArgumentException("Defaults for type " + type.getSimpleName() + " already added");
+            }
+
+            typesDefaultsMap.put(type, typeDefaults);
+
+            return this;
+        }
+
+        /**
          * Builds new instance of {@link DefaultStorIOContentResolver}
          *
          * @return new instance of {@link DefaultStorIOContentResolver}
@@ -210,8 +264,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         @NonNull
         public DefaultStorIOContentResolver build() {
             checkNotNull(contentResolver, "Please specify content resolver");
-
-            return new DefaultStorIOContentResolver(contentResolver);
+            return new DefaultStorIOContentResolver(contentResolver, typesDefaultsMap);
         }
     }
 }

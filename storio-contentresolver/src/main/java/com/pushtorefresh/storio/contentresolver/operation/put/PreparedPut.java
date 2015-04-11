@@ -52,13 +52,14 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         /**
          * Prepares Put Operation that should put multiple objects
          *
+         * @param type type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
          * @param objects objects to put
          * @param <T>     type of objects
          * @return builder for {@link PreparedPutObjects}
          */
         @NonNull
-        public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
-            return new PreparedPutObjects.Builder<T>(storIOContentResolver, objects);
+        public <T> PreparedPutObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {
+            return new PreparedPutObjects.Builder<T>(storIOContentResolver, type, objects);
         }
 
         /**

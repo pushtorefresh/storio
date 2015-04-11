@@ -52,6 +52,7 @@ public class PreparedGetTest {
 
     private static class GetStub {
         final StorIOContentResolver storIOContentResolver;
+        private final StorIOContentResolver.Internal internal;
         final Query query;
         final GetResolver getResolver;
         final MapFunc<Cursor, TestItem> mapFunc;
@@ -61,6 +62,7 @@ public class PreparedGetTest {
         @SuppressWarnings("unchecked")
         GetStub() {
             storIOContentResolver = mock(StorIOContentResolver.class);
+            internal = mock(StorIOContentResolver.Internal.class);
             query = mock(Query.class);
             getResolver = mock(GetResolver.class);
             mapFunc = (MapFunc<Cursor, TestItem>) mock(MapFunc.class);
@@ -70,6 +72,9 @@ public class PreparedGetTest {
             testItems.add(new TestItem());
             testItems.add(new TestItem());
             testItems.add(new TestItem());
+
+            when(storIOContentResolver.internal())
+                    .thenReturn(internal);
 
             when(cursor.moveToNext())
                     .thenAnswer(new Answer<Boolean>() {
