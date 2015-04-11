@@ -137,7 +137,7 @@ public abstract class StorIOSQLite {
         private final Loggi loggi = new Loggi();
 
         /**
-         * Gets {@link SQLiteTypeDefaults} for some type
+         * Gets {@link SQLiteTypeDefaults} for required type
          * <p>
          * Result can be null
          *

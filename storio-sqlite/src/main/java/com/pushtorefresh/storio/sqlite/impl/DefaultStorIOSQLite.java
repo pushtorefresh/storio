@@ -31,7 +31,7 @@ import static com.pushtorefresh.storio.util.EnvironmentUtil.newRxJavaIsNotAvaila
 
 /**
  * Default implementation of {@link StorIOSQLite} for {@link SQLiteDatabase}
- * <p>
+ * <p/>
  * Thread safe
  */
 public class DefaultStorIOSQLite extends StorIOSQLite {
@@ -275,9 +275,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         /**
          * Adds {@link SQLiteTypeDefaults} for some type
          *
-         * @param type           type
-         * @param typeDefaults definition of type
-         * @param <T>            type
+         * @param type         type
+         * @param typeDefaults defaults for type
+         * @param <T>          type
          * @return builder
          */
         @NonNull

@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.contentresolver.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.MapFunc;
 
@@ -77,121 +78,81 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
     /**
      * Builder for {@link PreparedPutObjects}
-     * <p/>
-     * Required: You should specify put resolver see {@link #withPutResolver(PutResolver)}
      *
      * @param <T> type of objects to put
      */
     public static class Builder<T> {
 
         @NonNull
-        final StorIOContentResolver storIOContentResolver;
+        private final StorIOContentResolver storIOContentResolver;
 
         @NonNull
-        final Iterable<T> objects;
+        private final Class<T> type;
 
-        MapFunc<T, ContentValues> mapFunc;
+        @NonNull
+        private final Iterable<T> objects;
 
-        PutResolver<T> putResolver;
+        private MapFunc<T, ContentValues> mapFunc;
 
-        public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Iterable<T> objects) {
+        private PutResolver<T> putResolver;
+
+        public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Class<T> type, @NonNull Iterable<T> objects) {
             this.storIOContentResolver = storIOContentResolver;
+            this.type = type;
             this.objects = objects;
         }
 
         /**
-         * Required: Specifies resolver for Put Operation
-         * that should define behavior of Put Operation: insert or update of the {@link ContentValues}
-         *
-         * @param putResolver resolver for Put Operation
-         * @return builder
-         */
-        @NonNull
-        public MapFuncBuilder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
-            this.putResolver = putResolver;
-            return new MapFuncBuilder<T>(this);
-        }
-    }
-
-    /**
-     * Compile-time safe part of builder for {@link PreparedPutObjects}
-     * with already specified put resolver
-     * <p/>
-     * Required: You should specify map function see {@link #withMapFunc(MapFunc)}
-     *
-     * @param <T> type of object to put
-     */
-    public static class MapFuncBuilder<T> extends Builder<T> {
-
-        MapFuncBuilder(@NonNull Builder<T> builder) {
-            super(builder.storIOContentResolver, builder.objects);
-            putResolver = builder.putResolver;
-        }
-
-        /**
-         * Required: Specifies map function that should map each object to {@link ContentValues}
+         * Optional: Specifies map function that should map object to {@link ContentValues}
+         * <p/>
+         * Can be set via {@link ContentResolverTypeDefaults},
+         * If value is not set via {@link ContentResolverTypeDefaults} or explicitly, exception will be thrown
          *
          * @param mapFunc map function
          * @return builder
          */
         @NonNull
-        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
+        public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
             this.mapFunc = mapFunc;
-            return new CompleteBuilder<T>(this);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public MapFuncBuilder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
-            super.withPutResolver(putResolver);
-            return this;
-        }
-    }
-
-    /**
-     * Compile-time safe part of builder for {@link PreparedPutObjects}
-     *
-     * @param <T> type of object to put
-     */
-    public static class CompleteBuilder<T> extends MapFuncBuilder<T> {
-
-        CompleteBuilder(@NonNull MapFuncBuilder<T> builder) {
-            super(builder);
-            mapFunc = builder.mapFunc;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
-            super.withMapFunc(mapFunc);
             return this;
         }
 
         /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
-            super.withPutResolver(putResolver);
-            return this;
-        }
-
-        /**
-         * Builds instance of {@link PreparedPutObjects}
+         * Optional: Specifies resolver for Put Operation
+         * that should define behavior of Put Operation: insert or update of the {@link ContentValues}
+         * <p/>
+         * Can be set via {@link ContentResolverTypeDefaults},
+         * If value is not set via {@link ContentResolverTypeDefaults} or explicitly, exception will be thrown
          *
-         * @return instance of {@link PreparedPutObjects}
+         * @param putResolver resolver for Put Operation
+         * @return builder
+         */
+        @NonNull
+        public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
+            this.putResolver = putResolver;
+            return this;
+        }
+
+        /**
+         * Builds new instance of {@link PreparedPutObjects}
+         *
+         * @return new instance of {@link PreparedPutObjects}
          */
         @NonNull
         public PreparedPutObjects<T> prepare() {
+            final ContentResolverTypeDefaults<T> typeDefaults = storIOContentResolver.internal().typeDefaults(type);
+
+            if (mapFunc == null && typeDefaults != null) {
+                mapFunc = typeDefaults.mapToContentValues;
+            }
+
             checkNotNull(mapFunc, "Please specify map function");
-            checkNotNull(putResolver, "Please specify put resolver");
+
+            if (putResolver == null && typeDefaults != null) {
+                putResolver = typeDefaults.putResolver;
+            }
+
+            checkNotNull(putResolver, "Please specify Put Resolver");
 
             return new PreparedPutObjects<T>(
                     storIOContentResolver,

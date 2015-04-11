@@ -58,13 +58,14 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
         /**
          * Creates builder for {@link PreparedDeleteObjects}
          *
+         * @param type    type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
          * @param objects non-null collection of objects to delete
          * @param <T>     type of objects
          * @return builder for {@link PreparedDeleteObjects}
          */
         @NonNull
-        public <T> PreparedDeleteObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
-            return new PreparedDeleteObjects.Builder<T>(storIOContentResolver, objects);
+        public <T> PreparedDeleteObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {
+            return new PreparedDeleteObjects.Builder<T>(storIOContentResolver, type, objects);
         }
 
         /**
