@@ -62,7 +62,7 @@ public class UpdateTest extends BaseTest {
 
         final PutResults<User> insertResults = storIOSQLite
                 .put()
-                .objects(usersForInsert)
+                .objects(User.class, usersForInsert)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
                 .withPutResolver(User.PUT_RESOLVER)
                 .prepare()
@@ -78,7 +78,7 @@ public class UpdateTest extends BaseTest {
 
         final PutResults<User> updateResults = storIOSQLite
                 .put()
-                .objects(usersForUpdate)
+                .objects(User.class, usersForUpdate)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
                 .withPutResolver(User.PUT_RESOLVER)
                 .prepare()

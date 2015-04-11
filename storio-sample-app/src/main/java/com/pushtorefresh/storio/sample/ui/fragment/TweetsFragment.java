@@ -86,8 +86,7 @@ public class TweetsFragment extends BaseFragment {
         final Subscription subscription = storIOSQLite
                 .get()
                 .listOfObjects(Tweet.class)
-                .withMapFunc(Tweet.MAP_FROM_CURSOR)
-                .withQuery(Tweet.GET_ALL_QUERY)
+                .withQuery(Tweet.QUERY_GET_ALL)
                 .prepare()
                 .createObservableStream() // it will be subscribed to changes in tweets table!
                 .delay(1, TimeUnit.SECONDS) // for better User Experience
@@ -133,9 +132,7 @@ public class TweetsFragment extends BaseFragment {
 
         storIOSQLite
                 .put()
-                .objects(tweets)
-                .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(Tweet.PUT_RESOLVER)
+                .objects(Tweet.class, tweets)
                 .prepare()
                 .createObservable()
                 .subscribeOn(Schedulers.io())

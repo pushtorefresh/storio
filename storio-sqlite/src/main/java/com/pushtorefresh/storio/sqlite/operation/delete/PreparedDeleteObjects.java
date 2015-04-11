@@ -1,14 +1,15 @@
 package com.pushtorefresh.storio.sqlite.operation.delete;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,14 +23,14 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
     @NonNull
-    private final Collection<T> objects;
+    private final Iterable<T> objects;
 
     @NonNull
     private final MapFunc<T, DeleteQuery> mapFunc;
 
     private final boolean useTransactionIfPossible;
 
-    PreparedDeleteObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible, @NonNull DeleteResolver deleteResolver) {
+    PreparedDeleteObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Iterable<T> objects, @NonNull MapFunc<T, DeleteQuery> mapFunc, boolean useTransactionIfPossible, @NonNull DeleteResolver deleteResolver) {
         super(storIOSQLite, deleteResolver);
         this.objects = objects;
         this.mapFunc = mapFunc;
@@ -128,26 +129,34 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
+
         @NonNull
-        private final Collection<T> objects;
+        private final Class<T> type;
+
+        @NonNull
+        private final Iterable<T> objects;
 
         private MapFunc<T, DeleteQuery> mapFunc;
         private boolean useTransactionIfPossible = true;
         private DeleteResolver deleteResolver;
 
-        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects) {
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type, @NonNull Iterable<T> objects) {
             this.storIOSQLite = storIOSQLite;
+            this.type = type;
             this.objects = objects;
         }
 
         /**
-         * Required: Specifies map function to map each object to {@link DeleteQuery}
+         * Optional: Specifies map function to map each object to {@link DeleteQuery}
+         * <p/>
+         * Can be set via {@link SQLiteTypeDefaults},
+         * If value is not set via {@link SQLiteTypeDefaults} or explicitly, exception will be thrown
          *
          * @param mapFunc map function to map each object to {@link DeleteQuery}
          * @return builder
          */
         @NonNull
-        public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
+        public Builder<T> withMapFunc(@Nullable MapFunc<T, DeleteQuery> mapFunc) {
             this.mapFunc = mapFunc;
             return this;
         }
@@ -155,40 +164,30 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         /**
          * Optional: Defines that Delete Operation will use transaction
          * if it is supported by implementation of {@link StorIOSQLite}
-         * <p>
+         * <p/>
          * By default, transaction will be used
          *
+         * @param useTransaction true to use transaction, false to not
          * @return builder
          */
         @NonNull
-        public Builder<T> useTransactionIfPossible() {
-            useTransactionIfPossible = true;
-            return this;
-        }
-
-        /**
-         * Optional: Defines that Delete Operation won't use transaction
-         * <p>
-         * By default, transaction will be used
-         *
-         * @return builder
-         */
-        @NonNull
-        public Builder<T> dontUseTransaction() {
-            useTransactionIfPossible = false;
+        public Builder<T> useTransaction(boolean useTransaction) {
+            useTransactionIfPossible = useTransaction;
             return this;
         }
 
         /**
          * Optional: Specifies {@link DeleteResolver} for Delete Operation
-         * <p>
-         * Default value is instance of {@link DefaultDeleteResolver}
+         * <p/>
+         * <p/>
+         * Can be set via {@link SQLiteTypeDefaults},
+         * If value is not set via {@link SQLiteTypeDefaults} or explicitly, instance of {@link DefaultDeleteResolver} will be used
          *
          * @param deleteResolver {@link DeleteResolver} for Delete Operation
          * @return builder
          */
         @NonNull
-        public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+        public Builder<T> withDeleteResolver(@Nullable DeleteResolver deleteResolver) {
             this.deleteResolver = deleteResolver;
             return this;
         }
@@ -200,8 +199,18 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
          */
         @NonNull
         public PreparedDeleteObjects<T> prepare() {
+            final SQLiteTypeDefaults<T> typeDefaults = storIOSQLite.internal().typeDefaults(type);
+
+            if (mapFunc == null && typeDefaults != null) {
+                mapFunc = typeDefaults.mapToDeleteQuery;
+            }
+
             if (deleteResolver == null) {
-                deleteResolver = DefaultDeleteResolver.INSTANCE;
+                if (typeDefaults != null && typeDefaults.deleteResolver != null) {
+                    deleteResolver = typeDefaults.deleteResolver;
+                } else {
+                    deleteResolver = DefaultDeleteResolver.INSTANCE;
+                }
             }
 
             checkNotNull(mapFunc, "Please specify map function");

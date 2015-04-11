@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
@@ -75,8 +76,11 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         }
 
         /**
-         * Required: Specifies map function for Put Operation
+         * Optional: Specifies map function for Put Operation
          * which will be used to map object to {@link ContentValues}
+         * <p>
+         * Can be set via {@link SQLiteTypeDefaults}
+         * If it's not set via {@link SQLiteTypeDefaults} or explicitly, exception will be thrown
          *
          * @param mapFunc map function for Put Operation which will be used to map object to {@link ContentValues}
          * @return builder
@@ -88,8 +92,11 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         }
 
         /**
-         * Required: Specifies {@link PutResolver} for Put Operation
+         * Optional: Specifies {@link PutResolver} for Put Operation
          * which allows you to customize behavior of Put Operation
+         * <p>
+         * Can be set via {@link SQLiteTypeDefaults}
+         * If it's not set via {@link SQLiteTypeDefaults} or explicitly, exception will be thrown
          *
          * @param putResolver put resolver
          * @return builder
@@ -106,8 +113,19 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
          *
          * @return {@link PreparedPutObject} instance
          */
+        @SuppressWarnings("unchecked")
         @NonNull
         public PreparedPutObject<T> prepare() {
+            final SQLiteTypeDefaults<T> typeDefaults = storIOSQLite.internal().typeDefaults((Class<T>) object.getClass());
+
+            if (mapFunc == null && typeDefaults != null) {
+                mapFunc = typeDefaults.mapToContentValues;
+            }
+
+            if (putResolver == null && typeDefaults != null) {
+                putResolver = typeDefaults.putResolver;
+            }
+
             checkNotNull(mapFunc, "Please specify map function");
             checkNotNull(putResolver, "Please specify put resolver");
 

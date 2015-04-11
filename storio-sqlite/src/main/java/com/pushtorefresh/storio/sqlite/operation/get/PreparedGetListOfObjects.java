@@ -2,11 +2,12 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.operation.MapFunc;
-import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
@@ -119,180 +120,156 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Builder for {@link PreparedOperationWithReactiveStream}
-     * <p>
-     * Required: Firstly you should specify map function
+     * Builder for {@link PreparedGetListOfObjects} Operation
      *
-     * @param <T> type of object for query
+     * @param <T> type of objects
      */
     public static class Builder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
 
-        private MapFunc<Cursor, T> mapFunc;
-        private Query query;
-        private RawQuery rawQuery;
-        private GetResolver getResolver;
+        @NonNull
+        private final Class<T> type;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type) {
             this.storIOSQLite = storIOSQLite;
+            this.type = type;
         }
 
         /**
-         * Required: Specifies map function for Get Operation
-         * which will map {@link Cursor} to object of required type
+         * Required: Specifies query which will be passed to {@link StorIOSQLite} to get list of objects
          *
-         * @param mapFunc map function which will map {@link Cursor} to object of required type
+         * @param query non-null query
          * @return builder
          */
         @NonNull
-        public QueryBuilder<T> withMapFunc(@NonNull MapFunc<Cursor, T> mapFunc) {
+        public CompleteBuilder<T> withQuery(@NonNull Query query) {
+            checkNotNull(query, "Please specify query");
+            return new CompleteBuilder<T>(storIOSQLite, type, query);
+        }
+
+        /**
+         * Required: Specifies query which will be passed to {@link StorIOSQLite} to get list of objects
+         *
+         * @param rawQuery non-null query
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder<T> withQuery(@NonNull RawQuery rawQuery) {
+            checkNotNull(rawQuery, "Please specify query");
+            return new CompleteBuilder<T>(storIOSQLite, type, rawQuery);
+        }
+    }
+
+    /**
+     * Compile-safe part of {@link Builder}
+     *
+     * @param <T> type of objects
+     */
+    public static class CompleteBuilder<T> {
+
+        @NonNull
+        private final StorIOSQLite storIOSQLite;
+
+        @NonNull
+        private final Class<T> type;
+
+        @Nullable
+        private final Query query;
+
+        @Nullable
+        private final RawQuery rawQuery;
+
+        private MapFunc<Cursor, T> mapFunc;
+        private GetResolver getResolver;
+
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type, @NonNull Query query) {
+            this.storIOSQLite = storIOSQLite;
+            this.type = type;
+            this.query = query;
+            rawQuery = null;
+        }
+
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type, @NonNull RawQuery rawQuery) {
+            this.storIOSQLite = storIOSQLite;
+            this.type = type;
+            this.rawQuery = rawQuery;
+            query = null;
+        }
+
+        /**
+         * Optional: Specifies map function that will be used to map each value from {@link Cursor} to object of required type
+         * <p/>
+         * {@link SQLiteTypeDefaults} can be used to set default map function,
+         * if map function is not set via {@link SQLiteTypeDefaults} or explicitly, exception will be thrown
+         *
+         * @param mapFunc nullable map function that will be used to map each value from {@link Cursor} to object of required type
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder<T> withMapFunc(@Nullable MapFunc<Cursor, T> mapFunc) {
             this.mapFunc = mapFunc;
-            return new QueryBuilder<T>(this);
+            return this;
         }
 
         /**
-         * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
-         * <p>
-         * Default value is instance of {@link DefaultGetResolver}
+         * Optional: Specifies resolver for Get Operation which can be used to provide custom behavior of Get Operation
+         * <p/>
+         * {@link SQLiteTypeDefaults} can be used to set default GetResolver
+         * If GetResolver is not set via {@link SQLiteTypeDefaults} or explicitly, instance of {@link DefaultGetResolver} will be used
          *
-         * @param getResolver get resolver
+         * @param getResolver nullable resolver for Get Operation
          * @return builder
          */
         @NonNull
-        public Builder<T> withGetResolver(@NonNull GetResolver getResolver) {
+        public CompleteBuilder<T> withGetResolver(@Nullable GetResolver getResolver) {
             this.getResolver = getResolver;
             return this;
         }
 
         /**
-         * Hidden method for prepare Get Operation
+         * Builds new instance of {@link PreparedGetListOfObjects}
          *
-         * @return {@link PreparedGetListOfObjects} instance
+         * @return new instance of {@link PreparedGetListOfObjects}
          */
         @NonNull
-        private PreparedOperationWithReactiveStream<List<T>> prepare() {
-            if (getResolver == null) {
-                getResolver = DefaultGetResolver.INSTANCE;
+        public PreparedGetListOfObjects<T> prepare() {
+            final SQLiteTypeDefaults<T> typeDefaults = storIOSQLite.internal().typeDefaults(type);
+
+            if (mapFunc == null && typeDefaults != null) {
+                mapFunc = typeDefaults.mapFromCursor;
             }
 
             checkNotNull(mapFunc, "Please specify map function");
 
-            if (query != null) {
-                return new PreparedGetListOfObjects<T>(storIOSQLite, query, getResolver, mapFunc);
-            } else if (rawQuery != null) {
-                return new PreparedGetListOfObjects<T>(storIOSQLite, rawQuery, getResolver, mapFunc);
-            } else {
-                throw new IllegalStateException("Please specify query");
+            if (getResolver == null) {
+                if (typeDefaults != null && typeDefaults.getResolver != null) {
+                    getResolver = typeDefaults.getResolver;
+                } else {
+                    getResolver = DefaultGetResolver.INSTANCE;
+                }
             }
-        }
-    }
 
-    /**
-     * Compile-time safe part of builder for {@link PreparedOperationWithReactiveStream}
-     * with specified map function
-     * <p>
-     * Required: You should specify query by call
-     * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
-     *
-     * @param <T> type of object for query
-     */
-    public static class QueryBuilder<T> {
+            checkNotNull(getResolver, "Please specify Get Resolver");
 
-        private Builder<T> incompleteBuilder;
-
-        public QueryBuilder(@NonNull final Builder<T> builder) {
-            this.incompleteBuilder = builder;
-        }
-        /**
-         * Specifies {@link Query} for Get Operation
-         *
-         * @param query query
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder<T> withQuery(@NonNull Query query) {
-            incompleteBuilder.query = query;
-            return new CompleteBuilder<T>(this);
-        }
-
-        /**
-         * Specifies {@link RawQuery} for Get Operation,
-         * you can use it for "joins" and same constructions which are not allowed in {@link Query}
-         *
-         * @param rawQuery query
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder<T> withQuery(@NonNull RawQuery rawQuery) {
-            incompleteBuilder.rawQuery = rawQuery;
-            return new CompleteBuilder<T>(this);
-        }
-
-        /**
-         * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
-         * <p>
-         * Default value is instance of {@link DefaultGetResolver}
-         *
-         * @param getResolver get resolver
-         * @return builder
-         */
-        @NonNull
-        public QueryBuilder<T> withGetResolver(@NonNull GetResolver getResolver) {
-            incompleteBuilder.withGetResolver(getResolver);
-            return this;
-        }
-
-        /**
-         * Hidden method for prepare Get Operation
-         *
-         * @return {@link PreparedGetListOfObjects} instance
-         */
-        @NonNull
-        private PreparedOperationWithReactiveStream<List<T>> prepare() {
-            return incompleteBuilder.prepare();
-        }
-    }
-
-    /**
-     * Compile-time safe part of builder for {@link PreparedOperationWithReactiveStream}
-     *
-     * @param <T> type of object for query
-     */
-    public static class CompleteBuilder<T> {
-
-        private QueryBuilder<T> queryBuilder;
-
-        public CompleteBuilder(@NonNull final QueryBuilder<T> builder) {
-            this.queryBuilder = builder;
-        }
-
-        /**
-         * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
-         * <p>
-         * Default value is instance of {@link DefaultGetResolver}
-         *
-         * @param getResolver get resolver
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder<T> withGetResolver(@NonNull GetResolver getResolver) {
-            queryBuilder.withGetResolver(getResolver);
-            return this;
-        }
-
-        /**
-         * Prepares Get Operation
-         *
-         * @return {@link PreparedGetListOfObjects} instance
-         */
-        @NonNull
-        public PreparedOperationWithReactiveStream<List<T>> prepare() {
-            return queryBuilder.prepare();
+            if (query != null) {
+                return new PreparedGetListOfObjects<T>(
+                        storIOSQLite,
+                        query,
+                        getResolver,
+                        mapFunc
+                );
+            } else if (rawQuery != null) {
+                return new PreparedGetListOfObjects<T>(
+                        storIOSQLite,
+                        rawQuery,
+                        getResolver,
+                        mapFunc
+                );
+            } else {
+                throw new IllegalStateException("Please specify Query or RawQuery");
+            }
         }
     }
 }

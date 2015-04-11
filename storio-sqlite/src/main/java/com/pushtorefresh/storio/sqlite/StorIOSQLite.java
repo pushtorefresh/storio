@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlite;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.LogListener;
 import com.pushtorefresh.storio.Loggi;
@@ -23,7 +24,7 @@ import rx.Observable;
 
 /**
  * Powerful abstraction for databases
- * <p/>
+ * <p>
  * It's an abstract class instead of interface because we want to have ability to add some
  * changes without breaking existing implementations
  */
@@ -35,7 +36,8 @@ public abstract class StorIOSQLite {
      *
      * @return builder for PreparedExecSql
      */
-    @NonNull public PreparedExecSql.Builder execSql() {
+    @NonNull
+    public PreparedExecSql.Builder execSql() {
         return new PreparedExecSql.Builder(this);
     }
 
@@ -45,7 +47,8 @@ public abstract class StorIOSQLite {
      *
      * @return builder for PreparedGet
      */
-    @NonNull public PreparedGet.Builder get() {
+    @NonNull
+    public PreparedGet.Builder get() {
         return new PreparedGet.Builder(this);
     }
 
@@ -55,7 +58,8 @@ public abstract class StorIOSQLite {
      *
      * @return builder for PreparedPut
      */
-    @NonNull public PreparedPut.Builder put() {
+    @NonNull
+    public PreparedPut.Builder put() {
         return new PreparedPut.Builder(this);
     }
 
@@ -65,7 +69,8 @@ public abstract class StorIOSQLite {
      *
      * @return builder for PreparedDelete
      */
-    @NonNull public PreparedDelete.Builder delete() {
+    @NonNull
+    public PreparedDelete.Builder delete() {
         return new PreparedDelete.Builder(this);
     }
 
@@ -116,7 +121,8 @@ public abstract class StorIOSQLite {
      *
      * @return implementation of Internal operations for {@link StorIOSQLite}
      */
-    @NonNull public abstract Internal internal();
+    @NonNull
+    public abstract Internal internal();
 
     /**
      * Hides some internal operations of {@link StorIOSQLite}
@@ -127,7 +133,20 @@ public abstract class StorIOSQLite {
         /**
          * Log wrapper for internal usage only.
          */
-        @NonNull private final Loggi loggi = new Loggi();
+        @NonNull
+        private final Loggi loggi = new Loggi();
+
+        /**
+         * Gets {@link SQLiteTypeDefaults} for some type
+         * <p>
+         * Result can be null
+         *
+         * @param type type
+         * @param <T>  type
+         * @return {@link SQLiteTypeDefaults} for required type or null
+         */
+        @Nullable
+        public abstract <T> SQLiteTypeDefaults<T> typeDefaults(@NonNull Class<T> type);
 
         /**
          * Execute a single SQL statement that is NOT a SELECT/INSERT/UPDATE/DELETE on the database
@@ -142,7 +161,8 @@ public abstract class StorIOSQLite {
          * @param rawQuery sql query
          * @return A Cursor object, which is positioned before the first entry. Note that Cursors are not synchronized, see the documentation for more details.
          */
-        @NonNull public abstract Cursor rawQuery(@NonNull RawQuery rawQuery);
+        @NonNull
+        public abstract Cursor rawQuery(@NonNull RawQuery rawQuery);
 
         /**
          * Executes query on the database and returns {@link android.database.Cursor} over the result set
@@ -150,7 +170,8 @@ public abstract class StorIOSQLite {
          * @param query sql query
          * @return A Cursor object, which is positioned before the first entry. Note that Cursors are not synchronized, see the documentation for more details.
          */
-        @NonNull public abstract Cursor query(@NonNull Query query);
+        @NonNull
+        public abstract Cursor query(@NonNull Query query);
 
         /**
          * Inserts a row into the database

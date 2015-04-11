@@ -43,9 +43,9 @@ public class DefaultStorIOSQLiteTest {
                 .build()
                 .get()
                 .listOfObjects(Object.class)
+                .withQuery(mock(Query.class))
                 .withGetResolver(mock(GetResolver.class))
                 .withMapFunc(mock(MapFunc.class))
-                .withQuery(mock(Query.class))
                 .prepare();
     }
 
@@ -105,7 +105,7 @@ public class DefaultStorIOSQLiteTest {
                 .db(mock(SQLiteDatabase.class))
                 .build()
                 .put()
-                .objects(mock(Iterable.class))
+                .objects(Object.class, mock(Iterable.class))
                 .withPutResolver(mock(PutResolver.class))
                 .withMapFunc(mock(MapFunc.class))
                 .prepare();
@@ -118,7 +118,7 @@ public class DefaultStorIOSQLiteTest {
                 .db(mock(SQLiteDatabase.class))
                 .build()
                 .put()
-                .objects(mock(Object.class), mock(Object.class))
+                .objects(Object.class, mock(Object.class), mock(Object.class))
                 .withPutResolver(mock(PutResolver.class))
                 .withMapFunc(mock(MapFunc.class))
                 .prepare();

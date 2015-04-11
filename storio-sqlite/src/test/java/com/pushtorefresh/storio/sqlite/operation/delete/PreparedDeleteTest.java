@@ -188,7 +188,7 @@ public class PreparedDeleteTest {
 
         deleteMultipleStub.storIOSQLite
                 .delete()
-                .objects(deleteMultipleStub.users)
+                .objects(User.class, deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
                 .withDeleteResolver(deleteMultipleStub.deleteResolver)
                 .prepare()
@@ -202,7 +202,7 @@ public class PreparedDeleteTest {
 
         deleteMultipleStub.storIOSQLite
                 .delete()
-                .objects(deleteMultipleStub.users)
+                .objects(User.class, deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
                 .withDeleteResolver(deleteMultipleStub.deleteResolver)
                 .prepare()
@@ -218,10 +218,10 @@ public class PreparedDeleteTest {
 
         deleteMultipleStub.storIOSQLite
                 .delete()
-                .objects(deleteMultipleStub.users)
+                .objects(User.class, deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
                 .withDeleteResolver(deleteMultipleStub.deleteResolver)
-                .dontUseTransaction()
+                .useTransaction(false)
                 .prepare()
                 .executeAsBlocking();
 
@@ -233,10 +233,10 @@ public class PreparedDeleteTest {
 
         deleteMultipleStub.storIOSQLite
                 .delete()
-                .objects(deleteMultipleStub.users)
+                .objects(User.class, deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
                 .withDeleteResolver(deleteMultipleStub.deleteResolver)
-                .dontUseTransaction()
+                .useTransaction(false)
                 .prepare()
                 .createObservable()
                 .toBlocking()
@@ -250,10 +250,10 @@ public class PreparedDeleteTest {
 
         deleteMultipleStub.storIOSQLite
                 .delete()
-                .objects(deleteMultipleStub.users)
+                .objects(User.class, deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
                 .withDeleteResolver(deleteMultipleStub.deleteResolver)
-                .useTransactionIfPossible()
+                .useTransaction(true)
                 .prepare()
                 .executeAsBlocking();
 
@@ -265,10 +265,10 @@ public class PreparedDeleteTest {
 
         deleteMultipleStub.storIOSQLite
                 .delete()
-                .objects(deleteMultipleStub.users)
+                .objects(User.class, deleteMultipleStub.users)
                 .withMapFunc(deleteMultipleStub.mapFunc)
                 .withDeleteResolver(deleteMultipleStub.deleteResolver)
-                .useTransactionIfPossible()
+                .useTransaction(true)
                 .prepare()
                 .createObservable()
                 .toBlocking()

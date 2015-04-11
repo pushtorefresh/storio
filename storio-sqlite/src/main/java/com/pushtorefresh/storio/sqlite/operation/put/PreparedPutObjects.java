@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
@@ -114,6 +115,9 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     public static class Builder<T> {
 
         @NonNull
+        private final Class<T> type;
+
+        @NonNull
         private final StorIOSQLite storIOSQLite;
 
         @NonNull
@@ -123,8 +127,9 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         private PutResolver<T> putResolver;
         private boolean useTransactionIfPossible = true;
 
-        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Iterable<T> objects) {
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type, @NonNull Iterable<T> objects) {
             this.storIOSQLite = storIOSQLite;
+            this.type = type;
             this.objects = objects;
         }
 
@@ -163,21 +168,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          * @return builder
          */
         @NonNull
-        public Builder<T> useTransactionIfPossible() {
-            useTransactionIfPossible = true;
-            return this;
-        }
-
-        /**
-         * Optional: Defines that Put Operation won't use transaction
-         * <p>
-         * By default, transaction will be used
-         *
-         * @return builder
-         */
-        @NonNull
-        public Builder<T> dontUseTransaction() {
-            useTransactionIfPossible = false;
+        public Builder<T> useTransaction(boolean useTransaction) {
+            useTransactionIfPossible = useTransaction;
             return this;
         }
 
@@ -188,6 +180,16 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          */
         @NonNull
         public PreparedPutObjects<T> prepare() {
+            final SQLiteTypeDefaults<T> typeDefaults = storIOSQLite.internal().typeDefaults(type);
+
+            if (mapFunc == null && typeDefaults != null) {
+                mapFunc = typeDefaults.mapToContentValues;
+            }
+
+            if (putResolver == null && typeDefaults != null) {
+                putResolver = typeDefaults.putResolver;
+            }
+
             checkNotNull(mapFunc, "Please specify map function");
             checkNotNull(putResolver, "Please specify put resolver");
 

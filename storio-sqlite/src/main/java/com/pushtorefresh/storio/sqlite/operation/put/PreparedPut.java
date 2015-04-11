@@ -3,8 +3,8 @@ package com.pushtorefresh.storio.sqlite.operation.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.operation.PreparedOperation;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
 import java.util.Arrays;
 
@@ -87,26 +87,28 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         /**
          * Prepares Put Operation for multiple objects
          *
+         * @param type    type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
          * @param objects objects to put
          * @param <T>     type of objects
          * @return builder
          */
         @NonNull
-        public <T> PreparedPutObjects.Builder<T> objects(@NonNull Iterable<T> objects) {
-            return new PreparedPutObjects.Builder<T>(storIOSQLite, objects);
+        public <T> PreparedPutObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {
+            return new PreparedPutObjects.Builder<T>(storIOSQLite, type, objects);
         }
 
         /**
          * Prepares Put Operation for multiple objects
          *
+         * @param type    type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
          * @param objects objects to put
          * @param <T>     type of objects
          * @return builder
          */
         @SuppressWarnings("unchecked")
         @NonNull
-        public final <T> PreparedPutObjects.Builder<T> objects(@NonNull T... objects) {
-            return new PreparedPutObjects.Builder<T>(storIOSQLite, Arrays.asList(objects));
+        public final <T> PreparedPutObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull T... objects) {
+            return new PreparedPutObjects.Builder<T>(storIOSQLite, type, Arrays.asList(objects));
         }
     }
 }
