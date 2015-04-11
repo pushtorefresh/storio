@@ -34,15 +34,30 @@ public class ChecksTest {
         checkNotEmpty("Not empty string", "No exceptions please");
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void checkNotEmptyNegative() {
+    @Test(expected = NullPointerException.class)
+    public void checkNotEmptyNullNegative() {
         checkNotEmpty(null, "Throw me!");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void checkNotEmptyEmptyNegative() {
+        checkNotEmpty("", "Throw me!");
     }
 
     @Test
     public void checkNotEmptyExceptionMessage() {
         try {
             checkNotEmpty(null, "expected message");
+            fail("NullPointerException should be thrown");
+        } catch (NullPointerException e) {
+            assertEquals("expected message", e.getMessage());
+        }
+    }
+
+    @Test
+    public void checkNotEmptyEmptyExceptionMessage() {
+        try {
+            checkNotEmpty("", "expected message");
             fail("IllegalStateException should be thrown");
         } catch (IllegalStateException e) {
             assertEquals("expected message", e.getMessage());

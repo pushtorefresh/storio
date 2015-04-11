@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class DeleteResultTest {
 
     @SuppressWarnings("ConstantConditions")
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = NullPointerException.class)
     public void nullAffectedTable() {
         DeleteResult.newInstance(0, null);
     }

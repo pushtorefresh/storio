@@ -163,8 +163,27 @@ public class Query {
      */
     public static class Builder {
 
+        String table;
+
+        /**
+         * Required: Specifies table name
+         *
+         * @param table table name
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder table(@NonNull String table) {
+            this.table = table;
+            return new CompleteBuilder(this);
+        }
+    }
+
+    /**
+     * Compile-time safe part of builder for {@link DeleteQuery}
+     */
+    public static class CompleteBuilder extends Builder {
+
         private boolean distinct;
-        private String table;
         private List<String> columns;
         private String where;
         private List<String> whereArgs;
@@ -172,6 +191,19 @@ public class Query {
         private String having;
         private String orderBy;
         private String limit;
+
+        CompleteBuilder(@NonNull Builder builder) {
+            table = builder.table;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        public CompleteBuilder table(@NonNull String table) {
+            this.table = table;
+            return this;
+        }
 
         /**
          * Optional: Specifies distinct option
@@ -184,20 +216,8 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder distinct(boolean distinct) {
+        public CompleteBuilder distinct(boolean distinct) {
             this.distinct = distinct;
-            return this;
-        }
-
-        /**
-         * Required: Specifies table name
-         *
-         * @param table table name
-         * @return builder
-         */
-        @NonNull
-        public Builder table(@NonNull String table) {
-            this.table = table;
             return this;
         }
 
@@ -212,7 +232,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder columns(@Nullable String... columns) {
+        public CompleteBuilder columns(@Nullable String... columns) {
             this.columns = QueryUtil.varargsToList(columns);
             return this;
         }
@@ -232,7 +252,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder where(@Nullable String where) {
+        public CompleteBuilder where(@Nullable String where) {
             this.where = where;
             return this;
         }
@@ -248,7 +268,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder whereArgs(@Nullable Object... whereArgs) {
+        public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
             this.whereArgs = QueryUtil.varargsToList(whereArgs);
             return this;
         }
@@ -268,7 +288,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder groupBy(@Nullable String groupBy) {
+        public CompleteBuilder groupBy(@Nullable String groupBy) {
             this.groupBy = groupBy;
             return this;
         }
@@ -288,7 +308,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder having(@Nullable String having) {
+        public CompleteBuilder having(@Nullable String having) {
             this.having = having;
             return this;
         }
@@ -308,7 +328,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder orderBy(@Nullable String orderBy) {
+        public CompleteBuilder orderBy(@Nullable String orderBy) {
             this.orderBy = orderBy;
             return this;
         }
@@ -328,7 +348,7 @@ public class Query {
          * @return builder
          */
         @NonNull
-        public Builder limit(@Nullable String limit) {
+        public CompleteBuilder limit(@Nullable String limit) {
             this.limit = limit;
             return this;
         }

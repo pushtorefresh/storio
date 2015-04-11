@@ -82,9 +82,7 @@ public class RawQuery {
      */
     public static class Builder {
 
-        private String query;
-        private List<String> args;
-        private Set<String> tables;
+        String query;
 
         /**
          * Required: Specifies SQL query
@@ -93,7 +91,30 @@ public class RawQuery {
          * @return builder
          */
         @NonNull
-        public Builder query(@NonNull String query) {
+        public CompleteBuilder query(@NonNull String query) {
+            this.query = query;
+            return new CompleteBuilder(this);
+        }
+    }
+
+    /**
+     * Compile-time safe part of builder for {@link DeleteQuery}
+     */
+    public static class CompleteBuilder extends Builder {
+
+        private List<String> args;
+        private Set<String> tables;
+
+        CompleteBuilder(@NonNull Builder builder) {
+            query = builder.query;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public CompleteBuilder query(@NonNull String query) {
             this.query = query;
             return this;
         }
@@ -110,7 +131,7 @@ public class RawQuery {
          * @return builder
          */
         @NonNull
-        public Builder args(@NonNull Object... args) {
+        public CompleteBuilder args(@NonNull Object... args) {
             this.args = QueryUtil.varargsToList(args);
             return this;
         }
@@ -125,7 +146,7 @@ public class RawQuery {
          * @return builder
          */
         @NonNull
-        public Builder affectedTables(@NonNull String... tables) {
+        public CompleteBuilder affectedTables(@NonNull String... tables) {
             if (this.tables == null) {
                 this.tables = new HashSet<String>(tables.length);
             }
