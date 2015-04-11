@@ -16,7 +16,7 @@ public interface PutResolver<T> {
     /**
      * Performs Put Operation of some {@link ContentValues} into {@link StorIOSQLite}
      *
-     * @param storIOSQLite      instance of {@link StorIOSQLite}
+     * @param storIOSQLite  instance of {@link StorIOSQLite}
      * @param contentValues some {@link ContentValues} to put
      * @return non-null result of Put Operation
      */

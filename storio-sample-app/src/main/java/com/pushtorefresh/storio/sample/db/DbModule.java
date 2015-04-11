@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.Logger;
+import com.pushtorefresh.storio.sample.db.entity.Tweet;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
 
@@ -22,6 +24,12 @@ public class DbModule {
     public StorIOSQLite provideStorIOSQLite(@NonNull SQLiteDatabase db) {
         return new DefaultStorIOSQLite.Builder()
                 .db(db)
+                .addDefaultsForType(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
+                        .mappingToContentValues(Tweet.MAP_TO_CONTENT_VALUES)
+                        .mappingFromCursor(Tweet.MAP_FROM_CURSOR)
+                        .putResolver(Tweet.PUT_RESOLVER)
+                        .mappingToDeleteQuery(Tweet.MAP_TO_DELETE_QUERY)
+                        .build())
                 .build()
                 .setLogListener(new Logger());
     }

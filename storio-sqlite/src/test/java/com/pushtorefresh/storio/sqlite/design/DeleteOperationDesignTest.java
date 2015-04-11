@@ -40,7 +40,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
         DeleteResults<User> deleteResult = storIOSQLite()
                 .delete()
-                .objects(users)
+                .objects(User.class, users)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
                 .prepare()
                 .executeAsBlocking();
@@ -51,7 +51,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
         Observable<DeleteResults<User>> deleteResultObservable = storIOSQLite()
                 .delete()
-                .objects(users)
+                .objects(User.class, users)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
                 .prepare()
                 .createObservable();

@@ -32,12 +32,12 @@ public class GetOperationDesignTest extends OperationDesignTest {
         List<User> users = storIOSQLite()
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new Query.Builder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -61,12 +61,12 @@ public class GetOperationDesignTest extends OperationDesignTest {
         Observable<List<User>> observableUsers = storIOSQLite()
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new Query.Builder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .createObservable();
     }
@@ -102,11 +102,11 @@ public class GetOperationDesignTest extends OperationDesignTest {
         List<User> users = storIOSQLite()
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new RawQuery.Builder()
                         .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
                         .args("arg1", "arg2")
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -116,11 +116,11 @@ public class GetOperationDesignTest extends OperationDesignTest {
         Observable<List<User>> usersObservable = storIOSQLite()
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new RawQuery.Builder()
                         .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
                         .args("arg1", "arg2")
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .createObservable();
     }
@@ -140,8 +140,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
         Observable<List<User>> usersObservableStream = storIOSQLite()
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new Query.Builder().table("users").build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .createObservableStream();
     }

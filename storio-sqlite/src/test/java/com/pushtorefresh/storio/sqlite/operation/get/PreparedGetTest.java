@@ -54,6 +54,7 @@ public class PreparedGetTest {
 
     private static class GetStub {
         final StorIOSQLite storIOSQLite;
+        private final StorIOSQLite.Internal internal;
         final Query query;
         final RawQuery rawQuery;
         final GetResolver getResolver;
@@ -64,6 +65,11 @@ public class PreparedGetTest {
         @SuppressWarnings("unchecked")
         GetStub() {
             storIOSQLite = mock(StorIOSQLite.class);
+            internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.internal())
+                    .thenReturn(internal);
+
             query = mock(Query.class);
             rawQuery = mock(RawQuery.class);
             getResolver = mock(GetResolver.class);
@@ -155,8 +161,8 @@ public class PreparedGetTest {
         final List<TestItem> testItems = getStub.storIOSQLite
                 .get()
                 .listOfObjects(TestItem.class)
-                .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.query)
+                .withMapFunc(getStub.mapFunc)
                 .withGetResolver(getStub.getResolver)
                 .prepare()
                 .executeAsBlocking();
@@ -189,8 +195,8 @@ public class PreparedGetTest {
         final List<TestItem> testItems = getStub.storIOSQLite
                 .get()
                 .listOfObjects(TestItem.class)
-                .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.query)
+                .withMapFunc(getStub.mapFunc)
                 .withGetResolver(getStub.getResolver)
                 .prepare()
                 .createObservable()
@@ -239,8 +245,8 @@ public class PreparedGetTest {
         final List<TestItem> testItems = getStub.storIOSQLite
                 .get()
                 .listOfObjects(TestItem.class)
-                .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.rawQuery)
+                .withMapFunc(getStub.mapFunc)
                 .withGetResolver(getStub.getResolver)
                 .prepare()
                 .executeAsBlocking();
@@ -255,8 +261,8 @@ public class PreparedGetTest {
         final List<TestItem> testItems = getStub.storIOSQLite
                 .get()
                 .listOfObjects(TestItem.class)
-                .withMapFunc(getStub.mapFunc)
                 .withQuery(getStub.rawQuery)
+                .withMapFunc(getStub.mapFunc)
                 .withGetResolver(getStub.getResolver)
                 .prepare()
                 .createObservable()

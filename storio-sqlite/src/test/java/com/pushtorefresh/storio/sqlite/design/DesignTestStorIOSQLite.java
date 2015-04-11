@@ -3,7 +3,9 @@ package com.pushtorefresh.storio.sqlite.design;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.operation.delete.PreparedDelete;
@@ -30,6 +32,13 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
     }
 
     @NonNull private final Internal internal = new Internal() {
+
+        @Nullable
+        @Override
+        public <T> SQLiteTypeDefaults<T> typeDefaults(@NonNull Class<T> type) {
+            // no impl
+            return null;
+        }
 
         @Override public void execSql(@NonNull RawQuery rawQuery) {
             // no impl

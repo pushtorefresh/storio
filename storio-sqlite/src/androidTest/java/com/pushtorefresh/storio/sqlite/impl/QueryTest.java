@@ -38,12 +38,12 @@ public class QueryTest extends BaseTest {
             final List<User> usersFromQuery = storIOSQLite
                     .get()
                     .listOfObjects(User.class)
-                    .withMapFunc(User.MAP_FROM_CURSOR)
                     .withQuery(new Query.Builder()
                             .table(User.TABLE)
                             .where(User.COLUMN_EMAIL + "=?")
                             .whereArgs(user.getEmail())
                             .build())
+                    .withMapFunc(User.MAP_FROM_CURSOR)
                     .prepare()
                     .executeAsBlocking();
 
@@ -64,11 +64,11 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQueryOrdered = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new Query.Builder()
                         .table(User.TABLE)
                         .orderBy(User.COLUMN_EMAIL)
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -94,11 +94,11 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQueryOrdered = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new Query.Builder()
                         .table(User.TABLE)
                         .orderBy(User.COLUMN_EMAIL + " DESC")
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -120,11 +120,11 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new Query.Builder()
                         .table(User.TABLE)
                         .limit(String.valueOf(limit))
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -140,12 +140,12 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new Query.Builder()
                         .table(User.TABLE)
                         .orderBy(User.COLUMN_EMAIL)
                         .limit(offset + ", " + limit)
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -178,12 +178,12 @@ public class QueryTest extends BaseTest {
         final List<User> groupsOfUsers = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(mapFuncOnlyEmail)
                 .withQuery(new Query.Builder()
                         .table(User.TABLE)
                         .columns(User.COLUMN_EMAIL)
                         .groupBy(User.COLUMN_EMAIL)
                         .build())
+                .withMapFunc(mapFuncOnlyEmail)
                 .prepare()
                 .executeAsBlocking();
 
@@ -211,13 +211,13 @@ public class QueryTest extends BaseTest {
         final List<User> groupsOfUsers = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(mapFuncOnlyEmail)
                 .withQuery(new Query.Builder()
                         .table(User.TABLE)
                         .columns(User.COLUMN_EMAIL)
                         .groupBy(User.COLUMN_EMAIL)
                         .having("COUNT(*) >= " + bigGroupThreshold)
                         .build())
+                .withMapFunc(mapFuncOnlyEmail)
                 .prepare()
                 .executeAsBlocking();
 
@@ -237,12 +237,12 @@ public class QueryTest extends BaseTest {
         final List<User> uniqueUsersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(mapFuncOnlyEmail)
                 .withQuery(new Query.Builder()
                         .table(User.TABLE)
                         .distinct(true)
                         .columns(User.COLUMN_EMAIL)
                         .build())
+                .withMapFunc(mapFuncOnlyEmail)
                 .prepare()
                 .executeAsBlocking();
 
@@ -252,12 +252,12 @@ public class QueryTest extends BaseTest {
         final List<User> allUsersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(mapFuncOnlyEmail)
                 .withQuery(new Query.Builder()
                         .table(User.TABLE)
                         .distinct(false)
                         .columns(User.COLUMN_EMAIL)
                         .build())
+                .withMapFunc(mapFuncOnlyEmail)
                 .prepare()
                 .executeAsBlocking();
 
@@ -306,10 +306,10 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new RawQuery.Builder()
                         .query(query)
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -330,11 +330,11 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new RawQuery.Builder()
                         .query(query)
                         .args(testUser.getEmail())
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -353,11 +353,11 @@ public class QueryTest extends BaseTest {
 
         storIOSQLite.get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new RawQuery.Builder()
                         .query(query)
                         .args(arg)
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 

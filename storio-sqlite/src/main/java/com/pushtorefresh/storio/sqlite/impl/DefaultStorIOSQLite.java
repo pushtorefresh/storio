@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 import com.pushtorefresh.storio.sqlite.query.InsertQuery;
@@ -17,6 +18,9 @@ import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 import com.pushtorefresh.storio.util.QueryUtil;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
@@ -51,10 +55,11 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      * Implementation of {@link StorIOSQLite.Internal}
      */
     @NonNull
-    private final Internal internal = new InternalImpl();
+    private final Internal internal;
 
-    protected DefaultStorIOSQLite(@NonNull SQLiteDatabase db) {
+    protected DefaultStorIOSQLite(@NonNull SQLiteDatabase db, @Nullable Map<Class<?>, SQLiteTypeDefaults<?>> typeDefinitionMap) {
         this.db = db;
+        internal = new InternalImpl(typeDefinitionMap);
     }
 
     /**
@@ -81,6 +86,27 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     }
 
     protected class InternalImpl extends Internal {
+
+        @Nullable
+        private final Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap;
+
+        protected InternalImpl(@Nullable Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap) {
+            this.typesDefaultsMap = typesDefaultsMap != null
+                    ? Collections.unmodifiableMap(typesDefaultsMap)
+                    : null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        @Nullable
+        @Override
+        public <T> SQLiteTypeDefaults<T> typeDefaults(@NonNull Class<T> type) {
+            return typesDefaultsMap != null
+                    ? (SQLiteTypeDefaults<T>) typesDefaultsMap.get(type)
+                    : null;
+        }
 
         /**
          * {@inheritDoc}
@@ -207,8 +233,6 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      */
     public static class Builder {
 
-        SQLiteDatabase db;
-
         /**
          * Specifies database for internal usage.
          * You should provide this or {@link SQLiteOpenHelper}
@@ -219,8 +243,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @NonNull
         public CompleteBuilder db(@NonNull SQLiteDatabase db) {
-            this.db = db;
-            return new CompleteBuilder(this);
+            return new CompleteBuilder(db);
         }
 
         /**
@@ -233,37 +256,45 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @NonNull
         public CompleteBuilder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
-            db = sqliteOpenHelper.getWritableDatabase();
-            return new CompleteBuilder(this);
+            return new CompleteBuilder(sqliteOpenHelper.getWritableDatabase());
         }
     }
 
     /**
-     * Compile-time safe part of builder for {@link DeleteQuery}
+     * Compile-time safe part of builder for {@link DefaultStorIOSQLite}
      */
-    public static class CompleteBuilder extends Builder {
+    public static class CompleteBuilder {
 
-        CompleteBuilder(@NonNull Builder builder) {
-            db = builder.db;
-        }
+        SQLiteDatabase db;
+        Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap;
 
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder db(@NonNull SQLiteDatabase db) {
+        CompleteBuilder(@NonNull SQLiteDatabase db) {
             this.db = db;
-            return this;
         }
 
         /**
-         * {@inheritDoc}
+         * Adds {@link SQLiteTypeDefaults} for some type
+         *
+         * @param type           type
+         * @param typeDefaults definition of type
+         * @param <T>            type
+         * @return builder
          */
         @NonNull
-        @Override
-        public CompleteBuilder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
-            db = sqliteOpenHelper.getWritableDatabase();
+        public <T> CompleteBuilder addDefaultsForType(@NonNull Class<T> type, @NonNull SQLiteTypeDefaults<T> typeDefaults) {
+            checkNotNull(type, "Please specify type");
+            checkNotNull(typeDefaults, "Please specify type defaults");
+
+            if (typesDefaultsMap == null) {
+                typesDefaultsMap = new HashMap<Class<?>, SQLiteTypeDefaults<?>>();
+            }
+
+            if (typesDefaultsMap.containsKey(type)) {
+                throw new IllegalArgumentException("Defaults for type " + type.getSimpleName() + " already added");
+            }
+
+            typesDefaultsMap.put(type, typeDefaults);
+
             return this;
         }
 
@@ -275,7 +306,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @NonNull
         public DefaultStorIOSQLite build() {
             checkNotNull(db, "Please specify SQLiteDatabase instance");
-            return new DefaultStorIOSQLite(db);
+            return new DefaultStorIOSQLite(db, typesDefaultsMap);
         }
     }
 }

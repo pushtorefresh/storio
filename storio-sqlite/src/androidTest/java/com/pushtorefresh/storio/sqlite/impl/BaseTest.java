@@ -55,10 +55,10 @@ public abstract class BaseTest {
         return storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .withQuery(new Query.Builder()
                         .table(User.TABLE)
                         .build())
+                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -96,7 +96,7 @@ public abstract class BaseTest {
 
         final PutResults<User> putResults = storIOSQLite
                 .put()
-                .objects(users)
+                .objects(User.class, users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
                 .withPutResolver(User.PUT_RESOLVER)
                 .prepare()

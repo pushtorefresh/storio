@@ -46,7 +46,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
         PutResults<User> putResults = storIOSQLite()
                 .put()
-                .objects(users)
+                .objects(User.class, users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
                 .withPutResolver(User.PUT_RESOLVER)
                 .prepare()
@@ -59,7 +59,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
         Observable<PutResults<User>> putResultsObservable = storIOSQLite()
                 .put()
-                .objects(users)
+                .objects(User.class, users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
                 .withPutResolver(User.PUT_RESOLVER)
                 .prepare()
@@ -72,7 +72,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
         PutResults<User> putResults = storIOSQLite()
                 .put()
-                .objects(users)
+                .objects(User.class, users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
                 .withPutResolver(User.PUT_RESOLVER)
                 .prepare()
@@ -85,7 +85,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
         Observable<PutResults<User>> putResultsObservable = storIOSQLite()
                 .put()
-                .objects(users)
+                .objects(User.class, users)
                 .withMapFunc(User.MAP_TO_CONTENT_VALUES)
                 .withPutResolver(User.PUT_RESOLVER)
                 .prepare()

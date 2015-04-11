@@ -10,6 +10,7 @@ import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.operation.put.DefaultPutResolver;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResult;
+import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 import com.pushtorefresh.storio.sqlite.query.Query;
 
 /**
@@ -33,7 +34,8 @@ public class Tweet {
 
     public static final MapFunc<Cursor, Tweet> MAP_FROM_CURSOR = new MapFunc<Cursor, Tweet>() {
         @NonNull
-        @Override public Tweet map(@NonNull Cursor cursor) {
+        @Override
+        public Tweet map(@NonNull Cursor cursor) {
             return new Tweet(
                     cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
                     cursor.getString(cursor.getColumnIndex(COLUMN_AUTHOR)),
@@ -44,7 +46,8 @@ public class Tweet {
 
     public static final MapFunc<Tweet, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<Tweet, ContentValues>() {
         @NonNull
-        @Override public ContentValues map(@NonNull Tweet tweet) {
+        @Override
+        public ContentValues map(@NonNull Tweet tweet) {
             final ContentValues contentValues = new ContentValues(3); // wow, such optimization
 
             contentValues.put(COLUMN_ID, tweet.id);
@@ -55,16 +58,31 @@ public class Tweet {
         }
     };
 
-    public static final Query GET_ALL_QUERY = new Query.Builder()
+    public static final MapFunc<Tweet, DeleteQuery> MAP_TO_DELETE_QUERY = new MapFunc<Tweet, DeleteQuery>() {
+        @NonNull
+        @Override
+        public DeleteQuery map(@NonNull Tweet tweet) {
+            return new DeleteQuery.Builder()
+                    .table(TABLE)
+                    .where(COLUMN_ID + "=?")
+                    .whereArgs(tweet.getId())
+                    .build();
+        }
+    };
+
+    public static final Query QUERY_GET_ALL = new Query.Builder()
             .table(TABLE)
             .build();
 
     public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<Tweet>() {
-        @NonNull @Override protected String getTable() {
+        @NonNull
+        @Override
+        protected String getTable() {
             return TABLE;
         }
 
-        @Override public void afterPut(@NonNull Tweet object, @NonNull PutResult putResult) {
+        @Override
+        public void afterPut(@NonNull Tweet object, @NonNull PutResult putResult) {
             if (putResult.wasInserted()) {
                 object.id = putResult.insertedId();
             }
@@ -72,10 +90,13 @@ public class Tweet {
     };
 
     // if object was not inserted into db, id will be null
-    @Nullable private volatile Long id;
+    @Nullable
+    private volatile Long id;
 
-    @NonNull private final String author;
-    @NonNull private final String content;
+    @NonNull
+    private final String author;
+    @NonNull
+    private final String content;
 
     private Tweet(Long id, @NonNull String author, @NonNull String content) {
         this.id = id;
@@ -83,19 +104,23 @@ public class Tweet {
         this.content = content;
     }
 
-    @NonNull public static Tweet newTweet(@NonNull String author, @NonNull String content) {
+    @NonNull
+    public static Tweet newTweet(@NonNull String author, @NonNull String content) {
         return new Tweet(null, author, content);
     }
 
-    @Nullable public Long getId() {
+    @Nullable
+    public Long getId() {
         return id;
     }
 
-    @NonNull public String getAuthor() {
+    @NonNull
+    public String getAuthor() {
         return author;
     }
 
-    @NonNull public String getContent() {
+    @NonNull
+    public String getContent() {
         return content;
     }
 

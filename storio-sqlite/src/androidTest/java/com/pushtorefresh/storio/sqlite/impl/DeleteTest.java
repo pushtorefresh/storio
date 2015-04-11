@@ -40,7 +40,7 @@ public class DeleteTest extends BaseTest {
 
         final DeleteResults<User> deleteResults = storIOSQLite
                 .delete()
-                .objects(usersToDelete)
+                .objects(User.class, usersToDelete)
                 .withMapFunc(User.MAP_TO_DELETE_QUERY)
                 .prepare()
                 .executeAsBlocking();

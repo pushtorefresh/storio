@@ -6,8 +6,6 @@ import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 
-import java.util.Collection;
-
 public abstract class PreparedDelete<T> implements PreparedOperation<T> {
 
     @NonNull
@@ -59,13 +57,14 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
         /**
          * Prepares Delete Operation which should delete multiple objects
          *
+         * @param type type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
          * @param objects objects to delete
          * @param <T>     type of objects
          * @return builder
          */
         @NonNull
-        public <T> PreparedDeleteObjects.Builder<T> objects(@NonNull Collection<T> objects) {
-            return new PreparedDeleteObjects.Builder<T>(storIOSQLite, objects);
+        public <T> PreparedDeleteObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {
+            return new PreparedDeleteObjects.Builder<T>(storIOSQLite, type, objects);
         }
     }
 }
