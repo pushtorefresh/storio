@@ -25,7 +25,7 @@ Currently in development.
 Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample App`:
 
 * [StorIO SQLite Design tests](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
-* [StorIO ContentResolver Design tests](storio-contentresolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
+* [StorIO ContentResolver Design tests](storio-content-resolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
 * [Sample App](storio-sample-app)
 
 ####Some examples
