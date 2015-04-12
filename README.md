@@ -1,5 +1,7 @@
 #### StorIO — modern API for SQLiteDatabase and ContentResolver
 
+Currently in development.
+
 #####Overview:
 * Powerful & Simple set of Operations: `Put`, `Get`, `Delete`
 * API for Humans: Type Safety, Immutability & Thread-Safety
@@ -19,6 +21,12 @@
 
 * [`StorIO SQLite`](docs/StorIOSQLite.md)
 * [`StorIO ContentResolver`](docs/StorIOContentProvider.md)
+
+Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample App`:
+
+* [StorIO SQLite Design tests](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
+* [StorIO ContentResolver Design tests](storio-contentresolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
+* [Sample App](storio-sample-app)
 
 ####Some examples
 
@@ -101,7 +109,7 @@ storIOSQLite
   });
 ```
 
-######Want to work with plain Cursor, okay!
+#####Want to work with plain Cursor, okay!
 ```java
 Cursor cursor = storIOSQLite
   .get()
@@ -139,11 +147,6 @@ We are thinking about optional Compile-Time annotation processing for generating
 API of `StorIOContentResolver` is same.
 
 ----
-Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample App`:
-
-* [StorIO SQLite Design tests](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
-* [StorIO ContentResolver Design tests](storio-contentresolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
-* [Sample App](storio-sample-app)
 
 ####Architecture:
 `StorIOSQLite` and `StorIOContentResolver` — are abstractions with default implementations: `DefaultStorIOSQLite` and `DefaultStorIOContentResolver`.
