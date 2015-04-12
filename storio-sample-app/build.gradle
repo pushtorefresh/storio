@@ -42,7 +42,7 @@ android {
 
 dependencies {
     compile project(':storio-sqlite')
-    compile project(':storio-contentresolver')
+    compile project(':storio-content-resolver')
 
     compile rootProject.ext.dagger
     apt rootProject.ext.daggerCompiler
