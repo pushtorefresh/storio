@@ -24,8 +24,8 @@ Currently in development.
 
 Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample App`:
 
-* [StorIO SQLite Design tests](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
-* [StorIO ContentResolver Design tests](storio-content-resolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
+* [Design tests for StorIO SQLite](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
+* [Design tests for StorIO ContentResolver](storio-content-resolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
 * [Sample App](storio-sample-app)
 
 ####Some examples
@@ -130,21 +130,34 @@ Cursor cursor = storIOSQLite
 StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
   .db(someSQLiteDatabase)
   .addTypeDefaults(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
-    .mappingToContentValues(mapToContentValues)) // map function to convert Tweet object to ContentValues
-    .mappingFromCursor(mapFromCursor) // map function to convert Cursor to Tweet object
-    .putResolver(putResolver) // Resolver for Put Operation (insert or Update), see DefaultPutResolver
-    .mappingToDeleteQuery(mapToDeleteQuery) // map function for converting Tweet object to DeleteQuery
+    .putResolver(Tweet.PUT_RESOLVER) // object that knows how to perform Put Operation (insert or update)
+    .getResolver(Tweet.GET_RESOLVER) // object that knows how to perform Get Operation
+    .deleteResolver(Tweet.DELETE_RESOLVER)  // object that knows how to perform Delete Operation
     .build())
+  .addTypeDefaults(...)
+  // other options
   .build(); // This instance of StorIOSQLite will know how to work with Tweet objects
 ```
 
-Of course, you can override Operation Resolver and Map Function per each Operation, it can be useful for working with `SQL JOIN`.
+You can override Operation Resolver per each individual Operation, it can be useful for working with `SQL JOIN`.
 Also, as you can see, there is no Reflection, and no performance reduction in compare to manual object mapping code.
 
-We are thinking about optional Compile-Time annotation processing for generating such object mapping automatically.
-
+We are thinking about optional Compile-Time annotation processing for generating resolvers implementation in compile-time.
 
 API of `StorIOContentResolver` is same.
+
+----
+
+####Documentation:
+
+* [`StorIO SQLite`](docs/StorIOSQLite.md)
+* [`StorIO ContentResolver`](docs/StorIOContentProvider.md)
+
+Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample App`:
+
+* [Design tests for StorIO SQLite](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
+* [Design tests for StorIO ContentResolver](storio-content-resolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
+* [Sample App](storio-sample-app)
 
 ----
 
