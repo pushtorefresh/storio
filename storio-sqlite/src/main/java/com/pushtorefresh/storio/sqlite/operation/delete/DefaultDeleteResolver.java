@@ -8,14 +8,25 @@ import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 /**
  * Default implementation for {@link DeleteResolver}, thread-safe
  */
-public class DefaultDeleteResolver implements DeleteResolver {
+public abstract class DefaultDeleteResolver<T> implements DeleteResolver<T> {
 
-    // shared instance for internal usage
-    static final DefaultDeleteResolver INSTANCE = new DefaultDeleteResolver();
-
-    @Override
+    /**
+     * Converts object to {@link DeleteQuery}
+     *
+     * @param object object that should be deleted
+     * @return {@link DeleteQuery} that will be performed
+     */
     @NonNull
-    public DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery) {
-        return DeleteResult.newInstance(storIOSQLite.internal().delete(deleteQuery), deleteQuery.table);
+    public abstract DeleteQuery mapToDeleteQuery(@NonNull T object);
+
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull T object) {
+        final DeleteQuery deleteQuery = mapToDeleteQuery(object);
+        final int numberOfRowsDeleted = storIOSQLite.internal().delete(deleteQuery);
+        return DeleteResult.newInstance(numberOfRowsDeleted, deleteQuery.table);
     }
 }

@@ -3,6 +3,11 @@ package com.pushtorefresh.storio.sqlite.operation.put;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Collections;
+import java.util.Set;
+
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+
 /**
  * Immutable container for results of Put Operation
  */
@@ -15,36 +20,61 @@ public class PutResult {
     private final Integer numberOfRowsUpdated;
 
     @NonNull
-    private final String affectedTable;
+    private final Set<String> affectedTables;
 
-    private PutResult(@Nullable Long insertedId, @Nullable Integer numberOfRowsUpdated, @NonNull String affectedTable) {
+    private PutResult(@Nullable Long insertedId, @Nullable Integer numberOfRowsUpdated, @NonNull Set<String> affectedTables) {
+        checkNotNull(affectedTables, "Please specify affected tables");
         this.insertedId = insertedId;
         this.numberOfRowsUpdated = numberOfRowsUpdated;
-        this.affectedTable = affectedTable;
+        this.affectedTables = Collections.unmodifiableSet(affectedTables);
     }
 
     /**
-     * Creates {@link PutResult} for insert
+     * Creates {@link PutResult} of insert
+     *
+     * @param insertedId     id of new row
+     * @param affectedTables tables that were affected
+     * @return new {@link PutResult} instance
+     */
+    @NonNull
+    public static PutResult newInsertResult(long insertedId, @NonNull Set<String> affectedTables) {
+        return new PutResult(insertedId, null, affectedTables);
+    }
+
+    /**
+     * Creates {@link PutResult} of insert
      *
      * @param insertedId    id of new row
-     * @param affectedTable affected table
+     * @param affectedTable table that was affected
      * @return new {@link PutResult} instance
      */
     @NonNull
     public static PutResult newInsertResult(long insertedId, @NonNull String affectedTable) {
-        return new PutResult(insertedId, null, affectedTable);
+        return new PutResult(insertedId, null, Collections.singleton(affectedTable));
     }
 
     /**
-     * Creates {@link PutResult} for update
+     * Creates {@link PutResult} of update
      *
      * @param numberOfRowsUpdated number of rows that were updated
-     * @param affectedTable       affected table
+     * @param affectedTables      tables that were affected
+     * @return new {@link PutResult} instance
+     */
+    @NonNull
+    public static PutResult newUpdateResult(int numberOfRowsUpdated, @NonNull Set<String> affectedTables) {
+        return new PutResult(null, numberOfRowsUpdated, affectedTables);
+    }
+
+    /**
+     * Creates {@link PutResult} of update
+     *
+     * @param numberOfRowsUpdated number of rows that were updated
+     * @param affectedTable       table that was affected
      * @return new {@link PutResult} instance
      */
     @NonNull
     public static PutResult newUpdateResult(int numberOfRowsUpdated, @NonNull String affectedTable) {
-        return new PutResult(null, numberOfRowsUpdated, affectedTable);
+        return new PutResult(null, numberOfRowsUpdated, Collections.singleton(affectedTable));
     }
 
     /**
@@ -104,13 +134,13 @@ public class PutResult {
     }
 
     /**
-     * Gets name of affected table
+     * Gets names of affected tables
      *
-     * @return non-null name of affected table
+     * @return non-null unmodifiable set of affected tables
      */
     @NonNull
-    public String affectedTable() {
-        return affectedTable;
+    public Set<String> affectedTables() {
+        return affectedTables;
     }
 
     @Override
@@ -124,14 +154,14 @@ public class PutResult {
             return false;
         if (numberOfRowsUpdated != null ? !numberOfRowsUpdated.equals(putResult.numberOfRowsUpdated) : putResult.numberOfRowsUpdated != null)
             return false;
-        return affectedTable.equals(putResult.affectedTable);
+        return affectedTables.equals(putResult.affectedTables);
     }
 
     @Override
     public int hashCode() {
         int result = insertedId != null ? insertedId.hashCode() : 0;
         result = 31 * result + (numberOfRowsUpdated != null ? numberOfRowsUpdated.hashCode() : 0);
-        result = 31 * result + affectedTable.hashCode();
+        result = 31 * result + affectedTables.hashCode();
         return result;
     }
 
@@ -140,7 +170,7 @@ public class PutResult {
         return "PutResult{" +
                 "insertedId=" + insertedId +
                 ", numberOfRowsUpdated=" + numberOfRowsUpdated +
-                ", affectedTable='" + affectedTable + '\'' +
+                ", affectedTables=" + affectedTables +
                 '}';
     }
 }

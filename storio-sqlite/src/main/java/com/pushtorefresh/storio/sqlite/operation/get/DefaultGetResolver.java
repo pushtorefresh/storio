@@ -9,18 +9,26 @@ import com.pushtorefresh.storio.sqlite.query.RawQuery;
 
 /**
  * Default implementation of {@link GetResolver}, thread-safe
+ * <p>
+ * You need to just override mapping from Cursor
  */
-public class DefaultGetResolver implements GetResolver {
+public abstract class DefaultGetResolver<T> implements GetResolver<T> {
 
-    // it's thread safe and we can share it instead of creating new one for each Get operation
-    static final DefaultGetResolver INSTANCE = new DefaultGetResolver();
-
-    @NonNull @Override
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
     public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
         return storIOSQLite.internal().rawQuery(rawQuery);
     }
 
-    @NonNull @Override public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
         return storIOSQLite.internal().query(query);
     }
 }

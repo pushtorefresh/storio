@@ -18,12 +18,12 @@ import rx.Observable;
 
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
-    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver getResolver) {
-        super(storIOSQLite, query, getResolver);
+    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
+        super(storIOSQLite, query);
     }
 
-    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
-        super(storIOSQLite, rawQuery, getResolver);
+    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
+        super(storIOSQLite, rawQuery);
     }
 
     /**
@@ -34,9 +34,9 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     @NonNull
     public Cursor executeAsBlocking() {
         if (query != null) {
-            return getResolver.performGet(storIOSQLite, query);
+            return storIOSQLite.internal().query(query);
         } else if (rawQuery != null) {
-            return getResolver.performGet(storIOSQLite, rawQuery);
+            return storIOSQLite.internal().rawQuery(rawQuery);
         } else {
             throw new IllegalStateException("Please specify query");
         }
@@ -57,7 +57,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     /**
      * Creates an {@link Observable} which will be subscribed to changes of query tables
      * and will emit result each time change occurs
-     * <p/>
+     * <p>
      * First result will be emitted immediately after subscription,
      * other emissions will occur only if changes of query tables will occur
      *
@@ -89,35 +89,16 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         }
     }
 
-    interface CommonBuilder<T> {
-
-        /**
-         * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
-         * <p>
-         * Default value is instance of {@link DefaultGetResolver}
-         *
-         * @param getResolver get resolver
-         * @return builder
-         */
-        @NonNull
-        T withGetResolver(@NonNull GetResolver getResolver);
-    }
-
     /**
      * Builder for {@link PreparedOperationWithReactiveStream}
      * <p>
      * Required: You should specify query by call
      * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
      */
-    public static class Builder implements CommonBuilder<Builder> {
+    public static class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
-
-        private Query query;
-        private RawQuery rawQuery;
-        private GetResolver getResolver;
 
         Builder(@NonNull StorIOSQLite storIOSQLite) {
             this.storIOSQLite = storIOSQLite;
@@ -131,8 +112,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull Query query) {
-            this.query = query;
-            return new CompleteBuilder(this);
+            return new CompleteBuilder(storIOSQLite, query);
         }
 
         /**
@@ -144,54 +124,31 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull RawQuery rawQuery) {
-            this.rawQuery = rawQuery;
-            return new CompleteBuilder(this);
-        }
-
-        @Override
-        @NonNull
-        public Builder withGetResolver(@NonNull GetResolver getResolver) {
-            this.getResolver = getResolver;
-            return this;
-        }
-
-        /**
-         * Hidden method for prepares Get Operation
-         *
-         * @return {@link PreparedGetCursor} instance
-         */
-        @NonNull
-        private PreparedOperationWithReactiveStream<Cursor> prepare() {
-            if (getResolver == null) {
-                getResolver = DefaultGetResolver.INSTANCE;
-            }
-
-            if (query != null) {
-                return new PreparedGetCursor(storIOSQLite, query, getResolver);
-            } else if (rawQuery != null) {
-                return new PreparedGetCursor(storIOSQLite, rawQuery, getResolver);
-            } else {
-                throw new IllegalStateException("Please specify query");
-            }
+            return new CompleteBuilder(storIOSQLite, rawQuery);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link PreparedOperationWithReactiveStream}
      */
-    public static class CompleteBuilder implements CommonBuilder<CompleteBuilder> {
+    public static class CompleteBuilder {
 
-        private final Builder incompleteBuilder;
+        @NonNull
+        private final StorIOSQLite storIOSQLite;
 
-        CompleteBuilder(@NonNull Builder builder) {
-            this.incompleteBuilder = builder;
+        private final Query query;
+        private final RawQuery rawQuery;
+
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
+            this.storIOSQLite = storIOSQLite;
+            this.query = query;
+            this.rawQuery = null;
         }
 
-        @Override
-        @NonNull
-        public CompleteBuilder withGetResolver(@NonNull GetResolver getResolver) {
-            incompleteBuilder.withGetResolver(getResolver);
-            return this;
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
+            this.storIOSQLite = storIOSQLite;
+            this.rawQuery = rawQuery;
+            this.query = null;
         }
 
         /**
@@ -201,7 +158,13 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public PreparedOperationWithReactiveStream<Cursor> prepare() {
-            return incompleteBuilder.prepare();
+            if (query != null) {
+                return new PreparedGetCursor(storIOSQLite, query);
+            } else if (rawQuery != null) {
+                return new PreparedGetCursor(storIOSQLite, rawQuery);
+            } else {
+                throw new IllegalStateException("Please specify query");
+            }
         }
     }
 }

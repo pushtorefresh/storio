@@ -1,9 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operation.put;
 
-import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
@@ -23,18 +21,16 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
     @NonNull
     private final Iterable<T> objects;
-    @NonNull
-    private final MapFunc<T, ContentValues> mapFunc;
-    private final boolean useTransactionIfPossible;
+
+    private final boolean useTransaction;
 
     PreparedPutObjects(@NonNull StorIOSQLite storIOSQLite,
+                       @NonNull Iterable<T> objects,
                        @NonNull PutResolver<T> putResolver,
-                       @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc,
-                       boolean useTransactionIfPossible) {
+                       boolean useTransaction) {
         super(storIOSQLite, putResolver);
         this.objects = objects;
-        this.mapFunc = mapFunc;
-        this.useTransactionIfPossible = useTransactionIfPossible;
+        this.useTransaction = useTransaction;
     }
 
     /**
@@ -48,7 +44,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         final StorIOSQLite.Internal internal = storIOSQLite.internal();
         final Map<T, PutResult> putResults = new HashMap<T, PutResult>();
 
-        final boolean withTransaction = useTransactionIfPossible
+        final boolean withTransaction = useTransaction
                 && storIOSQLite.internal().transactionsSupported();
 
         if (withTransaction) {
@@ -59,16 +55,12 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
         try {
             for (T object : objects) {
-                final PutResult putResult = putResolver.performPut(
-                        storIOSQLite,
-                        mapFunc.map(object)
-                );
+                final PutResult putResult = putResolver.performPut(storIOSQLite, object);
 
-                putResolver.afterPut(object, putResult);
                 putResults.put(object, putResult);
 
                 if (!withTransaction) {
-                    internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTable()));
+                    internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                 }
             }
 
@@ -84,7 +76,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
                     final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
 
                     for (final T object : putResults.keySet()) {
-                        affectedTables.add(putResults.get(object).affectedTable());
+                        affectedTables.addAll(putResults.get(object).affectedTables());
                     }
 
                     storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
@@ -123,9 +115,9 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         @NonNull
         private final Iterable<T> objects;
 
-        private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
-        private boolean useTransactionIfPossible = true;
+
+        private boolean useTransaction = true;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type, @NonNull Iterable<T> objects) {
             this.storIOSQLite = storIOSQLite;
@@ -134,21 +126,11 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         }
 
         /**
-         * Required: Specifies map function for Put Operation
-         * which will be used to map each object to {@link ContentValues}
-         *
-         * @param mapFunc map function for Put Operation which will be used to map each object to {@link ContentValues}
-         * @return builder
-         */
-        @NonNull
-        public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
-            this.mapFunc = mapFunc;
-            return this;
-        }
-
-        /**
-         * Required: Specifies {@link PutResolver} for Put Operation
+         * Optional: Specifies {@link PutResolver} for Put Operation
          * which allows you to customize behavior of Put Operation
+         * <p>
+         * Can be set via {@link SQLiteTypeDefaults}
+         * If it's not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *
          * @param putResolver put resolver
          * @return builder
@@ -169,7 +151,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          */
         @NonNull
         public Builder<T> useTransaction(boolean useTransaction) {
-            useTransactionIfPossible = useTransaction;
+            this.useTransaction = useTransaction;
             return this;
         }
 
@@ -182,23 +164,18 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         public PreparedPutObjects<T> prepare() {
             final SQLiteTypeDefaults<T> typeDefaults = storIOSQLite.internal().typeDefaults(type);
 
-            if (mapFunc == null && typeDefaults != null) {
-                mapFunc = typeDefaults.mapToContentValues;
-            }
-
             if (putResolver == null && typeDefaults != null) {
                 putResolver = typeDefaults.putResolver;
             }
 
-            checkNotNull(mapFunc, "Please specify map function");
-            checkNotNull(putResolver, "Please specify put resolver");
+            checkNotNull(putResolver, "Please specify PutResolver");
 
             return new PreparedPutObjects<T>(
                     storIOSQLite,
-                    putResolver,
                     objects,
-                    mapFunc,
-                    useTransactionIfPossible);
+                    putResolver,
+                    useTransaction
+            );
         }
     }
 }

@@ -3,8 +3,8 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 
@@ -19,20 +19,15 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
     @Nullable
     protected final RawQuery rawQuery;
 
-    @NonNull
-    protected final GetResolver getResolver;
-
-    PreparedGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver getResolver) {
+    PreparedGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
         this.storIOSQLite = storIOSQLite;
         this.query = query;
-        this.getResolver = getResolver;
         this.rawQuery = null;
     }
 
-    PreparedGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
+    PreparedGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
         this.storIOSQLite = storIOSQLite;
         this.rawQuery = rawQuery;
-        this.getResolver = getResolver;
         query = null;
     }
 

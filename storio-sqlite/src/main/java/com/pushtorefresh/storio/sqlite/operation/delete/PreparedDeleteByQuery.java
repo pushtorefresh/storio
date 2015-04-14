@@ -18,8 +18,8 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     @NonNull
     private final DeleteQuery deleteQuery;
 
-    PreparedDeleteByQuery(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery, @NonNull DeleteResolver deleteResolver) {
-        super(storIOSQLite, deleteResolver);
+    PreparedDeleteByQuery(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery) {
+        super(storIOSQLite);
         this.deleteQuery = deleteQuery;
     }
 
@@ -31,9 +31,9 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     @NonNull
     @Override
     public DeleteResult executeAsBlocking() {
-        final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
+        final int numberOfRowsDeleted = storIOSQLite.internal().delete(deleteQuery);
         storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(deleteQuery.table));
-        return deleteResult;
+        return DeleteResult.newInstance(numberOfRowsDeleted, deleteQuery.table);
     }
 
     /**
@@ -66,28 +66,13 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
+
         @NonNull
         private final DeleteQuery deleteQuery;
-
-        private DeleteResolver deleteResolver;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery) {
             this.storIOSQLite = storIOSQLite;
             this.deleteQuery = deleteQuery;
-        }
-
-        /**
-         * Optional: Specifies {@link DeleteResolver} for Delete Operation
-         * <p>
-         * Default value is instance of {@link DefaultDeleteResolver}
-         *
-         * @param deleteResolver delete resolver
-         * @return builder
-         */
-        @NonNull
-        public Builder withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
-            this.deleteResolver = deleteResolver;
-            return this;
         }
 
         /**
@@ -97,11 +82,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
          */
         @NonNull
         public PreparedDeleteByQuery prepare() {
-            if (deleteResolver == null) {
-                deleteResolver = DefaultDeleteResolver.INSTANCE;
-            }
-
-            return new PreparedDeleteByQuery(storIOSQLite, deleteQuery, deleteResolver);
+            return new PreparedDeleteByQuery(storIOSQLite, deleteQuery);
         }
     }
 }
