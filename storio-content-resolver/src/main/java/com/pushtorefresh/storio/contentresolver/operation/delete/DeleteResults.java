@@ -37,6 +37,26 @@ public final class DeleteResults<T> {
         return results;
     }
 
+    /**
+     * Checks whether particular object was deleted
+     *
+     * @param object object to check
+     * @return true if object was deleted, false otherwise
+     */
+    public boolean wasDeleted(@NonNull T object) {
+        return results.containsKey(object);
+    }
+
+    /**
+     * Checks whether particular object was NOT deleted
+     *
+     * @param object object to check
+     * @return true if object was NOT deleter, false if it was deleted
+     */
+    public boolean wasNotDeleted(@NonNull T object) {
+        return !results.containsKey(object);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
