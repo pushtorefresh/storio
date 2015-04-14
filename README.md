@@ -38,7 +38,7 @@ List<Tweet> tweets = storIOSQLite
   .withQuery(new Query.Builder() // Query builder
     .table("tweets")
     .where("author = ?")
-    .whereArgs("artem_zin") // Varargs Object..., forget about new String[] {"I", "am", "tired", "of", "this", "shit"}
+    .whereArgs("artem_zin") // Varargs Object..., no more new String[] {"I", "am", "tired", "of", "this", "shit"}
     .build()) // Query is immutable — you can save it and share without worries
   .prepare() // Operation builder
   .executeAsBlocking(); // Control flow is readable from top to bottom, just like with RxJava
@@ -79,7 +79,7 @@ storIOSQLite
     .build())
   .prepare()
   .createObservable()
-  .subscribeOn(Schedulers.io()) // Move Get Operation to Background Thread
+  .subscribeOn(Schedulers.io()) // Execute Get Operation on Background Thread
   .observeOn(AndroidSchedulers.mainThread()) // Observe on Main Thread
   .subscribe(new Action1<List<Tweet>>() {
   	@Override public void call(List<Tweet> tweets) {
@@ -102,14 +102,14 @@ storIOSQLite
   .observeOn(AndroidSchedulers.mainThread())
   .subscribe(new Action1<List<Tweet>>() { // don't forget to unsubscribe please
   	@Override public void call(List<Tweet> tweets) {
-  	  // will be called after each change of tables from Query
+  	  // will be called with first result and then after each change of tables from Query
   	  // several changes in transaction -> one notification
   	  adapter.setData(tweets);
   	}
   });
 ```
 
-#####Want to work with plain Cursor, okay!
+#####Want to work with plain Cursor, no problems
 ```java
 Cursor cursor = storIOSQLite
   .get()
