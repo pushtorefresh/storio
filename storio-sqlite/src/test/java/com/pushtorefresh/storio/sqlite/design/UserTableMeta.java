@@ -16,7 +16,11 @@ import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
 import static org.mockito.Mockito.mock;
 
-class UserTableInfo {
+class UserTableMeta {
+
+    private UserTableMeta() {
+        throw new IllegalStateException("No instances please");
+    }
 
     static final String TABLE = "users";
 

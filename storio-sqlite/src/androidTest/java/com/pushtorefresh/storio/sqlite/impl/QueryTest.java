@@ -4,9 +4,10 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.sqlite.query.RawQuery;
-import com.pushtorefresh.storio.operation.MapFunc;
+import com.pushtorefresh.storio.sqlite.operation.get.DefaultGetResolver;
+import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
 import com.pushtorefresh.storio.sqlite.query.Query;
+import com.pushtorefresh.storio.sqlite.query.RawQuery;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,15 +24,15 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class QueryTest extends BaseTest {
 
-    @Test public void queryAll() {
+    @Test
+    public void queryAll() {
         final List<User> users = putUsers(3);
-
         final List<User> usersFromQuery = getAllUsers();
-
         assertTrue(users.equals(usersFromQuery));
     }
 
-    @Test public void queryOneByField() {
+    @Test
+    public void queryOneByField() {
         final List<User> users = putUsers(3);
 
         for (User user : users) {
@@ -39,11 +40,10 @@ public class QueryTest extends BaseTest {
                     .get()
                     .listOfObjects(User.class)
                     .withQuery(new Query.Builder()
-                            .table(User.TABLE)
-                            .where(User.COLUMN_EMAIL + "=?")
-                            .whereArgs(user.getEmail())
+                            .table(UserTableMeta.TABLE)
+                            .where(UserTableMeta.COLUMN_EMAIL + "=?")
+                            .whereArgs(user.email())
                             .build())
-                    .withMapFunc(User.MAP_FROM_CURSOR)
                     .prepare()
                     .executeAsBlocking();
 
@@ -53,7 +53,8 @@ public class QueryTest extends BaseTest {
         }
     }
 
-    @Test public void queryOrdered() {
+    @Test
+    public void queryOrdered() {
         final List<User> users = TestFactory.newUsers(3);
 
         // Reverse sorting by email before inserting, for the purity of the experiment.
@@ -65,10 +66,9 @@ public class QueryTest extends BaseTest {
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .table(User.TABLE)
-                        .orderBy(User.COLUMN_EMAIL)
+                        .table(UserTableMeta.TABLE)
+                        .orderBy(UserTableMeta.COLUMN_EMAIL)
                         .build())
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -83,7 +83,8 @@ public class QueryTest extends BaseTest {
         }
     }
 
-    @Test public void queryOrderedDesc() {
+    @Test
+    public void queryOrderedDesc() {
         final List<User> users = TestFactory.newUsers(3);
 
         // Sorting by email before inserting, for the purity of the experiment.
@@ -95,10 +96,9 @@ public class QueryTest extends BaseTest {
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .table(User.TABLE)
-                        .orderBy(User.COLUMN_EMAIL + " DESC")
+                        .table(UserTableMeta.TABLE)
+                        .orderBy(UserTableMeta.COLUMN_EMAIL + " DESC")
                         .build())
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -113,7 +113,8 @@ public class QueryTest extends BaseTest {
         }
     }
 
-    @Test public void querySingleLimit() {
+    @Test
+    public void querySingleLimit() {
         putUsers(10);
 
         final int limit = 8;
@@ -121,10 +122,9 @@ public class QueryTest extends BaseTest {
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .table(User.TABLE)
+                        .table(UserTableMeta.TABLE)
                         .limit(String.valueOf(limit))
                         .build())
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -132,7 +132,8 @@ public class QueryTest extends BaseTest {
         assertEquals(usersFromQuery.size(), limit);
     }
 
-    @Test public void queryLimitOffset() {
+    @Test
+    public void queryLimitOffset() {
         final List<User> users = putUsers(10);
 
         final int offset = 5;
@@ -141,11 +142,10 @@ public class QueryTest extends BaseTest {
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .table(User.TABLE)
-                        .orderBy(User.COLUMN_EMAIL)
+                        .table(UserTableMeta.TABLE)
+                        .orderBy(UserTableMeta.COLUMN_EMAIL)
                         .limit(offset + ", " + limit)
                         .build())
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -160,7 +160,8 @@ public class QueryTest extends BaseTest {
         }
     }
 
-    @Test public void queryGroupBy() {
+    @Test
+    public void queryGroupBy() {
         final List<User> users = TestFactory.newUsers(10);
 
         for (int i = 0; i < users.size(); i++) {
@@ -170,7 +171,8 @@ public class QueryTest extends BaseTest {
             } else {
                 commonEmail = "second_group@gmail.com";
             }
-            users.get(i).setEmail(commonEmail);
+
+            users.set(i, User.newInstance(null, commonEmail));
         }
 
         putUsers(users);
@@ -179,11 +181,17 @@ public class QueryTest extends BaseTest {
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .table(User.TABLE)
-                        .columns(User.COLUMN_EMAIL)
-                        .groupBy(User.COLUMN_EMAIL)
+                        .table(UserTableMeta.TABLE)
+                        .columns(UserTableMeta.COLUMN_EMAIL)
+                        .groupBy(UserTableMeta.COLUMN_EMAIL)
                         .build())
-                .withMapFunc(mapFuncOnlyEmail)
+                .withGetResolver(new DefaultGetResolver<User>() {
+                    @NonNull
+                    @Override
+                    public User mapFromCursor(@NonNull Cursor cursor) {
+                        return User.newInstance(null, cursor.getString(cursor.getColumnIndex(UserTableMeta.COLUMN_EMAIL)));
+                    }
+                })
                 .prepare()
                 .executeAsBlocking();
 
@@ -191,7 +199,8 @@ public class QueryTest extends BaseTest {
         assertEquals(2, groupsOfUsers.size());
     }
 
-    @Test public void queryHaving() {
+    @Test
+    public void queryHaving() {
         final List<User> users = TestFactory.newUsers(10);
 
         for (int i = 0; i < users.size(); i++) {
@@ -201,7 +210,8 @@ public class QueryTest extends BaseTest {
             } else {
                 commonEmail = "second_group@gmail.com";
             }
-            users.get(i).setEmail(commonEmail);
+
+            users.set(i, User.newInstance(null, commonEmail));
         }
 
         putUsers(users);
@@ -212,12 +222,18 @@ public class QueryTest extends BaseTest {
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .table(User.TABLE)
-                        .columns(User.COLUMN_EMAIL)
-                        .groupBy(User.COLUMN_EMAIL)
+                        .table(UserTableMeta.TABLE)
+                        .columns(UserTableMeta.COLUMN_EMAIL)
+                        .groupBy(UserTableMeta.COLUMN_EMAIL)
                         .having("COUNT(*) >= " + bigGroupThreshold)
                         .build())
-                .withMapFunc(mapFuncOnlyEmail)
+                .withGetResolver(new DefaultGetResolver<User>() {
+                    @NonNull
+                    @Override
+                    public User mapFromCursor(@NonNull Cursor cursor) {
+                        return User.newInstance(null, cursor.getString(cursor.getColumnIndex(UserTableMeta.COLUMN_EMAIL)));
+                    }
+                })
                 .prepare()
                 .executeAsBlocking();
 
@@ -225,24 +241,33 @@ public class QueryTest extends BaseTest {
         assertEquals(1, groupsOfUsers.size());
     }
 
-    @Test public void queryDistinct() {
-        final List<User> users = TestFactory.newUsers(10);
+    @Test
+    public void queryDistinct() {
+        final List<User> users = new ArrayList<User>();
 
-        for (User user : users) {
-            user.setEmail("same@gmail.com");
+        for (int i = 0; i < 10; i++) {
+            users.add(User.newInstance((long) i, "same@email.com"));
         }
 
         putUsers(users);
+
+        final GetResolver<User> customGetResolver = new DefaultGetResolver<User>() {
+            @NonNull
+            @Override
+            public User mapFromCursor(@NonNull Cursor cursor) {
+                return User.newInstance(null, cursor.getString(cursor.getColumnIndex(UserTableMeta.COLUMN_EMAIL)));
+            }
+        };
 
         final List<User> uniqueUsersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .table(User.TABLE)
+                        .table(UserTableMeta.TABLE)
                         .distinct(true)
-                        .columns(User.COLUMN_EMAIL)
+                        .columns(UserTableMeta.COLUMN_EMAIL)
                         .build())
-                .withMapFunc(mapFuncOnlyEmail)
+                .withGetResolver(customGetResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -253,11 +278,11 @@ public class QueryTest extends BaseTest {
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .table(User.TABLE)
+                        .table(UserTableMeta.TABLE)
                         .distinct(false)
-                        .columns(User.COLUMN_EMAIL)
+                        .columns(UserTableMeta.COLUMN_EMAIL)
                         .build())
-                .withMapFunc(mapFuncOnlyEmail)
+                .withGetResolver(customGetResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -265,23 +290,16 @@ public class QueryTest extends BaseTest {
         assertEquals(users.size(), allUsersFromQuery.size());
     }
 
-    private final MapFunc<Cursor, User> mapFuncOnlyEmail = new MapFunc<Cursor, User>() {
-        @NonNull
-        @Override public User map(@NonNull Cursor cursor) {
-            return new User(null, cursor.getString(cursor.getColumnIndex(User.COLUMN_EMAIL)));
-        }
-    };
-
-    @Test public void queryWithRawQuery() {
-
+    @Test
+    public void queryWithRawQuery() {
         final List<User> users = TestFactory.newUsers(20);
 
         int counter = 1;
-        for (User user : users) {
 
+        for (int i = 0; i < users.size(); i++) {
             char[] chars = new char[counter++];
-            Arrays.fill(chars, '*');
-            user.setEmail(new String(chars));
+            Arrays.fill(chars, '*'); // wtf is going on?
+            users.set(i, User.newInstance(null, new String(chars)));
         }
 
         putUsers(users);
@@ -290,18 +308,20 @@ public class QueryTest extends BaseTest {
 
         int lengthSum = 0;
         for (User user : users) {
-            lengthSum += user.getEmail().length();
+            lengthSum += user.email().length();
         }
+
         final int avrLength = lengthSum / users.size();
+
         for (User user : users) {
-            if (user.getEmail().length() > avrLength) {
+            if (user.email().length() > avrLength) {
                 usersWithLongName.add(user);
             }
         }
 
-        final String query = "Select * from " + User.TABLE
-                + " where length(" + User.COLUMN_EMAIL + ") > "
-                + "(select avg(length(" + User.COLUMN_EMAIL + ")) from users)";
+        final String query = "Select * from " + UserTableMeta.TABLE
+                + " where length(" + UserTableMeta.COLUMN_EMAIL + ") > "
+                + "(select avg(length(" + UserTableMeta.COLUMN_EMAIL + ")) from users)";
 
         final List<User> usersFromQuery = storIOSQLite
                 .get()
@@ -309,32 +329,30 @@ public class QueryTest extends BaseTest {
                 .withQuery(new RawQuery.Builder()
                         .query(query)
                         .build())
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
         assertEquals(usersWithLongName, usersFromQuery);
     }
 
-    @Test public void queryWithRawQueryAndArguments() {
-
-        final User testUser = new User(null, "testUserName");
+    @Test
+    public void queryWithRawQueryAndArguments() {
+        final User testUser = User.newInstance(null, "testUserName");
 
         final List<User> users = TestFactory.newUsers(10);
         users.add(testUser);
         putUsers(users);
 
-        final String query = "Select * from " + User.TABLE
-                + " where " + User.COLUMN_EMAIL + " like ?";
+        final String query = "SELECT * FROM " + UserTableMeta.TABLE
+                + " WHERE " + UserTableMeta.COLUMN_EMAIL + " LIKE ?";
 
         final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new RawQuery.Builder()
                         .query(query)
-                        .args(testUser.getEmail())
+                        .args(testUser.email())
                         .build())
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -343,13 +361,14 @@ public class QueryTest extends BaseTest {
         assertEquals(testUser, usersFromQuery.get(0));
     }
 
-    @Test public void queryWithRawQuerySqlInjection() {
-
+    @Test
+    public void queryWithRawQuerySqlInjectionFail() {
         final List<User> users = putUsers(10);
 
-        final String query = "Select * from " + User.TABLE
-                + " where " + User.COLUMN_EMAIL + " like ?";
-        final String arg = "(delete from " + User.TABLE + ")";
+        final String query = "SELECT * FROM " + UserTableMeta.TABLE
+                + " WHERE " + UserTableMeta.COLUMN_EMAIL + " LIKE ?";
+
+        final String arg = "(DELETE FROM " + UserTableMeta.TABLE + ")";
 
         storIOSQLite.get()
                 .listOfObjects(User.class)
@@ -357,7 +376,6 @@ public class QueryTest extends BaseTest {
                         .query(query)
                         .args(arg)
                         .build())
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 

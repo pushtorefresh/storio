@@ -32,18 +32,16 @@ public class PutOperationDesignTest extends OperationDesignTest {
 
         @NonNull
         @Override
-        protected UpdateQuery mapToUpdateQuery(@NonNull ContentValues object) {
+        protected UpdateQuery mapToUpdateQuery(@NonNull ContentValues contentValues) {
             return new UpdateQuery.Builder()
-                    .table("some_table")
-                    .where("_id = ?")
-                    .whereArgs(object.get("_id"))
+                    .table("some_table") // it's just a sample, no need to specify params
                     .build();
         }
 
         @NonNull
         @Override
-        protected ContentValues mapToContentValues(@NonNull ContentValues object) {
-            return object; // easy
+        protected ContentValues mapToContentValues(@NonNull ContentValues contentValues) {
+            return contentValues; // easy
         }
     };
 
@@ -54,7 +52,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResult putResult = storIOSQLite()
                 .put()
                 .object(user)
-                .withPutResolver(UserTableInfo.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -66,7 +64,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResult> observablePutResult = storIOSQLite()
                 .put()
                 .object(user)
-                .withPutResolver(UserTableInfo.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -78,7 +76,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResults<User> putResults = storIOSQLite()
                 .put()
                 .objects(User.class, users)
-                .withPutResolver(UserTableInfo.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -90,7 +88,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResults<User>> putResultsObservable = storIOSQLite()
                 .put()
                 .objects(User.class, users)
-                .withPutResolver(UserTableInfo.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -102,7 +100,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResults<User> putResults = storIOSQLite()
                 .put()
                 .objects(User.class, users)
-                .withPutResolver(UserTableInfo.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -114,7 +112,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResults<User>> putResultsObservable = storIOSQLite()
                 .put()
                 .objects(User.class, users)
-                .withPutResolver(UserTableInfo.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }

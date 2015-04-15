@@ -59,7 +59,7 @@ public abstract class DefaultPutResolver<T> implements PutResolver<T> {
             final Cursor cursor = storIOSQLite.internal().query(new Query.Builder()
                     .table(updateQuery.table)
                     .where(updateQuery.where)
-                    .whereArgs(QueryUtil.listToArray(updateQuery.whereArgs))
+                    .whereArgs((Object[]) QueryUtil.listToArray(updateQuery.whereArgs))
                     .build());
 
             final PutResult putResult;

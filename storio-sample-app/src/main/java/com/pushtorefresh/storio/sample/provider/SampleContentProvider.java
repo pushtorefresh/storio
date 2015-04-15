@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.sample.SampleApp;
-import com.pushtorefresh.storio.sample.db.entity.Tweet;
+import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
 
 import javax.inject.Inject;
 
@@ -43,7 +43,7 @@ public class SampleContentProvider extends ContentProvider {
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
                 return db.query(
-                        Tweet.TABLE,
+                        TweetTableMeta.TABLE,
                         projection,
                         selection,
                         selectionArgs,
@@ -67,7 +67,7 @@ public class SampleContentProvider extends ContentProvider {
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
                 final long insertedId = db.insert(
-                        Tweet.TABLE,
+                        TweetTableMeta.TABLE,
                         null,
                         values
                 );
@@ -83,7 +83,7 @@ public class SampleContentProvider extends ContentProvider {
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
                 return db.delete(
-                        Tweet.TABLE,
+                        TweetTableMeta.TABLE,
                         selection,
                         selectionArgs
                 );
@@ -97,7 +97,7 @@ public class SampleContentProvider extends ContentProvider {
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
                 return db.update(
-                        Tweet.TABLE,
+                        TweetTableMeta.TABLE,
                         values,
                         selection,
                         selectionArgs

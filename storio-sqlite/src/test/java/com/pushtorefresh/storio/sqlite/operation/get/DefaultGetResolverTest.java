@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operation.get;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
@@ -17,6 +18,10 @@ import static org.mockito.Mockito.when;
 
 public class DefaultGetResolverTest {
 
+    private static class TestItem {
+
+    }
+
     @Test
     public void rawQuery() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
@@ -30,7 +35,13 @@ public class DefaultGetResolverTest {
         when(internal.rawQuery(rawQuery))
                 .thenReturn(expectedCursor);
 
-        final DefaultGetResolver defaultGetResolver = new DefaultGetResolver();
+        final DefaultGetResolver<TestItem> defaultGetResolver = new DefaultGetResolver<TestItem>() {
+            @NonNull
+            @Override
+            public TestItem mapFromCursor(@NonNull Cursor cursor) {
+                return mock(TestItem.class);
+            }
+        };
 
         final Cursor actualCursor = defaultGetResolver.performGet(storIOSQLite, rawQuery);
 
@@ -56,7 +67,13 @@ public class DefaultGetResolverTest {
         when(internal.query(query))
                 .thenReturn(expectedCursor);
 
-        final DefaultGetResolver defaultGetResolver = new DefaultGetResolver();
+        final DefaultGetResolver<TestItem> defaultGetResolver = new DefaultGetResolver<TestItem>() {
+            @NonNull
+            @Override
+            public TestItem mapFromCursor(@NonNull Cursor cursor) {
+                return mock(TestItem.class);
+            }
+        };
 
         final Cursor actualCursor = defaultGetResolver.performGet(storIOSQLite, query);
 

@@ -13,7 +13,6 @@ public class PreparedPutObjectTest {
         final PutResult putResult = putStub.storIOSQLite
                 .put()
                 .object(putStub.testItems.get(0))
-                .withMapFunc(putStub.mapFunc)
                 .withPutResolver(putStub.putResolver)
                 .prepare()
                 .executeAsBlocking();
@@ -28,7 +27,6 @@ public class PreparedPutObjectTest {
         final Observable<PutResult> putResultObservable = putStub.storIOSQLite
                 .put()
                 .object(putStub.testItems.get(0))
-                .withMapFunc(putStub.mapFunc)
                 .withPutResolver(putStub.putResolver)
                 .prepare()
                 .createObservable();

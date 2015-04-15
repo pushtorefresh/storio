@@ -37,7 +37,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
-                .withGetResolver(UserTableInfo.GET_RESOLVER)
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -66,7 +66,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
-                .withGetResolver(UserTableInfo.GET_RESOLVER)
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -106,7 +106,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
                         .args("arg1", "arg2")
                         .build())
-                .withGetResolver(UserTableInfo.GET_RESOLVER)
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -120,7 +120,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
                         .args("arg1", "arg2")
                         .build())
-                .withGetResolver(UserTableInfo.GET_RESOLVER)
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -141,7 +141,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder().table("users").build())
-                .withGetResolver(UserTableInfo.GET_RESOLVER)
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
                 .createObservableStream();
     }
