@@ -2,14 +2,13 @@ package com.pushtorefresh.storio.sqlite.impl;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 
+import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResult;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResult;
-import com.pushtorefresh.storio.sqlite.query.Query;
+import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
 
 import org.junit.Before;
 
@@ -34,31 +33,38 @@ public abstract class BaseTest {
 
         storIOSQLite = new DefaultStorIOSQLite.Builder()
                 .db(db)
+                .addDefaultsForType(User.class, new SQLiteTypeDefaults.Builder<User>()
+                        .putResolver(UserTableMeta.PUT_RESOLVER)
+                        .getResolver(UserTableMeta.GET_RESOLVER)
+                        .deleteResolver(UserTableMeta.DELETE_RESOLVER)
+                        .build())
+                .addDefaultsForType(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
+                        .putResolver(TweetTableMeta.PUT_RESOLVER)
+                        .getResolver(TweetTableMeta.GET_RESOLVER)
+                        .deleteResolver(TweetTableMeta.DELETE_RESOLVER)
+                        .build())
                 .build();
 
         // clearing db before each test case
         storIOSQLite
                 .delete()
-                .byQuery(User.DELETE_ALL)
+                .byQuery(UserTableMeta.DELETE_QUERY_ALL)
                 .prepare()
                 .executeAsBlocking();
 
         storIOSQLite
                 .delete()
-                .byQuery(Tweet.DELETE_ALL)
+                .byQuery(TweetTableMeta.DELETE_QUERY_ALL)
                 .prepare()
                 .executeAsBlocking();
     }
 
-    @Nullable
+    @NonNull
     List<User> getAllUsers() {
         return storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
-                        .table(User.TABLE)
-                        .build())
-                .withMapFunc(User.MAP_FROM_CURSOR)
+                .withQuery(UserTableMeta.QUERY_ALL)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -75,8 +81,6 @@ public abstract class BaseTest {
         final PutResult putResult = storIOSQLite
                 .put()
                 .object(user)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(User.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
 
@@ -97,8 +101,6 @@ public abstract class BaseTest {
         final PutResults<User> putResults = storIOSQLite
                 .put()
                 .objects(User.class, users)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(User.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
 
@@ -112,7 +114,6 @@ public abstract class BaseTest {
         final DeleteResult deleteResult = storIOSQLite
                 .delete()
                 .object(user)
-                .withMapFunc(User.MAP_TO_DELETE_QUERY)
                 .prepare()
                 .executeAsBlocking();
 

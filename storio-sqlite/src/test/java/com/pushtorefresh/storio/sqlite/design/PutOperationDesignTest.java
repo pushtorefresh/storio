@@ -1,9 +1,14 @@
 package com.pushtorefresh.storio.sqlite.design;
 
 import android.content.ContentValues;
+import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
+import com.pushtorefresh.storio.sqlite.operation.put.DefaultPutResolver;
+import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResult;
+import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
+import com.pushtorefresh.storio.sqlite.query.InsertQuery;
+import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
 import org.junit.Test;
 
@@ -12,7 +17,33 @@ import java.util.Arrays;
 
 import rx.Observable;
 
+import static org.mockito.Mockito.mock;
+
 public class PutOperationDesignTest extends OperationDesignTest {
+
+    private static final PutResolver<ContentValues> CONTENT_VALUES_PUT_RESOLVER = new DefaultPutResolver<ContentValues>() {
+        @NonNull
+        @Override
+        protected InsertQuery mapToInsertQuery(@NonNull ContentValues object) {
+            return new InsertQuery.Builder()
+                    .table("some_table")
+                    .build();
+        }
+
+        @NonNull
+        @Override
+        protected UpdateQuery mapToUpdateQuery(@NonNull ContentValues contentValues) {
+            return new UpdateQuery.Builder()
+                    .table("some_table") // it's just a sample, no need to specify params
+                    .build();
+        }
+
+        @NonNull
+        @Override
+        protected ContentValues mapToContentValues(@NonNull ContentValues contentValues) {
+            return contentValues; // easy
+        }
+    };
 
     @Test
     public void putObjectBlocking() {
@@ -21,8 +52,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResult putResult = storIOSQLite()
                 .put()
                 .object(user)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(User.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -34,8 +64,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResult> observablePutResult = storIOSQLite()
                 .put()
                 .object(user)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(User.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -47,8 +76,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResults<User> putResults = storIOSQLite()
                 .put()
                 .objects(User.class, users)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(User.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -60,8 +88,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResults<User>> putResultsObservable = storIOSQLite()
                 .put()
                 .objects(User.class, users)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(User.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -73,8 +100,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResults<User> putResults = storIOSQLite()
                 .put()
                 .objects(User.class, users)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(User.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -86,32 +112,27 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResults<User>> putResultsObservable = storIOSQLite()
                 .put()
                 .objects(User.class, users)
-                .withMapFunc(User.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(User.PUT_RESOLVER)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
 
     @Test
     public void putContentValuesBlocking() {
-        ContentValues contentValues = User.MAP_TO_CONTENT_VALUES.map(newUser());
-
         PutResult putResult = storIOSQLite()
                 .put()
-                .contentValues(contentValues)
-                .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .contentValues(mock(ContentValues.class))
+                .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
 
     @Test
     public void putContentValuesObservable() {
-        ContentValues contentValues = User.MAP_TO_CONTENT_VALUES.map(newUser());
-
         Observable<PutResult> putResult = storIOSQLite()
                 .put()
-                .contentValues(contentValues)
-                .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .contentValues(mock(ContentValues.class))
+                .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -119,12 +140,12 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test
     public void putContentValuesIterableBlocking() {
         Iterable<ContentValues> contentValuesIterable
-                = Arrays.asList(User.MAP_TO_CONTENT_VALUES.map(newUser()));
+                = Arrays.asList(mock(ContentValues.class));
 
         PutResults<ContentValues> putResults = storIOSQLite()
                 .put()
                 .contentValues(contentValuesIterable)
-                .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -132,36 +153,36 @@ public class PutOperationDesignTest extends OperationDesignTest {
     @Test
     public void putContentValuesIterableObservable() {
         Iterable<ContentValues> contentValuesIterable
-                = Arrays.asList(User.MAP_TO_CONTENT_VALUES.map(newUser()));
+                = Arrays.asList(mock(ContentValues.class));
 
         Observable<PutResults<ContentValues>> putResults = storIOSQLite()
                 .put()
                 .contentValues(contentValuesIterable)
-                .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
 
     @Test
     public void putContentValuesArrayBlocking() {
-        ContentValues[] contentValuesArray = {User.MAP_TO_CONTENT_VALUES.map(newUser())};
+        ContentValues[] contentValuesArray = {mock(ContentValues.class)};
 
         PutResults<ContentValues> putResults = storIOSQLite()
                 .put()
                 .contentValues(contentValuesArray)
-                .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
 
     @Test
     public void putContentValuesArrayObservable() {
-        ContentValues[] contentValuesArray = {User.MAP_TO_CONTENT_VALUES.map(newUser())};
+        ContentValues[] contentValuesArray = {mock(ContentValues.class)};
 
         Observable<PutResults<ContentValues>> putResults = storIOSQLite()
                 .put()
                 .contentValues(contentValuesArray)
-                .withPutResolver(User.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }

@@ -2,7 +2,9 @@ package com.pushtorefresh.storio.sqlite.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
+import java.util.Collections;
+import java.util.Set;
+
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
@@ -15,13 +17,25 @@ public class DeleteResult {
     private final int numberOfRowsDeleted;
 
     @NonNull
-    private final String affectedTable;
+    private final Set<String> affectedTables;
 
-    private DeleteResult(int numberOfRowsDeleted, @NonNull String affectedTable) {
-        checkNotNull(affectedTable, "Please specify affected table");
-
+    private DeleteResult(int numberOfRowsDeleted, @NonNull Set<String> affectedTables) {
+        checkNotNull(affectedTables, "Please specify affected tables");
         this.numberOfRowsDeleted = numberOfRowsDeleted;
-        this.affectedTable = affectedTable;
+        this.affectedTables = Collections.unmodifiableSet(affectedTables);
+    }
+
+    /**
+     * Creates new instance of immutable container for results of Delete Operation
+     *
+     * @param numberOfRowsDeleted number of rows that were deleted
+     * @param affectedTables      tables that were affected
+     * @return new instance of immutable container for result of Delete Operation
+     */
+    @NonNull
+    public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull Set<String> affectedTables) {
+        checkNotNull(affectedTables, "Please specify affected tables");
+        return new DeleteResult(numberOfRowsDeleted, affectedTables);
     }
 
     /**
@@ -29,12 +43,12 @@ public class DeleteResult {
      *
      * @param numberOfRowsDeleted number of rows that were deleted
      * @param affectedTable       table that was affected
-     * @return new instance of immutable container for result of Delete Operation
+     * @return new instance of immutable container for results of Delete Operation
      */
     @NonNull
     public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull String affectedTable) {
-        checkNotEmpty(affectedTable, "Please specify affected table");
-        return new DeleteResult(numberOfRowsDeleted, affectedTable);
+        checkNotNull(affectedTable, "Please specify affected table");
+        return new DeleteResult(numberOfRowsDeleted, Collections.singleton(affectedTable));
     }
 
     /**
@@ -47,13 +61,13 @@ public class DeleteResult {
     }
 
     /**
-     * Gets name of the table that was affected by Delete Operation
+     * Gets names of the tables that wer affected by Delete Operation
      *
-     * @return name of affected table
+     * @return unmodifiable set of tables that were affected
      */
     @NonNull
-    public String affectedTable() {
-        return affectedTable;
+    public Set<String> affectedTables() {
+        return affectedTables;
     }
 
     @Override
@@ -64,13 +78,13 @@ public class DeleteResult {
         DeleteResult that = (DeleteResult) o;
 
         if (numberOfRowsDeleted != that.numberOfRowsDeleted) return false;
-        return affectedTable.equals(that.affectedTable);
+        return affectedTables.equals(that.affectedTables);
     }
 
     @Override
     public int hashCode() {
         int result = numberOfRowsDeleted;
-        result = 31 * result + affectedTable.hashCode();
+        result = 31 * result + affectedTables.hashCode();
         return result;
     }
 
@@ -78,7 +92,7 @@ public class DeleteResult {
     public String toString() {
         return "DeleteResult{" +
                 "numberOfRowsDeleted=" + numberOfRowsDeleted +
-                ", affectedTable='" + affectedTable + '\'' +
+                ", affectedTables=" + affectedTables +
                 '}';
     }
 }

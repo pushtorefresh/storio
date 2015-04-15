@@ -1,9 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operation.put;
 
-import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
@@ -28,7 +26,6 @@ class PutStub {
     final List<TestItem> testItems;
     final StorIOSQLite storIOSQLite;
     final StorIOSQLite.Internal internal;
-    final MapFunc<TestItem, ContentValues> mapFunc;
     final PutResolver<TestItem> putResolver;
     final boolean useTransaction;
 
@@ -71,15 +68,8 @@ class PutStub {
 
         putResolver = (PutResolver<TestItem>) mock(PutResolver.class);
 
-        when(putResolver.performPut(eq(storIOSQLite), any(ContentValues.class)))
+        when(putResolver.performPut(eq(storIOSQLite), any(TestItem.class)))
                 .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE));
-
-        mapFunc = (MapFunc<TestItem, ContentValues>) mock(MapFunc.class);
-
-        for (TestItem testItem : testItems) {
-            when(mapFunc.map(testItem))
-                    .thenReturn(mock(ContentValues.class));
-        }
     }
 
     void verifyBehaviorForMultiple(@NonNull PutResults<TestItem> putResults) {
@@ -87,15 +77,10 @@ class PutStub {
         verify(storIOSQLite, times(1)).put();
 
         // number of calls to putResolver's performPut() should be equal to number of objects
-        verify(putResolver, times(testItems.size())).performPut(eq(storIOSQLite), any(ContentValues.class));
+        verify(putResolver, times(testItems.size())).performPut(eq(storIOSQLite), any(TestItem.class));
 
         for (final TestItem testItem : testItems) {
-            // map operation for each object should be called only once
-            verify(mapFunc, times(1)).map(testItem);
-
-            // putResolver's afterPut() callback should be called only once for each object
-            verify(putResolver, times(1))
-                    .afterPut(testItem, putResults.results().get(testItem));
+            verify(putResolver, times(1)).performPut(storIOSQLite, testItem);
         }
 
         if (useTransaction) {

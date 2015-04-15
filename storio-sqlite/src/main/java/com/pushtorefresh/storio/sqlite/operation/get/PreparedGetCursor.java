@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
@@ -18,12 +19,17 @@ import rx.Observable;
 
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
-    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver getResolver) {
-        super(storIOSQLite, query, getResolver);
+    @NonNull
+    private final GetResolver<Cursor> getResolver;
+
+    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver<Cursor> getResolver) {
+        super(storIOSQLite, query);
+        this.getResolver = getResolver;
     }
 
-    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver) {
-        super(storIOSQLite, rawQuery, getResolver);
+    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver<Cursor> getResolver) {
+        super(storIOSQLite, rawQuery);
+        this.getResolver = getResolver;
     }
 
     /**
@@ -89,35 +95,16 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         }
     }
 
-    interface CommonBuilder<T> {
-
-        /**
-         * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
-         * <p>
-         * Default value is instance of {@link DefaultGetResolver}
-         *
-         * @param getResolver get resolver
-         * @return builder
-         */
-        @NonNull
-        T withGetResolver(@NonNull GetResolver getResolver);
-    }
-
     /**
      * Builder for {@link PreparedOperationWithReactiveStream}
-     * <p>
+     * <p/>
      * Required: You should specify query by call
      * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
      */
-    public static class Builder implements CommonBuilder<Builder> {
+    public static class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
-
-        private Query query;
-        private RawQuery rawQuery;
-        private GetResolver getResolver;
 
         Builder(@NonNull StorIOSQLite storIOSQLite) {
             this.storIOSQLite = storIOSQLite;
@@ -131,8 +118,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull Query query) {
-            this.query = query;
-            return new CompleteBuilder(this);
+            return new CompleteBuilder(storIOSQLite, query);
         }
 
         /**
@@ -144,53 +130,53 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull RawQuery rawQuery) {
-            this.rawQuery = rawQuery;
-            return new CompleteBuilder(this);
-        }
-
-        @Override
-        @NonNull
-        public Builder withGetResolver(@NonNull GetResolver getResolver) {
-            this.getResolver = getResolver;
-            return this;
-        }
-
-        /**
-         * Hidden method for prepares Get Operation
-         *
-         * @return {@link PreparedGetCursor} instance
-         */
-        @NonNull
-        private PreparedOperationWithReactiveStream<Cursor> prepare() {
-            if (getResolver == null) {
-                getResolver = DefaultGetResolver.INSTANCE;
-            }
-
-            if (query != null) {
-                return new PreparedGetCursor(storIOSQLite, query, getResolver);
-            } else if (rawQuery != null) {
-                return new PreparedGetCursor(storIOSQLite, rawQuery, getResolver);
-            } else {
-                throw new IllegalStateException("Please specify query");
-            }
+            return new CompleteBuilder(storIOSQLite, rawQuery);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link PreparedOperationWithReactiveStream}
      */
-    public static class CompleteBuilder implements CommonBuilder<CompleteBuilder> {
+    public static class CompleteBuilder {
 
-        private final Builder incompleteBuilder;
+        private static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
+            @NonNull
+            @Override
+            public Cursor mapFromCursor(@NonNull Cursor cursor) {
+                return cursor; // no modifications
+            }
+        };
 
-        CompleteBuilder(@NonNull Builder builder) {
-            this.incompleteBuilder = builder;
+        @NonNull
+        private final StorIOSQLite storIOSQLite;
+
+        private final Query query;
+        private final RawQuery rawQuery;
+
+        private GetResolver<Cursor> getResolver;
+
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
+            this.storIOSQLite = storIOSQLite;
+            this.query = query;
+            this.rawQuery = null;
         }
 
-        @Override
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
+            this.storIOSQLite = storIOSQLite;
+            this.rawQuery = rawQuery;
+            this.query = null;
+        }
+
+        /**
+         * Optional: Specifies Get Resolver for operation
+         * If no value is set, builder will use resolver that simply redirects query to {@link StorIOSQLite}
+         *
+         * @param getResolver nullable GetResolver for Get Operation
+         * @return builder
+         */
         @NonNull
-        public CompleteBuilder withGetResolver(@NonNull GetResolver getResolver) {
-            incompleteBuilder.withGetResolver(getResolver);
+        public CompleteBuilder withGetResolver(@Nullable GetResolver<Cursor> getResolver) {
+            this.getResolver = getResolver;
             return this;
         }
 
@@ -201,7 +187,17 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public PreparedOperationWithReactiveStream<Cursor> prepare() {
-            return incompleteBuilder.prepare();
+            if (getResolver == null) {
+                getResolver = STANDARD_GET_RESOLVER;
+            }
+
+            if (query != null) {
+                return new PreparedGetCursor(storIOSQLite, query, getResolver);
+            } else if (rawQuery != null) {
+                return new PreparedGetCursor(storIOSQLite, rawQuery, getResolver);
+            } else {
+                throw new IllegalStateException("Please specify query");
+            }
         }
     }
 }

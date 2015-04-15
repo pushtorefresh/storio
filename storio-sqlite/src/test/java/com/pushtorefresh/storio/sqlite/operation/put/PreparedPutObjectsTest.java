@@ -13,7 +13,6 @@ public class PreparedPutObjectsTest {
         final PutResults<TestItem> putResults = putStub.storIOSQLite
                 .put()
                 .objects(TestItem.class, putStub.testItems)
-                .withMapFunc(putStub.mapFunc)
                 .withPutResolver(putStub.putResolver)
                 .prepare()
                 .executeAsBlocking();
@@ -28,7 +27,6 @@ public class PreparedPutObjectsTest {
         final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOSQLite
                 .put()
                 .objects(TestItem.class, putStub.testItems)
-                .withMapFunc(putStub.mapFunc)
                 .withPutResolver(putStub.putResolver)
                 .prepare()
                 .createObservable();
@@ -43,7 +41,6 @@ public class PreparedPutObjectsTest {
         final PutResults<TestItem> putResults = putStub.storIOSQLite
                 .put()
                 .objects(TestItem.class, putStub.testItems)
-                .withMapFunc(putStub.mapFunc)
                 .withPutResolver(putStub.putResolver)
                 .useTransaction(false)
                 .prepare()
@@ -59,7 +56,6 @@ public class PreparedPutObjectsTest {
         final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOSQLite
                 .put()
                 .objects(TestItem.class, putStub.testItems)
-                .withMapFunc(putStub.mapFunc)
                 .withPutResolver(putStub.putResolver)
                 .useTransaction(false)
                 .prepare()
@@ -75,7 +71,6 @@ public class PreparedPutObjectsTest {
         final PutResults<TestItem> putResults = putStub.storIOSQLite
                 .put()
                 .objects(TestItem.class, putStub.testItems)
-                .withMapFunc(putStub.mapFunc)
                 .withPutResolver(putStub.putResolver)
                 .useTransaction(true)
                 .prepare()
@@ -91,7 +86,6 @@ public class PreparedPutObjectsTest {
         final Observable<PutResults<TestItem>> putResultsObservable = putStub.storIOSQLite
                 .put()
                 .objects(TestItem.class, putStub.testItems)
-                .withMapFunc(putStub.mapFunc)
                 .withPutResolver(putStub.putResolver)
                 .useTransaction(true)
                 .prepare()

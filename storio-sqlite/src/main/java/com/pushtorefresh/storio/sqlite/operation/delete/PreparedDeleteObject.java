@@ -1,13 +1,10 @@
 package com.pushtorefresh.storio.sqlite.operation.delete;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
@@ -26,12 +23,12 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     private final T object;
 
     @NonNull
-    private final MapFunc<T, DeleteQuery> mapFunc;
+    private final DeleteResolver<T> deleteResolver;
 
-    PreparedDeleteObject(@NonNull StorIOSQLite storIOSQLite, @NonNull T object, @NonNull MapFunc<T, DeleteQuery> mapFunc, @NonNull DeleteResolver deleteResolver) {
-        super(storIOSQLite, deleteResolver);
+    PreparedDeleteObject(@NonNull StorIOSQLite storIOSQLite, @NonNull T object, @NonNull DeleteResolver<T> deleteResolver) {
+        super(storIOSQLite);
         this.object = object;
-        this.mapFunc = mapFunc;
+        this.deleteResolver = deleteResolver;
     }
 
     /**
@@ -42,15 +39,8 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     @NonNull
     @Override
     public DeleteResult executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLite.internal();
-        final DeleteQuery deleteQuery = mapFunc.map(object);
-
-        final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
-
-        internal.getLoggi().v(deleteResult.numberOfRowsDeleted() + " object(s) deleted");
-
-        internal.notifyAboutChanges(Changes.newInstance(deleteQuery.table));
-
+        final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, object);
+        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
         return deleteResult;
     }
 
@@ -90,8 +80,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         @NonNull
         private final T object;
 
-        private MapFunc<T, DeleteQuery> mapFunc;
-        private DeleteResolver deleteResolver;
+        private DeleteResolver<T> deleteResolver;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull T object) {
             this.storIOSQLite = storIOSQLite;
@@ -99,31 +88,16 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         }
 
         /**
-         * Optional: Specifies map function to map object to {@link DeleteQuery}
-         * <p/>
-         * Can be set via {@link SQLiteTypeDefaults},
-         * If map function is not set via {@link SQLiteTypeDefaults} or explicitly, exception will be thrown
-         *
-         * @param mapFunc map function to map object to {@link DeleteQuery}
-         * @return builder
-         */
-        @NonNull
-        public Builder<T> withMapFunc(@Nullable MapFunc<T, DeleteQuery> mapFunc) {
-            this.mapFunc = mapFunc;
-            return this;
-        }
-
-        /**
          * Optional: Specifies {@link DeleteResolver} for Delete Operation
-         * <p/>
+         * <p>
          * Can be set via {@link SQLiteTypeDefaults},
-         * If resolver is not set via {@link SQLiteTypeDefaults}, {@link DefaultDeleteResolver} will be used
+         * If resolver is not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *
          * @param deleteResolver delete resolver
          * @return builder
          */
         @NonNull
-        public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+        public Builder<T> withDeleteResolver(@NonNull DeleteResolver<T> deleteResolver) {
             this.deleteResolver = deleteResolver;
             return this;
         }
@@ -138,20 +112,15 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         public PreparedDeleteObject<T> prepare() {
             final SQLiteTypeDefaults<T> typeDefinition = storIOSQLite.internal().typeDefaults((Class<T>) object.getClass());
 
-            if (mapFunc == null && typeDefinition != null) {
-                mapFunc = typeDefinition.mapToDeleteQuery;
+            if (deleteResolver == null && typeDefinition != null) {
+                deleteResolver = typeDefinition.deleteResolver;
             }
 
-            if (deleteResolver == null) {
-                deleteResolver = DefaultDeleteResolver.INSTANCE;
-            }
-
-            checkNotNull(mapFunc, "Please specify map function");
+            checkNotNull(deleteResolver, "Please specify DeleteResolver");
 
             return new PreparedDeleteObject<T>(
                     storIOSQLite,
                     object,
-                    mapFunc,
                     deleteResolver
             );
         }

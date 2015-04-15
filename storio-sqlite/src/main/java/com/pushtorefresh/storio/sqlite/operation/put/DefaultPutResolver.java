@@ -1,12 +1,14 @@
 package com.pushtorefresh.storio.sqlite.operation.put;
 
 import android.content.ContentValues;
-import android.provider.BaseColumns;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.InsertQuery;
+import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
+import com.pushtorefresh.storio.util.QueryUtil;
 
 /**
  * Default, thread-safe implementation of {@link PutResolver}
@@ -16,100 +18,74 @@ import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 public abstract class DefaultPutResolver<T> implements PutResolver<T> {
 
     /**
-     * Resolves table name to perform insert or update
+     * Converts object of required type to {@link InsertQuery}
      *
-     * @return table name
+     * @param object non-null object that should be converted to {@link InsertQuery}
+     * @return non-null {@link InsertQuery}
      */
     @NonNull
-    protected abstract String getTable();
+    protected abstract InsertQuery mapToInsertQuery(@NonNull T object);
 
     /**
-     * Provides field name that uses for store internal identifier.
-     * You can override this to use your custom name.
-     * <p/>
-     * Default value is <code>BaseColumns._ID</code>
+     * Converts object of required type to {@link UpdateQuery}
      *
-     * @return column name to store internal id.
+     * @param object non-null object that should be converted to {@link UpdateQuery}
+     * @return non-null {@link UpdateQuery}
      */
     @NonNull
-    protected String getIdColumnName() {
-        return BaseColumns._ID;
-    }
+    protected abstract UpdateQuery mapToUpdateQuery(@NonNull T object);
 
     /**
-     * Performs insert or update of {@link ContentValues} into {@link StorIOSQLite}
-     * <p/>
-     * By default, it will perform insert if content values does not contain {@link BaseColumns#_ID} field with non-null value
-     * or update if content values contains {@link BaseColumns#_ID} field and value is not null
-     * <p/>
-     * But, if it will decide to perform update and no rows will be updated, it will perform insert!
+     * Converts object of required type to {@link ContentValues}
      *
-     * @param storIOSQLite instance of {@link StorIOSQLite}
-     * @param contentValues  content values to put
-     * @return non-null result of put operation
+     * @param object non-null object that should be converted to {@link ContentValues}
+     * @return non-null {@link ContentValues}
      */
+    @NonNull
+    protected abstract ContentValues mapToContentValues(@NonNull T object);
+
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
     @Override
-    @NonNull
-    public PutResult performPut(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues) {
-        final String idColumnName = getIdColumnName();
+    public PutResult performPut(@NonNull StorIOSQLite storIOSQLite, @NonNull T object) {
+        final UpdateQuery updateQuery = mapToUpdateQuery(object);
 
-        final Object idAsObject = contentValues.get(idColumnName);
-        final String idAsString = idAsObject != null
-                ? idAsObject.toString()
-                : null;
+        // for data consistency in concurrent environment, encapsulate Put Operation into transaction
+        storIOSQLite.internal().beginTransaction();
 
-        final String table = getTable();
+        try {
+            final Cursor cursor = storIOSQLite.internal().query(new Query.Builder()
+                    .table(updateQuery.table)
+                    .where(updateQuery.where)
+                    .whereArgs((Object[]) QueryUtil.listToArray(updateQuery.whereArgs))
+                    .build());
 
-        return idAsString == null
-                ? insert(storIOSQLite, contentValues, table)
-                : updateOrInsert(storIOSQLite, contentValues, table, idColumnName, idAsString);
-    }
+            final PutResult putResult;
 
-    @NonNull
-    private PutResult insert(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues, @NonNull String table) {
-        final long insertedId = storIOSQLite.internal().insert(
-                new InsertQuery.Builder()
-                        .table(table)
-                        .nullColumnHack(null)
-                        .build(),
-                contentValues
-        );
+            try {
+                final ContentValues contentValues = mapToContentValues(object);
 
-        return PutResult.newInsertResult(insertedId, table);
-    }
+                if (cursor.getCount() == 0) {
+                    final InsertQuery insertQuery = mapToInsertQuery(object);
+                    final long insertedId = storIOSQLite.internal().insert(insertQuery, contentValues);
+                    putResult = PutResult.newInsertResult(insertedId, insertQuery.table);
+                } else {
+                    final int numberOfRowsUpdated = storIOSQLite.internal().update(updateQuery, contentValues);
+                    putResult = PutResult.newUpdateResult(numberOfRowsUpdated, updateQuery.table);
+                }
+            } finally {
+                cursor.close();
+            }
 
-    @NonNull
-    private PutResult updateOrInsert(@NonNull StorIOSQLite storIOSQLite,
-                                     @NonNull ContentValues contentValues,
-                                     @NonNull String table,
-                                     @NonNull String idFieldName,
-                                     @NonNull String id) {
+            // everything okay
+            storIOSQLite.internal().setTransactionSuccessful();
 
-        final int numberOfRowsUpdated = storIOSQLite.internal().update(
-                new UpdateQuery.Builder()
-                        .table(table)
-                        .where(idFieldName + "=?")
-                        .whereArgs(id)
-                        .build(),
-                contentValues
-        );
-
-        return numberOfRowsUpdated > 0
-                ? PutResult.newUpdateResult(numberOfRowsUpdated, table)
-                : insert(storIOSQLite, contentValues, table);
-    }
-
-    /**
-     * Useful callback which will be called in same thread that performed Put Operation right after
-     * execution of {@link #performPut(StorIOSQLite, ContentValues)}
-     * <p>
-     * You can, for example, set object id after insert
-     *
-     * @param object    object, that was "put" in {@link StorIOSQLite}
-     * @param putResult result of put operation
-     */
-    @Override
-    public void afterPut(@NonNull T object, @NonNull PutResult putResult) {
-
+            return putResult;
+        } finally {
+            // in case of bad situations, db won't be affected
+            storIOSQLite.internal().endTransaction();
+        }
     }
 }

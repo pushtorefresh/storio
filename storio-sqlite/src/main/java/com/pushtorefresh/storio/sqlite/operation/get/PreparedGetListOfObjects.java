@@ -4,7 +4,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
@@ -31,16 +30,16 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     @NonNull
-    private final MapFunc<Cursor, T> mapFunc;
+    private final GetResolver<T> getResolver;
 
-    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
-        super(storIOSQLite, query, getResolver);
-        this.mapFunc = mapFunc;
+    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver<T> getResolver) {
+        super(storIOSQLite, query);
+        this.getResolver = getResolver;
     }
 
-    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc) {
-        super(storIOSQLite, rawQuery, getResolver);
-        this.mapFunc = mapFunc;
+    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver<T> getResolver) {
+        super(storIOSQLite, rawQuery);
+        this.getResolver = getResolver;
     }
 
     /**
@@ -65,7 +64,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             final List<T> list = new ArrayList<T>(cursor.getCount());
 
             while (cursor.moveToNext()) {
-                list.add(mapFunc.map(cursor));
+                list.add(getResolver.mapFromCursor(cursor));
             }
 
             return list;
@@ -88,7 +87,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     /**
      * Creates an {@link Observable} which will be subscribed to changes of query tables
      * and will emit result each time change occurs
-     * <p/>
+     * <p>
      * First result will be emitted immediately,
      * other emissions will occur only if changes of query tables will occur
      *
@@ -138,26 +137,24 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Required: Specifies query which will be passed to {@link StorIOSQLite} to get list of objects
+         * Specifies query which will be passed to {@link StorIOSQLite} to get list of objects
          *
          * @param query non-null query
          * @return builder
          */
         @NonNull
         public CompleteBuilder<T> withQuery(@NonNull Query query) {
-            checkNotNull(query, "Please specify query");
             return new CompleteBuilder<T>(storIOSQLite, type, query);
         }
 
         /**
-         * Required: Specifies query which will be passed to {@link StorIOSQLite} to get list of objects
+         * Specifies query which will be passed to {@link StorIOSQLite} to get list of objects
          *
          * @param rawQuery non-null query
          * @return builder
          */
         @NonNull
         public CompleteBuilder<T> withQuery(@NonNull RawQuery rawQuery) {
-            checkNotNull(rawQuery, "Please specify query");
             return new CompleteBuilder<T>(storIOSQLite, type, rawQuery);
         }
     }
@@ -181,8 +178,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         @Nullable
         private final RawQuery rawQuery;
 
-        private MapFunc<Cursor, T> mapFunc;
-        private GetResolver getResolver;
+        private GetResolver<T> getResolver;
 
         CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type, @NonNull Query query) {
             this.storIOSQLite = storIOSQLite;
@@ -199,31 +195,16 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Optional: Specifies map function that will be used to map each value from {@link Cursor} to object of required type
-         * <p/>
-         * {@link SQLiteTypeDefaults} can be used to set default map function,
-         * if map function is not set via {@link SQLiteTypeDefaults} or explicitly, exception will be thrown
-         *
-         * @param mapFunc nullable map function that will be used to map each value from {@link Cursor} to object of required type
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder<T> withMapFunc(@Nullable MapFunc<Cursor, T> mapFunc) {
-            this.mapFunc = mapFunc;
-            return this;
-        }
-
-        /**
          * Optional: Specifies resolver for Get Operation which can be used to provide custom behavior of Get Operation
-         * <p/>
+         * <p>
          * {@link SQLiteTypeDefaults} can be used to set default GetResolver
-         * If GetResolver is not set via {@link SQLiteTypeDefaults} or explicitly, instance of {@link DefaultGetResolver} will be used
+         * If GetResolver is not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *
          * @param getResolver nullable resolver for Get Operation
          * @return builder
          */
         @NonNull
-        public CompleteBuilder<T> withGetResolver(@Nullable GetResolver getResolver) {
+        public CompleteBuilder<T> withGetResolver(@Nullable GetResolver<T> getResolver) {
             this.getResolver = getResolver;
             return this;
         }
@@ -237,35 +218,23 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         public PreparedGetListOfObjects<T> prepare() {
             final SQLiteTypeDefaults<T> typeDefaults = storIOSQLite.internal().typeDefaults(type);
 
-            if (mapFunc == null && typeDefaults != null) {
-                mapFunc = typeDefaults.mapFromCursor;
+            if (getResolver == null && typeDefaults != null) {
+                getResolver = typeDefaults.getResolver;
             }
 
-            checkNotNull(mapFunc, "Please specify map function");
-
-            if (getResolver == null) {
-                if (typeDefaults != null && typeDefaults.getResolver != null) {
-                    getResolver = typeDefaults.getResolver;
-                } else {
-                    getResolver = DefaultGetResolver.INSTANCE;
-                }
-            }
-
-            checkNotNull(getResolver, "Please specify Get Resolver");
+            checkNotNull(getResolver, "Please specify GetResolver");
 
             if (query != null) {
                 return new PreparedGetListOfObjects<T>(
                         storIOSQLite,
                         query,
-                        getResolver,
-                        mapFunc
+                        getResolver
                 );
             } else if (rawQuery != null) {
                 return new PreparedGetListOfObjects<T>(
                         storIOSQLite,
                         rawQuery,
-                        getResolver,
-                        mapFunc
+                        getResolver
                 );
             } else {
                 throw new IllegalStateException("Please specify Query or RawQuery");

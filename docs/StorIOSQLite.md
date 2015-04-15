@@ -217,7 +217,7 @@ storIOSQLite
 
 Several things about `Put` Operation:
 * `Put` Operation requires `PutResolver`, `StorIO` requires it to avoid reflection
-* `Put` Operation can be executed in transaction and by default it will use transaction, you can customize this via `useTransactionIfPossible()` or `dontUseTransaction()`
+* `Put` Operation can be executed in transaction and by default it will use transaction, you can customize this via `useTransaction(true)` or `useTransaction(false)`
 * `Put` Operation in transaction will produce only one notification to `StorIOSQLite` observers
 * Result of `Put` Operation can be useful if you want to know what happened: insert (and insertedId) or update (and number of updated rows)
 
