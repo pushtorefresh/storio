@@ -12,25 +12,24 @@ import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
  * <p>
  * Instances of this class are thread-safe
  */
-public class DefaultDeleteResolver implements DeleteResolver {
+public abstract class DefaultDeleteResolver<T> extends DeleteResolver<T> {
 
     /**
-     * We can safely share it instead of creating new instance each time
-     */
-    static final DefaultDeleteResolver INSTANCE = new DefaultDeleteResolver();
-
-    /**
-     * Performs Delete Operation
-     * <p>
-     * Simply redirects {@link DeleteQuery} to {@link StorIOContentResolver}
+     * Converts object of required type to {@link DeleteQuery}
      *
-     * @param storIOContentResolver instance of {@link StorIOContentResolver}
-     * @param deleteQuery           query that specifies what should be deleted
-     * @return non-null result of Delete Operation
+     * @param object non-null object that should be converted to {@link DeleteQuery}
+     * @return non-null {@link DeleteQuery}
+     */
+    @NonNull
+    protected abstract DeleteQuery mapToDeleteQuery(@NonNull T object);
+
+    /**
+     * {@inheritDoc}
      */
     @NonNull
     @Override
-    public DeleteResult performDelete(@NonNull StorIOContentResolver storIOContentResolver, @NonNull DeleteQuery deleteQuery) {
+    public DeleteResult performDelete(@NonNull StorIOContentResolver storIOContentResolver, @NonNull T object) {
+        final DeleteQuery deleteQuery = mapToDeleteQuery(object);
         final int numberOfRowsDeleted = storIOContentResolver.internal().delete(deleteQuery);
         return DeleteResult.newInstance(numberOfRowsDeleted, deleteQuery.uri);
     }

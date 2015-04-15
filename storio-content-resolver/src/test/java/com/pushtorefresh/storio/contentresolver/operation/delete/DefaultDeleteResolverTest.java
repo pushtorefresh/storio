@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.operation.delete;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
@@ -8,6 +9,8 @@ import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -29,8 +32,6 @@ public class DefaultDeleteResolverTest {
         when(internal.delete(any(DeleteQuery.class)))
                 .thenReturn(expectedNumberOfRowsDeleted);
 
-        final DefaultDeleteResolver defaultDeleteResolver = new DefaultDeleteResolver();
-
         final Uri expectedUri = mock(Uri.class);
 
         final DeleteQuery expectedDeleteQuery = new DeleteQuery.Builder()
@@ -39,8 +40,19 @@ public class DefaultDeleteResolverTest {
                 .whereArgs("test")
                 .build();
 
+        final TestItem testItem = TestItem.newInstance();
+
+        final DefaultDeleteResolver<TestItem> defaultDeleteResolver = new DefaultDeleteResolver<TestItem>() {
+            @NonNull
+            @Override
+            protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {
+                assertSame(testItem, object);
+                return expectedDeleteQuery;
+            }
+        };
+
         // Performing Delete Operation
-        final DeleteResult deleteResult = defaultDeleteResolver.performDelete(storIOContentResolver, expectedDeleteQuery);
+        final DeleteResult deleteResult = defaultDeleteResolver.performDelete(storIOContentResolver, testItem);
 
         // checks that required delete was performed
         verify(internal, times(1)).delete(expectedDeleteQuery);
@@ -50,6 +62,7 @@ public class DefaultDeleteResolverTest {
 
         // delete result checks
         assertEquals(expectedNumberOfRowsDeleted, deleteResult.numberOfRowsDeleted());
-        assertEquals(expectedUri, deleteResult.affectedUri());
+        assertEquals(1, deleteResult.affectedUris().size());
+        assertTrue(deleteResult.affectedUris().contains(expectedUri));
     }
 }

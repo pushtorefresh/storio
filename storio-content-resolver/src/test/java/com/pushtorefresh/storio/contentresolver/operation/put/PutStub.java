@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import java.util.ArrayList;
@@ -35,10 +34,11 @@ class PutStub {
     final List<TestItem> testItems;
     final StorIOContentResolver storIOContentResolver;
     final StorIOContentResolver.Internal internal;
-    final MapFunc<TestItem, ContentValues> mapFunc;
     final PutResolver<TestItem> putResolverForObjects;
     final PutResolver<ContentValues> putResolverForContentValues;
     final Map<TestItem, ContentValues> testItemsToContentValuesMap;
+    private final Map<TestItem, PutResult> testItemsToPutResultsMap;
+    final Map<ContentValues, PutResult> contentValuesToPutResultsMap;
 
     @NonNull
     public static PutStub newPutStubForOneObject() {
@@ -84,27 +84,39 @@ class PutStub {
 
         if (typeOfItems.equals(TypeOfItems.OBJECTS)) {
             putResolverForObjects = (PutResolver<TestItem>) mock(PutResolver.class);
+            testItemsToPutResultsMap = new HashMap<TestItem, PutResult>(numberOfTestItems);
 
-            when(putResolverForObjects.performPut(eq(storIOContentResolver), any(ContentValues.class)))
-                    .thenReturn(PutResult.newInsertResult(mock(Uri.class), TestItem.CONTENT_URI));
+            for (final TestItem testItem : testItems) {
+                final PutResult putResult = PutResult.newInsertResult(mock(Uri.class), mock(Uri.class));
+                testItemsToPutResultsMap.put(testItem, putResult);
+
+                when(putResolverForObjects.performPut(storIOContentResolver, testItem))
+                        .thenReturn(putResult);
+            }
         } else {
             putResolverForObjects = null;
+            testItemsToPutResultsMap = null;
         }
 
         if (typeOfItems.equals(TypeOfItems.CONTENT_VALUES)) {
             putResolverForContentValues = (PutResolver<ContentValues>) mock(PutResolver.class);
+            contentValuesToPutResultsMap = new HashMap<ContentValues, PutResult>(numberOfTestItems);
 
             when(putResolverForContentValues.performPut(eq(storIOContentResolver), any(ContentValues.class)))
                     .thenReturn(PutResult.newInsertResult(mock(Uri.class), TestItem.CONTENT_URI));
+
+            for (final TestItem testItem : testItems) {
+                final ContentValues contentValues = testItemsToContentValuesMap.get(testItem);
+                final PutResult putResult = PutResult.newInsertResult(mock(Uri.class), mock(Uri.class));
+
+                contentValuesToPutResultsMap.put(contentValues, putResult);
+
+                when(putResolverForContentValues.performPut(storIOContentResolver, contentValues))
+                        .thenReturn(putResult);
+            }
         } else {
             putResolverForContentValues = null;
-        }
-
-        mapFunc = (MapFunc<TestItem, ContentValues>) mock(MapFunc.class);
-
-        for (final TestItem testItem : testItems) {
-            when(mapFunc.map(testItem))
-                    .thenReturn(testItemsToContentValuesMap.get(testItem));
+            contentValuesToPutResultsMap = null;
         }
     }
 
@@ -113,15 +125,10 @@ class PutStub {
         verify(storIOContentResolver, times(1)).put();
 
         // number of calls to putResolver's performPut() should be equal to number of objects
-        verify(putResolverForObjects, times(testItems.size())).performPut(eq(storIOContentResolver), any(ContentValues.class));
+        verify(putResolverForObjects, times(testItems.size())).performPut(eq(storIOContentResolver), any(TestItem.class));
 
         for (final TestItem testItem : testItems) {
-            // map operation for each object should be called only once
-            verify(mapFunc, times(1)).map(testItem);
-
-            // callback after Put Operation should be called once for each item
-            verify(putResolverForObjects, times(1))
-                    .afterPut(testItem, putResults.results().get(testItem));
+            verify(putResolverForObjects, times(1)).performPut(storIOContentResolver, testItem);
         }
     }
 
@@ -168,12 +175,7 @@ class PutStub {
             final ContentValues contentValues = testItemsToContentValuesMap.get(testItem);
 
             // Put Operation should be performed once for each item
-            verify(putResolverForContentValues, times(1))
-                    .performPut(storIOContentResolver, contentValues);
-
-            // callback after Put Operation should be called once for each item
-            verify(putResolverForContentValues, times(1))
-                    .afterPut(contentValues, putResults.results().get(contentValues));
+            verify(putResolverForContentValues, times(1)).performPut(storIOContentResolver, contentValues);
         }
     }
 
@@ -192,7 +194,7 @@ class PutStub {
 
     void verifyBehaviorForOneContentValues(@NonNull PutResult putResult) {
         Map<ContentValues, PutResult> putResultsMap = new HashMap<ContentValues, PutResult>(1);
-        putResultsMap.put(mapFunc.map(testItems.get(0)), putResult);
+        putResultsMap.put(testItemsToContentValuesMap.get(testItems.get(0)), putResult);
         verifyBehaviorForMultipleContentValues(PutResults.newInstance(putResultsMap));
     }
 

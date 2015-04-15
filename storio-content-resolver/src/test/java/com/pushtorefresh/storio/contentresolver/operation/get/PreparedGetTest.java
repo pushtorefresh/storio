@@ -4,7 +4,6 @@ import android.database.Cursor;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
-import com.pushtorefresh.storio.operation.MapFunc;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -54,8 +53,8 @@ public class PreparedGetTest {
         final StorIOContentResolver storIOContentResolver;
         private final StorIOContentResolver.Internal internal;
         final Query query;
-        final GetResolver getResolver;
-        final MapFunc<Cursor, TestItem> mapFunc;
+        final GetResolver<TestItem> getResolverForTestItems;
+        final GetResolver<Cursor> getResolverForCursor;
         final Cursor cursor;
         final List<TestItem> testItems;
 
@@ -64,8 +63,8 @@ public class PreparedGetTest {
             storIOContentResolver = mock(StorIOContentResolver.class);
             internal = mock(StorIOContentResolver.Internal.class);
             query = mock(Query.class);
-            getResolver = mock(GetResolver.class);
-            mapFunc = (MapFunc<Cursor, TestItem>) mock(MapFunc.class);
+            getResolverForTestItems = mock(GetResolver.class);
+            getResolverForCursor = mock(GetResolver.class);
             cursor = mock(Cursor.class);
 
             testItems = new ArrayList<TestItem>();
@@ -86,13 +85,19 @@ public class PreparedGetTest {
                         }
                     });
 
+            when(cursor.getCount())
+                    .thenReturn(testItems.size());
+
             when(storIOContentResolver.get())
                     .thenReturn(new PreparedGet.Builder(storIOContentResolver));
 
-            when(getResolver.performGet(storIOContentResolver, query))
+            when(getResolverForTestItems.performGet(storIOContentResolver, query))
                     .thenReturn(cursor);
 
-            when(mapFunc.map(cursor))
+            when(getResolverForCursor.performGet(storIOContentResolver, query))
+                    .thenReturn(cursor);
+
+            when(getResolverForTestItems.mapFromCursor(cursor))
                     .thenAnswer(new Answer<TestItem>() {
                         int invocationsCount = 0;
 
@@ -103,18 +108,21 @@ public class PreparedGetTest {
                             return testItem;
                         }
                     });
+
+            when(getResolverForCursor.mapFromCursor(cursor))
+                    .thenReturn(cursor);
         }
 
         void verifyQueryBehavior(Cursor actualCursor) {
             verify(storIOContentResolver, times(1)).get();
-            verify(getResolver, times(1)).performGet(storIOContentResolver, query);
+            verify(getResolverForCursor, times(1)).performGet(storIOContentResolver, query);
             assertSame(cursor, actualCursor);
         }
 
         private void verifyQueryBehaviorForList(List<TestItem> actualList) {
             verify(storIOContentResolver, times(1)).get();
-            verify(getResolver, times(1)).performGet(storIOContentResolver, query);
-            verify(mapFunc, times(testItems.size())).map(cursor);
+            verify(getResolverForTestItems, times(1)).performGet(storIOContentResolver, query);
+            verify(getResolverForTestItems, times(testItems.size())).mapFromCursor(cursor);
             assertEquals(testItems, actualList);
         }
     }
@@ -127,7 +135,7 @@ public class PreparedGetTest {
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolver)
+                .withGetResolver(getStub.getResolverForCursor)
                 .prepare()
                 .executeAsBlocking();
 
@@ -142,8 +150,7 @@ public class PreparedGetTest {
                 .get()
                 .listOfObjects(TestItem.class)
                 .withQuery(getStub.query)
-                .withMapFunc(getStub.mapFunc)
-                .withGetResolver(getStub.getResolver)
+                .withGetResolver(getStub.getResolverForTestItems)
                 .prepare()
                 .executeAsBlocking();
 
@@ -158,7 +165,7 @@ public class PreparedGetTest {
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolver)
+                .withGetResolver(getStub.getResolverForCursor)
                 .prepare()
                 .createObservable()
                 .toBlocking()
@@ -175,8 +182,7 @@ public class PreparedGetTest {
                 .get()
                 .listOfObjects(TestItem.class)
                 .withQuery(getStub.query)
-                .withMapFunc(getStub.mapFunc)
-                .withGetResolver(getStub.getResolver)
+                .withGetResolver(getStub.getResolverForTestItems)
                 .prepare()
                 .createObservable()
                 .toBlocking()

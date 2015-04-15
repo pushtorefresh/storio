@@ -1,117 +1,50 @@
 package com.pushtorefresh.storio.content_resolver.impl;
 
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import com.pushtorefresh.storio.contentresolver.operation.put.DefaultPutResolver;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResult;
-import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
-import com.pushtorefresh.storio.operation.MapFunc;
 
 /**
  * Test class with custom internal id field name.
  */
-public class Tweet {
-
-    public static final String TABLE = "tweets";
-
-    // Custom internal id field name, that used instead of "_id".
-    public static final String COLUMN_ID = "tweet_internal_id";
-
-    public static final String COLUMN_AUTHOR_ID = "author_id";
-    public static final String COLUMN_CONTENT = "content";
-
-    public static final String CREATE_TABLE = "CREATE TABLE " + TABLE + "(" +
-            COLUMN_ID + " INTEGER PRIMARY KEY, " +
-            COLUMN_AUTHOR_ID + " INTEGER NOT NULL, " +
-            COLUMN_CONTENT + " TEXT NOT NULL" +
-            ");";
-
-    public static final String CONTENT_URI = "content://" + TestContentProvider.AUTHORITY + "/" + TABLE;
-
-    public static final DeleteQuery DELETE_ALL = new DeleteQuery.Builder()
-            .uri(CONTENT_URI)
-            .build();
-
-    public static final MapFunc<Cursor, Tweet> MAP_FROM_CURSOR = new MapFunc<Cursor, Tweet>() {
-        @NonNull
-        @Override
-        public Tweet map(@NonNull Cursor cursor) {
-            return new Tweet(
-                    cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-                    cursor.getLong(cursor.getColumnIndex(COLUMN_AUTHOR_ID)),
-                    cursor.getString(cursor.getColumnIndex(COLUMN_CONTENT))
-            );
-        }
-    };
-
-    public static final MapFunc<Tweet, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<Tweet, ContentValues>() {
-        @NonNull
-        @Override
-        public ContentValues map(@NonNull Tweet tweet) {
-            final ContentValues contentValues = new ContentValues(3);
-
-            contentValues.put(COLUMN_ID, tweet.id);
-            contentValues.put(COLUMN_AUTHOR_ID, tweet.authorId);
-            contentValues.put(COLUMN_CONTENT, tweet.content);
-
-            return contentValues;
-        }
-    };
-
-    public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<Tweet>() {
-        @NonNull
-        @Override
-        protected Uri getUri(@NonNull ContentValues contentValues) {
-            return Uri.parse(CONTENT_URI);
-        }
-
-        @Override
-        public void afterPut(@NonNull Tweet tweet, @NonNull PutResult putResult) {
-            if (putResult.wasInserted()) {
-                final Uri insertedUri = putResult.insertedUri();
-                tweet.id = insertedUri != null ? ContentUris.parseId(insertedUri) : null;
-            }
-        }
-
-        @NonNull
-        @Override
-        protected String getIdColumnName() {
-            return COLUMN_ID;   //  Specific internal id field name.
-        }
-    };
+class Tweet {
 
     @Nullable
-    private volatile Long id;
+    private Long id;
+
     @NonNull
     private final Long authorId;
-    @NonNull
-    private final String content;
 
-    public Tweet(@Nullable Long id, @NonNull Long authorId, @NonNull String content) {
+    @NonNull
+    private final String contentText;
+
+    private Tweet(@Nullable Long id, @NonNull Long authorId, @NonNull String contentText) {
         this.id = id;
         this.authorId = authorId;
-        this.content = content;
+        this.contentText = contentText;
+    }
+
+    @NonNull
+    static Tweet newInstance(@Nullable Long id, @NonNull Long authorId, @NonNull String contentText) {
+        return new Tweet(id, authorId, contentText);
     }
 
     @Nullable
-    public Long getId() {
+    public Long id() {
         return id;
     }
 
+    public void setId(@Nullable Long id) {
+        this.id = id;
+    }
+
     @NonNull
-    public Long getAuthorId() {
+    public Long authorId() {
         return authorId;
     }
 
     @NonNull
-    public String getContent() {
-        return content;
+    public String contentText() {
+        return contentText;
     }
 
     @Override
@@ -123,15 +56,14 @@ public class Tweet {
 
         if (id != null ? !id.equals(tweet.id) : tweet.id != null) return false;
         if (!authorId.equals(tweet.authorId)) return false;
-        return content.equals(tweet.content);
-
+        return contentText.equals(tweet.contentText);
     }
 
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + authorId.hashCode();
-        result = 31 * result + content.hashCode();
+        result = 31 * result + contentText.hashCode();
         return result;
     }
 }

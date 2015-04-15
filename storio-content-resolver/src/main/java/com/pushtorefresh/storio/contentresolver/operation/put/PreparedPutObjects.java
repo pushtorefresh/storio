@@ -1,11 +1,9 @@
 package com.pushtorefresh.storio.contentresolver.operation.put;
 
-import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio.operation.MapFunc;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,13 +23,11 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     @NonNull
     private final Iterable<T> objects;
 
-    @NonNull
-    private final MapFunc<T, ContentValues> mapFunc;
-
-    PreparedPutObjects(@NonNull StorIOContentResolver storIOContentResolver, @NonNull PutResolver<T> putResolver, @NonNull Iterable<T> objects, @NonNull MapFunc<T, ContentValues> mapFunc) {
+    PreparedPutObjects(@NonNull StorIOContentResolver storIOContentResolver,
+                       @NonNull PutResolver<T> putResolver,
+                       @NonNull Iterable<T> objects) {
         super(storIOContentResolver, putResolver);
         this.objects = objects;
-        this.mapFunc = mapFunc;
     }
 
     /**
@@ -42,13 +38,10 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     @NonNull
     @Override
     public PutResults<T> executeAsBlocking() {
-
         final Map<T, PutResult> putResults = new HashMap<T, PutResult>();
 
         for (T object : objects) {
-            final PutResult putResult = putResolver.performPut(storIOContentResolver, mapFunc.map(object));
-            putResolver.afterPut(object, putResult);
-
+            final PutResult putResult = putResolver.performPut(storIOContentResolver, object);
             putResults.put(object, putResult);
         }
 
@@ -81,7 +74,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
      *
      * @param <T> type of objects to put
      */
-    public static class Builder<T> {
+    public static final class Builder<T> {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;
@@ -92,8 +85,6 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         @NonNull
         private final Iterable<T> objects;
 
-        private MapFunc<T, ContentValues> mapFunc;
-
         private PutResolver<T> putResolver;
 
         public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Class<T> type, @NonNull Iterable<T> objects) {
@@ -103,28 +94,13 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         }
 
         /**
-         * Optional: Specifies map function that should map object to {@link ContentValues}
-         * <p/>
-         * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults} or explicitly, exception will be thrown
-         *
-         * @param mapFunc map function
-         * @return builder
-         */
-        @NonNull
-        public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
-            this.mapFunc = mapFunc;
-            return this;
-        }
-
-        /**
          * Optional: Specifies resolver for Put Operation
-         * that should define behavior of Put Operation: insert or update of the {@link ContentValues}
+         * that should define behavior of Put Operation: insert or update of the {@link android.content.ContentValues}
          * <p/>
          * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults} or explicitly, exception will be thrown
+         * If value is not set via {@link ContentResolverTypeDefaults} or explicitly -> exception will be thrown
          *
-         * @param putResolver resolver for Put Operation
+         * @param putResolver nullable resolver for Put Operation
          * @return builder
          */
         @NonNull
@@ -142,12 +118,6 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         public PreparedPutObjects<T> prepare() {
             final ContentResolverTypeDefaults<T> typeDefaults = storIOContentResolver.internal().typeDefaults(type);
 
-            if (mapFunc == null && typeDefaults != null) {
-                mapFunc = typeDefaults.mapToContentValues;
-            }
-
-            checkNotNull(mapFunc, "Please specify map function");
-
             if (putResolver == null && typeDefaults != null) {
                 putResolver = typeDefaults.putResolver;
             }
@@ -157,8 +127,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
             return new PreparedPutObjects<T>(
                     storIOContentResolver,
                     putResolver,
-                    objects,
-                    mapFunc
+                    objects
             );
         }
     }

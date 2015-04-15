@@ -4,26 +4,22 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
-import com.pushtorefresh.storio.operation.MapFunc;
 
 import rx.Observable;
 import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
-public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
+public class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResult> {
 
     @NonNull
     private final T object;
 
-    @NonNull
-    private final MapFunc<T, DeleteQuery> mapFunc;
-
-    PreparedDeleteObject(@NonNull StorIOContentResolver storIOContentResolver, @NonNull DeleteResolver deleteResolver, @NonNull T object, @NonNull MapFunc<T, DeleteQuery> mapFunc) {
+    PreparedDeleteObject(@NonNull StorIOContentResolver storIOContentResolver,
+                         @NonNull DeleteResolver<T> deleteResolver,
+                         @NonNull T object) {
         super(storIOContentResolver, deleteResolver);
         this.object = object;
-        this.mapFunc = mapFunc;
     }
 
     /**
@@ -34,8 +30,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     @NonNull
     @Override
     public DeleteResult executeAsBlocking() {
-        final DeleteQuery deleteQuery = mapFunc.map(object);
-        return deleteResolver.performDelete(storIOContentResolver, deleteQuery);
+        return deleteResolver.performDelete(storIOContentResolver, object);
     }
 
     /**
@@ -64,7 +59,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
      *
      * @param <T> type of object to delete
      */
-    public static class Builder<T> {
+    public static final class Builder<T> {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;
@@ -72,9 +67,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         @NonNull
         private final T object;
 
-        private DeleteResolver deleteResolver;
-
-        private MapFunc<T, DeleteQuery> mapFunc;
+        private DeleteResolver<T> deleteResolver;
 
         /**
          * Creates builder for {@link PreparedDeleteObject}
@@ -93,31 +86,16 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         /**
          * Optional: Specifies resolver for Delete Operation
          * Allows you to customise behavior of Delete Operation
-         * <p/>
+         * <p>
          * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults} or explicitly instance of {@link DefaultDeleteResolver} will be used
+         * If value is not set via {@link ContentResolverTypeDefaults} or explicitly -> exception will be thrown
          *
          * @param deleteResolver resolver for Delete Operation
          * @return builder
          */
         @NonNull
-        public Builder<T> withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+        public Builder<T> withDeleteResolver(@NonNull DeleteResolver<T> deleteResolver) {
             this.deleteResolver = deleteResolver;
-            return this;
-        }
-
-        /**
-         * Optional: Specifies map function that should map each object to {@link DeleteQuery}
-         * <p/>
-         * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set view {@link ContentResolverTypeDefaults} or explicitly, exception will be thrown
-         *
-         * @param mapFunc map function
-         * @return builder
-         */
-        @NonNull
-        public Builder<T> withMapFunc(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
-            this.mapFunc = mapFunc;
             return this;
         }
 
@@ -131,18 +109,8 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         public PreparedDeleteObject<T> prepare() {
             final ContentResolverTypeDefaults<T> typeDefaults = storIOContentResolver.internal().typeDefaults((Class<T>) object.getClass());
 
-            if (mapFunc == null && typeDefaults != null) {
-                mapFunc = typeDefaults.mapToDeleteQuery;
-            }
-
-            checkNotNull(mapFunc, "Please specify map function");
-
-            if (deleteResolver == null) {
-                if (typeDefaults != null && typeDefaults.deleteResolver != null) {
-                    deleteResolver = typeDefaults.deleteResolver;
-                } else {
-                    deleteResolver = DefaultDeleteResolver.INSTANCE;
-                }
+            if (deleteResolver == null && typeDefaults != null) {
+                deleteResolver = typeDefaults.deleteResolver;
             }
 
             checkNotNull(deleteResolver, "Please specify Delete Resolver");
@@ -150,8 +118,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
             return new PreparedDeleteObject<T>(
                     storIOContentResolver,
                     deleteResolver,
-                    object,
-                    mapFunc
+                    object
             );
         }
     }

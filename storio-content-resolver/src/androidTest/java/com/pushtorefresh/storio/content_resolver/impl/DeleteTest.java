@@ -13,25 +13,27 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 public class DeleteTest extends BaseTest {
 
-    @Test public void deleteOne() {
+    @Test
+    public void deleteOne() {
         final User user = putUser();
         oneUserInStorageCheck(user);
         deleteUser(user);
         noUsersInStorageCheck();
     }
 
-    @Test public void deleteCollection() {
+    @Test
+    public void deleteCollection() {
         final List<User> allUsers = putUsers(10);
 
         final List<User> usersToDelete = new ArrayList<User>();
-        for (int i = 0; i < allUsers.size(); i += 2) {  // I will delete every second
+
+        for (int i = 0; i < allUsers.size(); i += 2) {  // Delete every second
             usersToDelete.add(allUsers.get(i));
         }
 
         final DeleteResults<User> deleteResults = storIOContentResolver
                 .delete()
                 .objects(User.class, usersToDelete)
-                .withMapFunc(User.MAP_TO_DELETE_QUERY)
                 .prepare()
                 .executeAsBlocking();
 
@@ -42,10 +44,10 @@ public class DeleteTest extends BaseTest {
         for (User user : allUsers) {
             final boolean shouldBeDeleted = usersToDelete.contains(user);
 
-            // Check if we deleted what we going to.
+            // Check that we deleted what we going to.
             assertEquals(shouldBeDeleted, deleteResults.wasDeleted(user));
 
-            // Check if exist, what we want to save.
+            // Check that everything that should be kept exist
             assertEquals(!shouldBeDeleted, existUsers.contains(user));
         }
     }

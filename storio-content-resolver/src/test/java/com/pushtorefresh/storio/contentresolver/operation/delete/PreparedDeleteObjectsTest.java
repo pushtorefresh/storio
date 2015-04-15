@@ -13,8 +13,7 @@ public class PreparedDeleteObjectsTest {
         final DeleteResults<TestItem> deleteResults = deleteStub.storIOContentResolver
                 .delete()
                 .objects(TestItem.class, deleteStub.testItems)
-                .withMapFunc(deleteStub.mapFunc)
-                .withDeleteResolver(deleteStub.deleteResolver)
+                .withDeleteResolver(deleteStub.deleteResolverForTestItems)
                 .prepare()
                 .executeAsBlocking();
 
@@ -28,8 +27,7 @@ public class PreparedDeleteObjectsTest {
         final Observable<DeleteResults<TestItem>> deleteResultsObservable = deleteStub.storIOContentResolver
                 .delete()
                 .objects(TestItem.class, deleteStub.testItems)
-                .withMapFunc(deleteStub.mapFunc)
-                .withDeleteResolver(deleteStub.deleteResolver)
+                .withDeleteResolver(deleteStub.deleteResolverForTestItems)
                 .prepare()
                 .createObservable();
 

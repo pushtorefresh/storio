@@ -1,113 +1,81 @@
 package com.pushtorefresh.storio.contentresolver.operation.put;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
+import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
+import com.pushtorefresh.storio.util.QueryUtil;
 
 /**
  * Default thread-safe implementation of {@link PutResolver}
  *
  * @param <T> type of objects to put
  */
-public abstract class DefaultPutResolver<T> implements PutResolver<T> {
+public abstract class DefaultPutResolver<T> extends PutResolver<T> {
 
     /**
-     * Resolves Uri to perform insert or update
+     * Converts object of required type to {@link InsertQuery}
      *
-     * @param contentValues some {@link ContentValues} which will be "put" into {@link StorIOContentResolver}
-     * @return non-null Uri for insert or update
+     * @param object non-null object that should be converted to {@link InsertQuery}
+     * @return non-null {@link InsertQuery}
      */
     @NonNull
-    protected abstract Uri getUri(@NonNull ContentValues contentValues);
+    protected abstract InsertQuery mapToInsertQuery(@NonNull T object);
 
     /**
-     * Provides field name that uses for store internal identifier.
-     * You can override this to use your custom name.
-     * <p/>
-     * Default value is <code>BaseColumns._ID</code>
+     * Converts object of required type to {@link UpdateQuery}
      *
-     * @return column name to store internal id.
+     * @param object non-null object that should be converted to {@link UpdateQuery}
+     * @return non-null {@link UpdateQuery}
      */
     @NonNull
-    protected String getIdColumnName() {
-        return BaseColumns._ID;
-    }
+    protected abstract UpdateQuery mapToUpdateQuery(@NonNull T object);
 
     /**
-     * Performs Put Operation of some {@link ContentValues} into {@link StorIOContentResolver}
-     * <p/>
-     * By default, it will perform insert if content values does not contain {@link BaseColumns#_ID} field with non-null value
-     * or update if content values contains {@link BaseColumns#_ID} field and value is not null
-     * <p/>
-     * But, if it will decide to perform update and no rows will be updated, it will perform insert!
+     * Converts object of required type to {@link ContentValues}
      *
-     * @param storIOContentResolver instance of {@link StorIOContentResolver}
-     * @param contentValues         some {@link ContentValues} to put
-     * @return non-null result of Put Operation
+     * @param object non-null object that should be converted to {@link ContentValues}
+     * @return non-null {@link ContentValues}
      */
+    @NonNull
+    protected abstract ContentValues mapToContentValues(@NonNull T object);
+
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
     @Override
-    public PutResult performPut(@NonNull StorIOContentResolver storIOContentResolver, @NonNull ContentValues contentValues) {
-        final Uri uri = getUri(contentValues);
-        final String idColumnName = getIdColumnName();
+    public PutResult performPut(@NonNull StorIOContentResolver storIOContentResolver, @NonNull T object) {
+        final UpdateQuery updateQuery = mapToUpdateQuery(object);
 
-        final Object idAsObject = contentValues.get(idColumnName);
-        final String idAsString = idAsObject != null
-                ? idAsObject.toString()
-                : null;
+        final Query query = new Query.Builder()
+                .uri(updateQuery.uri)
+                .where(updateQuery.where)
+                .whereArgs((Object[]) QueryUtil.listToArray(updateQuery.whereArgs))
+                .build();
 
-        return idAsString == null
-                ? insert(storIOContentResolver, contentValues, uri)
-                : updateOrInsert(storIOContentResolver, contentValues, uri, idColumnName, idAsString);
-    }
+        final Cursor cursor = storIOContentResolver.internal().query(query);
 
-    @NonNull
-    private PutResult insert(@NonNull StorIOContentResolver storIOContentResolver, @NonNull ContentValues contentValues, @NonNull Uri uri) {
-        final Uri insertedUri = storIOContentResolver
-                .internal()
-                .insert(new InsertQuery.Builder()
-                                .uri(uri)
-                                .build(),
-                        contentValues
-                );
+        try {
+            final ContentValues contentValues = mapToContentValues(object);
 
-        return PutResult.newInsertResult(insertedUri, uri);
-    }
-
-    @NonNull
-    private PutResult updateOrInsert(@NonNull StorIOContentResolver storIOContentResolver,
-                                     @NonNull ContentValues contentValues, @NonNull Uri uri,
-                                     @NonNull String idColumnName, @NonNull String id) {
-        final int numberOfRowsUpdated = storIOContentResolver
-                .internal()
-                .update(new UpdateQuery.Builder()
-                                .uri(uri)
-                                .where(idColumnName + "=?")
-                                .whereArgs(id)
-                                .build(),
-                        contentValues
-                );
-
-        return numberOfRowsUpdated > 0
-                ? PutResult.newUpdateResult(numberOfRowsUpdated, uri)
-                : insert(storIOContentResolver, contentValues, uri);
-    }
-
-    /**
-     * Useful callback which will be called in same thread that performed Put Operation right after
-     * execution of {@link #performPut(StorIOContentResolver, ContentValues)}
-     * <p/>
-     * You can, for example, set object Uri after insert
-     *
-     * @param object,   that was "put" in {@link StorIOContentResolver}
-     * @param putResult result of put operation
-     */
-    @Override
-    public void afterPut(@NonNull T object, @NonNull PutResult putResult) {
-
+            if (cursor == null || cursor.getCount() == 0) {
+                final InsertQuery insertQuery = mapToInsertQuery(object);
+                final Uri insertedUri = storIOContentResolver.internal().insert(insertQuery, contentValues);
+                return PutResult.newInsertResult(insertedUri, insertQuery.uri);
+            } else {
+                final int numberOfRowsUpdated = storIOContentResolver.internal().update(updateQuery, contentValues);
+                return PutResult.newUpdateResult(numberOfRowsUpdated, updateQuery.uri);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 }

@@ -14,7 +14,6 @@ public class PreparedPutObjectsTest {
                 .put()
                 .objects(TestItem.class, putStub.testItems)
                 .withPutResolver(putStub.putResolverForObjects)
-                .withMapFunc(putStub.mapFunc)
                 .prepare()
                 .executeAsBlocking();
 
@@ -29,7 +28,6 @@ public class PreparedPutObjectsTest {
                 .put()
                 .objects(TestItem.class, putStub.testItems)
                 .withPutResolver(putStub.putResolverForObjects)
-                .withMapFunc(putStub.mapFunc)
                 .prepare()
                 .createObservable();
 

@@ -20,17 +20,17 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
  * Represents an Operation for {@link StorIOContentResolver} which performs query that retrieves data as {@link Cursor}
  * from {@link android.content.ContentProvider}
  */
-public class PreparedGetCursor extends PreparedGet<Cursor> {
+public class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
 
     @NonNull
     protected final Query query;
 
-    PreparedGetCursor(@NonNull StorIOContentResolver storIOContentResolver, @NonNull GetResolver getResolver, @NonNull Query query) {
+    PreparedGetCursor(@NonNull StorIOContentResolver storIOContentResolver, @NonNull GetResolver<Cursor> getResolver, @NonNull Query query) {
         super(storIOContentResolver, getResolver);
         this.query = query;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Cursor executeAsBlocking() {
         return getResolver.performGet(storIOContentResolver, query);
@@ -82,14 +82,10 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
      * <p>
      * Required: You should specify query see {@link #withQuery(Query)}
      */
-    public static class Builder {
+    public static final class Builder {
 
         @NonNull
         final StorIOContentResolver storIOContentResolver;
-
-        Query query;
-
-        GetResolver getResolver;
 
         public Builder(@NonNull StorIOContentResolver storIOContentResolver) {
             this.storIOContentResolver = storIOContentResolver;
@@ -103,54 +99,49 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull Query query) {
-            this.query = query;
-            return new CompleteBuilder(this);
-        }
-
-        /**
-         * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
-         * <p>
-         * Default value is instance of {@link DefaultGetResolver}
-         *
-         * @param getResolver get resolver
-         * @return builder
-         */
-        @NonNull
-        public Builder withGetResolver(@Nullable GetResolver getResolver) {
-            this.getResolver = getResolver;
-            return this;
+            checkNotNull(query, "Please specify Query");
+            return new CompleteBuilder(storIOContentResolver, query);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link PreparedGetCursor}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
 
-        CompleteBuilder(@NonNull final Builder builder) {
-            super(builder.storIOContentResolver);
-            query = builder.query;
-            getResolver = builder.getResolver;
+        private static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
+            @NonNull
+            @Override
+            public Cursor mapFromCursor(@NonNull Cursor cursor) {
+                return cursor; // easy
+            }
+        };
+
+        @NonNull
+        private final StorIOContentResolver storIOContentResolver;
+
+        @NonNull
+        private final Query query;
+
+        private GetResolver<Cursor> getResolver;
+
+        CompleteBuilder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Query query) {
+            this.storIOContentResolver = storIOContentResolver;
+            this.query = query;
         }
 
         /**
-         * {@inheritDoc}
+         * Optional: Specifies {@link GetResolver} for Get Operation
+         * which allows you to customize behavior of Get Operation
+         * <p>
+         * If no value will be set, builder will use resolver that simply redirects query to {@link StorIOContentResolver}
+         *
+         * @param getResolver get resolver
+         * @return builder
          */
         @NonNull
-        @Override
-        public CompleteBuilder withQuery(@NonNull Query query) {
-            super.withQuery(query);
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder withGetResolver(@Nullable GetResolver getResolver) {
-            super.withGetResolver(getResolver);
+        public CompleteBuilder withGetResolver(@Nullable GetResolver<Cursor> getResolver) {
+            this.getResolver = getResolver;
             return this;
         }
 
@@ -161,10 +152,8 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public PreparedOperationWithReactiveStream<Cursor> prepare() {
-            checkNotNull(query, "Please specify query");
-
             if (getResolver == null) {
-                getResolver = DefaultGetResolver.INSTANCE;
+                getResolver = STANDARD_GET_RESOLVER;
             }
 
             return new PreparedGetCursor(
