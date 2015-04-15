@@ -1,0 +1,9 @@
+apply plugin: 'java'
+
+targetCompatibility = '1.6'
+sourceCompatibility = '1.6'
+
+dependencies {
+    compile rootProject.ext.autoService
+    compile rootProject.ext.javaPoet
+}
