@@ -1,10 +1,10 @@
 package com.pushtorefresh.storio.contentresolver.operation.delete;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
-import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import java.util.ArrayList;
@@ -27,12 +27,12 @@ import static org.mockito.Mockito.when;
 class DeleteStub {
 
     final List<TestItem> testItems;
-    final Map<TestItem, DeleteQuery> testItemToDeleteQueryMap;
     final StorIOContentResolver storIOContentResolver;
     private final StorIOContentResolver.Internal internal;
-    final DeleteResolver deleteResolver;
-    final MapFunc<TestItem, DeleteQuery> mapFunc;
-    private final Map<DeleteQuery, DeleteResult> deleteQueryToDeleteResultMap;
+    final DeleteResolver<TestItem> deleteResolverForTestItems;
+    final DeleteResolver<DeleteQuery> deleteResolverForQuery;
+    private final Map<TestItem, DeleteResult> testItemToDeleteResultMap;
+    final Map<TestItem, DeleteQuery> testItemDeleteQueryMap;
 
     @NonNull
     static DeleteStub newInstanceForDeleteByQuery() {
@@ -60,43 +60,49 @@ class DeleteStub {
         when(storIOContentResolver.delete())
                 .thenReturn(new PreparedDelete.Builder(storIOContentResolver));
 
-        deleteResolver = mock(DeleteResolver.class);
+        deleteResolverForTestItems = mock(DeleteResolver.class);
 
-        mapFunc = (MapFunc<TestItem, DeleteQuery>) mock(MapFunc.class);
+        deleteResolverForQuery = mock(DeleteResolver.class);
 
         testItems = new ArrayList<TestItem>(numberOfTestItems);
-        testItemToDeleteQueryMap = new HashMap<TestItem, DeleteQuery>(numberOfTestItems);
-        deleteQueryToDeleteResultMap = new HashMap<DeleteQuery, DeleteResult>(numberOfTestItems);
+        testItemToDeleteResultMap = new HashMap<TestItem, DeleteResult>(numberOfTestItems);
+
+        testItemDeleteQueryMap = new HashMap<TestItem, DeleteQuery>(numberOfTestItems);
 
         for (int i = 0; i < numberOfTestItems; i++) {
             final TestItem testItem = TestItem.newInstance();
-            final DeleteQuery deleteQuery = mock(DeleteQuery.class);
             testItems.add(testItem);
-            testItemToDeleteQueryMap.put(testItem, deleteQuery);
-
-            when(mapFunc.map(testItem))
-                    .thenReturn(deleteQuery);
 
             final DeleteResult deleteResult = mock(DeleteResult.class);
-            deleteQueryToDeleteResultMap.put(deleteQuery, deleteResult);
+            testItemToDeleteResultMap.put(testItem, deleteResult);
 
-            when(deleteResolver.performDelete(storIOContentResolver, deleteQuery))
+            when(deleteResolverForTestItems.performDelete(storIOContentResolver, testItem))
+                    .thenReturn(deleteResult);
+
+            final DeleteQuery deleteQuery = new DeleteQuery.Builder()
+                    .uri(mock(Uri.class))
+                    .build();
+
+            testItemDeleteQueryMap.put(testItem, deleteQuery);
+
+            when(deleteResolverForQuery.performDelete(storIOContentResolver, deleteQuery))
                     .thenReturn(deleteResult);
         }
     }
 
     void verifyBehaviorForDeleteByQuery(@NonNull DeleteResult deleteResult) {
         final TestItem testItem = testItems.get(0);
-        final DeleteQuery expectedDeleteQuery = testItemToDeleteQueryMap.get(testItem);
+
+        final DeleteQuery expectedDeleteQuery = testItemDeleteQueryMap.get(testItem);
 
         // checks that required delete was performed
-        verify(deleteResolver, times(1)).performDelete(storIOContentResolver, expectedDeleteQuery);
+        verify(deleteResolverForQuery, times(1)).performDelete(storIOContentResolver, expectedDeleteQuery);
 
         // only one call to DeleteResolver.performDelete() should occur
-        verify(deleteResolver, times(1)).performDelete(any(StorIOContentResolver.class), any(DeleteQuery.class));
+        verify(deleteResolverForQuery, times(1)).performDelete(any(StorIOContentResolver.class), any(DeleteQuery.class));
 
         // checks that actual delete result equals to expected
-        final DeleteResult expectedDeleteResult = deleteQueryToDeleteResultMap.get(expectedDeleteQuery);
+        final DeleteResult expectedDeleteResult = testItemToDeleteResultMap.get(testItem);
         assertEquals(expectedDeleteResult, deleteResult);
     }
 
@@ -115,15 +121,13 @@ class DeleteStub {
 
     void verifyBehaviorForDeleteMultipleObjects(@NonNull DeleteResults<TestItem> deleteResults) {
         // checks that delete was performed same amount of times as count of items
-        verify(deleteResolver, times(testItems.size())).performDelete(eq(storIOContentResolver), any(DeleteQuery.class));
+        verify(deleteResolverForTestItems, times(testItems.size())).performDelete(eq(storIOContentResolver), any(TestItem.class));
 
         for (final TestItem testItem : testItems) {
-            final DeleteQuery expectedDeleteQuery = testItemToDeleteQueryMap.get(testItem);
-
             // checks that delete was performed for each item
-            verify(deleteResolver, times(1)).performDelete(storIOContentResolver, expectedDeleteQuery);
+            verify(deleteResolverForTestItems, times(1)).performDelete(storIOContentResolver, testItem);
 
-            final DeleteResult expectedDeleteResult = deleteQueryToDeleteResultMap.get(expectedDeleteQuery);
+            final DeleteResult expectedDeleteResult = testItemToDeleteResultMap.get(testItem);
 
             // checks that delete results contains result of deletion of each item
             assertEquals(expectedDeleteResult, deleteResults.results().get(testItem));

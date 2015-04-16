@@ -20,6 +20,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -145,6 +146,9 @@ public class DefaultPutResolverTest {
         // checks that it asks db for results
         verify(internal, times(1)).query(eq(expectedQuery));
 
+        // checks that cursor was closed
+        verify(cursor, times(1)).close();
+
         // only one query should occur
         verify(internal, times(1)).query(any(Query.class));
 
@@ -206,9 +210,8 @@ public class DefaultPutResolverTest {
             @NonNull
             @Override
             protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {
-                return new InsertQuery.Builder()
-                        .table(TestItem.TABLE)
-                        .build();
+                fail("Should not be called");
+                return null;
             }
 
             @NonNull
@@ -239,6 +242,9 @@ public class DefaultPutResolverTest {
 
         // checks that it asks db for results
         verify(internal, times(1)).query(eq(expectedQuery));
+
+        // checks that cursor was closed
+        verify(cursor, times(1)).close();
 
         // only one query should occur
         verify(internal, times(1)).query(any(Query.class));

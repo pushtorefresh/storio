@@ -18,7 +18,7 @@ public class PreparedPutContentValuesIterableTest {
         final List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
 
         for (final TestItem testItem : putStub.testItems) {
-            contentValuesList.add(putStub.mapFunc.map(testItem));
+            contentValuesList.add(putStub.testItemsToContentValuesMap.get(testItem));
         }
 
         final PutResults<ContentValues> putResults = putStub.storIOContentResolver
@@ -38,7 +38,7 @@ public class PreparedPutContentValuesIterableTest {
         final List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
 
         for (final TestItem testItem : putStub.testItems) {
-            contentValuesList.add(putStub.mapFunc.map(testItem));
+            contentValuesList.add(putStub.testItemsToContentValuesMap.get(testItem));
         }
 
         final Observable<PutResults<ContentValues>> putResultsObservable = putStub.storIOContentResolver

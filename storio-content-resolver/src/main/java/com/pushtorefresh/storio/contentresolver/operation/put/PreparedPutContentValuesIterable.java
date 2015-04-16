@@ -38,7 +38,6 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
 
         for (final ContentValues cv : contentValues) {
             final PutResult putResult = putResolver.performPut(storIOContentResolver, cv);
-            putResolver.afterPut(cv, putResult);
             putResultsMap.put(cv, putResult);
         }
 
@@ -71,19 +70,16 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
      * <p>
      * Required: You should specify query see {@link #withPutResolver(PutResolver)}
      */
-    public static class Builder {
+    public static final class Builder {
 
         @NonNull
-        final StorIOContentResolver storIOContentResolver;
+        private final StorIOContentResolver storIOContentResolver;
 
         @NonNull
-        final Iterable<ContentValues> contentValues;
+        private final Iterable<ContentValues> contentValues;
 
-        PutResolver<ContentValues> putResolver;
-
-        public Builder(
-                @NonNull StorIOContentResolver storIOContentResolver,
-                @NonNull Iterable<ContentValues> contentValues) {
+        public Builder(@NonNull StorIOContentResolver storIOContentResolver,
+                       @NonNull Iterable<ContentValues> contentValues) {
             this.storIOContentResolver = storIOContentResolver;
             this.contentValues = contentValues;
         }
@@ -97,30 +93,29 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
          */
         @NonNull
         public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
-            this.putResolver = putResolver;
-            return new CompleteBuilder(this);
+            checkNotNull(putResolver, "Please specify PutResolver");
+            return new CompleteBuilder(storIOContentResolver, contentValues, putResolver);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link PreparedPutContentValuesIterable}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
 
-        CompleteBuilder(@NonNull final Builder builder) {
-            super(builder.storIOContentResolver, builder.contentValues);
-
-            putResolver = builder.putResolver;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
         @NonNull
-        @Override
-        public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
-            super.withPutResolver(putResolver);
-            return this;
+        private final StorIOContentResolver storIOContentResolver;
+
+        @NonNull
+        private final Iterable<ContentValues> contentValues;
+
+        @NonNull
+        private final PutResolver<ContentValues> putResolver;
+
+        CompleteBuilder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Iterable<ContentValues> contentValues, @NonNull PutResolver<ContentValues> putResolver) {
+            this.storIOContentResolver = storIOContentResolver;
+            this.contentValues = contentValues;
+            this.putResolver = putResolver;
         }
 
         /**
@@ -130,8 +125,6 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
          */
         @NonNull
         public PreparedPutContentValuesIterable prepare() {
-            checkNotNull(putResolver, "Please specify put resolver");
-
             return new PreparedPutContentValuesIterable(
                     storIOContentResolver,
                     putResolver,

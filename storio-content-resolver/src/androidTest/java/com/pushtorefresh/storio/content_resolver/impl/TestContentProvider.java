@@ -19,8 +19,8 @@ public class TestContentProvider extends MockContentProvider {
     private static final UriMatcher TWEETS_URI_MATCHER = new UriMatcher(1);
 
     static {
-        USER_URI_MATCHER.addURI(AUTHORITY, User.TABLE, URI_MATCHER_TABLE_CODE);
-        TWEETS_URI_MATCHER.addURI(AUTHORITY, Tweet.TABLE, URI_MATCHER_TABLE_CODE);
+        USER_URI_MATCHER.addURI(AUTHORITY, UserMeta.TABLE, URI_MATCHER_TABLE_CODE);
+        TWEETS_URI_MATCHER.addURI(AUTHORITY, TweetMeta.TABLE, URI_MATCHER_TABLE_CODE);
     }
 
     SQLiteDatabase db = new TestSQLiteOpenHelper(InstrumentationRegistry.getContext()).getWritableDatabase();
@@ -28,10 +28,10 @@ public class TestContentProvider extends MockContentProvider {
     private String getTableNameForUri(@Nullable final Uri uri) {
         if (uri != null) {
             if ((USER_URI_MATCHER.match(uri) == URI_MATCHER_TABLE_CODE)) {
-                return User.TABLE;
+                return UserMeta.TABLE;
             }
             if ((TWEETS_URI_MATCHER.match(uri) == URI_MATCHER_TABLE_CODE)) {
-                return Tweet.TABLE;
+                return TweetMeta.TABLE;
             }
         }
         return null;

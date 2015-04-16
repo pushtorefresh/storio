@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.contentresolver.design;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 
 import org.junit.Test;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.mock;
 
 public class GetOperationDesignTest extends OperationDesignTest {
 
+    @SuppressWarnings("unchecked")
     @Test
     public void getCursorBlocking() {
         Cursor cursor = storIOContentResolver()
@@ -21,6 +23,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .withQuery(new Query.Builder()
                         .uri(mock(Uri.class))
                         .build())
+                .withGetResolver(mock(GetResolver.class))
                 .prepare()
                 .executeAsBlocking();
     }
@@ -31,7 +34,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .get()
                 .listOfObjects(Article.class)
                 .withQuery(mock(Query.class))
-                .withMapFunc(Article.MAP_FROM_CURSOR)
+                .withGetResolver(ArticleMeta.GET_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }

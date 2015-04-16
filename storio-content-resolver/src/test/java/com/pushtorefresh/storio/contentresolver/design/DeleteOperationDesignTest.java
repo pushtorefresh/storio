@@ -54,7 +54,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
         DeleteResults<Article> deleteResults = storIOContentResolver()
                 .delete()
                 .objects(Article.class, articles)
-                .withMapFunc(Article.MAP_TO_DELETE_QUERY)
+                .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -66,7 +66,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
         Observable<DeleteResults<Article>> deleteResultsObservable = storIOContentResolver()
                 .delete()
                 .objects(Article.class, articles)
-                .withMapFunc(Article.MAP_TO_DELETE_QUERY)
+                .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -78,7 +78,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
         DeleteResult deleteResult = storIOContentResolver()
                 .delete()
                 .object(article)
-                .withMapFunc(Article.MAP_TO_DELETE_QUERY)
+                .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -90,7 +90,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
         Observable<DeleteResult> deleteResultObservable = storIOContentResolver()
                 .delete()
                 .object(article)
-                .withMapFunc(Article.MAP_TO_DELETE_QUERY)
+                .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
                 .createObservable();
     }

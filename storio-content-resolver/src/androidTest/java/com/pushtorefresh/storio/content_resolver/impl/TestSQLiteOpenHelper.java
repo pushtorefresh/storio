@@ -11,12 +11,14 @@ class TestSQLiteOpenHelper extends SQLiteOpenHelper {
         super(context, "test_db", null, 1);
     }
 
-    @Override public void onCreate(@NonNull SQLiteDatabase db) {
-        db.execSQL(User.CREATE_TABLE);
-        db.execSQL(Tweet.CREATE_TABLE);
+    @Override
+    public void onCreate(@NonNull SQLiteDatabase db) {
+        db.execSQL(UserMeta.SQL_CREATE_TABLE);
+        db.execSQL(TweetMeta.SQL_CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(@NonNull SQLiteDatabase db, int oldVersion, int newVersion) {
+
     }
 }

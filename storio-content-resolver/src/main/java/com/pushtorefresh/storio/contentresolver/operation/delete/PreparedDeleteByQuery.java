@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.operation.delete;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
@@ -14,12 +15,12 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
  * Prepared Delete Operation by {@link com.pushtorefresh.storio.contentresolver.query.DeleteQuery}
  * for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
  */
-public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
+public class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, DeleteResult> {
 
     @NonNull
     private final DeleteQuery deleteQuery;
 
-    PreparedDeleteByQuery(@NonNull StorIOContentResolver storIOContentResolver, @NonNull DeleteResolver deleteResolver, @NonNull DeleteQuery deleteQuery) {
+    PreparedDeleteByQuery(@NonNull StorIOContentResolver storIOContentResolver, @NonNull DeleteResolver<DeleteQuery> deleteResolver, @NonNull DeleteQuery deleteQuery) {
         super(storIOContentResolver, deleteResolver);
         this.deleteQuery = deleteQuery;
     }
@@ -61,13 +62,21 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
      */
     public static class Builder {
 
+        private static final DeleteResolver<DeleteQuery> STANDARD_DELETE_RESOLVER = new DefaultDeleteResolver<DeleteQuery>() {
+            @NonNull
+            @Override
+            protected DeleteQuery mapToDeleteQuery(@NonNull DeleteQuery deleteQuery) {
+                return deleteQuery; // easy
+            }
+        };
+
         @NonNull
         private final StorIOContentResolver storIOContentResolver;
 
         @NonNull
         private final DeleteQuery deleteQuery;
 
-        private DeleteResolver deleteResolver;
+        private DeleteResolver<DeleteQuery> deleteResolver;
 
         /**
          * Creates builder for {@link PreparedDeleteByQuery}
@@ -87,13 +96,13 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
          * Optional: Specifies resolver for Delete Operation
          * Allows you to customise behavior of Delete Operation
          * <p>
-         * Default value is instance of {@link DefaultDeleteResolver}
+         * If no value will be set, builder will use Delete Resolver that simply redirects query to {@link StorIOContentResolver}
          *
-         * @param deleteResolver resolver for Delete Operation
+         * @param deleteResolver nullable resolver for Delete Operation
          * @return builder
          */
         @NonNull
-        public Builder withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+        public Builder withDeleteResolver(@Nullable DeleteResolver<DeleteQuery> deleteResolver) {
             this.deleteResolver = deleteResolver;
             return this;
         }
@@ -106,7 +115,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         @NonNull
         public PreparedDeleteByQuery prepare() {
             if (deleteResolver == null) {
-                deleteResolver = DefaultDeleteResolver.INSTANCE;
+                deleteResolver = STANDARD_DELETE_RESOLVER;
             }
 
             return new PreparedDeleteByQuery(
