@@ -1,8 +1,14 @@
 package com.pushtorefresh.storio.sqlite.processor;
 
 import com.google.auto.service.AutoService;
-import com.pushtorefresh.storio.sqlite.processor.annotation.StorIOSQLiteColumn;
-import com.pushtorefresh.storio.sqlite.processor.annotation.StorIOSQLiteType;
+import com.pushtorefresh.storio.sqlite.annotation.StorIOSQLiteColumn;
+import com.pushtorefresh.storio.sqlite.annotation.StorIOSQLiteType;
+import com.pushtorefresh.storio.sqlite.processor.generate.PutResolverSourceGenerator;
+import com.pushtorefresh.storio.sqlite.processor.introspection.JavaType;
+import com.pushtorefresh.storio.sqlite.processor.introspection.StorIOSQLiteColumnMeta;
+import com.pushtorefresh.storio.sqlite.processor.introspection.StorIOSQLiteTypeMeta;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,8 +39,8 @@ import static javax.tools.Diagnostic.Kind.ERROR;
  * Addition: Annotation Processor should work fast and be optimized because it's part of compilation
  * We don't want to annoy developers, who use StorIO
  */
-@AutoService(Processor.class)
 // Generate file with annotation processor declaration via another Annotation Processor!
+@AutoService(Processor.class)
 public class StorIOSQLiteProcessor extends AbstractProcessor {
 
     private Filer filer;
@@ -65,7 +71,7 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
     }
 
     /**
-     * For those who don't familiar with Annotation Processing API — this is the main method
+     * For those who don't familiar with Annotation Processing API — this is the main method of Annotation Processor lifecycle
      * <p>
      * It will be after Java Compiler will find lang elements annotated with annotations from {@link #getSupportedAnnotationTypes()}
      *
@@ -76,7 +82,16 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
     @Override
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
         try {
-            final Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses = processAnnotatedClasses(roundEnv, elementUtils);
+            final Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses
+                    = processAnnotatedClasses(roundEnv, elementUtils);
+
+            processAnnotatedFields(roundEnv, annotatedClasses);
+
+            final PutResolverSourceGenerator putResolverSourceGenerator = new PutResolverSourceGenerator();
+
+            for (StorIOSQLiteTypeMeta storIOSQLiteTypeMeta : annotatedClasses.values()) {
+                putResolverSourceGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
+            }
         } catch (ProcessingException e) {
             messager.printMessage(ERROR, e.getMessage(), e.element());
         } catch (Exception e) {
@@ -94,7 +109,8 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
      * @param roundEnvironment environment
      * @return non-null unmodifiable map(element, typeMeta)
      */
-    private static Map<TypeElement, StorIOSQLiteTypeMeta> processAnnotatedClasses(final RoundEnvironment roundEnvironment, final Elements elementUtils) {
+    @NotNull
+    private static Map<TypeElement, StorIOSQLiteTypeMeta> processAnnotatedClasses(@NotNull final RoundEnvironment roundEnvironment, @NotNull final Elements elementUtils) {
         final Set<? extends Element> elementsAnnotatedWithStorIOSQLiteType
                 = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteType.class);
 
@@ -116,7 +132,8 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
      * @param annotatedElement element annotated with {@link StorIOSQLiteType}
      * @return {@link TypeElement} object
      */
-    private static TypeElement validateAnnotatedClass(final Element annotatedElement) {
+    @NotNull
+    private static TypeElement validateAnnotatedClass(@NotNull final Element annotatedElement) {
         // we expect here that annotatedElement is Class, annotation requires that via @Target
         final TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
 
@@ -137,7 +154,8 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
      * @param elementUtils utils for working with elementUtils
      * @return result of processing as {@link StorIOSQLiteTypeMeta}
      */
-    private static StorIOSQLiteTypeMeta processAnnotatedClass(TypeElement classElement, Elements elementUtils) {
+    @NotNull
+    private static StorIOSQLiteTypeMeta processAnnotatedClass(@NotNull TypeElement classElement, @NotNull Elements elementUtils) {
         final StorIOSQLiteType storIOSQLiteType = classElement.getAnnotation(StorIOSQLiteType.class);
 
         final String tableName = storIOSQLiteType.table();
@@ -152,20 +170,43 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
         final String simpleName = classElement.getSimpleName().toString();
         final String packageName = elementUtils.getPackageOf(classElement).getQualifiedName().toString();
 
-        return new StorIOSQLiteTypeMeta(simpleName, packageName, tableName);
+        return new StorIOSQLiteTypeMeta(simpleName, packageName, storIOSQLiteType);
     }
 
     //endregion
 
     //region Processing of annotated fields
 
-    private static void processAnnotatedFields(final RoundEnvironment roundEnvironment) {
+    /**
+     * Processes fields annotated with {@link StorIOSQLiteColumn}
+     *
+     * @param roundEnvironment current processing environment
+     * @param annotatedClasses map of classes annotated with {@link StorIOSQLiteType}
+     */
+    private static void processAnnotatedFields(@NotNull final RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
         final Set<? extends Element> elementsAnnotatedWithStorIOSQLiteColumn
                 = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteColumn.class);
 
-        for (final Element element : elementsAnnotatedWithStorIOSQLiteColumn) {
-            validateAnnotatedField(element);
-            processAnnotatedField(element);
+        for (final Element annotatedFieldElement : elementsAnnotatedWithStorIOSQLiteColumn) {
+            validateAnnotatedField(annotatedFieldElement);
+            final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta = processAnnotatedField(annotatedFieldElement);
+
+            final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = annotatedClasses.get(storIOSQLiteColumnMeta.enclosingElement);
+
+            if (storIOSQLiteTypeMeta == null) {
+                throw new ProcessingException(annotatedFieldElement, "Field marked with "
+                        + StorIOSQLiteColumn.class.getSimpleName()
+                        + " annotation should be placed in class marked by "
+                        + StorIOSQLiteType.class.getSimpleName()
+                        + " annotation"
+                );
+            }
+
+            // Put meta column info
+            // If class already contains column with same name -> throw exception
+            if (storIOSQLiteTypeMeta.columns.put(storIOSQLiteColumnMeta.storIOSQLiteColumn.name(), storIOSQLiteTypeMeta) != null) {
+                throw new ProcessingException(annotatedFieldElement, "Column name already used in this class");
+            }
         }
     }
 
@@ -174,7 +215,7 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
      *
      * @param annotatedElement element annotated with {@link StorIOSQLiteColumn}
      */
-    private static void validateAnnotatedField(final Element annotatedElement) {
+    private static void validateAnnotatedField(@NotNull final Element annotatedElement) {
         // we expect here that annotatedElement is Field, annotation requires that via @Target
 
         final Element enclosingElement = annotatedElement.getEnclosingElement();
@@ -201,8 +242,41 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
         }
     }
 
-    private static void processAnnotatedField(final Element annotatedField) {
+    /**
+     * Processes annotated field and returns result of processing or throws exception
+     *
+     * @param annotatedField field that was annotated with {@link StorIOSQLiteColumn}
+     * @return non-null {@link StorIOSQLiteColumnMeta} with meta information about field
+     */
+    @NotNull
+    private static StorIOSQLiteColumnMeta processAnnotatedField(@NotNull final Element annotatedField) {
+        final JavaType javaType;
 
+        try {
+            javaType = JavaType.from(annotatedField.asType());
+        } catch (Exception e) {
+            throw new ProcessingException(annotatedField, "Unsupported type of field for "
+                    + StorIOSQLiteColumn.class.getSimpleName()
+                    + " annotation, if you need to serialize/deserialize field of that type "
+                    + "-> please write your own resolver: "
+                    + e.getMessage()
+            );
+        }
+
+        final StorIOSQLiteColumn storIOSQLiteColumn = annotatedField.getAnnotation(StorIOSQLiteColumn.class);
+
+        final String columnName = storIOSQLiteColumn.name();
+
+        if (columnName == null || columnName.length() == 0) {
+            throw new ProcessingException(annotatedField, "Column name is null or empty");
+        }
+
+        return new StorIOSQLiteColumnMeta(
+                annotatedField.getEnclosingElement(),
+                annotatedField.getSimpleName().toString(),
+                javaType,
+                storIOSQLiteColumn
+        );
     }
 
     //endregion

@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.sqlite.processor.annotation;
+package com.pushtorefresh.storio.sqlite.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

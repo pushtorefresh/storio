@@ -1,5 +1,7 @@
 package com.pushtorefresh.storio.sqlite.processor;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.lang.model.element.Element;
 
 /**
@@ -11,9 +13,10 @@ public class ProcessingException extends RuntimeException {
     /**
      * Element that caused exception
      */
+    @NotNull
     private final Element element;
 
-    public ProcessingException(Element element, String message) {
+    public ProcessingException(@NotNull Element element, @NotNull String message) {
         super(message);
         this.element = element;
     }
@@ -21,6 +24,7 @@ public class ProcessingException extends RuntimeException {
     /**
      * @return non-null element that caused exception
      */
+    @NotNull
     public Element element() {
         return element;
     }
