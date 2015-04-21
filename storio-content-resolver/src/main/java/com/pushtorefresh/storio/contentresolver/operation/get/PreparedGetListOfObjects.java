@@ -26,17 +26,15 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
  *
  * @param <T> type of result
  */
-public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
-
-    @NonNull
-    private final MapFunc<Cursor, T> mapFunc;
+public class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
 
     @NonNull
     private final Query query;
 
-    PreparedGetListOfObjects(@NonNull StorIOContentResolver storIOContentResolver, @NonNull GetResolver getResolver, @NonNull MapFunc<Cursor, T> mapFunc, @NonNull Query query) {
+    PreparedGetListOfObjects(@NonNull StorIOContentResolver storIOContentResolver,
+                             @NonNull GetResolver<T> getResolver,
+                             @NonNull Query query) {
         super(storIOContentResolver, getResolver);
-        this.mapFunc = mapFunc;
         this.query = query;
     }
 
@@ -45,27 +43,25 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      *
      * @return non-null list with mapped results, can be empty
      */
-    @Nullable
+    @NonNull
     @Override
     public List<T> executeAsBlocking() {
         final Cursor cursor = getResolver.performGet(storIOContentResolver, query);
 
         try {
-            if (cursor == null) {
+            if (cursor.getCount() == 0) {
                 return new ArrayList<T>(0);
             } else {
                 final List<T> list = new ArrayList<T>(cursor.getCount());
 
                 while (cursor.moveToNext()) {
-                    list.add(mapFunc.map(cursor));
+                    list.add(getResolver.mapFromCursor(cursor));
                 }
 
                 return list;
             }
         } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+            cursor.close();
         }
     }
 
@@ -93,7 +89,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     /**
      * Creates an {@link Observable} which will be subscribed to changes of {@link #query} Uri
      * and will emit result each time change occurs
-     * <p/>
+     * <p>
      * First result will be emitted immediately,
      * other emissions will occur only if changes of {@link #query} Uri will occur
      *
@@ -120,7 +116,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      *
      * @param <T> type of objects for query
      */
-    public static class Builder<T> {
+    public static final class Builder<T> {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;
@@ -151,7 +147,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      *
      * @param <T> type of objects for query
      */
-    public static class CompleteBuilder<T> {
+    public static final class CompleteBuilder<T> {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;
@@ -163,7 +159,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         private final Query query;
 
         private MapFunc<Cursor, T> mapFunc;
-        private GetResolver getResolver;
+        private GetResolver<T> getResolver;
 
         CompleteBuilder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Class<T> type, @NonNull Query query) {
             this.storIOContentResolver = storIOContentResolver;
@@ -172,33 +168,17 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Optional: Specifies map function for Get Operation
-         * which will map {@link Cursor} to object of required type
-         * <p/>
-         * Can be set via {@link ContentResolverTypeDefaults},
-         * if value is not set via {@link ContentResolverTypeDefaults} or explicitly exception will be thrown
-         *
-         * @param mapFunc map function which will map {@link Cursor} to object of required type
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder<T> withMapFunc(@Nullable MapFunc<Cursor, T> mapFunc) {
-            this.mapFunc = mapFunc;
-            return this;
-        }
-
-        /**
          * Optional: Specifies {@link GetResolver} for Get Operation
          * which allows you to customize behavior of Get Operation
-         * <p/>
+         * <p>
          * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults}, instance of {@link DefaultGetResolver}
+         * If value is not set via {@link ContentResolverTypeDefaults} -> exception will be thrown
          *
          * @param getResolver get resolver
          * @return builder
          */
         @NonNull
-        public CompleteBuilder<T> withGetResolver(@Nullable GetResolver getResolver) {
+        public CompleteBuilder<T> withGetResolver(@Nullable GetResolver<T> getResolver) {
             this.getResolver = getResolver;
             return this;
         }
@@ -212,18 +192,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         public PreparedGetListOfObjects<T> prepare() {
             final ContentResolverTypeDefaults<T> typeDefaults = storIOContentResolver.internal().typeDefaults(type);
 
-            if (mapFunc == null && typeDefaults != null) {
-                mapFunc = typeDefaults.mapFromCursor;
-            }
-
-            checkNotNull(mapFunc, "Please specify map function");
-
-            if (getResolver == null) {
-                if (typeDefaults != null && typeDefaults.getResolver != null) {
-                    getResolver = typeDefaults.getResolver;
-                } else {
-                    getResolver = DefaultGetResolver.INSTANCE;
-                }
+            if (getResolver == null && typeDefaults != null) {
+                getResolver = typeDefaults.getResolver;
             }
 
             checkNotNull(getResolver, "Please specify Get Resolver");
@@ -231,7 +201,6 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             return new PreparedGetListOfObjects<T>(
                     storIOContentResolver,
                     getResolver,
-                    mapFunc,
                     query
             );
         }

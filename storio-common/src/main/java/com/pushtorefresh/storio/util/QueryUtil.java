@@ -12,6 +12,7 @@ import java.util.List;
 public final class QueryUtil {
 
     private QueryUtil() {
+        throw new IllegalStateException("No instances please");
     }
 
     /**
@@ -27,8 +28,10 @@ public final class QueryUtil {
         } else {
             final List<String> list = new ArrayList<String>(args.length);
 
+            //noinspection ForLoopReplaceableByForEach -> on Android it's faster
             for (int i = 0; i < args.length; i++) {
-                list.add(args[i].toString());
+                final Object arg = args[i];
+                list.add(arg != null ? arg.toString() : "null");
             }
 
             return list;

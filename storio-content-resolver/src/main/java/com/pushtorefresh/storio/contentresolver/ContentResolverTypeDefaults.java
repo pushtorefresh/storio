@@ -1,15 +1,10 @@
 package com.pushtorefresh.storio.contentresolver;
 
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResolver;
 import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
 import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
-import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
-import com.pushtorefresh.storio.operation.MapFunc;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
@@ -18,31 +13,21 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
  *
  * @param <T> type
  */
-public class ContentResolverTypeDefaults<T> {
-
-    @NonNull
-    public final MapFunc<T, ContentValues> mapToContentValues;
-
-    @NonNull
-    public final MapFunc<Cursor, T> mapFromCursor;
+public final class ContentResolverTypeDefaults<T> {
 
     @NonNull
     public final PutResolver<T> putResolver;
 
     @NonNull
-    public final MapFunc<T, DeleteQuery> mapToDeleteQuery;
+    public final GetResolver<T> getResolver;
 
-    @Nullable
-    public final GetResolver getResolver;
+    @NonNull
+    public final DeleteResolver<T> deleteResolver;
 
-    @Nullable
-    public final DeleteResolver deleteResolver;
-
-    private ContentResolverTypeDefaults(@NonNull MapFunc<T, ContentValues> mapToContentValues, @NonNull MapFunc<Cursor, T> mapFromCursor, @NonNull PutResolver<T> putResolver, @NonNull MapFunc<T, DeleteQuery> mapToDeleteQuery, GetResolver getResolver, DeleteResolver deleteResolver) {
-        this.mapToContentValues = mapToContentValues;
-        this.mapFromCursor = mapFromCursor;
+    private ContentResolverTypeDefaults(@NonNull PutResolver<T> putResolver,
+                                        @NonNull GetResolver<T> getResolver,
+                                        @NonNull DeleteResolver<T> deleteResolver) {
         this.putResolver = putResolver;
-        this.mapToDeleteQuery = mapToDeleteQuery;
         this.getResolver = getResolver;
         this.deleteResolver = deleteResolver;
     }
@@ -50,59 +35,7 @@ public class ContentResolverTypeDefaults<T> {
     /**
      * Builder for {@link ContentResolverTypeDefaults}
      */
-    public static class Builder<T> {
-
-        /**
-         * Required: Specifies map function that will be used to map object of required type to {@link ContentValues}
-         *
-         * @param mapFunc non-null map function
-         * @return builder
-         */
-        @NonNull
-        public MapToContentValuesBuilder<T> mappingToContentValues(@NonNull MapFunc<T, ContentValues> mapFunc) {
-            return new MapToContentValuesBuilder<T>(mapFunc);
-        }
-    }
-
-    /**
-     * Compile-time safe part of builder for {@link ContentResolverTypeDefaults}
-     *
-     * @param <T> type
-     */
-    public static class MapToContentValuesBuilder<T> {
-
-        private final MapFunc<T, ContentValues> mapToContentValues;
-
-        MapToContentValuesBuilder(MapFunc<T, ContentValues> mapToContentValues) {
-            this.mapToContentValues = mapToContentValues;
-        }
-
-        /**
-         * Required: Specifies map function that will be used to map {@link Cursor} to object of required type
-         *
-         * @param mapFunc non-null map function
-         * @return builder
-         */
-        @NonNull
-        public MapFromCursorBuilder<T> mappingFromCursor(@NonNull MapFunc<Cursor, T> mapFunc) {
-            return new MapFromCursorBuilder<T>(mapToContentValues, mapFunc);
-        }
-    }
-
-    /**
-     * Compile-time safe part of builder for {@link ContentResolverTypeDefaults}
-     *
-     * @param <T> type
-     */
-    public static class MapFromCursorBuilder<T> {
-
-        private final MapFunc<T, ContentValues> mapToContentValues;
-        private final MapFunc<Cursor, T> mapFromCursor;
-
-        MapFromCursorBuilder(MapFunc<T, ContentValues> mapToContentValues, MapFunc<Cursor, T> mapFromCursor) {
-            this.mapToContentValues = mapToContentValues;
-            this.mapFromCursor = mapFromCursor;
-        }
+    public static final class Builder<T> {
 
         /**
          * Required: Specifies Resolver for Put Operation
@@ -112,11 +45,8 @@ public class ContentResolverTypeDefaults<T> {
          */
         @NonNull
         public PutResolverBuilder<T> putResolver(@NonNull PutResolver<T> putResolver) {
-            return new PutResolverBuilder<T>(
-                    mapToContentValues,
-                    mapFromCursor,
-                    putResolver
-            );
+            checkNotNull(putResolver, "Please specify PutResolver");
+            return new PutResolverBuilder<T>(putResolver);
         }
     }
 
@@ -125,32 +55,56 @@ public class ContentResolverTypeDefaults<T> {
      *
      * @param <T> type
      */
-    public static class PutResolverBuilder<T> {
+    public static final class PutResolverBuilder<T> {
 
-        private final MapFunc<T, ContentValues> mapToContentValues;
-        private final MapFunc<Cursor, T> mapFromCursor;
+        @NonNull
         private final PutResolver<T> putResolver;
 
-        PutResolverBuilder(MapFunc<T, ContentValues> mapToContentValues, MapFunc<Cursor, T> mapFromCursor, PutResolver<T> putResolver) {
-            this.mapToContentValues = mapToContentValues;
-            this.mapFromCursor = mapFromCursor;
+        PutResolverBuilder(@NonNull PutResolver<T> putResolver) {
             this.putResolver = putResolver;
         }
 
         /**
-         * Required: Specifies map function that will be used to map object or required type to {@link DeleteQuery}
+         * Required: Specifies Resolver for Get Operation
          *
-         * @param mapFunc non-null map function
+         * @param getResolver non-null resolver for Get Operation
          * @return builder
          */
         @NonNull
-        public CompleteBuilder<T> mappingToDeleteQuery(@NonNull MapFunc<T, DeleteQuery> mapFunc) {
-            return new CompleteBuilder<T>(
-                    mapToContentValues,
-                    mapFromCursor,
-                    putResolver,
-                    mapFunc
-            );
+        public GetResolverBuilder<T> getResolver(@NonNull GetResolver<T> getResolver) {
+            checkNotNull(getResolver, "Please specify GetResolver");
+            return new GetResolverBuilder<T>(putResolver, getResolver);
+        }
+    }
+
+    /**
+     * Compile-time safe part of builder for {@link ContentResolverTypeDefaults}
+     *
+     * @param <T> type
+     */
+    public static final class GetResolverBuilder<T> {
+
+        @NonNull
+        private final PutResolver<T> putResolver;
+
+        @NonNull
+        private final GetResolver<T> getResolver;
+
+        GetResolverBuilder(@NonNull PutResolver<T> putResolver, @NonNull GetResolver<T> getResolver) {
+            this.putResolver = putResolver;
+            this.getResolver = getResolver;
+        }
+
+        /**
+         * Required: Specifies Resolver for Delete Operation
+         *
+         * @param deleteResolver non-null resolver for Put Operation
+         * @return builder
+         */
+        @NonNull
+        public CompleteBuilder<T> deleteResolver(@NonNull DeleteResolver<T> deleteResolver) {
+            checkNotNull(deleteResolver, "Please specify DeleteResolver");
+            return new CompleteBuilder<T>(putResolver, getResolver, deleteResolver);
         }
     }
 
@@ -161,43 +115,21 @@ public class ContentResolverTypeDefaults<T> {
      */
     public static class CompleteBuilder<T> {
 
-        private final MapFunc<T, ContentValues> mapToContentValues;
-        private final MapFunc<Cursor, T> mapFromCursor;
+        @NonNull
         private final PutResolver<T> putResolver;
-        private final MapFunc<T, DeleteQuery> mapToDeleteQuery;
 
-        private GetResolver getResolver;
-        private DeleteResolver deleteResolver;
+        @NonNull
+        private final GetResolver<T> getResolver;
 
-        CompleteBuilder(MapFunc<T, ContentValues> mapToContentValues, MapFunc<Cursor, T> mapFromCursor, PutResolver<T> putResolver, MapFunc<T, DeleteQuery> mapToDeleteQuery) {
-            this.mapToContentValues = mapToContentValues;
-            this.mapFromCursor = mapFromCursor;
+        @NonNull
+        private final DeleteResolver<T> deleteResolver;
+
+        CompleteBuilder(@NonNull PutResolver<T> putResolver,
+                        @NonNull GetResolver<T> getResolver,
+                        @NonNull DeleteResolver<T> deleteResolver) {
             this.putResolver = putResolver;
-            this.mapToDeleteQuery = mapToDeleteQuery;
-        }
-
-        /**
-         * Optional: Specifies resolver for Get Operation
-         *
-         * @param getResolver resolver for Get Operation
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder<T> getResolver(@Nullable GetResolver getResolver) {
             this.getResolver = getResolver;
-            return this;
-        }
-
-        /**
-         * Optional: Specifies resolver for Delete Operation
-         *
-         * @param deleteResolver resolver for Delete Operation
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder<T> deleteResolver(@NonNull DeleteResolver deleteResolver) {
             this.deleteResolver = deleteResolver;
-            return this;
         }
 
         /**
@@ -207,16 +139,8 @@ public class ContentResolverTypeDefaults<T> {
          */
         @NonNull
         public ContentResolverTypeDefaults<T> build() {
-            checkNotNull(mapToContentValues, "Please specify mapping to ContentValues");
-            checkNotNull(mapFromCursor, "Please specify mapping from Cursor");
-            checkNotNull(putResolver, "Please specify PutResolver");
-            checkNotNull(mapToDeleteQuery, "Please specify mapping to DeleteQuery");
-
             return new ContentResolverTypeDefaults<T>(
-                    mapToContentValues,
-                    mapFromCursor,
                     putResolver,
-                    mapToDeleteQuery,
                     getResolver,
                     deleteResolver
             );

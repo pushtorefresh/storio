@@ -38,10 +38,14 @@ public class QueryUtilTest {
         }
     }
 
-    @Test(expected = NullPointerException.class)
-    public void oneOfItemsIsNullVarargsToList() {
+    @Test
+    public void nullItemVarargsToList() {
         Object[] varargs = {"1", null, "3"};
-        QueryUtil.varargsToList(varargs);
+        List<String> strings = QueryUtil.varargsToList(varargs);
+        assertNotNull(strings);
+        assertEquals("1", strings.get(0));
+        assertEquals("null", strings.get(1));
+        assertEquals("3", strings.get(2));
     }
 
     @SuppressWarnings("ConstantConditions")

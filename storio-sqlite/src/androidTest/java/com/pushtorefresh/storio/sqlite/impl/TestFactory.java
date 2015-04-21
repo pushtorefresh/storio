@@ -9,16 +9,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TestFactory {
 
     private TestFactory() {
+        throw new IllegalStateException("No instances please");
     }
 
     private static final AtomicInteger USERS_COUNTER = new AtomicInteger(0);
     private static final AtomicInteger TWEETS_COUNTER = new AtomicInteger(0);
 
-    @NonNull public static User newUser() {
-        return new User(null, "user" + USERS_COUNTER.incrementAndGet() + "@example.com");
+    @NonNull
+    public static User newUser() {
+        return User.newInstance(null, "user" + USERS_COUNTER.incrementAndGet() + "@example.com");
     }
 
-    @NonNull public static List<User> newUsers(int quantity) {
+    @NonNull
+    public static List<User> newUsers(int quantity) {
         final List<User> users = new ArrayList<User>(quantity);
 
         for (int i = 0; i < quantity; i++) {
@@ -28,7 +31,8 @@ public class TestFactory {
         return users;
     }
 
-    @NonNull public static Tweet newTweet(@NonNull Long userId) {
-        return new Tweet(null, userId, "tweet_" + TWEETS_COUNTER.incrementAndGet());
+    @NonNull
+    public static Tweet newTweet(@NonNull Long userId) {
+        return Tweet.newInstance(null, userId, "tweet_" + TWEETS_COUNTER.incrementAndGet());
     }
 }

@@ -1,9 +1,15 @@
 package com.pushtorefresh.storio.contentresolver.design;
 
 import android.content.ContentValues;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.contentresolver.operation.put.DefaultPutResolver;
+import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
 import com.pushtorefresh.storio.contentresolver.operation.put.PutResult;
 import com.pushtorefresh.storio.contentresolver.operation.put.PutResults;
+import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
+import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
 
 import org.junit.Test;
 
@@ -16,28 +22,50 @@ import static org.mockito.Mockito.mock;
 
 public class PutOperationDesignTest extends OperationDesignTest {
 
+    final PutResolver<ContentValues> putResolverForContentValues = new DefaultPutResolver<ContentValues>() {
+        @NonNull
+        @Override
+        protected InsertQuery mapToInsertQuery(@NonNull ContentValues object) {
+            return new InsertQuery.Builder()
+                    .uri(mock(Uri.class))
+                    .build();
+        }
+
+        @NonNull
+        @Override
+        protected UpdateQuery mapToUpdateQuery(@NonNull ContentValues object) {
+            return new UpdateQuery.Builder()
+                    .uri(mock(Uri.class))
+                    .build();
+        }
+
+        @NonNull
+        @Override
+        protected ContentValues mapToContentValues(@NonNull ContentValues contentValues) {
+            return contentValues; // easy
+        }
+    };
+
     @Test
     public void putObjectBlocking() {
-        Article article = new Article();
+        Article article = Article.newInstance(null, "test");
 
         PutResult putResult = storIOContentResolver()
                 .put()
                 .object(article)
-                .withPutResolver(Article.PUT_RESOLVER)
-                .withMapFunc(Article.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(ArticleMeta.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
 
     @Test
     public void putObjectObservable() {
-        Article article = new Article();
+        Article article = Article.newInstance(null, "test");
 
         Observable<PutResult> putResultObservable = storIOContentResolver()
                 .put()
                 .object(article)
-                .withPutResolver(Article.PUT_RESOLVER)
-                .withMapFunc(Article.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(ArticleMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -49,8 +77,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResults<Article> putResults = storIOContentResolver()
                 .put()
                 .objects(Article.class, articles)
-                .withPutResolver(Article.PUT_RESOLVER)
-                .withMapFunc(Article.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(ArticleMeta.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -62,8 +89,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResults<Article>> putResultsObservable = storIOContentResolver()
                 .put()
                 .objects(Article.class, articles)
-                .withPutResolver(Article.PUT_RESOLVER)
-                .withMapFunc(Article.MAP_TO_CONTENT_VALUES)
+                .withPutResolver(ArticleMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
     }
@@ -75,7 +101,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResult putResult = storIOContentResolver()
                 .put()
                 .contentValues(contentValues)
-                .withPutResolver(Article.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .withPutResolver(putResolverForContentValues)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -87,7 +113,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResult> putResultObservable = storIOContentResolver()
                 .put()
                 .contentValues(contentValues)
-                .withPutResolver(Article.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .withPutResolver(putResolverForContentValues)
                 .prepare()
                 .createObservable();
     }
@@ -99,7 +125,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         PutResults<ContentValues> putResults = storIOContentResolver()
                 .put()
                 .contentValues(contentValuesList)
-                .withPutResolver(Article.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .withPutResolver(putResolverForContentValues)
                 .prepare()
                 .executeAsBlocking();
     }
@@ -111,7 +137,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResults<ContentValues>> putResultsObservable = storIOContentResolver()
                 .put()
                 .contentValues(contentValuesList)
-                .withPutResolver(Article.PUT_RESOLVER_FOR_CONTENT_VALUES)
+                .withPutResolver(putResolverForContentValues)
                 .prepare()
                 .createObservable();
     }

@@ -12,7 +12,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
  * Delete query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
- * <p>
+ * <p/>
  * Instances of this class are Immutable
  */
 public class DeleteQuery {
@@ -38,7 +38,7 @@ public class DeleteQuery {
     /**
      * Please use {@link com.pushtorefresh.storio.contentresolver.query.DeleteQuery.Builder} instead of constructor
      */
-    protected DeleteQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
+    private DeleteQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
         this.where = where;
         this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
@@ -139,7 +139,7 @@ public class DeleteQuery {
 
         /**
          * Optional: Specifies where clause
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param where optional restriction to apply to rows when deleting
@@ -153,9 +153,9 @@ public class DeleteQuery {
 
         /**
          * Optional: Specifies arguments for where clause
-         * <p>
+         * <p/>
          * Passed objects will be immediately converted to list of {@link String} via calling {@link Object#toString()}
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param whereArgs arguments for {@link DeleteQuery#where}

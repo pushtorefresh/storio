@@ -1,9 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operation.put;
 
-import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
@@ -18,14 +16,12 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
 
     @NonNull
     private final T object;
-    @NonNull
-    private final MapFunc<T, ContentValues> mapFunc;
 
-    PreparedPutObject(@NonNull StorIOSQLite storIOSQLite, @NonNull PutResolver<T> putResolver,
-                      @NonNull T object, @NonNull MapFunc<T, ContentValues> mapFunc) {
+    PreparedPutObject(@NonNull StorIOSQLite storIOSQLite,
+                      @NonNull T object,
+                      @NonNull PutResolver<T> putResolver) {
         super(storIOSQLite, putResolver);
         this.object = object;
-        this.mapFunc = mapFunc;
     }
 
     /**
@@ -35,11 +31,8 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
      */
     @NonNull
     public PutResult executeAsBlocking() {
-        final PutResult putResult = putResolver.performPut(storIOSQLite, mapFunc.map(object));
-
-        putResolver.afterPut(object, putResult);
-        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTable()));
-
+        final PutResult putResult = putResolver.performPut(storIOSQLite, object);
+        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
         return putResult;
     }
 
@@ -67,7 +60,6 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         @NonNull
         private final T object;
 
-        private MapFunc<T, ContentValues> mapFunc;
         private PutResolver<T> putResolver;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull T object) {
@@ -76,27 +68,11 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         }
 
         /**
-         * Optional: Specifies map function for Put Operation
-         * which will be used to map object to {@link ContentValues}
-         * <p>
-         * Can be set via {@link SQLiteTypeDefaults}
-         * If it's not set via {@link SQLiteTypeDefaults} or explicitly, exception will be thrown
-         *
-         * @param mapFunc map function for Put Operation which will be used to map object to {@link ContentValues}
-         * @return builder
-         */
-        @NonNull
-        public Builder<T> withMapFunc(@NonNull MapFunc<T, ContentValues> mapFunc) {
-            this.mapFunc = mapFunc;
-            return this;
-        }
-
-        /**
          * Optional: Specifies {@link PutResolver} for Put Operation
          * which allows you to customize behavior of Put Operation
          * <p>
          * Can be set via {@link SQLiteTypeDefaults}
-         * If it's not set via {@link SQLiteTypeDefaults} or explicitly, exception will be thrown
+         * If it's not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *
          * @param putResolver put resolver
          * @return builder
@@ -118,22 +94,16 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         public PreparedPutObject<T> prepare() {
             final SQLiteTypeDefaults<T> typeDefaults = storIOSQLite.internal().typeDefaults((Class<T>) object.getClass());
 
-            if (mapFunc == null && typeDefaults != null) {
-                mapFunc = typeDefaults.mapToContentValues;
-            }
-
             if (putResolver == null && typeDefaults != null) {
                 putResolver = typeDefaults.putResolver;
             }
 
-            checkNotNull(mapFunc, "Please specify map function");
-            checkNotNull(putResolver, "Please specify put resolver");
+            checkNotNull(putResolver, "Please specify PutResolver");
 
             return new PreparedPutObject<T>(
                     storIOSQLite,
-                    putResolver,
                     object,
-                    mapFunc
+                    putResolver
             );
         }
     }

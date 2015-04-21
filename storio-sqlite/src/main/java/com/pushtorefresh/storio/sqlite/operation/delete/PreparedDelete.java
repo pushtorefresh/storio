@@ -11,12 +11,8 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
     @NonNull
     protected final StorIOSQLite storIOSQLite;
 
-    @NonNull
-    protected final DeleteResolver deleteResolver;
-
-    PreparedDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteResolver deleteResolver) {
+    PreparedDelete(@NonNull StorIOSQLite storIOSQLite) {
         this.storIOSQLite = storIOSQLite;
-        this.deleteResolver = deleteResolver;
     }
 
     /**

@@ -13,17 +13,20 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 public class InsertTest extends BaseTest {
 
-    @Test public void insertOne() {
+    @Test
+    public void insertOne() {
         final User user = putUser();
         oneUserInStorageCheck(user);
     }
 
-    @Test public void insertCollection() {
+    @Test
+    public void insertCollection() {
         final List<User> users = putUsers(3);
         usersInStorageCheck(users);
     }
 
-    @Test public void insertAndDeleteTwice() {
+    @Test
+    public void insertAndDeleteTwice() {
         final User user = TestFactory.newUser();
 
         for (int i = 0; i < 2; i++) {
@@ -37,19 +40,18 @@ public class InsertTest extends BaseTest {
     /**
      * Check inserting item with custom internal id field name
      */
-    @Test public void insertCollectionWithCustomId() {
+    @Test
+    public void insertCollectionWithCustomId() {
         final List<User> users = putUsers(1);
         final User user = users.get(0);
 
-        assertNotNull(user.getId());
+        assertNotNull(user.id());
 
-        final Tweet tweet = TestFactory.newTweet(user.getId());
+        final Tweet tweet = TestFactory.newTweet(user.id());
 
         final PutResult putResult = storIOContentResolver
                 .put()
                 .object(tweet)
-                .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
-                .withPutResolver(Tweet.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
 
@@ -60,9 +62,8 @@ public class InsertTest extends BaseTest {
                 .get()
                 .listOfObjects(Tweet.class)
                 .withQuery(new Query.Builder()
-                        .uri(Tweet.CONTENT_URI)
+                        .uri(TweetMeta.CONTENT_URI)
                         .build())
-                .withMapFunc(Tweet.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 

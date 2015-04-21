@@ -5,30 +5,22 @@
 ```java
 StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
   .sqliteOpenHelper(yourSqliteOpenHelper) // or .db(db)
+  .addTypeDefaults(SomeType.class, typeDefaults) // required for object mapping
   .build();
 ```
 
-It's a good practice to use one instance of `StorIOSQLite` per database.
+It's a good practice to use one instance of `StorIOSQLite` per database, otherwise you can have problems with notifications about changes in the db.
 
 ####1. Get Operation
 ######Get list of objects with blocking call:
 
 ```java
-// it's a good practice to store MapFunc as public static final field somewhere
-final MapFunc<Cursor, Tweet> mapFunc = new MapFunc<Cursor, Tweet>() {
-  @Override public Tweet map(Cursor cursor) {
-    // no need to move cursor and close it, StorIO will handle it for you
-    return new Tweet(); // fill with values from cursor 
-  }
-};
-
 final List<Tweet> tweets = storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
   .withQuery(new Query.Builder()
     .table("tweets")
     .build())
-  .withMapFunc(mapFunc)
   .prepare()
   .executeAsBlocking();
 ```
@@ -58,8 +50,8 @@ storIOSQLite
     .build())
   .prepare()
   .createObservable()
-  .subscribeOn(Schedulers.io()) // Move Get Operation to background thread
-  .observeOn(AndroidSchedulers.mainThread()) // Observe result on Main thread
+  .subscribeOn(Schedulers.io()) // Execute Get Operation on Background Thread
+  .observeOn(AndroidSchedulers.mainThread()) // Observe on Main Thread
   .subscribe(new Action1<Cursor>() {
     @Override public void call(Cursor cursor) {
       // display the data from cursor
@@ -76,20 +68,21 @@ storIOSQLite
 storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
-  .withQuery(Tweet.ALL_TWEETS_QUERY)
-  .withMapFunc(Tweet.MAP_FROM_CURSOR)
+  .withQuery(new Query.Builder()
+    .table("tweets")
+    .build())
   .prepare()
-  .createObservableStream() // here is the magic! It will be subscribed to changes in tables from Query
+  .createObservableStream() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
   .subscribeOn(Schedulers.io())
   .observeOn(AndroidSchedulers.mainThread())
-  .subscribe(new Action1<List<Tweet>>() {
+  .subscribe(new Action1<List<Tweet>>() { // don't forget to unsubscribe please
     @Override public void call(List<Tweet> tweets) {
-      // display the data
-      // magic: this will be called on each update in "tweets" table
+      // will be called with first result and then after each change of tables from Query
+      // several changes in transaction -> one notification
+      adapter.setData(tweets);
     }
-  });
-  
-  // don't forget to manage Subscription and unsubscribe in lifecycle methods to prevent memory leaks
+});
+// don't forget to manage Subscription and unsubscribe in lifecycle methods to prevent memory leaks
 ```
 
 ######Second case: Handle changes manually
@@ -112,7 +105,6 @@ storIOSQLite
     .query("SELECT * FROM tweets JOIN users ON tweets.user_name = users.name WHERE tweets.user_name = ?")
     .args("artem_zin")
     .build())
-  .withMapFunc(TweetAndUser.MAP_FROM_CURSOR)
   .prepare()
   .createObservableStream();
 ```
@@ -120,63 +112,29 @@ storIOSQLite
 ######Customize behavior of `Get` Operation with `GetResolver`
 
 ```java
-GetResolver getResolver = new GetResolver() {
-  // Performs Get for RawQuery
-  @Override @NonNull public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
-    Cursor cursor = ...; // get result as you want, or add some additional behavior 
-    return cursor;
-  }
-  
-  // Performs Get for Query
-  @Override @NonNull public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
-    Cursor cursor = ...; // get result as you want, or add some additional behavior 
-    return cursor;
+GetResolver<Type> getResolver = new DefaultGetResolver()<Type> {
+  @Override @NonNull public SomeType mapFromCursor(@NonNull Cursor cursor) {
+    return new SomeType(); // parse Cursor here
   }
 };
 
 storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
-  .withQuery(Tweet.ALL_TWEETS_QUERY)
-  .withMapFunc(Tweet.MAP_FROM_CURSOR)
+  .withQuery(someQuery)
   .withGetResolver(getResolver) // here we set custom GetResolver for Get Operation
   .prepare()
   .executeAsBlocking();
 ```
 
 Several things about `Get` Operation:
-* There is `DefaultGetResolver` which simply redirects query to `StorIOSQLite`, `Get` Operation will use `DefaultGetResolver` if you won't pass your `GetResolver`, in 99% of cases `DefaultGetResolver` will be enough
+* There is `DefaultGetResolver` — Default implementation of `GetResolver` which simply redirects query to `StorIOSQLite`, in 99% of cases `DefaultGetResolver` will be enough
 * As you can see, results of `Get` Operation computed even if you'll apply `RxJava` operators such as `Debounce`, if you want to avoid unneeded computations, please combine `StorIOSQLite.observeChangesInTable()` with `Get` Operation manually.
-* In `StorIO 1.1.0` we are going to add `Lazy<T>` to allow you skip unneeded computations
+* In next versions of `StorIO` we are going to add `Lazy<T>` to allow you skip unneeded computations
 * If you want to `Put` multiple items into `StorIOSQLite`, better to do this in transaction to avoid multiple calls to the listeners (see docs about `Put` Operation)
 
 ####2. Put Operation
-`Put` Operation requires `PutResolver` which defines the behavior of `Put` Operation (insert or update).
 
-You have two ways of implementing `PutResolver`:
-
-1) Easy: extend `DefaultPutResolver` and implement it correctly
-`DefaultPutResolver` will search for field `_id` in `ContentValues` and will perform insert if there is no value or update if there `_id` is not null.
-
-2) Implement `PutResolver` and perform put as you need.
-
-In 99% of cases your tables have `_id` column as unique id and `DefaultPutResolver` will be enough
-
-```java
-public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<>() {
-  @Override @NonNull protected String getTable() {
-    return "tweets";
-  }
-  
-  @Override public void afterPut(@NonNull Tweet tweet, @NonNull PutResult putResult) {
-    // callback were you can change object after insert
-    
-    if (putResult.wasInserted()) {
-      tweet.setId(putResult.getInsertedId());
-    }
-  }
-};
-```
 ######Put object of some type
 ```java
 Tweet tweet = getSomeTweet();
@@ -184,8 +142,6 @@ Tweet tweet = getSomeTweet();
 storIOSQLite
   .put()
   .object(tweet)
-  .withPutResolver(Tweet.PUT_RESOLVER)
-  .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
   .prepare()
   .executeAsBlocking(); // or createObservable()
 ```
@@ -196,9 +152,7 @@ List<Tweet> tweets = getSomeTweets();
 
 storIOSQLite
   .put()
-  .objects(tweets)
-  .withPutResolver(Tweet.PUT_RESOLVER)
-  .withMapFunc(Tweet.MAP_TO_CONTENT_VALUES)
+  .objects(Tweet.class, tweets)
   .prepare()
   .executeAsBlocking(); // or createObservable()
 ```
@@ -210,38 +164,52 @@ ContentValues contentValues = getSomeContentValues();
 storIOSQLite
   .put()
   .contentValues(contentValues)
-  .withPutResolver(putResolver)
+  .withPutResolver(putResolver) // requires PutResolver<ContentValues>
   .prepare()
   .executeAsBlocking(); // or createObservable()
 ```
 
+`Put` Operation requires `PutResolver` which defines the behavior of `Put` Operation (insert or update).
+
+```java
+PutResolver<SomeType> putResolver = new DefaultPutResolver<SomeType>() {
+  @Override @NonNull public InsertQuery mapToInsertQuery(@NonNull SomeType object) {
+    return new InsertQuery.Builder()
+      .table("some_table")
+      .build();
+  }
+  
+  @Override @NonNull public UpdateQuery mapToUpdateQuery(@NonNull SomeType object) {
+    return new UpdateQuery.Builder()
+      .table("some_table")
+      .where("some_column = ?")
+      .whereArgs(object.someColumn())
+      .build();
+  }
+  
+  @Override @NonNull public ContentValues mapToContentValues(@NonNull SomeType object) {
+    final ContentValues contentValues = new ContentValues();
+    // fill with fields from object
+    return contentValues;
+  }
+};
+```
+
 Several things about `Put` Operation:
-* `Put` Operation requires `PutResolver`, `StorIO` requires it to avoid reflection
-* `Put` Operation can be executed in transaction and by default it will use transaction, you can customize this via `useTransactionIfPossible()` or `dontUseTransaction()`
+* `Put` Operation requires `PutResolver`
+* `Put` Operation for collections can be executed in transaction and by default it will use transaction, you can customize this via `useTransaction(true)` or `useTransaction(false)`
 * `Put` Operation in transaction will produce only one notification to `StorIOSQLite` observers
 * Result of `Put` Operation can be useful if you want to know what happened: insert (and insertedId) or update (and number of updated rows)
 
 ####3. Delete Operation
+
 ######Delete object
 ```java
-// you can store it as static final field somewhere
-final MapFunc<Tweet, DeleteQuery> mapToDeleteQuery = new MapFunc<Tweet, DeleteQuery>() {
-  @Override public DeleteQuery map(Tweet tweet) {
-    return new DeleteQuery.Builder()
-      .table(Tweet.TABLE)
-      .where(Tweet.COLUMN_ID)
-      .whereArgs(String.valueOf(tweet.getId()))
-      .build();
-  }
-};
-
-
 Tweet tweet = getSomeTweet();
 
 storIOSQLite
   .delete()
   .object(tweet)
-  .withMapFunc(mapToDeleteQuery)
   .prepare()
   .executeAsBlocking(); // or createObservable()
 ``` 
@@ -252,14 +220,27 @@ List<Tweet> tweets = getSomeTweets();
 
 storIOSQLite
   .delete()
-  .objects(tweets)
-  .withMapFunc(mapToDeleteQuery)
+  .objects(Tweet.class, tweets)
   .prepare()
   .executeAsBlocking(); // or createObservable()
 ```
 
+Delete Resolver
+
+```java
+DeleteResolver<SomeType> deleteResolver = new DefaultDeleteResolver<SomeType>() {
+  @Override @NonNull public DeleteQuery mapToDeleteQuery(@NonNull SomeType object) {
+    return new DeleteQuery.Builder()
+      .table("some_table")
+      .where("some_column = ?")
+      .whereArgs(object.someColumn())
+      .build();
+  }
+};
+```
+
 Several things about `Delete` Operation:
-* `Delete` Operation of multiple items can be performed in transaction, by default it will use transaction if possible
+* `Delete` Operation foc collection can be performed in transaction, by default it will use transaction if possible
 * Same rules as for `Put` Operation about notifications for `StorIOSQLite` observers: transaction -> one notification, without transaction - multiple notifications
 * Result of `Delete` Operation can be useful if you want to know what happened
 
@@ -281,3 +262,27 @@ storIOSQLite
 Several things about `ExecSql`:
 * Use it for non insert/update/query/delete operations
 * Notice that you can set list of tables that will be affected by `RawQuery` and `StorIOSQLite` will notify tables Observers
+
+
+####How object mapping works?
+#####You can set default type mappings when you build instance of `StorIOSQLite` or `StorIOContentResolver`
+
+```java
+StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
+  .db(someSQLiteDatabase)
+  .addTypeDefaults(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
+    .putResolver(Tweet.PUT_RESOLVER) // object that knows how to perform Put Operation (insert or update)
+    .getResolver(Tweet.GET_RESOLVER) // object that knows how to perform Get Operation
+    .deleteResolver(Tweet.DELETE_RESOLVER)  // object that knows how to perform Delete Operation
+    .build())
+  .addTypeDefaults(...)
+  // other options
+  .build(); // This instance of StorIOSQLite will know how to work with Tweet objects
+```
+
+You can override Operation Resolver per each individual Operation, it can be useful for working with `SQL JOIN`.
+Also, as you can see, there is no Reflection, and no performance reduction in compare to manual object mapping code.
+
+We are thinking about optional Compile-Time annotation processing for generating resolvers implementation in compile-time.
+
+API of `StorIOContentResolver` is same.

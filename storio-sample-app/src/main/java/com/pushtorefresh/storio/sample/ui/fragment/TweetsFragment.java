@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
 import com.pushtorefresh.storio.sample.R;
@@ -86,7 +87,7 @@ public class TweetsFragment extends BaseFragment {
         final Subscription subscription = storIOSQLite
                 .get()
                 .listOfObjects(Tweet.class)
-                .withQuery(Tweet.QUERY_GET_ALL)
+                .withQuery(TweetTableMeta.QUERY_ALL)
                 .prepare()
                 .createObservableStream() // it will be subscribed to changes in tweets table!
                 .delay(1, TimeUnit.SECONDS) // for better User Experience

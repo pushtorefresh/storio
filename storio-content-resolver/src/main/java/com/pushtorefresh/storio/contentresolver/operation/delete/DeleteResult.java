@@ -3,6 +3,9 @@ package com.pushtorefresh.storio.contentresolver.operation.delete;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.util.Collections;
+import java.util.Set;
+
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
@@ -15,11 +18,24 @@ public class DeleteResult {
     private final int numberOfRowsDeleted;
 
     @NonNull
-    private final Uri affectedUri;
+    private final Set<Uri> affectedUris;
 
-    private DeleteResult(int numberOfRowsDeleted, @NonNull Uri affectedUri) {
+    private DeleteResult(int numberOfRowsDeleted, @NonNull Set<Uri> affectedUris) {
         this.numberOfRowsDeleted = numberOfRowsDeleted;
-        this.affectedUri = affectedUri;
+        this.affectedUris = Collections.unmodifiableSet(affectedUris);
+    }
+
+    /**
+     * Creates new instance of immutable container for results of Delete Operation
+     *
+     * @param numberOfRowsDeleted number of rows that were deleted
+     * @param affectedUris        non-null set of Uris that wer affected
+     * @return new instance of immutable container for results of Delete Operation
+     */
+    @NonNull
+    public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull Set<Uri> affectedUris) {
+        checkNotNull(affectedUris, "Please specify affected Uris");
+        return new DeleteResult(numberOfRowsDeleted, affectedUris);
     }
 
     /**
@@ -32,7 +48,7 @@ public class DeleteResult {
     @NonNull
     public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull Uri affectedUri) {
         checkNotNull(affectedUri, "Please specify affected Uri");
-        return new DeleteResult(numberOfRowsDeleted, affectedUri);
+        return new DeleteResult(numberOfRowsDeleted, Collections.singleton(affectedUri));
     }
 
     /**
@@ -45,13 +61,13 @@ public class DeleteResult {
     }
 
     /**
-     * Gets affected Uri
+     * Gets immutable set of affected Uris
      *
-     * @return affected Uri
+     * @return affected Uris
      */
     @NonNull
-    public Uri affectedUri() {
-        return affectedUri;
+    public Set<Uri> affectedUris() {
+        return affectedUris;
     }
 
     @Override
@@ -62,13 +78,13 @@ public class DeleteResult {
         DeleteResult that = (DeleteResult) o;
 
         if (numberOfRowsDeleted != that.numberOfRowsDeleted) return false;
-        return affectedUri.equals(that.affectedUri);
+        return affectedUris.equals(that.affectedUris);
     }
 
     @Override
     public int hashCode() {
         int result = numberOfRowsDeleted;
-        result = 31 * result + affectedUri.hashCode();
+        result = 31 * result + affectedUris.hashCode();
         return result;
     }
 
@@ -76,7 +92,7 @@ public class DeleteResult {
     public String toString() {
         return "DeleteResult{" +
                 "numberOfRowsDeleted=" + numberOfRowsDeleted +
-                ", affectedUri=" + affectedUri +
+                ", affectedUris=" + affectedUris +
                 '}';
     }
 }

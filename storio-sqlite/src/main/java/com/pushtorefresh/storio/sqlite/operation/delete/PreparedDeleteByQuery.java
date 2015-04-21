@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operation.delete;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -18,9 +19,13 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     @NonNull
     private final DeleteQuery deleteQuery;
 
-    PreparedDeleteByQuery(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery, @NonNull DeleteResolver deleteResolver) {
-        super(storIOSQLite, deleteResolver);
+    @NonNull
+    private final DeleteResolver<DeleteQuery> deleteResolver;
+
+    PreparedDeleteByQuery(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery, @NonNull DeleteResolver<DeleteQuery> deleteResolver) {
+        super(storIOSQLite);
         this.deleteQuery = deleteQuery;
+        this.deleteResolver = deleteResolver;
     }
 
     /**
@@ -32,7 +37,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     @Override
     public DeleteResult executeAsBlocking() {
         final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
-        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(deleteQuery.table));
+        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
         return deleteResult;
     }
 
@@ -64,12 +69,21 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
      */
     public static class Builder {
 
+        private static final DeleteResolver<DeleteQuery> STANDARD_DELETE_RESOLVER = new DefaultDeleteResolver<DeleteQuery>() {
+            @NonNull
+            @Override
+            public DeleteQuery mapToDeleteQuery(@NonNull DeleteQuery deleteQuery) {
+                return deleteQuery; // no transformations
+            }
+        };
+
         @NonNull
         private final StorIOSQLite storIOSQLite;
+
         @NonNull
         private final DeleteQuery deleteQuery;
 
-        private DeleteResolver deleteResolver;
+        private DeleteResolver<DeleteQuery> deleteResolver;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery) {
             this.storIOSQLite = storIOSQLite;
@@ -77,15 +91,15 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         }
 
         /**
-         * Optional: Specifies {@link DeleteResolver} for Delete Operation
-         * <p>
-         * Default value is instance of {@link DefaultDeleteResolver}
+         * Optional: Specifies Delete Resolver for Delete Operation
+         * <p/>
+         * If no value was specified, builder will use resolver that simply redirects query to {@link StorIOSQLite}
          *
-         * @param deleteResolver delete resolver
+         * @param deleteResolver nullable resolver for Delete Operation
          * @return builder
          */
         @NonNull
-        public Builder withDeleteResolver(@NonNull DeleteResolver deleteResolver) {
+        public Builder withDeleteResolver(@Nullable DeleteResolver<DeleteQuery> deleteResolver) {
             this.deleteResolver = deleteResolver;
             return this;
         }
@@ -98,7 +112,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         @NonNull
         public PreparedDeleteByQuery prepare() {
             if (deleteResolver == null) {
-                deleteResolver = DefaultDeleteResolver.INSTANCE;
+                deleteResolver = STANDARD_DELETE_RESOLVER;
             }
 
             return new PreparedDeleteByQuery(storIOSQLite, deleteQuery, deleteResolver);

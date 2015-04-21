@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.operation.get;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
@@ -16,6 +17,10 @@ import static org.mockito.Mockito.when;
 
 public class DefaultGetResolverTest {
 
+    private static class TestItem {
+
+    }
+
     @Test
     public void query() {
         final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
@@ -29,7 +34,14 @@ public class DefaultGetResolverTest {
         when(internal.query(query))
                 .thenReturn(expectedCursor);
 
-        final DefaultGetResolver defaultGetResolver = new DefaultGetResolver();
+        final GetResolver<TestItem> defaultGetResolver = new DefaultGetResolver<TestItem>() {
+            @NonNull
+            @Override
+            public TestItem mapFromCursor(@NonNull Cursor cursor) {
+                assertSame(expectedCursor, cursor);
+                return new TestItem();
+            }
+        };
 
         final Cursor actualCursor = defaultGetResolver.performGet(storIOContentResolver, query);
 

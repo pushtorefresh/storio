@@ -31,9 +31,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
     @NonNull
     @Override
     public PutResult executeAsBlocking() {
-        final PutResult putResult = putResolver.performPut(storIOContentResolver, contentValues);
-        putResolver.afterPut(contentValues, putResult);
-        return putResult;
+        return putResolver.performPut(storIOContentResolver, contentValues);
     }
 
     /**
@@ -62,15 +60,13 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
      * <p>
      * Required: You should specify put resolver see {@link #withPutResolver(PutResolver)}
      */
-    public static class Builder {
+    public static final class Builder {
 
         @NonNull
-        final StorIOContentResolver storIOContentResolver;
+        private final StorIOContentResolver storIOContentResolver;
 
         @NonNull
-        final ContentValues contentValues;
-
-        PutResolver<ContentValues> putResolver;
+        private final ContentValues contentValues;
 
         /**
          * Creates builder for {@link PreparedPutContentValues}
@@ -95,30 +91,29 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
          */
         @NonNull
         public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
-            this.putResolver = putResolver;
-            return new CompleteBuilder(this);
+            checkNotNull(putResolver, "Please specify PutResolver");
+            return new CompleteBuilder(storIOContentResolver, contentValues, putResolver);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link PreparedPutContentValues}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
 
-        CompleteBuilder(@NonNull final Builder builder) {
-            super(builder.storIOContentResolver, builder.contentValues);
-
-            putResolver = builder.putResolver;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
         @NonNull
-        @Override
-        public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
-            super.withPutResolver(putResolver);
-            return this;
+        private final StorIOContentResolver storIOContentResolver;
+
+        @NonNull
+        private final ContentValues contentValues;
+
+        @NonNull
+        private final PutResolver<ContentValues> putResolver;
+
+        CompleteBuilder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull ContentValues contentValues, @NonNull PutResolver<ContentValues> putResolver) {
+            this.storIOContentResolver = storIOContentResolver;
+            this.contentValues = contentValues;
+            this.putResolver = putResolver;
         }
 
         /**
@@ -128,8 +123,6 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
          */
         @NonNull
         public PreparedPutContentValues prepare() {
-            checkNotNull(putResolver, "Please specify put resolver");
-
             return new PreparedPutContentValues(
                     storIOContentResolver,
                     putResolver,

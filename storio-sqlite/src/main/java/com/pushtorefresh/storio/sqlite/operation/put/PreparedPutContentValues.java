@@ -17,7 +17,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
     @NonNull
     private final ContentValues contentValues;
 
-    PreparedPutContentValues(@NonNull StorIOSQLite storIOSQLite, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
+    PreparedPutContentValues(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues, @NonNull PutResolver<ContentValues> putResolver) {
         super(storIOSQLite, putResolver);
         this.contentValues = contentValues;
     }
@@ -31,8 +31,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
     @Override
     public PutResult executeAsBlocking() {
         final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
-        putResolver.afterPut(contentValues, putResult);
-        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTable()));
+        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
         return putResult;
     }
 
@@ -55,11 +54,9 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
-        
+
         @NonNull
         private final ContentValues contentValues;
-
-        private PutResolver<ContentValues> putResolver;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues) {
             this.storIOSQLite = storIOSQLite;
@@ -75,9 +72,32 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
          * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
          */
         @NonNull
-        public Builder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
+        public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
+            return new CompleteBuilder(
+                    storIOSQLite,
+                    contentValues,
+                    putResolver
+            );
+        }
+    }
+
+    /**
+     * Compile-time safe part of {@link Builder}
+     */
+    public static class CompleteBuilder {
+
+        @NonNull
+        private final StorIOSQLite storIOSQLite;
+
+        @NonNull
+        private final ContentValues contentValues;
+
+        private final PutResolver<ContentValues> putResolver;
+
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues, PutResolver<ContentValues> putResolver) {
+            this.storIOSQLite = storIOSQLite;
+            this.contentValues = contentValues;
             this.putResolver = putResolver;
-            return this;
         }
 
         /**
@@ -91,8 +111,8 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
 
             return new PreparedPutContentValues(
                     storIOSQLite,
-                    putResolver,
-                    contentValues
+                    contentValues,
+                    putResolver
             );
         }
     }

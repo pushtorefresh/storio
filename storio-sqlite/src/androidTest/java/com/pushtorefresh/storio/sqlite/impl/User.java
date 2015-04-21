@@ -1,103 +1,38 @@
 package com.pushtorefresh.storio.sqlite.impl;
 
-import android.content.ContentValues;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.operation.MapFunc;
-import com.pushtorefresh.storio.sqlite.operation.put.DefaultPutResolver;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResult;
-import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
-
 public class User implements Comparable<User> {
 
-    // they are open just for test purposes
-    static final String TABLE = "users";
-    static final String COLUMN_ID = "_id";
-    static final String COLUMN_EMAIL = "email";
-
-    // I'll be very old when Java will support string interpolation :(
-    public static final String CREATE_TABLE = "CREATE TABLE " + TABLE + "(" +
-            COLUMN_ID + " INTEGER PRIMARY KEY, " +
-            COLUMN_EMAIL + " TEXT NOT NULL" +
-            ");";
-
-    public static final DeleteQuery DELETE_ALL = new DeleteQuery.Builder()
-            .table(TABLE)
-            .build();
+    @Nullable
+    private Long id;
 
     @NonNull
-    public static final MapFunc<User, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<User, ContentValues>() {
-        @NonNull
-        @Override public ContentValues map(@NonNull User user) {
-            final ContentValues contentValues = new ContentValues(2);
+    private final String email;
 
-            contentValues.put(COLUMN_ID, user.id);
-            contentValues.put(COLUMN_EMAIL, user.email);
-
-            return contentValues;
-        }
-    };
-
-    @NonNull
-    public static final MapFunc<Cursor, User> MAP_FROM_CURSOR = new MapFunc<Cursor, User>() {
-        @NonNull
-        @Override public User map(@NonNull Cursor cursor) {
-            return new User(
-                    cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-                    cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL))
-            );
-        }
-    };
-
-    @NonNull
-    public static final MapFunc<User, DeleteQuery> MAP_TO_DELETE_QUERY = new MapFunc<User, DeleteQuery>() {
-        @NonNull
-        @Override public DeleteQuery map(@NonNull User user) {
-            return new DeleteQuery.Builder()
-                    .table(TABLE)
-                    .where(COLUMN_ID + "=?")
-                    .whereArgs(String.valueOf(user.id))
-                    .build();
-        }
-    };
-
-    @NonNull public static final PutResolver<User> PUT_RESOLVER = new DefaultPutResolver<User>() {
-        @NonNull @Override protected String getTable() {
-            return TABLE;
-        }
-
-        @Override public void afterPut(@NonNull User user, @NonNull PutResult putResult) {
-            if (putResult.wasInserted()) {
-                user.id = putResult.insertedId();
-            }
-        }
-    };
-
-    @Nullable private volatile Long id;
-    private String email;
-
-    User(@Nullable Long id, @NonNull String email) {
+    private User(@Nullable Long id, @NonNull String email) {
         this.id = id;
         this.email = email;
     }
 
-    @Nullable public Long getId() {
+    @NonNull
+    public static User newInstance(@Nullable Long id, @NonNull String email) {
+        return new User(id, email);
+    }
+
+    @Nullable
+    public Long id() {
         return id;
     }
 
-    public String getEmail() {
+    @NonNull
+    public String email() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean equalsExceptId(@NonNull User other) {
-        return email.equals(other.email);
+    public void setId(@Nullable Long id) {
+        this.id = id;
     }
 
     @Override
@@ -108,19 +43,22 @@ public class User implements Comparable<User> {
         User user = (User) o;
 
         if (id != null ? !id.equals(user.id) : user.id != null) return false;
-        if (email != null ? !email.equals(user.email) : user.email != null) return false;
-
-        return true;
+        return email.equals(user.email);
     }
 
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + email.hashCode();
         return result;
     }
 
-    @Override public int compareTo(@NonNull User another) {
-        return email == null ? 0 : email.compareTo(another.getEmail());
+    public boolean equalsExceptId(@NonNull User another) {
+        return email.equals(another.email);
+    }
+
+    @Override
+    public int compareTo(@NonNull User another) {
+        return email.compareTo(another.email);
     }
 }

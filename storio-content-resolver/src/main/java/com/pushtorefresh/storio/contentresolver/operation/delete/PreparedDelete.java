@@ -11,17 +11,17 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 /**
  * Prepared Delete Operation for {@link StorIOContentResolver}
  *
- * @param <T> type of result of Delete Operation
+ * @param <Result> type of result of Delete Operation
  */
-public abstract class PreparedDelete<T> implements PreparedOperation<T> {
+public abstract class PreparedDelete<T, Result> implements PreparedOperation<Result> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;
 
     @NonNull
-    protected final DeleteResolver deleteResolver;
+    protected final DeleteResolver<T> deleteResolver;
 
-    PreparedDelete(@NonNull StorIOContentResolver storIOContentResolver, @NonNull DeleteResolver deleteResolver) {
+    PreparedDelete(@NonNull StorIOContentResolver storIOContentResolver, @NonNull DeleteResolver<T> deleteResolver) {
         this.storIOContentResolver = storIOContentResolver;
         this.deleteResolver = deleteResolver;
     }

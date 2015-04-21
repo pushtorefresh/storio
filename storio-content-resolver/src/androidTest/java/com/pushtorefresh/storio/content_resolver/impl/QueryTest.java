@@ -4,8 +4,8 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.pushtorefresh.storio.contentresolver.operation.get.DefaultGetResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
-import com.pushtorefresh.storio.operation.MapFunc;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,12 +20,14 @@ public class QueryTest extends BaseTest {
         super();
     }
 
-    @Test public void queryAll() {
+    @Test
+    public void queryAll() {
         final List<User> users = putUsers(3);
         usersInStorageCheck(users);
     }
 
-    @Test public void queryOneByField() {
+    @Test
+    public void queryOneByField() {
         final List<User> users = putUsers(3);
 
         for (User user : users) {
@@ -33,11 +35,10 @@ public class QueryTest extends BaseTest {
                     .get()
                     .listOfObjects(User.class)
                     .withQuery(new Query.Builder()
-                            .uri(User.CONTENT_URI)
-                            .where(User.COLUMN_EMAIL + "=?")
-                            .whereArgs(user.getEmail())
+                            .uri(UserMeta.CONTENT_URI)
+                            .where(UserMeta.COLUMN_EMAIL + "=?")
+                            .whereArgs(user.email())
                             .build())
-                    .withMapFunc(User.MAP_FROM_CURSOR)
                     .prepare()
                     .executeAsBlocking();
 
@@ -47,7 +48,8 @@ public class QueryTest extends BaseTest {
         }
     }
 
-    @Test public void queryOrdered() {
+    @Test
+    public void queryOrdered() {
         final List<User> users = TestFactory.newUsers(3);
 
         // Reverse sorting by email before inserting, for the purity of the experiment.
@@ -59,10 +61,9 @@ public class QueryTest extends BaseTest {
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .uri(User.CONTENT_URI)
-                        .sortOrder(User.COLUMN_EMAIL)
+                        .uri(UserMeta.CONTENT_URI)
+                        .sortOrder(UserMeta.COLUMN_EMAIL)
                         .build())
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -77,7 +78,8 @@ public class QueryTest extends BaseTest {
         }
     }
 
-    @Test public void queryOrderedDesc() {
+    @Test
+    public void queryOrderedDesc() {
         final List<User> users = TestFactory.newUsers(3);
 
         // Sorting by email before inserting, for the purity of the experiment.
@@ -89,10 +91,9 @@ public class QueryTest extends BaseTest {
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .uri(User.CONTENT_URI)
-                        .sortOrder(User.COLUMN_EMAIL + " DESC")
+                        .uri(UserMeta.CONTENT_URI)
+                        .sortOrder(UserMeta.COLUMN_EMAIL + " DESC")
                         .build())
-                .withMapFunc(User.MAP_FROM_CURSOR)
                 .prepare()
                 .executeAsBlocking();
 
@@ -107,22 +108,23 @@ public class QueryTest extends BaseTest {
         }
     }
 
-    @Test public void queryProjection() {
+    @Test
+    public void queryProjection() {
         final List<User> users = putUsers(3);
 
         final List<User> usersFromStorage = storIOContentResolver
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
-                        .uri(User.CONTENT_URI)
-                        .projection(User.COLUMN_ID)
+                        .uri(UserMeta.CONTENT_URI)
+                        .projection(UserMeta.COLUMN_ID)
                         .build())
-                .withMapFunc(new MapFunc<Cursor, User>() {
+                .withGetResolver(new DefaultGetResolver<User>() {
                     @NonNull
                     @Override
-                    public User map(@NonNull Cursor cursor) {
-                        final Long id = cursor.getLong(cursor.getColumnIndex(User.COLUMN_ID));
-                        return new User(id);
+                    public User mapFromCursor(@NonNull Cursor cursor) {
+                        final Long id = cursor.getLong(cursor.getColumnIndex(UserMeta.COLUMN_ID));
+                        return User.newInstance(id, null);
                     }
                 })
                 .prepare()
@@ -134,8 +136,8 @@ public class QueryTest extends BaseTest {
         for (int i = 0; i < users.size(); i++) {
             final User user = users.get(i);
             final User userFromStorage = usersFromStorage.get(i);
-            assertEquals(user.getId(), userFromStorage.getId());
-            assertNull(userFromStorage.getEmail());
+            assertEquals(user.id(), userFromStorage.id());
+            assertNull(userFromStorage.email());
         }
     }
 }

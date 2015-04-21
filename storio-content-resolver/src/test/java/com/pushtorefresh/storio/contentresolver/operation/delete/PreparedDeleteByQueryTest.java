@@ -12,8 +12,8 @@ public class PreparedDeleteByQueryTest {
 
         final DeleteResult deleteResult = deleteStub.storIOContentResolver
                 .delete()
-                .byQuery(deleteStub.testItemToDeleteQueryMap.get(deleteStub.testItems.get(0)))
-                .withDeleteResolver(deleteStub.deleteResolver)
+                .byQuery(deleteStub.testItemDeleteQueryMap.get(deleteStub.testItems.get(0)))
+                .withDeleteResolver(deleteStub.deleteResolverForQuery)
                 .prepare()
                 .executeAsBlocking();
 
@@ -26,8 +26,8 @@ public class PreparedDeleteByQueryTest {
 
         final Observable<DeleteResult> deleteResultObservable = deleteStub.storIOContentResolver
                 .delete()
-                .byQuery(deleteStub.testItemToDeleteQueryMap.get(deleteStub.testItems.get(0)))
-                .withDeleteResolver(deleteStub.deleteResolver)
+                .byQuery(deleteStub.testItemDeleteQueryMap.get(deleteStub.testItems.get(0)))
+                .withDeleteResolver(deleteStub.deleteResolverForQuery)
                 .prepare()
                 .createObservable();
 

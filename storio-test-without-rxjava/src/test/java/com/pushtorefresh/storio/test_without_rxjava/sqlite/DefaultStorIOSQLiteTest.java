@@ -3,7 +3,6 @@ package com.pushtorefresh.storio.test_without_rxjava.sqlite;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
@@ -23,6 +22,7 @@ public class DefaultStorIOSQLiteTest {
                 .build();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void instantiateGetCursor() {
         new DefaultStorIOSQLite.Builder()
@@ -30,8 +30,8 @@ public class DefaultStorIOSQLiteTest {
                 .build()
                 .get()
                 .cursor()
-                .withGetResolver(mock(GetResolver.class))
                 .withQuery(mock(Query.class))
+                .withGetResolver(mock(GetResolver.class))
                 .prepare();
     }
 
@@ -45,7 +45,6 @@ public class DefaultStorIOSQLiteTest {
                 .listOfObjects(Object.class)
                 .withQuery(mock(Query.class))
                 .withGetResolver(mock(GetResolver.class))
-                .withMapFunc(mock(MapFunc.class))
                 .prepare();
     }
 
@@ -94,7 +93,6 @@ public class DefaultStorIOSQLiteTest {
                 .put()
                 .object(mock(Object.class))
                 .withPutResolver(mock(PutResolver.class))
-                .withMapFunc(mock(MapFunc.class))
                 .prepare();
     }
 
@@ -107,7 +105,6 @@ public class DefaultStorIOSQLiteTest {
                 .put()
                 .objects(Object.class, mock(Iterable.class))
                 .withPutResolver(mock(PutResolver.class))
-                .withMapFunc(mock(MapFunc.class))
                 .prepare();
     }
 
@@ -120,7 +117,6 @@ public class DefaultStorIOSQLiteTest {
                 .put()
                 .objects(Object.class, mock(Object.class), mock(Object.class))
                 .withPutResolver(mock(PutResolver.class))
-                .withMapFunc(mock(MapFunc.class))
                 .prepare();
     }
 }

@@ -12,7 +12,7 @@ public class PreparedPutContentValuesTest {
 
         final PutResult putResult = putStub.storIOContentResolver
                 .put()
-                .contentValues(putStub.mapFunc.map(putStub.testItems.get(0)))
+                .contentValues(putStub.testItemsToContentValuesMap.get(putStub.testItems.get(0)))
                 .withPutResolver(putStub.putResolverForContentValues)
                 .prepare()
                 .executeAsBlocking();
@@ -26,7 +26,7 @@ public class PreparedPutContentValuesTest {
 
         final Observable<PutResult> putResultObservable = putStub.storIOContentResolver
                 .put()
-                .contentValues(putStub.mapFunc.map(putStub.testItems.get(0)))
+                .contentValues(putStub.testItemsToContentValuesMap.get(putStub.testItems.get(0)))
                 .withPutResolver(putStub.putResolverForContentValues)
                 .prepare()
                 .createObservable();

@@ -2,6 +2,10 @@ package com.pushtorefresh.storio.sqlite.operation.delete;
 
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.Assert.assertEquals;
 
 public class DeleteResultTest {
@@ -9,7 +13,13 @@ public class DeleteResultTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void nullAffectedTable() {
-        DeleteResult.newInstance(0, null);
+        DeleteResult.newInstance(0, (String) null);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test(expected = NullPointerException.class)
+    public void nullAffectedTables() {
+        DeleteResult.newInstance(0, (Set<String>) null);
     }
 
     @Test
@@ -19,8 +29,19 @@ public class DeleteResultTest {
     }
 
     @Test
-    public void affectedTable() {
+    public void oneAffectedTable() {
         final DeleteResult deleteResult = DeleteResult.newInstance(2, "test_table");
-        assertEquals("test_table", deleteResult.affectedTable());
+        assertEquals(Collections.singleton("test_table"), deleteResult.affectedTables());
+    }
+
+    @Test
+    public void multipleAffectedTables() {
+        final Set<String> affectedTables = new HashSet<String>();
+        affectedTables.add("table1");
+        affectedTables.add("table2");
+
+        final DeleteResult deleteResult = DeleteResult.newInstance(2, affectedTables);
+
+        assertEquals(affectedTables, deleteResult.affectedTables());
     }
 }

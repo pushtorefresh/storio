@@ -9,17 +9,17 @@ import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
  * Represents an Operation for {@link StorIOContentResolver} which performs query that retrieves data
  * from {@link android.content.ContentProvider}
  *
- * @param <T> type of result
+ * @param <Result> type of result
  */
-public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStream<T> {
+public abstract class PreparedGet<T, Result> implements PreparedOperationWithReactiveStream<Result> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;
 
     @NonNull
-    protected final GetResolver getResolver;
+    protected final GetResolver<T> getResolver;
 
-    PreparedGet(@NonNull StorIOContentResolver storIOContentResolver, @NonNull GetResolver getResolver) {
+    PreparedGet(@NonNull StorIOContentResolver storIOContentResolver, @NonNull GetResolver<T> getResolver) {
         this.storIOContentResolver = storIOContentResolver;
         this.getResolver = getResolver;
     }
