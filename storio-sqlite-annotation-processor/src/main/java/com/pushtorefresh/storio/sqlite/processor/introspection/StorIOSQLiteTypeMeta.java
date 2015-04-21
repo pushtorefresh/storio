@@ -22,7 +22,7 @@ public class StorIOSQLiteTypeMeta {
      * Yep, this is MODIFIABLE Map, please use it carefully
      */
     @NotNull
-    public final Map<String, StorIOSQLiteTypeMeta> columns = new HashMap<String, StorIOSQLiteTypeMeta>();
+    public final Map<String, StorIOSQLiteColumnMeta> columns = new HashMap<String, StorIOSQLiteColumnMeta>();
 
     public StorIOSQLiteTypeMeta(@NotNull String simpleName, @NotNull String packageName, @NotNull StorIOSQLiteType storIOSQLiteType) {
         this.simpleName = simpleName;

@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.processor;
 import com.google.auto.service.AutoService;
 import com.pushtorefresh.storio.sqlite.annotation.StorIOSQLiteColumn;
 import com.pushtorefresh.storio.sqlite.annotation.StorIOSQLiteType;
-import com.pushtorefresh.storio.sqlite.processor.generate.PutResolverSourceGenerator;
+import com.pushtorefresh.storio.sqlite.processor.generate.PutResolverGenerator;
 import com.pushtorefresh.storio.sqlite.processor.introspection.JavaType;
 import com.pushtorefresh.storio.sqlite.processor.introspection.StorIOSQLiteColumnMeta;
 import com.pushtorefresh.storio.sqlite.processor.introspection.StorIOSQLiteTypeMeta;
@@ -28,6 +28,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 import static javax.lang.model.element.ElementKind.CLASS;
+import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
@@ -87,10 +88,12 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
 
             processAnnotatedFields(roundEnv, annotatedClasses);
 
-            final PutResolverSourceGenerator putResolverSourceGenerator = new PutResolverSourceGenerator();
+            validateAnnotatedClassesAndColumns(annotatedClasses);
+
+            final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
 
             for (StorIOSQLiteTypeMeta storIOSQLiteTypeMeta : annotatedClasses.values()) {
-                putResolverSourceGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
+                putResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
             }
         } catch (ProcessingException e) {
             messager.printMessage(ERROR, e.getMessage(), e.element());
@@ -204,7 +207,7 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
 
             // Put meta column info
             // If class already contains column with same name -> throw exception
-            if (storIOSQLiteTypeMeta.columns.put(storIOSQLiteColumnMeta.storIOSQLiteColumn.name(), storIOSQLiteTypeMeta) != null) {
+            if (storIOSQLiteTypeMeta.columns.put(storIOSQLiteColumnMeta.storIOSQLiteColumn.name(), storIOSQLiteColumnMeta) != null) {
                 throw new ProcessingException(annotatedFieldElement, "Column name already used in this class");
             }
         }
@@ -213,31 +216,38 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
     /**
      * Checks that element annotated with {@link StorIOSQLiteColumn} satisfies all required conditions
      *
-     * @param annotatedElement element annotated with {@link StorIOSQLiteColumn}
+     * @param annotatedField element annotated with {@link StorIOSQLiteColumn}
      */
-    private static void validateAnnotatedField(@NotNull final Element annotatedElement) {
+    private static void validateAnnotatedField(@NotNull final Element annotatedField) {
         // we expect here that annotatedElement is Field, annotation requires that via @Target
 
-        final Element enclosingElement = annotatedElement.getEnclosingElement();
+        final Element enclosingElement = annotatedField.getEnclosingElement();
 
         if (!enclosingElement.getKind().equals(CLASS)) {
             throw new ProcessingException(
-                    annotatedElement,
-                    "Please apply " + StorIOSQLiteType.class.getSimpleName() + " to fields of class: " + annotatedElement.getSimpleName()
+                    annotatedField,
+                    "Please apply " + StorIOSQLiteType.class.getSimpleName() + " to fields of class: " + annotatedField.getSimpleName()
             );
         }
 
         if (enclosingElement.getAnnotation(StorIOSQLiteType.class) == null) {
             throw new ProcessingException(
-                    annotatedElement,
+                    annotatedField,
                     "Please annotate class " + enclosingElement.getSimpleName() + " with " + StorIOSQLiteType.class.getSimpleName()
             );
         }
 
-        if (annotatedElement.getModifiers().contains(PRIVATE)) {
+        if (annotatedField.getModifiers().contains(PRIVATE)) {
             throw new ProcessingException(
-                    annotatedElement,
-                    StorIOSQLiteColumn.class.getSimpleName() + " can not be applied to private field: " + annotatedElement.getSimpleName()
+                    annotatedField,
+                    StorIOSQLiteColumn.class.getSimpleName() + " can not be applied to private field: " + annotatedField.getSimpleName()
+            );
+        }
+
+        if (annotatedField.getModifiers().contains(FINAL)) {
+            throw new ProcessingException(
+                    annotatedField,
+                    StorIOSQLiteColumn.class.getSimpleName() + " can not be applied to final field: " + annotatedField.getSimpleName()
             );
         }
     }
@@ -280,4 +290,35 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
     }
 
     //endregion
+
+    private static void validateAnnotatedClassesAndColumns(@NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
+        // check that each annotated class has columns with at least one key column
+        for (Map.Entry<TypeElement, StorIOSQLiteTypeMeta> annotatedClass : annotatedClasses.entrySet()) {
+            if (annotatedClass.getValue().columns.size() == 0) {
+                throw new ProcessingException(annotatedClass.getKey(),
+                        "Class marked with "
+                                + StorIOSQLiteType.class.getSimpleName()
+                                + " annotation should have at least one field marked with "
+                                + StorIOSQLiteColumn.class.getSimpleName()
+                                + " annotation");
+            }
+
+            boolean hasAtLeastOneKeyColumn = false;
+
+            for (StorIOSQLiteColumnMeta columnMeta : annotatedClass.getValue().columns.values()) {
+                if (columnMeta.storIOSQLiteColumn.key()) {
+                    hasAtLeastOneKeyColumn = true;
+                    break;
+                }
+            }
+
+            if (!hasAtLeastOneKeyColumn) {
+                throw new ProcessingException(annotatedClass.getKey(),
+                        "Class marked with "
+                                + StorIOSQLiteType.class.getSimpleName()
+                                + " annotation should have at least one KEY field marked with "
+                                + StorIOSQLiteColumn.class.getSimpleName() + " annotation");
+            }
+        }
+    }
 }
