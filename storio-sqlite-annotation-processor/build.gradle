@@ -1,0 +1,22 @@
+apply plugin: 'java'
+
+targetCompatibility = '1.6'
+sourceCompatibility = '1.6'
+
+dependencies {
+    compile project(':storio-sqlite-annotation')
+    compile rootProject.ext.intellijAnnotations
+    compile rootProject.ext.autoService
+    compile rootProject.ext.javaPoet
+
+    testCompile rootProject.ext.junit
+    testCompile rootProject.ext.mockitoCore
+}
+
+task createJarWithDependencies(type: Jar) {
+    baseName = project.name + '-with-dependencies'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+build.dependsOn createJarWithDependencies

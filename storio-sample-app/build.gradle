@@ -44,6 +44,11 @@ dependencies {
     compile project(':storio-sqlite')
     compile project(':storio-content-resolver')
 
+    //compile files('../storio-sqlite-annotation/build/libs/storio-sqlite-annotation.jar')
+    //apt files('../storio-sqlite-annotation-processor/build/libs/storio-sqlite-annotation-processor-with-dependencies.jar')
+    compile project(':storio-sqlite-annotation')
+    apt project(':storio-sqlite-annotation-processor')
+
     compile rootProject.ext.dagger
     apt rootProject.ext.daggerCompiler
 
