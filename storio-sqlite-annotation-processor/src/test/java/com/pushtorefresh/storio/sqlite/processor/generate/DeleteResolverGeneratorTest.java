@@ -2,7 +2,6 @@ package com.pushtorefresh.storio.sqlite.processor.generate;
 
 import com.pushtorefresh.storio.sqlite.annotation.StorIOSQLiteColumn;
 import com.pushtorefresh.storio.sqlite.annotation.StorIOSQLiteType;
-import com.pushtorefresh.storio.sqlite.processor.introspection.JavaType;
 import com.pushtorefresh.storio.sqlite.processor.introspection.StorIOSQLiteColumnMeta;
 import com.pushtorefresh.storio.sqlite.processor.introspection.StorIOSQLiteTypeMeta;
 import com.squareup.javapoet.JavaFile;
@@ -15,10 +14,10 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GetResolverGeneratorTest {
+public class DeleteResolverGeneratorTest {
 
     @Test
-    public void generateJavaFileTest() throws IOException {
+    public void generateJavaFile() throws IOException {
         final StorIOSQLiteType storIOSQLiteType = mock(StorIOSQLiteType.class);
 
         when(storIOSQLiteType.table()).thenReturn("test_table");
@@ -35,7 +34,7 @@ public class GetResolverGeneratorTest {
                 null,
                 null,
                 "field1",
-                JavaType.BOOLEAN,
+                null,
                 storIOSQLiteColumn1
         );
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
@@ -46,38 +45,37 @@ public class GetResolverGeneratorTest {
                 null,
                 null,
                 "field2",
-                JavaType.STRING,
+                null,
                 storIOSQLiteColumn2
         );
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 
-        final JavaFile javaFile = new GetResolverGenerator().generateJavaFile(storIOSQLiteTypeMeta);
+        final JavaFile javaFile = new DeleteResolverGenerator().generateJavaFile(storIOSQLiteTypeMeta);
         final StringBuilder out = new StringBuilder();
         javaFile.writeTo(out);
 
         assertEquals("package com.test;\n" +
                 "\n" +
-                "import android.database.Cursor;\n" +
                 "import android.support.annotation.NonNull;\n" +
-                "import com.pushtorefresh.storio.sqlite.operation.get.DefaultGetResolver;\n" +
+                "import com.pushtorefresh.storio.sqlite.operation.delete.DefaultDeleteResolver;\n" +
+                "import com.pushtorefresh.storio.sqlite.query.DeleteQuery;\n" +
                 "import java.lang.Override;\n" +
                 "\n" +
                 "/**\n" +
-                " * Generated resolver for Get Operation\n" +
+                " * Generated resolver for Delete Operation\n" +
                 " */\n" +
-                "public class TestItemGetResolver extends DefaultGetResolver<TestItem> {\n" +
+                "public class TestItemDeleteResolver extends DefaultDeleteResolver<TestItem> {\n" +
                 "    /**\n" +
                 "     * {@inheritDoc}\n" +
                 "     */\n" +
                 "    @Override\n" +
                 "    @NonNull\n" +
-                "    public TestItem mapFromCursor(@NonNull Cursor cursor) {\n" +
-                "        TestItem object = new TestItem();\n" +
-                "\n" +
-                "        object.field1 = cursor.getInt(cursor.getColumnIndex(\"column1\")) == 1;\n" +
-                "        object.field2 = cursor.getString(cursor.getColumnIndex(\"column2\"));\n" +
-                "\n" +
-                "        return object;\n" +
+                "    protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
+                "        return new DeleteQuery.Builder()\n" +
+                "            .table(\"test_table\")\n" +
+                "            .where(null)\n" +
+                "            .whereArgs(null)\n" +
+                "            .build();\n" +
                 "    }\n" +
                 "}\n", out.toString());
     }

@@ -17,7 +17,7 @@ public abstract class DefaultDeleteResolver<T> implements DeleteResolver<T> {
      * @return {@link DeleteQuery} that will be performed
      */
     @NonNull
-    public abstract DeleteQuery mapToDeleteQuery(@NonNull T object);
+    protected abstract DeleteQuery mapToDeleteQuery(@NonNull T object);
 
     /**
      * {@inheritDoc}

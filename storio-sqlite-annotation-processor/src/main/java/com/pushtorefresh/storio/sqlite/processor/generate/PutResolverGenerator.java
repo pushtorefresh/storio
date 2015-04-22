@@ -42,6 +42,7 @@ public class PutResolverGenerator {
     @NotNull
     MethodSpec createMapToInsertQueryMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
         return MethodSpec.methodBuilder("mapToInsertQuery")
+                .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
                 .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                 .addModifiers(PROTECTED)
@@ -50,8 +51,8 @@ public class PutResolverGenerator {
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
                 .addCode("return new InsertQuery.Builder()\n" +
-                                "    .table($S)\n" +
-                                "    .build();\n",
+                                INDENT + ".table($S)\n" +
+                                INDENT + ".build();\n",
                         storIOSQLiteTypeMeta.storIOSQLiteType.table())
                 .build();
     }
@@ -61,6 +62,7 @@ public class PutResolverGenerator {
         final Map<String, String> where = QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object");
 
         return MethodSpec.methodBuilder("mapToUpdateQuery")
+                .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
                 .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                 .addModifiers(PROTECTED)
@@ -69,10 +71,10 @@ public class PutResolverGenerator {
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
                 .addCode("return new UpdateQuery.Builder()\n" +
-                                "    .table($S)\n" +
-                                "    .where($S)\n" +
-                                "    .whereArgs($L)\n" +
-                                "    .build();\n",
+                                INDENT + ".table($S)\n" +
+                                INDENT + ".where($S)\n" +
+                                INDENT + ".whereArgs($L)\n" +
+                                INDENT + ".build();\n",
                         storIOSQLiteTypeMeta.storIOSQLiteType.table(),
                         where.get(QueryGenerator.WHERE_CLAUSE),
                         where.get(QueryGenerator.WHERE_ARGS))
@@ -82,6 +84,7 @@ public class PutResolverGenerator {
     @NotNull
     MethodSpec createMapToContentValuesMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
         final MethodSpec.Builder builder = MethodSpec.methodBuilder("mapToContentValues")
+                .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
                 .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                 .addModifiers(PUBLIC)

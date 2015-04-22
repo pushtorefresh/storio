@@ -52,6 +52,7 @@ public class GetResolverGenerator {
     @NotNull
     MethodSpec createMapFromCursorMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
         final MethodSpec.Builder builder = MethodSpec.methodBuilder("mapFromCursor")
+                .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
                 .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                 .addModifiers(PUBLIC)

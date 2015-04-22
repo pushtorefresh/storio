@@ -67,6 +67,9 @@ public class PutResolverGeneratorTest {
                 " * Generated resolver for Put Operation\n" +
                 " */\n" +
                 "public class TestItemPutResolver extends DefaultPutResolver<TestItem> {\n" +
+                "    /**\n" +
+                "     * {@inheritDoc}\n" +
+                "     */\n" +
                 "    @Override\n" +
                 "    @NonNull\n" +
                 "    protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
@@ -75,6 +78,9 @@ public class PutResolverGeneratorTest {
                 "            .build();\n" +
                 "    }\n" +
                 "\n" +
+                "    /**\n" +
+                "     * {@inheritDoc}\n" +
+                "     */\n" +
                 "    @Override\n" +
                 "    @NonNull\n" +
                 "    protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
@@ -85,6 +91,9 @@ public class PutResolverGeneratorTest {
                 "            .build();\n" +
                 "    }\n" +
                 "\n" +
+                "    /**\n" +
+                "     * {@inheritDoc}\n" +
+                "     */\n" +
                 "    @Override\n" +
                 "    @NonNull\n" +
                 "    public ContentValues mapToContentValues(@NonNull TestItem object) {\n" +

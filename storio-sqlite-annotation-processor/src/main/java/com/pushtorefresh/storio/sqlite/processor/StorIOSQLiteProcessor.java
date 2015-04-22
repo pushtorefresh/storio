@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlite.processor;
 import com.google.auto.service.AutoService;
 import com.pushtorefresh.storio.sqlite.annotation.StorIOSQLiteColumn;
 import com.pushtorefresh.storio.sqlite.annotation.StorIOSQLiteType;
+import com.pushtorefresh.storio.sqlite.processor.generate.DeleteResolverGenerator;
 import com.pushtorefresh.storio.sqlite.processor.generate.GetResolverGenerator;
 import com.pushtorefresh.storio.sqlite.processor.generate.PutResolverGenerator;
 import com.pushtorefresh.storio.sqlite.processor.introspection.JavaType;
@@ -93,10 +94,12 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
 
             final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
             final GetResolverGenerator getResolverGenerator = new GetResolverGenerator();
+            final DeleteResolverGenerator deleteResolverGenerator = new DeleteResolverGenerator();
 
             for (StorIOSQLiteTypeMeta storIOSQLiteTypeMeta : annotatedClasses.values()) {
                 putResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
                 getResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
+                deleteResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
             }
         } catch (ProcessingException e) {
             messager.printMessage(ERROR, e.getMessage(), e.element());
