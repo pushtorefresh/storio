@@ -29,13 +29,25 @@ public class PutResolverGeneratorTest {
         final StorIOSQLiteColumn storIOSQLiteColumn1 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn1.name()).thenReturn("column1");
         when(storIOSQLiteColumn1.key()).thenReturn(true);
-        final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta1 = new StorIOSQLiteColumnMeta(null, "column1Field", null, storIOSQLiteColumn1);
+        final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta1 = new StorIOSQLiteColumnMeta(
+                null,
+                null,
+                "column1Field",
+                null,
+                storIOSQLiteColumn1
+        );
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
         final StorIOSQLiteColumn storIOSQLiteColumn2 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn2.name()).thenReturn("column2");
         when(storIOSQLiteColumn2.key()).thenReturn(false);
-        final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta2 = new StorIOSQLiteColumnMeta(null, "column2Field", null, storIOSQLiteColumn2);
+        final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta2 = new StorIOSQLiteColumnMeta(
+                null,
+                null,
+                "column2Field",
+                null,
+                storIOSQLiteColumn2
+        );
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 
         final JavaFile javaFile = putResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta);

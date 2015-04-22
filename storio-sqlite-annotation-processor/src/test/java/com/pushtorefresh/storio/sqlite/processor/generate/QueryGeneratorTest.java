@@ -33,11 +33,11 @@ public class QueryGeneratorTest {
 
         final StorIOSQLiteColumn storIOSQLiteColumn1 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn1.key()).thenReturn(false);
-        storIOSQLiteTypeMeta.columns.put("column1", new StorIOSQLiteColumnMeta(null, null, null, storIOSQLiteColumn1));
+        storIOSQLiteTypeMeta.columns.put("column1", new StorIOSQLiteColumnMeta(null, null, null, null, storIOSQLiteColumn1));
 
         final StorIOSQLiteColumn storIOSQLiteColumn2 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn2.key()).thenReturn(false);
-        storIOSQLiteTypeMeta.columns.put("column2", new StorIOSQLiteColumnMeta(null, null, null, storIOSQLiteColumn2));
+        storIOSQLiteTypeMeta.columns.put("column2", new StorIOSQLiteColumnMeta(null, null, null, null, storIOSQLiteColumn2));
 
         assertEquals(Collections.emptyMap(), QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object"));
     }
@@ -48,16 +48,16 @@ public class QueryGeneratorTest {
 
         final StorIOSQLiteColumn storIOSQLiteColumn1 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn1.key()).thenReturn(false);
-        storIOSQLiteTypeMeta.columns.put("column1", new StorIOSQLiteColumnMeta(null, null, null, storIOSQLiteColumn1));
+        storIOSQLiteTypeMeta.columns.put("column1", new StorIOSQLiteColumnMeta(null, null, null, null, storIOSQLiteColumn1));
 
         final StorIOSQLiteColumn storIOSQLiteColumn2 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn2.key()).thenReturn(true);
         when(storIOSQLiteColumn2.name()).thenReturn("column2");
-        storIOSQLiteTypeMeta.columns.put("column2", new StorIOSQLiteColumnMeta(null, "testField1", null, storIOSQLiteColumn2));
+        storIOSQLiteTypeMeta.columns.put("column2", new StorIOSQLiteColumnMeta(null, null, "testField1", null, storIOSQLiteColumn2));
 
         final StorIOSQLiteColumn storIOSQLiteColumn3 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn3.key()).thenReturn(false);
-        storIOSQLiteTypeMeta.columns.put("column3", new StorIOSQLiteColumnMeta(null, null, null, storIOSQLiteColumn3));
+        storIOSQLiteTypeMeta.columns.put("column3", new StorIOSQLiteColumnMeta(null, null, null, null, storIOSQLiteColumn3));
 
         final Map<String, String> where = QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object");
 
@@ -72,16 +72,16 @@ public class QueryGeneratorTest {
         final StorIOSQLiteColumn storIOSQLiteColumn1 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn1.key()).thenReturn(true);
         when(storIOSQLiteColumn1.name()).thenReturn("column1");
-        storIOSQLiteTypeMeta.columns.put("column1", new StorIOSQLiteColumnMeta(null, "testField1", null, storIOSQLiteColumn1));
+        storIOSQLiteTypeMeta.columns.put("column1", new StorIOSQLiteColumnMeta(null, null, "testField1", null, storIOSQLiteColumn1));
 
         final StorIOSQLiteColumn storIOSQLiteColumn2 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn2.key()).thenReturn(false);
-        storIOSQLiteTypeMeta.columns.put("column2", new StorIOSQLiteColumnMeta(null, null, null, storIOSQLiteColumn2));
+        storIOSQLiteTypeMeta.columns.put("column2", new StorIOSQLiteColumnMeta(null, null, null, null, storIOSQLiteColumn2));
 
         final StorIOSQLiteColumn storIOSQLiteColumn3 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn3.key()).thenReturn(true);
         when(storIOSQLiteColumn3.name()).thenReturn("column3");
-        storIOSQLiteTypeMeta.columns.put("column3", new StorIOSQLiteColumnMeta(null, "testField3", null, storIOSQLiteColumn3));
+        storIOSQLiteTypeMeta.columns.put("column3", new StorIOSQLiteColumnMeta(null, null, "testField3", null, storIOSQLiteColumn3));
 
         final Map<String, String> where = QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object");
 

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.Logger;
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
+import com.pushtorefresh.storio.sample.db.entity.TweetGetResolver;
 import com.pushtorefresh.storio.sample.db.entity.TweetPutResolver;
 import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
@@ -28,7 +29,7 @@ public class DbModule {
                 .db(db)
                 .addDefaultsForType(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
                         .putResolver(new TweetPutResolver())
-                        .getResolver(TweetTableMeta.GET_RESOLVER)
+                        .getResolver(new TweetGetResolver())
                         .deleteResolver(TweetTableMeta.DELETE_RESOLVER)
                         .build())
                 .build()
