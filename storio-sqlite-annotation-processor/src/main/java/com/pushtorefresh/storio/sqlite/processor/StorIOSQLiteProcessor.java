@@ -36,9 +36,9 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 
 /**
  * Annotation processor for StorIOSQLite
- * <p>
+ * <p/>
  * It'll process annotations to generate StorIOSQLite Object-Mapping
- * <p>
+ * <p/>
  * Addition: Annotation Processor should work fast and be optimized because it's part of compilation
  * We don't want to annoy developers, who use StorIO
  */
@@ -49,68 +49,6 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
     private Filer filer;
     private Elements elementUtils;
     private Messager messager;
-
-    @Override
-    public synchronized void init(ProcessingEnvironment processingEnv) {
-        super.init(processingEnv);
-        filer = processingEnv.getFiler();
-        elementUtils = processingEnv.getElementUtils(); // why class name is "Elements" but method "getElementUtils()", OKAY..
-        messager = processingEnv.getMessager();
-    }
-
-    @Override
-    public Set<String> getSupportedAnnotationTypes() {
-        final Set<String> supportedAnnotations = new HashSet<String>(2);
-
-        supportedAnnotations.add(StorIOSQLiteType.class.getCanonicalName());
-        supportedAnnotations.add(StorIOSQLiteColumn.class.getCanonicalName());
-
-        return supportedAnnotations;
-    }
-
-    @Override
-    public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.latestSupported();
-    }
-
-    /**
-     * For those who don't familiar with Annotation Processing API — this is the main method of Annotation Processor lifecycle
-     * <p>
-     * It will be after Java Compiler will find lang elements annotated with annotations from {@link #getSupportedAnnotationTypes()}
-     *
-     * @param annotations set of annotations
-     * @param roundEnv    environment of current processing round
-     * @return true if annotation processor should not be invoked in next rounds of annotation processing, false otherwise
-     */
-    @Override
-    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
-        try {
-            final Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses
-                    = processAnnotatedClasses(roundEnv, elementUtils);
-
-            processAnnotatedFields(roundEnv, annotatedClasses);
-
-            validateAnnotatedClassesAndColumns(annotatedClasses);
-
-            final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
-            final GetResolverGenerator getResolverGenerator = new GetResolverGenerator();
-            final DeleteResolverGenerator deleteResolverGenerator = new DeleteResolverGenerator();
-
-            for (StorIOSQLiteTypeMeta storIOSQLiteTypeMeta : annotatedClasses.values()) {
-                putResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
-                getResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
-                deleteResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
-            }
-        } catch (ProcessingException e) {
-            messager.printMessage(ERROR, e.getMessage(), e.element());
-        } catch (Exception e) {
-            messager.printMessage(ERROR, "Problem occurred with StorIOSQLiteProcessor: " + e.getMessage());
-        }
-
-        return true;
-    }
-
-    //region Processing of annotated classes
 
     /**
      * Processes class annotations
@@ -182,10 +120,6 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
         return new StorIOSQLiteTypeMeta(simpleName, packageName, storIOSQLiteType);
     }
 
-    //endregion
-
-    //region Processing of annotated fields
-
     /**
      * Processes fields annotated with {@link StorIOSQLiteColumn}
      *
@@ -218,6 +152,8 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
             }
         }
     }
+
+    //region Processing of annotated classes
 
     /**
      * Checks that element annotated with {@link StorIOSQLiteColumn} satisfies all required conditions
@@ -296,8 +232,6 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
         );
     }
 
-    //endregion
-
     private static void validateAnnotatedClassesAndColumns(@NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
         // check that each annotated class has columns with at least one key column
         for (Map.Entry<TypeElement, StorIOSQLiteTypeMeta> annotatedClass : annotatedClasses.entrySet()) {
@@ -327,5 +261,71 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
                                 + StorIOSQLiteColumn.class.getSimpleName() + " annotation");
             }
         }
+    }
+
+    //endregion
+
+    //region Processing of annotated fields
+
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+        filer = processingEnv.getFiler();
+        elementUtils = processingEnv.getElementUtils(); // why class name is "Elements" but method "getElementUtils()", OKAY..
+        messager = processingEnv.getMessager();
+    }
+
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        final Set<String> supportedAnnotations = new HashSet<String>(2);
+
+        supportedAnnotations.add(StorIOSQLiteType.class.getCanonicalName());
+        supportedAnnotations.add(StorIOSQLiteColumn.class.getCanonicalName());
+
+        return supportedAnnotations;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
+    }
+
+    //endregion
+
+    /**
+     * For those who don't familiar with Annotation Processing API — this is the main method of Annotation Processor lifecycle
+     * <p/>
+     * It will be after Java Compiler will find lang elements annotated with annotations from {@link #getSupportedAnnotationTypes()}
+     *
+     * @param annotations set of annotations
+     * @param roundEnv    environment of current processing round
+     * @return true if annotation processor should not be invoked in next rounds of annotation processing, false otherwise
+     */
+    @Override
+    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
+        try {
+            final Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses
+                    = processAnnotatedClasses(roundEnv, elementUtils);
+
+            processAnnotatedFields(roundEnv, annotatedClasses);
+
+            validateAnnotatedClassesAndColumns(annotatedClasses);
+
+            final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
+            final GetResolverGenerator getResolverGenerator = new GetResolverGenerator();
+            final DeleteResolverGenerator deleteResolverGenerator = new DeleteResolverGenerator();
+
+            for (StorIOSQLiteTypeMeta storIOSQLiteTypeMeta : annotatedClasses.values()) {
+                putResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
+                getResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
+                deleteResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta).writeTo(filer);
+            }
+        } catch (ProcessingException e) {
+            messager.printMessage(ERROR, e.getMessage(), e.element());
+        } catch (Exception e) {
+            messager.printMessage(ERROR, "Problem occurred with StorIOSQLiteProcessor: " + e.getMessage());
+        }
+
+        return true;
     }
 }

@@ -147,7 +147,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
         /**
          * Optional: Defines that Delete Operation will use transaction
          * if it is supported by implementation of {@link StorIOSQLite}
-         * <p>
+         * <p/>
          * By default, transaction will be used
          *
          * @param useTransaction true to use transaction, false to not
@@ -161,8 +161,8 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
         /**
          * Optional: Specifies {@link DeleteResolver} for Delete Operation
-         * <p>
-         * <p>
+         * <p/>
+         * <p/>
          * Can be set via {@link SQLiteTypeDefaults},
          * If value is not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *

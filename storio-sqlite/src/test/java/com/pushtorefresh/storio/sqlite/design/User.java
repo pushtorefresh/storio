@@ -8,8 +8,8 @@ import android.support.annotation.Nullable;
  */
 class User {
 
-    private Long id;
     private final String email;
+    private Long id;
 
     User(@Nullable Long id, @NonNull String email) {
         this.id = id;

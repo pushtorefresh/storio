@@ -10,9 +10,11 @@ import com.pushtorefresh.storio.sample.R;
 
 public abstract class BaseActivity extends ActionBarActivity {
 
-    @Nullable private Toolbar toolbar;
+    @Nullable
+    private Toolbar toolbar;
 
-    @Override public void setContentView(@LayoutRes int layoutResID) {
+    @Override
+    public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
         setupToolbar();
     }
@@ -25,7 +27,8 @@ public abstract class BaseActivity extends ActionBarActivity {
         }
     }
 
-    @Nullable protected Toolbar getToolbar() {
+    @Nullable
+    protected Toolbar getToolbar() {
         return toolbar;
     }
 
@@ -33,7 +36,8 @@ public abstract class BaseActivity extends ActionBarActivity {
         return true;
     }
 
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home && homeAsBackButton()) {
             onBackPressed();
         }

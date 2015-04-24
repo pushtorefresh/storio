@@ -89,7 +89,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     /**
      * Creates an {@link Observable} which will be subscribed to changes of {@link #query} Uri
      * and will emit result each time change occurs
-     * <p>
+     * <p/>
      * First result will be emitted immediately,
      * other emissions will occur only if changes of {@link #query} Uri will occur
      *
@@ -170,7 +170,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
         /**
          * Optional: Specifies {@link GetResolver} for Get Operation
          * which allows you to customize behavior of Get Operation
-         * <p>
+         * <p/>
          * Can be set via {@link ContentResolverTypeDefaults},
          * If value is not set via {@link ContentResolverTypeDefaults} -> exception will be thrown
          *

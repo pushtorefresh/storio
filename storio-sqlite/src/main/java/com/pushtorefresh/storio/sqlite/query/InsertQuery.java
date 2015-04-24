@@ -7,7 +7,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
 
 /**
  * Insert query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
- * <p>
+ * <p/>
  * Instances of this class are Immutable
  */
 public class InsertQuery {
@@ -20,7 +20,7 @@ public class InsertQuery {
 
     /**
      * Tricky-wiki hack for null columns in {@link android.database.sqlite.SQLiteDatabase}
-     * <p>
+     * <p/>
      * SQL doesn't allow inserting a completely empty row without naming at least one column name.
      * If your provided values are empty, no column names are known and an empty row can't be inserted.
      * If not set to null, the nullColumnHack parameter provides the name of nullable column name
@@ -108,12 +108,12 @@ public class InsertQuery {
 
         /**
          * Optional: Specifies null column hack
-         * <p>
+         * <p/>
          * SQL doesn't allow inserting a completely empty row without naming at least one column name.
          * If your provided values are empty, no column names are known and an empty row can't be inserted.
          * If not set to null, the nullColumnHack parameter provides the name of nullable column name
          * to explicitly insert a NULL into in the case where your values is empty.
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param nullColumnHack optional null column hack

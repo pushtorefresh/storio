@@ -22,7 +22,9 @@ public class UiStateController {
     @Nullable
     private final View loadingUiView, errorUiView, emptyUiView, contentUiView;
 
-    @Nullable @AnimRes private Integer appearAnimationResId, disappearAnimationResId;
+    @Nullable
+    @AnimRes
+    private Integer appearAnimationResId, disappearAnimationResId;
 
     private int currentUiState = UI_STATE_CONTENT;
 
@@ -46,15 +48,18 @@ public class UiStateController {
         if (appearAnimationResId != null) {
             final Animation animation = AnimationUtils.loadAnimation(view.getContext(), appearAnimationResId);
             animation.setAnimationListener(new Animation.AnimationListener() {
-                @Override public void onAnimationStart(Animation animation) {
+                @Override
+                public void onAnimationStart(Animation animation) {
                     view.setVisibility(View.VISIBLE);
                 }
 
-                @Override public void onAnimationEnd(Animation animation) {
+                @Override
+                public void onAnimationEnd(Animation animation) {
 
                 }
 
-                @Override public void onAnimationRepeat(Animation animation) {
+                @Override
+                public void onAnimationRepeat(Animation animation) {
 
                 }
             });
@@ -72,15 +77,18 @@ public class UiStateController {
         if (disappearAnimationResId != null) {
             final Animation animation = AnimationUtils.loadAnimation(view.getContext(), disappearAnimationResId);
             animation.setAnimationListener(new Animation.AnimationListener() {
-                @Override public void onAnimationStart(Animation animation) {
+                @Override
+                public void onAnimationStart(Animation animation) {
 
                 }
 
-                @Override public void onAnimationEnd(Animation animation) {
+                @Override
+                public void onAnimationEnd(Animation animation) {
                     view.setVisibility(View.GONE);
                 }
 
-                @Override public void onAnimationRepeat(Animation animation) {
+                @Override
+                public void onAnimationRepeat(Animation animation) {
 
                 }
             });

@@ -8,14 +8,12 @@ import android.support.annotation.Nullable;
  */
 public class Tweet {
 
-    @Nullable
-    private volatile Long id;
-
     @NonNull
     private final Long authorId;
-
     @NonNull
     private final String contentText;
+    @Nullable
+    private volatile Long id;
 
     private Tweet(@Nullable Long id, @NonNull Long authorId, @NonNull String contentText) {
         this.id = id;

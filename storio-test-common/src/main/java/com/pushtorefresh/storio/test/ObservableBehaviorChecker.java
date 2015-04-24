@@ -18,7 +18,7 @@ public class ObservableBehaviorChecker<T> {
 
     /**
      * Required: Specifies {@link Observable} for the check
-     * <p>
+     * <p/>
      * Default value is <code>null</code>
      *
      * @param observable observable
@@ -32,9 +32,9 @@ public class ObservableBehaviorChecker<T> {
 
     /**
      * Required: Specifies expected number of emissions of the {@link Observable}
-     * <p>
+     * <p/>
      * If {@link Observable} will emit more or less items, check will fail
-     * <p>
+     * <p/>
      * Default value is <code>null</code>
      *
      * @param expectedNumberOfEmission expected number of emissions
@@ -48,9 +48,9 @@ public class ObservableBehaviorChecker<T> {
 
     /**
      * Required: Specifies test action which will be applied to each emission of the {@link Observable}
-     * <p>
+     * <p/>
      * Action may throw an exception if emissions is not expected, etc
-     * <p>
+     * <p/>
      * Default value is <code>null</code>
      *
      * @param testAction test action which will be applied to each emission of the {@link Observable}

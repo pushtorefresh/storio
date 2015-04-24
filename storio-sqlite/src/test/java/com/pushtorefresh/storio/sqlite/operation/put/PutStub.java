@@ -29,21 +29,6 @@ class PutStub {
     final PutResolver<TestItem> putResolver;
     final boolean useTransaction;
 
-    @NonNull
-    static PutStub newPutStubForOneItem() {
-        return new PutStub(false, 1);
-    }
-
-    @NonNull
-    static PutStub newPutStubForMultipleItems() {
-        return new PutStub(true, 3);
-    }
-
-    @NonNull
-    static PutStub newPutStubForMultipleItems(boolean useTransaction) {
-        return new PutStub(useTransaction, 3);
-    }
-
     @SuppressWarnings("unchecked")
     private PutStub(boolean useTransaction, int numberOfItems) {
         this.useTransaction = useTransaction;
@@ -70,6 +55,21 @@ class PutStub {
 
         when(putResolver.performPut(eq(storIOSQLite), any(TestItem.class)))
                 .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE));
+    }
+
+    @NonNull
+    static PutStub newPutStubForOneItem() {
+        return new PutStub(false, 1);
+    }
+
+    @NonNull
+    static PutStub newPutStubForMultipleItems() {
+        return new PutStub(true, 3);
+    }
+
+    @NonNull
+    static PutStub newPutStubForMultipleItems(boolean useTransaction) {
+        return new PutStub(useTransaction, 3);
     }
 
     void verifyBehaviorForMultiple(@NonNull PutResults<TestItem> putResults) {

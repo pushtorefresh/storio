@@ -5,9 +5,9 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.sqlite.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.storio.sqlite.operation.get.PreparedGet;
@@ -26,12 +26,8 @@ import static org.mockito.Mockito.mock;
 
 class DesignTestStorIOSQLite extends StorIOSQLite {
 
-    @NonNull @Override
-    public Observable<Changes> observeChangesInTables(@NonNull Set<String> tables) {
-        return Observable.empty();
-    }
-
-    @NonNull private final Internal internal = new Internal() {
+    @NonNull
+    private final Internal internal = new Internal() {
 
         @Nullable
         @Override
@@ -40,15 +36,20 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
             return null;
         }
 
-        @Override public void execSql(@NonNull RawQuery rawQuery) {
+        @Override
+        public void execSql(@NonNull RawQuery rawQuery) {
             // no impl
         }
 
-        @NonNull @Override public Cursor rawQuery(@NonNull RawQuery rawQuery) {
+        @NonNull
+        @Override
+        public Cursor rawQuery(@NonNull RawQuery rawQuery) {
             return mock(Cursor.class);
         }
 
-        @NonNull @Override public Cursor query(@NonNull Query query) {
+        @NonNull
+        @Override
+        public Cursor query(@NonNull Query query) {
             return mock(Cursor.class);
         }
 
@@ -62,48 +63,70 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
             return 0;
         }
 
-        @Override public int delete(@NonNull DeleteQuery deleteQuery) {
+        @Override
+        public int delete(@NonNull DeleteQuery deleteQuery) {
             return 0;
         }
 
-        @Override public void notifyAboutChanges(@NonNull Changes changes) {
+        @Override
+        public void notifyAboutChanges(@NonNull Changes changes) {
             // no impl
         }
 
-        @Override public boolean transactionsSupported() {
+        @Override
+        public boolean transactionsSupported() {
             return false;
         }
 
-        @Override public void beginTransaction() {
+        @Override
+        public void beginTransaction() {
             // no impl
         }
 
-        @Override public void setTransactionSuccessful() {
+        @Override
+        public void setTransactionSuccessful() {
             // no impl
         }
 
-        @Override public void endTransaction() {
+        @Override
+        public void endTransaction() {
             // no impl
         }
     };
 
-    @NonNull @Override public PreparedExecSql.Builder execSql() {
+    @NonNull
+    @Override
+    public Observable<Changes> observeChangesInTables(@NonNull Set<String> tables) {
+        return Observable.empty();
+    }
+
+    @NonNull
+    @Override
+    public PreparedExecSql.Builder execSql() {
         return new PreparedExecSql.Builder(this);
     }
 
-    @NonNull @Override public PreparedGet.Builder get() {
+    @NonNull
+    @Override
+    public PreparedGet.Builder get() {
         return new PreparedGet.Builder(this);
     }
 
-    @NonNull @Override public PreparedPut.Builder put() {
+    @NonNull
+    @Override
+    public PreparedPut.Builder put() {
         return new PreparedPut.Builder(this);
     }
 
-    @NonNull @Override public PreparedDelete.Builder delete() {
+    @NonNull
+    @Override
+    public PreparedDelete.Builder delete() {
         return new PreparedDelete.Builder(this);
     }
 
-    @NonNull @Override public Internal internal() {
+    @NonNull
+    @Override
+    public Internal internal() {
         return internal;
     }
 }

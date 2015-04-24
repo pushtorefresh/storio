@@ -9,7 +9,7 @@ import rx.functions.Func1;
 /**
  * Required to avoid problems with ClassLoader when RxJava is not in ClassPath
  * We can not use anonymous classes from RxJava directly in StorIO, ClassLoader won't be happy :(
- * <p>
+ * <p/>
  * For internal usage only!
  */
 public class MapSomethingToExecuteAsBlocking<Something, Result> implements Func1<Something, Result> {

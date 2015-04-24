@@ -25,11 +25,6 @@ import static org.mockito.Mockito.when;
 // stub class to avoid violation of DRY in tests
 class PutStub {
 
-    private enum TypeOfItems {
-        OBJECTS,
-        CONTENT_VALUES
-    }
-
     final TypeOfItems typeOfItems;
     final List<TestItem> testItems;
     final StorIOContentResolver storIOContentResolver;
@@ -37,29 +32,8 @@ class PutStub {
     final PutResolver<TestItem> putResolverForObjects;
     final PutResolver<ContentValues> putResolverForContentValues;
     final Map<TestItem, ContentValues> testItemsToContentValuesMap;
-    private final Map<TestItem, PutResult> testItemsToPutResultsMap;
     final Map<ContentValues, PutResult> contentValuesToPutResultsMap;
-
-    @NonNull
-    public static PutStub newPutStubForOneObject() {
-        return new PutStub(TypeOfItems.OBJECTS, 1);
-    }
-
-    @NonNull
-    public static PutStub newPutStubForMultipleObjects() {
-        return new PutStub(TypeOfItems.OBJECTS, 3);
-    }
-
-    @NonNull
-    public static PutStub newPutStubForOneContentValues() {
-        return new PutStub(TypeOfItems.CONTENT_VALUES, 1);
-    }
-
-    @NonNull
-    public static PutStub newPutStubForMultipleContentValues() {
-        return new PutStub(TypeOfItems.CONTENT_VALUES, 3);
-    }
-
+    private final Map<TestItem, PutResult> testItemsToPutResultsMap;
     @SuppressWarnings("unchecked")
     private PutStub(@NonNull TypeOfItems typeOfItems, int numberOfTestItems) {
         this.typeOfItems = typeOfItems;
@@ -118,6 +92,26 @@ class PutStub {
             putResolverForContentValues = null;
             contentValuesToPutResultsMap = null;
         }
+    }
+
+    @NonNull
+    public static PutStub newPutStubForOneObject() {
+        return new PutStub(TypeOfItems.OBJECTS, 1);
+    }
+
+    @NonNull
+    public static PutStub newPutStubForMultipleObjects() {
+        return new PutStub(TypeOfItems.OBJECTS, 3);
+    }
+
+    @NonNull
+    public static PutStub newPutStubForOneContentValues() {
+        return new PutStub(TypeOfItems.CONTENT_VALUES, 1);
+    }
+
+    @NonNull
+    public static PutStub newPutStubForMultipleContentValues() {
+        return new PutStub(TypeOfItems.CONTENT_VALUES, 3);
     }
 
     void verifyBehaviorForMultipleObjects(@NonNull PutResults<TestItem> putResults) {
@@ -209,5 +203,10 @@ class PutStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+    }
+
+    private enum TypeOfItems {
+        OBJECTS,
+        CONTENT_VALUES
     }
 }

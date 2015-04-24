@@ -67,7 +67,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
 
     /**
      * Builder for {@link PreparedPutContentValuesIterable}
-     * <p>
+     * <p/>
      * Required: You should specify query see {@link #withPutResolver(PutResolver)}
      */
     public static final class Builder {

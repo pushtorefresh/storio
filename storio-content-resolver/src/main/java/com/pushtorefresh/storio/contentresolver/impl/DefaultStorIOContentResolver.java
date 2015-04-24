@@ -109,83 +109,6 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         return internal;
     }
 
-    protected class InternalImpl extends Internal {
-
-        @Nullable
-        private final Map<Class<?>, ContentResolverTypeDefaults<?>> typesDefaultsMap;
-
-        protected InternalImpl(@Nullable Map<Class<?>, ContentResolverTypeDefaults<?>> typesDefaultsMap) {
-            this.typesDefaultsMap = typesDefaultsMap != null
-                    ? Collections.unmodifiableMap(typesDefaultsMap)
-                    : null;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @SuppressWarnings("unchecked")
-        @Nullable
-        @Override
-        public <T> ContentResolverTypeDefaults<T> typeDefaults(@NonNull Class<T> type) {
-            return typesDefaultsMap != null
-                    ? (ContentResolverTypeDefaults<T>) typesDefaultsMap.get(type)
-                    : null;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Nullable
-        @Override
-        public Cursor query(@NonNull Query query) {
-            return contentResolver.query(
-                    query.uri,
-                    QueryUtil.listToArray(query.projection),
-                    query.where,
-                    QueryUtil.listToArray(query.whereArgs),
-                    query.sortOrder
-            );
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public Uri insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
-            return contentResolver.insert(
-                    insertQuery.uri,
-                    contentValues
-            );
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
-            return contentResolver.update(
-                    updateQuery.uri,
-                    contentValues,
-                    updateQuery.where,
-                    QueryUtil.listToArray(updateQuery.whereArgs)
-            );
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int delete(@NonNull DeleteQuery deleteQuery) {
-            return contentResolver.delete(
-                    deleteQuery.uri,
-                    deleteQuery.where,
-                    QueryUtil.listToArray(deleteQuery.whereArgs)
-            );
-        }
-    }
-
-
     /**
      * Builder for {@link DefaultStorIOContentResolver}
      */
@@ -265,6 +188,82 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         public DefaultStorIOContentResolver build() {
             checkNotNull(contentResolver, "Please specify content resolver");
             return new DefaultStorIOContentResolver(contentResolver, typesDefaultsMap);
+        }
+    }
+
+    protected class InternalImpl extends Internal {
+
+        @Nullable
+        private final Map<Class<?>, ContentResolverTypeDefaults<?>> typesDefaultsMap;
+
+        protected InternalImpl(@Nullable Map<Class<?>, ContentResolverTypeDefaults<?>> typesDefaultsMap) {
+            this.typesDefaultsMap = typesDefaultsMap != null
+                    ? Collections.unmodifiableMap(typesDefaultsMap)
+                    : null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings("unchecked")
+        @Nullable
+        @Override
+        public <T> ContentResolverTypeDefaults<T> typeDefaults(@NonNull Class<T> type) {
+            return typesDefaultsMap != null
+                    ? (ContentResolverTypeDefaults<T>) typesDefaultsMap.get(type)
+                    : null;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Nullable
+        @Override
+        public Cursor query(@NonNull Query query) {
+            return contentResolver.query(
+                    query.uri,
+                    QueryUtil.listToArray(query.projection),
+                    query.where,
+                    QueryUtil.listToArray(query.whereArgs),
+                    query.sortOrder
+            );
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public Uri insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
+            return contentResolver.insert(
+                    insertQuery.uri,
+                    contentValues
+            );
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
+            return contentResolver.update(
+                    updateQuery.uri,
+                    contentValues,
+                    updateQuery.where,
+                    QueryUtil.listToArray(updateQuery.whereArgs)
+            );
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int delete(@NonNull DeleteQuery deleteQuery) {
+            return contentResolver.delete(
+                    deleteQuery.uri,
+                    deleteQuery.where,
+                    QueryUtil.listToArray(deleteQuery.whereArgs)
+            );
         }
     }
 }

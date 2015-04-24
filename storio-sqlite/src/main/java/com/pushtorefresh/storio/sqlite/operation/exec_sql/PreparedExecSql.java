@@ -14,24 +14,31 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 public class PreparedExecSql implements PreparedOperation<Void> {
 
-    @NonNull private final StorIOSQLite storIOSQLite;
-    @NonNull private final RawQuery rawQuery;
+    @NonNull
+    private final StorIOSQLite storIOSQLite;
+    @NonNull
+    private final RawQuery rawQuery;
 
     PreparedExecSql(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
         this.storIOSQLite = storIOSQLite;
         this.rawQuery = rawQuery;
     }
 
-    @NonNull @Override public Void executeAsBlocking() {
+    @NonNull
+    @Override
+    public Void executeAsBlocking() {
         storIOSQLite.internal().execSql(rawQuery);
         return null;
     }
 
-    @NonNull @Override public Observable<Void> createObservable() {
+    @NonNull
+    @Override
+    public Observable<Void> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override public void call(Subscriber<? super Void> subscriber) {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
                 executeAsBlocking();
 
                 if (!subscriber.isUnsubscribed()) {
@@ -47,7 +54,8 @@ public class PreparedExecSql implements PreparedOperation<Void> {
      */
     public static class Builder {
 
-        @NonNull private final StorIOSQLite storIOSQLite;
+        @NonNull
+        private final StorIOSQLite storIOSQLite;
 
         private RawQuery rawQuery;
 
@@ -61,7 +69,8 @@ public class PreparedExecSql implements PreparedOperation<Void> {
          * @param rawQuery query
          * @return builder
          */
-        @NonNull public Builder withQuery(@NonNull RawQuery rawQuery) {
+        @NonNull
+        public Builder withQuery(@NonNull RawQuery rawQuery) {
             this.rawQuery = rawQuery;
             return this;
         }
@@ -71,7 +80,8 @@ public class PreparedExecSql implements PreparedOperation<Void> {
          *
          * @return {@link PreparedExecSql} instance
          */
-        @NonNull public PreparedExecSql prepare() {
+        @NonNull
+        public PreparedExecSql prepare() {
             checkNotNull(rawQuery, "Please set query object");
 
             return new PreparedExecSql(

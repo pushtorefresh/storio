@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" android:exitFadeDuration="@android:integer/config_mediumAnimTime">
-    <item android:state_pressed="true" android:drawable="@color/bg_main_sample_item_pressed"/>
-    <item android:state_focused="true" android:drawable="@color/bg_main_sample_item_focused"/>
-    <item android:drawable="@color/bg_main_sample_item_normal"/>
+    <item android:drawable="@color/bg_main_sample_item_pressed" android:state_pressed="true" />
+    <item android:drawable="@color/bg_main_sample_item_focused" android:state_focused="true" />
+    <item android:drawable="@color/bg_main_sample_item_normal" />
 </selector>

@@ -9,7 +9,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
 /**
  * Immutable container for result of Delete Operation
- * <p>
+ * <p/>
  * Instances of this class are Immutable
  */
 public class DeleteResult {

@@ -55,7 +55,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
     /**
      * Creates an {@link Observable} which will be subscribed to changes of {@link #query} Uri
      * and will emit result each time change occurs
-     * <p>
+     * <p/>
      * First result will be emitted immediately,
      * other emissions will occur only if changes of {@link #query} Uri will occur
      *
@@ -79,7 +79,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
 
     /**
      * Builder for {@link PreparedGetCursor}
-     * <p>
+     * <p/>
      * Required: You should specify query see {@link #withQuery(Query)}
      */
     public static final class Builder {
@@ -133,7 +133,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
         /**
          * Optional: Specifies {@link GetResolver} for Get Operation
          * which allows you to customize behavior of Get Operation
-         * <p>
+         * <p/>
          * If no value will be set, builder will use resolver that simply redirects query to {@link StorIOContentResolver}
          *
          * @param getResolver get resolver

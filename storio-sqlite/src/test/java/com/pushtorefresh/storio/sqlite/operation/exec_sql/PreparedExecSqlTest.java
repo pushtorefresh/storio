@@ -14,6 +14,34 @@ import static org.mockito.Mockito.when;
 
 public class PreparedExecSqlTest {
 
+    @Test
+    public void blocking() {
+        final Stub stub = new Stub();
+
+        stub.storIOSQLite
+                .execSql()
+                .withQuery(stub.rawQuery)
+                .prepare()
+                .executeAsBlocking();
+
+        stub.verifyBehavior();
+    }
+
+    @Test
+    public void observable() {
+        final Stub stub = new Stub();
+
+        stub.storIOSQLite
+                .execSql()
+                .withQuery(stub.rawQuery)
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .last();
+
+        stub.verifyBehavior();
+    }
+
     static class Stub {
 
         private final StorIOSQLite storIOSQLite;
@@ -33,7 +61,8 @@ public class PreparedExecSqlTest {
 
         }
 
-        @SuppressWarnings("unchecked") void verifyBehavior() {
+        @SuppressWarnings("unchecked")
+        void verifyBehavior() {
             // storIOSQLite.execSql() should be called once
             verify(storIOSQLite, times(1)).execSql();
 
@@ -46,31 +75,5 @@ public class PreparedExecSqlTest {
             // no notifications should occur
             verify(internal, times(0)).notifyAboutChanges(any(Changes.class));
         }
-    }
-
-    @Test public void blocking() {
-        final Stub stub = new Stub();
-
-        stub.storIOSQLite
-                .execSql()
-                .withQuery(stub.rawQuery)
-                .prepare()
-                .executeAsBlocking();
-
-        stub.verifyBehavior();
-    }
-
-    @Test public void observable() {
-        final Stub stub = new Stub();
-
-        stub.storIOSQLite
-                .execSql()
-                .withQuery(stub.rawQuery)
-                .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
-
-        stub.verifyBehavior();
     }
 }

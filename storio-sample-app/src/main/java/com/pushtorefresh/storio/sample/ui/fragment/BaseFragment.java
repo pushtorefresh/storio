@@ -15,7 +15,8 @@ public abstract class BaseFragment extends Fragment {
         compositeSubscriptionForOnStop.add(subscription);
     }
 
-    @Override public void onStop() {
+    @Override
+    public void onStop() {
         compositeSubscriptionForOnStop.clear();
         super.onStop();
     }

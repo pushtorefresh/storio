@@ -177,7 +177,7 @@ public class Query {
         /**
          * The list of columns to put into the cursor.
          * If <code>null</code> all columns are included.
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param columns columns
@@ -192,7 +192,7 @@ public class Query {
         /**
          * Optional: A selection criteria to apply when filtering rows.
          * If <code>null</code> then all rows are included.
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param where where
@@ -206,9 +206,9 @@ public class Query {
 
         /**
          * Optional: Specifies arguments for where clause
-         * <p>
+         * <p/>
          * Passed objects will be immediately converted to list {@link String} via calling {@link Object#toString()}
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param whereArgs selection arguments
@@ -223,7 +223,7 @@ public class Query {
         /**
          * Optional: Specifies how the rows in the cursor should be sorted.
          * If <code>null</code> then the provider is free to define the sort order.
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param sortOrder sort order

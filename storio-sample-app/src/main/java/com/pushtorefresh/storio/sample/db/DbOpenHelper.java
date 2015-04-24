@@ -13,16 +13,6 @@ public class DbOpenHelper extends SQLiteOpenHelper {
         super(context, "sample_db", null, 1);
     }
 
-    @Override
-    public void onCreate(@NonNull SQLiteDatabase db) {
-        db.execSQL(getCreateTweetTableQuery());
-    }
-
-    @Override
-    public void onUpgrade(@NonNull SQLiteDatabase db, int oldVersion, int newVersion) {
-        // no impl
-    }
-
     // better than static final field -> allows VM to unload useless String
     @NonNull
     private static String getCreateTweetTableQuery() {
@@ -31,5 +21,15 @@ public class DbOpenHelper extends SQLiteOpenHelper {
                 + TweetTableMeta.COLUMN_AUTHOR + " TEXT NOT NULL, "
                 + TweetTableMeta.COLUMN_CONTENT + " TEXT NOT NULL"
                 + ");";
+    }
+
+    @Override
+    public void onCreate(@NonNull SQLiteDatabase db) {
+        db.execSQL(getCreateTweetTableQuery());
+    }
+
+    @Override
+    public void onUpgrade(@NonNull SQLiteDatabase db, int oldVersion, int newVersion) {
+        // no impl
     }
 }

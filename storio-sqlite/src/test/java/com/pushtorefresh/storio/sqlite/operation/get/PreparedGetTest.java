@@ -23,6 +23,134 @@ import static org.mockito.Mockito.when;
 
 public class PreparedGetTest {
 
+    @Test
+    public void getCursorBlocking() {
+        final GetStub getStub = new GetStub();
+
+        final Cursor cursor = getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare()
+                .executeAsBlocking();
+
+        getStub.verifyQueryBehaviorForCursor(cursor);
+    }
+
+    @Test
+    public void getListOfObjectsBlocking() {
+        final GetStub getStub = new GetStub();
+
+        final List<TestItem> testItems = getStub.storIOSQLite
+                .get()
+                .listOfObjects(TestItem.class)
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForObject)
+                .prepare()
+                .executeAsBlocking();
+
+        getStub.verifyQueryBehaviorForList(testItems);
+    }
+
+    @Test
+    public void getCursorObservable() {
+        final GetStub getStub = new GetStub();
+
+        final Cursor cursor = getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .last();
+
+        getStub.verifyQueryBehaviorForCursor(cursor);
+    }
+
+    @Test
+    public void getListOfObjectsObservable() {
+        final GetStub getStub = new GetStub();
+
+        final List<TestItem> testItems = getStub.storIOSQLite
+                .get()
+                .listOfObjects(TestItem.class)
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForObject)
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .last();
+
+        getStub.verifyQueryBehaviorForList(testItems);
+    }
+
+    @Test
+    public void getCursorWithRawQueryBlocking() {
+        final GetStub getStub = new GetStub();
+
+        final Cursor cursor = getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare()
+                .executeAsBlocking();
+
+        getStub.verifyRawQueryBehaviorForCursor(cursor);
+    }
+
+    @Test
+    public void getCursorWithRawQueryObservable() {
+        final GetStub getStub = new GetStub();
+
+        final Cursor cursor = getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .last();
+
+        getStub.verifyRawQueryBehaviorForCursor(cursor);
+    }
+
+    @Test
+    public void getListOfObjectsWithRawQueryBlocking() {
+        final GetStub getStub = new GetStub();
+
+        final List<TestItem> testItems = getStub.storIOSQLite
+                .get()
+                .listOfObjects(TestItem.class)
+                .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolverForObject)
+                .prepare()
+                .executeAsBlocking();
+
+        getStub.verifyRawQueryBehaviorForList(testItems);
+    }
+
+    @Test
+    public void getListOfObjectsWithRawQueryObservable() {
+        final GetStub getStub = new GetStub();
+
+        final List<TestItem> testItems = getStub.storIOSQLite
+                .get()
+                .listOfObjects(TestItem.class)
+                .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolverForObject)
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .last();
+
+        getStub.verifyRawQueryBehaviorForList(testItems);
+    }
+
     private static class TestItem {
 
         private static final AtomicLong COUNTER = new AtomicLong(0);
@@ -51,13 +179,13 @@ public class PreparedGetTest {
 
     private static class GetStub {
         final StorIOSQLite storIOSQLite;
-        private final StorIOSQLite.Internal internal;
         final Query query;
         final RawQuery rawQuery;
         final GetResolver<TestItem> getResolverForObject;
         final GetResolver<Cursor> getResolverForCursor;
         final Cursor cursor;
         final List<TestItem> testItems;
+        private final StorIOSQLite.Internal internal;
 
         @SuppressWarnings("unchecked")
         GetStub() {
@@ -140,134 +268,5 @@ public class PreparedGetTest {
             verify(getResolverForObject, times(testItems.size())).mapFromCursor(cursor);
             assertEquals(testItems, actualList);
         }
-    }
-
-    @Test
-    public void getCursorBlocking() {
-        final GetStub getStub = new GetStub();
-
-        final Cursor cursor = getStub.storIOSQLite
-                .get()
-                .cursor()
-                .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolverForCursor)
-                .prepare()
-                .executeAsBlocking();
-
-        getStub.verifyQueryBehaviorForCursor(cursor);
-    }
-
-    @Test
-    public void getListOfObjectsBlocking() {
-        final GetStub getStub = new GetStub();
-
-        final List<TestItem> testItems = getStub.storIOSQLite
-                .get()
-                .listOfObjects(TestItem.class)
-                .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolverForObject)
-                .prepare()
-                .executeAsBlocking();
-
-        getStub.verifyQueryBehaviorForList(testItems);
-    }
-
-    @Test
-    public void getCursorObservable() {
-        final GetStub getStub = new GetStub();
-
-        final Cursor cursor = getStub.storIOSQLite
-                .get()
-                .cursor()
-                .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolverForCursor)
-                .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
-
-        getStub.verifyQueryBehaviorForCursor(cursor);
-    }
-
-
-    @Test
-    public void getListOfObjectsObservable() {
-        final GetStub getStub = new GetStub();
-
-        final List<TestItem> testItems = getStub.storIOSQLite
-                .get()
-                .listOfObjects(TestItem.class)
-                .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolverForObject)
-                .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
-
-        getStub.verifyQueryBehaviorForList(testItems);
-    }
-
-    @Test
-    public void getCursorWithRawQueryBlocking() {
-        final GetStub getStub = new GetStub();
-
-        final Cursor cursor = getStub.storIOSQLite
-                .get()
-                .cursor()
-                .withQuery(getStub.rawQuery)
-                .withGetResolver(getStub.getResolverForCursor)
-                .prepare()
-                .executeAsBlocking();
-
-        getStub.verifyRawQueryBehaviorForCursor(cursor);
-    }
-
-    @Test
-    public void getCursorWithRawQueryObservable() {
-        final GetStub getStub = new GetStub();
-
-        final Cursor cursor = getStub.storIOSQLite
-                .get()
-                .cursor()
-                .withQuery(getStub.rawQuery)
-                .withGetResolver(getStub.getResolverForCursor)
-                .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
-
-        getStub.verifyRawQueryBehaviorForCursor(cursor);
-    }
-
-    @Test
-    public void getListOfObjectsWithRawQueryBlocking() {
-        final GetStub getStub = new GetStub();
-
-        final List<TestItem> testItems = getStub.storIOSQLite
-                .get()
-                .listOfObjects(TestItem.class)
-                .withQuery(getStub.rawQuery)
-                .withGetResolver(getStub.getResolverForObject)
-                .prepare()
-                .executeAsBlocking();
-
-        getStub.verifyRawQueryBehaviorForList(testItems);
-    }
-
-    @Test
-    public void getListOfObjectsWithRawQueryObservable() {
-        final GetStub getStub = new GetStub();
-
-        final List<TestItem> testItems = getStub.storIOSQLite
-                .get()
-                .listOfObjects(TestItem.class)
-                .withQuery(getStub.rawQuery)
-                .withGetResolver(getStub.getResolverForObject)
-                .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
-
-        getStub.verifyRawQueryBehaviorForList(testItems);
     }
 }

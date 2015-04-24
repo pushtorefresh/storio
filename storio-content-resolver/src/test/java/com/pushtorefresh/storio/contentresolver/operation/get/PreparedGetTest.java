@@ -22,6 +22,70 @@ import static org.mockito.Mockito.when;
 
 public class PreparedGetTest {
 
+    @Test
+    public void getCursorBlocking() {
+        final GetStub getStub = new GetStub();
+
+        final Cursor cursor = getStub.storIOContentResolver
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare()
+                .executeAsBlocking();
+
+        getStub.verifyQueryBehavior(cursor);
+    }
+
+    @Test
+    public void getListOfObjectsBlocking() {
+        final GetStub getStub = new GetStub();
+
+        final List<TestItem> testItems = getStub.storIOContentResolver
+                .get()
+                .listOfObjects(TestItem.class)
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForTestItems)
+                .prepare()
+                .executeAsBlocking();
+
+        getStub.verifyQueryBehaviorForList(testItems);
+    }
+
+    @Test
+    public void getCursorObservable() {
+        final GetStub getStub = new GetStub();
+
+        final Cursor cursor = getStub.storIOContentResolver
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .last();
+
+        getStub.verifyQueryBehavior(cursor);
+    }
+
+    @Test
+    public void getListOfObjectsObservable() {
+        final GetStub getStub = new GetStub();
+
+        final List<TestItem> testItems = getStub.storIOContentResolver
+                .get()
+                .listOfObjects(TestItem.class)
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForTestItems)
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .last();
+
+        getStub.verifyQueryBehaviorForList(testItems);
+    }
+
     private static class TestItem {
 
         private static final AtomicLong COUNTER = new AtomicLong(0);
@@ -51,12 +115,12 @@ public class PreparedGetTest {
 
     private static class GetStub {
         final StorIOContentResolver storIOContentResolver;
-        private final StorIOContentResolver.Internal internal;
         final Query query;
         final GetResolver<TestItem> getResolverForTestItems;
         final GetResolver<Cursor> getResolverForCursor;
         final Cursor cursor;
         final List<TestItem> testItems;
+        private final StorIOContentResolver.Internal internal;
 
         @SuppressWarnings("unchecked")
         GetStub() {
@@ -125,69 +189,5 @@ public class PreparedGetTest {
             verify(getResolverForTestItems, times(testItems.size())).mapFromCursor(cursor);
             assertEquals(testItems, actualList);
         }
-    }
-
-    @Test
-    public void getCursorBlocking() {
-        final GetStub getStub = new GetStub();
-
-        final Cursor cursor = getStub.storIOContentResolver
-                .get()
-                .cursor()
-                .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolverForCursor)
-                .prepare()
-                .executeAsBlocking();
-
-        getStub.verifyQueryBehavior(cursor);
-    }
-
-    @Test
-    public void getListOfObjectsBlocking() {
-        final GetStub getStub = new GetStub();
-
-        final List<TestItem> testItems = getStub.storIOContentResolver
-                .get()
-                .listOfObjects(TestItem.class)
-                .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolverForTestItems)
-                .prepare()
-                .executeAsBlocking();
-
-        getStub.verifyQueryBehaviorForList(testItems);
-    }
-
-    @Test
-    public void getCursorObservable() {
-        final GetStub getStub = new GetStub();
-
-        final Cursor cursor = getStub.storIOContentResolver
-                .get()
-                .cursor()
-                .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolverForCursor)
-                .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
-
-        getStub.verifyQueryBehavior(cursor);
-    }
-
-    @Test
-    public void getListOfObjectsObservable() {
-        final GetStub getStub = new GetStub();
-
-        final List<TestItem> testItems = getStub.storIOContentResolver
-                .get()
-                .listOfObjects(TestItem.class)
-                .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolverForTestItems)
-                .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
-
-        getStub.verifyQueryBehaviorForList(testItems);
     }
 }

@@ -85,6 +85,88 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         return internal;
     }
 
+    /**
+     * Builder for {@link DefaultStorIOSQLite}
+     */
+    public static class Builder {
+
+        /**
+         * Specifies database for internal usage.
+         * You should provide this or {@link SQLiteOpenHelper}
+         *
+         * @param db a real database for internal usage
+         * @return builder
+         * @see {@link #sqliteOpenHelper(SQLiteOpenHelper)}
+         */
+        @NonNull
+        public CompleteBuilder db(@NonNull SQLiteDatabase db) {
+            return new CompleteBuilder(db);
+        }
+
+        /**
+         * Specifies SqLite helper for internal usage
+         * You should provide this or {@link SQLiteDatabase}
+         *
+         * @param sqliteOpenHelper a SqLite helper for internal usage
+         * @return builder
+         * @see {@link #db(SQLiteDatabase)}
+         */
+        @NonNull
+        public CompleteBuilder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
+            return new CompleteBuilder(sqliteOpenHelper.getWritableDatabase());
+        }
+    }
+
+    /**
+     * Compile-time safe part of builder for {@link DefaultStorIOSQLite}
+     */
+    public static class CompleteBuilder {
+
+        SQLiteDatabase db;
+        Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap;
+
+        CompleteBuilder(@NonNull SQLiteDatabase db) {
+            this.db = db;
+        }
+
+        /**
+         * Adds {@link SQLiteTypeDefaults} for some type
+         *
+         * @param type         type
+         * @param typeDefaults defaults for type
+         * @param <T>          type
+         * @return builder
+         */
+        @NonNull
+        public <T> CompleteBuilder addDefaultsForType(@NonNull Class<T> type, @NonNull SQLiteTypeDefaults<T> typeDefaults) {
+            checkNotNull(type, "Please specify type");
+            checkNotNull(typeDefaults, "Please specify type defaults");
+
+            if (typesDefaultsMap == null) {
+                typesDefaultsMap = new HashMap<Class<?>, SQLiteTypeDefaults<?>>();
+            }
+
+            if (typesDefaultsMap.containsKey(type)) {
+                throw new IllegalArgumentException("Defaults for type " + type.getSimpleName() + " already added");
+            }
+
+            typesDefaultsMap.put(type, typeDefaults);
+
+            return this;
+        }
+
+        /**
+         * Builds {@link DefaultStorIOSQLite} instance with required params
+         *
+         * @return new {@link DefaultStorIOSQLite} instance
+         */
+        @NonNull
+        public DefaultStorIOSQLite build() {
+            checkNotNull(db, "Please specify SQLiteDatabase instance");
+            return new DefaultStorIOSQLite(db, typesDefaultsMap);
+        }
+    }
+
     protected class InternalImpl extends Internal {
 
         @Nullable
@@ -225,88 +307,6 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public void endTransaction() {
             db.endTransaction();
-        }
-    }
-
-    /**
-     * Builder for {@link DefaultStorIOSQLite}
-     */
-    public static class Builder {
-
-        /**
-         * Specifies database for internal usage.
-         * You should provide this or {@link SQLiteOpenHelper}
-         *
-         * @param db a real database for internal usage
-         * @return builder
-         * @see {@link #sqliteOpenHelper(SQLiteOpenHelper)}
-         */
-        @NonNull
-        public CompleteBuilder db(@NonNull SQLiteDatabase db) {
-            return new CompleteBuilder(db);
-        }
-
-        /**
-         * Specifies SqLite helper for internal usage
-         * You should provide this or {@link SQLiteDatabase}
-         *
-         * @param sqliteOpenHelper a SqLite helper for internal usage
-         * @return builder
-         * @see {@link #db(SQLiteDatabase)}
-         */
-        @NonNull
-        public CompleteBuilder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
-            return new CompleteBuilder(sqliteOpenHelper.getWritableDatabase());
-        }
-    }
-
-    /**
-     * Compile-time safe part of builder for {@link DefaultStorIOSQLite}
-     */
-    public static class CompleteBuilder {
-
-        SQLiteDatabase db;
-        Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap;
-
-        CompleteBuilder(@NonNull SQLiteDatabase db) {
-            this.db = db;
-        }
-
-        /**
-         * Adds {@link SQLiteTypeDefaults} for some type
-         *
-         * @param type         type
-         * @param typeDefaults defaults for type
-         * @param <T>          type
-         * @return builder
-         */
-        @NonNull
-        public <T> CompleteBuilder addDefaultsForType(@NonNull Class<T> type, @NonNull SQLiteTypeDefaults<T> typeDefaults) {
-            checkNotNull(type, "Please specify type");
-            checkNotNull(typeDefaults, "Please specify type defaults");
-
-            if (typesDefaultsMap == null) {
-                typesDefaultsMap = new HashMap<Class<?>, SQLiteTypeDefaults<?>>();
-            }
-
-            if (typesDefaultsMap.containsKey(type)) {
-                throw new IllegalArgumentException("Defaults for type " + type.getSimpleName() + " already added");
-            }
-
-            typesDefaultsMap.put(type, typeDefaults);
-
-            return this;
-        }
-
-        /**
-         * Builds {@link DefaultStorIOSQLite} instance with required params
-         *
-         * @return new {@link DefaultStorIOSQLite} instance
-         */
-        @NonNull
-        public DefaultStorIOSQLite build() {
-            checkNotNull(db, "Please specify SQLiteDatabase instance");
-            return new DefaultStorIOSQLite(db, typesDefaultsMap);
         }
     }
 }

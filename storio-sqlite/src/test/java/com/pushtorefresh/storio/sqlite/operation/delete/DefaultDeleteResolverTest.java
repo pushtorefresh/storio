@@ -18,10 +18,6 @@ import static org.mockito.Mockito.when;
 
 public class DefaultDeleteResolverTest {
 
-    private static class TestItem {
-
-    }
-
     @Test
     public void performDelete() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
@@ -55,5 +51,9 @@ public class DefaultDeleteResolverTest {
 
         assertEquals(1, deleteResult.numberOfRowsDeleted());
         assertEquals(Collections.singleton(testTable), deleteResult.affectedTables());
+    }
+
+    private static class TestItem {
+
     }
 }

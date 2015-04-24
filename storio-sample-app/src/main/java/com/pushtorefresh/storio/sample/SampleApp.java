@@ -14,15 +14,15 @@ public class SampleApp extends Application {
     @Nullable
     private volatile AppComponent appComponent;
 
+    @NonNull
+    public static SampleApp get(@NonNull Context context) {
+        return (SampleApp) context.getApplicationContext();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         Timber.plant(new Timber.DebugTree());
-    }
-
-    @NonNull
-    public static SampleApp get(@NonNull Context context) {
-        return (SampleApp) context.getApplicationContext();
     }
 
     // When another process of the app created (for example, for ContentProvider), onCreate() method of application object won't be called

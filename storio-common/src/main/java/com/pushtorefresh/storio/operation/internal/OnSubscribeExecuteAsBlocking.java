@@ -10,7 +10,7 @@ import rx.Subscriber;
 /**
  * Required to avoid problems with ClassLoader when RxJava is not in ClassPath
  * We can not use anonymous classes from RxJava directly in StorIO, ClassLoader won't be happy :(
- * <p>
+ * <p/>
  * For internal usage only!
  */
 public class OnSubscribeExecuteAsBlocking<Result> implements Observable.OnSubscribe<Result> {
@@ -26,7 +26,7 @@ public class OnSubscribeExecuteAsBlocking<Result> implements Observable.OnSubscr
      * Creates new instance of {@link OnSubscribeExecuteAsBlocking}
      *
      * @param preparedOperation non-null instance of {@link PreparedOperation} which will be used to provide result to subscribers
-     * @param <Result> type of result of {@link PreparedOperation}
+     * @param <Result>          type of result of {@link PreparedOperation}
      * @return new instance of {@link OnSubscribeExecuteAsBlocking}
      */
     @NonNull

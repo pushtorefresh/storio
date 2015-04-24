@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="com.pushtorefresh.storio.test_without_rxjava"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest package="com.pushtorefresh.storio.test_without_rxjava">
 
 </manifest>

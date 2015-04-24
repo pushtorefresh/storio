@@ -87,7 +87,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     /**
      * Creates an {@link Observable} which will be subscribed to changes of query tables
      * and will emit result each time change occurs
-     * <p>
+     * <p/>
      * First result will be emitted immediately,
      * other emissions will occur only if changes of query tables will occur
      *
@@ -196,7 +196,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
         /**
          * Optional: Specifies resolver for Get Operation which can be used to provide custom behavior of Get Operation
-         * <p>
+         * <p/>
          * {@link SQLiteTypeDefaults} can be used to set default GetResolver
          * If GetResolver is not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *

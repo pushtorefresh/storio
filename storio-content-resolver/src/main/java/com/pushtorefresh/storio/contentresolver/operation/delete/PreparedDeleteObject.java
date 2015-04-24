@@ -86,7 +86,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResult> {
         /**
          * Optional: Specifies resolver for Delete Operation
          * Allows you to customise behavior of Delete Operation
-         * <p>
+         * <p/>
          * Can be set via {@link ContentResolverTypeDefaults},
          * If value is not set via {@link ContentResolverTypeDefaults} or explicitly -> exception will be thrown
          *

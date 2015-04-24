@@ -18,24 +18,16 @@ import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
 public class TweetTableMeta {
 
-    private TweetTableMeta() {
-        throw new IllegalStateException("No instances please");
-    }
-
     public static final String TABLE = "tweets";
-
     public static final String COLUMN_ID = "_id";
-
     /**
      * For example: "artem_zin" without "@"
      */
     public static final String COLUMN_AUTHOR = "author";
-
     /**
      * For example: "Check out StorIO — modern API for SQLiteDatabase & ContentResolver #androiddev"
      */
     public static final String COLUMN_CONTENT = "content";
-
     public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<Tweet>() {
         @NonNull
         @Override
@@ -67,7 +59,6 @@ public class TweetTableMeta {
             return contentValues;
         }
     };
-
     public static final GetResolver<Tweet> GET_RESOLVER = new DefaultGetResolver<Tweet>() {
         @NonNull
         @Override
@@ -79,7 +70,6 @@ public class TweetTableMeta {
             );
         }
     };
-
     public static final DeleteResolver<Tweet> DELETE_RESOLVER = new DefaultDeleteResolver<Tweet>() {
         @NonNull
         @Override
@@ -91,8 +81,11 @@ public class TweetTableMeta {
                     .build();
         }
     };
-
     public static final Query QUERY_ALL = new Query.Builder()
             .table(TABLE)
             .build();
+
+    private TweetTableMeta() {
+        throw new IllegalStateException("No instances please");
+    }
 }

@@ -10,22 +10,14 @@ import android.util.Log;
  * <p/>
  * Call it "Loggi, come here!", you can think that Loggi is your little dog :)
  */
-@SuppressWarnings({ "PMD.ProtectLogD", "PMD.ProtectLogV" })
+@SuppressWarnings({"PMD.ProtectLogD", "PMD.ProtectLogV"})
 public class Loggi {
 
     private static final String TAG = "StorIO";
-    
+
     private volatile boolean isEnabled = false;
 
     private LogListener externalLogListener;
-
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public void setIsEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
-    }
 
     @NonNull
     private static String getTag() {
@@ -35,6 +27,14 @@ public class Loggi {
     @NonNull
     private static String getMessageWithTag(@NonNull String message) {
         return TAG + "/" + message;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     public void setLogListener(@Nullable LogListener externalLogListener) {

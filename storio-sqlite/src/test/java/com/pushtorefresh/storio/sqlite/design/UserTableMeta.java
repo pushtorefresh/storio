@@ -18,16 +18,9 @@ import static org.mockito.Mockito.mock;
 
 class UserTableMeta {
 
-    private UserTableMeta() {
-        throw new IllegalStateException("No instances please");
-    }
-
     static final String TABLE = "users";
-
     static final String COLUMN_ID = "_id";
-
     static final String COLUMN_EMAIL = "email";
-
     static final PutResolver<User> PUT_RESOLVER = new DefaultPutResolver<User>() {
         @NonNull
         @Override
@@ -53,7 +46,6 @@ class UserTableMeta {
             return mock(ContentValues.class);
         }
     };
-
     static final GetResolver<User> GET_RESOLVER = new DefaultGetResolver<User>() {
         @NonNull
         @Override
@@ -61,7 +53,6 @@ class UserTableMeta {
             return mock(User.class);
         }
     };
-
     static final DeleteResolver<User> DELETE_RESOLVER = new DefaultDeleteResolver<User>() {
         @NonNull
         @Override
@@ -73,4 +64,8 @@ class UserTableMeta {
                     .build();
         }
     };
+
+    private UserTableMeta() {
+        throw new IllegalStateException("No instances please");
+    }
 }
