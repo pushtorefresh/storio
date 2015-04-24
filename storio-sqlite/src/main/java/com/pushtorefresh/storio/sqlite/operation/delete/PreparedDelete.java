@@ -53,7 +53,7 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
         /**
          * Prepares Delete Operation which should delete multiple objects
          *
-         * @param type type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
+         * @param type    type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
          * @param objects objects to delete
          * @param <T>     type of objects
          * @return builder

@@ -14,9 +14,9 @@ import rx.Observable;
 
 /**
  * Prepared Group Operation for StorIO implementations
- * <p>
+ * <p/>
  * Allows group execution of any combination of {@link PreparedOperation}
- * <p>
+ * <p/>
  * And yes, you can execute {@link PreparedGroupOperation} as part of {@link PreparedGroupOperation} since it implements {@link PreparedOperation} :)
  */
 public final class PreparedGroupOperation implements PreparedOperation<GroupOperationResults> {

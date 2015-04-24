@@ -10,16 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
-import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
 import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.SampleApp;
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
+import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
 import com.pushtorefresh.storio.sample.ui.DividerItemDecoration;
 import com.pushtorefresh.storio.sample.ui.ToastHelper;
 import com.pushtorefresh.storio.sample.ui.UiStateController;
 import com.pushtorefresh.storio.sample.ui.adapter.TweetsAdapter;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,8 @@ public class TweetsFragment extends BaseFragment {
 
     TweetsAdapter tweetsAdapter;
 
-    @Override public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SampleApp.get(getActivity()).getAppComponent().inject(this);
         tweetsAdapter = new TweetsAdapter();
@@ -58,7 +59,8 @@ public class TweetsFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_tweets, container, false);
     }
 
-    @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.inject(this, view);
 
@@ -76,7 +78,8 @@ public class TweetsFragment extends BaseFragment {
                 .build();
     }
 
-    @Override public void onStart() {
+    @Override
+    public void onStart() {
         super.onStart();
         reloadData();
     }
@@ -94,12 +97,14 @@ public class TweetsFragment extends BaseFragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Tweet>>() {
-                    @Override public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
                         uiStateController.setUiStateError();
                         tweetsAdapter.setTweets(null);
                     }
 
-                    @Override public void onNext(List<Tweet> tweets) {
+                    @Override
+                    public void onNext(List<Tweet> tweets) {
                         if (tweets.isEmpty()) {
                             uiStateController.setUiStateEmpty();
                             tweetsAdapter.setTweets(null);
@@ -109,7 +114,8 @@ public class TweetsFragment extends BaseFragment {
                         }
                     }
 
-                    @Override public void onCompleted() {
+                    @Override
+                    public void onCompleted() {
                         // no impl
                     }
                 });
@@ -139,7 +145,8 @@ public class TweetsFragment extends BaseFragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<PutResults<Tweet>>() {
-                    @Override public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
                         ToastHelper.safeShowShortToast(getActivity(), R.string.tweets_add_error_toast);
                     }
 
@@ -148,7 +155,8 @@ public class TweetsFragment extends BaseFragment {
                         // handled via reactive stream! see reloadData()
                     }
 
-                    @Override public void onCompleted() {
+                    @Override
+                    public void onCompleted() {
                         // no impl
                     }
                 });

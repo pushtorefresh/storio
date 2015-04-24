@@ -70,7 +70,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         /**
          * Optional: Specifies {@link PutResolver} for Put Operation
          * which allows you to customize behavior of Put Operation
-         * <p>
+         * <p/>
          * Can be set via {@link SQLiteTypeDefaults}
          * If it's not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *

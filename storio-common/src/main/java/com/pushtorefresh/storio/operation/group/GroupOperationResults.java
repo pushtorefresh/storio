@@ -12,7 +12,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 /**
  * Immutable container for results of {@link PreparedGroupOperation}
  * Thread-safe
- * <p>
+ * <p/>
  * Unfortunately, we can not generify it because each Operation can return different type of result
  */
 public class GroupOperationResults {

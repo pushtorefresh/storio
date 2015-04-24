@@ -31,50 +31,6 @@ import static org.mockito.Mockito.when;
 
 public class DefaultPutResolverTest {
 
-    private static class TestItem {
-
-        final static Uri CONTENT_URI = mock(Uri.class);
-        final static String COLUMN_ID = "customIdColumnName";
-
-        static final MapFunc<TestItem, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<TestItem, ContentValues>() {
-
-            // ContentValues should be mocked for usage in tests (damn you Android...)
-            // but we can not mock equals() method
-            // so, we will return SAME ContentValues for object and assertEquals() will pass
-            @NonNull
-            private final Map<TestItem, ContentValues> map = new HashMap<TestItem, ContentValues>();
-
-            @NonNull
-            @Override
-            public ContentValues map(@NonNull TestItem testItem) {
-                if (map.containsKey(testItem)) {
-                    return map.get(testItem);
-                } else {
-                    final ContentValues contentValues = mock(ContentValues.class);
-
-                    when(contentValues.get(COLUMN_ID))
-                            .thenReturn(testItem.id);
-
-                    map.put(testItem, contentValues); // storing pair of mapping
-
-                    return contentValues;
-                }
-            }
-        };
-
-        @Nullable
-        private final Long id;
-
-        TestItem(@Nullable Long id) {
-            this.id = id;
-        }
-
-        @Nullable
-        Long getId() {
-            return id;
-        }
-    }
-
     /**
      * Verifies behavior of {@link DefaultPutResolver} for "insert"
      */
@@ -256,6 +212,48 @@ public class DefaultPutResolverTest {
 
         assertEquals(expectedNumberOfRowsUpdated, putResult.numberOfRowsUpdated());
         assertNull(putResult.insertedUri());
+    }
+
+    private static class TestItem {
+
+        final static Uri CONTENT_URI = mock(Uri.class);
+        final static String COLUMN_ID = "customIdColumnName";
+        @Nullable
+        private final Long id;
+        static final MapFunc<TestItem, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<TestItem, ContentValues>() {
+
+            // ContentValues should be mocked for usage in tests (damn you Android...)
+            // but we can not mock equals() method
+            // so, we will return SAME ContentValues for object and assertEquals() will pass
+            @NonNull
+            private final Map<TestItem, ContentValues> map = new HashMap<TestItem, ContentValues>();
+
+            @NonNull
+            @Override
+            public ContentValues map(@NonNull TestItem testItem) {
+                if (map.containsKey(testItem)) {
+                    return map.get(testItem);
+                } else {
+                    final ContentValues contentValues = mock(ContentValues.class);
+
+                    when(contentValues.get(COLUMN_ID))
+                            .thenReturn(testItem.id);
+
+                    map.put(testItem, contentValues); // storing pair of mapping
+
+                    return contentValues;
+                }
+            }
+        };
+
+        TestItem(@Nullable Long id) {
+            this.id = id;
+        }
+
+        @Nullable
+        Long getId() {
+            return id;
+        }
     }
 
 }

@@ -57,7 +57,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
 
     /**
      * Builder for {@link PreparedPutContentValues}
-     * <p>
+     * <p/>
      * Required: You should specify put resolver see {@link #withPutResolver(PutResolver)}
      */
     public static final class Builder {

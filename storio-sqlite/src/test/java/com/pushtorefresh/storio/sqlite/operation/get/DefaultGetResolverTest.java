@@ -18,10 +18,6 @@ import static org.mockito.Mockito.when;
 
 public class DefaultGetResolverTest {
 
-    private static class TestItem {
-
-    }
-
     @Test
     public void rawQuery() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
@@ -84,5 +80,9 @@ public class DefaultGetResolverTest {
         verify(internal, times(1)).query(query);
 
         assertSame(expectedCursor, actualCursor);
+    }
+
+    private static class TestItem {
+
     }
 }

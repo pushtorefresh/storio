@@ -130,7 +130,7 @@ public class UpdateQuery {
 
         /**
          * Optional: Specifies where clause
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param where an optional filter to match rows to update.
@@ -144,9 +144,9 @@ public class UpdateQuery {
 
         /**
          * Optional: Specifies arguments for where clause
-         * <p>
+         * <p/>
          * Passed objects will be immediately converted to list {@link String} via calling {@link Object#toString()}
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param whereArgs arguments for {@link UpdateQuery#where}

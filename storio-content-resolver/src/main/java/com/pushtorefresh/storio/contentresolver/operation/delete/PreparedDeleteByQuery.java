@@ -95,7 +95,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, DeleteRes
         /**
          * Optional: Specifies resolver for Delete Operation
          * Allows you to customise behavior of Delete Operation
-         * <p>
+         * <p/>
          * If no value will be set, builder will use Delete Resolver that simply redirects query to {@link StorIOContentResolver}
          *
          * @param deleteResolver nullable resolver for Delete Operation

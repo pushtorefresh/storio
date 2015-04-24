@@ -123,7 +123,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
         /**
          * Optional: Defines that Put Operation will use transaction
          * if it is supported by implementation of {@link StorIOSQLite}
-         * <p>
+         * <p/>
          * By default, transaction will be used
          *
          * @return builder
@@ -179,7 +179,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
         /**
          * Optional: Defines that Put Operation will use transaction
          * if it is supported by implementation of {@link StorIOSQLite}
-         * <p>
+         * <p/>
          * By default, transaction will be used
          *
          * @return builder

@@ -28,26 +28,11 @@ class DeleteStub {
 
     final List<TestItem> testItems;
     final StorIOContentResolver storIOContentResolver;
-    private final StorIOContentResolver.Internal internal;
     final DeleteResolver<TestItem> deleteResolverForTestItems;
     final DeleteResolver<DeleteQuery> deleteResolverForQuery;
-    private final Map<TestItem, DeleteResult> testItemToDeleteResultMap;
     final Map<TestItem, DeleteQuery> testItemDeleteQueryMap;
-
-    @NonNull
-    static DeleteStub newInstanceForDeleteByQuery() {
-        return new DeleteStub(1);
-    }
-
-    @NonNull
-    static DeleteStub newInstanceForDeleteMultipleObjects() {
-        return new DeleteStub(3);
-    }
-
-    @NonNull
-    static DeleteStub newInstanceForDeleteOneObject() {
-        return new DeleteStub(1);
-    }
+    private final StorIOContentResolver.Internal internal;
+    private final Map<TestItem, DeleteResult> testItemToDeleteResultMap;
 
     @SuppressWarnings("unchecked")
     private DeleteStub(int numberOfTestItems) {
@@ -88,6 +73,21 @@ class DeleteStub {
             when(deleteResolverForQuery.performDelete(storIOContentResolver, deleteQuery))
                     .thenReturn(deleteResult);
         }
+    }
+
+    @NonNull
+    static DeleteStub newInstanceForDeleteByQuery() {
+        return new DeleteStub(1);
+    }
+
+    @NonNull
+    static DeleteStub newInstanceForDeleteMultipleObjects() {
+        return new DeleteStub(3);
+    }
+
+    @NonNull
+    static DeleteStub newInstanceForDeleteOneObject() {
+        return new DeleteStub(1);
     }
 
     void verifyBehaviorForDeleteByQuery(@NonNull DeleteResult deleteResult) {

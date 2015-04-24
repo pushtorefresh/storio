@@ -7,9 +7,9 @@ import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 
 /**
  * Default implementation of {@link DeleteResolver}
- * <p>
+ * <p/>
  * Simply redirects {@link DeleteQuery} to {@link StorIOContentResolver}
- * <p>
+ * <p/>
  * Instances of this class are thread-safe
  */
 public abstract class DefaultDeleteResolver<T> extends DeleteResolver<T> {

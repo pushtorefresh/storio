@@ -5,11 +5,10 @@ import android.support.annotation.Nullable;
 
 public class User implements Comparable<User> {
 
-    @Nullable
-    private Long id;
-
     @NonNull
     private final String email;
+    @Nullable
+    private Long id;
 
     private User(@Nullable Long id, @NonNull String email) {
         this.id = id;

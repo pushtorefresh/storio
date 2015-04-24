@@ -9,7 +9,7 @@ import com.pushtorefresh.storio.sqlite.query.RawQuery;
 
 /**
  * Default implementation of {@link GetResolver}, thread-safe
- * <p>
+ * <p/>
  * You need to just override mapping from Cursor
  */
 public abstract class DefaultGetResolver<T> implements GetResolver<T> {

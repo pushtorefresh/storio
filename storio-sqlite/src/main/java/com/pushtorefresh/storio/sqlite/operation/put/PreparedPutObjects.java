@@ -128,7 +128,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         /**
          * Optional: Specifies {@link PutResolver} for Put Operation
          * which allows you to customize behavior of Put Operation
-         * <p>
+         * <p/>
          * Can be set via {@link SQLiteTypeDefaults}
          * If it's not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *
@@ -144,7 +144,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
         /**
          * Optional: Defines that Put Operation will use transaction if it is supported by implementation of {@link StorIOSQLite}
-         * <p>
+         * <p/>
          * By default, transaction will be used
          *
          * @return builder

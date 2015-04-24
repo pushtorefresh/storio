@@ -11,13 +11,17 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    @NonNull private final SampleApp app;
+    @NonNull
+    private final SampleApp app;
 
     AppModule(@NonNull SampleApp app) {
         this.app = app;
     }
 
-    @Provides @NonNull @Singleton Context provideContext() {
+    @Provides
+    @NonNull
+    @Singleton
+    Context provideContext() {
         return app;
     }
 }

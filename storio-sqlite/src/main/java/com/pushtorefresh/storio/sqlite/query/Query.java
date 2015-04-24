@@ -11,7 +11,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
 
 /**
  * Get query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
- * <p>
+ * <p/>
  * Instances of this class are Immutable
  */
 public class Query {
@@ -29,7 +29,7 @@ public class Query {
 
     /**
      * Optional list of columns that should be received.
-     * <p>
+     * <p/>
      * If list will be null or empty -> all columns will be received
      */
     @Nullable
@@ -37,9 +37,9 @@ public class Query {
 
     /**
      * Optional filter declaring which rows to return
-     * <p>
+     * <p/>
      * Formatted as an SQL WHERE clause (excluding the WHERE itself).
-     * <p>
+     * <p/>
      * Passing null will return all rows for the given table
      */
     @Nullable
@@ -53,9 +53,9 @@ public class Query {
 
     /**
      * Optional filter declaring how to group rows.
-     * <p>
+     * <p/>
      * Formatted as an SQL GROUP BY clause (excluding the GROUP BY itself).
-     * <p>
+     * <p/>
      * Passing null will cause the rows to not be grouped
      */
     @Nullable
@@ -63,9 +63,9 @@ public class Query {
 
     /**
      * Optional filter declare which row groups to include in the cursor, if row grouping is being used.
-     * <p>
+     * <p/>
      * Formatted as an SQL HAVING clause (excluding the HAVING itself).
-     * <p>
+     * <p/>
      * Passing null will cause all row groups to be included, and is required when row grouping is not being used
      */
     @Nullable
@@ -73,9 +73,9 @@ public class Query {
 
     /**
      * Optional specifier to how to order the rows.
-     * <p>
+     * <p/>
      * Formatted as an SQL ORDER BY clause (excluding the ORDER BY itself).
-     * <p>
+     * <p/>
      * Passing null will use the default sort order, which may be unordered
      */
     @Nullable
@@ -83,9 +83,9 @@ public class Query {
 
     /**
      * Optional specifier that limits the number of rows returned by the query.
-     * <p>
+     * <p/>
      * Formatted as LIMIT clause.
-     * <p>
+     * <p/>
      * Passing null denotes no LIMIT clause
      */
     @Nullable
@@ -207,9 +207,9 @@ public class Query {
 
         /**
          * Optional: Specifies distinct option
-         * <p>
+         * <p/>
          * True if you want each row to be unique, false otherwise
-         * <p>
+         * <p/>
          * Default value is <code>false</code>
          *
          * @param distinct distinct option
@@ -223,9 +223,9 @@ public class Query {
 
         /**
          * Optional: Specifies list of columns that should be received.
-         * <p>
+         * <p/>
          * If list will be null or empty -> all columns will be received
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param columns list of columns to receive
@@ -239,13 +239,13 @@ public class Query {
 
         /**
          * Optional: Specifies where clause
-         * <p>
+         * <p/>
          * Optional filter declaring which rows to return
-         * <p>
+         * <p/>
          * Formatted as an SQL WHERE clause (excluding the WHERE itself).
-         * <p>
+         * <p/>
          * Passing null will RETURN all rows for the given table
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param where where clause
@@ -259,9 +259,9 @@ public class Query {
 
         /**
          * Optional: Specifies arguments for where clause
-         * <p>
+         * <p/>
          * Passed objects will be immediately converted list of to {@link String} via calling {@link Object#toString()}
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param whereArgs list of arguments for where clause
@@ -275,13 +275,13 @@ public class Query {
 
         /**
          * Optional: Specifies group by clause
-         * <p>
+         * <p/>
          * Optional filter declaring how to group rows.
-         * <p>
+         * <p/>
          * Formatted as an SQL GROUP BY clause (excluding the GROUP BY itself).
-         * <p>
+         * <p/>
          * Passing null will cause the rows to not be grouped
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param groupBy group by clause
@@ -295,13 +295,13 @@ public class Query {
 
         /**
          * Optional: Specifies having clause
-         * <p>
+         * <p/>
          * Optional filter declare which row groups to include in the cursor, if row grouping is being used.
-         * <p>
+         * <p/>
          * Formatted as an SQL HAVING clause (excluding the HAVING itself).
-         * <p>
+         * <p/>
          * Passing null will cause all row groups to be included, and is required when row grouping is not being used
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param having having clause
@@ -315,13 +315,13 @@ public class Query {
 
         /**
          * Optional: Specifies order by clause
-         * <p>
+         * <p/>
          * Optional specifier to how to order the rows.
-         * <p>
+         * <p/>
          * Formatted as an SQL ORDER BY clause (excluding the ORDER BY itself).
-         * <p>
+         * <p/>
          * Passing null will use the default sort order, which may be unordered
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param orderBy order by clause
@@ -335,13 +335,13 @@ public class Query {
 
         /**
          * Optional: Specifies limit clause
-         * <p>
+         * <p/>
          * Optional specifier that limits the number of rows returned by the query.
-         * <p>
+         * <p/>
          * Formatted as LIMIT clause.
-         * <p>
+         * <p/>
          * Passing null denotes no LIMIT clause
-         * <p>
+         * <p/>
          * Default value is <code>null</code>
          *
          * @param limit limit clause

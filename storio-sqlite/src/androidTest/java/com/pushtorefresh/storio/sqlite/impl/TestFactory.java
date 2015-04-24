@@ -8,12 +8,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestFactory {
 
+    private static final AtomicInteger USERS_COUNTER = new AtomicInteger(0);
+    private static final AtomicInteger TWEETS_COUNTER = new AtomicInteger(0);
     private TestFactory() {
         throw new IllegalStateException("No instances please");
     }
-
-    private static final AtomicInteger USERS_COUNTER = new AtomicInteger(0);
-    private static final AtomicInteger TWEETS_COUNTER = new AtomicInteger(0);
 
     @NonNull
     public static User newUser() {

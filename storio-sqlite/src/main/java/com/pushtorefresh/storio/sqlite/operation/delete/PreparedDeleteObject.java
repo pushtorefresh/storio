@@ -89,7 +89,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
         /**
          * Optional: Specifies {@link DeleteResolver} for Delete Operation
-         * <p>
+         * <p/>
          * Can be set via {@link SQLiteTypeDefaults},
          * If resolver is not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *

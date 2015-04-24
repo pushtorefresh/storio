@@ -16,27 +16,19 @@ import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
 public class TweetTableMeta {
 
-    private TweetTableMeta() {
-        throw new IllegalStateException("No instances please");
-    }
-
     static final String TABLE = "tweets";
-
     // Custom internal id field name, that used instead of "_id".
     static final String COLUMN_ID = "tweet_internal_id";
     static final String COLUMN_AUTHOR_ID = "author_id";
     static final String COLUMN_CONTENT_TEXT = "content_text";
-
     static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + "(" +
             COLUMN_ID + " INTEGER PRIMARY KEY, " +
             COLUMN_AUTHOR_ID + " INTEGER NOT NULL, " +
             COLUMN_CONTENT_TEXT + " TEXT NOT NULL" +
             ");";
-
     static final DeleteQuery DELETE_QUERY_ALL = new DeleteQuery.Builder()
             .table(TABLE)
             .build();
-
     static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<Tweet>() {
         @NonNull
         @Override
@@ -68,7 +60,6 @@ public class TweetTableMeta {
             return contentValues;
         }
     };
-
     static final GetResolver<Tweet> GET_RESOLVER = new DefaultGetResolver<Tweet>() {
         @NonNull
         @Override
@@ -80,7 +71,6 @@ public class TweetTableMeta {
             );
         }
     };
-
     static final DeleteResolver<Tweet> DELETE_RESOLVER = new DefaultDeleteResolver<Tweet>() {
         @NonNull
         @Override
@@ -92,4 +82,8 @@ public class TweetTableMeta {
                     .build();
         }
     };
+
+    private TweetTableMeta() {
+        throw new IllegalStateException("No instances please");
+    }
 }

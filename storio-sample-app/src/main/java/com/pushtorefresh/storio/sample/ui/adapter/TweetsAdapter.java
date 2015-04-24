@@ -25,16 +25,19 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    @Override public int getItemCount() {
+    @Override
+    public int getItemCount() {
         return tweets == null ? 0 : tweets.size();
     }
 
-    @Override public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_tweet, parent, false));
     }
 
-    @Override public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Tweet tweet = tweets.get(position);
 
         holder.authorTextView.setText("@" + tweet.author());

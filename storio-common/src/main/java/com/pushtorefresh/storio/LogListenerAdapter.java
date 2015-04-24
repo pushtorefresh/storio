@@ -8,18 +8,23 @@ import android.support.annotation.NonNull;
  */
 public class LogListenerAdapter implements LogListener {
 
-    @Override public void v(@NonNull String message) {
+    @Override
+    public void v(@NonNull String message) {
     }
 
-    @Override public void d(@NonNull String message) {
+    @Override
+    public void d(@NonNull String message) {
     }
 
-    @Override public void i(@NonNull String message) {
+    @Override
+    public void i(@NonNull String message) {
     }
 
-    @Override public void w(@NonNull String message) {
+    @Override
+    public void w(@NonNull String message) {
     }
 
-    @Override public void e(@NonNull String message) {
+    @Override
+    public void e(@NonNull String message) {
     }
 }
