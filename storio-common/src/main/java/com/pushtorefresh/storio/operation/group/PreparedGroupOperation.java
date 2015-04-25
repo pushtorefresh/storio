@@ -19,12 +19,12 @@ import rx.Observable;
  * <p/>
  * And yes, you can execute {@link PreparedGroupOperation} as part of {@link PreparedGroupOperation} since it implements {@link PreparedOperation} :)
  */
-public final class PreparedGroupOperation implements PreparedOperation<GroupOperationResults> {
+public class PreparedGroupOperation implements PreparedOperation<GroupOperationResults> {
 
     @NonNull
     private final List<PreparedOperation<?>> preparedOperations;
 
-    PreparedGroupOperation(@NonNull List<PreparedOperation<?>> preparedOperations) {
+    protected PreparedGroupOperation(@NonNull List<PreparedOperation<?>> preparedOperations) {
         this.preparedOperations = preparedOperations;
     }
 
