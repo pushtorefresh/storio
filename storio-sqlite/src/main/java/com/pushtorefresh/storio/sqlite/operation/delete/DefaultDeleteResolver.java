@@ -8,7 +8,7 @@ import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 /**
  * Default implementation for {@link DeleteResolver}, thread-safe
  */
-public abstract class DefaultDeleteResolver<T> implements DeleteResolver<T> {
+public abstract class DefaultDeleteResolver<T> extends DeleteResolver<T> {
 
     /**
      * Converts object to {@link DeleteQuery}

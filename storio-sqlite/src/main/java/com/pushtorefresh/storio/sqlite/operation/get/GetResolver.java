@@ -10,7 +10,7 @@ import com.pushtorefresh.storio.sqlite.query.RawQuery;
 /**
  * Defines behavior of Get Operation
  */
-public interface GetResolver<T> {
+public abstract class GetResolver<T> {
 
     /**
      * Converts {@link Cursor} with already set position to object of required type
@@ -19,7 +19,7 @@ public interface GetResolver<T> {
      * @return non-null object of required type with data parsed from passed {@link Cursor}
      */
     @NonNull
-    T mapFromCursor(@NonNull Cursor cursor);
+    public abstract T mapFromCursor(@NonNull Cursor cursor);
 
     /**
      * Performs get of results with passed query
@@ -29,7 +29,7 @@ public interface GetResolver<T> {
      * @return non-null, not closed {@link Cursor} that can be empty or contain data with results of Get Operation
      */
     @NonNull
-    Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery);
+    public abstract Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery);
 
     /**
      * Performs get of results with passed query
@@ -39,5 +39,5 @@ public interface GetResolver<T> {
      * @return non-null, not closed {@link Cursor} that can be empty or contain data with results of Get Operation
      */
     @NonNull
-    Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query);
+    public abstract Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query);
 }

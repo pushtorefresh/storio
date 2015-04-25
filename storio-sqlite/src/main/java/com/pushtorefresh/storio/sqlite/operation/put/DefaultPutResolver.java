@@ -15,7 +15,7 @@ import com.pushtorefresh.storio.util.QueryUtil;
  *
  * @param <T> type of objects to put
  */
-public abstract class DefaultPutResolver<T> implements PutResolver<T> {
+public abstract class DefaultPutResolver<T> extends PutResolver<T> {
 
     /**
      * Converts object of required type to {@link InsertQuery}
