@@ -104,7 +104,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
      *
      * @param <T> type of objects to put
      */
-    public static class Builder<T> {
+    public static final class Builder<T> {
 
         @NonNull
         private final Class<T> type;

@@ -16,6 +16,7 @@ public class PreparedExecSql implements PreparedOperation<Void> {
 
     @NonNull
     private final StorIOSQLite storIOSQLite;
+
     @NonNull
     private final RawQuery rawQuery;
 
@@ -52,12 +53,10 @@ public class PreparedExecSql implements PreparedOperation<Void> {
     /**
      * Builder for {@link PreparedExecSql}
      */
-    public static class Builder {
+    public static final class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
-
-        private RawQuery rawQuery;
 
         public Builder(@NonNull StorIOSQLite storIOSQLite) {
             this.storIOSQLite = storIOSQLite;
@@ -70,9 +69,26 @@ public class PreparedExecSql implements PreparedOperation<Void> {
          * @return builder
          */
         @NonNull
-        public Builder withQuery(@NonNull RawQuery rawQuery) {
+        public CompleteBuilder withQuery(@NonNull RawQuery rawQuery) {
+            checkNotNull(rawQuery, "Please set query object");
+            return new CompleteBuilder(storIOSQLite, rawQuery);
+        }
+    }
+
+    /**
+     * Compile-time safe part of {@link Builder}
+     */
+    public static final class CompleteBuilder {
+
+        @NonNull
+        private final StorIOSQLite storIOSQLite;
+
+        @NonNull
+        private final RawQuery rawQuery;
+
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
+            this.storIOSQLite = storIOSQLite;
             this.rawQuery = rawQuery;
-            return this;
         }
 
         /**
@@ -82,8 +98,6 @@ public class PreparedExecSql implements PreparedOperation<Void> {
          */
         @NonNull
         public PreparedExecSql prepare() {
-            checkNotNull(rawQuery, "Please set query object");
-
             return new PreparedExecSql(
                     storIOSQLite,
                     rawQuery

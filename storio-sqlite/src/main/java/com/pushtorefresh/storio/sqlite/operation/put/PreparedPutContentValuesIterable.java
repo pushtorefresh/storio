@@ -103,7 +103,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
     /**
      * Builder for {@link PreparedPutContentValuesIterable}
      */
-    public static class Builder {
+    public static final class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -145,6 +145,8 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
          */
         @NonNull
         public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
+            checkNotNull(putResolver, "Please specify put resolver");
+
             return new CompleteBuilder(
                     storIOSQLite,
                     contentValuesIterable,
@@ -157,7 +159,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
     /**
      * Compile-time safe part of {@link Builder}
      */
-    public static class CompleteBuilder {
+    public static final class CompleteBuilder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -165,11 +167,12 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
         @NonNull
         private final Iterable<ContentValues> contentValuesIterable;
 
+        @NonNull
         private final PutResolver<ContentValues> putResolver;
 
         private boolean useTransaction;
 
-        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Iterable<ContentValues> contentValuesIterable, PutResolver<ContentValues> putResolver, boolean useTransaction) {
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Iterable<ContentValues> contentValuesIterable, @NonNull PutResolver<ContentValues> putResolver, boolean useTransaction) {
             this.storIOSQLite = storIOSQLite;
             this.contentValuesIterable = contentValuesIterable;
             this.putResolver = putResolver;
@@ -197,8 +200,6 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
          */
         @NonNull
         public PreparedPutContentValuesIterable prepare() {
-            checkNotNull(putResolver, "Please specify put resolver");
-
             return new PreparedPutContentValuesIterable(
                     storIOSQLite,
                     contentValuesIterable,

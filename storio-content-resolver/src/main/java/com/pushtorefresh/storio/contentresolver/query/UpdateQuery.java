@@ -67,9 +67,7 @@ public class UpdateQuery {
     /**
      * Builder for {@link UpdateQuery}
      */
-    public static class Builder {
-
-        Uri uri;
+    public static final class Builder {
 
         /**
          * Required: Specifies uri
@@ -79,8 +77,8 @@ public class UpdateQuery {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull Uri uri) {
-            this.uri = uri;
-            return new CompleteBuilder(this);
+            checkNotNull(uri, "Please specify uri");
+            return new CompleteBuilder(uri);
         }
 
         /**
@@ -91,41 +89,24 @@ public class UpdateQuery {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
-            this.uri = Uri.parse(uri);
-            return new CompleteBuilder(this);
+            return new CompleteBuilder(Uri.parse(uri));
         }
     }
 
     /**
      * Compile-time safe part of {@link Builder}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
+
+        @NonNull
+        private final Uri uri;
 
         private String where;
+
         private List<String> whereArgs;
 
-        CompleteBuilder(@NonNull Builder builder) {
-            uri = builder.uri;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder uri(@NonNull Uri uri) {
+        CompleteBuilder(@NonNull Uri uri) {
             this.uri = uri;
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder uri(@NonNull String uri) {
-            this.uri = Uri.parse(uri);
-            return this;
         }
 
         /**
@@ -165,8 +146,6 @@ public class UpdateQuery {
          */
         @NonNull
         public UpdateQuery build() {
-            checkNotNull(uri, "Please specify uri");
-
             return new UpdateQuery(
                     uri,
                     where,

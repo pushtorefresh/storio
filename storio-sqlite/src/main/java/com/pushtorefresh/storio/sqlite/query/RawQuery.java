@@ -57,7 +57,6 @@ public class RawQuery {
         if (!query.equals(rawQuery.query)) return false;
         if (args != null ? !args.equals(rawQuery.args) : rawQuery.args != null) return false;
         return !(affectedTables != null ? !affectedTables.equals(rawQuery.affectedTables) : rawQuery.affectedTables != null);
-
     }
 
     @Override
@@ -80,9 +79,7 @@ public class RawQuery {
     /**
      * Builder for {@link RawQuery}
      */
-    public static class Builder {
-
-        String query;
+    public static final class Builder {
 
         /**
          * Required: Specifies SQL query
@@ -92,31 +89,25 @@ public class RawQuery {
          */
         @NonNull
         public CompleteBuilder query(@NonNull String query) {
-            this.query = query;
-            return new CompleteBuilder(this);
+            checkNotEmpty(query, "Query is null or empty");
+            return new CompleteBuilder(query);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link DeleteQuery}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
+
+        @NonNull
+        private final String query;
 
         private List<String> args;
+
         private Set<String> tables;
 
-        CompleteBuilder(@NonNull Builder builder) {
-            query = builder.query;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder query(@NonNull String query) {
+        CompleteBuilder(@NonNull String query) {
             this.query = query;
-            return this;
         }
 
         /**
@@ -162,8 +153,6 @@ public class RawQuery {
          */
         @NonNull
         public RawQuery build() {
-            checkNotEmpty(query, "Please specify query string");
-
             return new RawQuery(
                     query,
                     args,

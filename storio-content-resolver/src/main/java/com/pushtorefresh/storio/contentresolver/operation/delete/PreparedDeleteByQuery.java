@@ -60,7 +60,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, DeleteRes
     /**
      * Builder for {@link PreparedDeleteByQuery}
      */
-    public static class Builder {
+    public static final class Builder {
 
         private static final DeleteResolver<DeleteQuery> STANDARD_DELETE_RESOLVER = new DefaultDeleteResolver<DeleteQuery>() {
             @NonNull

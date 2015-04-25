@@ -122,7 +122,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
      *
      * @param <T> type of objects to delete
      */
-    public static class Builder<T> {
+    public static final class Builder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
