@@ -5,14 +5,15 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
-import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Delete Operation of some collection of objects for {@link StorIOContentResolver}
@@ -55,17 +56,8 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResults<T>
     @NonNull
     @Override
     public Observable<DeleteResults<T>> createObservable() {
-        return Observable.create(new Observable.OnSubscribe<DeleteResults<T>>() {
-            @Override
-            public void call(Subscriber<? super DeleteResults<T>> subscriber) {
-                final DeleteResults<T> deleteResults = executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(deleteResults);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**

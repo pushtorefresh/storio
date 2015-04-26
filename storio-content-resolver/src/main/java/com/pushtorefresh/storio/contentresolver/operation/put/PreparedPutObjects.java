@@ -4,14 +4,15 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
-import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Put Operation for collection of objects
@@ -56,17 +57,8 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     @NonNull
     @Override
     public Observable<PutResults<T>> createObservable() {
-        return Observable.create(new Observable.OnSubscribe<PutResults<T>>() {
-            @Override
-            public void call(Subscriber<? super PutResults<T>> subscriber) {
-                final PutResults<T> putResults = executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(putResults);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**

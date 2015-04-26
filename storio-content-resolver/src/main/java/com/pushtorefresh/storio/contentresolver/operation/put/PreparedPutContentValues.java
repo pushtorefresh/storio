@@ -4,11 +4,12 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
-import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Put Operation for {@link ContentValues}
@@ -42,17 +43,8 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
     @NonNull
     @Override
     public Observable<PutResult> createObservable() {
-        return Observable.create(new Observable.OnSubscribe<PutResult>() {
-            @Override
-            public void call(Subscriber<? super PutResult> subscriber) {
-                final PutResult putResult = executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(putResult);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**
