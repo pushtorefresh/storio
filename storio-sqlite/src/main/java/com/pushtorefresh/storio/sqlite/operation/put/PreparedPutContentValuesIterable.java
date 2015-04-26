@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,6 +15,7 @@ import java.util.Set;
 import rx.Observable;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
 
 public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues, PutResults<ContentValues>> {
 
@@ -96,7 +96,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
     @NonNull
     @Override
     public Observable<PutResults<ContentValues>> createObservable() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
         return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 

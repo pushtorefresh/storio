@@ -4,11 +4,12 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
-import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
 
 public class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResult> {
 
@@ -41,17 +42,8 @@ public class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResult> {
     @NonNull
     @Override
     public Observable<DeleteResult> createObservable() {
-        return Observable.create(new Observable.OnSubscribe<DeleteResult>() {
-            @Override
-            public void call(Subscriber<? super DeleteResult> subscriber) {
-                final DeleteResult deleteResult = executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(deleteResult);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**

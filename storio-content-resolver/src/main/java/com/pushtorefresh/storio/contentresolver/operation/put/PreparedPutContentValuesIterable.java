@@ -4,14 +4,15 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
-import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Put Operation to perform put multiple {@link ContentValues} into {@link StorIOContentResolver}
@@ -52,17 +53,8 @@ public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
     @NonNull
     @Override
     public Observable<PutResults<ContentValues>> createObservable() {
-        return Observable.create(new Observable.OnSubscribe<PutResults<ContentValues>>() {
-            @Override
-            public void call(Subscriber<? super PutResults<ContentValues>> subscriber) {
-                final PutResults<ContentValues> putResults = executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(putResults);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**

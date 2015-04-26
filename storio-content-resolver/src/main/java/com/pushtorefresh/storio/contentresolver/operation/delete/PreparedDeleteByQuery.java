@@ -5,11 +5,12 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
-import rx.Subscriber;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Delete Operation by {@link com.pushtorefresh.storio.contentresolver.query.DeleteQuery}
@@ -44,17 +45,8 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, DeleteRes
     @NonNull
     @Override
     public Observable<DeleteResult> createObservable() {
-        return Observable.create(new Observable.OnSubscribe<DeleteResult>() {
-            @Override
-            public void call(Subscriber<? super DeleteResult> subscriber) {
-                final DeleteResult deleteResult = executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(deleteResult);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**

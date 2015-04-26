@@ -50,42 +50,6 @@ public class DefaultStorIOSQLiteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void instantiatePutContentValues() {
-        new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
-                .build()
-                .put()
-                .contentValues(mock(ContentValues.class))
-                .withPutResolver(mock(PutResolver.class))
-                .prepare();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void instantiatePutContentValuesIterable() {
-        new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
-                .build()
-                .put()
-                .contentValues(mock(Iterable.class))
-                .withPutResolver(mock(PutResolver.class))
-                .prepare();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void instantiatePutContentValuesVarArgs() {
-        new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
-                .build()
-                .put()
-                .contentValues(mock(ContentValues.class), mock(ContentValues.class))
-                .withPutResolver(mock(PutResolver.class))
-                .prepare();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
     public void instantiatePutObject() {
         new DefaultStorIOSQLite.Builder()
                 .db(mock(SQLiteDatabase.class))
@@ -116,6 +80,42 @@ public class DefaultStorIOSQLiteTest {
                 .build()
                 .put()
                 .objects(Object.class, mock(Object.class), mock(Object.class))
+                .withPutResolver(mock(PutResolver.class))
+                .prepare();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void instantiatePutContentValues() {
+        new DefaultStorIOSQLite.Builder()
+                .db(mock(SQLiteDatabase.class))
+                .build()
+                .put()
+                .contentValues(mock(ContentValues.class))
+                .withPutResolver(mock(PutResolver.class))
+                .prepare();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void instantiatePutContentValuesIterable() {
+        new DefaultStorIOSQLite.Builder()
+                .db(mock(SQLiteDatabase.class))
+                .build()
+                .put()
+                .contentValues(mock(Iterable.class))
+                .withPutResolver(mock(PutResolver.class))
+                .prepare();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void instantiatePutContentValuesVarArgs() {
+        new DefaultStorIOSQLite.Builder()
+                .db(mock(SQLiteDatabase.class))
+                .build()
+                .put()
+                .contentValues(mock(ContentValues.class), mock(ContentValues.class))
                 .withPutResolver(mock(PutResolver.class))
                 .prepare();
     }

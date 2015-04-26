@@ -4,20 +4,19 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
+import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Func1;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Represents an Operation for {@link StorIOContentResolver} which performs query that retrieves data as list of objects
@@ -72,17 +71,8 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     @NonNull
     @Override
     public Observable<List<T>> createObservable() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-
-        return Observable.create(new Observable.OnSubscribe<List<T>>() {
-            @Override
-            public void call(Subscriber<? super List<T>> subscriber) {
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(executeAsBlocking());
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**
@@ -97,16 +87,11 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     @NonNull
     @Override
     public Observable<List<T>> createObservableStream() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return storIOContentResolver
-                .observeChangesOfUri(query.uri)
-                .map(new Func1<Changes, List<T>>() {
-                    @Override
-                    public List<T> call(Changes changes) { // each change triggers executeAsBlocking
-                        return executeAsBlocking();
-                    }
-                })
+                .observeChangesOfUri(query.uri) // each change triggers executeAsBlocking
+                .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                 .startWith(executeAsBlocking());  // start stream with first query result
     }
 

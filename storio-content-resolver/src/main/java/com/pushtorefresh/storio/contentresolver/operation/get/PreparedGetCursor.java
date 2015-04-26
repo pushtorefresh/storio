@@ -4,15 +4,14 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.util.EnvironmentUtil;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Func1;
 
 import static com.pushtorefresh.storio.util.Checks.checkNotNull;
 
@@ -40,16 +39,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
     @Override
     public Observable<Cursor> createObservable() {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-
-        return Observable.create(new Observable.OnSubscribe<Cursor>() {
-            @Override
-            public void call(Subscriber<? super Cursor> subscriber) {
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(executeAsBlocking());
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
     /**
@@ -67,13 +57,8 @@ public class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
         EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
 
         return storIOContentResolver
-                .observeChangesOfUri(query.uri)
-                .map(new Func1<Changes, Cursor>() {
-                    @Override
-                    public Cursor call(Changes changes) {
-                        return executeAsBlocking();
-                    }
-                })
+                .observeChangesOfUri(query.uri) // each change triggers executeAsBlocking
+                .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                 .startWith(executeAsBlocking()); // start stream with first query result
     }
 
