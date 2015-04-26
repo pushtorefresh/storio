@@ -10,7 +10,7 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
  * @param <T> type of objects to put
  * @see {@link DefaultPutResolver} default implementation
  */
-public interface PutResolver<T> {
+public abstract class PutResolver<T> {
 
     /**
      * Performs put of an object
@@ -20,5 +20,5 @@ public interface PutResolver<T> {
      * @return non-null result of Put Operation
      */
     @NonNull
-    PutResult performPut(@NonNull StorIOSQLite storIOSQLite, @NonNull T object);
+    public abstract PutResult performPut(@NonNull StorIOSQLite storIOSQLite, @NonNull T object);
 }
