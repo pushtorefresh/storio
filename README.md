@@ -6,16 +6,25 @@ Currently in development.
 * Powerful & Simple set of Operations: `Put`, `Get`, `Delete`
 * API for Humans: Type Safety, Immutability & Thread-Safety
 * Convenient builders with compile-time guarantees for required params. Forget about 6-7 `null` in queries
-* Object mapping, if you don't want to work with `Cursor` and `ContentValues` you don't have to
+* Typesafe Object Mapping, if you don't want to work with `Cursor` and `ContentValues` you don't have to
 * No reflection, `StorIO` is not ORM
 * Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`
 * `RxJava` as first class citizen, but it's not required dependency!
-* `rx.Observable` from `Get` Operation can observe changes in `StorIO` and receive updates automatically
+* `rx.Observable` from `Get` Operation **can observe changes** in `StorIO` and receive updates automatically
 * `StorIO` is replacements for `SQLiteDatabase` and `ContentResolver` APIs
 * `StorIO` + `RxJava` is replacement for `Loaders` API
 * We are working on `MockStorIO` (similar to [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver)) for easy unit testing
 
 ----
+
+#####Why StorIO?
+* Open Source -> less bugs
+* Documentation, Sample app and Design tests -> less bugs
+* StorIO has unit and integration tests -> less bugs
+* Simple concept of just three Operations: `Put`, `Get`, `Delete` -> less bugs
+* Almost everything is immutable and thread-safe -> less bugs
+* Builders for everything make code much, much more readable and obvious -> less bugs
+* Less bugs -> less bugs
 
 ####Documentation:
 
