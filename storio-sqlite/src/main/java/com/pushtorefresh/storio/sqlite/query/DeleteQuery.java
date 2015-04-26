@@ -79,43 +79,35 @@ public class DeleteQuery {
     /**
      * Builder for {@link DeleteQuery}
      */
-    public static class Builder {
-
-        String table;
+    public static final class Builder {
 
         /**
          * Required: Specifies table name
          *
-         * @param table non-null table name
+         * @param table non-null and not empty table name
          * @return builder
          */
         @NonNull
         public CompleteBuilder table(@NonNull String table) {
-            this.table = table;
-            return new CompleteBuilder(this);
+            checkNotEmpty(table, "Table name is null or empty");
+            return new CompleteBuilder(table);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link DeleteQuery}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
+
+        @NonNull
+        private final String table;
 
         private String where;
+
         private List<String> whereArgs;
 
-        CompleteBuilder(@NonNull Builder builder) {
-            table = builder.table;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder table(@NonNull String table) {
+        CompleteBuilder(@NonNull String table) {
             this.table = table;
-            return this;
         }
 
         /**
@@ -161,8 +153,6 @@ public class DeleteQuery {
          */
         @NonNull
         public DeleteQuery build() {
-            checkNotEmpty(table, "Please specify table name");
-
             return new DeleteQuery(
                     table,
                     where,

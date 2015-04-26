@@ -52,7 +52,7 @@ public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
      *
      * @param <T> type of object to put
      */
-    public static class Builder<T> {
+    public static final class Builder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;

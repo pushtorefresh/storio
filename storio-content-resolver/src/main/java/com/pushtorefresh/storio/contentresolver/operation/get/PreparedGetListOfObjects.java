@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
-import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
@@ -143,7 +142,6 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
         @NonNull
         private final Query query;
 
-        private MapFunc<Cursor, T> mapFunc;
         private GetResolver<T> getResolver;
 
         CompleteBuilder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Class<T> type, @NonNull Query query) {

@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,60 +54,5 @@ public class PreparedGroupOperation implements PreparedOperation<GroupOperationR
     @Override
     public Observable<GroupOperationResults> createObservable() {
         return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
-    }
-
-    /**
-     * Builder for {@link PreparedGroupOperation}
-     */
-    public static class Builder {
-
-        List<PreparedOperation<?>> preparedOperations = new ArrayList<PreparedOperation<?>>();
-
-        /**
-         * Adds Prepared Operation to Group Operation
-         *
-         * @param preparedOperation non-null implementation of {@link PreparedOperation}
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder addOperation(@NonNull PreparedOperation<?> preparedOperation) {
-            preparedOperations.add(preparedOperation);
-            return new CompleteBuilder(this);
-        }
-
-        /**
-         * Adds Prepared Operations to Group Operation
-         *
-         * @param preparedOperations non-null collection of {@link PreparedOperation}
-         * @return builder
-         */
-        @NonNull
-        public CompleteBuilder addOperations(@NonNull Iterable<PreparedOperation<?>> preparedOperations) {
-            for (PreparedOperation<?> preparedOperation : preparedOperations) {
-                this.preparedOperations.add(preparedOperation);
-            }
-
-            return new CompleteBuilder(this);
-        }
-    }
-
-    /**
-     * Compile-safe part of {@link Builder}
-     */
-    public static class CompleteBuilder extends Builder {
-
-        CompleteBuilder(@NonNull Builder builder) {
-            preparedOperations = builder.preparedOperations;
-        }
-
-        /**
-         * Creates instance of {@link PreparedGroupOperation}
-         *
-         * @return instance of {@link PreparedGroupOperation
-         */
-        @NonNull
-        public PreparedGroupOperation prepare() {
-            return new PreparedGroupOperation(preparedOperations);
-        }
     }
 }

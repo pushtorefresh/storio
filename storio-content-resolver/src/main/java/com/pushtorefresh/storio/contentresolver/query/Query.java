@@ -76,7 +76,6 @@ public class Query {
         if (whereArgs != null ? !whereArgs.equals(query.whereArgs) : query.whereArgs != null)
             return false;
         return !(sortOrder != null ? !sortOrder.equals(query.sortOrder) : query.sortOrder != null);
-
     }
 
     @Override
@@ -103,9 +102,7 @@ public class Query {
     /**
      * Builder for {@link Query}
      */
-    public static class Builder {
-
-        Uri uri;
+    public static final class Builder {
 
         /**
          * Specifies URI to query.
@@ -119,8 +116,8 @@ public class Query {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull Uri uri) {
-            this.uri = uri;
-            return new CompleteBuilder(this);
+            checkNotNull(uri, "Please specify uri");
+            return new CompleteBuilder(uri);
         }
 
         /**
@@ -135,43 +132,28 @@ public class Query {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
-            this.uri = Uri.parse(uri);
-            return new CompleteBuilder(this);
+            return new CompleteBuilder(Uri.parse(uri));
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link DeleteQuery}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
 
-        List<String> projection;
-        String where;
-        List<String> whereArgs;
-        String sortOrder;
-
-        CompleteBuilder(@NonNull Builder builder) {
-            uri = builder.uri;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
         @NonNull
-        @Override
-        public CompleteBuilder uri(@NonNull Uri uri) {
+        private final Uri uri;
+
+        private List<String> projection;
+
+        private String where;
+
+        private List<String> whereArgs;
+
+        private String sortOrder;
+
+        CompleteBuilder(@NonNull Uri uri) {
             this.uri = uri;
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder uri(@NonNull String uri) {
-            this.uri = Uri.parse(uri);
-            return this;
         }
 
         /**
@@ -242,8 +224,6 @@ public class Query {
          */
         @NonNull
         public Query build() {
-            checkNotNull(uri, "Please specify uri");
-
             return new Query(
                     uri,
                     projection,

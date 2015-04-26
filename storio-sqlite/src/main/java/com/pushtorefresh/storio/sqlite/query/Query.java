@@ -126,7 +126,6 @@ public class Query {
         if (having != null ? !having.equals(query.having) : query.having != null) return false;
         if (orderBy != null ? !orderBy.equals(query.orderBy) : query.orderBy != null) return false;
         return !(limit != null ? !limit.equals(query.limit) : query.limit != null);
-
     }
 
     @Override
@@ -161,48 +160,47 @@ public class Query {
     /**
      * Builder for {@link Query}
      */
-    public static class Builder {
-
-        String table;
+    public static final class Builder {
 
         /**
          * Required: Specifies table name
          *
-         * @param table table name
+         * @param table non-null and not emtpy table name
          * @return builder
          */
         @NonNull
         public CompleteBuilder table(@NonNull String table) {
-            this.table = table;
-            return new CompleteBuilder(this);
+            checkNotEmpty(table, "Table name is null or empty");
+            return new CompleteBuilder(table);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link DeleteQuery}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
+
+        @NonNull
+        private final String table;
 
         private boolean distinct;
+
         private List<String> columns;
+
         private String where;
+
         private List<String> whereArgs;
+
         private String groupBy;
+
         private String having;
+
         private String orderBy;
+
         private String limit;
 
-        CompleteBuilder(@NonNull Builder builder) {
-            table = builder.table;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        public CompleteBuilder table(@NonNull String table) {
+        CompleteBuilder(@NonNull String table) {
             this.table = table;
-            return this;
         }
 
         /**
@@ -360,8 +358,6 @@ public class Query {
          */
         @NonNull
         public Query build() {
-            checkNotEmpty(table, "Please specify table name");
-
             return new Query(
                     distinct,
                     table,

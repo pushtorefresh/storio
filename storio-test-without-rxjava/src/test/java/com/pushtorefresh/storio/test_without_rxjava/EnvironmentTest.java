@@ -14,7 +14,7 @@ public class EnvironmentTest {
     }
 
     @Test(expected = ClassNotFoundException.class)
-    public void rxJavaReallyIsNotInClassPath() throws ClassNotFoundException {
+    public void rxJavaIsReallyNotInClassPath() throws ClassNotFoundException {
         Class.forName("rx.Observable");
     }
 }

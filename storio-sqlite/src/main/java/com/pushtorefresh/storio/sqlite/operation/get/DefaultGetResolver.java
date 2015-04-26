@@ -12,7 +12,7 @@ import com.pushtorefresh.storio.sqlite.query.RawQuery;
  * <p/>
  * You need to just override mapping from Cursor
  */
-public abstract class DefaultGetResolver<T> implements GetResolver<T> {
+public abstract class DefaultGetResolver<T> extends GetResolver<T> {
 
     /**
      * {@inheritDoc}

@@ -112,9 +112,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     /**
      * Builder for {@link DefaultStorIOContentResolver}
      */
-    public static class Builder {
-
-        protected ContentResolver contentResolver;
+    public static final class Builder {
 
         /**
          * Required: Specifies {@link ContentResolver} for {@link StorIOContentResolver}
@@ -127,30 +125,23 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
          */
         @NonNull
         public CompleteBuilder contentResolver(@NonNull ContentResolver contentResolver) {
-            this.contentResolver = contentResolver;
-            return new CompleteBuilder(this);
+            checkNotNull(contentResolver, "Please specify content resolver");
+            return new CompleteBuilder(contentResolver);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link DefaultStorIOContentResolver}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
+
+        @NonNull
+        private final ContentResolver contentResolver;
 
         private Map<Class<?>, ContentResolverTypeDefaults<?>> typesDefaultsMap;
 
-        CompleteBuilder(@NonNull Builder builder) {
-            contentResolver = builder.contentResolver;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder contentResolver(@NonNull ContentResolver contentResolver) {
+        CompleteBuilder(@NonNull ContentResolver contentResolver) {
             this.contentResolver = contentResolver;
-            return this;
         }
 
         /**
@@ -186,7 +177,6 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
          */
         @NonNull
         public DefaultStorIOContentResolver build() {
-            checkNotNull(contentResolver, "Please specify content resolver");
             return new DefaultStorIOContentResolver(contentResolver, typesDefaultsMap);
         }
     }

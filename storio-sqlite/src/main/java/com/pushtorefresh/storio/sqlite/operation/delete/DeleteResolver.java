@@ -7,7 +7,7 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 /**
  * Defines behavior of Delete Operation
  */
-public interface DeleteResolver<T> {
+public abstract class DeleteResolver<T> {
 
     /**
      * Performs delete of an object
@@ -17,5 +17,5 @@ public interface DeleteResolver<T> {
      * @return non-null result of Delete Operation
      */
     @NonNull
-    DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull T object);
+    public abstract DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull T object);
 }
