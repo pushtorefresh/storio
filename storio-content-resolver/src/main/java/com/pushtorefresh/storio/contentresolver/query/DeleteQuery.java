@@ -76,9 +76,7 @@ public class DeleteQuery {
     /**
      * Builder for {@link DeleteQuery}
      */
-    public static class Builder {
-
-        Uri uri;
+    public static final class Builder {
 
         /**
          * Required: Specifies uri
@@ -88,8 +86,8 @@ public class DeleteQuery {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull Uri uri) {
-            this.uri = uri;
-            return new CompleteBuilder(this);
+            checkNotNull(uri, "Please specify uri");
+            return new CompleteBuilder(uri);
         }
 
         /**
@@ -100,41 +98,23 @@ public class DeleteQuery {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
-            this.uri = Uri.parse(uri);
-            return new CompleteBuilder(this);
+            return new CompleteBuilder(Uri.parse(uri));
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link DeleteQuery}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
+
+        @NonNull
+        private final Uri uri;
 
         private String where;
         private List<String> whereArgs;
 
-        CompleteBuilder(@NonNull final Builder builder) {
-            uri = builder.uri;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder uri(@NonNull Uri uri) {
+        CompleteBuilder(@NonNull Uri uri) {
             this.uri = uri;
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder uri(@NonNull String uri) {
-            this.uri = Uri.parse(uri);
-            return this;
         }
 
         /**
@@ -174,8 +154,6 @@ public class DeleteQuery {
          */
         @NonNull
         public DeleteQuery build() {
-            checkNotNull(uri, "Please specify uri");
-
             return new DeleteQuery(
                     uri,
                     where,

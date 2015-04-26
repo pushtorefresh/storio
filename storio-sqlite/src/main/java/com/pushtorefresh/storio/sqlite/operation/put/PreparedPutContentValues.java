@@ -50,7 +50,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
     /**
      * Builder for {@link PreparedPutContentValues}
      */
-    public static class Builder {
+    public static final class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -73,6 +73,8 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
          */
         @NonNull
         public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
+            checkNotNull(putResolver, "Please specify put resolver");
+
             return new CompleteBuilder(
                     storIOSQLite,
                     contentValues,
@@ -92,9 +94,10 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
         @NonNull
         private final ContentValues contentValues;
 
+        @NonNull
         private final PutResolver<ContentValues> putResolver;
 
-        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues, PutResolver<ContentValues> putResolver) {
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues, @NonNull PutResolver<ContentValues> putResolver) {
             this.storIOSQLite = storIOSQLite;
             this.contentValues = contentValues;
             this.putResolver = putResolver;
@@ -107,8 +110,6 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
          */
         @NonNull
         public PreparedPutContentValues prepare() {
-            checkNotNull(putResolver, "Please specify put resolver");
-
             return new PreparedPutContentValues(
                     storIOSQLite,
                     contentValues,

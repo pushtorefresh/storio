@@ -17,6 +17,8 @@ import java.util.Set;
 
 import rx.Observable;
 
+import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+
 public class PreparedGetCursor extends PreparedGet<Cursor> {
 
     @NonNull
@@ -101,7 +103,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
      * Required: You should specify query by call
      * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
      */
-    public static class Builder {
+    public static final class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -118,6 +120,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull Query query) {
+            checkNotNull(query, "Please specify query");
             return new CompleteBuilder(storIOSQLite, query);
         }
 
@@ -130,6 +133,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull RawQuery rawQuery) {
+            checkNotNull(rawQuery, "Please specify rawQuery");
             return new CompleteBuilder(storIOSQLite, rawQuery);
         }
     }
@@ -137,7 +141,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     /**
      * Compile-time safe part of builder for {@link PreparedOperationWithReactiveStream}
      */
-    public static class CompleteBuilder {
+    public static final class CompleteBuilder {
 
         private static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
             @NonNull
@@ -151,6 +155,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         private final StorIOSQLite storIOSQLite;
 
         private final Query query;
+
         private final RawQuery rawQuery;
 
         private GetResolver<Cursor> getResolver;

@@ -53,9 +53,7 @@ public class InsertQuery {
      * Yep, it looks stupid with only one parameter — Uri, but think about future,
      * we can add other things later without breaking the API!
      */
-    public static class Builder {
-
-        Uri uri;
+    public static final class Builder {
 
         /**
          * Required: Specifies uri
@@ -65,8 +63,8 @@ public class InsertQuery {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull Uri uri) {
-            this.uri = uri;
-            return new CompleteBuilder(this);
+            checkNotNull(uri, "Please specify uri");
+            return new CompleteBuilder(uri);
         }
 
         /**
@@ -77,38 +75,20 @@ public class InsertQuery {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
-            this.uri = Uri.parse(uri);
-            return new CompleteBuilder(this);
+            return new CompleteBuilder(Uri.parse(uri));
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link DeleteQuery}
      */
-    public static class CompleteBuilder extends Builder {
+    public static final class CompleteBuilder {
 
-        CompleteBuilder(@NonNull Builder builder) {
-            uri = builder.uri;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
         @NonNull
-        @Override
-        public CompleteBuilder uri(@NonNull Uri uri) {
+        private final Uri uri;
+
+        CompleteBuilder(@NonNull Uri uri) {
             this.uri = uri;
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @NonNull
-        @Override
-        public CompleteBuilder uri(@NonNull String uri) {
-            this.uri = Uri.parse(uri);
-            return this;
         }
 
         /**
@@ -118,8 +98,6 @@ public class InsertQuery {
          */
         @NonNull
         public InsertQuery build() {
-            checkNotNull(uri, "Please specify uri");
-
             return new InsertQuery(
                     uri
             );

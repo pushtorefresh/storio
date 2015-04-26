@@ -88,7 +88,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     /**
      * Builder for {@link DefaultStorIOSQLite}
      */
-    public static class Builder {
+    public static final class Builder {
 
         /**
          * Specifies database for internal usage.
@@ -100,6 +100,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @NonNull
         public CompleteBuilder db(@NonNull SQLiteDatabase db) {
+            checkNotNull(db, "Please specify SQLiteDatabase instance");
             return new CompleteBuilder(db);
         }
 
@@ -113,17 +114,21 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @NonNull
         public CompleteBuilder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
-            return new CompleteBuilder(sqliteOpenHelper.getWritableDatabase());
+            SQLiteDatabase db = sqliteOpenHelper.getWritableDatabase();
+            checkNotNull(db, "Please specify SQLiteDatabase instance");
+            return new CompleteBuilder(db);
         }
     }
 
     /**
      * Compile-time safe part of builder for {@link DefaultStorIOSQLite}
      */
-    public static class CompleteBuilder {
+    public static final class CompleteBuilder {
 
-        SQLiteDatabase db;
-        Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap;
+        @NonNull
+        private final SQLiteDatabase db;
+
+        private Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap;
 
         CompleteBuilder(@NonNull SQLiteDatabase db) {
             this.db = db;
@@ -162,7 +167,6 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @NonNull
         public DefaultStorIOSQLite build() {
-            checkNotNull(db, "Please specify SQLiteDatabase instance");
             return new DefaultStorIOSQLite(db, typesDefaultsMap);
         }
     }

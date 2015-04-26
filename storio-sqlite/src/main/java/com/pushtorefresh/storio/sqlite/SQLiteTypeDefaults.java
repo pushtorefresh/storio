@@ -35,7 +35,7 @@ public class SQLiteTypeDefaults<T> {
     /**
      * Builder for {@link SQLiteTypeDefaults}
      */
-    public static class Builder<T> {
+    public static final class Builder<T> {
 
         /**
          * Required: Specifies Resolver for Put Operation
@@ -45,6 +45,7 @@ public class SQLiteTypeDefaults<T> {
          */
         @NonNull
         public PutResolverBuilder<T> putResolver(@NonNull PutResolver<T> putResolver) {
+            checkNotNull(putResolver, "Please specify PutResolver");
             return new PutResolverBuilder<T>(putResolver);
         }
     }
@@ -54,11 +55,12 @@ public class SQLiteTypeDefaults<T> {
      *
      * @param <T> type
      */
-    public static class PutResolverBuilder<T> {
+    public static final class PutResolverBuilder<T> {
 
+        @NonNull
         private final PutResolver<T> putResolver;
 
-        PutResolverBuilder(PutResolver<T> putResolver) {
+        PutResolverBuilder(@NonNull PutResolver<T> putResolver) {
             this.putResolver = putResolver;
         }
 
@@ -70,16 +72,25 @@ public class SQLiteTypeDefaults<T> {
          */
         @NonNull
         public GetResolverBuilder<T> getResolver(@NonNull GetResolver<T> getResolver) {
+            checkNotNull(getResolver, "Please specify GetResolver");
             return new GetResolverBuilder<T>(putResolver, getResolver);
         }
     }
 
-    public static class GetResolverBuilder<T> {
+    /**
+     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}
+     *
+     * @param <T> type
+     */
+    public static final class GetResolverBuilder<T> {
 
+        @NonNull
         private final PutResolver<T> putResolver;
+
+        @NonNull
         private final GetResolver<T> getResolver;
 
-        GetResolverBuilder(PutResolver<T> putResolver, GetResolver<T> getResolver) {
+        GetResolverBuilder(@NonNull PutResolver<T> putResolver, @NonNull GetResolver<T> getResolver) {
             this.putResolver = putResolver;
             this.getResolver = getResolver;
         }
@@ -92,6 +103,8 @@ public class SQLiteTypeDefaults<T> {
          */
         @NonNull
         public CompleteBuilder<T> deleteResolver(@NonNull DeleteResolver<T> deleteResolver) {
+            checkNotNull(deleteResolver, "Please specify DeleteResolver");
+
             return new CompleteBuilder<T>(
                     putResolver,
                     getResolver,
@@ -100,15 +113,25 @@ public class SQLiteTypeDefaults<T> {
         }
     }
 
+    /**
+     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}
+     *
+     * @param <T> type
+     */
     public static class CompleteBuilder<T> {
 
+        @NonNull
         private final PutResolver<T> putResolver;
+
+        @NonNull
         private final GetResolver<T> getResolver;
+
+        @NonNull
         private final DeleteResolver<T> deleteResolver;
 
-        CompleteBuilder(PutResolver<T> putResolver,
-                        GetResolver<T> getResolver,
-                        DeleteResolver<T> deleteResolver) {
+        CompleteBuilder(@NonNull PutResolver<T> putResolver,
+                        @NonNull GetResolver<T> getResolver,
+                        @NonNull DeleteResolver<T> deleteResolver) {
             this.putResolver = putResolver;
             this.getResolver = getResolver;
             this.deleteResolver = deleteResolver;
@@ -121,10 +144,6 @@ public class SQLiteTypeDefaults<T> {
          */
         @NonNull
         public SQLiteTypeDefaults<T> build() {
-            checkNotNull(putResolver, "Please specify PutResolver");
-            checkNotNull(getResolver, "Please specify GetResolver");
-            checkNotNull(deleteResolver, "Please specify DeleteResolver");
-
             return new SQLiteTypeDefaults<T>(
                     putResolver,
                     getResolver,

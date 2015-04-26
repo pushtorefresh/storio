@@ -123,7 +123,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      *
      * @param <T> type of objects
      */
-    public static class Builder<T> {
+    public static final class Builder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -144,6 +144,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          */
         @NonNull
         public CompleteBuilder<T> withQuery(@NonNull Query query) {
+            checkNotNull(query, "Please specify query");
             return new CompleteBuilder<T>(storIOSQLite, type, query);
         }
 
@@ -155,6 +156,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          */
         @NonNull
         public CompleteBuilder<T> withQuery(@NonNull RawQuery rawQuery) {
+            checkNotNull(rawQuery, "Please specify rawQuery");
             return new CompleteBuilder<T>(storIOSQLite, type, rawQuery);
         }
     }
@@ -164,7 +166,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      *
      * @param <T> type of objects
      */
-    public static class CompleteBuilder<T> {
+    public static final class CompleteBuilder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
