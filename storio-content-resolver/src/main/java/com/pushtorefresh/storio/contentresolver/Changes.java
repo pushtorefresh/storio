@@ -6,12 +6,12 @@ import android.support.annotation.NonNull;
 import java.util.Collections;
 import java.util.Set;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Immutable container of information about one or more changes in {@link StorIOContentResolver}
  */
-public class Changes {
+public final class Changes {
 
     /**
      * Immutable set of affected Uris

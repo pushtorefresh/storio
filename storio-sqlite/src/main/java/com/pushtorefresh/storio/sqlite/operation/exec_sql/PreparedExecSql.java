@@ -5,14 +5,14 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
+import com.pushtorefresh.storio.internal.Environment;
 
 import rx.Observable;
 import rx.Subscriber;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
-public class PreparedExecSql implements PreparedOperation<Void> {
+public final class PreparedExecSql implements PreparedOperation<Void> {
 
     @NonNull
     private final StorIOSQLite storIOSQLite;
@@ -35,7 +35,7 @@ public class PreparedExecSql implements PreparedOperation<Void> {
     @NonNull
     @Override
     public Observable<Void> createObservable() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override

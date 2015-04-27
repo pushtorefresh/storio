@@ -31,7 +31,7 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
         query = null;
     }
 
-    public static class Builder {
+    public static final class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;

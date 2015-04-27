@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.test_without_rxjava;
 
-import com.pushtorefresh.storio.util.EnvironmentUtil;
+import com.pushtorefresh.storio.internal.Environment;
 
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ public class EnvironmentTest {
 
     @Test
     public void noRxJavaInClassPath() {
-        assertFalse(EnvironmentUtil.IS_RX_JAVA_AVAILABLE);
+        assertFalse(Environment.IS_RX_JAVA_AVAILABLE);
     }
 
     @Test(expected = ClassNotFoundException.class)

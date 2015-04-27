@@ -9,14 +9,14 @@ import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Delete Operation by {@link com.pushtorefresh.storio.contentresolver.query.DeleteQuery}
  * for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
  */
-public class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, DeleteResult> {
+public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, DeleteResult> {
 
     @NonNull
     private final DeleteQuery deleteQuery;

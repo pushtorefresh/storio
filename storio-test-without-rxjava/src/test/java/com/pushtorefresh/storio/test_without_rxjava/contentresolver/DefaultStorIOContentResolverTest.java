@@ -2,13 +2,14 @@ package com.pushtorefresh.storio.test_without_rxjava.contentresolver;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.impl.DefaultStorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResolver;
+import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
 import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
-import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
 
 import org.junit.Test;
 
@@ -32,7 +33,9 @@ public class DefaultStorIOContentResolverTest {
                 .build()
                 .get()
                 .cursor()
-                .withQuery(mock(Query.class))
+                .withQuery(new Query.Builder()
+                        .uri(mock(Uri.class))
+                        .build())
                 .withGetResolver(mock(GetResolver.class))
                 .prepare();
     }
@@ -45,7 +48,9 @@ public class DefaultStorIOContentResolverTest {
                 .build()
                 .get()
                 .listOfObjects(Object.class)
-                .withQuery(mock(Query.class))
+                .withQuery(new Query.Builder()
+                        .uri(mock(Uri.class))
+                        .build())
                 .withGetResolver(mock(GetResolver.class))
                 .prepare();
     }
@@ -105,7 +110,9 @@ public class DefaultStorIOContentResolverTest {
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .delete()
-                .byQuery(mock(DeleteQuery.class))
+                .byQuery(new DeleteQuery.Builder()
+                        .uri(mock(Uri.class))
+                        .build())
                 .withDeleteResolver(mock(DeleteResolver.class))
                 .prepare();
     }

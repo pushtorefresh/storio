@@ -9,10 +9,10 @@ import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
-public class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
+public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
 
     @NonNull
     private final T object;

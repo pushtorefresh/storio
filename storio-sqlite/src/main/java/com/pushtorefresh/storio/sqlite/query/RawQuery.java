@@ -3,21 +3,21 @@ package com.pushtorefresh.storio.sqlite.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.util.QueryUtil;
+import com.pushtorefresh.storio.internal.QueryUtil;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 
 /**
  * Get query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
  * <p/>
  * Instances of this class are Immutable
  */
-public class RawQuery {
+public final class RawQuery {
 
     /**
      * Raw SQL query

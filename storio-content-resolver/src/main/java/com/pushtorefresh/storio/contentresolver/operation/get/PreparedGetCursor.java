@@ -9,17 +9,17 @@ import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
+import com.pushtorefresh.storio.internal.Environment;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Represents an Operation for {@link StorIOContentResolver} which performs query that retrieves data as {@link Cursor}
  * from {@link android.content.ContentProvider}
  */
-public class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
+public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
 
     @NonNull
     protected final Query query;
@@ -38,7 +38,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
     @NonNull
     @Override
     public Observable<Cursor> createObservable() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
         return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
@@ -54,7 +54,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
     @NonNull
     @Override
     public Observable<Cursor> createObservableStream() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
 
         return storIOContentResolver
                 .observeChangesOfUri(query.uri) // each change triggers executeAsBlocking

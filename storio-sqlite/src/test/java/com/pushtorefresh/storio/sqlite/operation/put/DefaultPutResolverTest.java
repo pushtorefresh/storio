@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.operation.MapFunc;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.InsertQuery;
 import com.pushtorefresh.storio.sqlite.query.Query;
@@ -15,6 +14,8 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import rx.functions.Func1;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -86,11 +87,11 @@ public class DefaultPutResolverTest {
             @NonNull
             @Override
             protected ContentValues mapToContentValues(@NonNull TestItem object) {
-                return TestItem.MAP_TO_CONTENT_VALUES.map(object);
+                return TestItem.MAP_TO_CONTENT_VALUES.call(object);
             }
         };
 
-        final ContentValues expectedContentValues = TestItem.MAP_TO_CONTENT_VALUES.map(testItem);
+        final ContentValues expectedContentValues = TestItem.MAP_TO_CONTENT_VALUES.call(testItem);
 
         // Performing Put that should "insert"
         final PutResult putResult = putResolver.performPut(storIOSQLite, testItem);
@@ -183,11 +184,11 @@ public class DefaultPutResolverTest {
             @NonNull
             @Override
             protected ContentValues mapToContentValues(@NonNull TestItem object) {
-                return TestItem.MAP_TO_CONTENT_VALUES.map(object);
+                return TestItem.MAP_TO_CONTENT_VALUES.call(object);
             }
         };
 
-        final ContentValues expectedContentValues = TestItem.MAP_TO_CONTENT_VALUES.map(testItem);
+        final ContentValues expectedContentValues = TestItem.MAP_TO_CONTENT_VALUES.call(testItem);
 
         // Performing Put that should "update"
         final PutResult putResult = putResolver.performPut(storIOSQLite, testItem);
@@ -228,7 +229,7 @@ public class DefaultPutResolverTest {
         final static String COLUMN_ID = "customIdColumnName";
         @Nullable
         private final Long id;
-        static final MapFunc<TestItem, ContentValues> MAP_TO_CONTENT_VALUES = new MapFunc<TestItem, ContentValues>() {
+        static final Func1<TestItem, ContentValues> MAP_TO_CONTENT_VALUES = new Func1<TestItem, ContentValues>() {
 
             // ContentValues should be mocked for usage in tests (damn you Android...)
             // but we can not mock equals() method
@@ -238,7 +239,7 @@ public class DefaultPutResolverTest {
 
             @NonNull
             @Override
-            public ContentValues map(@NonNull TestItem testItem) {
+            public ContentValues call(@NonNull TestItem testItem) {
                 if (map.containsKey(testItem)) {
                     return map.get(testItem);
                 } else {

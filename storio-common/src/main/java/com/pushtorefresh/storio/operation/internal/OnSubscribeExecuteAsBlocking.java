@@ -13,7 +13,7 @@ import rx.Subscriber;
  * <p/>
  * For internal usage only!
  */
-public class OnSubscribeExecuteAsBlocking<Result> implements Observable.OnSubscribe<Result> {
+public final class OnSubscribeExecuteAsBlocking<Result> implements Observable.OnSubscribe<Result> {
 
     @NonNull
     private final PreparedOperation<Result> preparedOperation;

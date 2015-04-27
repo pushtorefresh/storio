@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
+import com.pushtorefresh.storio.internal.Environment;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -14,7 +14,7 @@ import rx.Subscriber;
 /**
  * Prepared Delete Operation for {@link StorIOSQLite}
  */
-public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
+public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     @NonNull
     private final DeleteQuery deleteQuery;
@@ -49,7 +49,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     @NonNull
     @Override
     public Observable<DeleteResult> createObservable() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<DeleteResult>() {
             @Override

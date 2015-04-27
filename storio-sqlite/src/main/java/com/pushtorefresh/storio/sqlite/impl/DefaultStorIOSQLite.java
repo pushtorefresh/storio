@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.internal.Environment;
+import com.pushtorefresh.storio.internal.QueryUtil;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -15,8 +17,6 @@ import com.pushtorefresh.storio.sqlite.query.InsertQuery;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
-import com.pushtorefresh.storio.util.QueryUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,8 +26,7 @@ import java.util.Set;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.newRxJavaIsNotAvailableException;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Default implementation of {@link StorIOSQLite} for {@link SQLiteDatabase}
@@ -47,7 +46,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      * One change can affect several tables, so we use {@link Changes} as representation of changes
      */
     @Nullable
-    private final PublishSubject<Changes> changesBus = EnvironmentUtil.IS_RX_JAVA_AVAILABLE
+    private final PublishSubject<Changes> changesBus = Environment.IS_RX_JAVA_AVAILABLE
             ? PublishSubject.<Changes>create()
             : null;
 
@@ -69,7 +68,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @NonNull
     public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
         if (changesBus == null) {
-            throw newRxJavaIsNotAvailableException("Observing changes in StorIOSQLite");
+            throw new IllegalStateException("Observing changes in StorIOSQLite requires RxJava");
         }
 
         // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath

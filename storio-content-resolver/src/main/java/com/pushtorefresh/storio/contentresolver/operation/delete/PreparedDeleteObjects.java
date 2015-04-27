@@ -12,15 +12,15 @@ import java.util.Map;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Delete Operation of some collection of objects for {@link StorIOContentResolver}
  *
  * @param <T> type of objects
  */
-public class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResults<T>> {
+public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResults<T>> {
 
     @NonNull
     private final Iterable<T> objects;

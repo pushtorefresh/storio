@@ -30,7 +30,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
     /**
      * Builder for {@link PreparedPut}
      */
-    public static class Builder {
+    public static final class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -107,7 +107,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
          */
         @SuppressWarnings("unchecked")
         @NonNull
-        public final <T> PreparedPutObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull T... objects) {
+        public <T> PreparedPutObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull T... objects) {
             return new PreparedPutObjects.Builder<T>(storIOSQLite, type, Arrays.asList(objects));
         }
     }

@@ -33,7 +33,9 @@ public class GetOperationDesignTest extends OperationDesignTest {
         List<Article> articles = storIOContentResolver()
                 .get()
                 .listOfObjects(Article.class)
-                .withQuery(mock(Query.class))
+                .withQuery(new Query.Builder()
+                        .uri(mock(Uri.class))
+                        .build())
                 .withGetResolver(ArticleMeta.GET_RESOLVER)
                 .prepare()
                 .executeAsBlocking();

@@ -30,7 +30,9 @@ public class DefaultStorIOSQLiteTest {
                 .build()
                 .get()
                 .cursor()
-                .withQuery(mock(Query.class))
+                .withQuery(new Query.Builder()
+                        .table("test_table")
+                        .build())
                 .withGetResolver(mock(GetResolver.class))
                 .prepare();
     }
@@ -43,7 +45,9 @@ public class DefaultStorIOSQLiteTest {
                 .build()
                 .get()
                 .listOfObjects(Object.class)
-                .withQuery(mock(Query.class))
+                .withQuery(new Query.Builder()
+                        .table("test_table")
+                        .build())
                 .withGetResolver(mock(GetResolver.class))
                 .prepare();
     }

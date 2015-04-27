@@ -8,10 +8,10 @@ import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
-public class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResult> {
+public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResult> {
 
     @NonNull
     private final T object;

@@ -15,8 +15,8 @@ import java.util.List;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Represents an Operation for {@link StorIOContentResolver} which performs query that retrieves data as list of objects
@@ -24,7 +24,7 @@ import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJa
  *
  * @param <T> type of result
  */
-public class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
+public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
 
     @NonNull
     private final Query query;

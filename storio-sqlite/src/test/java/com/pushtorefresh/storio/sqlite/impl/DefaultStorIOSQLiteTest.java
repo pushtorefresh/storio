@@ -5,6 +5,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResolver;
+import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
+import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
 
 import org.junit.Test;
 
@@ -51,7 +54,11 @@ public class DefaultStorIOSQLiteTest {
     public void addTypeDefinitionNullType() {
         new DefaultStorIOSQLite.Builder()
                 .db(mock(SQLiteDatabase.class))
-                .addDefaultsForType(null, mock(SQLiteTypeDefaults.class))
+                .addDefaultsForType(null, new SQLiteTypeDefaults.Builder<Object>()
+                        .putResolver(mock(PutResolver.class))
+                        .getResolver(mock(GetResolver.class))
+                        .deleteResolver(mock(DeleteResolver.class))
+                        .build())
                 .build();
     }
 
@@ -71,7 +78,11 @@ public class DefaultStorIOSQLiteTest {
 
         }
 
-        final SQLiteTypeDefaults<TestItem> testItemTypeDefinition = mock(SQLiteTypeDefaults.class);
+        final SQLiteTypeDefaults<TestItem> testItemTypeDefinition = new SQLiteTypeDefaults.Builder<TestItem>()
+                .putResolver(mock(PutResolver.class))
+                .getResolver(mock(GetResolver.class))
+                .deleteResolver(mock(DeleteResolver.class))
+                .build();
 
         final StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
                 .db(mock(SQLiteDatabase.class))

@@ -3,14 +3,14 @@ package com.pushtorefresh.storio.sqlite.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 
 /**
  * Insert query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
  * <p/>
  * Instances of this class are Immutable
  */
-public class InsertQuery {
+public final class InsertQuery {
 
     /**
      * Table name

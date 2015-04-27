@@ -1,8 +1,13 @@
-package com.pushtorefresh.storio.util;
+package com.pushtorefresh.storio.internal;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+/**
+ * Bunch of check methods
+ * <p/>
+ * For internal usage only!
+ */
 public final class Checks {
 
     private Checks() {

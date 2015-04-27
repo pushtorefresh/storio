@@ -6,14 +6,14 @@ import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResolver;
 import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * SQLite Type default values for object mapping
  *
  * @param <T> type
  */
-public class SQLiteTypeDefaults<T> {
+public final class SQLiteTypeDefaults<T> {
 
     @NonNull
     public final PutResolver<T> putResolver;
@@ -118,7 +118,7 @@ public class SQLiteTypeDefaults<T> {
      *
      * @param <T> type
      */
-    public static class CompleteBuilder<T> {
+    public static final class CompleteBuilder<T> {
 
         @NonNull
         private final PutResolver<T> putResolver;

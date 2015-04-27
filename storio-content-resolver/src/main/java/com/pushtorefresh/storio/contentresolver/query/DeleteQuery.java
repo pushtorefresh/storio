@@ -4,18 +4,18 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.util.QueryUtil;
+import com.pushtorefresh.storio.internal.QueryUtil;
 
 import java.util.List;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Delete query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
  * <p/>
  * Instances of this class are Immutable
  */
-public class DeleteQuery {
+public final class DeleteQuery {
 
     /**
      * The full URI to query, including a row ID (if a specific record is requested)

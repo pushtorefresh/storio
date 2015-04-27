@@ -6,7 +6,7 @@ import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResolver;
 import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
 import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * ContentResolver Type default values for object mapping
@@ -113,7 +113,7 @@ public final class ContentResolverTypeDefaults<T> {
      *
      * @param <T> type
      */
-    public static class CompleteBuilder<T> {
+    public static final class CompleteBuilder<T> {
 
         @NonNull
         private final PutResolver<T> putResolver;

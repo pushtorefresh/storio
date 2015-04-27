@@ -22,7 +22,11 @@ public class DefaultGetResolverTest {
     public void rawQuery() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
-        final RawQuery rawQuery = mock(RawQuery.class);
+
+        final RawQuery rawQuery = new RawQuery.Builder()
+                .query("test sql")
+                .build();
+
         final Cursor expectedCursor = mock(Cursor.class);
 
         when(storIOSQLite.internal())
@@ -54,7 +58,11 @@ public class DefaultGetResolverTest {
     public void query() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
-        final Query query = mock(Query.class);
+
+        final Query query = new Query.Builder()
+                .table("test_table")
+                .build();
+
         final Cursor expectedCursor = mock(Cursor.class);
 
         when(storIOSQLite.internal())
