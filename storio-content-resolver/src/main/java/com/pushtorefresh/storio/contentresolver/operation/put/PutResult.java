@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 /**
  * Immutable container for results of Put Operation
  */
-public class PutResult {
+public final class PutResult {
 
     @Nullable
     private final Uri insertedUri;

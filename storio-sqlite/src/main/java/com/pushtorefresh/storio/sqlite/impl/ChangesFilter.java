@@ -13,7 +13,7 @@ import rx.subjects.PublishSubject;
 /**
  * Hiding RxJava from ClassLoader via separate class
  */
-class ChangesFilter implements Func1<Changes, Boolean> {
+final class ChangesFilter implements Func1<Changes, Boolean> {
 
     @NonNull
     private final Set<String> tables;

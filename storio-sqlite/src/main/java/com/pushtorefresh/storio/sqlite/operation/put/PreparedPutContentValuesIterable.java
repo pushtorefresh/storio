@@ -14,10 +14,10 @@ import java.util.Set;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
-public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues, PutResults<ContentValues>> {
+public final class PreparedPutContentValuesIterable extends PreparedPut<ContentValues, PutResults<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValuesIterable;

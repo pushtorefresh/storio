@@ -12,7 +12,7 @@ import rx.functions.Func1;
  * <p/>
  * For internal usage only!
  */
-public class MapSomethingToExecuteAsBlocking<Something, Result> implements Func1<Something, Result> {
+public final class MapSomethingToExecuteAsBlocking<Something, Result> implements Func1<Something, Result> {
 
     @NonNull
     private final PreparedOperation<Result> preparedOperation;

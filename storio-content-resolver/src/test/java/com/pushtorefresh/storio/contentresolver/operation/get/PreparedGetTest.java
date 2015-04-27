@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.operation.get;
 
 import android.database.Cursor;
+import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
@@ -126,7 +127,11 @@ public class PreparedGetTest {
         GetStub() {
             storIOContentResolver = mock(StorIOContentResolver.class);
             internal = mock(StorIOContentResolver.Internal.class);
-            query = mock(Query.class);
+
+            query = new Query.Builder()
+                    .uri(mock(Uri.class))
+                    .build();
+
             getResolverForTestItems = mock(GetResolver.class);
             getResolverForCursor = mock(GetResolver.class);
             cursor = mock(Cursor.class);

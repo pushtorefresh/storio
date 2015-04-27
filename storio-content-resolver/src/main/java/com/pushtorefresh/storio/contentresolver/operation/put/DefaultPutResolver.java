@@ -9,7 +9,7 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
-import com.pushtorefresh.storio.util.QueryUtil;
+import com.pushtorefresh.storio.internal.QueryUtil;
 
 /**
  * Default thread-safe implementation of {@link PutResolver}

@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.util;
+package com.pushtorefresh.storio.internal;
 
 import android.support.annotation.Nullable;
 
@@ -8,6 +8,8 @@ import java.util.List;
 
 /**
  * Util methods for queries
+ * <p/>
+ * For internal usage only!
  */
 public final class QueryUtil {
 

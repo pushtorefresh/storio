@@ -58,14 +58,16 @@ class DeleteStub {
             final TestItem testItem = TestItem.newInstance();
             testItems.add(testItem);
 
-            final DeleteResult deleteResult = mock(DeleteResult.class);
+            final Uri testItemUri = mock(Uri.class);
+
+            final DeleteResult deleteResult = DeleteResult.newInstance(1, testItemUri);
             testItemToDeleteResultMap.put(testItem, deleteResult);
 
             when(deleteResolverForTestItems.performDelete(storIOContentResolver, testItem))
                     .thenReturn(deleteResult);
 
             final DeleteQuery deleteQuery = new DeleteQuery.Builder()
-                    .uri(mock(Uri.class))
+                    .uri(testItemUri)
                     .build();
 
             testItemDeleteQueryMap.put(testItem, deleteQuery);

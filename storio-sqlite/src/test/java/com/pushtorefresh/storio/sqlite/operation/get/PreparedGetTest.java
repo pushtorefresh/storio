@@ -195,8 +195,14 @@ public class PreparedGetTest {
             when(storIOSQLite.internal())
                     .thenReturn(internal);
 
-            query = mock(Query.class);
-            rawQuery = mock(RawQuery.class);
+            query = new Query.Builder()
+                    .table("test_table")
+                    .build();
+
+            rawQuery = new RawQuery.Builder()
+                    .query("test sql")
+                    .build();
+
             getResolverForObject = mock(GetResolver.class);
             getResolverForCursor = mock(GetResolver.class);
             cursor = mock(Cursor.class);

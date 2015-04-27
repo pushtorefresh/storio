@@ -8,7 +8,7 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.InsertQuery;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
-import com.pushtorefresh.storio.util.QueryUtil;
+import com.pushtorefresh.storio.internal.QueryUtil;
 
 /**
  * Default, thread-safe implementation of {@link PutResolver}

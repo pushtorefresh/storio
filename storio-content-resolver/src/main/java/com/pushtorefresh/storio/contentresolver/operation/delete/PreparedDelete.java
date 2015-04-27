@@ -6,7 +6,7 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.operation.PreparedOperation;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Prepared Delete Operation for {@link StorIOContentResolver}
@@ -29,7 +29,7 @@ public abstract class PreparedDelete<T, Result> implements PreparedOperation<Res
     /**
      * Builder for {@link PreparedDelete}
      */
-    public static class Builder {
+    public static final class Builder {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;

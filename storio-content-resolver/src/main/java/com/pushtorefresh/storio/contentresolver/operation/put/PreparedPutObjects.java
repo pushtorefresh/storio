@@ -11,15 +11,15 @@ import java.util.Map;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Put Operation for collection of objects
  *
  * @param <T> type of objects
  */
-public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
+public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
     @NonNull
     private final Iterable<T> objects;

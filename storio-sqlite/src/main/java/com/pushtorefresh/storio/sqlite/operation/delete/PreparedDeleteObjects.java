@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
+import com.pushtorefresh.storio.internal.Environment;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,9 +16,9 @@ import java.util.Set;
 import rx.Observable;
 import rx.Subscriber;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
-public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
+public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
     @NonNull
     private final Iterable<T> objects;
@@ -102,7 +102,7 @@ public class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
     @NonNull
     @Override
     public Observable<DeleteResults<T>> createObservable() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<DeleteResults<T>>() {
             @Override

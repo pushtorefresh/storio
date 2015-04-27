@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.util;
+package com.pushtorefresh.storio.internal;
 
 import org.junit.Test;
 

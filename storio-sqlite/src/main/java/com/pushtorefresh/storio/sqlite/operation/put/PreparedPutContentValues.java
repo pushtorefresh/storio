@@ -6,13 +6,13 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
+import com.pushtorefresh.storio.internal.Environment;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
-public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResult> {
+public final class PreparedPutContentValues extends PreparedPut<ContentValues, PutResult> {
 
     @NonNull
     private final ContentValues contentValues;
@@ -43,7 +43,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
     @NonNull
     @Override
     public Observable<PutResult> createObservable() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
         return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
@@ -86,7 +86,7 @@ public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResu
     /**
      * Compile-time safe part of {@link Builder}
      */
-    public static class CompleteBuilder {
+    public static final class CompleteBuilder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;

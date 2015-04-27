@@ -4,18 +4,18 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.util.QueryUtil;
+import com.pushtorefresh.storio.internal.QueryUtil;
 
 import java.util.List;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Update query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
  * <p/>
  * Instances of this class are Immutable
  */
-public class UpdateQuery {
+public final class UpdateQuery {
 
     /**
      * The URI to query. This can potentially have a record ID if this is an update request for a specific record

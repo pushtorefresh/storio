@@ -1,9 +1,9 @@
-package com.pushtorefresh.storio.util;
+package com.pushtorefresh.storio.internal;
 
 import org.junit.Test;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotEmpty;
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 

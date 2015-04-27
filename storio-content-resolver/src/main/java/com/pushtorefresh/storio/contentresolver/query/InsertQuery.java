@@ -3,14 +3,14 @@ package com.pushtorefresh.storio.contentresolver.query;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Insert query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
  * <p/>
  * Instances of this class are Immutable
  */
-public class InsertQuery {
+public final class InsertQuery {
 
     /**
      * The content:// URI of the insertion request.

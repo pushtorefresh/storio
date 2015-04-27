@@ -10,16 +10,16 @@ import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
+import com.pushtorefresh.storio.internal.Environment;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
-public class PreparedGetCursor extends PreparedGet<Cursor> {
+public final class PreparedGetCursor extends PreparedGet<Cursor> {
 
     @NonNull
     private final GetResolver<Cursor> getResolver;
@@ -58,7 +58,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     @NonNull
     @Override
     public Observable<Cursor> createObservable() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
         return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
@@ -74,7 +74,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     @NonNull
     @Override
     public Observable<Cursor> createObservableStream() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
 
         final Set<String> tables;
 

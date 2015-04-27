@@ -8,13 +8,13 @@ import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Put Operation for {@link ContentValues}
  */
-public class PreparedPutContentValues extends PreparedPut<ContentValues, PutResult> {
+public final class PreparedPutContentValues extends PreparedPut<ContentValues, PutResult> {
 
     @NonNull
     private final ContentValues contentValues;

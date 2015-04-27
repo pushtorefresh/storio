@@ -5,14 +5,14 @@ import android.support.annotation.NonNull;
 import java.util.Collections;
 import java.util.Set;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Immutable container for result of Delete Operation
  * <p/>
  * Instances of this class are Immutable
  */
-public class DeleteResult {
+public final class DeleteResult {
 
     private final int numberOfRowsDeleted;
 

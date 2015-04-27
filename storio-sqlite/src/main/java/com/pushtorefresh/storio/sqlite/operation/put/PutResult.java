@@ -6,12 +6,12 @@ import android.support.annotation.Nullable;
 import java.util.Collections;
 import java.util.Set;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Immutable container for results of Put Operation
  */
-public class PutResult {
+public final class PutResult {
 
     @Nullable
     private final Long insertedId;

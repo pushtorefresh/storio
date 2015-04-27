@@ -11,13 +11,13 @@ import java.util.Map;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Put Operation to perform put multiple {@link ContentValues} into {@link StorIOContentResolver}
  */
-public class PreparedPutContentValuesIterable extends PreparedPut<ContentValues, PutResults<ContentValues>> {
+public final class PreparedPutContentValuesIterable extends PreparedPut<ContentValues, PutResults<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValues;

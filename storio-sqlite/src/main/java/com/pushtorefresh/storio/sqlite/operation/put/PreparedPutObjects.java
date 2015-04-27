@@ -6,7 +6,7 @@ import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
+import com.pushtorefresh.storio.internal.Environment;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,9 +15,9 @@ import java.util.Set;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
-public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
+public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
     @NonNull
     private final Iterable<T> objects;
@@ -95,7 +95,7 @@ public class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     @NonNull
     @Override
     public Observable<PutResults<T>> createObservable() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
         return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 

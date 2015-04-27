@@ -10,7 +10,7 @@ import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
-import com.pushtorefresh.storio.util.EnvironmentUtil;
+import com.pushtorefresh.storio.internal.Environment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +19,7 @@ import java.util.Set;
 
 import rx.Observable;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Represents an Operation for {@link StorIOSQLite} which performs query that retrieves data as list of objects
@@ -27,7 +27,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
  *
  * @param <T> type of result
  */
-public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
+public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     @NonNull
     private final GetResolver<T> getResolver;
@@ -80,7 +80,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      */
     @NonNull
     public Observable<List<T>> createObservable() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
         return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
@@ -96,7 +96,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @NonNull
     @Override
     public Observable<List<T>> createObservableStream() {
-        EnvironmentUtil.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
+        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
 
         final Set<String> tables;
 

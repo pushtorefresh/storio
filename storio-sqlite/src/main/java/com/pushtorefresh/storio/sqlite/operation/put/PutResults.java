@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @param <T> type of objects
  */
-public class PutResults<T> {
+public final class PutResults<T> {
 
     @NonNull
     private final Map<T, PutResult> results;

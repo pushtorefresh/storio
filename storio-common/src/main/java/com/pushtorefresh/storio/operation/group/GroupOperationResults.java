@@ -7,7 +7,7 @@ import com.pushtorefresh.storio.operation.PreparedOperation;
 import java.util.Collections;
 import java.util.Map;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Immutable container for results of {@link PreparedGroupOperation}
@@ -15,7 +15,7 @@ import static com.pushtorefresh.storio.util.Checks.checkNotNull;
  * <p/>
  * Unfortunately, we can not generify it because each Operation can return different type of result
  */
-public class GroupOperationResults {
+public final class GroupOperationResults {
 
     @NonNull
     private final Map<PreparedOperation<?>, Object> results;

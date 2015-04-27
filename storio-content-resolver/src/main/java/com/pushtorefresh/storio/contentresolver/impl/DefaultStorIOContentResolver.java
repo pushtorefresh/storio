@@ -17,7 +17,7 @@ import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
-import com.pushtorefresh.storio.util.QueryUtil;
+import com.pushtorefresh.storio.internal.QueryUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,9 +27,9 @@ import java.util.Set;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
-import static com.pushtorefresh.storio.util.Checks.checkNotNull;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.IS_RX_JAVA_AVAILABLE;
-import static com.pushtorefresh.storio.util.EnvironmentUtil.newRxJavaIsNotAvailableException;
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.IS_RX_JAVA_AVAILABLE;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Default, thread-safe implementation of {@link StorIOContentResolver}
@@ -84,9 +84,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     @NonNull
     @Override
     public Observable<Changes> observeChangesOfUris(@NonNull final Set<Uri> uris) {
-        if (!IS_RX_JAVA_AVAILABLE) {
-            throw newRxJavaIsNotAvailableException("Observing changes in StorIOContentProvider");
-        }
+        throwExceptionIfRxJavaIsNotAvailable("Observing changes in StorIOContentProvider");
 
         for (Uri uri : uris) {
             contentResolver.registerContentObserver(
