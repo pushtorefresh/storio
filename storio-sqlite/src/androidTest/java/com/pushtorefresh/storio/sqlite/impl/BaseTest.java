@@ -7,6 +7,7 @@ import android.support.test.InstrumentationRegistry;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResult;
+import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResults;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResult;
 import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
 
@@ -120,5 +121,19 @@ public abstract class BaseTest {
         assertEquals(1, deleteResult.numberOfRowsDeleted());
 
         return deleteResult;
+    }
+
+    @NonNull
+    DeleteResults<User> deleteUsers(@NonNull final List<User> users) {
+        final DeleteResults<User> deleteResults = storIOSQLite
+                .delete()
+                .objects(User.class, users)
+                .prepare()
+                .executeAsBlocking();
+
+        for (User user : users) {
+            assertTrue(deleteResults.wasDeleted(user));
+        }
+        return deleteResults;
     }
 }

@@ -24,6 +24,7 @@ dependencies {
 
     provided rootProject.ext.supportAnnotations
     provided rootProject.ext.rxJava
+    provided rootProject.ext.rxAndroid
 
     testCompile rootProject.ext.junit
     testCompile rootProject.ext.mockitoCore
