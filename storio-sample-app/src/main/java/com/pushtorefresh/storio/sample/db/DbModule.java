@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sample.Logger;
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
 import com.pushtorefresh.storio.sample.db.entity.TweetDeleteResolver;
 import com.pushtorefresh.storio.sample.db.entity.TweetGetResolver;
@@ -32,8 +31,7 @@ public class DbModule {
                         .getResolver(new TweetGetResolver())
                         .deleteResolver(new TweetDeleteResolver())
                         .build())
-                .build()
-                .setLogListener(new Logger());
+                .build();
     }
 
     @Provides
