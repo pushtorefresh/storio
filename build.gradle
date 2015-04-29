@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         // Android Gradle plugin
-        classpath 'com.android.tools.build:gradle:1.2.1'
+        classpath 'com.android.tools.build:gradle:1.2.2'
 
         // Resolves android-sdk dependencies
         classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
@@ -32,9 +32,9 @@ task wrapper(type: Wrapper) {
 
 ext {
     compileSdkVersion = 22
-    buildToolsVersion = '22.0.0'
+    buildToolsVersion = '22.0.1'
 
-    supportAnnotations = 'com.android.support:support-annotations:21.0.3'
+    supportAnnotations = 'com.android.support:support-annotations:22.1.1'
     rxJava = 'io.reactivex:rxjava:1.0.9'
 
     dagger = 'com.google.dagger:dagger:2.0'
@@ -43,11 +43,11 @@ ext {
     javaxInject = 'javax.inject:javax.inject:1'
     javaxAnnotationApi = 'javax.annotation:javax.annotation-api:1.2'
 
-    appCompat = 'com.android.support:appcompat-v7:22.0.0'
     butterKnife = 'com.jakewharton:butterknife:6.1.0'
-    recyclerView = 'com.android.support:recyclerview-v7:22.0.0'
+    appCompat = 'com.android.support:appcompat-v7:22.1.1'
+    recyclerView = 'com.android.support:recyclerview-v7:22.1.1'
     rxAndroid = 'io.reactivex:rxandroid:0.24.0'
-    timber = 'com.jakewharton.timber:timber:2.7.1'
+    timber = 'com.jakewharton.timber:timber:3.0.1'
 
     autoService = 'com.google.auto.service:auto-service:1.0-rc2'
     javaPoet = 'com.squareup:javapoet:1.0.0'
