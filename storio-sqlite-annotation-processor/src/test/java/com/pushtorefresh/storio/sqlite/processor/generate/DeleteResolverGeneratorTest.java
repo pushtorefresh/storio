@@ -64,7 +64,7 @@ public class DeleteResolverGeneratorTest {
                 "/**\n" +
                 " * Generated resolver for Delete Operation\n" +
                 " */\n" +
-                "public class TestItemDeleteResolver extends DefaultDeleteResolver<TestItem> {\n" +
+                "public class TestItemStorIOSQLiteDeleteResolver extends DefaultDeleteResolver<TestItem> {\n" +
                 "    /**\n" +
                 "     * {@inheritDoc}\n" +
                 "     */\n" +

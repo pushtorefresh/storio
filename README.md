@@ -20,8 +20,8 @@ Currently in development.
 #####Why StorIO?
 * Open Source -> less bugs
 * Documentation, Sample app and Design tests -> less bugs
-* StorIO has unit and integration tests -> less bugs
-* Simple concept of just three Operations: `Put`, `Get`, `Delete` -> less bugs
+* `StorIO` has unit and integration tests -> less bugs
+* Simple concept of just three main Operations: `Put`, `Get`, `Delete` -> less bugs
 * Almost everything is immutable and thread-safe -> less bugs
 * Builders for everything make code much, much more readable and obvious -> less bugs
 * Less bugs -> less bugs
@@ -70,7 +70,7 @@ storIOSQLite
   .byQuery(new DeleteQuery.Builder()
     .table("tweets")
     .where("timestamp <= ?")
-    .whereArgs(System.currentTimeMillis() - 86400)
+    .whereArgs(System.currentTimeMillis() - 86400) // No need to write String.valueOf()
     .build())
   .prepare()
   .executeAsBlocking();
@@ -139,9 +139,9 @@ Cursor cursor = storIOSQLite
 StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
   .db(someSQLiteDatabase)
   .addTypeDefaults(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
-    .putResolver(Tweet.PUT_RESOLVER) // object that knows how to perform Put Operation (insert or update)
-    .getResolver(Tweet.GET_RESOLVER) // object that knows how to perform Get Operation
-    .deleteResolver(Tweet.DELETE_RESOLVER)  // object that knows how to perform Delete Operation
+    .putResolver(new TweetPutResolver()) // object that knows how to perform Put Operation (insert or update)
+    .getResolver(new TweetGetResolver()) // object that knows how to perform Get Operation
+    .deleteResolver(new TweetDeleteResolver())  // object that knows how to perform Delete Operation
     .build())
   .addTypeDefaults(...)
   // other options
@@ -151,7 +151,60 @@ StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
 You can override Operation Resolver per each individual Operation, it can be useful for working with `SQL JOIN`.
 Also, as you can see, there is no Reflection, and no performance reduction in compare to manual object mapping code.
 
-We are thinking about optional Compile-Time annotation processing for generating resolvers implementation in compile-time.
+To **save you from coding boilerplate classes** we created **Annotation Processor** which will generate `PutResolver`, `GetResolver` and `DeleteResolver` at compile time, you just need to use generated classes
+
+```groovy
+dependencies {
+	// At the moment there is annotation processor only for StorIOSQLite 
+	compile 'com.pushtorefresh.storio:storio-sqlite-annotation:1.0.0'
+
+	// We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
+	apt 'com.pushtorefresh.storio:storio-sqlite-annotation-processor:1.0.0'
+}
+```
+
+```java
+@StorIOSQLiteType(table = "tweets")
+public class Tweet {
+	
+	// annotated fields should have package-level visibility
+	@StorIOSQLiteColumn(name = "author")
+	String author;
+
+	@StorIOSQLiteColumn(name = "content")
+	String content;
+
+    // please leave default constuctor with package-level visibility
+	Tweet() {}
+}
+```
+
+Annotation Processor will generate three classes in same package as annotated class during compilation:
+
+* `TweetStorIOSQLitePutResolver`
+* `TweetStorIOSQLiteGetResolver`
+* `TweetStorIOSQLiteDeleteResolver`
+
+You just need to aply them:
+
+```java
+StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
+  .db(someSQLiteDatabase)
+  .addTypeDefaults(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
+    .putResolver(new TweetStorIOSQLitePutResolver()) // object that knows how to perform Put Operation (insert or update)
+    .getResolver(new TweetStorIOSQLiteGetResolver()) // object that knows how to perform Get Operation
+    .deleteResolver(new TweetStorIOSQLiteDeleteResolver())  // object that knows how to perform Delete Operation
+    .build())
+  .addTypeDefaults(...)
+  // other options
+  .build(); // This instance of StorIOSQLite will know how to work with Tweet objects
+```
+
+Few tips about Operation Resolvers:
+
+* If your entities are immutable or they have builders or they use AutoValue/AutoParcel -> write your own Operation Resolvers
+* If you want to write your own Operation Resolver -> take a look at Default Operation resolvers, they can fit your needs
+* Via custom Operation Resolvers you can implement any Operation as you want -> store one object in multiple tables, use custom sql things and so on
 
 API of `StorIOContentResolver` is same.
 

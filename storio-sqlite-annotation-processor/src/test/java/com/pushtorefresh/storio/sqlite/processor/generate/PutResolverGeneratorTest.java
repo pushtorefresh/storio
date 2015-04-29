@@ -66,7 +66,7 @@ public class PutResolverGeneratorTest {
                 "/**\n" +
                 " * Generated resolver for Put Operation\n" +
                 " */\n" +
-                "public class TestItemPutResolver extends DefaultPutResolver<TestItem> {\n" +
+                "public class TestItemStorIOSQLitePutResolver extends DefaultPutResolver<TestItem> {\n" +
                 "    /**\n" +
                 "     * {@inheritDoc}\n" +
                 "     */\n" +
