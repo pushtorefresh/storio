@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.LogListener;
-import com.pushtorefresh.storio.Loggi;
 import com.pushtorefresh.storio.sqlite.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.sqlite.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.storio.sqlite.operation.get.PreparedGet;
@@ -24,7 +22,7 @@ import rx.Observable;
 
 /**
  * Powerful abstraction for databases
- * <p/>
+ * <p>
  * It's an abstract class instead of interface because we want to have ability to add some
  * changes without breaking existing implementations
  */
@@ -95,28 +93,6 @@ public abstract class StorIOSQLite {
     }
 
     /**
-     * Set your own logger, and it will be use instead of default.
-     *
-     * @param logListener an logger.
-     * @return this.
-     */
-    public StorIOSQLite setLogListener(@NonNull final LogListener logListener) {
-        internal().getLoggi().setLogListener(logListener);
-        return this;
-    }
-
-    /**
-     * Use to turn logs on/off
-     *
-     * @param enabled <code>false</code>, if you want to hide logs.
-     * @return this.
-     */
-    public StorIOSQLite setLogIsEnabled(final boolean enabled) {
-        internal().getLoggi().setIsEnabled(enabled);
-        return this;
-    }
-
-    /**
      * Hides some internal operations of {@link StorIOSQLite} to make API of {@link StorIOSQLite} clean and easy to understand
      *
      * @return implementation of Internal operations for {@link StorIOSQLite}
@@ -131,14 +107,8 @@ public abstract class StorIOSQLite {
     public static abstract class Internal {
 
         /**
-         * Log wrapper for internal usage only.
-         */
-        @NonNull
-        private final Loggi loggi = new Loggi();
-
-        /**
          * Gets {@link SQLiteTypeDefaults} for required type
-         * <p/>
+         * <p>
          * Result can be null
          *
          * @param type type
@@ -229,15 +199,5 @@ public abstract class StorIOSQLite {
          * End a transaction
          */
         public abstract void endTransaction();
-
-        /**
-         * Log wrapper getter.
-         *
-         * @return a log wrapper.
-         */
-        @NonNull
-        public Loggi getLoggi() {
-            return loggi;
-        }
     }
 }
