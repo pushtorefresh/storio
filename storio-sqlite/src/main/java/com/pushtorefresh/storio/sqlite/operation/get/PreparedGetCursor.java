@@ -10,7 +10,6 @@ import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
-import com.pushtorefresh.storio.internal.Environment;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +17,7 @@ import java.util.Set;
 import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 public final class PreparedGetCursor extends PreparedGet<Cursor> {
 
@@ -58,7 +58,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     @NonNull
     @Override
     public Observable<Cursor> createObservable() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
         return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
     }
 
@@ -74,7 +74,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     @NonNull
     @Override
     public Observable<Cursor> createObservableStream() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
+        throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
 
         final Set<String> tables;
 
