@@ -65,7 +65,7 @@ public class GetResolverGeneratorTest {
                 "/**\n" +
                 " * Generated resolver for Get Operation\n" +
                 " */\n" +
-                "public class TestItemGetResolver extends DefaultGetResolver<TestItem> {\n" +
+                "public class TestItemStorIOSQLiteGetResolver extends DefaultGetResolver<TestItem> {\n" +
                 "    /**\n" +
                 "     * {@inheritDoc}\n" +
                 "     */\n" +

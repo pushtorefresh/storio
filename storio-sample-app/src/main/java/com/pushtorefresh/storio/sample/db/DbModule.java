@@ -5,9 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
-import com.pushtorefresh.storio.sample.db.entity.TweetDeleteResolver;
-import com.pushtorefresh.storio.sample.db.entity.TweetGetResolver;
-import com.pushtorefresh.storio.sample.db.entity.TweetPutResolver;
+import com.pushtorefresh.storio.sample.db.entity.TweetStorIOSQLiteDeleteResolver;
+import com.pushtorefresh.storio.sample.db.entity.TweetStorIOSQLiteGetResolver;
+import com.pushtorefresh.storio.sample.db.entity.TweetStorIOSQLitePutResolver;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
@@ -27,9 +27,9 @@ public class DbModule {
         return new DefaultStorIOSQLite.Builder()
                 .db(db)
                 .addDefaultsForType(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
-                        .putResolver(new TweetPutResolver())
-                        .getResolver(new TweetGetResolver())
-                        .deleteResolver(new TweetDeleteResolver())
+                        .putResolver(new TweetStorIOSQLitePutResolver())
+                        .getResolver(new TweetStorIOSQLiteGetResolver())
+                        .deleteResolver(new TweetStorIOSQLiteDeleteResolver())
                         .build())
                 .build();
     }

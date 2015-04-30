@@ -24,7 +24,7 @@ public class PutResolverGenerator {
     public JavaFile generateJavaFile(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
         final ClassName storIOSQLiteTypeClassName = ClassName.get(storIOSQLiteTypeMeta.packageName, storIOSQLiteTypeMeta.simpleName);
 
-        final TypeSpec putResolver = TypeSpec.classBuilder(storIOSQLiteTypeMeta.simpleName + "PutResolver")
+        final TypeSpec putResolver = TypeSpec.classBuilder(storIOSQLiteTypeMeta.simpleName + "StorIOSQLitePutResolver")
                 .addJavadoc("Generated resolver for Put Operation\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operation.put", "DefaultPutResolver"), storIOSQLiteTypeClassName))
