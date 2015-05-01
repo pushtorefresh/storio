@@ -174,7 +174,7 @@ public class Tweet {
 	@StorIOSQLiteColumn(name = "content")
 	String content;
 
-    // please leave default constuctor with package-level visibility
+    // please leave default constructor with package-level visibility
 	Tweet() {}
 }
 ```
@@ -185,7 +185,7 @@ Annotation Processor will generate three classes in same package as annotated cl
 * `TweetStorIOSQLiteGetResolver`
 * `TweetStorIOSQLiteDeleteResolver`
 
-You just need to aply them:
+You just need to apply them:
 
 ```java
 StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
