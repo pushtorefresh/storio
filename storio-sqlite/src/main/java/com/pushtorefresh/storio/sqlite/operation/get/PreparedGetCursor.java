@@ -19,6 +19,9 @@ import rx.Observable;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
+/**
+ * Represents Get Operation for {@link StorIOSQLite} which performs query that retrieves data as {@link Cursor}
+ */
 public final class PreparedGetCursor extends PreparedGet<Cursor> {
 
     @NonNull
@@ -51,7 +54,9 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Creates an {@link Observable} which will emit result of operation
+     * Creates "Cold" {@link Observable} which will emit result of operation
+     * <p>
+     * Does not operate by default on a particular {@link rx.Scheduler}
      *
      * @return non-null {@link Observable} which will emit non-null {@link Cursor}, can be empty
      */
@@ -63,11 +68,15 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Creates an {@link Observable} which will be subscribed to changes of query tables
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
      * and will emit result each time change occurs
-     * <p/>
+     * <p>
      * First result will be emitted immediately after subscription,
-     * other emissions will occur only if changes of query tables will occur
+     * other emissions will occur only if changes of query tables will occur during lifetime of the Observable
+     * <p>
+     * Does not operate by default on a particular {@link rx.Scheduler}
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because it's "Hot" and endless
      *
      * @return non-null {@link Observable} which will emit {@link Cursor} and will be subscribed to changes of query tables
      */
@@ -99,7 +108,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
 
     /**
      * Builder for {@link PreparedOperationWithReactiveStream}
-     * <p/>
+     * <p>
      * Required: You should specify query by call
      * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
      */

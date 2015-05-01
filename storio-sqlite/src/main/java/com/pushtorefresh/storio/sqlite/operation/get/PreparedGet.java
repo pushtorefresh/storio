@@ -8,7 +8,12 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 
-public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStream<T> {
+/**
+ * Represents Get Operation for {@link StorIOSQLite} which performs query that retrieves data
+ *
+ * @param <Result> type of result
+ */
+public abstract class PreparedGet<Result> implements PreparedOperationWithReactiveStream<Result> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;
@@ -31,6 +36,9 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
         query = null;
     }
 
+    /**
+     * Builder for {@link PreparedGet}
+     */
     public static final class Builder {
 
         @NonNull
@@ -40,11 +48,23 @@ public abstract class PreparedGet<T> implements PreparedOperationWithReactiveStr
             this.storIOSQLite = storIOSQLite;
         }
 
+        /**
+         * Returns builder for Get Operation that returns result as {@link android.database.Cursor}
+         *
+         * @return builder for Get Operation that returns result as {@link android.database.Cursor}
+         */
         @NonNull
         public PreparedGetCursor.Builder cursor() {
             return new PreparedGetCursor.Builder(storIOSQLite);
         }
 
+        /**
+         * Returns builder for Get Operation that returns result as {@link java.util.List} of items
+         *
+         * @param type type of items
+         * @param <T>  type of items
+         * @return builder for Get Operation that returns result as {@link java.util.List} of items
+         */
         @NonNull
         public <T> PreparedGetListOfObjects.Builder<T> listOfObjects(@NonNull Class<T> type) {
             return new PreparedGetListOfObjects.Builder<T>(storIOSQLite, type);
