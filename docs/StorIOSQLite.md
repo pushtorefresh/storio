@@ -287,10 +287,11 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 
 ```groovy
 dependencies {
-  compile 'com.pushtorefresh.storio:storio-sqlite-annotation:1.0.0'
+    // At the moment there is annotation processor only for StorIOSQLite
+  	compile 'com.pushtorefresh.storio:sqlite-annotation:not-published-yet'
 
-  // We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
-  apt 'com.pushtorefresh.storio:storio-sqlite-annotation-processor:1.0.0'
+  	// We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
+  	apt 'com.pushtorefresh.storio:sqlite-annotation-processor:not-published-yet'
 }
 ```
 
