@@ -6,7 +6,7 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 
 /**
- * Represents an Operation for {@link StorIOContentResolver} which performs query that retrieves data
+ * Represents Get Operation for {@link StorIOContentResolver} which performs query that retrieves data
  * from {@link android.content.ContentProvider}
  *
  * @param <Result> type of result
@@ -27,7 +27,7 @@ public abstract class PreparedGet<T, Result> implements PreparedOperationWithRea
     /**
      * Builder for {@link PreparedGet}
      */
-    public static class Builder {
+    public final static class Builder {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;
@@ -37,9 +37,9 @@ public abstract class PreparedGet<T, Result> implements PreparedOperationWithRea
         }
 
         /**
-         * Returns builder for {@link PreparedGetCursor}
+         * Returns builder for Get Operation that returns result as {@link android.database.Cursor}
          *
-         * @return builder
+         * @return builder for Get Operation that returns result as {@link android.database.Cursor}
          */
         @NonNull
         public PreparedGetCursor.Builder cursor() {
@@ -47,9 +47,11 @@ public abstract class PreparedGet<T, Result> implements PreparedOperationWithRea
         }
 
         /**
-         * Returns builder for {@link PreparedGetListOfObjects}
+         * Returns builder for Get Operation that returns result as {@link java.util.List} of items
          *
-         * @return builder
+         * @param type type of items
+         * @param <T>  type of items
+         * @return builder for Get Operation that returns result as {@link java.util.List} of items
          */
         @NonNull
         public <T> PreparedGetListOfObjects.Builder<T> listOfObjects(@NonNull Class<T> type) {
