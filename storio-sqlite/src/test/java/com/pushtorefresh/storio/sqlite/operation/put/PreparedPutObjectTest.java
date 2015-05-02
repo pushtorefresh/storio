@@ -8,29 +8,29 @@ public class PreparedPutObjectTest {
 
     @Test
     public void putObjectBlocking() {
-        final PutStub putStub = PutStub.newPutStubForOneItem();
+        final PutStub putStub = PutStub.newPutStubForOneObject();
 
         final PutResult putResult = putStub.storIOSQLite
                 .put()
                 .object(putStub.testItems.get(0))
-                .withPutResolver(putStub.putResolver)
+                .withPutResolver(putStub.putResolverForObjects)
                 .prepare()
                 .executeAsBlocking();
 
-        putStub.verifyBehaviorForOne(putResult);
+        putStub.verifyBehaviorForOneObject(putResult);
     }
 
     @Test
     public void putObjectObservable() {
-        final PutStub putStub = PutStub.newPutStubForOneItem();
+        final PutStub putStub = PutStub.newPutStubForOneObject();
 
         final Observable<PutResult> putResultObservable = putStub.storIOSQLite
                 .put()
                 .object(putStub.testItems.get(0))
-                .withPutResolver(putStub.putResolver)
+                .withPutResolver(putStub.putResolverForObjects)
                 .prepare()
                 .createObservable();
 
-        putStub.verifyBehaviorForOne(putResultObservable);
+        putStub.verifyBehaviorForOneObject(putResultObservable);
     }
 }

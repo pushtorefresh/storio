@@ -47,41 +47,34 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
 
         final Map<ContentValues, PutResult> putResults = new HashMap<ContentValues, PutResult>();
 
-        final boolean withTransaction = useTransaction && internal.transactionsSupported();
-
-        if (withTransaction) {
+        if (useTransaction) {
             internal.beginTransaction();
         }
-
-        boolean transactionSuccessful = false;
 
         try {
             for (ContentValues contentValues : contentValuesIterable) {
                 final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
                 putResults.put(contentValues, putResult);
 
-                if (!withTransaction) {
+                if (!useTransaction) {
                     internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                 }
             }
 
-            if (withTransaction) {
+            if (useTransaction) {
                 storIOSQLite.internal().setTransactionSuccessful();
-                transactionSuccessful = true;
+
+                final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+
+                for (final ContentValues contentValues : putResults.keySet()) {
+                    affectedTables.addAll(putResults.get(contentValues).affectedTables());
+                }
+
+                storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
             }
         } finally {
-            if (withTransaction) {
+            if (useTransaction) {
                 storIOSQLite.internal().endTransaction();
-
-                if (transactionSuccessful) {
-                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
-
-                    for (final ContentValues contentValues : putResults.keySet()) {
-                        affectedTables.addAll(putResults.get(contentValues).affectedTables());
-                    }
-
-                    storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
-                }
             }
         }
 
@@ -111,29 +104,10 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
         @NonNull
         private final Iterable<ContentValues> contentValuesIterable;
 
-        private PutResolver<ContentValues> putResolver;
-
-        private boolean useTransaction = true;
-
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Iterable<ContentValues> contentValuesIterable) {
             this.storIOSQLite = storIOSQLite;
             this.contentValuesIterable = contentValuesIterable;
         }
-
-        /**
-         * Optional: Defines that Put Operation will use transaction
-         * if it is supported by implementation of {@link StorIOSQLite}
-         * <p/>
-         * By default, transaction will be used
-         *
-         * @return builder
-         */
-        @NonNull
-        public Builder useTransaction(boolean useTransaction) {
-            this.useTransaction = useTransaction;
-            return this;
-        }
-
 
         /**
          * Required: Specifies {@link PutResolver} for Put Operation
@@ -150,8 +124,7 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
             return new CompleteBuilder(
                     storIOSQLite,
                     contentValuesIterable,
-                    putResolver,
-                    useTransaction
+                    putResolver
             );
         }
     }
@@ -170,13 +143,12 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
         @NonNull
         private final PutResolver<ContentValues> putResolver;
 
-        private boolean useTransaction;
+        private boolean useTransaction = true;
 
-        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Iterable<ContentValues> contentValuesIterable, @NonNull PutResolver<ContentValues> putResolver, boolean useTransaction) {
+        CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Iterable<ContentValues> contentValuesIterable, @NonNull PutResolver<ContentValues> putResolver) {
             this.storIOSQLite = storIOSQLite;
             this.contentValuesIterable = contentValuesIterable;
             this.putResolver = putResolver;
-            this.useTransaction = useTransaction;
         }
 
         /**

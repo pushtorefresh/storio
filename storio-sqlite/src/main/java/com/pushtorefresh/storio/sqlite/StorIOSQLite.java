@@ -179,13 +179,6 @@ public abstract class StorIOSQLite {
         public abstract void notifyAboutChanges(@NonNull Changes changes);
 
         /**
-         * Returns true if {@link StorIOSQLite} implementation supports transactions
-         *
-         * @return true if transactions are supported, false otherwise
-         */
-        public abstract boolean transactionsSupported();
-
-        /**
          * Begins a transaction in EXCLUSIVE mode
          */
         public abstract void beginTransaction();

@@ -284,14 +284,6 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          * {@inheritDoc}
          */
         @Override
-        public boolean transactionsSupported() {
-            return true;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
         public void beginTransaction() {
             db.beginTransaction();
         }
