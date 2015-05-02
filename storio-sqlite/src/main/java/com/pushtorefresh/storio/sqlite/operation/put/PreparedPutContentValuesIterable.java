@@ -51,6 +51,8 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
             internal.beginTransaction();
         }
 
+        boolean transactionSuccessful = false;
+
         try {
             for (ContentValues contentValues : contentValuesIterable) {
                 final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
@@ -63,18 +65,21 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
 
             if (useTransaction) {
                 storIOSQLite.internal().setTransactionSuccessful();
-
-                final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
-
-                for (final ContentValues contentValues : putResults.keySet()) {
-                    affectedTables.addAll(putResults.get(contentValues).affectedTables());
-                }
-
-                storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                transactionSuccessful = true;
             }
         } finally {
             if (useTransaction) {
                 storIOSQLite.internal().endTransaction();
+
+                if (transactionSuccessful) {
+                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+
+                    for (final ContentValues contentValues : putResults.keySet()) {
+                        affectedTables.addAll(putResults.get(contentValues).affectedTables());
+                    }
+
+                    storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                }
             }
         }
 

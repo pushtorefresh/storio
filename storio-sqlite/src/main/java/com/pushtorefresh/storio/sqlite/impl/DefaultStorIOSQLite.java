@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -175,6 +177,12 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Nullable
         private final Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap;
 
+        @NonNull
+        private final AtomicInteger numberOfRunningTransactions = new AtomicInteger(0);
+
+        @NonNull
+        private final Set<Changes> pendingChanges = Collections.newSetFromMap(new ConcurrentHashMap<Changes, Boolean>());
+
         protected InternalImpl(@Nullable Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap) {
             this.typesDefaultsMap = typesDefaultsMap != null
                     ? Collections.unmodifiableMap(typesDefaultsMap)
@@ -276,7 +284,17 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         public void notifyAboutChanges(@NonNull Changes changes) {
             // Notifying about changes requires RxJava, if RxJava is not available -> skip notification
             if (changesBus != null) {
-                changesBus.onNext(changes);
+                pendingChanges.add(changes);
+                notifyAboutPendingChangesIfNotInTransaction();
+            }
+        }
+
+        private void notifyAboutPendingChangesIfNotInTransaction() {
+            if (changesBus != null && numberOfRunningTransactions.get() == 0) {
+                for (final Changes changes : pendingChanges) {
+                    pendingChanges.remove(changes);
+                    changesBus.onNext(changes);
+                }
             }
         }
 
@@ -286,6 +304,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public void beginTransaction() {
             db.beginTransaction();
+            numberOfRunningTransactions.incrementAndGet();
         }
 
         /**
@@ -301,7 +320,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void endTransaction() {
+            numberOfRunningTransactions.decrementAndGet();
             db.endTransaction();
+            notifyAboutPendingChangesIfNotInTransaction();
         }
     }
 }

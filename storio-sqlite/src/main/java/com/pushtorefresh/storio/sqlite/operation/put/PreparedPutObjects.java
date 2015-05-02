@@ -48,6 +48,8 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
             internal.beginTransaction();
         }
 
+        boolean transactionSuccessful = false;
+
         try {
             for (T object : objects) {
                 final PutResult putResult = putResolver.performPut(storIOSQLite, object);
@@ -61,18 +63,21 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
             if (useTransaction) {
                 storIOSQLite.internal().setTransactionSuccessful();
-
-                final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
-
-                for (final T object : putResults.keySet()) {
-                    affectedTables.addAll(putResults.get(object).affectedTables());
-                }
-
-                storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                transactionSuccessful = true;
             }
         } finally {
             if (useTransaction) {
                 storIOSQLite.internal().endTransaction();
+
+                if (transactionSuccessful) {
+                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+
+                    for (final T object : putResults.keySet()) {
+                        affectedTables.addAll(putResults.get(object).affectedTables());
+                    }
+
+                    storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                }
             }
         }
 
