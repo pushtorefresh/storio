@@ -24,11 +24,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static java.util.Collections.newSetFromMap;
 
 /**
  * Default implementation of {@link StorIOSQLite} for {@link SQLiteDatabase}
@@ -172,6 +174,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected class InternalImpl extends Internal {
 
         @Nullable
@@ -181,7 +186,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         private final AtomicInteger numberOfRunningTransactions = new AtomicInteger(0);
 
         @NonNull
-        private final Set<Changes> pendingChanges = Collections.newSetFromMap(new ConcurrentHashMap<Changes, Boolean>());
+        private final AtomicReference<Set<Changes>> pendingChanges
+                = new AtomicReference<Set<Changes>>(newSetFromMap(new ConcurrentHashMap<Changes, Boolean>()));
 
         protected InternalImpl(@Nullable Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap) {
             this.typesDefaultsMap = typesDefaultsMap != null
@@ -284,16 +290,18 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         public void notifyAboutChanges(@NonNull Changes changes) {
             // Notifying about changes requires RxJava, if RxJava is not available -> skip notification
             if (changesBus != null) {
-                pendingChanges.add(changes);
+                pendingChanges.get().add(changes);
                 notifyAboutPendingChangesIfNotInTransaction();
             }
         }
 
         private void notifyAboutPendingChangesIfNotInTransaction() {
             if (changesBus != null && numberOfRunningTransactions.get() == 0) {
-                for (final Changes changes : pendingChanges) {
-                    pendingChanges.remove(changes);
-                    changesBus.onNext(changes);
+                final Set<Changes> changes = pendingChanges
+                        .getAndSet(newSetFromMap(new ConcurrentHashMap<Changes, Boolean>()));
+
+                for (final Changes next : changes) {
+                    changesBus.onNext(next);
                 }
             }
         }
