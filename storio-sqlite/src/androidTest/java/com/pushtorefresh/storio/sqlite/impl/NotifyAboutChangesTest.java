@@ -19,6 +19,7 @@ import rx.observers.TestObserver;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class NotifyAboutChangesTest extends BaseTest {
@@ -46,7 +47,7 @@ public class NotifyAboutChangesTest extends BaseTest {
 
     @Test
     public void notifyAboutChangesConcurrently() {
-        final int numberOfThreads = 5;
+        final int numberOfThreads = 10;
 
         final TestObserver<Changes> testObserver = new TestObserver<Changes>();
 
@@ -88,12 +89,13 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         final long startTime = SystemClock.elapsedRealtime();
 
-        while (testObserver.getOnNextEvents().size() != tables.size() && SystemClock.elapsedRealtime() - startTime < 1000) {
+        while (testObserver.getOnNextEvents().size() != tables.size() && SystemClock.elapsedRealtime() - startTime < 2000) {
             SystemClock.sleep(5);
         }
 
         // notice, that order of received notification can be different
         // but in total, they should be equal
-        assertEquals(expectedChanges, testObserver.getOnNextEvents());
+        assertEquals(expectedChanges.size(), testObserver.getOnNextEvents().size());
+        assertTrue(expectedChanges.containsAll(testObserver.getOnNextEvents()));
     }
 }
