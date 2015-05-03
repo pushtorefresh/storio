@@ -22,7 +22,7 @@ import rx.Observable;
 
 /**
  * Powerful abstraction for databases
- * <p>
+ * <p/>
  * It's an abstract class instead of interface because we want to have ability to add some
  * changes without breaking existing implementations
  */
@@ -108,7 +108,7 @@ public abstract class StorIOSQLite {
 
         /**
          * Gets {@link SQLiteTypeDefaults} for required type
-         * <p>
+         * <p/>
          * Result can be null
          *
          * @param type type
@@ -179,24 +179,44 @@ public abstract class StorIOSQLite {
         public abstract void notifyAboutChanges(@NonNull Changes changes);
 
         /**
-         * Returns true if {@link StorIOSQLite} implementation supports transactions
-         *
-         * @return true if transactions are supported, false otherwise
-         */
-        public abstract boolean transactionsSupported();
-
-        /**
-         * Begins a transaction in EXCLUSIVE mode
+         * Begins a transaction in EXCLUSIVE mode.
+         * <p/>
+         * Thread will be blocked on call to this method if another thread already in transaction,
+         * as soon as first thread will end its transaction this thread will be unblocked
+         * <p>
+         * Transactions can be nested.
+         * When the outer transaction is ended all of
+         * the work done in that transaction and all of the nested transactions will be committed or
+         * rolled back. The changes will be rolled back if any transaction is ended without being
+         * marked as clean (by calling setTransactionSuccessful). Otherwise they will be committed.
+         * </p>
+         * <p>Here is the standard idiom for transactions:
+         * <p/>
+         * <pre>
+         *   db.beginTransaction();
+         *   try {
+         *     ...
+         *     db.setTransactionSuccessful();
+         *   } finally {
+         *     db.endTransaction();
+         *   }
+         * </pre>
          */
         public abstract void beginTransaction();
 
         /**
-         * Marks the current transaction as successful
+         * Marks the current transaction as successful. Do not do any more database work between
+         * calling this and calling endTransaction. Do as little non-database work as possible in that
+         * situation too. If any errors are encountered between this and endTransaction the transaction
+         * will still be committed.
+         *
+         * @throws IllegalStateException if the transaction is already marked as successful.
          */
         public abstract void setTransactionSuccessful();
 
         /**
-         * End a transaction
+         * Ends a transaction. See {@link #beginTransaction()} for notes about how to use this and when transactions
+         * are committed and rolled back.
          */
         public abstract void endTransaction();
     }

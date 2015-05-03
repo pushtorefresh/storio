@@ -2,11 +2,11 @@ package com.pushtorefresh.storio.sqlite.operation.put;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.internal.Environment;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.internal.Environment;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,10 +44,7 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         final StorIOSQLite.Internal internal = storIOSQLite.internal();
         final Map<T, PutResult> putResults = new HashMap<T, PutResult>();
 
-        final boolean withTransaction = useTransaction
-                && storIOSQLite.internal().transactionsSupported();
-
-        if (withTransaction) {
+        if (useTransaction) {
             internal.beginTransaction();
         }
 
@@ -59,17 +56,17 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
                 putResults.put(object, putResult);
 
-                if (!withTransaction) {
+                if (!useTransaction) {
                     internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                 }
             }
 
-            if (withTransaction) {
+            if (useTransaction) {
                 storIOSQLite.internal().setTransactionSuccessful();
                 transactionSuccessful = true;
             }
         } finally {
-            if (withTransaction) {
+            if (useTransaction) {
                 storIOSQLite.internal().endTransaction();
 
                 if (transactionSuccessful) {

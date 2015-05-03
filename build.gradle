@@ -31,8 +31,9 @@ task wrapper(type: Wrapper) {
 }
 
 ext {
-    compileSdkVersion = 22
     buildToolsVersion = '22.0.1'
+    compileSdkVersion = 22
+    minSdkVersion = 14
 
     supportAnnotations = 'com.android.support:support-annotations:22.1.1'
     rxJava = 'io.reactivex:rxjava:1.0.10'
