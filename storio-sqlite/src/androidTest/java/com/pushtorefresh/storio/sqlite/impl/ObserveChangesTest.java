@@ -11,13 +11,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import rx.Observer;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
 public class ObserveChangesTest extends BaseSubscriptionTest {
 
@@ -32,21 +30,10 @@ public class ObserveChangesTest extends BaseSubscriptionTest {
             return storIOSQLite
                     .observeChangesInTable(UserTableMeta.TABLE)
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<Changes>() {
-
+                    .subscribe(new Action1<Changes>() {
                         @Override
-                        public void onError(Throwable e) {
-                            fail("Error occurred: " + e);
-                        }
-
-                        @Override
-                        public void onNext(Changes changes) {
+                        public void call(Changes changes) {
                             onNextObtained(changes);
-                        }
-
-                        @Override
-                        public void onCompleted() {
                         }
                     });
         }

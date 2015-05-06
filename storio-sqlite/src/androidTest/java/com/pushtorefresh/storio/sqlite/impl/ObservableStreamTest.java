@@ -11,13 +11,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import rx.Observer;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class ObservableStreamTest extends BaseSubscriptionTest {
@@ -35,23 +33,12 @@ public class ObservableStreamTest extends BaseSubscriptionTest {
                     .listOfObjects(User.class)
                     .withQuery(UserTableMeta.QUERY_ALL)
                     .prepare()
-                    .createObservableStream()
+                    .createObservable()
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<List<User>>() {
-
+                    .subscribe(new Action1<List<User>>() {
                         @Override
-                        public void onError(Throwable e) {
-                            fail("Error occurred: " + e);
-                        }
-
-                        @Override
-                        public void onNext(List<User> users) {
+                        public void call(List<User> users) {
                             onNextObtained(users);
-                        }
-
-                        @Override
-                        public void onCompleted() {
                         }
                     });
         }

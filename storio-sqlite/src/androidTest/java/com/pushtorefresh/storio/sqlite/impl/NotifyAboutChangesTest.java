@@ -89,7 +89,8 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         final long startTime = SystemClock.elapsedRealtime();
 
-        while (testObserver.getOnNextEvents().size() != tables.size() && SystemClock.elapsedRealtime() - startTime < 2000) {
+        while (testObserver.getOnNextEvents().size() != tables.size()
+                && (SystemClock.elapsedRealtime() - startTime) < 15000) {
             SystemClock.sleep(5);
         }
 

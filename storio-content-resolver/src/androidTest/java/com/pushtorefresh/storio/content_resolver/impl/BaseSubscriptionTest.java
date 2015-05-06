@@ -4,9 +4,10 @@ import android.support.annotation.NonNull;
 
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import rx.Subscription;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public abstract class BaseSubscriptionTest extends BaseTest {
 
@@ -21,9 +22,9 @@ public abstract class BaseSubscriptionTest extends BaseTest {
 
         public boolean syncWait() {
             try {
-                lock.await(2000, TimeUnit.MILLISECONDS);
+                lock.await(15, SECONDS);
             } catch (InterruptedException e) {
-                return false;
+                throw new RuntimeException(e);
             }
             return lock.getCount() == 0;
         }
