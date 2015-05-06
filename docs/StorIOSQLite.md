@@ -40,26 +40,6 @@ final Cursor tweetsCursor = storIOSQLite
 
 Things become much more interesting with `RxJava`!
 
-######Get cursor as `Observable`
-```java
-storIOSQLite
-  .get()
-  .cursor()
-  .withQuery(new Query.Builder()
-    .table("tweets")
-    .build())
-  .prepare()
-  .createObservable()
-  .subscribeOn(Schedulers.io()) // Execute Get Operation on Background Thread
-  .observeOn(AndroidSchedulers.mainThread()) // Observe on Main Thread
-  .subscribe(new Action1<Cursor>() {
-    @Override public void call(Cursor cursor) {
-      // display the data from cursor
-      // will be called once
-    }
-  });
-```
-
 #####What if you want to observe changes in `StorIOSQLite`?
 
 ######First-case: Receive updates to `Observable` on each change in tables from `Query` 
@@ -72,7 +52,7 @@ storIOSQLite
     .table("tweets")
     .build())
   .prepare()
-  .createObservableStream() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
+  .createObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
   .subscribeOn(Schedulers.io())
   .observeOn(AndroidSchedulers.mainThread())
   .subscribe(new Action1<List<Tweet>>() { // don't forget to unsubscribe please
@@ -90,7 +70,7 @@ storIOSQLite
 ```java
 storIOSQLite
   .observeChangesInTable("tweets")
-  .subscribe(new Action1<Changes>() { // or apply RxJava Operators
+  .subscribe(new Action1<Changes>() { // or apply RxJava Operators such as Debounce, Filter, etc
     // do what you want!
   });
 ```
@@ -106,7 +86,7 @@ storIOSQLite
     .args("artem_zin")
     .build())
   .prepare()
-  .createObservableStream();
+  .createObservable();
 ```
 
 ######Customize behavior of `Get` Operation with `GetResolver`

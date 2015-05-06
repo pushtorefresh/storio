@@ -23,7 +23,6 @@ import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -33,7 +32,11 @@ import butterknife.OnClick;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class TweetsFragment extends BaseFragment {
 
@@ -92,19 +95,13 @@ public class TweetsFragment extends BaseFragment {
                 .listOfObjects(Tweet.class)
                 .withQuery(TweetTableMeta.QUERY_ALL)
                 .prepare()
-                .createObservableStream() // it will be subscribed to changes in tweets table!
-                .delay(1, TimeUnit.SECONDS) // for better User Experience
+                .createObservable() // it will be subscribed to changes in tweets table!
+                .delay(1, SECONDS) // for better User Experience
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Tweet>>() {
+                .subscribe(new Action1<List<Tweet>>() {
                     @Override
-                    public void onError(Throwable e) {
-                        uiStateController.setUiStateError();
-                        tweetsAdapter.setTweets(null);
-                    }
-
-                    @Override
-                    public void onNext(List<Tweet> tweets) {
+                    public void call(List<Tweet> tweets) {
                         if (tweets.isEmpty()) {
                             uiStateController.setUiStateEmpty();
                             tweetsAdapter.setTweets(null);
@@ -113,10 +110,12 @@ public class TweetsFragment extends BaseFragment {
                             tweetsAdapter.setTweets(tweets);
                         }
                     }
-
+                }, new Action1<Throwable>() {
                     @Override
-                    public void onCompleted() {
-                        // no impl
+                    public void call(Throwable throwable) {
+                        Timber.e(throwable, "reloadData()");
+                        uiStateController.setUiStateError();
+                        tweetsAdapter.setTweets(null);
                     }
                 });
 

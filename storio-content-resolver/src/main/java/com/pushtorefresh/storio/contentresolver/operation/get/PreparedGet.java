@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.contentresolver.operation.get;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.operation.PreparedOperation;
 
 /**
  * Represents Get Operation for {@link StorIOContentResolver} which performs query that retrieves data
@@ -11,7 +11,7 @@ import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
  *
  * @param <Result> type of result
  */
-public abstract class PreparedGet<T, Result> implements PreparedOperationWithReactiveStream<Result> {
+public abstract class PreparedGet<T, Result> implements PreparedOperation<Result> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;

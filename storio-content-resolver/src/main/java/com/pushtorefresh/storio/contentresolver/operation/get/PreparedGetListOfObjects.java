@@ -8,7 +8,6 @@ import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
-import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,20 +63,6 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     }
 
     /**
-     * Creates "Cold" {@link Observable} which will emit result of operation
-     * <p>
-     * Does not operate by default on a particular {@link rx.Scheduler}
-     *
-     * @return non-null {@link Observable} which will emit non-null list with mapped results, list can be empty
-     */
-    @NonNull
-    @Override
-    public Observable<List<T>> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
-    }
-
-    /**
      * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
      * and will emit result each time change occurs
      * <p>
@@ -92,7 +77,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
      */
     @NonNull
     @Override
-    public Observable<List<T>> createObservableStream() {
+    public Observable<List<T>> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return storIOContentResolver

@@ -6,8 +6,8 @@ Currently in development.
 * Powerful & Simple set of Operations: `Put`, `Get`, `Delete`
 * API for Humans: Type Safety, Immutability & Thread-Safety
 * Convenient builders with compile-time guarantees for required params. Forget about 6-7 `null` in queries
-* Typesafe Object Mapping, if you don't want to work with `Cursor` and `ContentValues` you don't have to
-* No reflection, `StorIO` is not ORM
+* Optional Type-Safe Object Mapping, if you don't want to work with `Cursor` and `ContentValues` you don't have to
+* No reflection and no annotations in core, also `StorIO` is not ORM
 * Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`
 * `RxJava` as first class citizen, but it's not required dependency!
 * `rx.Observable` from `Get` Operation **can observe changes** in `StorIO` and receive updates automatically
@@ -78,25 +78,6 @@ storIOSQLite
 
 ####Reactive? Observable.just(true)!
 
-#####Get something as rx.Observable
-```java
-storIOSQLite
-  .get()
-  .listOfObjects(Tweet.class)
-  .withQuery(new Query.Builder()
-    .table("tweets")
-    .build())
-  .prepare()
-  .createObservable()
-  .subscribeOn(Schedulers.io()) // Execute Get Operation on Background Thread
-  .observeOn(AndroidSchedulers.mainThread()) // Observe on Main Thread
-  .subscribe(new Action1<List<Tweet>>() {
-  	@Override public void call(List<Tweet> tweets) {
-  	  adapter.setData(tweets); // display results
-  	}
-  });
-```
-
 #####Get something as rx.Observable and receive updates!
 ```java
 storIOSQLite
@@ -106,7 +87,7 @@ storIOSQLite
     .table("tweets")
     .build())
   .prepare()
-  .createObservableStream() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
+  .createObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
   .subscribeOn(Schedulers.io())
   .observeOn(AndroidSchedulers.mainThread())
   .subscribe(new Action1<List<Tweet>>() { // don't forget to unsubscribe please
@@ -235,7 +216,7 @@ One of the main goals of `StorIO` — clean API for Humans which will be easy to
 All `Query` objects are immutable, you can share them safely.
 
 ####Concept of Prepared Operations
-You may notice that each Operation (Get, Put, Delete) should be prepared with `prepare()`. `StorIO` has an entity called `PreparedOperation<T>`, and you can use them to perform group execution of several Prepared Operations or provide `PreparedOperation<T>` as a return type of your API (for example in Model layer) and client will decide how to execute it: `executeAsBlocking()` or `createObservable()` or `createObservableStream()` (if possible). Also, Prepared Operations might be useful for ORMs based on `StorIO`.
+You may notice that each Operation (Get, Put, Delete) should be prepared with `prepare()`. `StorIO` has an entity called `PreparedOperation<T>`, and you can use them to perform group execution of several Prepared Operations or provide `PreparedOperation<T>` as a return type of your API (for example in Model layer) and client will decide how to execute it: `executeAsBlocking()` or `createObservable()`. Also, Prepared Operations might be useful for ORMs based on `StorIO`.
 
 You can customize behavior of every Operation via `Resolvers`: `GetResolver`, `PutResolver`, `DeleteResolver`.
 

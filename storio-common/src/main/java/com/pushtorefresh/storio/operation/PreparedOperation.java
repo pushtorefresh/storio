@@ -20,7 +20,9 @@ public interface PreparedOperation<Result> {
     Result executeAsBlocking();
 
     /**
-     * Creates {@link rx.Observable} that emits only ONE result
+     * Creates {@link rx.Observable} that emits result of Operation.
+     *
+     * Observable may be Hot or Cold, please read documentation of the concrete implementation
      *
      * @return observable result of operation with only one {@link rx.Observer#onNext(Object)} call
      */
