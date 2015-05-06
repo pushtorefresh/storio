@@ -124,25 +124,4 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .prepare()
                 .createObservable();
     }
-
-    @Test
-    public void getCursorObservableStream() {
-        Observable<Cursor> usersObservableStream = storIOSQLite()
-                .get()
-                .cursor()
-                .withQuery(new Query.Builder().table("users").build())
-                .prepare()
-                .createObservableStream();
-    }
-
-    @Test
-    public void getListOfObjectsObservableStream() {
-        Observable<List<User>> usersObservableStream = storIOSQLite()
-                .get()
-                .listOfObjects(User.class)
-                .withQuery(new Query.Builder().table("users").build())
-                .withGetResolver(UserTableMeta.GET_RESOLVER)
-                .prepare()
-                .createObservableStream();
-    }
 }

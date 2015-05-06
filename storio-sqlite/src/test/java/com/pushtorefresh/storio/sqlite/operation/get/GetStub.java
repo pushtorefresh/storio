@@ -127,6 +127,8 @@ class GetStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+
+        verify(storIOSQLite, times(1)).observeChangesInTables(eq(Collections.singleton(query.table)));
     }
 
     void verifyQueryBehaviorForList(@NonNull List<TestItem> actualList) {
@@ -149,6 +151,8 @@ class GetStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+
+        verify(storIOSQLite, times(1)).observeChangesInTables(eq(Collections.singleton(query.table)));
     }
 
     void verifyRawQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
@@ -169,6 +173,9 @@ class GetStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+
+        assertNotNull(rawQuery.affectedTables);
+        verify(storIOSQLite, times(1)).observeChangesInTables(rawQuery.affectedTables);
     }
 
     void verifyRawQueryBehaviorForList(@NonNull List<TestItem> actualList) {
@@ -191,5 +198,8 @@ class GetStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+
+        assertNotNull(rawQuery.affectedTables);
+        verify(storIOSQLite, times(1)).observeChangesInTables(rawQuery.affectedTables);
     }
 }

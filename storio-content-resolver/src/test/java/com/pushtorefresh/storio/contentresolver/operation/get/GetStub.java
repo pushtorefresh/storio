@@ -114,6 +114,8 @@ class GetStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+
+        verify(storIOContentResolver, times(1)).observeChangesOfUri(query.uri);
     }
 
     void verifyQueryBehaviorForList(@NonNull List<TestItem> actualList) {
@@ -135,5 +137,7 @@ class GetStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+
+        verify(storIOContentResolver, times(1)).observeChangesOfUri(query.uri);
     }
 }

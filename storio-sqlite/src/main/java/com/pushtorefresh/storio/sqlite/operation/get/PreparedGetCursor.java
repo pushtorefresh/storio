@@ -4,7 +4,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -54,20 +53,6 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Creates "Cold" {@link Observable} which will emit result of operation
-     * <p>
-     * Does not operate by default on a particular {@link rx.Scheduler}
-     *
-     * @return non-null {@link Observable} which will emit non-null {@link Cursor}, can be empty
-     */
-    @NonNull
-    @Override
-    public Observable<Cursor> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
-    }
-
-    /**
      * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
      * and will emit result each time change occurs
      * <p>
@@ -82,8 +67,8 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      */
     @NonNull
     @Override
-    public Observable<Cursor> createObservableStream() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
+    public Observable<Cursor> createObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         final Set<String> tables;
 
@@ -102,12 +87,12 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
                     .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                     .startWith(executeAsBlocking()); // start stream with first query result
         } else {
-            return createObservable();
+            return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
         }
     }
 
     /**
-     * Builder for {@link PreparedOperationWithReactiveStream}
+     * Builder for {@link PreparedGetCursor}
      * <p>
      * Required: You should specify query by call
      * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
@@ -148,7 +133,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link PreparedOperationWithReactiveStream}
+     * Compile-time safe part of builder for {@link PreparedGetCursor}
      */
     public static final class CompleteBuilder {
 
@@ -200,7 +185,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
          * @return {@link PreparedGetCursor} instance
          */
         @NonNull
-        public PreparedOperationWithReactiveStream<Cursor> prepare() {
+        public PreparedGetCursor prepare() {
             if (getResolver == null) {
                 getResolver = STANDARD_GET_RESOLVER;
             }

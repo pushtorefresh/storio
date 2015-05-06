@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
+import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
@@ -13,7 +13,7 @@ import com.pushtorefresh.storio.sqlite.query.RawQuery;
  *
  * @param <Result> type of result
  */
-public abstract class PreparedGet<Result> implements PreparedOperationWithReactiveStream<Result> {
+public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;

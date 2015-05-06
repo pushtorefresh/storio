@@ -74,19 +74,6 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Creates "Cold" {@link Observable} which will emit result of operation
-     * <p>
-     * Does not operate by default on a particular {@link rx.Scheduler}
-     *
-     * @return non-null {@link Observable} which will emit non-null list with mapped results, list can be empty
-     */
-    @NonNull
-    public Observable<List<T>> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
-    }
-
-    /**
      * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
      * and will emit result each time change occurs
      * <p>
@@ -101,8 +88,8 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      */
     @NonNull
     @Override
-    public Observable<List<T>> createObservableStream() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
+    public Observable<List<T>> createObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         final Set<String> tables;
 
@@ -120,7 +107,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
                     .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                     .startWith(executeAsBlocking()); // start stream with first query result
         } else {
-            return createObservable();
+            return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
         }
     }
 
