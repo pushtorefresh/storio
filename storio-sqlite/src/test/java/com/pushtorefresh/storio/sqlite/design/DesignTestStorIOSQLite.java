@@ -74,11 +74,6 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
         }
 
         @Override
-        public boolean transactionsSupported() {
-            return false;
-        }
-
-        @Override
         public void beginTransaction() {
             // no impl
         }

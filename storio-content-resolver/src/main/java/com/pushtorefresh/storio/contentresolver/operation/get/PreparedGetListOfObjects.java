@@ -8,7 +8,6 @@ import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
-import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Represents an Operation for {@link StorIOContentResolver} which performs query that retrieves data as list of objects
+ * Represents Get Operation for {@link StorIOContentResolver} which performs query that retrieves data as list of objects
  * from {@link android.content.ContentProvider}
  *
  * @param <T> type of result
@@ -39,7 +38,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     /**
      * Executes Prepared Operation immediately in current thread
      *
-     * @return non-null list with mapped results, can be empty
+     * @return non-null {@link List} with mapped results, can be empty
      */
     @NonNull
     @Override
@@ -64,29 +63,21 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     }
 
     /**
-     * Creates an {@link Observable} which will emit result of operation
-     *
-     * @return non-null {@link Observable} which will emit non-null list with mapped results, list can be empty
-     */
-    @NonNull
-    @Override
-    public Observable<List<T>> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
-    }
-
-    /**
-     * Creates an {@link Observable} which will be subscribed to changes of {@link #query} Uri
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
      * and will emit result each time change occurs
-     * <p/>
+     * <p>
      * First result will be emitted immediately,
      * other emissions will occur only if changes of {@link #query} Uri will occur
+     * <p>
+     * Does not operate by default on a particular {@link rx.Scheduler}
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because it's "Hot" and endless
      *
      * @return non-null {@link Observable} which will emit non-null list with mapped results and will be subscribed to changes of {@link #query} Uri
      */
     @NonNull
     @Override
-    public Observable<List<T>> createObservableStream() {
+    public Observable<List<T>> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return storIOContentResolver
@@ -153,7 +144,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
         /**
          * Optional: Specifies {@link GetResolver} for Get Operation
          * which allows you to customize behavior of Get Operation
-         * <p/>
+         * <p>
          * Can be set via {@link ContentResolverTypeDefaults},
          * If value is not set via {@link ContentResolverTypeDefaults} -> exception will be thrown
          *

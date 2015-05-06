@@ -40,26 +40,6 @@ final Cursor tweetsCursor = storIOSQLite
 
 Things become much more interesting with `RxJava`!
 
-######Get cursor as `Observable`
-```java
-storIOSQLite
-  .get()
-  .cursor()
-  .withQuery(new Query.Builder()
-    .table("tweets")
-    .build())
-  .prepare()
-  .createObservable()
-  .subscribeOn(Schedulers.io()) // Execute Get Operation on Background Thread
-  .observeOn(AndroidSchedulers.mainThread()) // Observe on Main Thread
-  .subscribe(new Action1<Cursor>() {
-    @Override public void call(Cursor cursor) {
-      // display the data from cursor
-      // will be called once
-    }
-  });
-```
-
 #####What if you want to observe changes in `StorIOSQLite`?
 
 ######First-case: Receive updates to `Observable` on each change in tables from `Query` 
@@ -72,7 +52,7 @@ storIOSQLite
     .table("tweets")
     .build())
   .prepare()
-  .createObservableStream() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
+  .createObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
   .subscribeOn(Schedulers.io())
   .observeOn(AndroidSchedulers.mainThread())
   .subscribe(new Action1<List<Tweet>>() { // don't forget to unsubscribe please
@@ -90,7 +70,7 @@ storIOSQLite
 ```java
 storIOSQLite
   .observeChangesInTable("tweets")
-  .subscribe(new Action1<Changes>() { // or apply RxJava Operators
+  .subscribe(new Action1<Changes>() { // or apply RxJava Operators such as Debounce, Filter, etc
     // do what you want!
   });
 ```
@@ -106,7 +86,7 @@ storIOSQLite
     .args("artem_zin")
     .build())
   .prepare()
-  .createObservableStream();
+  .createObservable();
 ```
 
 ######Customize behavior of `Get` Operation with `GetResolver`
@@ -271,9 +251,9 @@ Several things about `ExecSql`:
 StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
   .db(someSQLiteDatabase)
   .addTypeDefaults(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
-    .putResolver(Tweet.PUT_RESOLVER) // object that knows how to perform Put Operation (insert or update)
-    .getResolver(Tweet.GET_RESOLVER) // object that knows how to perform Get Operation
-    .deleteResolver(Tweet.DELETE_RESOLVER)  // object that knows how to perform Delete Operation
+    .putResolver(new TweetPutResolver()) // object that knows how to perform Put Operation (insert or update)
+    .getResolver(new TweetGetResolver()) // object that knows how to perform Get Operation
+    .deleteResolver(new TweetDeleteResolver())  // object that knows how to perform Delete Operation
     .build())
   .addTypeDefaults(...)
   // other options
@@ -283,6 +263,59 @@ StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
 You can override Operation Resolver per each individual Operation, it can be useful for working with `SQL JOIN`.
 Also, as you can see, there is no Reflection, and no performance reduction in compare to manual object mapping code.
 
-We are thinking about optional Compile-Time annotation processing for generating resolvers implementation in compile-time.
+To **save you from coding boilerplate classes** we created **Annotation Processor** which will generate `PutResolver`, `GetResolver` and `DeleteResolver` at compile time, you just need to use generated classes
+
+```groovy
+dependencies {
+    // At the moment there is annotation processor only for StorIOSQLite
+  	compile 'com.pushtorefresh.storio:sqlite-annotation:not-published-yet'
+
+  	// We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
+  	apt 'com.pushtorefresh.storio:sqlite-annotation-processor:not-published-yet'
+}
+```
+
+```java
+@StorIOSQLiteType(table = "tweets")
+public class Tweet {
+  
+  // annotated fields should have package-level visibility
+  @StorIOSQLiteColumn(name = "author")
+  String author;
+
+  @StorIOSQLiteColumn(name = "content")
+  String content;
+
+    // please leave default constructor with package-level visibility
+  Tweet() {}
+}
+```
+
+Annotation Processor will generate three classes in same package as annotated class during compilation:
+
+* `TweetStorIOSQLitePutResolver`
+* `TweetStorIOSQLiteGetResolver`
+* `TweetStorIOSQLiteDeleteResolver`
+
+You just need to apply them:
+
+```java
+StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
+  .db(someSQLiteDatabase)
+  .addTypeDefaults(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
+    .putResolver(new TweetStorIOSQLitePutResolver()) // object that knows how to perform Put Operation (insert or update)
+    .getResolver(new TweetStorIOSQLiteGetResolver()) // object that knows how to perform Get Operation
+    .deleteResolver(new TweetStorIOSQLiteDeleteResolver())  // object that knows how to perform Delete Operation
+    .build())
+  .addTypeDefaults(...)
+  // other options
+  .build(); // This instance of StorIOSQLite will know how to work with Tweet objects
+```
+
+Few tips about Operation Resolvers:
+
+* If your entities are immutable or they have builders or they use AutoValue/AutoParcel -> write your own Operation Resolvers
+* If you want to write your own Operation Resolver -> take a look at Default Operation resolvers, they can fit your needs
+* Via custom Operation Resolvers you can implement any Operation as you want -> store one object in multiple tables, use custom sql things and so on
 
 API of `StorIOContentResolver` is same.

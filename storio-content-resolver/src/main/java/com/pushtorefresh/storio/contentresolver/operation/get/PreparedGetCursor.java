@@ -6,17 +6,15 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
-import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
-import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
-import com.pushtorefresh.storio.internal.Environment;
 
 import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Represents an Operation for {@link StorIOContentResolver} which performs query that retrieves data as {@link Cursor}
+ * Represents Get Operation for {@link StorIOContentResolver} which performs query that retrieves data as {@link Cursor}
  * from {@link android.content.ContentProvider}
  */
 public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
@@ -29,32 +27,34 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
         this.query = query;
     }
 
+    /**
+     * Executes Get Operation immediately in current thread
+     *
+     * @return non-null {@link Cursor}, can be empty
+     */
     @NonNull
     @Override
     public Cursor executeAsBlocking() {
         return getResolver.performGet(storIOContentResolver, query);
     }
 
-    @NonNull
-    @Override
-    public Observable<Cursor> createObservable() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
-    }
-
     /**
-     * Creates an {@link Observable} which will be subscribed to changes of {@link #query} Uri
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
      * and will emit result each time change occurs
-     * <p/>
+     * <p>
      * First result will be emitted immediately,
      * other emissions will occur only if changes of {@link #query} Uri will occur
+     * <p>
+     * Does not operate by default on a particular {@link rx.Scheduler}
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because it's "Hot" and endless
      *
      * @return non-null {@link Observable} which will emit non-null list with mapped results and will be subscribed to changes of {@link #query} Uri
      */
     @NonNull
     @Override
-    public Observable<Cursor> createObservableStream() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
+    public Observable<Cursor> createObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return storIOContentResolver
                 .observeChangesOfUri(query.uri) // each change triggers executeAsBlocking
@@ -64,7 +64,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
 
     /**
      * Builder for {@link PreparedGetCursor}
-     * <p/>
+     * <p>
      * Required: You should specify query see {@link #withQuery(Query)}
      */
     public static final class Builder {
@@ -118,7 +118,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
         /**
          * Optional: Specifies {@link GetResolver} for Get Operation
          * which allows you to customize behavior of Get Operation
-         * <p/>
+         * <p>
          * If no value will be set, builder will use resolver that simply redirects query to {@link StorIOContentResolver}
          *
          * @param getResolver get resolver
@@ -136,7 +136,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
          * @return {@link PreparedGetCursor} instance
          */
         @NonNull
-        public PreparedOperationWithReactiveStream<Cursor> prepare() {
+        public PreparedGetCursor prepare() {
             if (getResolver == null) {
                 getResolver = STANDARD_GET_RESOLVER;
             }

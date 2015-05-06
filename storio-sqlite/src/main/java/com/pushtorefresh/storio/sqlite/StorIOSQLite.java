@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.LogListener;
-import com.pushtorefresh.storio.Loggi;
 import com.pushtorefresh.storio.sqlite.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.sqlite.operation.exec_sql.PreparedExecSql;
 import com.pushtorefresh.storio.sqlite.operation.get.PreparedGet;
@@ -95,28 +93,6 @@ public abstract class StorIOSQLite {
     }
 
     /**
-     * Set your own logger, and it will be use instead of default.
-     *
-     * @param logListener an logger.
-     * @return this.
-     */
-    public StorIOSQLite setLogListener(@NonNull final LogListener logListener) {
-        internal().getLoggi().setLogListener(logListener);
-        return this;
-    }
-
-    /**
-     * Use to turn logs on/off
-     *
-     * @param enabled <code>false</code>, if you want to hide logs.
-     * @return this.
-     */
-    public StorIOSQLite setLogIsEnabled(final boolean enabled) {
-        internal().getLoggi().setIsEnabled(enabled);
-        return this;
-    }
-
-    /**
      * Hides some internal operations of {@link StorIOSQLite} to make API of {@link StorIOSQLite} clean and easy to understand
      *
      * @return implementation of Internal operations for {@link StorIOSQLite}
@@ -129,12 +105,6 @@ public abstract class StorIOSQLite {
      * to make {@link StorIOSQLite} API clean and easy to understand
      */
     public static abstract class Internal {
-
-        /**
-         * Log wrapper for internal usage only.
-         */
-        @NonNull
-        private final Loggi loggi = new Loggi();
 
         /**
          * Gets {@link SQLiteTypeDefaults} for required type
@@ -209,35 +179,45 @@ public abstract class StorIOSQLite {
         public abstract void notifyAboutChanges(@NonNull Changes changes);
 
         /**
-         * Returns true if {@link StorIOSQLite} implementation supports transactions
-         *
-         * @return true if transactions are supported, false otherwise
-         */
-        public abstract boolean transactionsSupported();
-
-        /**
-         * Begins a transaction in EXCLUSIVE mode
+         * Begins a transaction in EXCLUSIVE mode.
+         * <p/>
+         * Thread will be blocked on call to this method if another thread already in transaction,
+         * as soon as first thread will end its transaction this thread will be unblocked
+         * <p>
+         * Transactions can be nested.
+         * When the outer transaction is ended all of
+         * the work done in that transaction and all of the nested transactions will be committed or
+         * rolled back. The changes will be rolled back if any transaction is ended without being
+         * marked as clean (by calling setTransactionSuccessful). Otherwise they will be committed.
+         * </p>
+         * <p>Here is the standard idiom for transactions:
+         * <p/>
+         * <pre>
+         *   db.beginTransaction();
+         *   try {
+         *     ...
+         *     db.setTransactionSuccessful();
+         *   } finally {
+         *     db.endTransaction();
+         *   }
+         * </pre>
          */
         public abstract void beginTransaction();
 
         /**
-         * Marks the current transaction as successful
+         * Marks the current transaction as successful. Do not do any more database work between
+         * calling this and calling endTransaction. Do as little non-database work as possible in that
+         * situation too. If any errors are encountered between this and endTransaction the transaction
+         * will still be committed.
+         *
+         * @throws IllegalStateException if the transaction is already marked as successful.
          */
         public abstract void setTransactionSuccessful();
 
         /**
-         * End a transaction
+         * Ends a transaction. See {@link #beginTransaction()} for notes about how to use this and when transactions
+         * are committed and rolled back.
          */
         public abstract void endTransaction();
-
-        /**
-         * Log wrapper getter.
-         *
-         * @return a log wrapper.
-         */
-        @NonNull
-        public Loggi getLoggi() {
-            return loggi;
-        }
     }
 }

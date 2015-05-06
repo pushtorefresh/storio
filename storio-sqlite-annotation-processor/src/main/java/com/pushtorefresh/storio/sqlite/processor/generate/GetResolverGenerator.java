@@ -36,7 +36,7 @@ public class GetResolverGenerator {
     public JavaFile generateJavaFile(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
         final ClassName storIOSQLiteTypeClassName = ClassName.get(storIOSQLiteTypeMeta.packageName, storIOSQLiteTypeMeta.simpleName);
 
-        final TypeSpec getResolver = TypeSpec.classBuilder(storIOSQLiteTypeMeta.simpleName + "GetResolver")
+        final TypeSpec getResolver = TypeSpec.classBuilder(storIOSQLiteTypeMeta.simpleName + "StorIOSQLiteGetResolver")
                 .addJavadoc("Generated resolver for Get Operation\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operation.get", "DefaultGetResolver"), storIOSQLiteTypeClassName))

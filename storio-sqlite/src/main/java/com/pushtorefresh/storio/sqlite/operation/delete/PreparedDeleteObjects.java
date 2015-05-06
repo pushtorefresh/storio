@@ -3,10 +3,10 @@ package com.pushtorefresh.storio.sqlite.operation.delete;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.internal.Environment;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.internal.Environment;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,13 +47,9 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
 
         final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>();
 
-        final boolean withTransaction = useTransaction && internal.transactionsSupported();
-
-        if (withTransaction) {
+        if (useTransaction) {
             internal.beginTransaction();
         }
-
-        boolean transactionSuccessful = false;
 
         try {
             for (final T object : objects) {
@@ -64,30 +60,27 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
                         deleteResult
                 );
 
-                if (!withTransaction) {
+                if (!useTransaction) {
                     internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
                 }
             }
 
-            if (withTransaction) {
+            if (useTransaction) {
                 internal.setTransactionSuccessful();
-                transactionSuccessful = true;
+
+                // if delete was in transaction and it was successful -> notify about changes
+
+                final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be one table
+
+                for (final T object : results.keySet()) {
+                    affectedTables.addAll(results.get(object).affectedTables());
+                }
+
+                internal.notifyAboutChanges(Changes.newInstance(affectedTables));
             }
         } finally {
-            if (withTransaction) {
+            if (useTransaction) {
                 internal.endTransaction();
-
-                if (transactionSuccessful) {
-                    // if delete was in transaction and it was successful -> notify about changes
-
-                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be one table
-
-                    for (final T object : results.keySet()) {
-                        affectedTables.addAll(results.get(object).affectedTables());
-                    }
-
-                    internal.notifyAboutChanges(Changes.newInstance(affectedTables));
-                }
             }
         }
 
@@ -147,7 +140,7 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
         /**
          * Optional: Defines that Delete Operation will use transaction
          * if it is supported by implementation of {@link StorIOSQLite}
-         * <p/>
+         * <p>
          * By default, transaction will be used
          *
          * @param useTransaction true to use transaction, false to not
@@ -161,8 +154,8 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
 
         /**
          * Optional: Specifies {@link DeleteResolver} for Delete Operation
-         * <p/>
-         * <p/>
+         * <p>
+         * <p>
          * Can be set via {@link SQLiteTypeDefaults},
          * If value is not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *

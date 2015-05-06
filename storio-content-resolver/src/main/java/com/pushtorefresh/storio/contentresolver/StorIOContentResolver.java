@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.LogListener;
-import com.pushtorefresh.storio.Loggi;
 import com.pushtorefresh.storio.contentresolver.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.contentresolver.operation.get.PreparedGet;
 import com.pushtorefresh.storio.contentresolver.operation.put.PreparedPut;
@@ -48,28 +46,6 @@ public abstract class StorIOContentResolver {
     }
 
     /**
-     * Set your own logger, and it will be use instead of default.
-     *
-     * @param logListener an logger.
-     * @return this.
-     */
-    public StorIOContentResolver setLogListener(@NonNull final LogListener logListener) {
-        internal().getLoggi().setLogListener(logListener);
-        return this;
-    }
-
-    /**
-     * Use to turn logs on/off
-     *
-     * @param enabled <code>false</code>, if you want to hide logs.
-     * @return this.
-     */
-    public StorIOContentResolver setLogIsEnabled(final boolean enabled) {
-        internal().getLoggi().setIsEnabled(enabled);
-        return this;
-    }
-
-    /**
      * Subscribes to changes of required Uris
      *
      * @param uris set of {@link Uri} that should be monitored
@@ -104,14 +80,8 @@ public abstract class StorIOContentResolver {
     public static abstract class Internal {
 
         /**
-         * Log wrapper for internal usage only.
-         */
-        @NonNull
-        private final Loggi loggi = new Loggi();
-
-        /**
          * Gets {@link ContentResolverTypeDefaults} for required type
-         * <p/>
+         * <p>
          * Result can be null
          *
          * @param type type
@@ -156,15 +126,5 @@ public abstract class StorIOContentResolver {
          * @return number of rows deleted
          */
         public abstract int delete(@NonNull DeleteQuery deleteQuery);
-
-        /**
-         * Log wrapper getter.
-         *
-         * @return a log wrapper.
-         */
-        @NonNull
-        public Loggi getLoggi() {
-            return loggi;
-        }
     }
 }

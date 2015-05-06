@@ -4,13 +4,11 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.operation.PreparedOperationWithReactiveStream;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
-import com.pushtorefresh.storio.internal.Environment;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +16,11 @@ import java.util.Set;
 import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
+/**
+ * Represents Get Operation for {@link StorIOSQLite} which performs query that retrieves data as {@link Cursor}
+ */
 public final class PreparedGetCursor extends PreparedGet<Cursor> {
 
     @NonNull
@@ -51,30 +53,22 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Creates an {@link Observable} which will emit result of operation
-     *
-     * @return non-null {@link Observable} which will emit non-null {@link Cursor}, can be empty
-     */
-    @NonNull
-    @Override
-    public Observable<Cursor> createObservable() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
-    }
-
-    /**
-     * Creates an {@link Observable} which will be subscribed to changes of query tables
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
      * and will emit result each time change occurs
-     * <p/>
+     * <p>
      * First result will be emitted immediately after subscription,
-     * other emissions will occur only if changes of query tables will occur
+     * other emissions will occur only if changes of query tables will occur during lifetime of the Observable
+     * <p>
+     * Does not operate by default on a particular {@link rx.Scheduler}
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because it's "Hot" and endless
      *
      * @return non-null {@link Observable} which will emit {@link Cursor} and will be subscribed to changes of query tables
      */
     @NonNull
     @Override
-    public Observable<Cursor> createObservableStream() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
+    public Observable<Cursor> createObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         final Set<String> tables;
 
@@ -93,13 +87,13 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
                     .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                     .startWith(executeAsBlocking()); // start stream with first query result
         } else {
-            return createObservable();
+            return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
         }
     }
 
     /**
-     * Builder for {@link PreparedOperationWithReactiveStream}
-     * <p/>
+     * Builder for {@link PreparedGetCursor}
+     * <p>
      * Required: You should specify query by call
      * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
      */
@@ -139,7 +133,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link PreparedOperationWithReactiveStream}
+     * Compile-time safe part of builder for {@link PreparedGetCursor}
      */
     public static final class CompleteBuilder {
 
@@ -191,7 +185,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
          * @return {@link PreparedGetCursor} instance
          */
         @NonNull
-        public PreparedOperationWithReactiveStream<Cursor> prepare() {
+        public PreparedGetCursor prepare() {
             if (getResolver == null) {
                 getResolver = STANDARD_GET_RESOLVER;
             }

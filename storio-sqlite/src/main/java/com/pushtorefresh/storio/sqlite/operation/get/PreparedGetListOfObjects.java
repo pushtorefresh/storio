@@ -10,7 +10,6 @@ import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
-import com.pushtorefresh.storio.internal.Environment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,9 +19,10 @@ import java.util.Set;
 import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Represents an Operation for {@link StorIOSQLite} which performs query that retrieves data as list of objects
+ * Represents Get Operation for {@link StorIOSQLite} which performs query that retrieves data as list of objects
  * from {@link StorIOSQLite}
  *
  * @param <T> type of result
@@ -45,7 +45,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     /**
      * Executes Prepared Operation immediately in current thread
      *
-     * @return non-null list with mapped results, can be empty
+     * @return non-null {@link List} with mapped results, can be empty
      */
     @SuppressWarnings("TryFinallyCanBeTryWithResources") // Min SDK :(
     @NonNull
@@ -74,29 +74,22 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Creates an {@link Observable} which will emit result of operation
-     *
-     * @return non-null {@link Observable} which will emit non-null list with mapped results, list can be empty
-     */
-    @NonNull
-    public Observable<List<T>> createObservable() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
-    }
-
-    /**
-     * Creates an {@link Observable} which will be subscribed to changes of query tables
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
      * and will emit result each time change occurs
-     * <p/>
+     * <p>
      * First result will be emitted immediately,
      * other emissions will occur only if changes of query tables will occur
+     * <p>
+     * Does not operate by default on a particular {@link rx.Scheduler}
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because it's "Hot" and endless
      *
      * @return non-null {@link Observable} which will emit non-null list with mapped results and will be subscribed to changes of query tables
      */
     @NonNull
     @Override
-    public Observable<List<T>> createObservableStream() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservableStream()");
+    public Observable<List<T>> createObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         final Set<String> tables;
 
@@ -114,7 +107,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
                     .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                     .startWith(executeAsBlocking()); // start stream with first query result
         } else {
-            return createObservable();
+            return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
         }
     }
 
@@ -198,7 +191,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
         /**
          * Optional: Specifies resolver for Get Operation which can be used to provide custom behavior of Get Operation
-         * <p/>
+         * <p>
          * {@link SQLiteTypeDefaults} can be used to set default GetResolver
          * If GetResolver is not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
          *
