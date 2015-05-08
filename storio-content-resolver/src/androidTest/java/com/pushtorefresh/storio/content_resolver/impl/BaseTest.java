@@ -8,6 +8,7 @@ import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.impl.DefaultStorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResult;
+import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResults;
 import com.pushtorefresh.storio.contentresolver.operation.put.PutResult;
 import com.pushtorefresh.storio.contentresolver.operation.put.PutResults;
 import com.pushtorefresh.storio.contentresolver.query.Query;
@@ -117,6 +118,20 @@ public abstract class BaseTest extends ProviderTestCase2<TestContentProvider> {
         assertEquals(1, deleteResult.numberOfRowsDeleted());
 
         return deleteResult;
+    }
+
+    @NonNull
+    DeleteResults<User> deleteUsers(@NonNull final List<User> users) {
+        final DeleteResults<User> deleteResults = storIOContentResolver
+                .delete()
+                .objects(User.class, users)
+                .prepare()
+                .executeAsBlocking();
+
+        for (User user : users) {
+            assertTrue(deleteResults.wasDeleted(user));
+        }
+        return deleteResults;
     }
 
     void oneUserInStorageCheck(@NonNull final User user) {

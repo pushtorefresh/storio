@@ -27,21 +27,6 @@ public class PreparedExecSqlTest {
         stub.verifyBehavior();
     }
 
-    @Test
-    public void observable() {
-        final Stub stub = new Stub();
-
-        stub.storIOSQLite
-                .execSql()
-                .withQuery(stub.rawQuery)
-                .prepare()
-                .createObservable()
-                .toBlocking()
-                .last();
-
-        stub.verifyBehavior();
-    }
-
     static class Stub {
 
         private final StorIOSQLite storIOSQLite;

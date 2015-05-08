@@ -52,6 +52,14 @@ public class User implements Comparable<User> {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", id=" + id +
+                '}';
+    }
+
     public boolean equalsExceptId(@NonNull User another) {
         return email.equals(another.email);
     }
