@@ -38,8 +38,9 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         final long startTime = SystemClock.elapsedRealtime();
 
-        while (testObserver.getOnNextEvents().size() == 0 && SystemClock.elapsedRealtime() - startTime < 1000) {
-            SystemClock.sleep(5);
+        while (testObserver.getOnNextEvents().size() == 0
+                && SystemClock.elapsedRealtime() - startTime < 1000) {
+            Thread.yield(); // let other threads work
         }
 
         testObserver.assertReceivedOnNext(singletonList(Changes.newInstance("test_table")));
@@ -91,7 +92,7 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         while (testObserver.getOnNextEvents().size() != tables.size()
                 && (SystemClock.elapsedRealtime() - startTime) < 15000) {
-            SystemClock.sleep(5);
+            Thread.yield(); // let other threads work
         }
 
         // notice, that order of received notification can be different
