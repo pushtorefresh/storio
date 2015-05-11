@@ -297,6 +297,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
 
         private void notifyAboutPendingChangesIfNotInTransaction() {
             if (changesBus != null && numberOfRunningTransactions.get() == 0) {
+                // Main idea — use AtomicReference to get pendingTransactions
+                // and replace them with new empty Set.
+                // Pros: we can avoid synchronization and be sure that this code is thread-safe.
+                // Cons: memory allocation on each call if it's not in transaction.
                 final Set<Changes> changes = pendingChanges
                         .getAndSet(newSetFromMap(new ConcurrentHashMap<Changes, Boolean>()));
 
