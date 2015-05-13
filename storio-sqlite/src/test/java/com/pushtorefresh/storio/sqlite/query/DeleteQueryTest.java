@@ -35,8 +35,8 @@ public class DeleteQueryTest {
                 .whereArgs(whereArgs)
                 .build();
 
-        assertEquals(table, deleteQuery.table);
-        assertEquals(where, deleteQuery.where);
-        assertEquals(Arrays.asList(whereArgs), deleteQuery.whereArgs);
+        assertEquals(table, deleteQuery.table());
+        assertEquals(where, deleteQuery.where());
+        assertEquals(Arrays.asList(whereArgs), deleteQuery.whereArgs());
     }
 }

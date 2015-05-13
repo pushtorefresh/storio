@@ -8,7 +8,7 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.InsertQuery;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
-import com.pushtorefresh.storio.internal.QueryUtil;
+import com.pushtorefresh.storio.internal.Queries;
 
 /**
  * Default, thread-safe implementation of {@link PutResolver}
@@ -57,9 +57,9 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
 
         try {
             final Cursor cursor = storIOSQLite.internal().query(new Query.Builder()
-                    .table(updateQuery.table)
-                    .where(updateQuery.where)
-                    .whereArgs((Object[]) QueryUtil.listToArray(updateQuery.whereArgs))
+                    .table(updateQuery.table())
+                    .where(updateQuery.where())
+                    .whereArgs((Object[]) Queries.listToArray(updateQuery.whereArgs()))
                     .build());
 
             final PutResult putResult;
@@ -70,10 +70,10 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
                 if (cursor.getCount() == 0) {
                     final InsertQuery insertQuery = mapToInsertQuery(object);
                     final long insertedId = storIOSQLite.internal().insert(insertQuery, contentValues);
-                    putResult = PutResult.newInsertResult(insertedId, insertQuery.table);
+                    putResult = PutResult.newInsertResult(insertedId, insertQuery.table());
                 } else {
                     final int numberOfRowsUpdated = storIOSQLite.internal().update(updateQuery, contentValues);
-                    putResult = PutResult.newUpdateResult(numberOfRowsUpdated, updateQuery.table);
+                    putResult = PutResult.newUpdateResult(numberOfRowsUpdated, updateQuery.table());
                 }
             } finally {
                 cursor.close();

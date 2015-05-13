@@ -33,6 +33,6 @@ public class InsertQueryTest {
                 .uri(uri)
                 .build();
 
-        assertEquals(uri, insertQuery.uri);
+        assertEquals(uri, insertQuery.uri());
     }
 }

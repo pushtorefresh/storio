@@ -57,7 +57,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return storIOContentResolver
-                .observeChangesOfUri(query.uri) // each change triggers executeAsBlocking
+                .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
                 .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                 .startWith(executeAsBlocking()); // start stream with first query result
     }

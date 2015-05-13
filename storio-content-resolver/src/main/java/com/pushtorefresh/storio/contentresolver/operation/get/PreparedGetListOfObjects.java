@@ -81,7 +81,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return storIOContentResolver
-                .observeChangesOfUri(query.uri) // each change triggers executeAsBlocking
+                .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
                 .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                 .startWith(executeAsBlocking());  // start stream with first query result
     }

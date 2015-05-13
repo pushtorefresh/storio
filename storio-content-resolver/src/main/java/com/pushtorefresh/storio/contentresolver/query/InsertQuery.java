@@ -12,17 +12,24 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  */
 public final class InsertQuery {
 
-    /**
-     * The content:// URI of the insertion request.
-     */
     @NonNull
-    public final Uri uri;
+    private final Uri uri;
 
     /**
      * Please use {@link com.pushtorefresh.storio.contentresolver.query.InsertQuery.Builder} instead of constructor
      */
-    protected InsertQuery(@NonNull Uri uri) {
+    private InsertQuery(@NonNull Uri uri) {
         this.uri = uri;
+    }
+
+    /**
+     * Gets {@code content://} URI of the insertion request.
+     *
+     * @return non-null URI of the insertion request.
+     */
+    @NonNull
+    public Uri uri() {
+        return uri;
     }
 
     @Override

@@ -117,7 +117,7 @@ public class QueryTest extends BaseTest {
                 .listOfObjects(User.class)
                 .withQuery(new Query.Builder()
                         .uri(UserMeta.CONTENT_URI)
-                        .projection(UserMeta.COLUMN_ID)
+                        .columns(UserMeta.COLUMN_ID)
                         .build())
                 .withGetResolver(new DefaultGetResolver<User>() {
                     @NonNull

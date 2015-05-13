@@ -76,12 +76,12 @@ class GetStub {
         when(storIOSQLite.get())
                 .thenReturn(new PreparedGet.Builder(storIOSQLite));
 
-        when(storIOSQLite.observeChangesInTables(eq(Collections.singleton(query.table))))
+        when(storIOSQLite.observeChangesInTables(eq(Collections.singleton(query.table()))))
                 .thenReturn(Observable.<Changes>empty());
 
-        assertNotNull(rawQuery.affectedTables);
+        assertNotNull(rawQuery.affectedTables());
 
-        when(storIOSQLite.observeChangesInTables(rawQuery.affectedTables))
+        when(storIOSQLite.observeChangesInTables(rawQuery.affectedTables()))
                 .thenReturn(Observable.<Changes>empty());
 
         when(getResolverForObject.performGet(storIOSQLite, query))
@@ -128,7 +128,7 @@ class GetStub {
                 })
                 .checkBehaviorOfObservable();
 
-        verify(storIOSQLite, times(1)).observeChangesInTables(eq(Collections.singleton(query.table)));
+        verify(storIOSQLite, times(1)).observeChangesInTables(eq(Collections.singleton(query.table())));
     }
 
     void verifyQueryBehaviorForList(@NonNull List<TestItem> actualList) {
@@ -152,7 +152,7 @@ class GetStub {
                 })
                 .checkBehaviorOfObservable();
 
-        verify(storIOSQLite, times(1)).observeChangesInTables(eq(Collections.singleton(query.table)));
+        verify(storIOSQLite, times(1)).observeChangesInTables(eq(Collections.singleton(query.table())));
     }
 
     void verifyRawQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
@@ -174,8 +174,8 @@ class GetStub {
                 })
                 .checkBehaviorOfObservable();
 
-        assertNotNull(rawQuery.affectedTables);
-        verify(storIOSQLite, times(1)).observeChangesInTables(rawQuery.affectedTables);
+        assertNotNull(rawQuery.affectedTables());
+        verify(storIOSQLite, times(1)).observeChangesInTables(rawQuery.affectedTables());
     }
 
     void verifyRawQueryBehaviorForList(@NonNull List<TestItem> actualList) {
@@ -199,7 +199,7 @@ class GetStub {
                 })
                 .checkBehaviorOfObservable();
 
-        assertNotNull(rawQuery.affectedTables);
-        verify(storIOSQLite, times(1)).observeChangesInTables(rawQuery.affectedTables);
+        assertNotNull(rawQuery.affectedTables());
+        verify(storIOSQLite, times(1)).observeChangesInTables(rawQuery.affectedTables());
     }
 }

@@ -9,7 +9,7 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
-import com.pushtorefresh.storio.internal.QueryUtil;
+import com.pushtorefresh.storio.internal.Queries;
 
 /**
  * Default thread-safe implementation of {@link PutResolver}
@@ -54,9 +54,9 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
         final UpdateQuery updateQuery = mapToUpdateQuery(object);
 
         final Query query = new Query.Builder()
-                .uri(updateQuery.uri)
-                .where(updateQuery.where)
-                .whereArgs((Object[]) QueryUtil.listToArray(updateQuery.whereArgs))
+                .uri(updateQuery.uri())
+                .where(updateQuery.where())
+                .whereArgs((Object[]) Queries.listToArray(updateQuery.whereArgs()))
                 .build();
 
         final Cursor cursor = storIOContentResolver.internal().query(query);
@@ -67,10 +67,10 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
             if (cursor == null || cursor.getCount() == 0) {
                 final InsertQuery insertQuery = mapToInsertQuery(object);
                 final Uri insertedUri = storIOContentResolver.internal().insert(insertQuery, contentValues);
-                return PutResult.newInsertResult(insertedUri, insertQuery.uri);
+                return PutResult.newInsertResult(insertedUri, insertQuery.uri());
             } else {
                 final int numberOfRowsUpdated = storIOContentResolver.internal().update(updateQuery, contentValues);
-                return PutResult.newUpdateResult(numberOfRowsUpdated, updateQuery.uri);
+                return PutResult.newUpdateResult(numberOfRowsUpdated, updateQuery.uri());
             }
         } finally {
             if (cursor != null) {

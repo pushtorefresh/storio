@@ -31,7 +31,7 @@ public class InsertQueryTest {
                 .nullColumnHack(nullColumnHack)
                 .build();
 
-        assertEquals(table, insertQuery.table);
-        assertEquals(nullColumnHack, insertQuery.nullColumnHack);
+        assertEquals(table, insertQuery.table());
+        assertEquals(nullColumnHack, insertQuery.nullColumnHack());
     }
 }
