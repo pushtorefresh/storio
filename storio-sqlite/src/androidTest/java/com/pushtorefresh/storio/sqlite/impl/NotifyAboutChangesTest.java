@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import rx.observers.TestObserver;
+import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
@@ -48,9 +49,9 @@ public class NotifyAboutChangesTest extends BaseTest {
 
     @Test
     public void notifyAboutChangesConcurrently() {
-        final int numberOfThreads = 10;
+        final int numberOfThreads = 100;
 
-        final TestObserver<Changes> testObserver = new TestObserver<Changes>();
+        final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         final Set<String> tables = new HashSet<String>();
         final List<Changes> expectedChanges = new ArrayList<Changes>();
@@ -63,7 +64,7 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         storIOSQLite
                 .observeChangesInTables(tables)
-                .subscribe(testObserver);
+                .subscribe(testSubscriber);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -90,14 +91,16 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         final long startTime = SystemClock.elapsedRealtime();
 
-        while (testObserver.getOnNextEvents().size() != tables.size()
-                && (SystemClock.elapsedRealtime() - startTime) < 15000) {
+        while (testSubscriber.getOnNextEvents().size() != tables.size()
+                && (SystemClock.elapsedRealtime() - startTime) < 20000) {
             Thread.yield(); // let other threads work
         }
 
+        testSubscriber.assertNoErrors();
+
         // notice, that order of received notification can be different
         // but in total, they should be equal
-        assertEquals(expectedChanges.size(), testObserver.getOnNextEvents().size());
-        assertTrue(expectedChanges.containsAll(testObserver.getOnNextEvents()));
+        assertEquals(expectedChanges.size(), testSubscriber.getOnNextEvents().size());
+        assertTrue(expectedChanges.containsAll(testSubscriber.getOnNextEvents()));
     }
 }

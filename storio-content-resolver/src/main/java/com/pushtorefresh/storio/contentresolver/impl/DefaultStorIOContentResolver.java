@@ -18,6 +18,7 @@ import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
 import com.pushtorefresh.storio.internal.Queries;
+import com.pushtorefresh.storio.internal.ChangesBus;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,10 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
-import rx.subjects.PublishSubject;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
-import static com.pushtorefresh.storio.internal.Environment.IS_RX_JAVA_AVAILABLE;
+import static com.pushtorefresh.storio.internal.Environment.RX_JAVA_IS_AVAILABLE;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
@@ -42,10 +42,8 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     @NonNull
     private final ContentResolver contentResolver;
 
-    @Nullable
-    private final PublishSubject<Changes> changesBus = IS_RX_JAVA_AVAILABLE
-            ? PublishSubject.<Changes>create()
-            : null;
+    @NonNull
+    private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>();
 
     // can be null, if RxJava is not available
     @Nullable
@@ -55,7 +53,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         this.contentResolver = contentResolver;
         internal = new InternalImpl(typesDefaultsMap);
 
-        if (IS_RX_JAVA_AVAILABLE) {
+        if (RX_JAVA_IS_AVAILABLE) {
             final HandlerThread handlerThread = new HandlerThread("StorIOContentResolverNotificationsThread");
             handlerThread.start(); // multithreading: don't block me, bro!
 
@@ -95,7 +93,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         }
 
         // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
-        return ChangesFilter.apply(changesBus, uris);
+        return ChangesFilter.apply(changesBus.asObservable(), uris);
     }
 
     /**
