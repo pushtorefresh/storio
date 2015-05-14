@@ -35,8 +35,8 @@ public class UpdateQueryTest {
                 .whereArgs(whereArgs)
                 .build();
 
-        assertEquals(table, updateQuery.table);
-        assertEquals(where, updateQuery.where);
-        assertEquals(Arrays.asList(whereArgs), updateQuery.whereArgs);
+        assertEquals(table, updateQuery.table());
+        assertEquals(where, updateQuery.where());
+        assertEquals(Arrays.asList(whereArgs), updateQuery.whereArgs());
     }
 }

@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.QueryUtil;
+import com.pushtorefresh.storio.internal.Queries;
 
 import java.util.List;
 
@@ -16,97 +16,173 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
  */
 public final class Query {
 
-    /**
-     * True if you want each row to be unique, false otherwise
-     */
-    public final boolean distinct;
+    private final boolean distinct;
 
-    /**
-     * Table name
-     */
     @NonNull
-    public final String table;
+    private final String table;
 
-    /**
-     * Optional list of columns that should be received.
-     * <p/>
-     * If list will be null or empty -> all columns will be received
-     */
     @Nullable
-    public final List<String> columns;
+    private final List<String> columns;
 
-    /**
-     * Optional filter declaring which rows to return
-     * <p/>
-     * Formatted as an SQL WHERE clause (excluding the WHERE itself).
-     * <p/>
-     * Passing null will return all rows for the given table
-     */
     @Nullable
-    public final String where;
+    private final String where;
 
-    /**
-     * Optional list of arguments for {@link #where} clause
-     */
     @Nullable
-    public final List<String> whereArgs;
+    private final List<String> whereArgs;
 
-    /**
-     * Optional filter declaring how to group rows.
-     * <p/>
-     * Formatted as an SQL GROUP BY clause (excluding the GROUP BY itself).
-     * <p/>
-     * Passing null will cause the rows to not be grouped
-     */
     @Nullable
-    public final String groupBy;
+    private final String groupBy;
 
-    /**
-     * Optional filter declare which row groups to include in the cursor, if row grouping is being used.
-     * <p/>
-     * Formatted as an SQL HAVING clause (excluding the HAVING itself).
-     * <p/>
-     * Passing null will cause all row groups to be included, and is required when row grouping is not being used
-     */
     @Nullable
-    public final String having;
+    private final String having;
 
-    /**
-     * Optional specifier to how to order the rows.
-     * <p/>
-     * Formatted as an SQL ORDER BY clause (excluding the ORDER BY itself).
-     * <p/>
-     * Passing null will use the default sort order, which may be unordered
-     */
     @Nullable
-    public final String orderBy;
+    private final String orderBy;
 
-    /**
-     * Optional specifier that limits the number of rows returned by the query.
-     * <p/>
-     * Formatted as LIMIT clause.
-     * <p/>
-     * Passing null denotes no LIMIT clause
-     */
     @Nullable
-    public final String limit;
+    private final String limit;
 
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.query.Query.Builder} instead of constructor
      */
-    protected Query(boolean distinct, @NonNull String table, @Nullable List<String> columns,
-                    @Nullable String where, @Nullable List<String> whereArgs,
-                    @Nullable String groupBy, @Nullable String having,
-                    @Nullable String orderBy, @Nullable String limit) {
+    private Query(boolean distinct, @NonNull String table, @Nullable List<String> columns,
+                  @Nullable String where, @Nullable List<String> whereArgs,
+                  @Nullable String groupBy, @Nullable String having,
+                  @Nullable String orderBy, @Nullable String limit) {
         this.distinct = distinct;
         this.table = table;
-        this.columns = QueryUtil.listToUnmodifiable(columns);
+        this.columns = Queries.listToUnmodifiable(columns);
         this.where = where;
-        this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
+        this.whereArgs = Queries.listToUnmodifiable(whereArgs);
         this.groupBy = groupBy;
         this.having = having;
         this.orderBy = orderBy;
         this.limit = limit;
+    }
+
+    /**
+     * Gets distinct option.
+     * <p/>
+     * True if you want each row to be unique, false otherwise.
+     *
+     * @return distinct option.
+     */
+    public boolean distinct() {
+        return distinct;
+    }
+
+    /**
+     * Gets table name.
+     *
+     * @return non-null table name.
+     */
+    @NonNull
+    public String table() {
+        return table;
+    }
+
+    /**
+     * Gets optional immutable list of columns that should be received.
+     * <p/>
+     * If list is {@code null} or empty -> all columns will be received.
+     *
+     * @return immutable list of columns that should be received.
+     */
+    @Nullable
+    public List<String> columns() {
+        return columns;
+    }
+
+    /**
+     * Gets {@code WHERE} clause.
+     * <p/>
+     * Optional filter declaring which rows to return.
+     * <p/>
+     * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
+     * <p/>
+     * If it's {@code null} — Query will retrieve all rows for the given table.
+     *
+     * @return nullable {@code WHERE} clause.
+     */
+    @Nullable
+    public String where() {
+        return where;
+    }
+
+    /**
+     * Gets optional immutable list of arguments for {@link #where()} clause.
+     *
+     * @return nullable immutable list of arguments for {@code WHERE} clause.
+     */
+    @Nullable
+    public List<String> whereArgs() {
+        return whereArgs;
+    }
+
+    /**
+     * Gets {@code GROUP BY} clause.
+     * <p/>
+     * Optional filter declaring how to group rows.
+     * <p/>
+     * Formatted as an SQL {@code GROUP BY} clause (excluding the {@code GROUP BY} itself).
+     * <p/>
+     * Passing {@code null} will cause the rows to not be grouped.
+     *
+     * @return nullable {@code GROUP BY} clause.
+     */
+    @Nullable
+    public String groupBy() {
+        return groupBy;
+    }
+
+    /**
+     * Gets having clause.
+     * <p/>
+     * Optional filter declare which row groups to include
+     * in the cursor, if row grouping is being used.
+     * <p/>
+     * Formatted as an SQL HAVING clause (excluding the HAVING itself).
+     * <p/>
+     * Passing {@code null} will cause all row groups to be included,
+     * and is required when row grouping is not being used.
+     *
+     * @return nullable {@code HAVING} clause.
+     */
+    @Nullable
+    public String having() {
+        return having;
+    }
+
+    /**
+     * Gets {@code ORDER BY} clause.
+     * <p/>
+     * Optional specifier to how to order the rows.
+     * <p/>
+     * Formatted as an SQL {@code ORDER BY} clause (excluding the {@code ORDER BY} itself).
+     * <p/>
+     * Passing {@code null} will use the default sort order, which may be unordered.
+     *
+     * @return nullable {@code ORDER BY} clause.
+     */
+    @Nullable
+    public String orderBy() {
+        return orderBy;
+    }
+
+    /**
+     * Gets {@code LIMIT} clause.
+     * <p/>
+     * Optional specifier that limits the number of rows returned by the query.
+     * <p/>
+     * Formatted as {@code LIMIT} clause.
+     * <p/>
+     * Passing {@code null} denotes no {@code LIMIT} clause.
+     *
+     * @return nullable {@code LIMIT} clause.
+     */
+    @Nullable
+    public String limit() {
+        return limit;
     }
 
     @Override
@@ -231,7 +307,7 @@ public final class Query {
          */
         @NonNull
         public CompleteBuilder columns(@Nullable String... columns) {
-            this.columns = QueryUtil.varargsToList(columns);
+            this.columns = Queries.varargsToList(columns);
             return this;
         }
 
@@ -267,7 +343,7 @@ public final class Query {
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
-            this.whereArgs = QueryUtil.varargsToList(whereArgs);
+            this.whereArgs = Queries.varargsToList(whereArgs);
             return this;
         }
 

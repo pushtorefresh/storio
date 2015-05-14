@@ -39,8 +39,8 @@ public class UpdateQueryTest {
                 .whereArgs(whereArgs)
                 .build();
 
-        assertEquals(uri, updateQuery.uri);
-        assertEquals(where, updateQuery.where);
-        assertEquals(Arrays.asList(whereArgs), updateQuery.whereArgs);
+        assertEquals(uri, updateQuery.uri());
+        assertEquals(where, updateQuery.where());
+        assertEquals(Arrays.asList(whereArgs), updateQuery.whereArgs());
     }
 }

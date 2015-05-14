@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.QueryUtil;
+import com.pushtorefresh.storio.internal.Queries;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,32 +19,54 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
  */
 public final class RawQuery {
 
-    /**
-     * Raw SQL query
-     */
     @NonNull
-    public final String query;
+    private final String query;
 
-    /**
-     * Optional list of arguments for {@link #query}
-     */
     @Nullable
-    public final List<String> args;
+    private final List<String> args;
 
-    /**
-     * Optional set of tables which will be affected by this query
-     * They will be used to notify observers of that tables
-     */
     @Nullable
-    public final Set<String> affectedTables;
+    private final Set<String> affectedTables;
 
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.query.RawQuery.Builder} instead of constructor
      */
-    protected RawQuery(@NonNull String query, @Nullable List<String> args, @Nullable Set<String> affectedTables) {
+    private RawQuery(@NonNull String query, @Nullable List<String> args, @Nullable Set<String> affectedTables) {
         this.query = query;
-        this.args = QueryUtil.listToUnmodifiable(args);
+        this.args = Queries.listToUnmodifiable(args);
         this.affectedTables = affectedTables;
+    }
+
+    /**
+     * Raw SQL query. Can contain {@code ?} for binding arguments.
+     *
+     * @return non-null SQL query.
+     */
+    @NonNull
+    public String query() {
+        return query;
+    }
+
+    /**
+     * Gets optional immutable list of arguments for {@link #query()}.
+     *
+     * @return nullable immutable list of arguments for query.
+     */
+    @Nullable
+    public List<String> args() {
+        return args;
+    }
+
+    /**
+     * Gets optional immutable set of tables which will be affected by this query.
+     * <p/>
+     * They will be used to notify observers of that tables.
+     *
+     * @return nullable immutable set of tables, affected by this query.
+     */
+    @Nullable
+    public Set<String> affectedTables() {
+        return affectedTables;
     }
 
     @Override
@@ -123,7 +145,7 @@ public final class RawQuery {
          */
         @NonNull
         public CompleteBuilder args(@NonNull Object... args) {
-            this.args = QueryUtil.varargsToList(args);
+            this.args = Queries.varargsToList(args);
             return this;
         }
 

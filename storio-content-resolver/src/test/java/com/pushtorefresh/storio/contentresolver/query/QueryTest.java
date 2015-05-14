@@ -30,23 +30,23 @@ public class QueryTest {
     @Test
     public void build() {
         final Uri uri = mock(Uri.class);
-        final String[] projection = {"1", "2", "3"};
+        final String[] columns = {"1", "2", "3"};
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
         final String sortOrder = "test_order";
 
         final Query query = new Query.Builder()
                 .uri(uri)
-                .projection(projection)
+                .columns(columns)
                 .where(where)
                 .whereArgs(whereArgs)
                 .sortOrder(sortOrder)
                 .build();
 
-        assertEquals(uri, query.uri);
-        assertEquals(Arrays.asList(projection), query.projection);
-        assertEquals(where, query.where);
-        assertEquals(Arrays.asList(whereArgs), query.whereArgs);
-        assertEquals(sortOrder, query.sortOrder);
+        assertEquals(uri, query.uri());
+        assertEquals(Arrays.asList(columns), query.columns());
+        assertEquals(where, query.where());
+        assertEquals(Arrays.asList(whereArgs), query.whereArgs());
+        assertEquals(sortOrder, query.sortOrder());
     }
 }

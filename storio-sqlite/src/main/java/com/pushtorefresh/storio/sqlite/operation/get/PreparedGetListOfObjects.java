@@ -94,9 +94,9 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         final Set<String> tables;
 
         if (query != null) {
-            tables = Collections.singleton(query.table);
+            tables = Collections.singleton(query.table());
         } else if (rawQuery != null) {
-            tables = rawQuery.affectedTables;
+            tables = rawQuery.affectedTables();
         } else {
             throw new IllegalStateException("Please specify query");
         }

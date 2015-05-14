@@ -47,14 +47,14 @@ public class QueryTest {
                 .limit(limit)
                 .build();
 
-        assertEquals(table, query.table);
-        assertEquals(distinct, query.distinct);
-        assertEquals(Arrays.asList(columns), query.columns);
-        assertEquals(where, query.where);
-        assertEquals(Arrays.asList(whereArgs), query.whereArgs);
-        assertEquals(groupBy, query.groupBy);
-        assertEquals(having, query.having);
-        assertEquals(orderBy, query.orderBy);
-        assertEquals(limit, query.limit);
+        assertEquals(table, query.table());
+        assertEquals(distinct, query.distinct());
+        assertEquals(Arrays.asList(columns), query.columns());
+        assertEquals(where, query.where());
+        assertEquals(Arrays.asList(whereArgs), query.whereArgs());
+        assertEquals(groupBy, query.groupBy());
+        assertEquals(having, query.having());
+        assertEquals(orderBy, query.orderBy());
+        assertEquals(limit, query.limit());
     }
 }

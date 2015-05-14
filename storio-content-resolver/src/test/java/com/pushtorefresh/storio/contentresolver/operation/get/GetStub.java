@@ -77,7 +77,7 @@ class GetStub {
         when(getResolverForCursor.performGet(storIOContentResolver, query))
                 .thenReturn(cursor);
 
-        when(storIOContentResolver.observeChangesOfUri(query.uri))
+        when(storIOContentResolver.observeChangesOfUri(query.uri()))
                 .thenReturn(Observable.<Changes>empty());
 
         when(getResolverForTestItems.mapFromCursor(cursor))
@@ -115,7 +115,7 @@ class GetStub {
                 })
                 .checkBehaviorOfObservable();
 
-        verify(storIOContentResolver, times(1)).observeChangesOfUri(query.uri);
+        verify(storIOContentResolver, times(1)).observeChangesOfUri(query.uri());
     }
 
     void verifyQueryBehaviorForList(@NonNull List<TestItem> actualList) {
@@ -138,6 +138,6 @@ class GetStub {
                 })
                 .checkBehaviorOfObservable();
 
-        verify(storIOContentResolver, times(1)).observeChangesOfUri(query.uri);
+        verify(storIOContentResolver, times(1)).observeChangesOfUri(query.uri());
     }
 }

@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.QueryUtil;
+import com.pushtorefresh.storio.internal.Queries;
 
 import java.util.List;
 
@@ -17,23 +17,14 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  */
 public final class DeleteQuery {
 
-    /**
-     * The full URI to query, including a row ID (if a specific record is requested)
-     */
     @NonNull
-    public final Uri uri;
+    private final Uri uri;
 
-    /**
-     * An optional restriction to apply to rows when deleting
-     */
     @Nullable
-    public final String where;
+    private final String where;
 
-    /**
-     * Arguments for {@link #where}
-     */
     @Nullable
-    public final List<String> whereArgs;
+    private final List<String> whereArgs;
 
     /**
      * Please use {@link com.pushtorefresh.storio.contentresolver.query.DeleteQuery.Builder} instead of constructor
@@ -41,7 +32,41 @@ public final class DeleteQuery {
     private DeleteQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
         this.where = where;
-        this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
+        this.whereArgs = Queries.listToUnmodifiable(whereArgs);
+    }
+
+    /**
+     * Gets full URI to query, including a row ID (if a specific record is requested).
+     *
+     * @return non-null URI to query.
+     */
+    @NonNull
+    public Uri uri() {
+        return uri;
+    }
+
+    /**
+     * Gets {@code WHERE} clause.
+     * <p/>
+     * An optional restriction to apply to rows when deleting.
+     *
+     * If {@code null} — all rows will be deleted.
+     *
+     * @return nullable {@code WHERE} clause.
+     */
+    @Nullable
+    public String where() {
+        return where;
+    }
+
+    /**
+     * Gets optional immutable list of arguments for {@link #where()} clause.
+     *
+     * @return nullable immutable list of arguments for {@code WHERE} clause.
+     */
+    @Nullable
+    public List<String> whereArgs() {
+        return whereArgs;
     }
 
     @Override
@@ -143,7 +168,7 @@ public final class DeleteQuery {
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
-            this.whereArgs = QueryUtil.varargsToList(whereArgs);
+            this.whereArgs = Queries.varargsToList(whereArgs);
             return this;
         }
 

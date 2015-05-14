@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.QueryUtil;
+import com.pushtorefresh.storio.internal.Queries;
 
 import java.util.List;
 
@@ -17,48 +17,97 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  */
 public final class Query {
 
-    /**
-     * The URI to query. This will be the full URI sent by the client;
-     * if the client is requesting a specific record, the URI will
-     * end in a record number that the implementation should parse and
-     * add to a WHERE or HAVING clause, specifying that _id value.
-     */
     @NonNull
-    public final Uri uri;
+    private final Uri uri;
 
-    /**
-     * The list of columns to put into the cursor. If null all columns are included.
-     */
     @Nullable
-    public final List<String> projection;
+    private final List<String> columns;
 
-    /**
-     * A selection criteria to apply when filtering rows. If null then all rows are included.
-     */
     @Nullable
-    public final String where;
+    private final String where;
 
-    /**
-     * You may include ?s in selection, which will be replaced by the values from selectionArgs, in order that they appear in the selection. The values will be bound as Strings.
-     */
     @Nullable
-    public final List<String> whereArgs;
+    private final List<String> whereArgs;
 
-    /**
-     * How the rows in the cursor should be sorted. If null then the provider is free to define the sort order.
-     */
     @Nullable
-    public final String sortOrder;
+    private final String sortOrder;
 
     /**
      * Please use {@link com.pushtorefresh.storio.contentresolver.query.Query.Builder} instead of constructor
      */
-    protected Query(@NonNull Uri uri, @Nullable List<String> projection, @Nullable String where, @Nullable List<String> whereArgs, @Nullable String sortOrder) {
+    private Query(@NonNull Uri uri, @Nullable List<String> columns, @Nullable String where, @Nullable List<String> whereArgs, @Nullable String sortOrder) {
         this.uri = uri;
-        this.projection = QueryUtil.listToUnmodifiable(projection);
+        this.columns = Queries.listToUnmodifiable(columns);
         this.where = where;
-        this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
+        this.whereArgs = Queries.listToUnmodifiable(whereArgs);
         this.sortOrder = sortOrder;
+    }
+
+    /**
+     * Gets URI to query.
+     *
+     * This will be the full URI sent by the client.
+     * If the client is requesting a specific record, the URI will
+     * end in a record number that the implementation should parse and
+     * add to a {@code WHERE} or {@code HAVING} clause,
+     * specifying that {@code _id} value.
+     *
+     * @return non-null URI to query.
+     */
+    @NonNull
+    public Uri uri() {
+        return uri;
+    }
+
+    /**
+     * Gets optional immutable list of columns that should be received.
+     * <p/>
+     * If list is {@code null} or empty -> all columns will be received.
+     *
+     * @return immutable list of columns that should be received.
+     */
+    @Nullable
+    public List<String> columns() {
+        return columns;
+    }
+
+    /**
+     * Gets {@code WHERE} clause.
+     * <p/>
+     * Optional filter declaring which rows to return.
+     * <p/>
+     * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
+     * <p/>
+     * If it's {@code null} — Query will retrieve all rows for specified URI.
+     *
+     * @return nullable {@code WHERE} clause.
+     */
+    @Nullable
+    public String where() {
+        return where;
+    }
+
+    /**
+     * Gets optional immutable list of arguments for {@link #where()} clause.
+     *
+     * @return nullable immutable list of arguments for {@code WHERE} clause.
+     */
+    @Nullable
+    public List<String> whereArgs() {
+        return whereArgs;
+    }
+
+    /**
+     * Gets sort order.
+     *
+     * How the rows in the cursor should be sorted.
+     * If {@code null} then the provider is free to define the sort order.
+     *
+     * @return nullable sort order.
+     */
+    @Nullable
+    public String sortOrder() {
+        return sortOrder;
     }
 
     @Override
@@ -69,7 +118,7 @@ public final class Query {
         Query query = (Query) o;
 
         if (!uri.equals(query.uri)) return false;
-        if (projection != null ? !projection.equals(query.projection) : query.projection != null)
+        if (columns != null ? !columns.equals(query.columns) : query.columns != null)
             return false;
         if (where != null ? !where.equals(query.where) : query.where != null)
             return false;
@@ -81,7 +130,7 @@ public final class Query {
     @Override
     public int hashCode() {
         int result = uri.hashCode();
-        result = 31 * result + (projection != null ? projection.hashCode() : 0);
+        result = 31 * result + (columns != null ? columns.hashCode() : 0);
         result = 31 * result + (where != null ? where.hashCode() : 0);
         result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
         result = 31 * result + (sortOrder != null ? sortOrder.hashCode() : 0);
@@ -92,7 +141,7 @@ public final class Query {
     public String toString() {
         return "Query{" +
                 "uri=" + uri +
-                ", projection=" + projection +
+                ", columns=" + columns +
                 ", where='" + where + '\'' +
                 ", whereArgs=" + whereArgs +
                 ", sortOrder='" + sortOrder + '\'' +
@@ -144,7 +193,7 @@ public final class Query {
         @NonNull
         private final Uri uri;
 
-        private List<String> projection;
+        private List<String> columns;
 
         private String where;
 
@@ -166,8 +215,8 @@ public final class Query {
          * @return builder
          */
         @NonNull
-        public CompleteBuilder projection(@Nullable String... columns) {
-            projection = QueryUtil.varargsToList(columns);
+        public CompleteBuilder columns(@Nullable String... columns) {
+            this.columns = Queries.varargsToList(columns);
             return this;
         }
 
@@ -198,7 +247,7 @@ public final class Query {
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
-            this.whereArgs = QueryUtil.varargsToList(whereArgs);
+            this.whereArgs = Queries.varargsToList(whereArgs);
             return this;
         }
 
@@ -226,7 +275,7 @@ public final class Query {
         public Query build() {
             return new Query(
                     uri,
-                    projection,
+                    columns,
                     where,
                     whereArgs,
                     sortOrder

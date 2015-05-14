@@ -34,8 +34,8 @@ public class RawQueryTest {
                 .affectedTables(affectedTables)
                 .build();
 
-        assertEquals(query, rawQuery.query);
-        assertEquals(Arrays.asList(args), rawQuery.args);
-        assertEquals(Arrays.asList(affectedTables), rawQuery.affectedTables);
+        assertEquals(query, rawQuery.query());
+        assertEquals(Arrays.asList(args), rawQuery.args());
+        assertEquals(Arrays.asList(affectedTables), rawQuery.affectedTables());
     }
 }

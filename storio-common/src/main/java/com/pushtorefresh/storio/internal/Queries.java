@@ -11,9 +11,9 @@ import java.util.List;
  * <p/>
  * For internal usage only!
  */
-public final class QueryUtil {
+public final class Queries {
 
-    private QueryUtil() {
+    private Queries() {
         throw new IllegalStateException("No instances please");
     }
 

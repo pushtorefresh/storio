@@ -12,29 +12,45 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
  */
 public final class InsertQuery {
 
-    /**
-     * Table name
-     */
     @NonNull
-    public final String table;
+    private final String table;
 
-    /**
-     * Tricky-wiki hack for null columns in {@link android.database.sqlite.SQLiteDatabase}
-     * <p/>
-     * SQL doesn't allow inserting a completely empty row without naming at least one column name.
-     * If your provided values are empty, no column names are known and an empty row can't be inserted.
-     * If not set to null, the nullColumnHack parameter provides the name of nullable column name
-     * to explicitly insert a NULL into in the case where your values is empty.
-     */
     @Nullable
-    public final String nullColumnHack;
+    private final String nullColumnHack;
 
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.query.InsertQuery.Builder} instead of constructor
      */
-    protected InsertQuery(@NonNull String table, @Nullable String nullColumnHack) {
+    private InsertQuery(@NonNull String table, @Nullable String nullColumnHack) {
         this.table = table;
         this.nullColumnHack = nullColumnHack;
+    }
+
+    /**
+     * Gets table name.
+     *
+     * @return non-null table name.
+     */
+    @NonNull
+    public String table() {
+        return table;
+    }
+
+    /**
+     * Gets tricky-wiki hack for {@code null} columns in {@link android.database.sqlite.SQLiteDatabase}
+     * <p/>
+     * SQL doesn't allow inserting a completely empty row
+     * without naming at least one column name. If your provided values
+     * are empty, no column names are known and an empty row can't be
+     * inserted. If not set to {@code null}, the {@code nullColumnHack}
+     * parameter provides the name of nullable column name to explicitly
+     * insert a {@code NULL} into in the case where your values is empty.
+     *
+     * @return nullable hack for {@code null} columns
+     */
+    @Nullable
+    public String nullColumnHack() {
+        return nullColumnHack;
     }
 
     @Override

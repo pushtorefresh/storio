@@ -17,7 +17,7 @@ import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
-import com.pushtorefresh.storio.internal.QueryUtil;
+import com.pushtorefresh.storio.internal.Queries;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -209,11 +209,11 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         @Override
         public Cursor query(@NonNull Query query) {
             return contentResolver.query(
-                    query.uri,
-                    QueryUtil.listToArray(query.projection),
-                    query.where,
-                    QueryUtil.listToArray(query.whereArgs),
-                    query.sortOrder
+                    query.uri(),
+                    Queries.listToArray(query.columns()),
+                    query.where(),
+                    Queries.listToArray(query.whereArgs()),
+                    query.sortOrder()
             );
         }
 
@@ -224,7 +224,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         @Override
         public Uri insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
             return contentResolver.insert(
-                    insertQuery.uri,
+                    insertQuery.uri(),
                     contentValues
             );
         }
@@ -235,10 +235,10 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         @Override
         public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
             return contentResolver.update(
-                    updateQuery.uri,
+                    updateQuery.uri(),
                     contentValues,
-                    updateQuery.where,
-                    QueryUtil.listToArray(updateQuery.whereArgs)
+                    updateQuery.where(),
+                    Queries.listToArray(updateQuery.whereArgs())
             );
         }
 
@@ -248,9 +248,9 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         @Override
         public int delete(@NonNull DeleteQuery deleteQuery) {
             return contentResolver.delete(
-                    deleteQuery.uri,
-                    deleteQuery.where,
-                    QueryUtil.listToArray(deleteQuery.whereArgs)
+                    deleteQuery.uri(),
+                    deleteQuery.where(),
+                    Queries.listToArray(deleteQuery.whereArgs())
             );
         }
     }

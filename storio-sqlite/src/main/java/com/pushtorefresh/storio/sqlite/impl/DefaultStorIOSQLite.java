@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.internal.Environment;
-import com.pushtorefresh.storio.internal.QueryUtil;
+import com.pushtorefresh.storio.internal.Queries;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -212,7 +212,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void execSql(@NonNull RawQuery rawQuery) {
-            db.execSQL(rawQuery.query, QueryUtil.listToArray(rawQuery.args));
+            db.execSQL(rawQuery.query(), Queries.listToArray(rawQuery.args()));
         }
 
         /**
@@ -222,8 +222,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public Cursor rawQuery(@NonNull RawQuery rawQuery) {
             return db.rawQuery(
-                    rawQuery.query,
-                    QueryUtil.listToArray(rawQuery.args)
+                    rawQuery.query(),
+                    Queries.listToArray(rawQuery.args())
             );
         }
 
@@ -234,15 +234,15 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public Cursor query(@NonNull Query query) {
             return db.query(
-                    query.distinct,
-                    query.table,
-                    QueryUtil.listToArray(query.columns),
-                    query.where,
-                    QueryUtil.listToArray(query.whereArgs),
-                    query.groupBy,
-                    query.having,
-                    query.orderBy,
-                    query.limit
+                    query.distinct(),
+                    query.table(),
+                    Queries.listToArray(query.columns()),
+                    query.where(),
+                    Queries.listToArray(query.whereArgs()),
+                    query.groupBy(),
+                    query.having(),
+                    query.orderBy(),
+                    query.limit()
             );
         }
 
@@ -252,8 +252,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
             return db.insertOrThrow(
-                    insertQuery.table,
-                    insertQuery.nullColumnHack,
+                    insertQuery.table(),
+                    insertQuery.nullColumnHack(),
                     contentValues
             );
         }
@@ -264,10 +264,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
             return db.update(
-                    updateQuery.table,
+                    updateQuery.table(),
                     contentValues,
-                    updateQuery.where,
-                    QueryUtil.listToArray(updateQuery.whereArgs)
+                    updateQuery.where(),
+                    Queries.listToArray(updateQuery.whereArgs())
             );
         }
 
@@ -277,9 +277,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public int delete(@NonNull DeleteQuery deleteQuery) {
             return db.delete(
-                    deleteQuery.table,
-                    deleteQuery.where,
-                    QueryUtil.listToArray(deleteQuery.whereArgs)
+                    deleteQuery.table(),
+                    deleteQuery.where(),
+                    Queries.listToArray(deleteQuery.whereArgs())
             );
         }
 

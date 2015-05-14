@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.QueryUtil;
+import com.pushtorefresh.storio.internal.Queries;
 
 import java.util.List;
 
@@ -11,40 +11,63 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 
 /**
  * Delete query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
- * <p/>
+ * <p>
  * Instances of this class are Immutable
  */
 public final class DeleteQuery {
 
-    /**
-     * Table name
-     */
     @NonNull
-    public final String table;
+    private final String table;
 
-    /**
-     * Optional filter declaring which rows to return
-     * <p/>
-     * Formatted as an SQL WHERE clause (excluding the WHERE itself).
-     * <p/>
-     * Passing null will return all rows for the given table
-     */
     @Nullable
-    public final String where;
+    private final String where;
 
-    /**
-     * Optional immutable list of arguments for {@link #where} clause
-     */
     @Nullable
-    public final List<String> whereArgs;
+    private final List<String> whereArgs;
 
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.query.DeleteQuery.Builder} instead of constructor
      */
-    protected DeleteQuery(@NonNull String table, @Nullable String where, @Nullable List<String> whereArgs) {
+    private DeleteQuery(@NonNull String table, @Nullable String where, @Nullable List<String> whereArgs) {
         this.table = table;
         this.where = where;
-        this.whereArgs = QueryUtil.listToUnmodifiable(whereArgs);
+        this.whereArgs = Queries.listToUnmodifiable(whereArgs);
+    }
+
+    /**
+     * Gets table name.
+     *
+     * @return non-null table name.
+     */
+    @NonNull
+    public String table() {
+        return table;
+    }
+
+    /**
+     * Gets {@code WHERE} clause.
+     * <p/>
+     * Optional filter declaring which rows to return.
+     * <p/>
+     * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
+     * <p/>
+     * If it's {@code null} — Query will delete all rows for the given table.
+     *
+     * @return nullable {@code WHERE} clause.
+     */
+    @Nullable
+    public String where() {
+        return where;
+    }
+
+    /**
+     * Gets optional immutable list of arguments for {@link #where()} clause.
+     *
+     * @return nullable immutable list of arguments for {@code WHERE} clause.
+     */
+    @Nullable
+    public List<String> whereArgs() {
+        return whereArgs;
     }
 
     @Override
@@ -112,13 +135,13 @@ public final class DeleteQuery {
 
         /**
          * Optional: Specifies where clause
-         * <p/>
+         * <p>
          * Optional filter declaring which rows to return
-         * <p/>
+         * <p>
          * Formatted as an SQL WHERE clause (excluding the WHERE itself).
-         * <p/>
+         * <p>
          * Passing null will DELETE all rows for the given table
-         * <p/>
+         * <p>
          * Default value is <code>null</code>
          *
          * @param where where clause
@@ -132,9 +155,9 @@ public final class DeleteQuery {
 
         /**
          * Optional: Specifies arguments for where clause
-         * <p/>
+         * <p>
          * Passed objects will be immediately converted to list of {@link String} via calling {@link Object#toString()}
-         * <p/>
+         * <p>
          * Default value is <code>null</code>
          *
          * @param whereArgs list of arguments for where clause
@@ -142,7 +165,7 @@ public final class DeleteQuery {
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
-            this.whereArgs = QueryUtil.varargsToList(whereArgs);
+            this.whereArgs = Queries.varargsToList(whereArgs);
             return this;
         }
 
