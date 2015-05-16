@@ -11,9 +11,9 @@ import java.util.List;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Update query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
+ * Update query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
  * <p/>
- * Instances of this class are Immutable
+ * Instances of this class are Immutable.
  */
 public final class UpdateQuery {
 
@@ -27,7 +27,8 @@ public final class UpdateQuery {
     private final List<String> whereArgs;
 
     /**
-     * Please use {@link com.pushtorefresh.storio.contentresolver.query.UpdateQuery.Builder} instead of constructor
+     * Please use {@link com.pushtorefresh.storio.contentresolver.query.UpdateQuery.Builder}
+     * instead of constructor.
      */
     private UpdateQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
@@ -94,15 +95,18 @@ public final class UpdateQuery {
     }
 
     /**
-     * Builder for {@link UpdateQuery}
+     * Builder for {@link UpdateQuery}.
      */
     public static final class Builder {
 
         /**
-         * Required: Specifies uri
+         * Required: Specifies uri.
          *
-         * @param uri URI to query. This can potentially have a record ID if this is an update request for a specific record
-         * @return builder
+         * @param uri URI to query.
+         *            This can potentially have a record ID if this is an update
+         *            request for a specific record.
+         * @return builder.
+         * @see UpdateQuery#uri()
          */
         @NonNull
         public CompleteBuilder uri(@NonNull Uri uri) {
@@ -111,10 +115,13 @@ public final class UpdateQuery {
         }
 
         /**
-         * Required: Specifies uri
+         * Required: Specifies uri.
          *
-         * @param uri URI to query. This can potentially have a record ID if this is an update request for a specific record
-         * @return builder
+         * @param uri URI to query.
+         *            This can potentially have a record ID if this is an update
+         *            request for a specific record.
+         * @return builder.
+         * @see UpdateQuery#uri()
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
@@ -123,7 +130,7 @@ public final class UpdateQuery {
     }
 
     /**
-     * Compile-time safe part of {@link Builder}
+     * Compile-time safe part of {@link Builder}.
      */
     public static final class CompleteBuilder {
 
@@ -139,12 +146,13 @@ public final class UpdateQuery {
         }
 
         /**
-         * Optional: Specifies where clause
+         * Optional: Specifies where clause.
          * <p/>
-         * Default value is <code>null</code>
+         * Default value is {@code null}.
          *
          * @param where an optional filter to match rows to update.
-         * @return builder
+         * @return builder.
+         * @see UpdateQuery#where()
          */
         @NonNull
         public CompleteBuilder where(@Nullable String where) {
@@ -153,14 +161,16 @@ public final class UpdateQuery {
         }
 
         /**
-         * Optional: Specifies arguments for where clause
+         * Optional: Specifies arguments for where clause.
          * <p/>
-         * Passed objects will be immediately converted to list {@link String} via calling {@link Object#toString()}
+         * Passed objects will be immediately converted to
+         * list {@link String} via calling {@link Object#toString()}.
          * <p/>
-         * Default value is <code>null</code>
+         * Default value is {@code null}.
          *
-         * @param whereArgs arguments for {@link UpdateQuery#where}
-         * @return builder
+         * @param whereArgs arguments for {@link UpdateQuery#where}.
+         * @return builder.
+         * @see UpdateQuery#whereArgs()
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
@@ -169,9 +179,9 @@ public final class UpdateQuery {
         }
 
         /**
-         * Builds new instance of {@link UpdateQuery}
+         * Builds new instance of {@link UpdateQuery}.
          *
-         * @return new instance of {@link UpdateQuery}
+         * @return new instance of {@link UpdateQuery}.
          */
         @NonNull
         public UpdateQuery build() {

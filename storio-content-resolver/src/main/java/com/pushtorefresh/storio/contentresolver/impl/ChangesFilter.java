@@ -11,7 +11,7 @@ import rx.Observable;
 import rx.functions.Func1;
 
 /**
- * Hiding RxJava from ClassLoader via separate class
+ * Hides RxJava from ClassLoader via separate class.
  */
 final class ChangesFilter implements Func1<Changes, Boolean> {
 

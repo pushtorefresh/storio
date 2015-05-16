@@ -11,9 +11,9 @@ import java.util.List;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Delete query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
- * <p/>
- * Instances of this class are Immutable
+ * Delete query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
+ * <p>
+ * Instances of this class are Immutable.
  */
 public final class DeleteQuery {
 
@@ -27,7 +27,8 @@ public final class DeleteQuery {
     private final List<String> whereArgs;
 
     /**
-     * Please use {@link com.pushtorefresh.storio.contentresolver.query.DeleteQuery.Builder} instead of constructor
+     * Please use {@link com.pushtorefresh.storio.contentresolver.query.DeleteQuery.Builder}
+     * instead of constructor.
      */
     private DeleteQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
@@ -36,7 +37,7 @@ public final class DeleteQuery {
     }
 
     /**
-     * Gets full URI to query, including a row ID (if a specific record is requested).
+     * Gets full {@code URI} to query, including a row ID (if a specific record is requested).
      *
      * @return non-null URI to query.
      */
@@ -47,9 +48,9 @@ public final class DeleteQuery {
 
     /**
      * Gets {@code WHERE} clause.
-     * <p/>
+     * <p>
      * An optional restriction to apply to rows when deleting.
-     *
+     * <p>
      * If {@code null} — all rows will be deleted.
      *
      * @return nullable {@code WHERE} clause.
@@ -99,15 +100,17 @@ public final class DeleteQuery {
     }
 
     /**
-     * Builder for {@link DeleteQuery}
+     * Builder for {@link DeleteQuery}.
      */
     public static final class Builder {
 
         /**
-         * Required: Specifies uri
+         * Required: Specifies uri.
          *
-         * @param uri full URI to query, including a row ID (if a specific record is requested)
-         * @return builder
+         * @param uri full {@code URI} to query, including a row ID
+         *            (if a specific record is requested).
+         * @return builder.
+         * @see DeleteQuery#uri()
          */
         @NonNull
         public CompleteBuilder uri(@NonNull Uri uri) {
@@ -116,10 +119,12 @@ public final class DeleteQuery {
         }
 
         /**
-         * Required: Specifies uri
+         * Required: Specifies uri.
          *
-         * @param uri full URI to query, including a row ID (if a specific record is requested)
-         * @return builder
+         * @param uri full {@code URI} to query,
+         *            including a row ID (if a specific record is requested).
+         * @return builder.
+         * @see DeleteQuery#uri()
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
@@ -128,7 +133,7 @@ public final class DeleteQuery {
     }
 
     /**
-     * Compile-time safe part of builder for {@link DeleteQuery}
+     * Compile-time safe part of builder for {@link DeleteQuery}.
      */
     public static final class CompleteBuilder {
 
@@ -143,12 +148,13 @@ public final class DeleteQuery {
         }
 
         /**
-         * Optional: Specifies where clause
-         * <p/>
-         * Default value is <code>null</code>
+         * Optional: Specifies {@code WHERE} clause.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param where optional restriction to apply to rows when deleting
-         * @return builder
+         * @param where optional restriction to apply to rows when deleting.
+         * @return builder.
+         * @see DeleteQuery#where()
          */
         @NonNull
         public CompleteBuilder where(@Nullable String where) {
@@ -157,14 +163,16 @@ public final class DeleteQuery {
         }
 
         /**
-         * Optional: Specifies arguments for where clause
-         * <p/>
-         * Passed objects will be immediately converted to list of {@link String} via calling {@link Object#toString()}
-         * <p/>
-         * Default value is <code>null</code>
+         * Optional: Specifies arguments for where clause.
+         * <p>
+         * Passed objects will be immediately converted to list
+         * of {@link String} via calling {@link Object#toString()}.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param whereArgs arguments for {@link DeleteQuery#where}
-         * @return builder
+         * @param whereArgs arguments for {@link DeleteQuery#where}.
+         * @return builder.
+         * @see DeleteQuery#whereArgs()
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
@@ -173,9 +181,9 @@ public final class DeleteQuery {
         }
 
         /**
-         * Builds new instance of {@link DeleteQuery}
+         * Builds new instance of {@link DeleteQuery}.
          *
-         * @return new instance of {@link DeleteQuery}
+         * @return new instance of {@link DeleteQuery}.
          */
         @NonNull
         public DeleteQuery build() {

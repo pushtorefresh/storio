@@ -15,22 +15,25 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Prepared Put Operation to perform put multiple {@link ContentValues} into {@link StorIOContentResolver}
+ * Prepared Put Operation to perform put multiple {@link ContentValues}
+ * into {@link StorIOContentResolver}.
  */
-public final class PreparedPutContentValuesIterable extends PreparedPut<ContentValues, PutResults<ContentValues>> {
+public final class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
+        PutResults<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValues;
 
-    PreparedPutContentValuesIterable(@NonNull StorIOContentResolver storIOContentResolver, @NonNull PutResolver<ContentValues> putResolver, @NonNull Iterable<ContentValues> contentValues) {
+    PreparedPutContentValuesIterable(@NonNull StorIOContentResolver storIOContentResolver,
+                                     @NonNull PutResolver<ContentValues> putResolver, @NonNull Iterable<ContentValues> contentValues) {
         super(storIOContentResolver, putResolver);
         this.contentValues = contentValues;
     }
 
     /**
-     * Executes Put Operation immediately in current thread
+     * Executes Put Operation immediately in current thread.
      *
-     * @return non-null results of Put Operation
+     * @return non-null results of Put Operation.
      */
     @NonNull
     @Override
@@ -46,9 +49,18 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
     }
 
     /**
-     * Creates {@link Observable} which will perform Put Operation and send results to observer
+     * Creates {@link Observable} which will perform Put Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * put only after subscribing to it. Also, it emits the result once.
      *
-     * @return non-null {@link Observable} which will perform Put Operation and send results to observer
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Put Operation.
+     * and send result to observer.
      */
     @NonNull
     @Override
@@ -58,9 +70,9 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
     }
 
     /**
-     * Builder for {@link PreparedPutContentValuesIterable}
+     * Builder for {@link PreparedPutContentValuesIterable}.
      * <p/>
-     * Required: You should specify query see {@link #withPutResolver(PutResolver)}
+     * Required: You should specify query see {@link #withPutResolver(PutResolver)}.
      */
     public static final class Builder {
 
@@ -78,10 +90,11 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
 
         /**
          * Required: Specifies resolver for Put Operation
-         * that should define behavior of Put Operation: insert or update of the {@link ContentValues}
+         * that should define behavior of Put Operation: insert or update
+         * of the {@link ContentValues}.
          *
-         * @param putResolver resolver for Put Operation
-         * @return builder
+         * @param putResolver resolver for Put Operation.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
@@ -91,7 +104,7 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
     }
 
     /**
-     * Compile-time safe part of builder for {@link PreparedPutContentValuesIterable}
+     * Compile-time safe part of builder for {@link PreparedPutContentValuesIterable}.
      */
     public static final class CompleteBuilder {
 
@@ -111,9 +124,9 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
         }
 
         /**
-         * Builds instance of {@link PreparedPutContentValuesIterable}
+         * Builds instance of {@link PreparedPutContentValuesIterable}.
          *
-         * @return instance of {@link PreparedPutContentValuesIterable}
+         * @return instance of {@link PreparedPutContentValuesIterable}.
          */
         @NonNull
         public PreparedPutContentValuesIterable prepare() {

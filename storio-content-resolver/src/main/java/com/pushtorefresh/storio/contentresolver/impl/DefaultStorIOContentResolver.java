@@ -17,8 +17,8 @@ import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
-import com.pushtorefresh.storio.internal.Queries;
 import com.pushtorefresh.storio.internal.ChangesBus;
+import com.pushtorefresh.storio.internal.Queries;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ import static com.pushtorefresh.storio.internal.Environment.RX_JAVA_IS_AVAILABLE
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Default, thread-safe implementation of {@link StorIOContentResolver}
+ * Default, thread-safe implementation of {@link StorIOContentResolver}.
  */
 public class DefaultStorIOContentResolver extends StorIOContentResolver {
 
@@ -106,18 +106,19 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     }
 
     /**
-     * Builder for {@link DefaultStorIOContentResolver}
+     * Builder for {@link DefaultStorIOContentResolver}.
      */
     public static final class Builder {
 
         /**
-         * Required: Specifies {@link ContentResolver} for {@link StorIOContentResolver}
-         * <p/>
-         * You can get in from any {@link android.content.Context} instance: <code>context.getContentResolver()</code>
-         * It's safe to use {@link android.app.Activity} as {@link android.content.Context}
+         * Required: Specifies {@link ContentResolver} for {@link StorIOContentResolver}.
+         * <p>
+         * You can get in from any {@link android.content.Context}
+         * instance: {@code context.getContentResolver().
+         * It's safe to use {@link android.app.Activity} as {@link android.content.Context}.
          *
-         * @param contentResolver non-null instance of {@link ContentResolver}
-         * @return builder
+         * @param contentResolver non-null instance of {@link ContentResolver}.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder contentResolver(@NonNull ContentResolver contentResolver) {
@@ -127,7 +128,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     }
 
     /**
-     * Compile-time safe part of builder for {@link DefaultStorIOContentResolver}
+     * Compile-time safe part of builder for {@link DefaultStorIOContentResolver}.
      */
     public static final class CompleteBuilder {
 
@@ -141,12 +142,12 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         }
 
         /**
-         * Adds {@link ContentResolverTypeDefaults} for some type
+         * Adds {@link ContentResolverTypeDefaults} for some type.
          *
-         * @param type         type
-         * @param typeDefaults defaults for type
-         * @param <T>          type
-         * @return builder
+         * @param type         type.
+         * @param typeDefaults defaults for type.
+         * @param <T>          type.
+         * @return builder.
          */
         @NonNull
         public <T> CompleteBuilder addDefaultsForType(@NonNull Class<T> type, ContentResolverTypeDefaults<T> typeDefaults) {
@@ -167,9 +168,9 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         }
 
         /**
-         * Builds new instance of {@link DefaultStorIOContentResolver}
+         * Builds new instance of {@link DefaultStorIOContentResolver}.
          *
-         * @return new instance of {@link DefaultStorIOContentResolver}
+         * @return new instance of {@link DefaultStorIOContentResolver}.
          */
         @NonNull
         public DefaultStorIOContentResolver build() {

@@ -11,9 +11,9 @@ import java.util.List;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
- * <p/>
- * Instances of this class are Immutable
+ * Query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
+ * <p>
+ * Instances of this class are Immutable.
  */
 public final class Query {
 
@@ -33,7 +33,8 @@ public final class Query {
     private final String sortOrder;
 
     /**
-     * Please use {@link com.pushtorefresh.storio.contentresolver.query.Query.Builder} instead of constructor
+     * Please use {@link com.pushtorefresh.storio.contentresolver.query.Query.Builder}
+     * instead of constructor.
      */
     private Query(@NonNull Uri uri, @Nullable List<String> columns, @Nullable String where, @Nullable List<String> whereArgs, @Nullable String sortOrder) {
         this.uri = uri;
@@ -45,7 +46,7 @@ public final class Query {
 
     /**
      * Gets URI to query.
-     *
+     * <p>
      * This will be the full URI sent by the client.
      * If the client is requesting a specific record, the URI will
      * end in a record number that the implementation should parse and
@@ -61,7 +62,7 @@ public final class Query {
 
     /**
      * Gets optional immutable list of columns that should be received.
-     * <p/>
+     * <p>
      * If list is {@code null} or empty -> all columns will be received.
      *
      * @return immutable list of columns that should be received.
@@ -73,11 +74,11 @@ public final class Query {
 
     /**
      * Gets {@code WHERE} clause.
-     * <p/>
+     * <p>
      * Optional filter declaring which rows to return.
-     * <p/>
+     * <p>
      * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
-     * <p/>
+     * <p>
      * If it's {@code null} — Query will retrieve all rows for specified URI.
      *
      * @return nullable {@code WHERE} clause.
@@ -99,7 +100,7 @@ public final class Query {
 
     /**
      * Gets sort order.
-     *
+     * <p>
      * How the rows in the cursor should be sorted.
      * If {@code null} then the provider is free to define the sort order.
      *
@@ -149,19 +150,20 @@ public final class Query {
     }
 
     /**
-     * Builder for {@link Query}
+     * Builder for {@link Query}.
      */
     public static final class Builder {
 
         /**
-         * Specifies URI to query.
+         * Required: Specifies URI to query.
          * This will be the full URI sent by the client;
          * if the client is requesting a specific record,
          * the URI will end in a record number that the implementation should parse and add to a WHERE or HAVING clause,
          * specifying that _id value.
          *
-         * @param uri uri
-         * @return builder
+         * @param uri uri.
+         * @return builder.
+         * @see Query#uri()
          */
         @NonNull
         public CompleteBuilder uri(@NonNull Uri uri) {
@@ -176,8 +178,9 @@ public final class Query {
          * the URI will end in a record number that the implementation should parse and add to a WHERE or HAVING clause,
          * specifying that _id value.
          *
-         * @param uri uri which will be converted to {@link Uri}
-         * @return builder
+         * @param uri uri string which will be converted to {@link Uri}.
+         * @return builder.
+         * @see Query#uri()
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
@@ -186,7 +189,7 @@ public final class Query {
     }
 
     /**
-     * Compile-time safe part of builder for {@link DeleteQuery}
+     * Compile-time safe part of builder for {@link DeleteQuery}.
      */
     public static final class CompleteBuilder {
 
@@ -206,13 +209,14 @@ public final class Query {
         }
 
         /**
-         * The list of columns to put into the cursor.
-         * If <code>null</code> all columns are included.
-         * <p/>
-         * Default value is <code>null</code>
+         * Optional: The list of columns to put into the cursor.
+         * If {@code null} all columns are included.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param columns columns
-         * @return builder
+         * @param columns columns.
+         * @return builder.
+         * @see Query#columns()
          */
         @NonNull
         public CompleteBuilder columns(@Nullable String... columns) {
@@ -222,12 +226,13 @@ public final class Query {
 
         /**
          * Optional: A selection criteria to apply when filtering rows.
-         * If <code>null</code> then all rows are included.
-         * <p/>
-         * Default value is <code>null</code>
+         * If {@code null} then all rows are included.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param where where
-         * @return builder
+         * @param where where clause.
+         * @return builder.
+         * @see Query#where()
          */
         @NonNull
         public CompleteBuilder where(@Nullable String where) {
@@ -236,14 +241,16 @@ public final class Query {
         }
 
         /**
-         * Optional: Specifies arguments for where clause
-         * <p/>
-         * Passed objects will be immediately converted to list {@link String} via calling {@link Object#toString()}
-         * <p/>
-         * Default value is <code>null</code>
+         * Optional: Specifies arguments for where clause.
+         * <p>
+         * Passed objects will be immediately converted
+         * to list {@link String} via calling {@link Object#toString()}.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param whereArgs selection arguments
-         * @return builder
+         * @param whereArgs selection arguments.
+         * @return builder.
+         * @see Query#whereArgs()
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
@@ -253,12 +260,13 @@ public final class Query {
 
         /**
          * Optional: Specifies how the rows in the cursor should be sorted.
-         * If <code>null</code> then the provider is free to define the sort order.
-         * <p/>
-         * Default value is <code>null</code>
+         * If {@code null} then the provider is free to define the sort order.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param sortOrder sort order
-         * @return builder
+         * @param sortOrder sort order.
+         * @return builder.
+         * @see Query#sortOrder()
          */
         @NonNull
         public CompleteBuilder sortOrder(@Nullable String sortOrder) {
@@ -267,9 +275,9 @@ public final class Query {
         }
 
         /**
-         * Builds new instance of {@link Query}
+         * Builds new instance of {@link Query}.
          *
-         * @return new instance of {@link Query}
+         * @return new instance of {@link Query}.
          */
         @NonNull
         public Query build() {

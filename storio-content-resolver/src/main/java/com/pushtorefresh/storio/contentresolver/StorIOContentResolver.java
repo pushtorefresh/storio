@@ -20,45 +20,63 @@ import java.util.Set;
 import rx.Observable;
 
 /**
- * Powerful abstraction over {@link android.content.ContentResolver}
+ * Powerful abstraction over {@link android.content.ContentResolver}.
  */
 public abstract class StorIOContentResolver {
 
     /**
-     * Prepares "get" operation for {@link StorIOContentResolver}
-     * Allows to get information from {@link StorIOContentResolver}
+     * Prepares "Get" Operation for {@link StorIOContentResolver}.
+     * Allows you get information from {@link android.content.ContentProvider}.
      *
-     * @return builder for PreparedGet
+     * @return builder for {@link PreparedGet}.
      */
     @NonNull
     public PreparedGet.Builder get() {
         return new PreparedGet.Builder(this);
     }
 
+    /**
+     * Prepares "Put" Operation for {@link StorIOContentResolver}.
+     * Allows you insert or update information in {@link android.content.ContentProvider}.
+     *
+     * @return builder for {@link PreparedPut}.
+     */
     @NonNull
     public PreparedPut.Builder put() {
         return new PreparedPut.Builder(this);
     }
 
+    /**
+     * Prepares "Delete" Operation for {@link StorIOContentResolver}.
+     * Allows you delete information from {@link android.content.ContentProvider}.
+     *
+     * @return builder for {@link PreparedDelete}.
+     */
     @NonNull
     public PreparedDelete.Builder delete() {
         return new PreparedDelete.Builder(this);
     }
 
     /**
-     * Subscribes to changes of required Uris
+     * Subscribes to changes of required Uris.
      *
-     * @param uris set of {@link Uri} that should be monitored
-     * @return {@link Observable} of {@link Changes} subscribed to changes of required Uris
+     * @param uris set of {@link Uri} that should be monitored.
+     * @return {@link Observable} of {@link Changes} subscribed to changes of required Uris.
+     * <p>Notice, that returned {@link Observable} is "Hot Observable", which means,
+     * that you should manually unsubscribe from it to prevent memory leak.
+     * Also, it can cause BackPressure problems.
      */
     @NonNull
     public abstract Observable<Changes> observeChangesOfUris(@NonNull Set<Uri> uris);
 
     /**
-     * Subscribes to changes of required Uri
+     * Subscribes to changes of required Uri.
      *
-     * @param uri {@link Uri} that should be monitored
-     * @return {@link Observable} of {@link Changes} subscribed to changes of required Uri
+     * @param uri {@link Uri} that should be monitored.
+     * @return {@link Observable} of {@link Changes} subscribed to changes of required Uri.
+     * <p>Notice, that returned {@link Observable} is "Hot Observable", which means,
+     * that you should manually unsubscribe from it to prevent memory leak.
+     * Also, it can cause BackPressure problems.
      */
     @NonNull
     public Observable<Changes> observeChangesOfUri(@NonNull Uri uri) {
@@ -66,64 +84,65 @@ public abstract class StorIOContentResolver {
     }
 
     /**
-     * Hides some internal operations of {@link StorIOContentResolver} to make API of {@link StorIOContentResolver} clean and easy to understand
+     * Hides some internal operations of {@link StorIOContentResolver}
+     * to make API of {@link StorIOContentResolver} clean and easy to understand.
      *
-     * @return implementation of Internal operations for {@link StorIOContentResolver}
+     * @return implementation of Internal operations for {@link StorIOContentResolver}.
      */
     @NonNull
     public abstract Internal internal();
 
     /**
      * Hides some internal operations of {@link StorIOContentResolver}
-     * to make {@link StorIOContentResolver} API clean and easy to understand
+     * to make {@link StorIOContentResolver} API clean and easy to understand.
      */
     public static abstract class Internal {
 
         /**
-         * Gets {@link ContentResolverTypeDefaults} for required type
+         * Gets {@link ContentResolverTypeDefaults} for required type.
          * <p>
-         * Result can be null
+         * Result can be null.
          *
-         * @param type type
-         * @param <T>  type
-         * @return {@link ContentResolverTypeDefaults} for required type or null
+         * @param type type.
+         * @param <T>  type.
+         * @return {@link ContentResolverTypeDefaults} for required type or null.
          */
         @Nullable
         public abstract <T> ContentResolverTypeDefaults<T> typeDefaults(@NonNull Class<T> type);
 
         /**
-         * Gets the data from {@link StorIOContentResolver}
+         * Gets the data from {@link StorIOContentResolver}.
          *
-         * @param query query
-         * @return cursor with result data or null
+         * @param query query.
+         * @return cursor with result data or null.
          */
         @Nullable
         public abstract Cursor query(@NonNull Query query);
 
         /**
-         * Inserts the data to {@link StorIOContentResolver}
+         * Inserts the data to {@link StorIOContentResolver}.
          *
-         * @param insertQuery   query
-         * @param contentValues data
-         * @return Uri for inserted data
+         * @param insertQuery   query.
+         * @param contentValues data.
+         * @return Uri for inserted data.
          */
         @NonNull
         public abstract Uri insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues);
 
         /**
-         * Updates data in {@link StorIOContentResolver}
+         * Updates data in {@link StorIOContentResolver}.
          *
-         * @param updateQuery   query
-         * @param contentValues data
-         * @return number of rows affected
+         * @param updateQuery   query.
+         * @param contentValues data.
+         * @return number of rows affected.
          */
         public abstract int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues);
 
         /**
-         * Deletes the data from {@link StorIOContentResolver}
+         * Deletes the data from {@link StorIOContentResolver}.
          *
-         * @param deleteQuery query
-         * @return number of rows deleted
+         * @param deleteQuery query.
+         * @return number of rows deleted.
          */
         public abstract int delete(@NonNull DeleteQuery deleteQuery);
     }

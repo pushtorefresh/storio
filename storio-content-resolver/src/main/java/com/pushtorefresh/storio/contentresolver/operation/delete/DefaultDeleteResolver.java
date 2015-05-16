@@ -6,19 +6,19 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 
 /**
- * Default implementation of {@link DeleteResolver}
+ * Default implementation of {@link DeleteResolver}.
  * <p/>
- * Simply redirects {@link DeleteQuery} to {@link StorIOContentResolver}
+ * Simply redirects {@link DeleteQuery} to {@link StorIOContentResolver}.
  * <p/>
- * Instances of this class are thread-safe
+ * Instances of this class are thread-safe.
  */
 public abstract class DefaultDeleteResolver<T> extends DeleteResolver<T> {
 
     /**
-     * Converts object of required type to {@link DeleteQuery}
+     * Converts object of required type to {@link DeleteQuery}.
      *
-     * @param object non-null object that should be converted to {@link DeleteQuery}
-     * @return non-null {@link DeleteQuery}
+     * @param object non-null object that should be converted to {@link DeleteQuery}.
+     * @return non-null {@link DeleteQuery}.
      */
     @NonNull
     protected abstract DeleteQuery mapToDeleteQuery(@NonNull T object);

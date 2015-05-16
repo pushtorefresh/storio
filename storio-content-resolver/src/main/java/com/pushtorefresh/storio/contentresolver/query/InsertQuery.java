@@ -6,9 +6,9 @@ import android.support.annotation.NonNull;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Insert query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
+ * Insert query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
  * <p/>
- * Instances of this class are Immutable
+ * Instances of this class are Immutable.
  */
 public final class InsertQuery {
 
@@ -16,7 +16,8 @@ public final class InsertQuery {
     private final Uri uri;
 
     /**
-     * Please use {@link com.pushtorefresh.storio.contentresolver.query.InsertQuery.Builder} instead of constructor
+     * Please use {@link com.pushtorefresh.storio.contentresolver.query.InsertQuery.Builder}
+     * instead of constructor.
      */
     private InsertQuery(@NonNull Uri uri) {
         this.uri = uri;
@@ -55,7 +56,7 @@ public final class InsertQuery {
     }
 
     /**
-     * Builder for {@link InsertQuery}
+     * Builder for {@link InsertQuery}.
      * <p/>
      * Yep, it looks stupid with only one parameter — Uri, but think about future,
      * we can add other things later without breaking the API!
@@ -63,10 +64,11 @@ public final class InsertQuery {
     public static final class Builder {
 
         /**
-         * Required: Specifies uri
+         * Required: Specifies uri.
          *
-         * @param uri content:// URI of the insertion request
-         * @return builder
+         * @param uri {@code content://} URI of the insertion request.
+         * @return builder.
+         * @see InsertQuery#uri()
          */
         @NonNull
         public CompleteBuilder uri(@NonNull Uri uri) {
@@ -75,10 +77,11 @@ public final class InsertQuery {
         }
 
         /**
-         * Required: Specifies uri
+         * Required: Specifies uri.
          *
-         * @param uri content:// URI of the insertion request
-         * @return builder
+         * @param uri {@code content://} URI of the insertion request.
+         * @return builder.
+         * @see InsertQuery#uri()
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
@@ -87,7 +90,7 @@ public final class InsertQuery {
     }
 
     /**
-     * Compile-time safe part of builder for {@link DeleteQuery}
+     * Compile-time safe part of builder for {@link DeleteQuery}.
      */
     public static final class CompleteBuilder {
 
@@ -99,9 +102,9 @@ public final class InsertQuery {
         }
 
         /**
-         * Builds {@link InsertQuery} instance with required params
+         * Builds {@link InsertQuery} instance with required params.
          *
-         * @return new {@link InsertQuery} instance
+         * @return new {@link InsertQuery} instance.
          */
         @NonNull
         public InsertQuery build() {

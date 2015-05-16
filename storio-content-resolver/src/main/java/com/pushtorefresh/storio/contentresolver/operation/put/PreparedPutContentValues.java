@@ -12,7 +12,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Prepared Put Operation for {@link ContentValues}
+ * Prepared Put Operation for {@link ContentValues}.
  */
 public final class PreparedPutContentValues extends PreparedPut<ContentValues, PutResult> {
 
@@ -25,9 +25,9 @@ public final class PreparedPutContentValues extends PreparedPut<ContentValues, P
     }
 
     /**
-     * Executes Put Operation immediately in current thread
+     * Executes Put Operation immediately in current thread.
      *
-     * @return non-null result of Put Operation
+     * @return non-null result of Put Operation.
      */
     @NonNull
     @Override
@@ -36,9 +36,18 @@ public final class PreparedPutContentValues extends PreparedPut<ContentValues, P
     }
 
     /**
-     * Creates {@link Observable} which will perform Put Operation and send result to observer
+     * Creates {@link Observable} which will perform Put Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * put only after subscribing to it. Also, it emits the result once.
+     * <p>
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
      *
-     * @return non-null {@link Observable} which will perform Put Operation and send result to observer
+     * @return non-null {@link Observable} which will perform Put Operation.
+     * and send result to observer.
      */
     @NonNull
     @Override
@@ -48,9 +57,9 @@ public final class PreparedPutContentValues extends PreparedPut<ContentValues, P
     }
 
     /**
-     * Builder for {@link PreparedPutContentValues}
-     * <p/>
-     * Required: You should specify put resolver see {@link #withPutResolver(PutResolver)}
+     * Builder for {@link PreparedPutContentValues}.
+     * <p>
+     * Required: You should specify put resolver see {@link #withPutResolver(PutResolver)}.
      */
     public static final class Builder {
 
@@ -61,10 +70,10 @@ public final class PreparedPutContentValues extends PreparedPut<ContentValues, P
         private final ContentValues contentValues;
 
         /**
-         * Creates builder for {@link PreparedPutContentValues}
+         * Creates builder for {@link PreparedPutContentValues}.
          *
-         * @param storIOContentResolver instance of {@link StorIOContentResolver}
-         * @param contentValues         some {@link ContentValues} to put
+         * @param storIOContentResolver instance of {@link StorIOContentResolver}.
+         * @param contentValues         some {@link ContentValues} to put.
          */
         public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull ContentValues contentValues) {
             checkNotNull(storIOContentResolver, "Please specify StorIOContentResolver");
@@ -75,11 +84,12 @@ public final class PreparedPutContentValues extends PreparedPut<ContentValues, P
         }
 
         /**
-         * Required: Specifies resolver for Put Operation
-         * that should define behavior of Put Operation: insert or update of the {@link ContentValues}
+         * Required: Specifies resolver for Put Operation.
+         * that should define behavior of Put Operation: insert or update
+         * of the {@link ContentValues}.
          *
-         * @param putResolver resolver for Put Operation
-         * @return builder
+         * @param putResolver resolver for Put Operation.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {
@@ -89,7 +99,7 @@ public final class PreparedPutContentValues extends PreparedPut<ContentValues, P
     }
 
     /**
-     * Compile-time safe part of builder for {@link PreparedPutContentValues}
+     * Compile-time safe part of builder for {@link PreparedPutContentValues}.
      */
     public static final class CompleteBuilder {
 
@@ -109,9 +119,9 @@ public final class PreparedPutContentValues extends PreparedPut<ContentValues, P
         }
 
         /**
-         * Builds instance of {@link PreparedPutContentValues}
+         * Builds instance of {@link PreparedPutContentValues}.
          *
-         * @return instance of {@link PreparedPutContentValues}
+         * @return instance of {@link PreparedPutContentValues}.
          */
         @NonNull
         public PreparedPutContentValues prepare() {

@@ -9,9 +9,9 @@ import java.util.Set;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Immutable container for results of Delete Operation
+ * Immutable container for results of Delete Operation.
  * <p/>
- * Instances of this class are Immutable
+ * Instances of this class are Immutable.
  */
 public final class DeleteResult {
 
@@ -26,11 +26,11 @@ public final class DeleteResult {
     }
 
     /**
-     * Creates new instance of immutable container for results of Delete Operation
+     * Creates new instance of immutable container for results of Delete Operation.
      *
-     * @param numberOfRowsDeleted number of rows that were deleted
-     * @param affectedUris        non-null set of Uris that wer affected
-     * @return new instance of immutable container for results of Delete Operation
+     * @param numberOfRowsDeleted number of rows that were deleted.
+     * @param affectedUris        non-null set of Uris that wer affected.
+     * @return new instance of immutable container for results of Delete Operation.
      */
     @NonNull
     public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull Set<Uri> affectedUris) {
@@ -39,11 +39,11 @@ public final class DeleteResult {
     }
 
     /**
-     * Creates new instance of immutable container for results of Delete Operation
+     * Creates new instance of immutable container for results of Delete Operation.
      *
-     * @param numberOfRowsDeleted number of rows that were deleted
-     * @param affectedUri         non-null Uri that was affected
-     * @return new instance of immutable container for results of Delete Operation
+     * @param numberOfRowsDeleted number of rows that were deleted.
+     * @param affectedUri         non-null Uri that was affected.
+     * @return new instance of immutable container for results of Delete Operation.
      */
     @NonNull
     public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull Uri affectedUri) {
@@ -52,18 +52,18 @@ public final class DeleteResult {
     }
 
     /**
-     * Gets number of rows that were deleted
+     * Gets number of rows that were deleted.
      *
-     * @return number of rows that were deleted
+     * @return number of rows that were deleted.
      */
     public int numberOfRowsDeleted() {
         return numberOfRowsDeleted;
     }
 
     /**
-     * Gets immutable set of affected Uris
+     * Gets immutable set of affected Uris.
      *
-     * @return affected Uris
+     * @return affected Uris.
      */
     @NonNull
     public Set<Uri> affectedUris() {
