@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.Environment;
 import com.pushtorefresh.storio.internal.Queries;
+import com.pushtorefresh.storio.internal.ChangesBus;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -24,10 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
-import rx.subjects.PublishSubject;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static java.util.Collections.newSetFromMap;
@@ -45,14 +43,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @NonNull
     private final SQLiteDatabase db;
 
-    /**
-     * Reactive bus for notifying observers about changes in StorIOSQLite
-     * One change can affect several tables, so we use {@link Changes} as representation of changes
-     */
-    @Nullable
-    private final PublishSubject<Changes> changesBus = Environment.IS_RX_JAVA_AVAILABLE
-            ? PublishSubject.<Changes>create()
-            : null;
+    @NonNull
+    private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>();
 
     /**
      * Implementation of {@link StorIOSQLite.Internal}
@@ -71,12 +63,14 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @Override
     @NonNull
     public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
-        if (changesBus == null) {
+        final Observable<Changes> rxBus = changesBus.asObservable();
+
+        if (rxBus == null) {
             throw new IllegalStateException("Observing changes in StorIOSQLite requires RxJava");
         }
 
         // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
-        return ChangesFilter.apply(changesBus, tables);
+        return ChangesFilter.apply(rxBus, tables);
     }
 
     /**
@@ -186,8 +180,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         private final AtomicInteger numberOfRunningTransactions = new AtomicInteger(0);
 
         @NonNull
-        private final AtomicReference<Set<Changes>> pendingChanges
-                = new AtomicReference<Set<Changes>>(newSetFromMap(new ConcurrentHashMap<Changes, Boolean>()));
+        private final Set<Changes> pendingChanges
+                = newSetFromMap(new ConcurrentHashMap<Changes, Boolean>());
 
         protected InternalImpl(@Nullable Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap) {
             this.typesDefaultsMap = typesDefaultsMap != null
@@ -288,24 +282,15 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void notifyAboutChanges(@NonNull Changes changes) {
-            // Notifying about changes requires RxJava, if RxJava is not available -> skip notification
-            if (changesBus != null) {
-                pendingChanges.get().add(changes);
-                notifyAboutPendingChangesIfNotInTransaction();
-            }
+            pendingChanges.add(changes);
+            notifyAboutPendingChangesIfNotInTransaction();
         }
 
         private void notifyAboutPendingChangesIfNotInTransaction() {
-            if (changesBus != null && numberOfRunningTransactions.get() == 0) {
-                // Main idea — use AtomicReference to get pendingTransactions
-                // and replace them with new empty Set.
-                // Pros: we can avoid synchronization and be sure that this code is thread-safe.
-                // Cons: memory allocation on each call if it's not in transaction.
-                final Set<Changes> changes = pendingChanges
-                        .getAndSet(newSetFromMap(new ConcurrentHashMap<Changes, Boolean>()));
-
-                for (final Changes next : changes) {
-                    changesBus.onNext(next);
+            if (numberOfRunningTransactions.get() == 0) {
+                for (Changes changes : pendingChanges) {
+                    pendingChanges.remove(changes);
+                    changesBus.onNext(changes);
                 }
             }
         }

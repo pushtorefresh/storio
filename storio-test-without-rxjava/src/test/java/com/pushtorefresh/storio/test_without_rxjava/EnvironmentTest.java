@@ -10,7 +10,7 @@ public class EnvironmentTest {
 
     @Test
     public void noRxJavaInClassPath() {
-        assertFalse(Environment.IS_RX_JAVA_AVAILABLE);
+        assertFalse(Environment.RX_JAVA_IS_AVAILABLE);
     }
 
     @Test(expected = ClassNotFoundException.class)

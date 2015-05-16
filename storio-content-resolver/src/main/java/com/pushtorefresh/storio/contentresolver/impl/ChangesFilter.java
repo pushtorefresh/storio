@@ -9,7 +9,6 @@ import java.util.Set;
 
 import rx.Observable;
 import rx.functions.Func1;
-import rx.subjects.PublishSubject;
 
 /**
  * Hiding RxJava from ClassLoader via separate class
@@ -24,7 +23,7 @@ final class ChangesFilter implements Func1<Changes, Boolean> {
     }
 
     @NonNull
-    static Observable<Changes> apply(@NonNull PublishSubject<Changes> publishSubject, @NonNull Set<Uri> uris) {
+    static Observable<Changes> apply(@NonNull Observable<Changes> publishSubject, @NonNull Set<Uri> uris) {
         return publishSubject.filter(new ChangesFilter(uris));
     }
 

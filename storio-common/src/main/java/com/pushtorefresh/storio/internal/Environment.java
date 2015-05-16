@@ -10,7 +10,7 @@ public final class Environment {
     /**
      * True if RxJava is on classpath, false otherwise
      */
-    public static final boolean IS_RX_JAVA_AVAILABLE = isRxJavaAvailable();
+    public static final boolean RX_JAVA_IS_AVAILABLE = isRxJavaAvailable();
 
     private Environment() {
         throw new IllegalStateException("No instances please");
@@ -32,7 +32,7 @@ public final class Environment {
      * @param messagePrefix first part of exception message, for example: "Creating Observable"
      */
     public static void throwExceptionIfRxJavaIsNotAvailable(@NonNull String messagePrefix) {
-        if (!IS_RX_JAVA_AVAILABLE) {
+        if (!RX_JAVA_IS_AVAILABLE) {
             throw new IllegalStateException(messagePrefix + " requires RxJava in classpath, please add it as compile dependency to the application");
         }
     }
