@@ -59,4 +59,7 @@ dependencies {
     compile rootProject.ext.butterKnife
     compile rootProject.ext.recyclerView
     compile rootProject.ext.timber
+
+    debugCompile   rootProject.ext.leakCanary
+    releaseCompile rootProject.ext.leakCanaryNoOp
 }
