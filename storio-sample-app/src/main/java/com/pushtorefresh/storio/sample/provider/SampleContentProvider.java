@@ -34,7 +34,7 @@ public class SampleContentProvider extends ContentProvider {
      */
     @Override
     public boolean onCreate() {
-        SampleApp.get(getContext()).getAppComponent().inject(this);
+        SampleApp.get(getContext()).appComponent().inject(this);
         return true;
     }
 

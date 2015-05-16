@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sample.db.DbModule;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import timber.log.Timber;
 
@@ -13,6 +15,9 @@ public class SampleApp extends Application {
 
     @Nullable
     private volatile AppComponent appComponent;
+
+    // Monitors Memory Leaks
+    private RefWatcher refWatcher;
 
     @NonNull
     public static SampleApp get(@NonNull Context context) {
@@ -22,13 +27,12 @@ public class SampleApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        refWatcher = LeakCanary.install(this);
         Timber.plant(new Timber.DebugTree());
     }
 
-    // When another process of the app created (for example, for ContentProvider), onCreate() method of application object won't be called
-    // so we can't be sure, that it will be initialized
     @NonNull
-    public AppComponent getAppComponent() {
+    public AppComponent appComponent() {
         if (appComponent == null) {
             synchronized (SampleApp.class) {
                 if (appComponent == null) {
@@ -48,5 +52,10 @@ public class SampleApp extends Application {
                 .appModule(new AppModule(this))
                 .dbModule(new DbModule())
                 .build();
+    }
+
+    @NonNull
+    public RefWatcher refWatcher() {
+        return refWatcher;
     }
 }

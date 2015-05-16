@@ -49,6 +49,8 @@ ext {
     recyclerView = 'com.android.support:recyclerview-v7:22.1.1'
     rxAndroid = 'io.reactivex:rxandroid:0.24.0'
     timber = 'com.jakewharton.timber:timber:3.0.1'
+    leakCanary = 'com.squareup.leakcanary:leakcanary-android:1.3'
+    leakCanaryNoOp = 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
 
     autoService = 'com.google.auto.service:auto-service:1.0-rc2'
     javaPoet = 'com.squareup:javapoet:1.0.0'
