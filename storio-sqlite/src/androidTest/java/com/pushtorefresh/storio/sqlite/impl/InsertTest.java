@@ -17,7 +17,7 @@ public class InsertTest extends BaseTest {
 
     @Test
     public void insertOne() {
-        final User user = putUser();
+        final User user = putUserBlocking();
 
         // why we created StorIOSQLite: nobody loves nulls
         final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
@@ -36,7 +36,7 @@ public class InsertTest extends BaseTest {
 
     @Test
     public void insertCollection() {
-        final List<User> users = putUsers(3);
+        final List<User> users = putUsersBlocking(3);
 
         // asserting that values was really inserted to db
         final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
@@ -56,9 +56,9 @@ public class InsertTest extends BaseTest {
         final User user = TestFactory.newUser();
 
         for (int i = 0; i < 2; i++) {
-            putUser(user);
+            putUserBlocking(user);
 
-            final List<User> existUsers = getAllUsers();
+            final List<User> existUsers = getAllUsersBlocking();
 
             assertNotNull(existUsers);
             assertEquals(1, existUsers.size());
@@ -67,7 +67,7 @@ public class InsertTest extends BaseTest {
             assertEquals(1, cursorAfterPut.getCount());
             cursorAfterPut.close();
 
-            deleteUser(user);
+            deleteUserBlocking(user);
 
             final Cursor cursorAfterDelete = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
             assertEquals(0, cursorAfterDelete.getCount());

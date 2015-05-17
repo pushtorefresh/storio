@@ -13,20 +13,20 @@ import java.util.Queue;
 
 import rx.Subscription;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class ObservableStreamTest extends BaseSubscriptionTest {
 
-    public class EmissionChecker extends BaseEmissionChecker<List<User>> {
+    private class EmissionChecker extends BaseEmissionChecker<List<User>> {
 
         public EmissionChecker(@NonNull Queue<List<User>> expected) {
             super(expected);
         }
 
         @Override
+        @NonNull
         public Subscription subscribe() {
             return storIOSQLite
                     .get()
@@ -34,7 +34,6 @@ public class ObservableStreamTest extends BaseSubscriptionTest {
                     .withQuery(UserTableMeta.QUERY_ALL)
                     .prepare()
                     .createObservable()
-                    .subscribeOn(Schedulers.io())
                     .subscribe(new Action1<List<User>>() {
                         @Override
                         public void call(List<User> users) {
@@ -46,7 +45,7 @@ public class ObservableStreamTest extends BaseSubscriptionTest {
 
     @Test
     public void insertEmission() {
-        final List<User> initialUsers = putUsers(10);
+        final List<User> initialUsers = putUsersBlocking(10);
         final List<User> usersForInsert = TestFactory.newUsers(10);
         final List<User> allUsers = new ArrayList<User>(initialUsers.size() + usersForInsert.size());
 
@@ -60,7 +59,7 @@ public class ObservableStreamTest extends BaseSubscriptionTest {
         final EmissionChecker emissionChecker = new EmissionChecker(expectedUsers);
         final Subscription subscription = emissionChecker.subscribe();
 
-        putUsers(usersForInsert);
+        putUsersBlocking(usersForInsert);
 
         assertTrue(emissionChecker.syncWait());
 
@@ -69,7 +68,7 @@ public class ObservableStreamTest extends BaseSubscriptionTest {
 
     @Test
     public void updateEmission() {
-        final List<User> users = putUsers(10);
+        final List<User> users = putUsersBlocking(10);
 
         final Queue<List<User>> expectedUsers = new LinkedList<List<User>>();
 
@@ -97,22 +96,24 @@ public class ObservableStreamTest extends BaseSubscriptionTest {
 
     @Test
     public void deleteEmission() {
-        final List<User> usersForSave = TestFactory.newUsers(10);
-        final List<User> usersForRemove = TestFactory.newUsers(10);
-        final List<User> allUsers = new ArrayList<User>(usersForSave.size() + usersForRemove.size());
+        final List<User> usersThatShouldBeSaved = TestFactory.newUsers(10);
+        final List<User> usersThatShouldBeRemoved = TestFactory.newUsers(10);
+        final List<User> allUsers = new ArrayList<User>();
 
-        allUsers.addAll(usersForSave);
-        allUsers.addAll(usersForRemove);
+        allUsers.addAll(usersThatShouldBeSaved);
+        allUsers.addAll(usersThatShouldBeRemoved);
 
-        putUsers(allUsers);
+        putUsersBlocking(allUsers);
 
         final Queue<List<User>> expectedUsers = new LinkedList<List<User>>();
+
         expectedUsers.add(allUsers);
-        expectedUsers.add(usersForSave);
+        expectedUsers.add(usersThatShouldBeSaved);
+
         final EmissionChecker emissionChecker = new EmissionChecker(expectedUsers);
         final Subscription subscription = emissionChecker.subscribe();
 
-        deleteUsers(usersForRemove);
+        deleteUsersBlocking(usersThatShouldBeRemoved);
 
         assertTrue(emissionChecker.syncWait());
 
