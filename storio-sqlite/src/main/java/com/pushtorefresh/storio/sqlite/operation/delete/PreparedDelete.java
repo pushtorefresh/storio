@@ -6,6 +6,11 @@ import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 
+/**
+ * Prepared Delete Operation for {@link StorIOSQLite}.
+ *
+ * @param <T> type of object to delete.
+ */
 public abstract class PreparedDelete<T> implements PreparedOperation<T> {
 
     @NonNull
@@ -16,7 +21,7 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
     }
 
     /**
-     * Builder for {@link PreparedDelete}
+     * Builder for {@link PreparedDelete}.
      */
     public static final class Builder {
 
@@ -28,10 +33,10 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
         }
 
         /**
-         * Prepares Delete Operation by {@link com.pushtorefresh.storio.sqlite.query.DeleteQuery}
+         * Prepares Delete Operation by {@link com.pushtorefresh.storio.sqlite.query.DeleteQuery}.
          *
-         * @param deleteQuery query that specifies which rows should be deleted
-         * @return builder
+         * @param deleteQuery query that specifies which rows should be deleted.
+         * @return builder.
          */
         @NonNull
         public PreparedDeleteByQuery.Builder byQuery(@NonNull DeleteQuery deleteQuery) {
@@ -39,11 +44,11 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
         }
 
         /**
-         * Prepares Delete Operation which should delete one object
+         * Prepares Delete Operation which should delete one object.
          *
-         * @param object object to delete
-         * @param <T>    type of the object
-         * @return builder
+         * @param object object to delete.
+         * @param <T>    type of the object.
+         * @return builder.
          */
         @NonNull
         public <T> PreparedDeleteObject.Builder<T> object(@NonNull T object) {
@@ -51,12 +56,13 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
         }
 
         /**
-         * Prepares Delete Operation which should delete multiple objects
+         * Prepares Delete Operation which should delete multiple objects.
          *
-         * @param type    type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
-         * @param objects objects to delete
-         * @param <T>     type of objects
-         * @return builder
+         * @param type    type of objects, due to limitations of Generics in Java
+         *                we have to explicitly ask you about type of objects, sorry :(.
+         * @param objects objects to delete.
+         * @param <T>     type of objects.
+         * @return builder.
          */
         @NonNull
         public <T> PreparedDeleteObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {

@@ -8,20 +8,20 @@ import java.util.Set;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Immutable container of information about one or more changes in {@link StorIOSQLite}
+ * Immutable container of information about one or more changes happened in {@link StorIOSQLite}.
  */
 public final class Changes {
 
     /**
-     * Immutable set of affected tables
+     * Immutable set of affected tables.
      */
     @NonNull
     private final Set<String> affectedTables;
 
     /**
-     * Creates {@link Changes} container with info about changes
+     * Creates {@link Changes} container with info about changes.
      *
-     * @param affectedTables set of tables which were affected by these changes
+     * @param affectedTables set of tables which were affected by these changes.
      */
     private Changes(@NonNull Set<String> affectedTables) {
         checkNotNull(affectedTables, "Please specify affected tables");
@@ -29,10 +29,10 @@ public final class Changes {
     }
 
     /**
-     * Creates new instance of {@link Changes}
+     * Creates new instance of {@link Changes}.
      *
-     * @param affectedTables non-null set of affected tables
-     * @return new immutable instance of {@link Changes}
+     * @param affectedTables non-null set of affected tables.
+     * @return new immutable instance of {@link Changes}.
      */
     @NonNull
     public static Changes newInstance(@NonNull Set<String> affectedTables) {
@@ -40,10 +40,10 @@ public final class Changes {
     }
 
     /**
-     * Creates {@link Changes} container with info about changes
+     * Creates {@link Changes} container with info about changes.
      *
-     * @param affectedTable table that was affected
-     * @return new immutable instance of {@link Changes}
+     * @param affectedTable table that was affected.
+     * @return new immutable instance of {@link Changes}.
      */
     @NonNull
     public static Changes newInstance(@NonNull String affectedTable) {
@@ -52,9 +52,9 @@ public final class Changes {
     }
 
     /**
-     * Gets immutable set of affected tables
+     * Gets immutable set of affected tables.
      *
-     * @return immutable set of affected tables
+     * @return immutable set of affected tables.
      */
     @NonNull
     public Set<String> affectedTables() {

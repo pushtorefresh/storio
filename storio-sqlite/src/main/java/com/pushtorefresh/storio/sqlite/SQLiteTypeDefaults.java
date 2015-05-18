@@ -9,9 +9,9 @@ import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * SQLite Type default values for object mapping
+ * SQLite Type default values for object mapping.
  *
- * @param <T> type
+ * @param <T> type.
  */
 public final class SQLiteTypeDefaults<T> {
 
@@ -33,15 +33,15 @@ public final class SQLiteTypeDefaults<T> {
     }
 
     /**
-     * Builder for {@link SQLiteTypeDefaults}
+     * Builder for {@link SQLiteTypeDefaults}.
      */
     public static final class Builder<T> {
 
         /**
-         * Required: Specifies Resolver for Put Operation
+         * Required: Specifies Resolver for Put Operation.
          *
-         * @param putResolver non-null resolver for Put Operation
-         * @return builder
+         * @param putResolver non-null resolver for Put Operation.
+         * @return builder.
          */
         @NonNull
         public PutResolverBuilder<T> putResolver(@NonNull PutResolver<T> putResolver) {
@@ -51,9 +51,9 @@ public final class SQLiteTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}
+     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}.
      *
-     * @param <T> type
+     * @param <T> type.
      */
     public static final class PutResolverBuilder<T> {
 
@@ -65,10 +65,10 @@ public final class SQLiteTypeDefaults<T> {
         }
 
         /**
-         * Required: Specifies Resolver for Get Operation
+         * Required: Specifies Resolver for Get Operation.
          *
-         * @param getResolver non-null resolver for Get Operation
-         * @return builder
+         * @param getResolver non-null resolver for Get Operation.
+         * @return builder.
          */
         @NonNull
         public GetResolverBuilder<T> getResolver(@NonNull GetResolver<T> getResolver) {
@@ -78,9 +78,9 @@ public final class SQLiteTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}
+     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}.
      *
-     * @param <T> type
+     * @param <T> type.
      */
     public static final class GetResolverBuilder<T> {
 
@@ -96,10 +96,10 @@ public final class SQLiteTypeDefaults<T> {
         }
 
         /**
-         * Required: Specifies Resolver for Delete Operation
+         * Required: Specifies Resolver for Delete Operation.
          *
-         * @param deleteResolver non-null resolver for Delete Operation
-         * @return builder
+         * @param deleteResolver non-null resolver for Delete Operation.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder<T> deleteResolver(@NonNull DeleteResolver<T> deleteResolver) {
@@ -114,9 +114,9 @@ public final class SQLiteTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}
+     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}.
      *
-     * @param <T> type
+     * @param <T> type.
      */
     public static final class CompleteBuilder<T> {
 
@@ -138,9 +138,9 @@ public final class SQLiteTypeDefaults<T> {
         }
 
         /**
-         * Builds new immutable instance of {@link SQLiteTypeDefaults}
+         * Builds new immutable instance of {@link SQLiteTypeDefaults}.
          *
-         * @return new immutable instance of {@link SQLiteTypeDefaults}
+         * @return new immutable instance of {@link SQLiteTypeDefaults}.
          */
         @NonNull
         public SQLiteTypeDefaults<T> build() {

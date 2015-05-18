@@ -7,11 +7,11 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Representation of result of Put Operation for collection of objects
- * <p/>
+ * Immutable container for results of Put Operation.
+ * <p>
  * Instances of this class are Immutable
  *
- * @param <T> type of objects
+ * @param <T> type of objects that were put.
  */
 public final class PutResults<T> {
 
@@ -29,11 +29,11 @@ public final class PutResults<T> {
     }
 
     /**
-     * Creates new instance of {@link PutResults}
+     * Creates new instance of {@link PutResults}.
      *
-     * @param putResults results of Put Operation
-     * @param <T>        type of objects
-     * @return immutable instance of {@link PutResults}
+     * @param putResults results of Put Operation.
+     * @param <T>        type of objects.
+     * @return immutable instance of {@link PutResults}.
      */
     @NonNull
     public static <T> PutResults<T> newInstance(@NonNull Map<T, PutResult> putResults) {
@@ -41,9 +41,9 @@ public final class PutResults<T> {
     }
 
     /**
-     * Returns immutable Map of pairs (object, PutResult)
+     * Returns immutable Map of pairs {@code (object, PutResult)}.
      *
-     * @return immutable Map of pairs (object, PutResult)
+     * @return immutable Map of pairs {@code (object, PutResult)}.
      */
     @NonNull
     public Map<T, PutResult> results() {
@@ -51,9 +51,9 @@ public final class PutResults<T> {
     }
 
     /**
-     * Returns number of inserts from all {@link #results()}
+     * Returns number of inserts from all {@link #results()}.
      *
-     * @return number of inserts from all {@link #results()}
+     * @return number of inserts from all {@link #results()}.
      */
     public int numberOfInserts() {
         final Integer cachedValue = numberOfInsertsCache;
@@ -76,9 +76,9 @@ public final class PutResults<T> {
     }
 
     /**
-     * Returns number of updates from all {@link #results()}
+     * Returns number of updates from all {@link #results()}.
      *
-     * @return number of updates from all {@link #results()}
+     * @return number of updates from all {@link #results()}.
      */
     @SuppressWarnings("ConstantConditions")
     public int numberOfUpdates() {

@@ -29,15 +29,12 @@ import rx.Observable;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Default implementation of {@link StorIOSQLite} for {@link SQLiteDatabase}
- * <p/>
- * Thread safe
+ * Default implementation of {@link StorIOSQLite} for {@link SQLiteDatabase}.
+ * <p>
+ * Thread-safe.
  */
 public class DefaultStorIOSQLite extends StorIOSQLite {
 
-    /**
-     * Real db
-     */
     @NonNull
     private final SQLiteDatabase db;
 
@@ -81,17 +78,18 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     }
 
     /**
-     * Builder for {@link DefaultStorIOSQLite}
+     * Builder for {@link DefaultStorIOSQLite}.
      */
     public static final class Builder {
 
         /**
-         * Specifies database for internal usage.
-         * You should provide this or {@link SQLiteOpenHelper}
+         * Required: Specifies actual database to use under the hood.
+         * <p>
+         * You should provide this or {@link SQLiteDatabase}.
          *
-         * @param db a real database for internal usage
-         * @return builder
-         * @see {@link #sqliteOpenHelper(SQLiteOpenHelper)}
+         * @param db a real database for internal usage.
+         * @return builder.
+         * @see #sqliteOpenHelper(SQLiteOpenHelper)
          */
         @NonNull
         public CompleteBuilder db(@NonNull SQLiteDatabase db) {
@@ -100,12 +98,13 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * Specifies SqLite helper for internal usage
-         * You should provide this or {@link SQLiteDatabase}
+         * Required: Specifies SqLite helper for internal usage.
+         * <p>
+         * You should provide this or {@link SQLiteDatabase}.
          *
-         * @param sqliteOpenHelper a SqLite helper for internal usage
-         * @return builder
-         * @see {@link #db(SQLiteDatabase)}
+         * @param sqliteOpenHelper a SqLite helper for internal usage.
+         * @return builder.
+         * @see #db(SQLiteDatabase)
          */
         @NonNull
         public CompleteBuilder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
@@ -116,7 +115,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     }
 
     /**
-     * Compile-time safe part of builder for {@link DefaultStorIOSQLite}
+     * Compile-time safe part of builder for {@link DefaultStorIOSQLite}.
      */
     public static final class CompleteBuilder {
 
@@ -130,12 +129,12 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * Adds {@link SQLiteTypeDefaults} for some type
+         * Adds {@link SQLiteTypeDefaults} for some type.
          *
-         * @param type         type
-         * @param typeDefaults defaults for type
-         * @param <T>          type
-         * @return builder
+         * @param type         type.
+         * @param typeDefaults defaults for type.
+         * @param <T>          type.
+         * @return builder.
          */
         @NonNull
         public <T> CompleteBuilder addDefaultsForType(@NonNull Class<T> type, @NonNull SQLiteTypeDefaults<T> typeDefaults) {
@@ -156,9 +155,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * Builds {@link DefaultStorIOSQLite} instance with required params
+         * Builds {@link DefaultStorIOSQLite} instance with required params.
          *
-         * @return new {@link DefaultStorIOSQLite} instance
+         * @return new {@link DefaultStorIOSQLite} instance.
          */
         @NonNull
         public DefaultStorIOSQLite build() {

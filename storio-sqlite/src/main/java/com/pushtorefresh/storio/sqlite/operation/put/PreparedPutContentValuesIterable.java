@@ -120,7 +120,7 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
          *
          * @param putResolver put resolver
          * @return builder
-         * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
+         * @see DefaultPutResolver
          */
         @NonNull
         public CompleteBuilder withPutResolver(@NonNull PutResolver<ContentValues> putResolver) {

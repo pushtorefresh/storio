@@ -1,17 +1,21 @@
 package com.pushtorefresh.storio.sqlite.operation.exec_sql;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
-import com.pushtorefresh.storio.internal.Environment;
 
 import rx.Observable;
 import rx.Subscriber;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
+/**
+ * Prepared Execute SQL Operation for {@link StorIOSQLite}.
+ */
 public final class PreparedExecSql implements PreparedOperation<Void> {
 
     @NonNull
@@ -25,17 +29,37 @@ public final class PreparedExecSql implements PreparedOperation<Void> {
         this.rawQuery = rawQuery;
     }
 
-    @NonNull
+    /**
+     * Executes SQL Operation immediately in current thread.
+     *
+     * @return {@code null}, sorry guys.
+     */
+    @Nullable
     @Override
     public Void executeAsBlocking() {
         storIOSQLite.internal().execSql(rawQuery);
         return null;
     }
 
+    /**
+     * Creates {@link Observable} which will perform Execute SQL Operation
+     * and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * execution of SQL only after subscribing to it. Also, it emits the result once.
+     * <p>
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Delete Operation.
+     * and send result to observer.
+     */
     @NonNull
     @Override
     public Observable<Void> createObservable() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
@@ -51,7 +75,7 @@ public final class PreparedExecSql implements PreparedOperation<Void> {
     }
 
     /**
-     * Builder for {@link PreparedExecSql}
+     * Builder for {@link PreparedExecSql}.
      */
     public static final class Builder {
 
@@ -63,10 +87,12 @@ public final class PreparedExecSql implements PreparedOperation<Void> {
         }
 
         /**
-         * Required: Specifies query for ExecSql Operation
+         * Required: Specifies query for ExecSql Operation.
          *
-         * @param rawQuery query
-         * @return builder
+         * @param rawQuery any SQL query that you want to execute, but please, be careful with it.
+         *                 Don't forget that you can set affected tables to the {@link RawQuery},
+         *                 so ExecSQL operation will send notification about changes in that tables.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull RawQuery rawQuery) {
@@ -76,7 +102,7 @@ public final class PreparedExecSql implements PreparedOperation<Void> {
     }
 
     /**
-     * Compile-time safe part of {@link Builder}
+     * Compile-time safe part of {@link Builder}.
      */
     public static final class CompleteBuilder {
 
@@ -92,9 +118,9 @@ public final class PreparedExecSql implements PreparedOperation<Void> {
         }
 
         /**
-         * Prepares ExecSql Operation
+         * Prepares ExecSql Operation.
          *
-         * @return {@link PreparedExecSql} instance
+         * @return {@link PreparedExecSql} instance.
          */
         @NonNull
         public PreparedExecSql prepare() {

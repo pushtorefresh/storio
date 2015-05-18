@@ -2,16 +2,21 @@ package com.pushtorefresh.storio.sqlite.operation.put;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.internal.Environment;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.internal.Environment;
 
 import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
+/**
+ * Prepared Put Operation for {@link StorIOSQLite}.
+ *
+ * @param <T> type of object to put.
+ */
 public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
 
     @NonNull
@@ -25,9 +30,9 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     }
 
     /**
-     * Executes Put Operation immediately in current thread
+     * Executes Put Operation immediately in current thread.
      *
-     * @return non-null result of Put Operation
+     * @return non-null result of Put Operation.
      */
     @NonNull
     public PutResult executeAsBlocking() {
@@ -37,9 +42,18 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     }
 
     /**
-     * Creates {@link Observable} which will perform Put Operation and send result to observer
+     * Creates {@link Observable} which will perform Put Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * put only after subscribing to it. Also, it emits the result once.
      *
-     * @return non-null {@link Observable} which will perform Put Operation and send result to observer
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Put Operation.
+     * and send result to observer.
      */
     @NonNull
     public Observable<PutResult> createObservable() {
@@ -48,9 +62,9 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     }
 
     /**
-     * Builder for {@link PreparedPutObject}
+     * Builder for {@link PreparedPutObject}.
      *
-     * @param <T> type of object to put
+     * @param <T> type of object to put.
      */
     public static final class Builder<T> {
 
@@ -69,14 +83,14 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
 
         /**
          * Optional: Specifies {@link PutResolver} for Put Operation
-         * which allows you to customize behavior of Put Operation
-         * <p/>
+         * which allows you to customize behavior of Put Operation.
+         * <p>
          * Can be set via {@link SQLiteTypeDefaults}
-         * If it's not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
+         * If it's not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown.
          *
-         * @param putResolver put resolver
-         * @return builder
-         * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
+         * @param putResolver put resolver.
+         * @return builder.
+         * @see DefaultPutResolver
          */
         @NonNull
         public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
@@ -85,9 +99,9 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         }
 
         /**
-         * Prepares Put Operation
+         * Prepares Put Operation.
          *
-         * @return {@link PreparedPutObject} instance
+         * @return {@link PreparedPutObject} instance.
          */
         @SuppressWarnings("unchecked")
         @NonNull

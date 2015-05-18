@@ -131,7 +131,7 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          *
          * @param putResolver put resolver
          * @return builder
-         * @see {@link DefaultPutResolver} — easy way to create {@link PutResolver}
+         * @see DefaultPutResolver
          */
         @NonNull
         public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {

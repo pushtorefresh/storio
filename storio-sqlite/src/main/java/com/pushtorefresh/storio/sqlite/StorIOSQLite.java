@@ -21,18 +21,18 @@ import java.util.Set;
 import rx.Observable;
 
 /**
- * Powerful abstraction for databases
+ * Powerful but simple abstraction for {@link android.database.sqlite.SQLiteDatabase}.
  * <p/>
  * It's an abstract class instead of interface because we want to have ability to add some
- * changes without breaking existing implementations
+ * changes without breaking existing implementations.
  */
 public abstract class StorIOSQLite {
 
     /**
-     * Prepares "execute sql" operation for {@link StorIOSQLite}
+     * Prepares "Execute SQL" Operation for {@link StorIOSQLite}.
      * Allows to execute a single SQL statement that is NOT a SELECT/INSERT/UPDATE/DELETE.
      *
-     * @return builder for PreparedExecSql
+     * @return builder for {@link PreparedExecSql}.
      */
     @NonNull
     public PreparedExecSql.Builder execSql() {
@@ -40,10 +40,10 @@ public abstract class StorIOSQLite {
     }
 
     /**
-     * Prepares "get" operation for {@link StorIOSQLite}
-     * Allows to get information from {@link StorIOSQLite}
+     * Prepares "Get" Operation for {@link StorIOSQLite}.
+     * Allows to get information from {@link StorIOSQLite}.
      *
-     * @return builder for PreparedGet
+     * @return builder for {@link PreparedGet}.
      */
     @NonNull
     public PreparedGet.Builder get() {
@@ -51,10 +51,10 @@ public abstract class StorIOSQLite {
     }
 
     /**
-     * Prepares "put" operation for {@link StorIOSQLite}
-     * Allows to insert/update information in {@link StorIOSQLite}
+     * Prepares "Put" Operation for {@link StorIOSQLite}.
+     * Allows to insert/update information in {@link StorIOSQLite}.
      *
-     * @return builder for PreparedPut
+     * @return builder for {@link PreparedPut}.
      */
     @NonNull
     public PreparedPut.Builder put() {
@@ -62,10 +62,10 @@ public abstract class StorIOSQLite {
     }
 
     /**
-     * Prepares "delete" operation for {@link StorIOSQLite}
-     * Allows to delete information from {@link StorIOSQLite}
+     * Prepares "Delete" Operation for {@link StorIOSQLite}.
+     * Allows to delete information from {@link StorIOSQLite}.
      *
-     * @return builder for PreparedDelete
+     * @return builder for {@link PreparedDelete}.
      */
     @NonNull
     public PreparedDelete.Builder delete() {
@@ -73,19 +73,19 @@ public abstract class StorIOSQLite {
     }
 
     /**
-     * Subscribes to changes in required tables
+     * Subscribes to changes of required tables.
      *
-     * @param tables set of table names that should be monitored
-     * @return {@link rx.Observable} of {@link Changes} subscribed to changes in required tables
+     * @param tables set of table names that should be monitored.
+     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required tables.
      */
     @NonNull
     public abstract Observable<Changes> observeChangesInTables(@NonNull Set<String> tables);
 
     /**
-     * Subscribes to changes in required table
+     * Subscribes to changes of required table.
      *
-     * @param table table name to monitor
-     * @return {@link rx.Observable} of {@link Changes} subscribed to changes in required table
+     * @param table table name to monitor.
+     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required table.
      */
     @NonNull
     public Observable<Changes> observeChangesInTable(@NonNull String table) {
@@ -93,88 +93,97 @@ public abstract class StorIOSQLite {
     }
 
     /**
-     * Hides some internal operations of {@link StorIOSQLite} to make API of {@link StorIOSQLite} clean and easy to understand
+     * Hides some internal operations of {@link StorIOSQLite}
+     * to make API of {@link StorIOSQLite} clean and easy to understand.
      *
-     * @return implementation of Internal operations for {@link StorIOSQLite}
+     * @return implementation of Internal operations for {@link StorIOSQLite}.
      */
     @NonNull
     public abstract Internal internal();
 
     /**
      * Hides some internal operations of {@link StorIOSQLite}
-     * to make {@link StorIOSQLite} API clean and easy to understand
+     * to make {@link StorIOSQLite} API clean and easy to understand.
      */
     public static abstract class Internal {
 
         /**
-         * Gets {@link SQLiteTypeDefaults} for required type
+         * Gets {@link SQLiteTypeDefaults} for required type.
          * <p/>
-         * Result can be null
+         * Result can be {@code null}.
          *
-         * @param type type
-         * @param <T>  type
-         * @return {@link SQLiteTypeDefaults} for required type or null
+         * @param type type.
+         * @param <T>  type.
+         * @return {@link SQLiteTypeDefaults} for required type or {@code null}.
          */
         @Nullable
         public abstract <T> SQLiteTypeDefaults<T> typeDefaults(@NonNull Class<T> type);
 
         /**
-         * Execute a single SQL statement that is NOT a SELECT/INSERT/UPDATE/DELETE on the database
+         * Executes a single SQL statement that
+         * is NOT a SELECT/INSERT/UPDATE/DELETE on the database.
          *
-         * @param rawQuery sql query
+         * @param rawQuery sql query.
          */
         public abstract void execSql(@NonNull RawQuery rawQuery);
 
         /**
-         * Executes raw query on the database and returns {@link android.database.Cursor} over the result set
+         * Executes raw query on the database
+         * and returns {@link android.database.Cursor} over the result set.
          *
          * @param rawQuery sql query
-         * @return A Cursor object, which is positioned before the first entry. Note that Cursors are not synchronized, see the documentation for more details.
+         * @return A Cursor object, which is positioned before the first entry.
+         * Note that Cursors are not synchronized, see the documentation for more details.
          */
         @NonNull
         public abstract Cursor rawQuery(@NonNull RawQuery rawQuery);
 
         /**
-         * Executes query on the database and returns {@link android.database.Cursor} over the result set
+         * Executes query on the database and returns {@link android.database.Cursor}
+         * over the result set.
          *
-         * @param query sql query
-         * @return A Cursor object, which is positioned before the first entry. Note that Cursors are not synchronized, see the documentation for more details.
+         * @param query sql query.
+         * @return A Cursor object, which is positioned before the first entry.
+         * Note that Cursors are not synchronized, see the documentation for more details.
          */
         @NonNull
         public abstract Cursor query(@NonNull Query query);
 
         /**
-         * Inserts a row into the database
+         * Inserts a row into the database.
          *
-         * @param insertQuery   query
-         * @param contentValues map that contains the initial column values for the row. The keys should be the column names and the values the column values
-         * @return id of inserted row
+         * @param insertQuery   query.
+         * @param contentValues map that contains the initial column values for the row.
+         *                      The keys should be the column names and the values the column values.
+         * @return id of inserted row.
          */
         public abstract long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues);
 
         /**
-         * Updates one or multiple rows in the database
+         * Updates one or multiple rows in the database.
          *
-         * @param updateQuery   query
-         * @param contentValues a map from column names to new column values. null is a valid value that will be translated to NULL.
-         * @return the number of rows affected
+         * @param updateQuery   query.
+         * @param contentValues a map from column names to new column values.
+         *                      {@code null} is a valid value that will be translated to {@code NULL}.
+         * @return the number of rows affected.
          */
         public abstract int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues);
 
         /**
-         * Deletes one or multiple rows in the database
+         * Deletes one or multiple rows in the database.
          *
-         * @param deleteQuery query
-         * @return the number of rows deleted
+         * @param deleteQuery query.
+         * @return the number of rows deleted.
          */
         public abstract int delete(@NonNull DeleteQuery deleteQuery);
 
         /**
-         * Notifies subscribers about changes happened in {@link StorIOSQLite}
-         * Operations can be executed in transaction or one operation can affect multiple tables, so to reduce number of notifications
-         * you can call this method once and provide Changes object
+         * Notifies subscribers about changes happened in {@link StorIOSQLite}.
+         * Operations can be executed in transaction or one operation can affect multiple tables,
+         * so to reduce number of notifications you can call this method once and
+         * provide aggregated Changes object.
          *
-         * @param changes changes happened in {@link StorIOSQLite}
+         * @param changes changes happened in {@link StorIOSQLite}.
          */
         public abstract void notifyAboutChanges(@NonNull Changes changes);
 
@@ -182,7 +191,7 @@ public abstract class StorIOSQLite {
          * Begins a transaction in EXCLUSIVE mode.
          * <p/>
          * Thread will be blocked on call to this method if another thread already in transaction,
-         * as soon as first thread will end its transaction this thread will be unblocked
+         * as soon as first thread will end its transaction this thread will be unblocked.
          * <p>
          * Transactions can be nested.
          * When the outer transaction is ended all of
@@ -215,8 +224,8 @@ public abstract class StorIOSQLite {
         public abstract void setTransactionSuccessful();
 
         /**
-         * Ends a transaction. See {@link #beginTransaction()} for notes about how to use this and when transactions
-         * are committed and rolled back.
+         * Ends a transaction. See {@link #beginTransaction()} for notes about
+         * how to use this and when transactions are committed and rolled back.
          */
         public abstract void endTransaction();
     }

@@ -22,10 +22,9 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Represents Get Operation for {@link StorIOSQLite} which performs query that retrieves data as list of objects
- * from {@link StorIOSQLite}
+ * Prepared Get Operation for {@link StorIOSQLite}.
  *
- * @param <T> type of result
+ * @param <T> type of results.
  */
 public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
@@ -43,9 +42,9 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Executes Prepared Operation immediately in current thread
+     * Executes Get Operation immediately in current thread.
      *
-     * @return non-null {@link List} with mapped results, can be empty
+     * @return non-null {@link List} with mapped results, can be empty.
      */
     @SuppressWarnings("TryFinallyCanBeTryWithResources") // Min SDK :(
     @NonNull
@@ -75,16 +74,21 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     /**
      * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
-     * and will emit result each time change occurs
+     * and will emit result each time change occurs.
      * <p>
-     * First result will be emitted immediately,
-     * other emissions will occur only if changes of query tables will occur
+     * First result will be emitted immediately after subscription,
+     * other emissions will occur only if changes of tables from query will occur during lifetime of
+     * the {@link Observable}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
      * <p>
-     * Does not operate by default on a particular {@link rx.Scheduler}
-     * <p>
-     * Please don't forget to unsubscribe from this {@link Observable} because it's "Hot" and endless
+     * Please don't forget to unsubscribe from this {@link Observable} because
+     * it's "Hot" and endless.
      *
-     * @return non-null {@link Observable} which will emit non-null list with mapped results and will be subscribed to changes of query tables
+     * @return non-null {@link Observable} which will emit non-null
+     * list with mapped results and will be subscribed to changes of tables from query.
      */
     @NonNull
     @Override
@@ -112,9 +116,9 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Builder for {@link PreparedGetListOfObjects} Operation
+     * Builder for {@link PreparedGetListOfObjects} Operation.
      *
-     * @param <T> type of objects
+     * @param <T> type of objects.
      */
     public static final class Builder<T> {
 
@@ -130,10 +134,12 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Specifies query which will be passed to {@link StorIOSQLite} to get list of objects
+         * Required: Specifies query which will be passed to {@link StorIOSQLite}
+         * to get list of objects.
          *
-         * @param query non-null query
-         * @return builder
+         * @param query non-null query.
+         * @return builder.
+         * @see Query
          */
         @NonNull
         public CompleteBuilder<T> withQuery(@NonNull Query query) {
@@ -142,10 +148,12 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Specifies query which will be passed to {@link StorIOSQLite} to get list of objects
+         * Required: Specifies {@link RawQuery} for Get Operation,
+         * you can use it for "joins" and same constructions which are not allowed for {@link Query}.
          *
-         * @param rawQuery non-null query
-         * @return builder
+         * @param rawQuery query.
+         * @return builder.
+         * @see RawQuery
          */
         @NonNull
         public CompleteBuilder<T> withQuery(@NonNull RawQuery rawQuery) {
@@ -155,9 +163,9 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Compile-safe part of {@link Builder}
+     * Compile-safe part of {@link Builder}.
      *
-     * @param <T> type of objects
+     * @param <T> type of objects.
      */
     public static final class CompleteBuilder<T> {
 
@@ -190,13 +198,15 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Optional: Specifies resolver for Get Operation which can be used to provide custom behavior of Get Operation
+         * Optional: Specifies resolver for Get Operation which can be used
+         * to provide custom behavior of Get Operation.
          * <p>
-         * {@link SQLiteTypeDefaults} can be used to set default GetResolver
-         * If GetResolver is not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
+         * {@link SQLiteTypeDefaults} can be used to set default GetResolver.
+         * If GetResolver is not set via {@link SQLiteTypeDefaults}
+         * or explicitly -> exception will be thrown.
          *
-         * @param getResolver nullable resolver for Get Operation
-         * @return builder
+         * @param getResolver nullable resolver for Get Operation.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder<T> withGetResolver(@Nullable GetResolver<T> getResolver) {
@@ -205,9 +215,9 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         /**
-         * Builds new instance of {@link PreparedGetListOfObjects}
+         * Builds new instance of {@link PreparedGetListOfObjects}.
          *
-         * @return new instance of {@link PreparedGetListOfObjects}
+         * @return new instance of {@link PreparedGetListOfObjects}.
          */
         @NonNull
         public PreparedGetListOfObjects<T> prepare() {

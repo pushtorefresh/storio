@@ -13,9 +13,9 @@ import java.util.Set;
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 
 /**
- * Get query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
+ * Raw SQL query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
  * <p/>
- * Instances of this class are Immutable
+ * Instances of this class are immutable.
  */
 public final class RawQuery {
 
@@ -29,7 +29,8 @@ public final class RawQuery {
     private final Set<String> affectedTables;
 
     /**
-     * Please use {@link com.pushtorefresh.storio.sqlite.query.RawQuery.Builder} instead of constructor
+     * Please use {@link com.pushtorefresh.storio.sqlite.query.RawQuery.Builder}
+     * instead of constructor.
      */
     private RawQuery(@NonNull String query, @Nullable List<String> args, @Nullable Set<String> affectedTables) {
         this.query = query;
@@ -99,15 +100,16 @@ public final class RawQuery {
     }
 
     /**
-     * Builder for {@link RawQuery}
+     * Builder for {@link RawQuery}.
      */
     public static final class Builder {
 
         /**
-         * Required: Specifies SQL query
+         * Required: Specifies SQL query.
          *
-         * @param query SQL query
-         * @return builder
+         * @param query SQL query.
+         * @return builder.
+         * @see RawQuery#query()
          */
         @NonNull
         public CompleteBuilder query(@NonNull String query) {
@@ -134,14 +136,16 @@ public final class RawQuery {
 
         /**
          * Optional: Specifies arguments for SQL query,
-         * please use arguments to avoid SQL injections
+         * please use arguments to avoid SQL injections.
          * <p/>
-         * Passed objects will be immediately converted to list of {@link String} via calling {@link Object#toString()}
+         * Passed objects will be immediately converted
+         * to list of {@link String} via calling {@link Object#toString()}.
          * <p/>
-         * Default value is <code>null</code>
+         * Default value is {@code null}.
          *
-         * @param args arguments fro SQL query
-         * @return builder
+         * @param args arguments fro SQL query.
+         * @return builder.
+         * @see RawQuery#args()
          */
         @NonNull
         public CompleteBuilder args(@NonNull Object... args) {
@@ -151,12 +155,13 @@ public final class RawQuery {
 
         /**
          * Optional: Specifies set of tables which will be affected by this query.
-         * They will be used to notify observers of that tables
+         * They will be used to notify observers of that tables.
          * <p/>
-         * Default value is <code>null</code>
+         * Default value is {@code null}.
          *
-         * @param tables set of tables which will be affected by this query
-         * @return builder
+         * @param tables set of tables which will be affected by this query.
+         * @return builder.
+         * @see RawQuery#affectedTables()
          */
         @NonNull
         public CompleteBuilder affectedTables(@NonNull String... tables) {
@@ -169,9 +174,9 @@ public final class RawQuery {
         }
 
         /**
-         * Builds immutable instance of {@link RawQuery}
+         * Builds immutable instance of {@link RawQuery}.
          *
-         * @return immutable instance of {@link RawQuery}
+         * @return immutable instance of {@link RawQuery}.
          */
         @NonNull
         public RawQuery build() {
