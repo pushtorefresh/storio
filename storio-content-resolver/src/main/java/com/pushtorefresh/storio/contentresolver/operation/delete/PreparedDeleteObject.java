@@ -11,6 +11,10 @@ import rx.Observable;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
+/**
+ * Prepared Delete Operation for
+ * {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
+ */
 public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResult> {
 
     @NonNull
@@ -24,9 +28,9 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResul
     }
 
     /**
-     * Executes Delete Operation immediately in current thread
+     * Executes Delete Operation immediately in current thread.
      *
-     * @return non-null result of Delete Operation
+     * @return non-null result of Delete Operation.
      */
     @NonNull
     @Override
@@ -35,9 +39,18 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResul
     }
 
     /**
-     * Creates {@link Observable} which will perform Delete Operation and send result to observer
+     * Creates {@link Observable} which will perform Delete Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * delete only after subscribing to it. Also, it emits the result once.
      *
-     * @return non-null {@link Observable} which will perform Delete Operation and send result to observer
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Delete Operation.
+     * and send result to observer.
      */
     @NonNull
     @Override
@@ -47,9 +60,9 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResul
     }
 
     /**
-     * Builder for {@link PreparedDeleteObject}
+     * Builder for {@link PreparedDeleteObject}.
      *
-     * @param <T> type of object to delete
+     * @param <T> type of object to delete.
      */
     public static final class Builder<T> {
 
@@ -62,10 +75,10 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResul
         private DeleteResolver<T> deleteResolver;
 
         /**
-         * Creates builder for {@link PreparedDeleteObject}
+         * Creates builder for {@link PreparedDeleteObject}.
          *
-         * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}
-         * @param object                non-null object that should be deleted
+         * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}.
+         * @param object                non-null object that should be deleted.
          */
         public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull T object) {
             checkNotNull(storIOContentResolver, "Please specify StorIOContentResolver");
@@ -76,14 +89,15 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResul
         }
 
         /**
-         * Optional: Specifies resolver for Delete Operation
-         * Allows you to customise behavior of Delete Operation
+         * Optional: Specifies resolver for Delete Operation.
+         * Allows you to customise behavior of Delete Operation.
          * <p/>
          * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults} or explicitly -> exception will be thrown
+         * If value is not set via {@link ContentResolverTypeDefaults}
+         * or explicitly -> exception will be thrown.
          *
-         * @param deleteResolver resolver for Delete Operation
-         * @return builder
+         * @param deleteResolver resolver for Delete Operation.
+         * @return builder.
          */
         @NonNull
         public Builder<T> withDeleteResolver(@NonNull DeleteResolver<T> deleteResolver) {
@@ -92,9 +106,9 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResul
         }
 
         /**
-         * Builds new instance of {@link PreparedDeleteObject}
+         * Builds new instance of {@link PreparedDeleteObject}.
          *
-         * @return new instance of {@link PreparedDeleteObject}
+         * @return new instance of {@link PreparedDeleteObject}.
          */
         @SuppressWarnings("unchecked")
         @NonNull

@@ -15,9 +15,9 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Prepared Put Operation for collection of objects
+ * Prepared Put Operation for collection of objects.
  *
- * @param <T> type of objects
+ * @param <T> type of objects.
  */
 public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
@@ -32,9 +32,9 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     }
 
     /**
-     * Executes Put Operation immediately in current thread
+     * Executes Put Operation immediately in current thread.
      *
-     * @return non-null result of Put Operation
+     * @return non-null result of Put Operation.
      */
     @NonNull
     @Override
@@ -50,9 +50,18 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     }
 
     /**
-     * Creates {@link Observable} which will perform Put Operation and send result to observer
+     * Creates {@link Observable} which will perform Put Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * put only after subscribing to it. Also, it emits the result once.
      *
-     * @return non-null {@link Observable} which will perform Put Operation and send result to observer
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Put Operation.
+     * and send result to observer.
      */
     @NonNull
     @Override
@@ -62,9 +71,9 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     }
 
     /**
-     * Builder for {@link PreparedPutObjects}
+     * Builder for {@link PreparedPutObjects}.
      *
-     * @param <T> type of objects to put
+     * @param <T> type of objects to put.
      */
     public static final class Builder<T> {
 
@@ -87,13 +96,15 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
         /**
          * Optional: Specifies resolver for Put Operation
-         * that should define behavior of Put Operation: insert or update of the {@link android.content.ContentValues}
+         * that should define behavior of Put Operation: insert or update
+         * of the objects.
          * <p/>
          * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults} or explicitly -> exception will be thrown
+         * If value is not set via {@link ContentResolverTypeDefaults}
+         * or explicitly -> exception will be thrown.
          *
-         * @param putResolver nullable resolver for Put Operation
-         * @return builder
+         * @param putResolver nullable resolver for Put Operation.
+         * @return builder.
          */
         @NonNull
         public Builder<T> withPutResolver(@NonNull PutResolver<T> putResolver) {
@@ -102,9 +113,9 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         }
 
         /**
-         * Builds new instance of {@link PreparedPutObjects}
+         * Builds new instance of {@link PreparedPutObjects}.
          *
-         * @return new instance of {@link PreparedPutObjects}
+         * @return new instance of {@link PreparedPutObjects}.
          */
         @NonNull
         public PreparedPutObjects<T> prepare() {

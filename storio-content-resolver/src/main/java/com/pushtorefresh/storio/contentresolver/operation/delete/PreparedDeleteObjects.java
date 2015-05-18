@@ -16,9 +16,9 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Prepared Delete Operation of some collection of objects for {@link StorIOContentResolver}
+ * Prepared Delete Operation for {@link StorIOContentResolver}.
  *
- * @param <T> type of objects
+ * @param <T> type of objects to delete.
  */
 public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResults<T>> {
 
@@ -31,9 +31,9 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResu
     }
 
     /**
-     * Executes Delete Operation immediately in current thread
+     * Executes Delete Operation immediately in current thread.
      *
-     * @return non-null results of Delete Operation
+     * @return non-null results of Delete Operation.
      */
     @NonNull
     @Override
@@ -49,9 +49,18 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResu
     }
 
     /**
-     * Creates {@link Observable} which will perform Delete Operation and send results to observer
+     * Creates {@link Observable} which will perform Delete Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * delete only after subscribing to it. Also, it emits the result once.
      *
-     * @return non-null {@link Observable} which will perform Delete Operation and send results to observer
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Delete Operation.
+     * and send result to observer.
      */
     @NonNull
     @Override
@@ -61,9 +70,9 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResu
     }
 
     /**
-     * Builder for {@link PreparedDeleteObjects}
+     * Builder for {@link PreparedDeleteObjects}.
      *
-     * @param <T> type of objects
+     * @param <T> type of objects.
      */
     public static final class Builder<T> {
 
@@ -79,11 +88,11 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResu
         private DeleteResolver<T> deleteResolver;
 
         /**
-         * Creates builder for {@link PreparedDeleteObjects}
+         * Creates builder for {@link PreparedDeleteObjects}.
          *
-         * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}
-         * @param type                  type of objects
-         * @param objects               non-null collection of objects to delete
+         * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}.
+         * @param type                  type of objects.
+         * @param objects               non-null collection of objects to delete.
          */
         public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Class<T> type, @NonNull Iterable<T> objects) {
             this.storIOContentResolver = storIOContentResolver;
@@ -92,14 +101,15 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResu
         }
 
         /**
-         * Optional: Specifies resolver for Delete Operation
-         * Allows you to customise behavior of Delete Operation
+         * Optional: Specifies resolver for Delete Operation.
+         * Allows you to customise behavior of Delete Operation.
          * <p/>
          * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults} or explicitly -> exception will be thrown
+         * If value is not set via {@link ContentResolverTypeDefaults}
+         * or explicitly -> exception will be thrown.
          *
-         * @param deleteResolver nullable resolver for Delete Operation
-         * @return builder
+         * @param deleteResolver nullable resolver for Delete Operation.
+         * @return builder.
          */
         @NonNull
         public Builder<T> withDeleteResolver(@Nullable DeleteResolver<T> deleteResolver) {
@@ -108,9 +118,9 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResu
         }
 
         /**
-         * Builds instance of {@link PreparedDeleteObjects}
+         * Builds instance of {@link PreparedDeleteObjects}.
          *
-         * @return instance of {@link PreparedDeleteObjects}
+         * @return instance of {@link PreparedDeleteObjects}.
          */
         @NonNull
         public PreparedDeleteObjects<T> prepare() {

@@ -14,8 +14,9 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Represents Get Operation for {@link StorIOContentResolver} which performs query that retrieves data as {@link Cursor}
- * from {@link android.content.ContentProvider}
+ * Represents Get Operation for {@link StorIOContentResolver}
+ * which performs query that retrieves data as {@link Cursor}.
+ * from {@link android.content.ContentProvider}.
  */
 public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
 
@@ -28,9 +29,9 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
     }
 
     /**
-     * Executes Get Operation immediately in current thread
+     * Executes Get Operation immediately in current thread.
      *
-     * @return non-null {@link Cursor}, can be empty
+     * @return non-null {@link Cursor}, can be empty.
      */
     @NonNull
     @Override
@@ -40,16 +41,20 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
 
     /**
      * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
-     * and will emit result each time change occurs
+     * and will emit result each time change occurs.
      * <p>
      * First result will be emitted immediately,
-     * other emissions will occur only if changes of {@link #query} Uri will occur
+     * other emissions will occur only if changes of {@link #query} Uri will occur.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
      * <p>
-     * Does not operate by default on a particular {@link rx.Scheduler}
-     * <p>
-     * Please don't forget to unsubscribe from this {@link Observable} because it's "Hot" and endless
+     * Please don't forget to unsubscribe from this {@link Observable} because
+     * it's "Hot" and endless.
      *
-     * @return non-null {@link Observable} which will emit non-null list with mapped results and will be subscribed to changes of {@link #query} Uri
+     * @return non-null {@link Observable} which will emit non-null
+     * list with mapped results and will be subscribed to changes of {@link #query} Uri.
      */
     @NonNull
     @Override
@@ -63,9 +68,9 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
     }
 
     /**
-     * Builder for {@link PreparedGetCursor}
+     * Builder for {@link PreparedGetCursor}.
      * <p>
-     * Required: You should specify query see {@link #withQuery(Query)}
+     * Required: You should specify query see {@link #withQuery(Query)}.
      */
     public static final class Builder {
 
@@ -77,10 +82,10 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
         }
 
         /**
-         * Required: Specifies {@link Query} for Get Operation
+         * Required: Specifies {@link Query} for Get Operation.
          *
-         * @param query query
-         * @return builder
+         * @param query query.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull Query query) {
@@ -90,7 +95,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link PreparedGetCursor}
+     * Compile-time safe part of builder for {@link PreparedGetCursor}.
      */
     public static final class CompleteBuilder {
 
@@ -117,12 +122,13 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
 
         /**
          * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
+         * which allows you to customize behavior of Get Operation.
          * <p>
-         * If no value will be set, builder will use resolver that simply redirects query to {@link StorIOContentResolver}
+         * If no value will be set, builder will use resolver that
+         * simply redirects query to {@link StorIOContentResolver}.
          *
-         * @param getResolver get resolver
-         * @return builder
+         * @param getResolver GetResolver.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder withGetResolver(@Nullable GetResolver<Cursor> getResolver) {
@@ -131,9 +137,9 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
         }
 
         /**
-         * Prepares Get Operation
+         * Prepares Get Operation.
          *
-         * @return {@link PreparedGetCursor} instance
+         * @return {@link PreparedGetCursor} instance.
          */
         @NonNull
         public PreparedGetCursor prepare() {

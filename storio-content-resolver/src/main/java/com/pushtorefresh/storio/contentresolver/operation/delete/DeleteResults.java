@@ -8,9 +8,9 @@ import java.util.Map;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Immutable container for multiple results of Delete Operation
+ * Immutable container for multiple results of Delete Operation.
  * <p/>
- * Instances of this class are immutable
+ * Instances of this class are immutable.
  */
 public final class DeleteResults<T> {
 
@@ -28,9 +28,9 @@ public final class DeleteResults<T> {
     }
 
     /**
-     * Gets immutable Map of pairs (object, DeleteResult)
+     * Gets immutable Map of pairs (object, DeleteResult).
      *
-     * @return immutable Map of pairs (object, DeleteResult)
+     * @return immutable Map of pairs (object, DeleteResult).
      */
     @NonNull
     public Map<T, DeleteResult> results() {
@@ -38,20 +38,20 @@ public final class DeleteResults<T> {
     }
 
     /**
-     * Checks whether particular object was deleted
+     * Checks whether particular object was deleted.
      *
-     * @param object object to check
-     * @return true if object was deleted, false otherwise
+     * @param object object to check.
+     * @return true if object was deleted, false otherwise.
      */
     public boolean wasDeleted(@NonNull T object) {
         return results.containsKey(object);
     }
 
     /**
-     * Checks whether particular object was NOT deleted
+     * Checks whether particular object was NOT deleted.
      *
-     * @param object object to check
-     * @return true if object was NOT deleter, false if it was deleted
+     * @param object object to check.
+     * @return true if object was NOT deleter, false if it was deleted.
      */
     public boolean wasNotDeleted(@NonNull T object) {
         return !results.containsKey(object);

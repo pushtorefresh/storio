@@ -13,8 +13,8 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Prepared Delete Operation by {@link com.pushtorefresh.storio.contentresolver.query.DeleteQuery}
- * for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}
+ * Prepared Delete Operation for
+ * {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
  */
 public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, DeleteResult> {
 
@@ -27,9 +27,9 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
     }
 
     /**
-     * Executes Delete Operation immediately in current thread
+     * Executes Delete Operation immediately in current thread.
      *
-     * @return non-null result of Delete Operation
+     * @return non-null result of Delete Operation.
      */
     @NonNull
     @Override
@@ -38,9 +38,18 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
     }
 
     /**
-     * Creates {@link Observable} which will perform Delete Operation and send result to observer
+     * Creates {@link Observable} which will perform Delete Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * delete only after subscribing to it. Also, it emits the result once.
      *
-     * @return non-null {@link Observable} which will perform Delete Operation and send result to observer
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Delete Operation.
+     * and send result to observer.
      */
     @NonNull
     @Override
@@ -50,7 +59,7 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
     }
 
     /**
-     * Builder for {@link PreparedDeleteByQuery}
+     * Builder for {@link PreparedDeleteByQuery}.
      */
     public static final class Builder {
 
@@ -71,10 +80,10 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
         private DeleteResolver<DeleteQuery> deleteResolver;
 
         /**
-         * Creates builder for {@link PreparedDeleteByQuery}
+         * Creates builder for {@link PreparedDeleteByQuery}.
          *
-         * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}
-         * @param deleteQuery           non-null instance of {@link DeleteQuery}
+         * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}.
+         * @param deleteQuery           non-null instance of {@link DeleteQuery}.
          */
         public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull DeleteQuery deleteQuery) {
             checkNotNull(storIOContentResolver, "Please specify StorIOContentResolver");
@@ -85,13 +94,14 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
         }
 
         /**
-         * Optional: Specifies resolver for Delete Operation
-         * Allows you to customise behavior of Delete Operation
-         * <p/>
-         * If no value will be set, builder will use Delete Resolver that simply redirects query to {@link StorIOContentResolver}
+         * Optional: Specifies resolver for Delete Operation.
+         * Allows you to customise behavior of Delete Operation.
+         * <p>
+         * If no value will be set, builder will use Delete Resolver
+         * that simply redirects query to {@link StorIOContentResolver}.
          *
-         * @param deleteResolver nullable resolver for Delete Operation
-         * @return builder
+         * @param deleteResolver nullable resolver for Delete Operation.
+         * @return builder.
          */
         @NonNull
         public Builder withDeleteResolver(@Nullable DeleteResolver<DeleteQuery> deleteResolver) {
@@ -100,9 +110,9 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
         }
 
         /**
-         * Builds instance of {@link PreparedDeleteByQuery}
+         * Builds instance of {@link PreparedDeleteByQuery}.
          *
-         * @return instance of {@link PreparedDeleteByQuery}
+         * @return instance of {@link PreparedDeleteByQuery}.
          */
         @NonNull
         public PreparedDeleteByQuery prepare() {

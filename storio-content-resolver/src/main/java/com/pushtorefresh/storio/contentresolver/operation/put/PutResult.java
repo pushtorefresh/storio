@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * Immutable container for results of Put Operation
+ * Immutable container for single result of Put Operation.
  */
 public final class PutResult {
 
@@ -25,11 +25,11 @@ public final class PutResult {
     }
 
     /**
-     * Creates {@link PutResult} for insert
+     * Creates {@link PutResult} for insert.
      *
-     * @param insertedUri Uri of inserted row
-     * @param affectedUri Uri that was affected by insert
-     * @return new {@link PutResult} instance
+     * @param insertedUri Uri of inserted row.
+     * @param affectedUri Uri that was affected by insert.
+     * @return new {@link PutResult} instance.
      */
     @NonNull
     public static PutResult newInsertResult(@NonNull Uri insertedUri, @NonNull Uri affectedUri) {
@@ -37,11 +37,11 @@ public final class PutResult {
     }
 
     /**
-     * Creates {@link PutResult} for update
+     * Creates {@link PutResult} for update.
      *
-     * @param numberOfRowsUpdated number of rows that were updated
-     * @param affectedUri         Uri that was affected by update
-     * @return new {@link PutResult} instance
+     * @param numberOfRowsUpdated number of rows that were updated.
+     * @param affectedUri         Uri that was affected by update.
+     * @return new {@link PutResult} instance.
      */
     @NonNull
     public static PutResult newUpdateResult(int numberOfRowsUpdated, @NonNull Uri affectedUri) {
@@ -49,45 +49,53 @@ public final class PutResult {
     }
 
     /**
-     * Checks whether result of Put Operation was "insert"
+     * Checks whether result of Put Operation was "insert".
      *
-     * @return true if something was inserted into {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}, false otherwise
+     * @return {@code true} if something was inserted into
+     * {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver},
+     * {@code false} otherwise.
      */
     public boolean wasInserted() {
         return insertedUri != null;
     }
 
     /**
-     * Checks whether result of Put Operation was NOT "insert"
+     * Checks whether result of Put Operation was NOT "insert".
      *
-     * @return true if nothing was inserted into {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}, false if something was inserted
+     * @return {@code true} if nothing was inserted
+     * into {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver},
+     * {@code false} if something was inserted.
      */
     public boolean wasNotInserted() {
         return !wasInserted();
     }
 
     /**
-     * Checks whether result of Put Operation was "update"
+     * Checks whether result of Put Operation was "update".
      *
-     * @return true if something was updated in {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}, false otherwise
+     * @return {@code true} if something was updated in
+     * {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver},
+     * {@code false} otherwise.
      */
     public boolean wasUpdated() {
         return numberOfRowsUpdated != null;
     }
 
     /**
-     * Checks whether result of Put Operation was NOT "update"
+     * Checks whether result of Put Operation was NOT "update".
      *
-     * @return true if nothing was updated in {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}, false if something was updated
+     * @return {@code true} if nothing was updated
+     * in {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver},
+     * {@code false} if something was updated.
      */
     public boolean wasNotUpdated() {
         return !wasUpdated();
     }
 
     /**
-     * Gets id of inserted row
+     * Gets id of inserted row.
      *
-     * @return null if nothing was inserted or id of inserted row
+     * @return null if nothing was inserted or id of inserted row.
      */
     @Nullable
     public Uri insertedUri() {
@@ -95,9 +103,9 @@ public final class PutResult {
     }
 
     /**
-     * Gets number of updated rows
+     * Gets number of updated rows.
      *
-     * @return null if nothing was updated or number of updated rows
+     * @return null if nothing was updated or number of updated rows.
      */
     @Nullable
     public Integer numberOfRowsUpdated() {
@@ -105,9 +113,9 @@ public final class PutResult {
     }
 
     /**
-     * Gets Uri that was affected by this Put
+     * Gets Uri that was affected by this Put.
      *
-     * @return non-null affected Uri
+     * @return non-null affected Uri.
      */
     @NonNull
     public Uri affectedUri() {

@@ -9,30 +9,31 @@ import java.util.Set;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Immutable container of information about one or more changes in {@link StorIOContentResolver}
+ * Immutable container of information about one or more changes in {@link StorIOContentResolver}.
  */
 public final class Changes {
 
     /**
-     * Immutable set of affected Uris
+     * Immutable set of affected Uris.
      */
     @NonNull
     private final Set<Uri> affectedUris;
 
     /**
-     * Creates {@link Changes} container with info about changes
+     * Creates {@link Changes} container with info about changes.
      *
-     * @param affectedUris set of Uris which were affected by these changes
+     * @param affectedUris set of Uris which were affected by these changes.
      */
     private Changes(@NonNull Set<Uri> affectedUris) {
         this.affectedUris = Collections.unmodifiableSet(affectedUris);
     }
 
     /**
-     * Creates immutable container of information about one or more changes in {@link StorIOContentResolver}
+     * Creates immutable container of information about one
+     * or more changes in {@link StorIOContentResolver}.
      *
-     * @param affectedUris non-null set of affected Uris
-     * @return new immutable instance of {@link Changes}
+     * @param affectedUris non-null set of affected Uris.
+     * @return new immutable instance of {@link Changes}.
      */
     @NonNull
     public static Changes newInstance(@NonNull Set<Uri> affectedUris) {
@@ -41,10 +42,11 @@ public final class Changes {
     }
 
     /**
-     * Creates immutable container of information about one or more changes in {@link StorIOContentResolver}
+     * Creates immutable container of information about one
+     * or more changes in {@link StorIOContentResolver}.
      *
-     * @param affectedUri non-null Uri that was affected
-     * @return new immutable instance of {@link Changes}
+     * @param affectedUri non-null Uri that was affected.
+     * @return new immutable instance of {@link Changes}.
      */
     @NonNull
     public static Changes newInstance(@NonNull Uri affectedUri) {
@@ -53,9 +55,9 @@ public final class Changes {
     }
 
     /**
-     * Gets immutable set of affected Uris
+     * Gets immutable set of affected Uris.
      *
-     * @return immutable set of affected Uris
+     * @return immutable set of affected Uris.
      */
     @NonNull
     public Set<Uri> affectedUris() {

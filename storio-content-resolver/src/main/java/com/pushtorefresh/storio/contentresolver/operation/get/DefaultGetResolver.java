@@ -8,7 +8,7 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 
 /**
- * Default implementation of {@link GetResolver}, thread-safe
+ * Default implementation of {@link GetResolver}, thread-safe.
  */
 public abstract class DefaultGetResolver<T> extends GetResolver<T> {
 

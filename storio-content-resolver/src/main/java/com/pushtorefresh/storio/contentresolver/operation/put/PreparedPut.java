@@ -8,9 +8,9 @@ import com.pushtorefresh.storio.operation.PreparedOperation;
 
 /**
  * Represents an Operation for {@link StorIOContentResolver} which performs insert or update data
- * in {@link android.content.ContentProvider}
+ * in {@link android.content.ContentProvider}.
  *
- * @param <T> type of data you want to put
+ * @param <T> type of data you want to put.
  */
 public abstract class PreparedPut<T, Result> implements PreparedOperation<Result> {
 
@@ -26,7 +26,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
     }
 
     /**
-     * Builder for {@link PreparedPut}
+     * Builder for {@link PreparedPut}.
      */
     public static final class Builder {
 
@@ -38,11 +38,11 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         }
 
         /**
-         * Prepares Put Operation that should put one object
+         * Prepares Put Operation that should put one object.
          *
-         * @param object object to put
-         * @param <T>    type of object
-         * @return builder for {@link PreparedPutObject}
+         * @param object object to put.
+         * @param <T>    type of object.
+         * @return builder for {@link PreparedPutObject}.
          */
         @NonNull
         public <T> PreparedPutObject.Builder<T> object(@NonNull T object) {
@@ -50,12 +50,13 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         }
 
         /**
-         * Prepares Put Operation that should put multiple objects
+         * Prepares Put Operation that should put multiple objects.
          *
-         * @param type    type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
-         * @param objects objects to put
-         * @param <T>     type of objects
-         * @return builder for {@link PreparedPutObjects}
+         * @param type    type of objects, due to limitations of Generics in Java
+         *                we have to explicitly ask you about type of objects, sorry :(.
+         * @param objects objects to put.
+         * @param <T>     type of objects.
+         * @return builder for {@link PreparedPutObjects}.
          */
         @NonNull
         public <T> PreparedPutObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {
@@ -63,10 +64,10 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         }
 
         /**
-         * Prepares Put Operation that should put one instance of {@link ContentValues}
+         * Prepares Put Operation that should put one instance of {@link ContentValues}.
          *
-         * @param contentValues non-null content values to put
-         * @return builder for {@link PreparedPutContentValues}
+         * @param contentValues non-null content values to put.
+         * @return builder for {@link PreparedPutContentValues}.
          */
         @NonNull
         public PreparedPutContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
@@ -74,10 +75,10 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         }
 
         /**
-         * Prepares Put Operation that should put several instances of {@link ContentValues}
+         * Prepares Put Operation that should put several instances of {@link ContentValues}.
          *
-         * @param contentValues non-null collection of {@link ContentValues}
-         * @return builder for {@link PreparedPutContentValuesIterable}
+         * @param contentValues non-null collection of {@link ContentValues}.
+         * @return builder for {@link PreparedPutContentValuesIterable}.
          */
         @NonNull
         public PreparedPutContentValuesIterable.Builder contentValues(@NonNull Iterable<ContentValues> contentValues) {

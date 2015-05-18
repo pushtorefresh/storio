@@ -9,9 +9,9 @@ import com.pushtorefresh.storio.operation.PreparedOperation;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Prepared Delete Operation for {@link StorIOContentResolver}
+ * Prepared Delete Operation for {@link StorIOContentResolver}.
  *
- * @param <Result> type of result of Delete Operation
+ * @param <Result> type of result of Delete Operation.
  */
 public abstract class PreparedDelete<T, Result> implements PreparedOperation<Result> {
 
@@ -27,7 +27,7 @@ public abstract class PreparedDelete<T, Result> implements PreparedOperation<Res
     }
 
     /**
-     * Builder for {@link PreparedDelete}
+     * Builder for {@link PreparedDelete}.
      */
     public static final class Builder {
 
@@ -35,9 +35,9 @@ public abstract class PreparedDelete<T, Result> implements PreparedOperation<Res
         private final StorIOContentResolver storIOContentResolver;
 
         /**
-         * Creates new builder for {@link PreparedDelete}
+         * Creates new builder for {@link PreparedDelete}.
          *
-         * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}
+         * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}.
          */
         public Builder(@NonNull StorIOContentResolver storIOContentResolver) {
             checkNotNull(storIOContentResolver, "Please specify StorIOContentResolver");
@@ -45,10 +45,10 @@ public abstract class PreparedDelete<T, Result> implements PreparedOperation<Res
         }
 
         /**
-         * Creates builder for {@link PreparedDeleteByQuery}
+         * Creates builder for {@link PreparedDeleteByQuery}.
          *
-         * @param deleteQuery non-null delete query
-         * @return builder for {@link PreparedDeleteByQuery}
+         * @param deleteQuery non-null delete query.
+         * @return builder for {@link PreparedDeleteByQuery}.
          */
         @NonNull
         public PreparedDeleteByQuery.Builder byQuery(@NonNull DeleteQuery deleteQuery) {
@@ -56,12 +56,13 @@ public abstract class PreparedDelete<T, Result> implements PreparedOperation<Res
         }
 
         /**
-         * Creates builder for {@link PreparedDeleteObjects}
+         * Creates builder for {@link PreparedDeleteObjects}.
          *
-         * @param type    type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
-         * @param objects non-null collection of objects to delete
-         * @param <T>     type of objects
-         * @return builder for {@link PreparedDeleteObjects}
+         * @param type    type of objects, due to limitations of Generics in Java
+         *                we have to explicitly ask you about type of objects, sorry :(.
+         * @param objects non-null collection of objects to delete.
+         * @param <T>     type of objects.
+         * @return builder for {@link PreparedDeleteObjects}.
          */
         @NonNull
         public <T> PreparedDeleteObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {
@@ -69,11 +70,11 @@ public abstract class PreparedDelete<T, Result> implements PreparedOperation<Res
         }
 
         /**
-         * Creates builder for {@link PreparedDeleteObject}
+         * Creates builder for {@link PreparedDeleteObject}.
          *
-         * @param object non-null object to delete
-         * @param <T>    type of object
-         * @return builder for {@link PreparedDeleteObject}
+         * @param object non-null object to delete.
+         * @param <T>    type of object.
+         * @return builder for {@link PreparedDeleteObject}.
          */
         @NonNull
         public <T> PreparedDeleteObject.Builder<T> object(@NonNull T object) {

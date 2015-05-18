@@ -18,10 +18,11 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Represents Get Operation for {@link StorIOContentResolver} which performs query that retrieves data as list of objects
- * from {@link android.content.ContentProvider}
+ * Represents Get Operation for {@link StorIOContentResolver}
+ * which performs query that retrieves data as list of objects
+ * from {@link android.content.ContentProvider}.
  *
- * @param <T> type of result
+ * @param <T> type of result.
  */
 public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
 
@@ -36,9 +37,9 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     }
 
     /**
-     * Executes Prepared Operation immediately in current thread
+     * Executes Prepared Operation immediately in current thread.
      *
-     * @return non-null {@link List} with mapped results, can be empty
+     * @return non-null {@link List} with mapped results, can be empty.
      */
     @NonNull
     @Override
@@ -64,16 +65,21 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
 
     /**
      * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
-     * and will emit result each time change occurs
+     * and will emit result each time change occurs.
      * <p>
      * First result will be emitted immediately,
-     * other emissions will occur only if changes of {@link #query} Uri will occur
+     * other emissions will occur only if changes of {@link #query} Uri will occur.
      * <p>
-     * Does not operate by default on a particular {@link rx.Scheduler}
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
      * <p>
-     * Please don't forget to unsubscribe from this {@link Observable} because it's "Hot" and endless
+     * Please don't forget to unsubscribe from this {@link Observable}
+     * because it's "Hot" and endless.
      *
-     * @return non-null {@link Observable} which will emit non-null list with mapped results and will be subscribed to changes of {@link #query} Uri
+     * @return non-null {@link Observable} which will emit non-null
+     * list with mapped results and will be subscribed to changes of {@link #query} Uri.
      */
     @NonNull
     @Override
@@ -87,9 +93,9 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link PreparedGetListOfObjects}
+     * Compile-time safe part of builder for {@link PreparedGetListOfObjects}.
      *
-     * @param <T> type of objects for query
+     * @param <T> type of objects for query.
      */
     public static final class Builder<T> {
 
@@ -105,10 +111,10 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
         }
 
         /**
-         * Required: Specifies {@link Query} for Get Operation
+         * Required: Specifies {@link Query} for Get Operation.
          *
-         * @param query query
-         * @return builder
+         * @param query query.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder<T> withQuery(@NonNull Query query) {
@@ -118,9 +124,9 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link PreparedGetListOfObjects}
+     * Compile-time safe part of builder for {@link PreparedGetListOfObjects}.
      *
-     * @param <T> type of objects for query
+     * @param <T> type of objects for query.
      */
     public static final class CompleteBuilder<T> {
 
@@ -143,13 +149,13 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
 
         /**
          * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation
+         * which allows you to customize behavior of Get Operation.
          * <p>
          * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults} -> exception will be thrown
+         * If value is not set via {@link ContentResolverTypeDefaults} -> exception will be thrown.
          *
-         * @param getResolver get resolver
-         * @return builder
+         * @param getResolver GetResolver.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder<T> withGetResolver(@Nullable GetResolver<T> getResolver) {
@@ -158,9 +164,9 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
         }
 
         /**
-         * Builds new instance of {@link PreparedGetListOfObjects}
+         * Builds new instance of {@link PreparedGetListOfObjects}.
          *
-         * @return new instance of {@link PreparedGetListOfObjects}
+         * @return new instance of {@link PreparedGetListOfObjects}.
          */
         @NonNull
         public PreparedGetListOfObjects<T> prepare() {
