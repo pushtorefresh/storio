@@ -18,13 +18,13 @@ public class DeleteTest extends BaseTest {
 
     @Test
     public void deleteOne() {
-        final User user = putUser();
+        final User user = putUserBlocking();
 
         final Cursor cursorAfterInsert = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
         assertEquals(1, cursorAfterInsert.getCount());
         cursorAfterInsert.close();
 
-        deleteUser(user);
+        deleteUserBlocking(user);
 
         final Cursor cursorAfterDelete = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
         assertEquals(0, cursorAfterDelete.getCount());
@@ -33,7 +33,7 @@ public class DeleteTest extends BaseTest {
 
     @Test
     public void deleteCollection() {
-        final List<User> allUsers = putUsers(10);
+        final List<User> allUsers = putUsersBlocking(10);
 
         final List<User> usersToDelete = new ArrayList<User>();
 
@@ -47,7 +47,7 @@ public class DeleteTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        final List<User> usersAfterDelete = getAllUsers();
+        final List<User> usersAfterDelete = getAllUsersBlocking();
 
         assertEquals(allUsers.size() / 2, usersAfterDelete.size());
 

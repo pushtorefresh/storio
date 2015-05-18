@@ -61,7 +61,7 @@ public abstract class BaseTest {
     }
 
     @NonNull
-    List<User> getAllUsers() {
+    List<User> getAllUsersBlocking() {
         return storIOSQLite
                 .get()
                 .listOfObjects(User.class)
@@ -71,13 +71,13 @@ public abstract class BaseTest {
     }
 
     @NonNull
-    User putUser() {
+    User putUserBlocking() {
         final User user = TestFactory.newUser();
-        return putUser(user);
+        return putUserBlocking(user);
     }
 
     @NonNull
-    User putUser(@NonNull final User user) {
+    User putUserBlocking(@NonNull final User user) {
 
         final PutResult putResult = storIOSQLite
                 .put()
@@ -91,14 +91,13 @@ public abstract class BaseTest {
     }
 
     @NonNull
-    List<User> putUsers(final int size) {
+    List<User> putUsersBlocking(final int size) {
         final List<User> users = TestFactory.newUsers(size);
-        return putUsers(users);
+        return putUsersBlocking(users);
     }
 
     @NonNull
-    List<User> putUsers(@NonNull final List<User> users) {
-
+    List<User> putUsersBlocking(@NonNull final List<User> users) {
         final PutResults<User> putResults = storIOSQLite
                 .put()
                 .objects(User.class, users)
@@ -111,7 +110,7 @@ public abstract class BaseTest {
     }
 
     @NonNull
-    DeleteResult deleteUser(@NonNull final User user) {
+    DeleteResult deleteUserBlocking(@NonNull final User user) {
         final DeleteResult deleteResult = storIOSQLite
                 .delete()
                 .object(user)
@@ -124,7 +123,7 @@ public abstract class BaseTest {
     }
 
     @NonNull
-    DeleteResults<User> deleteUsers(@NonNull final List<User> users) {
+    DeleteResults<User> deleteUsersBlocking(@NonNull final List<User> users) {
         final DeleteResults<User> deleteResults = storIOSQLite
                 .delete()
                 .objects(User.class, users)
@@ -134,6 +133,7 @@ public abstract class BaseTest {
         for (User user : users) {
             assertTrue(deleteResults.wasDeleted(user));
         }
+
         return deleteResults;
     }
 }

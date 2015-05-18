@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.Queries;
 import com.pushtorefresh.storio.internal.ChangesBus;
+import com.pushtorefresh.storio.internal.Queries;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -20,15 +20,13 @@ import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
-import static java.util.Collections.newSetFromMap;
 
 /**
  * Default implementation of {@link StorIOSQLite} for {@link SQLiteDatabase}
@@ -173,15 +171,23 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      */
     protected class InternalImpl extends Internal {
 
+        @NonNull
+        private final Object lock = new Object();
+
         @Nullable
         private final Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap;
 
-        @NonNull
-        private final AtomicInteger numberOfRunningTransactions = new AtomicInteger(0);
+        /**
+         * Guarded by {@link #lock}
+          */
+        private int numberOfRunningTransactions = 0;
 
+        /**
+         * Guarded by {@link #lock}
+         */
         @NonNull
-        private final Set<Changes> pendingChanges
-                = newSetFromMap(new ConcurrentHashMap<Changes, Boolean>());
+        private final Set<Changes> pendingChanges = new HashSet<Changes>();
+
 
         protected InternalImpl(@Nullable Map<Class<?>, SQLiteTypeDefaults<?>> typesDefaultsMap) {
             this.typesDefaultsMap = typesDefaultsMap != null
@@ -282,12 +288,17 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void notifyAboutChanges(@NonNull Changes changes) {
-            pendingChanges.add(changes);
-            notifyAboutPendingChangesIfNotInTransaction();
+            synchronized (lock) {
+                pendingChanges.add(changes);
+                notifyAboutPendingChangesIfNotInTransaction();
+            }
         }
 
+        /**
+         * Access to this method MUST BE guarded by synchronization on {@link #lock}
+         */
         private void notifyAboutPendingChangesIfNotInTransaction() {
-            if (numberOfRunningTransactions.get() == 0) {
+            if (numberOfRunningTransactions == 0) {
                 for (Changes changes : pendingChanges) {
                     pendingChanges.remove(changes);
                     changesBus.onNext(changes);
@@ -300,8 +311,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void beginTransaction() {
-            db.beginTransaction();
-            numberOfRunningTransactions.incrementAndGet();
+            synchronized (lock) {
+                db.beginTransaction();
+                numberOfRunningTransactions++;
+            }
         }
 
         /**
@@ -309,7 +322,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void setTransactionSuccessful() {
-            db.setTransactionSuccessful();
+            synchronized (lock) {
+                db.setTransactionSuccessful();
+            }
         }
 
         /**
@@ -317,9 +332,11 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void endTransaction() {
-            numberOfRunningTransactions.decrementAndGet();
-            db.endTransaction();
-            notifyAboutPendingChangesIfNotInTransaction();
+            synchronized (lock) {
+                db.endTransaction();
+                numberOfRunningTransactions--;
+                notifyAboutPendingChangesIfNotInTransaction();
+            }
         }
     }
 }

@@ -26,14 +26,14 @@ public class QueryTest extends BaseTest {
 
     @Test
     public void queryAll() {
-        final List<User> users = putUsers(3);
-        final List<User> usersFromQuery = getAllUsers();
+        final List<User> users = putUsersBlocking(3);
+        final List<User> usersFromQuery = getAllUsersBlocking();
         assertTrue(users.equals(usersFromQuery));
     }
 
     @Test
     public void queryOneByField() {
-        final List<User> users = putUsers(3);
+        final List<User> users = putUsersBlocking(3);
 
         for (User user : users) {
             final List<User> usersFromQuery = storIOSQLite
@@ -60,7 +60,7 @@ public class QueryTest extends BaseTest {
         // Reverse sorting by email before inserting, for the purity of the experiment.
         Collections.reverse(users);
 
-        putUsers(users);
+        putUsersBlocking(users);
 
         final List<User> usersFromQueryOrdered = storIOSQLite
                 .get()
@@ -90,7 +90,7 @@ public class QueryTest extends BaseTest {
         // Sorting by email before inserting, for the purity of the experiment.
         Collections.sort(users);
 
-        putUsers(users);
+        putUsersBlocking(users);
 
         final List<User> usersFromQueryOrdered = storIOSQLite
                 .get()
@@ -115,7 +115,7 @@ public class QueryTest extends BaseTest {
 
     @Test
     public void querySingleLimit() {
-        putUsers(10);
+        putUsersBlocking(10);
 
         final int limit = 8;
         final List<User> usersFromQuery = storIOSQLite
@@ -134,7 +134,7 @@ public class QueryTest extends BaseTest {
 
     @Test
     public void queryLimitOffset() {
-        final List<User> users = putUsers(10);
+        final List<User> users = putUsersBlocking(10);
 
         final int offset = 5;
         final int limit = 3;
@@ -175,7 +175,7 @@ public class QueryTest extends BaseTest {
             users.set(i, User.newInstance(null, commonEmail));
         }
 
-        putUsers(users);
+        putUsersBlocking(users);
 
         final List<User> groupsOfUsers = storIOSQLite
                 .get()
@@ -214,7 +214,7 @@ public class QueryTest extends BaseTest {
             users.set(i, User.newInstance(null, commonEmail));
         }
 
-        putUsers(users);
+        putUsersBlocking(users);
 
         final int bigGroupThreshold = 5;
 
@@ -249,7 +249,7 @@ public class QueryTest extends BaseTest {
             users.add(User.newInstance((long) i, "same@email.com"));
         }
 
-        putUsers(users);
+        putUsersBlocking(users);
 
         final GetResolver<User> customGetResolver = new DefaultGetResolver<User>() {
             @NonNull
@@ -302,7 +302,7 @@ public class QueryTest extends BaseTest {
             users.set(i, User.newInstance(null, new String(chars)));
         }
 
-        putUsers(users);
+        putUsersBlocking(users);
 
         final List<User> usersWithLongName = new ArrayList<User>(users.size());
 
@@ -341,7 +341,7 @@ public class QueryTest extends BaseTest {
 
         final List<User> users = TestFactory.newUsers(10);
         users.add(testUser);
-        putUsers(users);
+        putUsersBlocking(users);
 
         final String query = "SELECT * FROM " + UserTableMeta.TABLE
                 + " WHERE " + UserTableMeta.COLUMN_EMAIL + " LIKE ?";
@@ -363,7 +363,7 @@ public class QueryTest extends BaseTest {
 
     @Test
     public void queryWithRawQuerySqlInjectionFail() {
-        final List<User> users = putUsers(10);
+        final List<User> users = putUsersBlocking(10);
 
         final String query = "SELECT * FROM " + UserTableMeta.TABLE
                 + " WHERE " + UserTableMeta.COLUMN_EMAIL + " LIKE ?";
@@ -379,6 +379,6 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(users, getAllUsers());
+        assertEquals(users, getAllUsersBlocking());
     }
 }

@@ -37,13 +37,14 @@ public abstract class BaseSubscriptionTest extends BaseTest {
             return lock.getCount() == 0;
         }
 
-        protected void onNextObtained(T obtained) {
-            T expectedItem = expected.remove();
+        protected void onNextObtained(@NonNull T obtained) {
+            final T expectedItem = expected.remove();
             assertEquals(expectedItem, obtained);
             assertTrue(lock.getCount() > 0);
             lock.countDown();
         }
 
+        @NonNull
         public abstract Subscription subscribe();
     }
 }
