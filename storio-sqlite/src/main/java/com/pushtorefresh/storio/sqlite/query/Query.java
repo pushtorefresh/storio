@@ -10,9 +10,9 @@ import java.util.List;
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 
 /**
- * Get query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
- * <p/>
- * Instances of this class are Immutable
+ * Get query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
+ * <p>
+ * Instances of this class are immutable.
  */
 public final class Query {
 
@@ -43,7 +43,8 @@ public final class Query {
     private final String limit;
 
     /**
-     * Please use {@link com.pushtorefresh.storio.sqlite.query.Query.Builder} instead of constructor
+     * Please use {@link com.pushtorefresh.storio.sqlite.query.Query.Builder}
+     * instead of constructor.
      */
     private Query(boolean distinct, @NonNull String table, @Nullable List<String> columns,
                   @Nullable String where, @Nullable List<String> whereArgs,
@@ -62,7 +63,7 @@ public final class Query {
 
     /**
      * Gets distinct option.
-     * <p/>
+     * <p>
      * True if you want each row to be unique, false otherwise.
      *
      * @return distinct option.
@@ -83,7 +84,7 @@ public final class Query {
 
     /**
      * Gets optional immutable list of columns that should be received.
-     * <p/>
+     * <p>
      * If list is {@code null} or empty -> all columns will be received.
      *
      * @return immutable list of columns that should be received.
@@ -95,11 +96,11 @@ public final class Query {
 
     /**
      * Gets {@code WHERE} clause.
-     * <p/>
+     * <p>
      * Optional filter declaring which rows to return.
-     * <p/>
+     * <p>
      * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
-     * <p/>
+     * <p>
      * If it's {@code null} — Query will retrieve all rows for the given table.
      *
      * @return nullable {@code WHERE} clause.
@@ -121,11 +122,11 @@ public final class Query {
 
     /**
      * Gets {@code GROUP BY} clause.
-     * <p/>
+     * <p>
      * Optional filter declaring how to group rows.
-     * <p/>
+     * <p>
      * Formatted as an SQL {@code GROUP BY} clause (excluding the {@code GROUP BY} itself).
-     * <p/>
+     * <p>
      * Passing {@code null} will cause the rows to not be grouped.
      *
      * @return nullable {@code GROUP BY} clause.
@@ -137,12 +138,12 @@ public final class Query {
 
     /**
      * Gets having clause.
-     * <p/>
+     * <p>
      * Optional filter declare which row groups to include
      * in the cursor, if row grouping is being used.
-     * <p/>
+     * <p>
      * Formatted as an SQL HAVING clause (excluding the HAVING itself).
-     * <p/>
+     * <p>
      * Passing {@code null} will cause all row groups to be included,
      * and is required when row grouping is not being used.
      *
@@ -155,11 +156,11 @@ public final class Query {
 
     /**
      * Gets {@code ORDER BY} clause.
-     * <p/>
+     * <p>
      * Optional specifier to how to order the rows.
-     * <p/>
+     * <p>
      * Formatted as an SQL {@code ORDER BY} clause (excluding the {@code ORDER BY} itself).
-     * <p/>
+     * <p>
      * Passing {@code null} will use the default sort order, which may be unordered.
      *
      * @return nullable {@code ORDER BY} clause.
@@ -171,11 +172,11 @@ public final class Query {
 
     /**
      * Gets {@code LIMIT} clause.
-     * <p/>
+     * <p>
      * Optional specifier that limits the number of rows returned by the query.
-     * <p/>
+     * <p>
      * Formatted as {@code LIMIT} clause.
-     * <p/>
+     * <p>
      * Passing {@code null} denotes no {@code LIMIT} clause.
      *
      * @return nullable {@code LIMIT} clause.
@@ -234,15 +235,16 @@ public final class Query {
     }
 
     /**
-     * Builder for {@link Query}
+     * Builder for {@link Query}.
      */
     public static final class Builder {
 
         /**
-         * Required: Specifies table name
+         * Required: Specifies table name.
          *
-         * @param table non-null and not emtpy table name
-         * @return builder
+         * @param table non-null and not empty table name.
+         * @return builder.
+         * @see Query#table()
          */
         @NonNull
         public CompleteBuilder table(@NonNull String table) {
@@ -252,7 +254,7 @@ public final class Query {
     }
 
     /**
-     * Compile-time safe part of builder for {@link DeleteQuery}
+     * Compile-time safe part of builder for {@link DeleteQuery}.
      */
     public static final class CompleteBuilder {
 
@@ -280,14 +282,15 @@ public final class Query {
         }
 
         /**
-         * Optional: Specifies distinct option
-         * <p/>
-         * True if you want each row to be unique, false otherwise
-         * <p/>
-         * Default value is <code>false</code>
+         * Optional: Specifies distinct option.
+         * <p>
+         * Set {@code true} if you want each row to be unique, {@code false} otherwise.
+         * <p>
+         * Default value is {@code false}.
          *
-         * @param distinct distinct option
-         * @return builder
+         * @param distinct distinct option.
+         * @return builder.
+         * @see Query#distinct()
          */
         @NonNull
         public CompleteBuilder distinct(boolean distinct) {
@@ -297,13 +300,14 @@ public final class Query {
 
         /**
          * Optional: Specifies list of columns that should be received.
-         * <p/>
-         * If list will be null or empty -> all columns will be received
-         * <p/>
-         * Default value is <code>null</code>
+         * <p>
+         * If list will be {@code null} or empty -> all columns will be received.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param columns list of columns to receive
-         * @return builder
+         * @param columns list of columns to receive.
+         * @return builder.
+         * @see Query#columns()
          */
         @NonNull
         public CompleteBuilder columns(@Nullable String... columns) {
@@ -312,18 +316,19 @@ public final class Query {
         }
 
         /**
-         * Optional: Specifies where clause
-         * <p/>
-         * Optional filter declaring which rows to return
-         * <p/>
-         * Formatted as an SQL WHERE clause (excluding the WHERE itself).
-         * <p/>
-         * Passing null will RETURN all rows for the given table
-         * <p/>
-         * Default value is <code>null</code>
+         * Optional: Specifies {@code WHERE} clause.
+         * <p>
+         * Optional filter declaring which rows to return.
+         * <p>
+         * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
+         * <p>
+         * Passing {@code null} will RETURN all rows for the given table.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param where where clause
-         * @return builder
+         * @param where {@code WHERE} clause.
+         * @return builder.
+         * @see Query#where()
          */
         @NonNull
         public CompleteBuilder where(@Nullable String where) {
@@ -332,14 +337,16 @@ public final class Query {
         }
 
         /**
-         * Optional: Specifies arguments for where clause
-         * <p/>
-         * Passed objects will be immediately converted list of to {@link String} via calling {@link Object#toString()}
-         * <p/>
-         * Default value is <code>null</code>
+         * Optional: Specifies arguments for where clause.
+         * <p>
+         * Passed objects will be immediately converted list of
+         * to {@link String} via calling {@link Object#toString()}.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param whereArgs list of arguments for where clause
-         * @return builder
+         * @param whereArgs list of arguments for where clause.
+         * @return builder.
+         * @see Query#whereArgs()
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
@@ -348,18 +355,19 @@ public final class Query {
         }
 
         /**
-         * Optional: Specifies group by clause
-         * <p/>
+         * Optional: Specifies {@code GROUP BY} clause.
+         * <p>
          * Optional filter declaring how to group rows.
-         * <p/>
-         * Formatted as an SQL GROUP BY clause (excluding the GROUP BY itself).
-         * <p/>
-         * Passing null will cause the rows to not be grouped
-         * <p/>
-         * Default value is <code>null</code>
+         * <p>
+         * Formatted as an SQL {@code GROUP BY} clause (excluding the {@code GROUP BY} itself).
+         * <p>
+         * Passing {@code null} will cause the rows to not be grouped.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param groupBy group by clause
-         * @return builder
+         * @param groupBy {@code GROUP BY} clause.
+         * @return builder.
+         * @see Query#groupBy()
          */
         @NonNull
         public CompleteBuilder groupBy(@Nullable String groupBy) {
@@ -368,18 +376,21 @@ public final class Query {
         }
 
         /**
-         * Optional: Specifies having clause
-         * <p/>
-         * Optional filter declare which row groups to include in the cursor, if row grouping is being used.
-         * <p/>
-         * Formatted as an SQL HAVING clause (excluding the HAVING itself).
-         * <p/>
-         * Passing null will cause all row groups to be included, and is required when row grouping is not being used
-         * <p/>
-         * Default value is <code>null</code>
+         * Optional: Specifies {@code HAVING} clause.
+         * <p>
+         * Optional filter declare which row groups to include in the cursor,
+         * if row grouping is being used.
+         * <p>
+         * Formatted as an SQL {@code HAVING} clause (excluding the {@code HAVING} itself).
+         * <p>
+         * Passing {@code null} will cause all row groups to be included,
+         * and is required when row grouping is not being used.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param having having clause
-         * @return builder
+         * @param having {@code HAVING} clause.
+         * @return builder.
+         * @see Query#having()
          */
         @NonNull
         public CompleteBuilder having(@Nullable String having) {
@@ -388,18 +399,19 @@ public final class Query {
         }
 
         /**
-         * Optional: Specifies order by clause
-         * <p/>
+         * Optional: Specifies {@code ORDER BY} clause.
+         * <p>
          * Optional specifier to how to order the rows.
-         * <p/>
-         * Formatted as an SQL ORDER BY clause (excluding the ORDER BY itself).
-         * <p/>
-         * Passing null will use the default sort order, which may be unordered
-         * <p/>
-         * Default value is <code>null</code>
+         * <p>
+         * Formatted as an SQL {@code ORDER BY} clause (excluding the {@code ORDER BY} itself).
+         * <p>
+         * Passing {@code null} will use the default sort order, which may be unordered.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param orderBy order by clause
-         * @return builder
+         * @param orderBy {@code ORDER BY} clause.
+         * @return builder.
+         * @see Query#orderBy()
          */
         @NonNull
         public CompleteBuilder orderBy(@Nullable String orderBy) {
@@ -408,18 +420,19 @@ public final class Query {
         }
 
         /**
-         * Optional: Specifies limit clause
-         * <p/>
+         * Optional: Specifies {@code LIMIT} clause.
+         * <p>
          * Optional specifier that limits the number of rows returned by the query.
-         * <p/>
-         * Formatted as LIMIT clause.
-         * <p/>
-         * Passing null denotes no LIMIT clause
-         * <p/>
-         * Default value is <code>null</code>
+         * <p>
+         * Formatted as {@code LIMIT} clause.
+         * <p>
+         * Passing {@code null} denotes no {@code LIMIT} clause.
+         * <p>
+         * Default value is {@code null}.
          *
-         * @param limit limit clause
-         * @return builder
+         * @param limit {@code LIMIT} clause.
+         * @return builder.
+         * @see Query#limit()
          */
         @NonNull
         public CompleteBuilder limit(@Nullable String limit) {
@@ -428,9 +441,9 @@ public final class Query {
         }
 
         /**
-         * Builds immutable instance of {@link Query}
+         * Builds immutable instance of {@link Query}.
          *
-         * @return immutable instance of {@link Query}
+         * @return immutable instance of {@link Query}.
          */
         @NonNull
         public Query build() {

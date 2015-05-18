@@ -12,19 +12,18 @@ import rx.Observable;
 public interface PreparedOperation<Result> {
 
     /**
-     * Executes operation synchronously in current thread
+     * Executes operation synchronously in current thread.
      *
-     * @return result of operation
+     * @return result of operation.
      */
-    @NonNull
     Result executeAsBlocking();
 
     /**
      * Creates {@link rx.Observable} that emits result of Operation.
      *
-     * Observable may be Hot or Cold, please read documentation of the concrete implementation
+     * Observable may be "Hot" or "Cold", please read documentation of the concrete implementation.
      *
-     * @return observable result of operation with only one {@link rx.Observer#onNext(Object)} call
+     * @return observable result of operation with only one {@link rx.Observer#onNext(Object)} call.
      */
     @NonNull
     Observable<Result> createObservable();

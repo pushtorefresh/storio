@@ -6,13 +6,14 @@ import android.support.annotation.Nullable;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
-import com.pushtorefresh.storio.internal.Environment;
 
 import rx.Observable;
 import rx.Subscriber;
 
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
+
 /**
- * Prepared Delete Operation for {@link StorIOSQLite}
+ * Prepared Delete Operation for {@link StorIOSQLite}.
  */
 public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
@@ -29,9 +30,9 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     }
 
     /**
-     * Executes Delete Operation immediately in current thread
+     * Executes Delete Operation immediately in current thread.
      *
-     * @return non-null result of Delete Operation
+     * @return non-null result of Delete Operation.
      */
     @NonNull
     @Override
@@ -42,14 +43,23 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     }
 
     /**
-     * Creates an {@link Observable} which will emit result of Delete Operation
+     * Creates {@link Observable} which will perform Delete Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * delete only after subscribing to it. Also, it emits the result once.
      *
-     * @return non-null {@link Observable} which will emit non-null result of Delete Operation
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Delete Operation.
+     * and send result to observer.
      */
     @NonNull
     @Override
     public Observable<DeleteResult> createObservable() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable.create(new Observable.OnSubscribe<DeleteResult>() {
             @Override
@@ -65,7 +75,7 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     }
 
     /**
-     * Builder for {@link PreparedDeleteByQuery}
+     * Builder for {@link PreparedDeleteByQuery}.
      */
     public static final class Builder {
 
@@ -91,12 +101,13 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         }
 
         /**
-         * Optional: Specifies Delete Resolver for Delete Operation
+         * Optional: Specifies Delete Resolver for Delete Operation.
          * <p/>
-         * If no value was specified, builder will use resolver that simply redirects query to {@link StorIOSQLite}
+         * If no value was specified, builder will use resolver that
+         * simply redirects query to {@link StorIOSQLite}.
          *
-         * @param deleteResolver nullable resolver for Delete Operation
-         * @return builder
+         * @param deleteResolver nullable resolver for Delete Operation.
+         * @return builder.
          */
         @NonNull
         public Builder withDeleteResolver(@Nullable DeleteResolver<DeleteQuery> deleteResolver) {
@@ -105,9 +116,9 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         }
 
         /**
-         * Prepares Delete Operation
+         * Prepares Delete Operation.
          *
-         * @return {@link PreparedDeleteByQuery} instance
+         * @return {@link PreparedDeleteByQuery} instance.
          */
         @NonNull
         public PreparedDeleteByQuery prepare() {

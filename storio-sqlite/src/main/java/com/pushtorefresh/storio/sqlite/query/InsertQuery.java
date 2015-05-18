@@ -6,9 +6,9 @@ import android.support.annotation.Nullable;
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 
 /**
- * Insert query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
+ * Insert query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
  * <p/>
- * Instances of this class are Immutable
+ * Instances of this class are immutable.
  */
 public final class InsertQuery {
 
@@ -19,7 +19,8 @@ public final class InsertQuery {
     private final String nullColumnHack;
 
     /**
-     * Please use {@link com.pushtorefresh.storio.sqlite.query.InsertQuery.Builder} instead of constructor
+     * Please use {@link com.pushtorefresh.storio.sqlite.query.InsertQuery.Builder}
+     * instead of constructor.
      */
     private InsertQuery(@NonNull String table, @Nullable String nullColumnHack) {
         this.table = table;
@@ -37,7 +38,8 @@ public final class InsertQuery {
     }
 
     /**
-     * Gets tricky-wiki hack for {@code null} columns in {@link android.database.sqlite.SQLiteDatabase}
+     * Gets tricky-wiki hack for {@code null} columns in
+     * {@link android.database.sqlite.SQLiteDatabase}.
      * <p/>
      * SQL doesn't allow inserting a completely empty row
      * without naming at least one column name. If your provided values
@@ -46,7 +48,7 @@ public final class InsertQuery {
      * parameter provides the name of nullable column name to explicitly
      * insert a {@code NULL} into in the case where your values is empty.
      *
-     * @return nullable hack for {@code null} columns
+     * @return nullable hack for {@code NULL} columns.
      */
     @Nullable
     public String nullColumnHack() {
@@ -83,15 +85,16 @@ public final class InsertQuery {
     }
 
     /**
-     * Builder for {@link InsertQuery}
+     * Builder for {@link InsertQuery}.
      */
     public static final class Builder {
 
         /**
-         * Required: Specifies table name
+         * Required: Specifies table name.
          *
-         * @param table non-null and not empty table name
-         * @return builder
+         * @param table non-null and not empty table name.
+         * @return builder.
+         * @see InsertQuery#table()
          */
         @NonNull
         public CompleteBuilder table(@NonNull String table) {
@@ -101,7 +104,7 @@ public final class InsertQuery {
     }
 
     /**
-     * Compile-time safe part of builder for {@link DeleteQuery}
+     * Compile-time safe part of builder for {@link DeleteQuery}.
      */
     public static final class CompleteBuilder {
 
@@ -115,17 +118,18 @@ public final class InsertQuery {
         }
 
         /**
-         * Optional: Specifies null column hack
+         * Optional: Specifies {@code NULL} column hack.
          * <p/>
          * SQL doesn't allow inserting a completely empty row without naming at least one column name.
          * If your provided values are empty, no column names are known and an empty row can't be inserted.
          * If not set to null, the nullColumnHack parameter provides the name of nullable column name
          * to explicitly insert a NULL into in the case where your values is empty.
          * <p/>
-         * Default value is <code>null</code>
+         * Default value is {@code null}.
          *
-         * @param nullColumnHack optional null column hack
-         * @return builder
+         * @param nullColumnHack optional null column hack.
+         * @return builder.
+         * @see InsertQuery#nullColumnHack()
          */
         @NonNull
         public CompleteBuilder nullColumnHack(@Nullable String nullColumnHack) {
@@ -134,9 +138,9 @@ public final class InsertQuery {
         }
 
         /**
-         * Builds immutable instance of {@link InsertQuery}
+         * Builds immutable instance of {@link InsertQuery}.
          *
-         * @return immutable instance of {@link InsertQuery}
+         * @return immutable instance of {@link InsertQuery}.
          */
         @NonNull
         public InsertQuery build() {

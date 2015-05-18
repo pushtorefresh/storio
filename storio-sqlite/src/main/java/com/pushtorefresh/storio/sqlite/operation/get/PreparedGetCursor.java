@@ -19,7 +19,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Represents Get Operation for {@link StorIOSQLite} which performs query that retrieves data as {@link Cursor}
+ * Prepared Get Operation for {@link StorIOSQLite}.
  */
 public final class PreparedGetCursor extends PreparedGet<Cursor> {
 
@@ -37,9 +37,9 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Executes Get Operation immediately in current thread
+     * Executes Get Operation immediately in current thread.
      *
-     * @return non-null {@link Cursor}, can be empty
+     * @return non-null {@link Cursor}, can be empty.
      */
     @NonNull
     public Cursor executeAsBlocking() {
@@ -54,16 +54,21 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
 
     /**
      * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
-     * and will emit result each time change occurs
+     * and will emit result each time change occurs.
      * <p>
      * First result will be emitted immediately after subscription,
-     * other emissions will occur only if changes of query tables will occur during lifetime of the Observable
+     * other emissions will occur only if changes of tables from query will occur during lifetime of
+     * the {@link Observable}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
      * <p>
-     * Does not operate by default on a particular {@link rx.Scheduler}
-     * <p>
-     * Please don't forget to unsubscribe from this {@link Observable} because it's "Hot" and endless
+     * Please don't forget to unsubscribe from this {@link Observable} because
+     * it's "Hot" and endless.
      *
-     * @return non-null {@link Observable} which will emit {@link Cursor} and will be subscribed to changes of query tables
+     * @return non-null {@link Observable} which will emit non-null
+     * list with mapped results and will be subscribed to changes of tables from query.
      */
     @NonNull
     @Override
@@ -92,10 +97,10 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Builder for {@link PreparedGetCursor}
+     * Builder for {@link PreparedGetCursor}.
      * <p>
      * Required: You should specify query by call
-     * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}
+     * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}.
      */
     public static final class Builder {
 
@@ -107,10 +112,11 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
         }
 
         /**
-         * Specifies {@link Query} for Get Operation
+         * Required: Specifies {@link Query} for Get Operation.
          *
-         * @param query query
-         * @return builder
+         * @param query query.
+         * @return builder.
+         * @see Query
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull Query query) {
@@ -119,11 +125,12 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
         }
 
         /**
-         * Specifies {@link RawQuery} for Get Operation,
-         * you can use it for "joins" and same constructions which are not allowed in {@link Query}
+         * Required: Specifies {@link RawQuery} for Get Operation,
+         * you can use it for "joins" and same constructions which are not allowed for {@link Query}.
          *
-         * @param rawQuery query
-         * @return builder
+         * @param rawQuery query.
+         * @return builder.
+         * @see RawQuery
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull RawQuery rawQuery) {
@@ -133,7 +140,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link PreparedGetCursor}
+     * Compile-time safe part of builder for {@link PreparedGetCursor}.
      */
     public static final class CompleteBuilder {
 
@@ -167,11 +174,12 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
         }
 
         /**
-         * Optional: Specifies Get Resolver for operation
-         * If no value is set, builder will use resolver that simply redirects query to {@link StorIOSQLite}
+         * Optional: Specifies Get Resolver for operation.
+         * If no value is set, builder will use resolver that
+         * simply redirects query to {@link StorIOSQLite}.
          *
-         * @param getResolver nullable GetResolver for Get Operation
-         * @return builder
+         * @param getResolver nullable GetResolver for Get Operation.
+         * @return builder.
          */
         @NonNull
         public CompleteBuilder withGetResolver(@Nullable GetResolver<Cursor> getResolver) {
@@ -180,9 +188,9 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
         }
 
         /**
-         * Prepares Get Operation
+         * Prepares Get Operation.
          *
-         * @return {@link PreparedGetCursor} instance
+         * @return {@link PreparedGetCursor} instance.
          */
         @NonNull
         public PreparedGetCursor prepare() {

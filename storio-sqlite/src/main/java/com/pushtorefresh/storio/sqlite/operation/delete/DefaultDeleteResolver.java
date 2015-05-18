@@ -6,15 +6,16 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 
 /**
- * Default implementation for {@link DeleteResolver}, thread-safe
+ * Default implementation of {@link DeleteResolver}.
+ * Thread-safe.
  */
 public abstract class DefaultDeleteResolver<T> extends DeleteResolver<T> {
 
     /**
-     * Converts object to {@link DeleteQuery}
+     * Converts object to {@link DeleteQuery}.
      *
-     * @param object object that should be deleted
-     * @return {@link DeleteQuery} that will be performed
+     * @param object object that should be deleted.
+     * @return {@link DeleteQuery} that will be performed.
      */
     @NonNull
     protected abstract DeleteQuery mapToDeleteQuery(@NonNull T object);

@@ -18,6 +18,11 @@ import rx.Subscriber;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
+/**
+ * Prepared Delete Operation for {@link StorIOSQLite}.
+ *
+ * @param <T> type of objects to delete.
+ */
 public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
     @NonNull
@@ -36,9 +41,9 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
     }
 
     /**
-     * Executes Delete Operation immediately in current thread
+     * Executes Delete Operation immediately in current thread.
      *
-     * @return non-null results of Delete Operation
+     * @return non-null results of Delete Operation.
      */
     @NonNull
     @Override
@@ -88,9 +93,18 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
     }
 
     /**
-     * Creates an {@link Observable} which will emit results of Delete Operation
+     * Creates {@link Observable} which will perform Delete Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * delete only after subscribing to it. Also, it emits the result once.
      *
-     * @return non-null {@link Observable} which will emit non-null results of Delete Operation
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Delete Operation.
+     * and send result to observer.
      */
     @NonNull
     @Override
@@ -111,9 +125,9 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
     }
 
     /**
-     * Builder for {@link PreparedDeleteObjects}
+     * Builder for {@link PreparedDeleteObjects}.
      *
-     * @param <T> type of objects to delete
+     * @param <T> type of objects to delete.
      */
     public static final class Builder<T> {
 
@@ -138,13 +152,12 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
 
 
         /**
-         * Optional: Defines that Delete Operation will use transaction
-         * if it is supported by implementation of {@link StorIOSQLite}
+         * Optional: Defines that Delete Operation will use transaction or not.
          * <p>
-         * By default, transaction will be used
+         * By default, transaction will be used.
          *
-         * @param useTransaction true to use transaction, false to not
-         * @return builder
+         * @param useTransaction {@code true} to use transaction, {@code false} to not.
+         * @return builder.
          */
         @NonNull
         public Builder<T> useTransaction(boolean useTransaction) {
@@ -153,14 +166,15 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
         }
 
         /**
-         * Optional: Specifies {@link DeleteResolver} for Delete Operation
+         * Optional: Specifies {@link DeleteResolver} for Delete Operation.
          * <p>
          * <p>
          * Can be set via {@link SQLiteTypeDefaults},
-         * If value is not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown
+         * If value is not set via {@link SQLiteTypeDefaults}
+         * or explicitly -> exception will be thrown.
          *
-         * @param deleteResolver {@link DeleteResolver} for Delete Operation
-         * @return builder
+         * @param deleteResolver {@link DeleteResolver} for Delete Operation.
+         * @return builder.
          */
         @NonNull
         public Builder<T> withDeleteResolver(@Nullable DeleteResolver<T> deleteResolver) {
@@ -169,9 +183,9 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
         }
 
         /**
-         * Prepares Delete Operation
+         * Prepares Delete Operation.
          *
-         * @return {@link PreparedDeleteObjects}
+         * @return {@link PreparedDeleteObjects}.
          */
         @NonNull
         public PreparedDeleteObjects<T> prepare() {

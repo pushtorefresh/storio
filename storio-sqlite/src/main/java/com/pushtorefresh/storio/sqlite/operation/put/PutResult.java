@@ -9,7 +9,9 @@ import java.util.Set;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Immutable container for results of Put Operation
+ * Immutable container for result of Put Operation.
+ * <p>
+ * Instances of this class are immutable.
  */
 public final class PutResult {
 
@@ -30,11 +32,11 @@ public final class PutResult {
     }
 
     /**
-     * Creates {@link PutResult} of insert
+     * Creates {@link PutResult} of insert.
      *
-     * @param insertedId     id of new row
-     * @param affectedTables tables that were affected
-     * @return new {@link PutResult} instance
+     * @param insertedId     id of new row.
+     * @param affectedTables tables that were affected.
+     * @return new {@link PutResult} instance.
      */
     @NonNull
     public static PutResult newInsertResult(long insertedId, @NonNull Set<String> affectedTables) {
@@ -42,11 +44,11 @@ public final class PutResult {
     }
 
     /**
-     * Creates {@link PutResult} of insert
+     * Creates {@link PutResult} of insert.
      *
-     * @param insertedId    id of new row
-     * @param affectedTable table that was affected
-     * @return new {@link PutResult} instance
+     * @param insertedId    id of new row.
+     * @param affectedTable table that was affected.
+     * @return new {@link PutResult} instance.
      */
     @NonNull
     public static PutResult newInsertResult(long insertedId, @NonNull String affectedTable) {
@@ -54,11 +56,11 @@ public final class PutResult {
     }
 
     /**
-     * Creates {@link PutResult} of update
+     * Creates {@link PutResult} of update.
      *
-     * @param numberOfRowsUpdated number of rows that were updated
-     * @param affectedTables      tables that were affected
-     * @return new {@link PutResult} instance
+     * @param numberOfRowsUpdated number of rows that were updated.
+     * @param affectedTables      tables that were affected.
+     * @return new {@link PutResult} instance.
      */
     @NonNull
     public static PutResult newUpdateResult(int numberOfRowsUpdated, @NonNull Set<String> affectedTables) {
@@ -66,11 +68,11 @@ public final class PutResult {
     }
 
     /**
-     * Creates {@link PutResult} of update
+     * Creates {@link PutResult} of update.
      *
-     * @param numberOfRowsUpdated number of rows that were updated
-     * @param affectedTable       table that was affected
-     * @return new {@link PutResult} instance
+     * @param numberOfRowsUpdated number of rows that were updated.
+     * @param affectedTable       table that was affected.
+     * @return new {@link PutResult} instance.
      */
     @NonNull
     public static PutResult newUpdateResult(int numberOfRowsUpdated, @NonNull String affectedTable) {
@@ -78,45 +80,49 @@ public final class PutResult {
     }
 
     /**
-     * Checks whether result of Put Operation was "insert"
+     * Checks whether result of Put Operation was "insert".
      *
-     * @return true if something was inserted into {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, false otherwise
+     * @return {@code true} if something was inserted into
+     * {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, {@code false} otherwise.
      */
     public boolean wasInserted() {
         return insertedId != null;
     }
 
     /**
-     * Checks whether result of Put Operation was NOT "insert"
+     * Checks whether result of Put Operation was NOT "insert".
      *
-     * @return true if nothing was inserted into {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, false if something was inserted
+     * @return {@code true} if nothing was inserted into
+     * {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, {@code false} if something was inserted.
      */
     public boolean wasNotInserted() {
         return !wasInserted();
     }
 
     /**
-     * Checks whether result of Put Operation was "update"
+     * Checks whether result of Put Operation was "update".
      *
-     * @return true if something was updated in {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, false otherwise
+     * @return {@code true} if something was updated in
+     * {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, {@code false} otherwise.
      */
     public boolean wasUpdated() {
         return numberOfRowsUpdated != null;
     }
 
     /**
-     * Checks whether result of Put Operation was NOT "update"
+     * Checks whether result of Put Operation was NOT "update".
      *
-     * @return true if nothing was updated in {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, false if something was updated
+     * @return {@code true} if nothing was updated in
+     * {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, {@code false} if something was updated.
      */
     public boolean wasNotUpdated() {
         return !wasUpdated();
     }
 
     /**
-     * Gets id of inserted row
+     * Gets id of inserted row.
      *
-     * @return null if nothing was inserted or id of inserted row
+     * @return {@code null} if nothing was inserted or id of inserted row.
      */
     @Nullable
     public Long insertedId() {
@@ -124,9 +130,9 @@ public final class PutResult {
     }
 
     /**
-     * Gets number of rows updated
+     * Gets number of rows updated.
      *
-     * @return null if nothing was updated or number of updated rows
+     * @return {@code null} if nothing was updated or number of updated rows.
      */
     @Nullable
     public Integer numberOfRowsUpdated() {
@@ -134,9 +140,9 @@ public final class PutResult {
     }
 
     /**
-     * Gets names of affected tables
+     * Gets names of affected tables.
      *
-     * @return non-null unmodifiable set of affected tables
+     * @return non-null unmodifiable set of affected tables.
      */
     @NonNull
     public Set<String> affectedTables() {

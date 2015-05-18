@@ -10,9 +10,9 @@ import java.util.List;
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 
 /**
- * Update query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}
+ * Update query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
  * <p/>
- * Instances of this class are Immutable
+ * Instances of this class are immutable.
  */
 public final class UpdateQuery {
 
@@ -26,7 +26,8 @@ public final class UpdateQuery {
     private final List<String> whereArgs;
 
     /**
-     * Please use {@link com.pushtorefresh.storio.sqlite.query.UpdateQuery.Builder} instead of constructor
+     * Please use {@link com.pushtorefresh.storio.sqlite.query.UpdateQuery.Builder}
+     * instead of constructor.
      */
     private UpdateQuery(@NonNull String table, @Nullable String where, @Nullable List<String> whereArgs) {
         this.table = table;
@@ -100,15 +101,16 @@ public final class UpdateQuery {
     }
 
     /**
-     * Builder for {@link UpdateQuery}
+     * Builder for {@link UpdateQuery}.
      */
     public static final class Builder {
 
         /**
-         * Required: Specifies table name
+         * Required: Specifies table name.
          *
-         * @param table non-null table name
-         * @return builder
+         * @param table non-null table name.
+         * @return builder.
+         * @see UpdateQuery#table()
          */
         @NonNull
         public CompleteBuilder table(@NonNull String table) {
@@ -118,7 +120,7 @@ public final class UpdateQuery {
     }
 
     /**
-     * Compile-time safe part of builder for {@link DeleteQuery}
+     * Compile-time safe part of builder for {@link DeleteQuery}.
      */
     public static final class CompleteBuilder {
 
@@ -134,18 +136,19 @@ public final class UpdateQuery {
         }
 
         /**
-         * Optional: Specifies where clause
+         * Optional: Specifies {@code WHERE} clause.
          * <p/>
-         * Optional filter declaring which rows to return
+         * Optional filter declaring which rows to return.
          * <p/>
-         * Formatted as an SQL WHERE clause (excluding the WHERE itself).
+         * Formatted as an SQL WHERE clause (excluding the {@code WHERE} itself).
          * <p/>
-         * Passing null will UPDATE all rows for the given table
+         * Passing {@code null} will UPDATE all rows for the given table.
          * <p/>
-         * Default value is <code>null</code>
+         * Default value is {@code null}.
          *
-         * @param where where clause
-         * @return builder
+         * @param where {@code WHERE} clause.
+         * @return builder.
+         * @see UpdateQuery#where()
          */
         @NonNull
         public CompleteBuilder where(@Nullable String where) {
@@ -154,14 +157,16 @@ public final class UpdateQuery {
         }
 
         /**
-         * Optional: Specifies arguments for where clause
+         * Optional: Specifies arguments for {@code WHERE} clause.
          * <p/>
-         * Passed objects will be immediately converted to list of {@link String} via calling {@link Object#toString()}
+         * Passed objects will be immediately converted
+         * to list of {@link String} via calling {@link Object#toString()}.
          * <p/>
-         * Default value is <code>null</code>
+         * Default value is {@code null}.
          *
-         * @param whereArgs list of arguments for where clause
-         * @return builder
+         * @param whereArgs list of arguments for {@code WHERE} clause.
+         * @return builder.
+         * @see UpdateQuery#whereArgs()
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
@@ -170,9 +175,9 @@ public final class UpdateQuery {
         }
 
         /**
-         * Builds immutable instance of {@link UpdateQuery}
+         * Builds immutable instance of {@link UpdateQuery}.
          *
-         * @return immutable instance of {@link UpdateQuery}
+         * @return immutable instance of {@link UpdateQuery}.
          */
         @NonNull
         public UpdateQuery build() {

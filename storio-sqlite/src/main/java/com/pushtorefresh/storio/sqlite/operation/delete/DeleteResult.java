@@ -8,9 +8,9 @@ import java.util.Set;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Immutable container for result of Delete Operation
- * <p/>
- * Instances of this class are Immutable
+ * Immutable container for result of Delete Operation.
+ * <p>
+ * Instances of this class are Immutable.
  */
 public final class DeleteResult {
 
@@ -26,11 +26,11 @@ public final class DeleteResult {
     }
 
     /**
-     * Creates new instance of immutable container for results of Delete Operation
+     * Creates new instance of immutable container for results of Delete Operation.
      *
-     * @param numberOfRowsDeleted number of rows that were deleted
-     * @param affectedTables      tables that were affected
-     * @return new instance of immutable container for result of Delete Operation
+     * @param numberOfRowsDeleted number of rows that were deleted.
+     * @param affectedTables      tables that were affected.
+     * @return new instance of immutable container for result of Delete Operation.
      */
     @NonNull
     public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull Set<String> affectedTables) {
@@ -39,11 +39,11 @@ public final class DeleteResult {
     }
 
     /**
-     * Creates new instance of immutable container for results of Delete Operation
+     * Creates new instance of immutable container for results of Delete Operation.
      *
-     * @param numberOfRowsDeleted number of rows that were deleted
-     * @param affectedTable       table that was affected
-     * @return new instance of immutable container for results of Delete Operation
+     * @param numberOfRowsDeleted number of rows that were deleted.
+     * @param affectedTable       table that was affected.
+     * @return new instance of immutable container for results of Delete Operation.
      */
     @NonNull
     public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull String affectedTable) {
@@ -52,18 +52,18 @@ public final class DeleteResult {
     }
 
     /**
-     * Gets number of rows that were deleted
+     * Gets number of rows that were deleted.
      *
-     * @return number of rows that were deleted
+     * @return number of rows that were deleted.
      */
     public int numberOfRowsDeleted() {
         return numberOfRowsDeleted;
     }
 
     /**
-     * Gets names of the tables that wer affected by Delete Operation
+     * Gets names of the tables that wer affected by Delete Operation.
      *
-     * @return unmodifiable set of tables that were affected
+     * @return unmodifiable set of tables that were affected.
      */
     @NonNull
     public Set<String> affectedTables() {

@@ -9,9 +9,9 @@ import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 
 /**
- * Represents Get Operation for {@link StorIOSQLite} which performs query that retrieves data
+ * Prepared Get Operation for {@link StorIOSQLite}.
  *
- * @param <Result> type of result
+ * @param <Result> type of result.
  */
 public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
 
@@ -37,7 +37,7 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
     }
 
     /**
-     * Builder for {@link PreparedGet}
+     * Builder for {@link PreparedGet}.
      */
     public static final class Builder {
 
@@ -49,9 +49,9 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
         }
 
         /**
-         * Returns builder for Get Operation that returns result as {@link android.database.Cursor}
+         * Returns builder for Get Operation that returns result as {@link android.database.Cursor}.
          *
-         * @return builder for Get Operation that returns result as {@link android.database.Cursor}
+         * @return builder for Get Operation that returns result as {@link android.database.Cursor}.
          */
         @NonNull
         public PreparedGetCursor.Builder cursor() {
@@ -59,11 +59,11 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
         }
 
         /**
-         * Returns builder for Get Operation that returns result as {@link java.util.List} of items
+         * Returns builder for Get Operation that returns result as {@link java.util.List} of items.
          *
-         * @param type type of items
-         * @param <T>  type of items
-         * @return builder for Get Operation that returns result as {@link java.util.List} of items
+         * @param type type of items.
+         * @param <T>  type of items.
+         * @return builder for Get Operation that returns result as {@link java.util.List} of items.
          */
         @NonNull
         public <T> PreparedGetListOfObjects.Builder<T> listOfObjects(@NonNull Class<T> type) {

@@ -9,10 +9,10 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import java.util.Arrays;
 
 /**
- * Represents an Operation for {@link StorIOSQLite} which performs insert or update data
- * in {@link StorIOSQLite}
+ * Prepared Put Operation for {@link StorIOSQLite} which performs insert or update data
+ * in {@link StorIOSQLite}.
  *
- * @param <T> type of data you want to put
+ * @param <T> type of data you want to put.
  */
 public abstract class PreparedPut<T, Result> implements PreparedOperation<Result> {
 
@@ -28,7 +28,7 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
     }
 
     /**
-     * Builder for {@link PreparedPut}
+     * Builder for {@link PreparedPut}.
      */
     public static final class Builder {
 
@@ -40,10 +40,10 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         }
 
         /**
-         * Prepares Put Operation for one instance of {@link ContentValues}
+         * Prepares Put Operation for one instance of {@link ContentValues}.
          *
-         * @param contentValues content values to put
-         * @return builder
+         * @param contentValues content values to put.
+         * @return builder.
          */
         @NonNull
         public PreparedPutContentValues.Builder contentValues(@NonNull ContentValues contentValues) {
@@ -51,10 +51,10 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         }
 
         /**
-         * Prepares Put Operation for multiple {@link ContentValues}
+         * Prepares Put Operation for multiple {@link ContentValues}.
          *
-         * @param contentValuesIterable content values to put
-         * @return builder
+         * @param contentValuesIterable content values to put.
+         * @return builder.
          */
         @NonNull
         public PreparedPutContentValuesIterable.Builder contentValues(@NonNull Iterable<ContentValues> contentValuesIterable) {
@@ -62,10 +62,10 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         }
 
         /**
-         * Prepares Put Operation for multiple {@link ContentValues}
+         * Prepares Put Operation for multiple {@link ContentValues}.
          *
-         * @param contentValuesArray content values to put
-         * @return builder
+         * @param contentValuesArray content values to put.
+         * @return builder.
          */
         @NonNull
         public PreparedPutContentValuesIterable.Builder contentValues(@NonNull ContentValues... contentValuesArray) {
@@ -73,11 +73,11 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         }
 
         /**
-         * Prepares Put Operation for one object
+         * Prepares Put Operation for one object.
          *
-         * @param object object to put
-         * @param <T>    type of object
-         * @return builder
+         * @param object object to put.
+         * @param <T>    type of object.
+         * @return builder.
          */
         @NonNull
         public <T> PreparedPutObject.Builder<T> object(T object) {
@@ -85,12 +85,13 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         }
 
         /**
-         * Prepares Put Operation for multiple objects
+         * Prepares Put Operation for multiple objects.
          *
-         * @param type    type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
-         * @param objects objects to put
-         * @param <T>     type of objects
-         * @return builder
+         * @param type    type of objects, due to limitations of Generics in Java
+         *                we have to explicitly ask you about type of objects, sorry :(.
+         * @param objects objects to put.
+         * @param <T>     type of objects.
+         * @return builder.
          */
         @NonNull
         public <T> PreparedPutObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {
@@ -98,12 +99,13 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         }
 
         /**
-         * Prepares Put Operation for multiple objects
+         * Prepares Put Operation for multiple objects.
          *
-         * @param type    type of objects, due to limitations of Generics in Java we have to explicitly ask you about type of objects, sorry :(
-         * @param objects objects to put
-         * @param <T>     type of objects
-         * @return builder
+         * @param type    type of objects, due to limitations of Generics in Java
+         *                we have to explicitly ask you about type of objects, sorry :(.
+         * @param objects objects to put.
+         * @param <T>     type of objects.
+         * @return builder.
          */
         @SuppressWarnings("unchecked")
         @NonNull
