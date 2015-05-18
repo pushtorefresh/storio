@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.sqlite.operation.exec_sql;
+package com.pushtorefresh.storio.sqlite.operation.execute;
 
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -12,14 +12,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PreparedExecSqlTest {
+public class PreparedExecuteSQLTest {
 
     @Test
     public void blocking() {
         final Stub stub = new Stub();
 
         stub.storIOSQLite
-                .execSql()
+                .executeSQL()
                 .withQuery(stub.rawQuery)
                 .prepare()
                 .executeAsBlocking();
@@ -41,21 +41,20 @@ public class PreparedExecSqlTest {
             when(storIOSQLite.internal())
                     .thenReturn(internal);
 
-            when(storIOSQLite.execSql())
-                    .thenReturn(new PreparedExecSql.Builder(storIOSQLite));
-
+            when(storIOSQLite.executeSQL())
+                    .thenReturn(new PreparedExecuteSQL.Builder(storIOSQLite));
         }
 
         @SuppressWarnings("unchecked")
         void verifyBehavior() {
-            // storIOSQLite.execSql() should be called once
-            verify(storIOSQLite, times(1)).execSql();
+            // storIOSQLite.executeSQL() should be called once
+            verify(storIOSQLite, times(1)).executeSQL();
 
-            // storIOSQLite.internal.execSql() should be called once for ANY RawQuery
-            verify(internal, times(1)).execSql(any(RawQuery.class));
+            // storIOSQLite.internal.executeSQL() should be called once for ANY RawQuery
+            verify(internal, times(1)).executeSQL(any(RawQuery.class));
 
-            // storIOSQLite.internal.execSql() should be called once for required RawQuery
-            verify(internal, times(1)).execSql(rawQuery);
+            // storIOSQLite.internal.executeSQL() should be called once for required RawQuery
+            verify(internal, times(1)).executeSQL(rawQuery);
 
             // no notifications should occur
             verify(internal, times(0)).notifyAboutChanges(any(Changes.class));

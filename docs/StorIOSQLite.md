@@ -229,7 +229,7 @@ Sometimes you need to execute raw sql, `StorIOSQLite` allows you to do it
 
 ```java
 storIOSQLite
-  .execSql()
+  .executeSQL()
   .withQuery(new RawQuery.Builder()
     .query("ALTER TABLE ? ADD COLUMN ? INTEGER")
     .args("tweets", "number_of_retweets")

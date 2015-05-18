@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sqlite.operation.delete.PreparedDelete;
-import com.pushtorefresh.storio.sqlite.operation.exec_sql.PreparedExecSql;
+import com.pushtorefresh.storio.sqlite.operation.execute.PreparedExecuteSQL;
 import com.pushtorefresh.storio.sqlite.operation.get.PreparedGet;
 import com.pushtorefresh.storio.sqlite.operation.put.PreparedPut;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
@@ -32,11 +32,11 @@ public abstract class StorIOSQLite {
      * Prepares "Execute SQL" Operation for {@link StorIOSQLite}.
      * Allows to execute a single SQL statement that is NOT a SELECT/INSERT/UPDATE/DELETE.
      *
-     * @return builder for {@link PreparedExecSql}.
+     * @return builder for {@link PreparedExecuteSQL}.
      */
     @NonNull
-    public PreparedExecSql.Builder execSql() {
-        return new PreparedExecSql.Builder(this);
+    public PreparedExecuteSQL.Builder executeSQL() {
+        return new PreparedExecuteSQL.Builder(this);
     }
 
     /**
@@ -125,7 +125,7 @@ public abstract class StorIOSQLite {
          *
          * @param rawQuery sql query.
          */
-        public abstract void execSql(@NonNull RawQuery rawQuery);
+        public abstract void executeSQL(@NonNull RawQuery rawQuery);
 
         /**
          * Executes raw query on the database

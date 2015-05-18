@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.sqlite.operation.exec_sql;
+package com.pushtorefresh.storio.sqlite.operation.execute;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,7 +16,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
 /**
  * Prepared Execute SQL Operation for {@link StorIOSQLite}.
  */
-public final class PreparedExecSql implements PreparedOperation<Void> {
+public final class PreparedExecuteSQL implements PreparedOperation<Void> {
 
     @NonNull
     private final StorIOSQLite storIOSQLite;
@@ -24,7 +24,7 @@ public final class PreparedExecSql implements PreparedOperation<Void> {
     @NonNull
     private final RawQuery rawQuery;
 
-    PreparedExecSql(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
+    PreparedExecuteSQL(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
         this.storIOSQLite = storIOSQLite;
         this.rawQuery = rawQuery;
     }
@@ -37,7 +37,7 @@ public final class PreparedExecSql implements PreparedOperation<Void> {
     @Nullable
     @Override
     public Void executeAsBlocking() {
-        storIOSQLite.internal().execSql(rawQuery);
+        storIOSQLite.internal().executeSQL(rawQuery);
         return null;
     }
 
@@ -75,7 +75,7 @@ public final class PreparedExecSql implements PreparedOperation<Void> {
     }
 
     /**
-     * Builder for {@link PreparedExecSql}.
+     * Builder for {@link PreparedExecuteSQL}.
      */
     public static final class Builder {
 
@@ -120,11 +120,11 @@ public final class PreparedExecSql implements PreparedOperation<Void> {
         /**
          * Prepares ExecSql Operation.
          *
-         * @return {@link PreparedExecSql} instance.
+         * @return {@link PreparedExecuteSQL} instance.
          */
         @NonNull
-        public PreparedExecSql prepare() {
-            return new PreparedExecSql(
+        public PreparedExecuteSQL prepare() {
+            return new PreparedExecuteSQL(
                     storIOSQLite,
                     rawQuery
             );
