@@ -210,7 +210,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          * {@inheritDoc}
          */
         @Override
-        public void execSql(@NonNull RawQuery rawQuery) {
+        public void executeSQL(@NonNull RawQuery rawQuery) {
             db.execSQL(rawQuery.query(), Queries.listToArray(rawQuery.args()));
         }
 

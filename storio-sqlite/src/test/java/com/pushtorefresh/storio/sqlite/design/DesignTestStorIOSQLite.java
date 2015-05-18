@@ -9,7 +9,7 @@ import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.delete.PreparedDelete;
-import com.pushtorefresh.storio.sqlite.operation.exec_sql.PreparedExecSql;
+import com.pushtorefresh.storio.sqlite.operation.execute.PreparedExecuteSQL;
 import com.pushtorefresh.storio.sqlite.operation.get.PreparedGet;
 import com.pushtorefresh.storio.sqlite.operation.put.PreparedPut;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
@@ -37,7 +37,7 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
         }
 
         @Override
-        public void execSql(@NonNull RawQuery rawQuery) {
+        public void executeSQL(@NonNull RawQuery rawQuery) {
             // no impl
         }
 
@@ -97,8 +97,8 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
 
     @NonNull
     @Override
-    public PreparedExecSql.Builder execSql() {
-        return new PreparedExecSql.Builder(this);
+    public PreparedExecuteSQL.Builder executeSQL() {
+        return new PreparedExecuteSQL.Builder(this);
     }
 
     @NonNull
