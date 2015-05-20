@@ -38,9 +38,9 @@ public final class Query {
      */
     private Query(@NonNull Uri uri, @Nullable List<String> columns, @Nullable String where, @Nullable List<String> whereArgs, @Nullable String sortOrder) {
         this.uri = uri;
-        this.columns = Queries.listToUnmodifiable(columns);
+        this.columns = Queries.unmodifiableNullableList(columns);
         this.where = where;
-        this.whereArgs = Queries.listToUnmodifiable(whereArgs);
+        this.whereArgs = Queries.unmodifiableNullableList(whereArgs);
         this.sortOrder = sortOrder;
     }
 

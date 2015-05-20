@@ -52,9 +52,9 @@ public final class Query {
                   @Nullable String orderBy, @Nullable String limit) {
         this.distinct = distinct;
         this.table = table;
-        this.columns = Queries.listToUnmodifiable(columns);
+        this.columns = Queries.unmodifiableNullableList(columns);
         this.where = where;
-        this.whereArgs = Queries.listToUnmodifiable(whereArgs);
+        this.whereArgs = Queries.unmodifiableNullableList(whereArgs);
         this.groupBy = groupBy;
         this.having = having;
         this.orderBy = orderBy;

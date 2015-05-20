@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.Queries.unmodifiableNullableList;
+import static com.pushtorefresh.storio.internal.Queries.unmodifiableNullableSet;
 
 /**
  * Raw SQL query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
@@ -26,16 +28,21 @@ public final class RawQuery {
     private final List<String> args;
 
     @Nullable
-    private final Set<String> affectedTables;
+    private final Set<String> affectsTables;
+
+    @Nullable
+    private final Set<String> observesTables;
 
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.query.RawQuery.Builder}
      * instead of constructor.
      */
-    private RawQuery(@NonNull String query, @Nullable List<String> args, @Nullable Set<String> affectedTables) {
+    private RawQuery(@NonNull String query, @Nullable List<String> args,
+                     @Nullable Set<String> affectsTables, @Nullable Set<String> observesTables) {
         this.query = query;
-        this.args = Queries.listToUnmodifiable(args);
-        this.affectedTables = affectedTables;
+        this.args = unmodifiableNullableList(args);
+        this.affectsTables = unmodifiableNullableSet(affectsTables);
+        this.observesTables = unmodifiableNullableSet(observesTables);
     }
 
     /**
@@ -66,8 +73,20 @@ public final class RawQuery {
      * @return nullable immutable set of tables, affected by this query.
      */
     @Nullable
-    public Set<String> affectedTables() {
-        return affectedTables;
+    public Set<String> affectsTables() {
+        return affectsTables;
+    }
+
+    /**
+     * Gets optional immutable set of tables that should be observed by this query.
+     * <p/>
+     * They will be used to observe changes of that tables and re-execute this query.
+     *
+     * @return nullable immutable set of tables, that should be observed by this query.
+     */
+    @Nullable
+    public Set<String> observesTables() {
+        return observesTables;
     }
 
     @Override
@@ -79,14 +98,17 @@ public final class RawQuery {
 
         if (!query.equals(rawQuery.query)) return false;
         if (args != null ? !args.equals(rawQuery.args) : rawQuery.args != null) return false;
-        return !(affectedTables != null ? !affectedTables.equals(rawQuery.affectedTables) : rawQuery.affectedTables != null);
+        if (affectsTables != null ? !affectsTables.equals(rawQuery.affectsTables) : rawQuery.affectsTables != null)
+            return false;
+        return !(observesTables != null ? !observesTables.equals(rawQuery.observesTables) : rawQuery.observesTables != null);
     }
 
     @Override
     public int hashCode() {
         int result = query.hashCode();
         result = 31 * result + (args != null ? args.hashCode() : 0);
-        result = 31 * result + (affectedTables != null ? affectedTables.hashCode() : 0);
+        result = 31 * result + (affectsTables != null ? affectsTables.hashCode() : 0);
+        result = 31 * result + (observesTables != null ? observesTables.hashCode() : 0);
         return result;
     }
 
@@ -95,7 +117,8 @@ public final class RawQuery {
         return "RawQuery{" +
                 "query='" + query + '\'' +
                 ", args=" + args +
-                ", affectedTables=" + affectedTables +
+                ", affectsTables=" + affectsTables +
+                ", observesTables=" + observesTables +
                 '}';
     }
 
@@ -128,7 +151,9 @@ public final class RawQuery {
 
         private List<String> args;
 
-        private Set<String> tables;
+        private Set<String> affectsTables;
+
+        private Set<String> observesTables;
 
         CompleteBuilder(@NonNull String query) {
             this.query = query;
@@ -161,15 +186,35 @@ public final class RawQuery {
          *
          * @param tables set of tables which will be affected by this query.
          * @return builder.
-         * @see RawQuery#affectedTables()
+         * @see RawQuery#affectsTables()
          */
         @NonNull
-        public CompleteBuilder affectedTables(@NonNull String... tables) {
-            if (this.tables == null) {
-                this.tables = new HashSet<String>(tables.length);
+        public CompleteBuilder affectsTables(@NonNull String... tables) {
+            if (this.affectsTables == null) {
+                this.affectsTables = new HashSet<String>(tables.length);
             }
 
-            Collections.addAll(this.tables, tables);
+            Collections.addAll(this.affectsTables, tables);
+            return this;
+        }
+
+        /**
+         * Optional: Specifies set of tables that should be observed by this query.
+         * They will be used to re-execute query if one of the tables will be changed.
+         * <p/>
+         * Default values is {@code null}.
+         *
+         * @param tables set of tables that should be observed by this query.
+         * @return builder.
+         * @see RawQuery#observesTables()
+         */
+        @NonNull
+        public CompleteBuilder observesTables(@NonNull String... tables) {
+            if (this.observesTables == null) {
+                this.observesTables = new HashSet<String>(tables.length);
+            }
+
+            Collections.addAll(this.observesTables, tables);
             return this;
         }
 
@@ -183,7 +228,8 @@ public final class RawQuery {
             return new RawQuery(
                     query,
                     args,
-                    tables
+                    affectsTables,
+                    observesTables
             );
         }
     }

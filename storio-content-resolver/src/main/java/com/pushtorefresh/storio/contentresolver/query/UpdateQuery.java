@@ -33,7 +33,7 @@ public final class UpdateQuery {
     private UpdateQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
         this.where = where;
-        this.whereArgs = Queries.listToUnmodifiable(whereArgs);
+        this.whereArgs = Queries.unmodifiableNullableList(whereArgs);
     }
 
     /**

@@ -28,6 +28,7 @@ dependencies {
     testCompile rootProject.ext.junit
     testCompile rootProject.ext.mockitoCore
     testCompile project(':storio-test-common')
+    testCompile rootProject.ext.guava
 
     androidTestCompile rootProject.ext.testingSupportLib
 }

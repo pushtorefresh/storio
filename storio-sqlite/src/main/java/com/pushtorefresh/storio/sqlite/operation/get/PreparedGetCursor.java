@@ -81,7 +81,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
             tables = new HashSet<String>(1);
             tables.add(query.table());
         } else if (rawQuery != null) {
-            tables = rawQuery.affectedTables();
+            tables = rawQuery.observesTables();
         } else {
             throw new IllegalStateException("Please specify query");
         }

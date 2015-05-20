@@ -32,7 +32,7 @@ public final class UpdateQuery {
     private UpdateQuery(@NonNull String table, @Nullable String where, @Nullable List<String> whereArgs) {
         this.table = table;
         this.where = where;
-        this.whereArgs = Queries.listToUnmodifiable(whereArgs);
+        this.whereArgs = Queries.unmodifiableNullableList(whereArgs);
     }
 
     /**
