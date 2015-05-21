@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
+import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
@@ -151,8 +151,8 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
          * Optional: Specifies {@link GetResolver} for Get Operation
          * which allows you to customize behavior of Get Operation.
          * <p>
-         * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults} -> exception will be thrown.
+         * Can be set via {@link ContentResolverTypeMapping},
+         * If value is not set via {@link ContentResolverTypeMapping} -> exception will be thrown.
          *
          * @param getResolver GetResolver.
          * @return builder.
@@ -170,10 +170,10 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
          */
         @NonNull
         public PreparedGetListOfObjects<T> prepare() {
-            final ContentResolverTypeDefaults<T> typeDefaults = storIOContentResolver.internal().typeDefaults(type);
+            final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping(type);
 
-            if (getResolver == null && typeDefaults != null) {
-                getResolver = typeDefaults.getResolver;
+            if (getResolver == null && typeMapping != null) {
+                getResolver = typeMapping.getResolver();
             }
 
             checkNotNull(getResolver, "Please specify Get Resolver");

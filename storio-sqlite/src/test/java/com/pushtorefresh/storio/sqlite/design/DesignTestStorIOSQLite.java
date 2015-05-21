@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.sqlite.operation.execute.PreparedExecuteSQL;
@@ -31,7 +31,7 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
 
         @Nullable
         @Override
-        public <T> SQLiteTypeDefaults<T> typeDefaults(@NonNull Class<T> type) {
+        public <T> SQLiteTypeMapping<T> typeMapping(@NonNull Class<T> type) {
             // no impl
             return null;
         }

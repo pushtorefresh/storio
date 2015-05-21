@@ -8,7 +8,7 @@ import com.pushtorefresh.storio.sample.db.entity.Tweet;
 import com.pushtorefresh.storio.sample.db.entity.TweetStorIOSQLiteDeleteResolver;
 import com.pushtorefresh.storio.sample.db.entity.TweetStorIOSQLiteGetResolver;
 import com.pushtorefresh.storio.sample.db.entity.TweetStorIOSQLitePutResolver;
-import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
 
@@ -26,7 +26,7 @@ public class DbModule {
     public StorIOSQLite provideStorIOSQLite(@NonNull SQLiteDatabase db) {
         return new DefaultStorIOSQLite.Builder()
                 .db(db)
-                .addDefaultsForType(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
+                .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
                         .putResolver(new TweetStorIOSQLitePutResolver())
                         .getResolver(new TweetStorIOSQLiteGetResolver())
                         .deleteResolver(new TweetStorIOSQLiteDeleteResolver())

@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.contentresolver.operation.put;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
+import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
@@ -99,8 +99,8 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          * that should define behavior of Put Operation: insert or update
          * of the objects.
          * <p/>
-         * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults}
+         * Can be set via {@link ContentResolverTypeMapping},
+         * If value is not set via {@link ContentResolverTypeMapping}
          * or explicitly -> exception will be thrown.
          *
          * @param putResolver nullable resolver for Put Operation.
@@ -119,10 +119,10 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
          */
         @NonNull
         public PreparedPutObjects<T> prepare() {
-            final ContentResolverTypeDefaults<T> typeDefaults = storIOContentResolver.internal().typeDefaults(type);
+            final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping(type);
 
-            if (putResolver == null && typeDefaults != null) {
-                putResolver = typeDefaults.putResolver;
+            if (putResolver == null && typeMapping != null) {
+                putResolver = typeMapping.putResolver();
             }
 
             checkNotNull(putResolver, "Please specify Put Resolver");

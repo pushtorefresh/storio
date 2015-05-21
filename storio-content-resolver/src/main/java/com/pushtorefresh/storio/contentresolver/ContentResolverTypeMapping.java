@@ -9,31 +9,46 @@ import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * ContentResolver Type default values for object mapping.
+ * ContentResolver Type Mapping.
  *
  * @param <T> type.
  */
-public final class ContentResolverTypeDefaults<T> {
+public final class ContentResolverTypeMapping<T> {
 
     @NonNull
-    public final PutResolver<T> putResolver;
+    private final PutResolver<T> putResolver;
 
     @NonNull
-    public final GetResolver<T> getResolver;
+    private final GetResolver<T> getResolver;
 
     @NonNull
-    public final DeleteResolver<T> deleteResolver;
+    private final DeleteResolver<T> deleteResolver;
 
-    private ContentResolverTypeDefaults(@NonNull PutResolver<T> putResolver,
-                                        @NonNull GetResolver<T> getResolver,
-                                        @NonNull DeleteResolver<T> deleteResolver) {
+    private ContentResolverTypeMapping(@NonNull PutResolver<T> putResolver,
+                                       @NonNull GetResolver<T> getResolver,
+                                       @NonNull DeleteResolver<T> deleteResolver) {
         this.putResolver = putResolver;
         this.getResolver = getResolver;
         this.deleteResolver = deleteResolver;
     }
 
+    @NonNull
+    public PutResolver<T> putResolver() {
+        return putResolver;
+    }
+
+    @NonNull
+    public GetResolver<T> getResolver() {
+        return getResolver;
+    }
+
+    @NonNull
+    public DeleteResolver<T> deleteResolver() {
+        return deleteResolver;
+    }
+
     /**
-     * Builder for {@link ContentResolverTypeDefaults}.
+     * Builder for {@link ContentResolverTypeMapping}.
      */
     public static final class Builder<T> {
 
@@ -51,7 +66,7 @@ public final class ContentResolverTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link ContentResolverTypeDefaults}.
+     * Compile-time safe part of builder for {@link ContentResolverTypeMapping}.
      *
      * @param <T> type.
      */
@@ -78,7 +93,7 @@ public final class ContentResolverTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link ContentResolverTypeDefaults}.
+     * Compile-time safe part of builder for {@link ContentResolverTypeMapping}.
      *
      * @param <T> type.
      */
@@ -109,7 +124,7 @@ public final class ContentResolverTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link ContentResolverTypeDefaults}.
+     * Compile-time safe part of builder for {@link ContentResolverTypeMapping}.
      *
      * @param <T> type.
      */
@@ -133,13 +148,13 @@ public final class ContentResolverTypeDefaults<T> {
         }
 
         /**
-         * Builds new immutable instance of {@link ContentResolverTypeDefaults}.
+         * Builds new immutable instance of {@link ContentResolverTypeMapping}.
          *
-         * @return new immutable instance of {@link ContentResolverTypeDefaults}.
+         * @return new immutable instance of {@link ContentResolverTypeMapping}.
          */
         @NonNull
-        public ContentResolverTypeDefaults<T> build() {
-            return new ContentResolverTypeDefaults<T>(
+        public ContentResolverTypeMapping<T> build() {
+            return new ContentResolverTypeMapping<T>(
                     putResolver,
                     getResolver,
                     deleteResolver

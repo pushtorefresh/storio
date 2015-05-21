@@ -4,7 +4,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 
-import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResult;
 import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResults;
@@ -34,12 +34,12 @@ public abstract class BaseTest {
 
         storIOSQLite = new DefaultStorIOSQLite.Builder()
                 .db(db)
-                .addDefaultsForType(User.class, new SQLiteTypeDefaults.Builder<User>()
+                .addTypeMapping(User.class, new SQLiteTypeMapping.Builder<User>()
                         .putResolver(UserTableMeta.PUT_RESOLVER)
                         .getResolver(UserTableMeta.GET_RESOLVER)
                         .deleteResolver(UserTableMeta.DELETE_RESOLVER)
                         .build())
-                .addDefaultsForType(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
+                .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
                         .putResolver(TweetTableMeta.PUT_RESOLVER)
                         .getResolver(TweetTableMeta.GET_RESOLVER)
                         .deleteResolver(TweetTableMeta.DELETE_RESOLVER)

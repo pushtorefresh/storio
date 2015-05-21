@@ -1,40 +1,40 @@
-package com.pushtorefresh.storio.sqlite;
+package com.pushtorefresh.storio.contentresolver;
 
-import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResolver;
-import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
+import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResolver;
+import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
+import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
-public class SQLiteTypeDefaultsTest {
+public class ContentResolverTypeMappingTest {
 
-    @SuppressWarnings({"ConstantConditions", "unchecked"})
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     @Test(expected = NullPointerException.class)
     public void nullPutResolver() {
-        new SQLiteTypeDefaults.Builder<Object>()
+        new ContentResolverTypeMapping.Builder<Object>()
                 .putResolver(null)
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
     }
 
-    @SuppressWarnings({"ConstantConditions", "unchecked"})
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     @Test(expected = NullPointerException.class)
-    public void nullMapFromCursor() {
-        new SQLiteTypeDefaults.Builder<Object>()
+    public void nullGetResolver() {
+        new ContentResolverTypeMapping.Builder<Object>()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(null)
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
     }
 
-    @SuppressWarnings({"ConstantConditions", "unchecked"})
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     @Test(expected = NullPointerException.class)
-    public void nullMapToDeleteQuery() {
-        new SQLiteTypeDefaults.Builder<Object>()
+    public void nullDeleteResolver() {
+        new ContentResolverTypeMapping.Builder<Object>()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(null)
@@ -52,14 +52,14 @@ public class SQLiteTypeDefaultsTest {
         final GetResolver<TestItem> getResolver = mock(GetResolver.class);
         final DeleteResolver<TestItem> deleteResolver = mock(DeleteResolver.class);
 
-        final SQLiteTypeDefaults<TestItem> sqliteTypeDefaults = new SQLiteTypeDefaults.Builder<TestItem>()
+        final ContentResolverTypeMapping<TestItem> typeMapping = new ContentResolverTypeMapping.Builder<TestItem>()
                 .putResolver(putResolver)
                 .getResolver(getResolver)
                 .deleteResolver(deleteResolver)
                 .build();
 
-        assertEquals(putResolver, sqliteTypeDefaults.putResolver);
-        assertEquals(getResolver, sqliteTypeDefaults.getResolver);
-        assertEquals(deleteResolver, sqliteTypeDefaults.deleteResolver);
+        assertSame(putResolver, typeMapping.putResolver());
+        assertSame(getResolver, typeMapping.getResolver());
+        assertSame(deleteResolver, typeMapping.deleteResolver());
     }
 }

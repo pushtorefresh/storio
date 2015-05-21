@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.test.ProviderTestCase2;
 
-import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
+import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.impl.DefaultStorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResult;
@@ -32,12 +32,12 @@ public abstract class BaseTest extends ProviderTestCase2<TestContentProvider> {
 
         storIOContentResolver = new DefaultStorIOContentResolver.Builder()
                 .contentResolver(getMockContentResolver())
-                .addDefaultsForType(User.class, new ContentResolverTypeDefaults.Builder<User>()
+                .addTypeMapping(User.class, new ContentResolverTypeMapping.Builder<User>()
                         .putResolver(UserMeta.PUT_RESOLVER)
                         .getResolver(UserMeta.GET_RESOLVER)
                         .deleteResolver(UserMeta.DELETE_RESOLVER)
                         .build())
-                .addDefaultsForType(Tweet.class, new ContentResolverTypeDefaults.Builder<Tweet>()
+                .addTypeMapping(Tweet.class, new ContentResolverTypeMapping.Builder<Tweet>()
                         .putResolver(TweetMeta.PUT_RESOLVER)
                         .getResolver(TweetMeta.GET_RESOLVER)
                         .deleteResolver(TweetMeta.DELETE_RESOLVER)

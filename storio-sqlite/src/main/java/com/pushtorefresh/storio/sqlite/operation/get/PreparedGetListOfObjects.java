@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
-import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
@@ -201,8 +201,8 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          * Optional: Specifies resolver for Get Operation which can be used
          * to provide custom behavior of Get Operation.
          * <p>
-         * {@link SQLiteTypeDefaults} can be used to set default GetResolver.
-         * If GetResolver is not set via {@link SQLiteTypeDefaults}
+         * {@link SQLiteTypeMapping} can be used to set default GetResolver.
+         * If GetResolver is not set via {@link SQLiteTypeMapping}
          * or explicitly -> exception will be thrown.
          *
          * @param getResolver nullable resolver for Get Operation.
@@ -221,10 +221,10 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          */
         @NonNull
         public PreparedGetListOfObjects<T> prepare() {
-            final SQLiteTypeDefaults<T> typeDefaults = storIOSQLite.internal().typeDefaults(type);
+            final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping(type);
 
-            if (getResolver == null && typeDefaults != null) {
-                getResolver = typeDefaults.getResolver;
+            if (getResolver == null && typeMapping != null) {
+                getResolver = typeMapping.getResolver();
             }
 
             checkNotNull(getResolver, "Please specify GetResolver");
