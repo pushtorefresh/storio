@@ -1,9 +1,10 @@
 package com.pushtorefresh.storio.sqlite.query;
 
+import com.google.common.collect.HashMultiset;
+
 import org.junit.Test;
 
-import java.util.Arrays;
-
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 public class RawQueryTest {
@@ -23,19 +24,23 @@ public class RawQueryTest {
                 .build();
     }
 
+    @Test
     public void build() {
         final String query = "test_query";
         final Object[] args = {"arg1", "arg2", "arg3"};
-        final String[] affectedTables = {"table1", "table2", "table3"};
+        final String[] observesTables = {"table_to_observe_1", "table_to_observe_2"};
+        final String[] affectsTables = {"table_to_affect_1", "table_to_affect_2"};
 
         final RawQuery rawQuery = new RawQuery.Builder()
                 .query(query)
                 .args(args)
-                .affectedTables(affectedTables)
+                .observesTables(observesTables)
+                .affectsTables(affectsTables)
                 .build();
 
         assertEquals(query, rawQuery.query());
-        assertEquals(Arrays.asList(args), rawQuery.args());
-        assertEquals(Arrays.asList(affectedTables), rawQuery.affectedTables());
+        assertEquals(asList(args), rawQuery.args());
+        assertEquals(HashMultiset.create(asList(observesTables)), HashMultiset.create(rawQuery.observesTables()));
+        assertEquals(HashMultiset.create(asList(affectsTables)), HashMultiset.create(rawQuery.affectsTables()));
     }
 }

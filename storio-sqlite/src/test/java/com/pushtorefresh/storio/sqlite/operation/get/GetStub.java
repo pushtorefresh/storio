@@ -52,7 +52,7 @@ class GetStub {
 
         rawQuery = new RawQuery.Builder()
                 .query("test sql")
-                .affectedTables("test_table")
+                .observesTables("test_table")
                 .build();
 
         getResolverForObject = mock(GetResolver.class);
@@ -79,9 +79,9 @@ class GetStub {
         when(storIOSQLite.observeChangesInTables(eq(Collections.singleton(query.table()))))
                 .thenReturn(Observable.<Changes>empty());
 
-        assertNotNull(rawQuery.affectedTables());
+        assertNotNull(rawQuery.observesTables());
 
-        when(storIOSQLite.observeChangesInTables(rawQuery.affectedTables()))
+        when(storIOSQLite.observeChangesInTables(rawQuery.observesTables()))
                 .thenReturn(Observable.<Changes>empty());
 
         when(getResolverForObject.performGet(storIOSQLite, query))
@@ -174,8 +174,8 @@ class GetStub {
                 })
                 .checkBehaviorOfObservable();
 
-        assertNotNull(rawQuery.affectedTables());
-        verify(storIOSQLite, times(1)).observeChangesInTables(rawQuery.affectedTables());
+        assertNotNull(rawQuery.observesTables());
+        verify(storIOSQLite, times(1)).observeChangesInTables(rawQuery.observesTables());
     }
 
     void verifyRawQueryBehaviorForList(@NonNull List<TestItem> actualList) {
@@ -199,7 +199,7 @@ class GetStub {
                 })
                 .checkBehaviorOfObservable();
 
-        assertNotNull(rawQuery.affectedTables());
-        verify(storIOSQLite, times(1)).observeChangesInTables(rawQuery.affectedTables());
+        assertNotNull(rawQuery.observesTables());
+        verify(storIOSQLite, times(1)).observeChangesInTables(rawQuery.observesTables());
     }
 }

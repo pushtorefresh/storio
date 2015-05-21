@@ -50,21 +50,21 @@ public class QueriesTest {
 
     @SuppressWarnings("ConstantConditions")
     @Test
-    public void nullListToUnmodifiable() {
+    public void nullListToUnmodifiableNullableList() {
         List<String> list = null;
-        assertEquals(null, Queries.listToUnmodifiable(list));
+        assertEquals(null, Queries.unmodifiableNullableList(list));
     }
 
     @Test
-    public void emptyListToUnmodifiable() {
+    public void emptyListToUnmodifiableNullableList() {
         List<String> list = new ArrayList<String>();
-        assertEquals(null, Queries.listToUnmodifiable(list));
+        assertEquals(null, Queries.unmodifiableNullableList(list));
     }
 
     @Test
-    public void nonEmptyListToUnmodifiable() {
+    public void nonEmptyListToUnmodifiableNullableList() {
         List<String> list = Arrays.asList("1", "2", "3");
-        List<String> unmodifiableList = Queries.listToUnmodifiable(list);
+        List<String> unmodifiableList = Queries.unmodifiableNullableList(list);
 
         assertNotNull(unmodifiableList);
         assertEquals(list.size(), unmodifiableList.size());
@@ -77,8 +77,8 @@ public class QueriesTest {
 
     @SuppressWarnings("ConstantConditions")
     @Test
-    public void listToUnmodifiableIsReallyUnmodifiable() {
-        List<String> unmodifiableList = Queries.listToUnmodifiable(Arrays.asList("1", "2", "3"));
+    public void listToUnmodifiableNullableListIsReallyUnmodifiable() {
+        List<String> unmodifiableList = Queries.unmodifiableNullableList(Arrays.asList("1", "2", "3"));
 
         // UnmodifiableCollection is private class :(
         String className = unmodifiableList.getClass().getSimpleName();

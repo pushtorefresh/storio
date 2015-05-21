@@ -53,7 +53,7 @@ public final class PreparedExecuteSQL implements PreparedOperation<Void> {
      * <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
      * </dl>
      *
-     * @return non-null {@link Observable} which will perform Delete Operation.
+     * @return non-null {@link Observable} which will perform Delete Operation
      * and send result to observer.
      */
     @NonNull

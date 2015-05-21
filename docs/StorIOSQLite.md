@@ -233,7 +233,7 @@ storIOSQLite
   .withQuery(new RawQuery.Builder()
     .query("ALTER TABLE ? ADD COLUMN ? INTEGER")
     .args("tweets", "number_of_retweets")
-    .affectedTables("tweets") // optional: you can specify affected tables to notify Observers 
+    .affectsTables("tweets") // optional: you can specify affected tables to notify Observers
     .build())
   .prepare()
   .executeAsBlocking(); // or createObservable()
