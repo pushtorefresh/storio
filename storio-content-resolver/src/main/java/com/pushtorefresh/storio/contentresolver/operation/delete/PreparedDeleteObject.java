@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.contentresolver.operation.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.contentresolver.ContentResolverTypeDefaults;
+import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
@@ -92,8 +92,8 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResul
          * Optional: Specifies resolver for Delete Operation.
          * Allows you to customise behavior of Delete Operation.
          * <p/>
-         * Can be set via {@link ContentResolverTypeDefaults},
-         * If value is not set via {@link ContentResolverTypeDefaults}
+         * Can be set via {@link ContentResolverTypeMapping},
+         * If value is not set via {@link ContentResolverTypeMapping}
          * or explicitly -> exception will be thrown.
          *
          * @param deleteResolver resolver for Delete Operation.
@@ -113,10 +113,10 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResul
         @SuppressWarnings("unchecked")
         @NonNull
         public PreparedDeleteObject<T> prepare() {
-            final ContentResolverTypeDefaults<T> typeDefaults = storIOContentResolver.internal().typeDefaults((Class<T>) object.getClass());
+            final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
 
-            if (deleteResolver == null && typeDefaults != null) {
-                deleteResolver = typeDefaults.deleteResolver;
+            if (deleteResolver == null && typeMapping != null) {
+                deleteResolver = typeMapping.deleteResolver();
             }
 
             checkNotNull(deleteResolver, "Please specify Delete Resolver");

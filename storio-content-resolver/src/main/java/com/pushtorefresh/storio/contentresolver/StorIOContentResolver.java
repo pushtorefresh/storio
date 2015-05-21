@@ -99,16 +99,16 @@ public abstract class StorIOContentResolver {
     public static abstract class Internal {
 
         /**
-         * Gets {@link ContentResolverTypeDefaults} for required type.
+         * Gets {@link ContentResolverTypeMapping} for required type.
          * <p>
-         * Result can be null.
+         * Result can be {@code null}.
          *
          * @param type type.
          * @param <T>  type.
-         * @return {@link ContentResolverTypeDefaults} for required type or null.
+         * @return {@link ContentResolverTypeMapping} for required type or {@code null}.
          */
         @Nullable
-        public abstract <T> ContentResolverTypeDefaults<T> typeDefaults(@NonNull Class<T> type);
+        public abstract <T> ContentResolverTypeMapping<T> typeMapping(@NonNull Class<T> type);
 
         /**
          * Gets the data from {@link StorIOContentResolver}.

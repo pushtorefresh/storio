@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.impl;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResolver;
 import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
@@ -51,10 +51,10 @@ public class DefaultStorIOSQLiteTest {
 
     @SuppressWarnings({"ConstantConditions", "unchecked"})
     @Test(expected = NullPointerException.class)
-    public void addTypeDefinitionNullType() {
+    public void addTypeMappingNullType() {
         new DefaultStorIOSQLite.Builder()
                 .db(mock(SQLiteDatabase.class))
-                .addDefaultsForType(null, new SQLiteTypeDefaults.Builder<Object>()
+                .addTypeMapping(null, new SQLiteTypeMapping.Builder<Object>()
                         .putResolver(mock(PutResolver.class))
                         .getResolver(mock(GetResolver.class))
                         .deleteResolver(mock(DeleteResolver.class))
@@ -64,21 +64,21 @@ public class DefaultStorIOSQLiteTest {
 
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     @Test(expected = NullPointerException.class)
-    public void addTypeDefinitionNullDefinition() {
+    public void addTypeMappingNullMapping() {
         new DefaultStorIOSQLite.Builder()
                 .db(mock(SQLiteDatabase.class))
-                .addDefaultsForType(Object.class, null)
+                .addTypeMapping(Object.class, null)
                 .build();
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void typeDefinition() {
+    public void typeMapping() {
         class TestItem {
 
         }
 
-        final SQLiteTypeDefaults<TestItem> testItemTypeDefinition = new SQLiteTypeDefaults.Builder<TestItem>()
+        final SQLiteTypeMapping<TestItem> testItemTypeDefinition = new SQLiteTypeMapping.Builder<TestItem>()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
@@ -86,9 +86,9 @@ public class DefaultStorIOSQLiteTest {
 
         final StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
                 .db(mock(SQLiteDatabase.class))
-                .addDefaultsForType(TestItem.class, testItemTypeDefinition)
+                .addTypeMapping(TestItem.class, testItemTypeDefinition)
                 .build();
 
-        assertEquals(testItemTypeDefinition, storIOSQLite.internal().typeDefaults(TestItem.class));
+        assertEquals(testItemTypeDefinition, storIOSQLite.internal().typeMapping(TestItem.class));
     }
 }

@@ -108,16 +108,16 @@ public abstract class StorIOSQLite {
     public static abstract class Internal {
 
         /**
-         * Gets {@link SQLiteTypeDefaults} for required type.
+         * Gets {@link SQLiteTypeMapping} for required type.
          * <p/>
          * Result can be {@code null}.
          *
          * @param type type.
          * @param <T>  type.
-         * @return {@link SQLiteTypeDefaults} for required type or {@code null}.
+         * @return {@link SQLiteTypeMapping} for required type or {@code null}.
          */
         @Nullable
-        public abstract <T> SQLiteTypeDefaults<T> typeDefaults(@NonNull Class<T> type);
+        public abstract <T> SQLiteTypeMapping<T> typeMapping(@NonNull Class<T> type);
 
         /**
          * Executes a single SQL statement that

@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.internal.Environment;
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
 import java.util.HashMap;
@@ -169,8 +169,8 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
          * Optional: Specifies {@link DeleteResolver} for Delete Operation.
          * <p>
          * <p>
-         * Can be set via {@link SQLiteTypeDefaults},
-         * If value is not set via {@link SQLiteTypeDefaults}
+         * Can be set via {@link SQLiteTypeMapping},
+         * If value is not set via {@link SQLiteTypeMapping}
          * or explicitly -> exception will be thrown.
          *
          * @param deleteResolver {@link DeleteResolver} for Delete Operation.
@@ -189,10 +189,10 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
          */
         @NonNull
         public PreparedDeleteObjects<T> prepare() {
-            final SQLiteTypeDefaults<T> typeDefaults = storIOSQLite.internal().typeDefaults(type);
+            final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping(type);
 
-            if (deleteResolver == null && typeDefaults != null) {
-                deleteResolver = typeDefaults.deleteResolver;
+            if (deleteResolver == null && typeMapping != null) {
+                deleteResolver = typeMapping.deleteResolver();
             }
 
             checkNotNull(deleteResolver, "Please specify DeleteResolver");

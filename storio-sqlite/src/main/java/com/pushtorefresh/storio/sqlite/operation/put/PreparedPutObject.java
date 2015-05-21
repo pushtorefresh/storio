@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.internal.Environment;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
-import com.pushtorefresh.storio.sqlite.SQLiteTypeDefaults;
+import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
 import rx.Observable;
@@ -85,8 +85,8 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
          * Optional: Specifies {@link PutResolver} for Put Operation
          * which allows you to customize behavior of Put Operation.
          * <p>
-         * Can be set via {@link SQLiteTypeDefaults}
-         * If it's not set via {@link SQLiteTypeDefaults} or explicitly -> exception will be thrown.
+         * Can be set via {@link SQLiteTypeMapping}
+         * If it's not set via {@link SQLiteTypeMapping} or explicitly -> exception will be thrown.
          *
          * @param putResolver put resolver.
          * @return builder.
@@ -106,10 +106,10 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         @SuppressWarnings("unchecked")
         @NonNull
         public PreparedPutObject<T> prepare() {
-            final SQLiteTypeDefaults<T> typeDefaults = storIOSQLite.internal().typeDefaults((Class<T>) object.getClass());
+            final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping((Class<T>) object.getClass());
 
-            if (putResolver == null && typeDefaults != null) {
-                putResolver = typeDefaults.putResolver;
+            if (putResolver == null && typeMapping != null) {
+                putResolver = typeMapping.putResolver();
             }
 
             checkNotNull(putResolver, "Please specify PutResolver");

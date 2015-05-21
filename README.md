@@ -119,12 +119,12 @@ Cursor cursor = storIOSQLite
 ```java
 StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
   .db(someSQLiteDatabase)
-  .addTypeDefaults(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
+  .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
     .putResolver(new TweetPutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetGetResolver()) // object that knows how to perform Get Operation
     .deleteResolver(new TweetDeleteResolver())  // object that knows how to perform Delete Operation
     .build())
-  .addTypeDefaults(...)
+  .addTypeMapping(...)
   // other options
   .build(); // This instance of StorIOSQLite will know how to work with Tweet objects
 ```
@@ -171,12 +171,12 @@ You just need to apply them:
 ```java
 StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
   .db(someSQLiteDatabase)
-  .addTypeDefaults(Tweet.class, new SQLiteTypeDefaults.Builder<Tweet>()
+  .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
     .putResolver(new TweetStorIOSQLitePutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetStorIOSQLiteGetResolver()) // object that knows how to perform Get Operation
     .deleteResolver(new TweetStorIOSQLiteDeleteResolver())  // object that knows how to perform Delete Operation
     .build())
-  .addTypeDefaults(...)
+  .addTypeMapping(...)
   // other options
   .build(); // This instance of StorIOSQLite will know how to work with Tweet objects
 ```

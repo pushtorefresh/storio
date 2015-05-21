@@ -9,31 +9,46 @@ import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * SQLite Type default values for object mapping.
+ * SQLite Type Mapping.
  *
- * @param <T> type.
+ * @param <T> type to map.
  */
-public final class SQLiteTypeDefaults<T> {
+public final class SQLiteTypeMapping<T> {
 
     @NonNull
-    public final PutResolver<T> putResolver;
+    private final PutResolver<T> putResolver;
 
     @NonNull
-    public final GetResolver<T> getResolver;
+    private final GetResolver<T> getResolver;
 
     @NonNull
-    public final DeleteResolver<T> deleteResolver;
+    private final DeleteResolver<T> deleteResolver;
 
-    SQLiteTypeDefaults(@NonNull PutResolver<T> putResolver,
-                       @NonNull GetResolver<T> getResolver,
-                       @NonNull DeleteResolver<T> deleteResolver) {
+    SQLiteTypeMapping(@NonNull PutResolver<T> putResolver,
+                      @NonNull GetResolver<T> getResolver,
+                      @NonNull DeleteResolver<T> deleteResolver) {
         this.putResolver = putResolver;
         this.getResolver = getResolver;
         this.deleteResolver = deleteResolver;
     }
 
+    @NonNull
+    public PutResolver<T> putResolver() {
+        return putResolver;
+    }
+
+    @NonNull
+    public GetResolver<T> getResolver() {
+        return getResolver;
+    }
+
+    @NonNull
+    public DeleteResolver<T> deleteResolver() {
+        return deleteResolver;
+    }
+
     /**
-     * Builder for {@link SQLiteTypeDefaults}.
+     * Builder for {@link SQLiteTypeMapping}.
      */
     public static final class Builder<T> {
 
@@ -51,7 +66,7 @@ public final class SQLiteTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}.
+     * Compile-time safe part of builder for {@link SQLiteTypeMapping}.
      *
      * @param <T> type.
      */
@@ -78,7 +93,7 @@ public final class SQLiteTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}.
+     * Compile-time safe part of builder for {@link SQLiteTypeMapping}.
      *
      * @param <T> type.
      */
@@ -114,7 +129,7 @@ public final class SQLiteTypeDefaults<T> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link SQLiteTypeDefaults}.
+     * Compile-time safe part of builder for {@link SQLiteTypeMapping}.
      *
      * @param <T> type.
      */
@@ -138,13 +153,13 @@ public final class SQLiteTypeDefaults<T> {
         }
 
         /**
-         * Builds new immutable instance of {@link SQLiteTypeDefaults}.
+         * Builds new immutable instance of {@link SQLiteTypeMapping}.
          *
-         * @return new immutable instance of {@link SQLiteTypeDefaults}.
+         * @return new immutable instance of {@link SQLiteTypeMapping}.
          */
         @NonNull
-        public SQLiteTypeDefaults<T> build() {
-            return new SQLiteTypeDefaults<T>(
+        public SQLiteTypeMapping<T> build() {
+            return new SQLiteTypeMapping<T>(
                     putResolver,
                     getResolver,
                     deleteResolver
