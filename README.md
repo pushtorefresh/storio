@@ -88,12 +88,11 @@ storIOSQLite
     .build())
   .prepare()
   .createObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
-  .subscribeOn(Schedulers.io())
-  .observeOn(AndroidSchedulers.mainThread())
-  .subscribe(new Action1<List<Tweet>>() { // don't forget to unsubscribe please
+  .observeOn(AndroidSchedulers.mainThread()) // Operates on Schedulers.io()
+  .subscribe(new Action1<List<Tweet>>() { // Please don't forget to unsubscribe
   	@Override public void call(List<Tweet> tweets) {
-  	  // will be called with first result and then after each change of tables from Query
-  	  // several changes in transaction -> one notification
+  	  // Will be called with first result and then after each change of tables from Query
+  	  // Several changes in transaction -> one notification
   	  adapter.setData(tweets);
   	}
   });
@@ -219,6 +218,10 @@ All `Query` objects are immutable, you can share them safely.
 You may notice that each Operation (Get, Put, Delete) should be prepared with `prepare()`. `StorIO` has an entity called `PreparedOperation<T>`, and you can use them to perform group execution of several Prepared Operations or provide `PreparedOperation<T>` as a return type of your API (for example in Model layer) and client will decide how to execute it: `executeAsBlocking()` or `createObservable()`. Also, Prepared Operations might be useful for ORMs based on `StorIO`.
 
 You can customize behavior of every Operation via `Resolvers`: `GetResolver`, `PutResolver`, `DeleteResolver`.
+
+####Rx Support Design
+Every Operation can be executed as rx.Observable. Get Operations will be automatically subscribed to the updates of the data.
+Every Observable runs on `Schedulers.io()` by default, currently we don't offer overloads to pass your `Scheduler`, feel free to send PRs!
 
 ----
 **Made with love** in [Pushtorefresh.com](https://pushtorefresh.com) by [@artem_zin](https://twitter.com/artem_zin) and [@nikitin-da](https://github.com/nikitin-da)

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -51,13 +52,13 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
     /**
      * Creates {@link Observable} which will perform Put Operation and send result to observer.
-     * <p>
+     * <p/>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * put only after subscribing to it. Also, it emits the result once.
-     *
+     * <p/>
      * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Put Operation.
@@ -67,7 +68,10 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     @Override
     public Observable<PutResults<T>> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
+
+        return Observable
+                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 
     /**

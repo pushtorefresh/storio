@@ -7,6 +7,7 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -37,13 +38,13 @@ public final class PreparedPutContentValues extends PreparedPut<ContentValues, P
 
     /**
      * Creates {@link Observable} which will perform Put Operation and send result to observer.
-     * <p>
+     * <p/>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * put only after subscribing to it. Also, it emits the result once.
-     * <p>
+     * <p/>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Put Operation.
@@ -53,12 +54,15 @@ public final class PreparedPutContentValues extends PreparedPut<ContentValues, P
     @Override
     public Observable<PutResult> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
+
+        return Observable
+                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 
     /**
      * Builder for {@link PreparedPutContentValues}.
-     * <p>
+     * <p/>
      * Required: You should specify put resolver see {@link #withPutResolver(PutResolver)}.
      */
     public static final class Builder {

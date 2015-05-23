@@ -8,6 +8,7 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -43,13 +44,13 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
 
     /**
      * Creates {@link Observable} which will perform Put Operation and send result to observer.
-     * <p>
+     * <p/>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * put only after subscribing to it. Also, it emits the result once.
-     *
+     * <p/>
      * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Put Operation.
@@ -59,7 +60,10 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
     @Override
     public Observable<PutResult> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
+
+        return Observable
+                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 
     /**

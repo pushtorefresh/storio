@@ -9,6 +9,7 @@ import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -42,14 +43,14 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
     /**
      * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
      * and will emit result each time change occurs.
-     * <p>
-     * First result will be emitted immediately,
+     * <p/>
+     * First result will be emitted immediately after subscription,
      * other emissions will occur only if changes of {@link #query} Uri will occur.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
-     * <p>
+     * <p/>
      * Please don't forget to unsubscribe from this {@link Observable} because
      * it's "Hot" and endless.
      *
@@ -64,12 +65,13 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
         return storIOContentResolver
                 .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
                 .map(MapSomethingToExecuteAsBlocking.newInstance(this))
-                .startWith(executeAsBlocking()); // start stream with first query result
+                .startWith(executeAsBlocking())  // start stream with first query result
+                .subscribeOn(Schedulers.io());
     }
 
     /**
      * Builder for {@link PreparedGetCursor}.
-     * <p>
+     * <p/>
      * Required: You should specify query see {@link #withQuery(Query)}.
      */
     public static final class Builder {
@@ -123,7 +125,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
         /**
          * Optional: Specifies {@link GetResolver} for Get Operation
          * which allows you to customize behavior of Get Operation.
-         * <p>
+         * <p/>
          * If no value will be set, builder will use resolver that
          * simply redirects query to {@link StorIOContentResolver}.
          *

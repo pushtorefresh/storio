@@ -10,13 +10,18 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
+
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
- * Prepared Group Operation for StorIO implementations
+ * Prepared Group Operation for StorIO implementations.
  * <p/>
- * Allows group execution of any combination of {@link PreparedOperation}
+ * Allows group execution of any combination of {@link PreparedOperation}.
  * <p/>
- * And yes, you can execute {@link PreparedGroupOperation} as part of {@link PreparedGroupOperation} since it implements {@link PreparedOperation} :)
+ * And yes, you can execute {@link PreparedGroupOperation}
+ * as part of {@link PreparedGroupOperation}
+ * since it implements {@link PreparedOperation} :).
  */
 public class PreparedGroupOperation implements PreparedOperation<GroupOperationResults> {
 
@@ -28,9 +33,9 @@ public class PreparedGroupOperation implements PreparedOperation<GroupOperationR
     }
 
     /**
-     * Executes Group Operation immediately in current thread
+     * Executes Group Operation immediately in current thread.
      *
-     * @return non-null results of Group Operation
+     * @return non-null result of Group Operation.
      */
     @NonNull
     @Override
@@ -46,13 +51,26 @@ public class PreparedGroupOperation implements PreparedOperation<GroupOperationR
     }
 
     /**
-     * Creates an {@link Observable} which will emit results of Group Operation
+     * Creates {@link Observable} which will perform Group Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * Group Operation only after subscribing to it. Also, it emits the result once.
      *
-     * @return non-null {@link Observable} which will emit non-null results of Group Operation
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Group Operation.
+     * and send result to observer.
      */
     @NonNull
     @Override
     public Observable<GroupOperationResults> createObservable() {
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
+        return Observable
+                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 }

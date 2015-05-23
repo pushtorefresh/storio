@@ -4,11 +4,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.operation.PreparedOperation;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -44,13 +45,13 @@ public final class PreparedExecuteSQL implements PreparedOperation<Void> {
     /**
      * Creates {@link Observable} which will perform Execute SQL Operation
      * and send result to observer.
-     * <p>
+     * <p/>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * execution of SQL only after subscribing to it. Also, it emits the result once.
-     * <p>
+     * <p/>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Delete Operation
@@ -61,17 +62,9 @@ public final class PreparedExecuteSQL implements PreparedOperation<Void> {
     public Observable<Void> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
-        return Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(null);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        return Observable
+                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 
     /**

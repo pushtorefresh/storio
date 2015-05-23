@@ -8,6 +8,7 @@ import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -39,13 +40,13 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
 
     /**
      * Creates {@link Observable} which will perform Delete Operation and send result to observer.
-     * <p>
+     * <p/>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * delete only after subscribing to it. Also, it emits the result once.
-     *
+     * <p/>
      * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Delete Operation.
@@ -55,7 +56,10 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
     @Override
     public Observable<DeleteResult> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
+
+        return Observable
+                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 
     /**
@@ -96,7 +100,7 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
         /**
          * Optional: Specifies resolver for Delete Operation.
          * Allows you to customise behavior of Delete Operation.
-         * <p>
+         * <p/>
          * If no value will be set, builder will use Delete Resolver
          * that simply redirects query to {@link StorIOContentResolver}.
          *

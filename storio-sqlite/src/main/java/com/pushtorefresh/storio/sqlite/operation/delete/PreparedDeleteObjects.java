@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.operation.delete;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.Environment;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -14,9 +14,10 @@ import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Delete Operation for {@link StorIOSQLite}.
@@ -94,13 +95,13 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
 
     /**
      * Creates {@link Observable} which will perform Delete Operation and send result to observer.
-     * <p>
+     * <p/>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * delete only after subscribing to it. Also, it emits the result once.
-     *
+     * <p/>
      * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Delete Operation.
@@ -109,19 +110,11 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
     @NonNull
     @Override
     public Observable<DeleteResults<T>> createObservable() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
-        return Observable.create(new Observable.OnSubscribe<DeleteResults<T>>() {
-            @Override
-            public void call(Subscriber<? super DeleteResults<T>> subscriber) {
-                final DeleteResults<T> deleteResults = executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(deleteResults);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        return Observable
+                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 
     /**
@@ -153,7 +146,7 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
 
         /**
          * Optional: Defines that Delete Operation will use transaction or not.
-         * <p>
+         * <p/>
          * By default, transaction will be used.
          *
          * @param useTransaction {@code true} to use transaction, {@code false} to not.
@@ -167,8 +160,8 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
 
         /**
          * Optional: Specifies {@link DeleteResolver} for Delete Operation.
-         * <p>
-         * <p>
+         * <p/>
+         * <p/>
          * Can be set via {@link SQLiteTypeMapping},
          * If value is not set via {@link SQLiteTypeMapping}
          * or explicitly -> exception will be thrown.

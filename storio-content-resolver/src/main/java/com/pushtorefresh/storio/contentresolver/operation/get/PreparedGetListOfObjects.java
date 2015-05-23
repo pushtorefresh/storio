@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -66,15 +67,15 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     /**
      * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
      * and will emit result each time change occurs.
-     * <p>
-     * First result will be emitted immediately,
+     * <p/>
+     * First result will be emitted immediately after subscription,
      * other emissions will occur only if changes of {@link #query} Uri will occur.
-     * <p>
+     * <p/>
      * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
-     * <p>
+     * <p/>
      * Please don't forget to unsubscribe from this {@link Observable}
      * because it's "Hot" and endless.
      *
@@ -89,7 +90,8 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
         return storIOContentResolver
                 .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
                 .map(MapSomethingToExecuteAsBlocking.newInstance(this))
-                .startWith(executeAsBlocking());  // start stream with first query result
+                .startWith(executeAsBlocking())   // start stream with first query result
+                .subscribeOn(Schedulers.io());
     }
 
     /**
@@ -150,7 +152,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
         /**
          * Optional: Specifies {@link GetResolver} for Get Operation
          * which allows you to customize behavior of Get Operation.
-         * <p>
+         * <p/>
          * Can be set via {@link ContentResolverTypeMapping},
          * If value is not set via {@link ContentResolverTypeMapping} -> exception will be thrown.
          *
