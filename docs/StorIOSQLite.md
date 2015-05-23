@@ -53,9 +53,8 @@ storIOSQLite
     .build())
   .prepare()
   .createObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
-  .subscribeOn(Schedulers.io())
-  .observeOn(AndroidSchedulers.mainThread())
-  .subscribe(new Action1<List<Tweet>>() { // don't forget to unsubscribe please
+  .observeOn(AndroidSchedulers.mainThread()) // Operates on Schedulers.io()
+  .subscribe(new Action1<List<Tweet>>() { // Please don't forget to unsubscribe
     @Override public void call(List<Tweet> tweets) {
       // will be called with first result and then after each change of tables from Query
       // several changes in transaction -> one notification

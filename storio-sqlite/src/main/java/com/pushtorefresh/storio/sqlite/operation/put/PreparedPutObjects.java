@@ -2,7 +2,6 @@ package com.pushtorefresh.storio.sqlite.operation.put;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.internal.Environment;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
@@ -14,8 +13,10 @@ import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
 
@@ -34,9 +35,9 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     }
 
     /**
-     * Executes Put Operation immediately in current thread
+     * Executes Put Operation immediately in current thread.
      *
-     * @return non-null results of Put Operation
+     * @return non-null results of Put Operation.
      */
     @NonNull
     @Override
@@ -85,15 +86,27 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     }
 
     /**
-     * Creates {@link Observable} which will perform Put Operation and send results to observer
+     * Creates {@link Observable} which will perform Put Operation and send result to observer.
+     * <p/>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * put only after subscribing to it. Also, it emits the result once.
+     * <p/>
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
      *
-     * @return non-null {@link Observable} which will perform Put Operation and send results to observer
+     * @return non-null {@link Observable} which will perform Put Operation.
+     * and send result to observer.
      */
     @NonNull
     @Override
     public Observable<PutResults<T>> createObservable() {
-        Environment.throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
+        return Observable
+                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 
     /**

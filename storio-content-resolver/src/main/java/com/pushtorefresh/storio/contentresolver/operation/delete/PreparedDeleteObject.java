@@ -7,6 +7,7 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -46,7 +47,7 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResul
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     *  <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Delete Operation.
@@ -56,7 +57,10 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<T, DeleteResul
     @Override
     public Observable<DeleteResult> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
-        return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
+
+        return Observable
+                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 
     /**

@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -55,15 +56,15 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     /**
      * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
      * and will emit result each time change occurs.
-     * <p>
+     * <p/>
      * First result will be emitted immediately after subscription,
      * other emissions will occur only if changes of tables from query will occur during lifetime of
      * the {@link Observable}.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
-     * <p>
+     * <p/>
      * Please don't forget to unsubscribe from this {@link Observable} because
      * it's "Hot" and endless.
      *
@@ -90,15 +91,18 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
             return storIOSQLite
                     .observeChangesInTables(tables) // each change triggers executeAsBlocking
                     .map(MapSomethingToExecuteAsBlocking.newInstance(this))
-                    .startWith(executeAsBlocking()); // start stream with first query result
+                    .startWith(executeAsBlocking()) // start stream with first query result
+                    .subscribeOn(Schedulers.io());
         } else {
-            return Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
+            return Observable
+                    .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                    .subscribeOn(Schedulers.io());
         }
     }
 
     /**
      * Builder for {@link PreparedGetCursor}.
-     * <p>
+     * <p/>
      * Required: You should specify query by call
      * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}.
      */

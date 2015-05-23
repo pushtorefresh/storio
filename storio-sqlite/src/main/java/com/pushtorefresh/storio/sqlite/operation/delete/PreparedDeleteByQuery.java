@@ -3,12 +3,13 @@ package com.pushtorefresh.storio.sqlite.operation.delete;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
@@ -44,13 +45,13 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     /**
      * Creates {@link Observable} which will perform Delete Operation and send result to observer.
-     * <p>
+     * <p/>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * delete only after subscribing to it. Also, it emits the result once.
-     *
+     * <p/>
      * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>Does not operate by default on a particular {@link rx.Scheduler}.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Delete Operation.
@@ -61,17 +62,9 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     public Observable<DeleteResult> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
-        return Observable.create(new Observable.OnSubscribe<DeleteResult>() {
-            @Override
-            public void call(Subscriber<? super DeleteResult> subscriber) {
-                final DeleteResult deleteByQueryResult = executeAsBlocking();
-
-                if (!subscriber.isUnsubscribed()) {
-                    subscriber.onNext(deleteByQueryResult);
-                    subscriber.onCompleted();
-                }
-            }
-        });
+        return Observable
+                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 
     /**
