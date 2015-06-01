@@ -5,8 +5,11 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
+
+import java.util.Set;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -39,6 +42,13 @@ public final class PreparedExecuteSQL implements PreparedOperation<Void> {
     @Override
     public Void executeAsBlocking() {
         storIOSQLite.internal().executeSQL(rawQuery);
+
+        final Set<String> affectedTables = rawQuery.affectsTables();
+
+        if (affectedTables != null && affectedTables.size() > 0) {
+            storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+        }
+
         return null;
     }
 
