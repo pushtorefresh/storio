@@ -87,7 +87,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
             throw new IllegalStateException("Please specify query");
         }
 
-        if (tables != null && !tables.isEmpty()) {
+        if (!tables.isEmpty()) {
             return storIOSQLite
                     .observeChangesInTables(tables) // each change triggers executeAsBlocking
                     .map(MapSomethingToExecuteAsBlocking.newInstance(this))

@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.internal.ChangesBus;
-import com.pushtorefresh.storio.internal.Queries;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -27,6 +26,8 @@ import java.util.Set;
 import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.Queries.nullableString;
 
 /**
  * Default implementation of {@link StorIOSQLite} for {@link android.database.sqlite.SQLiteDatabase}.
@@ -97,7 +98,6 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         /**
          * Required: Specifies SQLite Open helper for internal usage.
          * <p/>
-         * You should provide this or {@link SQLiteDatabase}.
          *
          * @param sqliteOpenHelper a SQLiteOpenHelper for internal usage.
          * @return builder.
@@ -203,7 +203,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         public void executeSQL(@NonNull RawQuery rawQuery) {
             sqLiteOpenHelper
                     .getWritableDatabase()
-                    .execSQL(rawQuery.query(), Queries.listToArray(rawQuery.args()));
+                    .execSQL(
+                            rawQuery.query(),
+                            nullableArrayOfStrings(rawQuery.args())
+                    );
         }
 
         /**
@@ -214,7 +217,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         public Cursor rawQuery(@NonNull RawQuery rawQuery) {
             return sqLiteOpenHelper
                     .getReadableDatabase()
-                    .rawQuery(rawQuery.query(), Queries.listToArray(rawQuery.args()));
+                    .rawQuery(
+                            rawQuery.query(),
+                            nullableArrayOfStrings(rawQuery.args())
+                    );
         }
 
         /**
@@ -224,17 +230,16 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public Cursor query(@NonNull Query query) {
             return sqLiteOpenHelper
-                    .getReadableDatabase()
-                    .query(
+                    .getReadableDatabase().query(
                             query.distinct(),
                             query.table(),
-                            Queries.listToArray(query.columns()),
-                            query.where(),
-                            Queries.listToArray(query.whereArgs()),
-                            query.groupBy(),
-                            query.having(),
-                            query.orderBy(),
-                            query.limit()
+                            nullableArrayOfStrings(query.columns()),
+                            nullableString(query.where()),
+                            nullableArrayOfStrings(query.whereArgs()),
+                            nullableString(query.groupBy()),
+                            nullableString(query.having()),
+                            nullableString(query.orderBy()),
+                            nullableString(query.limit())
                     );
         }
 
@@ -262,8 +267,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                     .update(
                             updateQuery.table(),
                             contentValues,
-                            updateQuery.where(),
-                            Queries.listToArray(updateQuery.whereArgs())
+                            nullableString(updateQuery.where()),
+                            nullableArrayOfStrings(updateQuery.whereArgs())
                     );
         }
 
@@ -276,8 +281,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                     .getWritableDatabase()
                     .delete(
                             deleteQuery.table(),
-                            deleteQuery.where(),
-                            Queries.listToArray(deleteQuery.whereArgs())
+                            nullableString(deleteQuery.where()),
+                            nullableArrayOfStrings(deleteQuery.whereArgs())
                     );
         }
 

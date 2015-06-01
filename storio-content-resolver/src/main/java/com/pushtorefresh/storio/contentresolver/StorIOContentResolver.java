@@ -116,7 +116,7 @@ public abstract class StorIOContentResolver {
          * @param query query.
          * @return cursor with result data or null.
          */
-        @Nullable
+        @NonNull
         public abstract Cursor query(@NonNull Query query);
 
         /**

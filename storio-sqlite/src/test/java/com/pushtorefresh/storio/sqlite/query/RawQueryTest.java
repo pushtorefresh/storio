@@ -6,26 +6,58 @@ import org.junit.Test;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class RawQueryTest {
 
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
-    public void nullQuery() {
+    public void shouldNotAllowNullQuery() {
         new RawQuery.Builder()
                 .query(null)
                 .build();
     }
 
     @Test(expected = IllegalStateException.class)
-    public void emptyQuery() {
+    public void shouldNotAllowEmptyQuery() {
         new RawQuery.Builder()
                 .query("")
                 .build();
     }
 
     @Test
-    public void build() {
+    public void argsShouldNotBeNull() {
+        RawQuery rawQuery = new RawQuery.Builder()
+                .query("lalala I know SQL")
+                .build();
+
+        assertNotNull(rawQuery.args());
+        assertTrue(rawQuery.args().isEmpty());
+    }
+
+    @Test
+    public void observesTablesShouldNotBeNull() {
+        RawQuery rawQuery = new RawQuery.Builder()
+                .query("lalala I know SQL")
+                .build();
+
+        assertNotNull(rawQuery.observesTables());
+        assertTrue(rawQuery.observesTables().isEmpty());
+    }
+
+    @Test
+    public void affectsTablesShouldNotBeNull() {
+        RawQuery rawQuery = new RawQuery.Builder()
+                .query("lalala I know SQL")
+                .build();
+
+        assertNotNull(rawQuery.affectsTables());
+        assertTrue(rawQuery.affectsTables().isEmpty());
+    }
+
+    @Test
+    public void buildWithNormalValues() {
         final String query = "test_query";
         final Object[] args = {"arg1", "arg2", "arg3"};
         final String[] observesTables = {"table_to_observe_1", "table_to_observe_2"};
