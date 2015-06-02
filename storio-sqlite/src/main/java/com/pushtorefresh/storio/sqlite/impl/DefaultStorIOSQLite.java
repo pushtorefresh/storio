@@ -2,7 +2,6 @@ package com.pushtorefresh.storio.sqlite.impl;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +17,7 @@ import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,26 +29,26 @@ import rx.Observable;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
- * Default implementation of {@link StorIOSQLite} for {@link SQLiteDatabase}.
+ * Default implementation of {@link StorIOSQLite} for {@link android.database.sqlite.SQLiteDatabase}.
  * <p/>
  * Thread-safe.
  */
 public class DefaultStorIOSQLite extends StorIOSQLite {
 
     @NonNull
-    private final SQLiteDatabase db;
+    private final SQLiteOpenHelper sqLiteOpenHelper;
 
     @NonNull
     private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>();
 
     /**
-     * Implementation of {@link StorIOSQLite.Internal}
+     * Implementation of {@link StorIOSQLite.Internal}.
      */
     @NonNull
     private final Internal internal;
 
-    protected DefaultStorIOSQLite(@NonNull SQLiteDatabase db, @Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
-        this.db = db;
+    protected DefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
+        this.sqLiteOpenHelper = sqLiteOpenHelper;
         internal = new InternalImpl(typesMapping);
     }
 
@@ -78,39 +78,34 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     }
 
     /**
+     * Closes underlying {@link SQLiteOpenHelper}.
+     * <p/>
+     * All calls to this instance of {@link StorIOSQLite}
+     * after call to this method can produce exceptions
+     * and undefined behavior.
+     */
+    @Override
+    public void close() throws IOException {
+        sqLiteOpenHelper.close();
+    }
+
+    /**
      * Builder for {@link DefaultStorIOSQLite}.
      */
     public static final class Builder {
 
         /**
-         * Required: Specifies actual database to use under the hood.
+         * Required: Specifies SQLite Open helper for internal usage.
          * <p/>
          * You should provide this or {@link SQLiteDatabase}.
          *
-         * @param db a real database for internal usage.
+         * @param sqliteOpenHelper a SQLiteOpenHelper for internal usage.
          * @return builder.
-         * @see #sqliteOpenHelper(SQLiteOpenHelper)
-         */
-        @NonNull
-        public CompleteBuilder db(@NonNull SQLiteDatabase db) {
-            checkNotNull(db, "Please specify SQLiteDatabase instance");
-            return new CompleteBuilder(db);
-        }
-
-        /**
-         * Required: Specifies SqLite helper for internal usage.
-         * <p/>
-         * You should provide this or {@link SQLiteDatabase}.
-         *
-         * @param sqliteOpenHelper a SqLite helper for internal usage.
-         * @return builder.
-         * @see #db(SQLiteDatabase)
          */
         @NonNull
         public CompleteBuilder sqliteOpenHelper(@NonNull SQLiteOpenHelper sqliteOpenHelper) {
-            SQLiteDatabase db = sqliteOpenHelper.getWritableDatabase();
-            checkNotNull(db, "Please specify SQLiteDatabase instance");
-            return new CompleteBuilder(db);
+            checkNotNull(sqliteOpenHelper, "Please specify SQLiteOpenHelper instance");
+            return new CompleteBuilder(sqliteOpenHelper);
         }
     }
 
@@ -120,12 +115,12 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     public static final class CompleteBuilder {
 
         @NonNull
-        private final SQLiteDatabase db;
+        private final SQLiteOpenHelper sqLiteOpenHelper;
 
         private Map<Class<?>, SQLiteTypeMapping<?>> typesMapping;
 
-        CompleteBuilder(@NonNull SQLiteDatabase db) {
-            this.db = db;
+        CompleteBuilder(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
+            this.sqLiteOpenHelper = sqLiteOpenHelper;
         }
 
         /**
@@ -157,7 +152,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @NonNull
         public DefaultStorIOSQLite build() {
-            return new DefaultStorIOSQLite(db, typesMapping);
+            return new DefaultStorIOSQLite(sqLiteOpenHelper, typesMapping);
         }
     }
 
@@ -206,7 +201,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void executeSQL(@NonNull RawQuery rawQuery) {
-            db.execSQL(rawQuery.query(), Queries.listToArray(rawQuery.args()));
+            sqLiteOpenHelper
+                    .getWritableDatabase()
+                    .execSQL(rawQuery.query(), Queries.listToArray(rawQuery.args()));
         }
 
         /**
@@ -215,10 +212,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @NonNull
         @Override
         public Cursor rawQuery(@NonNull RawQuery rawQuery) {
-            return db.rawQuery(
-                    rawQuery.query(),
-                    Queries.listToArray(rawQuery.args())
-            );
+            return sqLiteOpenHelper
+                    .getReadableDatabase()
+                    .rawQuery(rawQuery.query(), Queries.listToArray(rawQuery.args()));
         }
 
         /**
@@ -227,17 +223,19 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @NonNull
         @Override
         public Cursor query(@NonNull Query query) {
-            return db.query(
-                    query.distinct(),
-                    query.table(),
-                    Queries.listToArray(query.columns()),
-                    query.where(),
-                    Queries.listToArray(query.whereArgs()),
-                    query.groupBy(),
-                    query.having(),
-                    query.orderBy(),
-                    query.limit()
-            );
+            return sqLiteOpenHelper
+                    .getReadableDatabase()
+                    .query(
+                            query.distinct(),
+                            query.table(),
+                            Queries.listToArray(query.columns()),
+                            query.where(),
+                            Queries.listToArray(query.whereArgs()),
+                            query.groupBy(),
+                            query.having(),
+                            query.orderBy(),
+                            query.limit()
+                    );
         }
 
         /**
@@ -245,11 +243,13 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
-            return db.insertOrThrow(
-                    insertQuery.table(),
-                    insertQuery.nullColumnHack(),
-                    contentValues
-            );
+            return sqLiteOpenHelper
+                    .getWritableDatabase()
+                    .insertOrThrow(
+                            insertQuery.table(),
+                            insertQuery.nullColumnHack(),
+                            contentValues
+                    );
         }
 
         /**
@@ -257,12 +257,14 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
-            return db.update(
-                    updateQuery.table(),
-                    contentValues,
-                    updateQuery.where(),
-                    Queries.listToArray(updateQuery.whereArgs())
-            );
+            return sqLiteOpenHelper
+                    .getWritableDatabase()
+                    .update(
+                            updateQuery.table(),
+                            contentValues,
+                            updateQuery.where(),
+                            Queries.listToArray(updateQuery.whereArgs())
+                    );
         }
 
         /**
@@ -270,11 +272,13 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public int delete(@NonNull DeleteQuery deleteQuery) {
-            return db.delete(
-                    deleteQuery.table(),
-                    deleteQuery.where(),
-                    Queries.listToArray(deleteQuery.whereArgs())
-            );
+            return sqLiteOpenHelper
+                    .getWritableDatabase()
+                    .delete(
+                            deleteQuery.table(),
+                            deleteQuery.where(),
+                            Queries.listToArray(deleteQuery.whereArgs())
+                    );
         }
 
         /**
@@ -289,7 +293,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * Access to this method MUST BE guarded by synchronization on {@link #lock}
+         * Access to this method MUST BE guarded by synchronization on {@link #lock}.
          */
         private void notifyAboutPendingChangesIfNotInTransaction() {
             if (numberOfRunningTransactions == 0) {
@@ -306,7 +310,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public void beginTransaction() {
             synchronized (lock) {
-                db.beginTransaction();
+                sqLiteOpenHelper
+                        .getWritableDatabase()
+                        .beginTransaction();
+
                 numberOfRunningTransactions++;
             }
         }
@@ -317,7 +324,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public void setTransactionSuccessful() {
             synchronized (lock) {
-                db.setTransactionSuccessful();
+                sqLiteOpenHelper
+                        .getWritableDatabase()
+                        .setTransactionSuccessful();
             }
         }
 
@@ -327,7 +336,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public void endTransaction() {
             synchronized (lock) {
-                db.endTransaction();
+                sqLiteOpenHelper
+                        .getWritableDatabase()
+                        .endTransaction();
+
                 numberOfRunningTransactions--;
                 notifyAboutPendingChangesIfNotInTransaction();
             }

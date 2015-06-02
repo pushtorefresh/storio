@@ -5,7 +5,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.sample.SampleApp;
@@ -27,7 +27,7 @@ public class SampleContentProvider extends ContentProvider {
     }
 
     @Inject
-    SQLiteDatabase db;
+    SQLiteOpenHelper sqLiteOpenHelper;
 
     /**
      * {@inheritDoc}
@@ -42,15 +42,17 @@ public class SampleContentProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
-                return db.query(
-                        TweetTableMeta.TABLE,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder
-                );
+                return sqLiteOpenHelper
+                        .getReadableDatabase()
+                        .query(
+                                TweetTableMeta.TABLE,
+                                projection,
+                                selection,
+                                selectionArgs,
+                                null,
+                                null,
+                                sortOrder
+                        );
 
             default:
                 return null;
@@ -66,11 +68,13 @@ public class SampleContentProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
-                final long insertedId = db.insert(
-                        TweetTableMeta.TABLE,
-                        null,
-                        values
-                );
+                final long insertedId = sqLiteOpenHelper
+                        .getWritableDatabase()
+                        .insert(
+                                TweetTableMeta.TABLE,
+                                null,
+                                values
+                        );
 
                 return ContentUris.withAppendedId(uri, insertedId);
         }
@@ -82,11 +86,13 @@ public class SampleContentProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
-                return db.delete(
-                        TweetTableMeta.TABLE,
-                        selection,
-                        selectionArgs
-                );
+                return sqLiteOpenHelper
+                        .getWritableDatabase()
+                        .delete(
+                                TweetTableMeta.TABLE,
+                                selection,
+                                selectionArgs
+                        );
         }
 
         return 0;
@@ -96,12 +102,14 @@ public class SampleContentProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
-                return db.update(
-                        TweetTableMeta.TABLE,
-                        values,
-                        selection,
-                        selectionArgs
-                );
+                return sqLiteOpenHelper
+                        .getWritableDatabase()
+                        .update(
+                                TweetTableMeta.TABLE,
+                                values,
+                                selection,
+                                selectionArgs
+                        );
         }
 
         return 0;

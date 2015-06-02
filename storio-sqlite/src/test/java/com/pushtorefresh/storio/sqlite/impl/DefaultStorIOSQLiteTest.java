@@ -1,6 +1,5 @@
 package com.pushtorefresh.storio.sqlite.impl;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
@@ -11,21 +10,14 @@ import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
 
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class DefaultStorIOSQLiteTest {
-
-    @SuppressWarnings("ConstantConditions")
-    @Test(expected = NullPointerException.class)
-    public void nullSQLiteDb() {
-        new DefaultStorIOSQLite.Builder()
-                .db(null)
-                .build();
-    }
 
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
@@ -35,25 +27,11 @@ public class DefaultStorIOSQLiteTest {
                 .build();
     }
 
-    @Test
-    public void buildSQLiteOpenHelper() {
-        final SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-
-        when(sqLiteOpenHelper.getWritableDatabase())
-                .thenReturn(mock(SQLiteDatabase.class));
-
-        new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
-
-        verify(sqLiteOpenHelper, times(1)).getWritableDatabase();
-    }
-
     @SuppressWarnings({"ConstantConditions", "unchecked"})
     @Test(expected = NullPointerException.class)
     public void addTypeMappingNullType() {
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .addTypeMapping(null, new SQLiteTypeMapping.Builder<Object>()
                         .putResolver(mock(PutResolver.class))
                         .getResolver(mock(GetResolver.class))
@@ -66,7 +44,7 @@ public class DefaultStorIOSQLiteTest {
     @Test(expected = NullPointerException.class)
     public void addTypeMappingNullMapping() {
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .addTypeMapping(Object.class, null)
                 .build();
     }
@@ -85,10 +63,27 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         final StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .addTypeMapping(TestItem.class, testItemTypeDefinition)
                 .build();
 
         assertEquals(testItemTypeDefinition, storIOSQLite.internal().typeMapping(TestItem.class));
+    }
+
+    @Test
+    public void shouldCloseSQLiteOpenHelper() throws IOException {
+        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
+
+        StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .build();
+
+        // Should not call close before explicit call to close
+        verify(sqLiteOpenHelper, times(0)).close();
+
+        storIOSQLite.close();
+
+        // Should call close on SQLiteOpenHelper
+        verify(sqLiteOpenHelper).close();
     }
 }

@@ -117,7 +117,7 @@ Cursor cursor = storIOSQLite
 
 ```java
 StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
-  .db(someSQLiteDatabase)
+  .sqliteOpenHelper(someSQLiteOpenHelper)
   .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
     .putResolver(new TweetPutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetGetResolver()) // object that knows how to perform Get Operation
@@ -169,7 +169,7 @@ You just need to apply them:
 
 ```java
 StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
-  .db(someSQLiteDatabase)
+  .sqliteOpenHelper(someSQLiteOpenHelper
   .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
     .putResolver(new TweetStorIOSQLitePutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetStorIOSQLiteGetResolver()) // object that knows how to perform Get Operation

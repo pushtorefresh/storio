@@ -1,7 +1,7 @@
 package com.pushtorefresh.storio.test_without_rxjava.sqlite;
 
 import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
@@ -18,7 +18,7 @@ public class DefaultStorIOSQLiteTest {
     public void instantiateWithoutRxJava() {
         // Should not fail
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build();
     }
 
@@ -26,7 +26,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiateGetCursor() {
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .get()
                 .cursor()
@@ -41,7 +41,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiateGetListOfObjects() {
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .get()
                 .listOfObjects(Object.class)
@@ -56,7 +56,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutObject() {
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
                 .object(mock(Object.class))
@@ -68,7 +68,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutObjectsIterable() {
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
                 .objects(Object.class, mock(Iterable.class))
@@ -80,7 +80,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutObjectsVarArgs() {
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
                 .objects(Object.class, mock(Object.class), mock(Object.class))
@@ -92,7 +92,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutContentValues() {
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
                 .contentValues(mock(ContentValues.class))
@@ -104,7 +104,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutContentValuesIterable() {
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
                 .contentValues(mock(Iterable.class))
@@ -116,7 +116,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutContentValuesVarArgs() {
         new DefaultStorIOSQLite.Builder()
-                .db(mock(SQLiteDatabase.class))
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
                 .contentValues(mock(ContentValues.class), mock(ContentValues.class))
