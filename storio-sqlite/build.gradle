@@ -30,6 +30,7 @@ dependencies {
     testCompile project(':storio-test-common')
     testCompile rootProject.ext.guava
 
+    androidTestCompile project(':storio-test-common')
     androidTestCompile rootProject.ext.testingSupportLib
 }
 
