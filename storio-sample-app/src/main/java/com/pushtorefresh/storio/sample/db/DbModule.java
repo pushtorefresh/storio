@@ -1,7 +1,7 @@
 package com.pushtorefresh.storio.sample.db;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
@@ -23,9 +23,9 @@ public class DbModule {
     @Provides
     @NonNull
     @Singleton
-    public StorIOSQLite provideStorIOSQLite(@NonNull SQLiteDatabase db) {
+    public StorIOSQLite provideStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
         return new DefaultStorIOSQLite.Builder()
-                .db(db)
+                .sqliteOpenHelper(sqLiteOpenHelper)
                 .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
                         .putResolver(new TweetStorIOSQLitePutResolver())
                         .getResolver(new TweetStorIOSQLiteGetResolver())
@@ -37,8 +37,7 @@ public class DbModule {
     @Provides
     @NonNull
     @Singleton
-    public SQLiteDatabase provideSQLiteDatabase(@NonNull Context context) {
-        return new DbOpenHelper(context)
-                .getWritableDatabase();
+    public SQLiteOpenHelper provideSQSqLiteOpenHelper(@NonNull Context context) {
+        return new DbOpenHelper(context);
     }
 }

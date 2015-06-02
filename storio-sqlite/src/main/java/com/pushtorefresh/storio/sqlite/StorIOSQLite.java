@@ -15,6 +15,7 @@ import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
+import java.io.Closeable;
 import java.util.Collections;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ import rx.Observable;
  * It's an abstract class instead of interface because we want to have ability to add some
  * changes without breaking existing implementations.
  */
-public abstract class StorIOSQLite {
+public abstract class StorIOSQLite implements Closeable {
 
     /**
      * Prepares "Execute SQL" Operation for {@link StorIOSQLite}.

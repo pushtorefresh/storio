@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.impl;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.test.InstrumentationRegistry;
 
@@ -25,15 +26,19 @@ public abstract class BaseTest {
     protected StorIOSQLite storIOSQLite;
 
     @NonNull
+    protected SQLiteOpenHelper sqLiteOpenHelper;
+
+    @NonNull
     protected SQLiteDatabase db;
 
     @Before
     public void setUp() throws Exception {
-        db = new TestSQLiteOpenHelper(InstrumentationRegistry.getContext())
-                .getWritableDatabase();
+        sqLiteOpenHelper = new TestSQLiteOpenHelper(InstrumentationRegistry.getContext());
+
+        db = sqLiteOpenHelper.getWritableDatabase();
 
         storIOSQLite = new DefaultStorIOSQLite.Builder()
-                .db(db)
+                .sqliteOpenHelper(sqLiteOpenHelper)
                 .addTypeMapping(User.class, new SQLiteTypeMapping.Builder<User>()
                         .putResolver(UserTableMeta.PUT_RESOLVER)
                         .getResolver(UserTableMeta.GET_RESOLVER)

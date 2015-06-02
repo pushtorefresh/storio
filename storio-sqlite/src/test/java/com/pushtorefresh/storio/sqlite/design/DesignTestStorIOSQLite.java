@@ -18,6 +18,7 @@ import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.RawQuery;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
+import java.io.IOException;
 import java.util.Set;
 
 import rx.Observable;
@@ -123,5 +124,10 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
     @Override
     public Internal internal() {
         return internal;
+    }
+
+    @Override
+    public void close() throws IOException {
+        // no impl
     }
 }
