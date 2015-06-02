@@ -3,6 +3,8 @@ package com.pushtorefresh.storio.sqlite.impl;
 import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.pushtorefresh.storio.test.AbstractEmissionChecker;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -14,12 +16,10 @@ import java.util.Queue;
 import rx.Subscription;
 import rx.functions.Action1;
 
-import static junit.framework.Assert.assertTrue;
-
 @RunWith(AndroidJUnit4.class)
-public class ObservableStreamTest extends BaseSubscriptionTest {
+public class ObservableStreamTest extends BaseTest {
 
-    private class EmissionChecker extends BaseEmissionChecker<List<User>> {
+    private class EmissionChecker extends AbstractEmissionChecker<List<User>> {
 
         public EmissionChecker(@NonNull Queue<List<User>> expected) {
             super(expected);
@@ -59,9 +59,15 @@ public class ObservableStreamTest extends BaseSubscriptionTest {
         final EmissionChecker emissionChecker = new EmissionChecker(expectedUsers);
         final Subscription subscription = emissionChecker.subscribe();
 
+        // Should receive initial users
+        emissionChecker.assertThatNextExpectedValueReceived();
+
         putUsersBlocking(usersForInsert);
 
-        assertTrue(emissionChecker.syncWait());
+        // Should receive initial users + inserted users
+        emissionChecker.assertThatNextExpectedValueReceived();
+
+        emissionChecker.assertThatNoExpectedValuesLeft();
 
         subscription.unsubscribe();
     }
@@ -83,13 +89,19 @@ public class ObservableStreamTest extends BaseSubscriptionTest {
         final EmissionChecker emissionChecker = new EmissionChecker(expectedUsers);
         final Subscription subscription = emissionChecker.subscribe();
 
+        // Should receive all users
+        emissionChecker.assertThatNextExpectedValueReceived();
+
         storIOSQLite
                 .put()
                 .objects(User.class, updatedList)
                 .prepare()
                 .executeAsBlocking();
 
-        assertTrue(emissionChecker.syncWait());
+        // Should receive updated users
+        emissionChecker.assertThatNextExpectedValueReceived();
+
+        emissionChecker.assertThatNoExpectedValuesLeft();
 
         subscription.unsubscribe();
     }
@@ -97,11 +109,11 @@ public class ObservableStreamTest extends BaseSubscriptionTest {
     @Test
     public void deleteEmission() {
         final List<User> usersThatShouldBeSaved = TestFactory.newUsers(10);
-        final List<User> usersThatShouldBeRemoved = TestFactory.newUsers(10);
+        final List<User> usersThatShouldBeDeleted = TestFactory.newUsers(10);
         final List<User> allUsers = new ArrayList<User>();
 
         allUsers.addAll(usersThatShouldBeSaved);
-        allUsers.addAll(usersThatShouldBeRemoved);
+        allUsers.addAll(usersThatShouldBeDeleted);
 
         putUsersBlocking(allUsers);
 
@@ -113,9 +125,15 @@ public class ObservableStreamTest extends BaseSubscriptionTest {
         final EmissionChecker emissionChecker = new EmissionChecker(expectedUsers);
         final Subscription subscription = emissionChecker.subscribe();
 
-        deleteUsersBlocking(usersThatShouldBeRemoved);
+        // Should receive all users
+        emissionChecker.assertThatNextExpectedValueReceived();
 
-        assertTrue(emissionChecker.syncWait());
+        deleteUsersBlocking(usersThatShouldBeDeleted);
+
+        // Should receive users that should be saved
+        emissionChecker.assertThatNextExpectedValueReceived();
+
+        emissionChecker.assertThatNoExpectedValuesLeft();
 
         subscription.unsubscribe();
     }
