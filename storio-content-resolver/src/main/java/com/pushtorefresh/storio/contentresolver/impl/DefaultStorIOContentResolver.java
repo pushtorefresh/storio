@@ -2,7 +2,6 @@ package com.pushtorefresh.storio.contentresolver.impl;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
@@ -17,7 +16,6 @@ import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
-import com.pushtorefresh.storio.internal.ChangesBus;
 import com.pushtorefresh.storio.internal.Queries;
 
 import java.util.Collections;
@@ -28,7 +26,6 @@ import java.util.Set;
 import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
-import static com.pushtorefresh.storio.internal.Environment.RX_JAVA_IS_AVAILABLE;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
@@ -43,36 +40,16 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     private final ContentResolver contentResolver;
 
     @NonNull
-    private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>();
-
-    // can be null, if RxJava is not available
-    @Nullable
-    private final ContentObserver contentObserver;
+    private final Handler contentObserverHandler;
 
     protected DefaultStorIOContentResolver(@NonNull ContentResolver contentResolver, @Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
         this.contentResolver = contentResolver;
         internal = new InternalImpl(typesMapping);
 
-        if (RX_JAVA_IS_AVAILABLE) {
-            final HandlerThread handlerThread = new HandlerThread("StorIOContentResolverNotificationsThread");
-            handlerThread.start(); // multithreading: don't block me, bro!
+        final HandlerThread handlerThread = new HandlerThread("StorIOContentResolverNotificationsThread");
+        handlerThread.start(); // multithreading: don't block me, bro!
 
-            contentObserver = new ContentObserver(new Handler(handlerThread.getLooper())) {
-                @Override
-                public boolean deliverSelfNotifications() {
-                    return false;
-                }
-
-                @SuppressWarnings("ConstantConditions")
-                @Override
-                public void onChange(boolean selfChange, Uri uri) {
-                    // sending changes to changesBus
-                    changesBus.onNext(Changes.newInstance(uri));
-                }
-            };
-        } else {
-            contentObserver = null;
-        }
+        contentObserverHandler = new Handler(handlerThread.getLooper());
     }
 
     /**
@@ -84,16 +61,9 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     public Observable<Changes> observeChangesOfUris(@NonNull final Set<Uri> uris) {
         throwExceptionIfRxJavaIsNotAvailable("Observing changes in StorIOContentProvider");
 
-        for (Uri uri : uris) {
-            contentResolver.registerContentObserver(
-                    uri,
-                    true,
-                    contentObserver
-            );
-        }
-
-        // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
-        return ChangesFilter.apply(changesBus.asObservable(), uris);
+        // indirect usage of RxJava
+        // required to avoid problems with ClassLoader when RxJava is not in ClassPath
+        return RxChangesObserver.observeChanges(contentResolver, uris, contentObserverHandler);
     }
 
     /**
