@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -65,7 +66,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
         return storIOContentResolver
                 .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
                 .map(MapSomethingToExecuteAsBlocking.newInstance(this))
-                .startWith(executeAsBlocking())  // start stream with first query result
+                .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
                 .subscribeOn(Schedulers.io());
     }
 
