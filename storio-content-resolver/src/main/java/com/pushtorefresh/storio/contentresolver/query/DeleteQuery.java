@@ -4,11 +4,12 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.Queries;
-
 import java.util.List;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Queries.nonNullString;
+import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullList;
+import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListOfStrings;
 
 /**
  * Delete query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
@@ -20,10 +21,10 @@ public final class DeleteQuery {
     @NonNull
     private final Uri uri;
 
-    @Nullable
+    @NonNull
     private final String where;
 
-    @Nullable
+    @NonNull
     private final List<String> whereArgs;
 
     /**
@@ -32,8 +33,8 @@ public final class DeleteQuery {
      */
     private DeleteQuery(@NonNull Uri uri, @Nullable String where, @Nullable List<String> whereArgs) {
         this.uri = uri;
-        this.where = where;
-        this.whereArgs = Queries.unmodifiableNullableList(whereArgs);
+        this.where = nonNullString(where);
+        this.whereArgs = unmodifiableNonNullList(whereArgs);
     }
 
     /**
@@ -51,11 +52,11 @@ public final class DeleteQuery {
      * <p>
      * An optional restriction to apply to rows when deleting.
      * <p>
-     * If {@code null} — all rows will be deleted.
+     * If empty — all rows will be deleted.
      *
-     * @return nullable {@code WHERE} clause.
+     * @return non-null {@code WHERE} clause.
      */
-    @Nullable
+    @NonNull
     public String where() {
         return where;
     }
@@ -63,9 +64,9 @@ public final class DeleteQuery {
     /**
      * Gets optional immutable list of arguments for {@link #where()} clause.
      *
-     * @return nullable immutable list of arguments for {@code WHERE} clause.
+     * @return non-null, immutable list of arguments for {@code WHERE} clause.
      */
-    @Nullable
+    @NonNull
     public List<String> whereArgs() {
         return whereArgs;
     }
@@ -78,15 +79,15 @@ public final class DeleteQuery {
         DeleteQuery that = (DeleteQuery) o;
 
         if (!uri.equals(that.uri)) return false;
-        if (where != null ? !where.equals(that.where) : that.where != null) return false;
-        return !(whereArgs != null ? !whereArgs.equals(that.whereArgs) : that.whereArgs != null);
+        if (!where.equals(that.where)) return false;
+        return whereArgs.equals(that.whereArgs);
     }
 
     @Override
     public int hashCode() {
         int result = uri.hashCode();
-        result = 31 * result + (where != null ? where.hashCode() : 0);
-        result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
+        result = 31 * result + where.hashCode();
+        result = 31 * result + whereArgs.hashCode();
         return result;
     }
 
@@ -176,7 +177,7 @@ public final class DeleteQuery {
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
-            this.whereArgs = Queries.varargsToList(whereArgs);
+            this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
             return this;
         }
 
@@ -187,6 +188,10 @@ public final class DeleteQuery {
          */
         @NonNull
         public DeleteQuery build() {
+            if (where == null && whereArgs != null && !whereArgs.isEmpty()) {
+                throw new IllegalStateException("You can not use whereArgs without where clause");
+            }
+
             return new DeleteQuery(
                     uri,
                     where,

@@ -3,16 +3,14 @@ package com.pushtorefresh.storio.sqlite.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.Queries;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
-import static com.pushtorefresh.storio.internal.Queries.unmodifiableNullableList;
-import static com.pushtorefresh.storio.internal.Queries.unmodifiableNullableSet;
+import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListOfStrings;
+import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullSet;
 
 /**
  * Raw SQL query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
@@ -24,13 +22,13 @@ public final class RawQuery {
     @NonNull
     private final String query;
 
-    @Nullable
+    @NonNull
     private final List<String> args;
 
-    @Nullable
+    @NonNull
     private final Set<String> affectsTables;
 
-    @Nullable
+    @NonNull
     private final Set<String> observesTables;
 
     /**
@@ -40,9 +38,9 @@ public final class RawQuery {
     private RawQuery(@NonNull String query, @Nullable List<String> args,
                      @Nullable Set<String> affectsTables, @Nullable Set<String> observesTables) {
         this.query = query;
-        this.args = unmodifiableNullableList(args);
-        this.affectsTables = unmodifiableNullableSet(affectsTables);
-        this.observesTables = unmodifiableNullableSet(observesTables);
+        this.args = unmodifiableNonNullListOfStrings(args);
+        this.affectsTables = unmodifiableNonNullSet(affectsTables);
+        this.observesTables = unmodifiableNonNullSet(observesTables);
     }
 
     /**
@@ -58,9 +56,9 @@ public final class RawQuery {
     /**
      * Gets optional immutable list of arguments for {@link #query()}.
      *
-     * @return nullable immutable list of arguments for query.
+     * @return non-null, immutable list of arguments for query.
      */
-    @Nullable
+    @NonNull
     public List<String> args() {
         return args;
     }
@@ -70,9 +68,9 @@ public final class RawQuery {
      * <p/>
      * They will be used to notify observers of that tables.
      *
-     * @return nullable immutable set of tables, affected by this query.
+     * @return non-null, immutable set of tables, affected by this query.
      */
-    @Nullable
+    @NonNull
     public Set<String> affectsTables() {
         return affectsTables;
     }
@@ -82,9 +80,9 @@ public final class RawQuery {
      * <p/>
      * They will be used to observe changes of that tables and re-execute this query.
      *
-     * @return nullable immutable set of tables, that should be observed by this query.
+     * @return non-null, immutable set of tables, that should be observed by this query.
      */
-    @Nullable
+    @NonNull
     public Set<String> observesTables() {
         return observesTables;
     }
@@ -97,18 +95,17 @@ public final class RawQuery {
         RawQuery rawQuery = (RawQuery) o;
 
         if (!query.equals(rawQuery.query)) return false;
-        if (args != null ? !args.equals(rawQuery.args) : rawQuery.args != null) return false;
-        if (affectsTables != null ? !affectsTables.equals(rawQuery.affectsTables) : rawQuery.affectsTables != null)
-            return false;
-        return !(observesTables != null ? !observesTables.equals(rawQuery.observesTables) : rawQuery.observesTables != null);
+        if (!args.equals(rawQuery.args)) return false;
+        if (!affectsTables.equals(rawQuery.affectsTables)) return false;
+        return observesTables.equals(rawQuery.observesTables);
     }
 
     @Override
     public int hashCode() {
         int result = query.hashCode();
-        result = 31 * result + (args != null ? args.hashCode() : 0);
-        result = 31 * result + (affectsTables != null ? affectsTables.hashCode() : 0);
-        result = 31 * result + (observesTables != null ? observesTables.hashCode() : 0);
+        result = 31 * result + args.hashCode();
+        result = 31 * result + affectsTables.hashCode();
+        result = 31 * result + observesTables.hashCode();
         return result;
     }
 
@@ -174,7 +171,7 @@ public final class RawQuery {
          */
         @NonNull
         public CompleteBuilder args(@NonNull Object... args) {
-            this.args = Queries.varargsToList(args);
+            this.args = unmodifiableNonNullListOfStrings(args);
             return this;
         }
 

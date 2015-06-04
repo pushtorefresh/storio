@@ -1,8 +1,10 @@
 package com.pushtorefresh.storio.contentresolver.impl;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -16,7 +18,6 @@ import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
-import com.pushtorefresh.storio.internal.Queries;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,6 +28,8 @@ import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.Queries.nullableString;
 
 /**
  * Default, thread-safe implementation of {@link StorIOContentResolver}.
@@ -170,16 +173,21 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         /**
          * {@inheritDoc}
          */
-        @Nullable
+        @SuppressLint("Recycle")
+        @NonNull
         @Override
         public Cursor query(@NonNull Query query) {
-            return contentResolver.query(
+            Cursor cursor = contentResolver.query(
                     query.uri(),
-                    Queries.listToArray(query.columns()),
-                    query.where(),
-                    Queries.listToArray(query.whereArgs()),
-                    query.sortOrder()
+                    nullableArrayOfStrings(query.columns()),
+                    nullableString(query.where()),
+                    nullableArrayOfStrings(query.whereArgs()),
+                    nullableString(query.sortOrder())
             );
+
+            return cursor == null
+                    ? new MatrixCursor(null, 0)
+                    : cursor;
         }
 
         /**
@@ -202,8 +210,8 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
             return contentResolver.update(
                     updateQuery.uri(),
                     contentValues,
-                    updateQuery.where(),
-                    Queries.listToArray(updateQuery.whereArgs())
+                    nullableString(updateQuery.where()),
+                    nullableArrayOfStrings(updateQuery.whereArgs())
             );
         }
 
@@ -214,8 +222,8 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         public int delete(@NonNull DeleteQuery deleteQuery) {
             return contentResolver.delete(
                     deleteQuery.uri(),
-                    deleteQuery.where(),
-                    Queries.listToArray(deleteQuery.whereArgs())
+                    nullableString(deleteQuery.where()),
+                    nullableArrayOfStrings(deleteQuery.whereArgs())
             );
         }
     }

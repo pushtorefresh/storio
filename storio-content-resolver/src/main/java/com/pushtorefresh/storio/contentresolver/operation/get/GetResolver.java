@@ -33,7 +33,7 @@ public abstract class GetResolver<T> {
      * from {@link android.content.ContentProvider#query(android.net.Uri, String[], String, String[], String)}
      * But null {@link Cursor} is not very great thing to work with,
      * so if {@link android.content.ContentProvider} returns null,
-     * you should create empty {@link android.database.MatrixCursor}.
+     * {@link StorIOContentResolver} will return empty cursor.
      */
     @NonNull
     public abstract Cursor performGet(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Query query);

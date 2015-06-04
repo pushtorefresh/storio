@@ -4,16 +4,17 @@ import android.net.Uri;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class QueryTest {
 
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
-    public void nullUri() {
+    public void shouldNotAllowNullUriObject() {
         new Query.Builder()
                 .uri((Uri) null)
                 .build();
@@ -21,14 +22,54 @@ public class QueryTest {
 
     @SuppressWarnings("ConstantConditions")
     @Test(expected = RuntimeException.class)
-    public void nullUriString() {
+    public void shouldNotAllowNullUriString() {
         new Query.Builder()
                 .uri((String) null)
                 .build();
     }
 
     @Test
-    public void build() {
+    public void columnsShouldNotBeNull() {
+        Query query = new Query.Builder()
+                .uri(mock(Uri.class))
+                .build();
+
+        assertNotNull(query.columns());
+        assertTrue(query.columns().isEmpty());
+    }
+
+    @Test
+    public void whereClauseShouldNotBeNull() {
+        Query query = new Query.Builder()
+                .uri(mock(Uri.class))
+                .build();
+
+        assertNotNull(query.where());
+        assertEquals("", query.where());
+    }
+
+    @Test
+    public void whereArgsShouldNotBeNull() {
+        Query query = new Query.Builder()
+                .uri(mock(Uri.class))
+                .build();
+
+        assertNotNull(query.whereArgs());
+        assertTrue(query.whereArgs().isEmpty());
+    }
+
+    @Test
+    public void sortOrderShouldNotBeNull() {
+        Query query = new Query.Builder()
+                .uri(mock(Uri.class))
+                .build();
+
+        assertNotNull(query.sortOrder());
+        assertEquals("", query.sortOrder());
+    }
+
+    @Test
+    public void buildWithNormalValues() {
         final Uri uri = mock(Uri.class);
         final String[] columns = {"1", "2", "3"};
         final String where = "test_where";
@@ -44,9 +85,9 @@ public class QueryTest {
                 .build();
 
         assertEquals(uri, query.uri());
-        assertEquals(Arrays.asList(columns), query.columns());
+        assertEquals(asList(columns), query.columns());
         assertEquals(where, query.where());
-        assertEquals(Arrays.asList(whereArgs), query.whereArgs());
+        assertEquals(asList(whereArgs), query.whereArgs());
         assertEquals(sortOrder, query.sortOrder());
     }
 }

@@ -46,7 +46,7 @@ class DesignTestStorIOContentResolver extends StorIOContentResolver {
             return null;
         }
 
-        @Nullable
+        @NonNull
         @Override
         public Cursor query(@NonNull Query query) {
             return mock(Cursor.class);

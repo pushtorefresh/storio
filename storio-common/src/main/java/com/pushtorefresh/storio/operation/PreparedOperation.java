@@ -16,6 +16,7 @@ public interface PreparedOperation<Result> {
      *
      * @return result of operation.
      */
+    @NonNull
     Result executeAsBlocking();
 
     /**

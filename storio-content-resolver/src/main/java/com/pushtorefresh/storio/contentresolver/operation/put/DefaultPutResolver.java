@@ -9,7 +9,9 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
-import com.pushtorefresh.storio.internal.Queries;
+
+import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.Queries.nullableString;
 
 /**
  * Default thread-safe implementation of {@link PutResolver}.
@@ -55,8 +57,8 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
 
         final Query query = new Query.Builder()
                 .uri(updateQuery.uri())
-                .where(updateQuery.where())
-                .whereArgs((Object[]) Queries.listToArray(updateQuery.whereArgs()))
+                .where(nullableString(updateQuery.where()))
+                .whereArgs((Object[]) nullableArrayOfStrings(updateQuery.whereArgs()))
                 .build();
 
         final Cursor cursor = storIOContentResolver.internal().query(query);

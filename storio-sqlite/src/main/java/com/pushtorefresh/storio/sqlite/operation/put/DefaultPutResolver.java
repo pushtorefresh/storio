@@ -4,11 +4,13 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.internal.Queries;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.query.InsertQuery;
 import com.pushtorefresh.storio.sqlite.query.Query;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
+
+import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.Queries.nullableString;
 
 /**
  * Default implementation of {@link PutResolver}.
@@ -60,8 +62,8 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
         try {
             final Cursor cursor = storIOSQLite.internal().query(new Query.Builder()
                     .table(updateQuery.table())
-                    .where(updateQuery.where())
-                    .whereArgs((Object[]) Queries.listToArray(updateQuery.whereArgs()))
+                    .where(nullableString(updateQuery.where()))
+                    .whereArgs((Object[]) nullableArrayOfStrings(updateQuery.whereArgs()))
                     .build());
 
             final PutResult putResult;

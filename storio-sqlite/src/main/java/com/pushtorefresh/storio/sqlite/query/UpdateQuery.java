@@ -3,11 +3,11 @@ package com.pushtorefresh.storio.sqlite.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.Queries;
-
 import java.util.List;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.Queries.nonNullString;
+import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListOfStrings;
 
 /**
  * Update query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
@@ -19,10 +19,10 @@ public final class UpdateQuery {
     @NonNull
     private final String table;
 
-    @Nullable
+    @NonNull
     private final String where;
 
-    @Nullable
+    @NonNull
     private final List<String> whereArgs;
 
     /**
@@ -31,8 +31,8 @@ public final class UpdateQuery {
      */
     private UpdateQuery(@NonNull String table, @Nullable String where, @Nullable List<String> whereArgs) {
         this.table = table;
-        this.where = where;
-        this.whereArgs = Queries.unmodifiableNullableList(whereArgs);
+        this.where = nonNullString(where);
+        this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
     }
 
     /**
@@ -52,11 +52,11 @@ public final class UpdateQuery {
      * <p/>
      * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
      * <p/>
-     * If it's {@code null} — Query will update all rows for the given table.
+     * If empty — Query will update all rows for the given table.
      *
-     * @return nullable {@code WHERE} clause.
+     * @return non-null {@code WHERE} clause.
      */
-    @Nullable
+    @NonNull
     public String where() {
         return where;
     }
@@ -64,9 +64,9 @@ public final class UpdateQuery {
     /**
      * Gets optional immutable list of arguments for {@link #where()} clause.
      *
-     * @return nullable immutable list of arguments for {@code WHERE} clause.
+     * @return non-null, immutable list of arguments for {@code WHERE} clause.
      */
-    @Nullable
+    @NonNull
     public List<String> whereArgs() {
         return whereArgs;
     }
@@ -79,15 +79,15 @@ public final class UpdateQuery {
         UpdateQuery that = (UpdateQuery) o;
 
         if (!table.equals(that.table)) return false;
-        if (where != null ? !where.equals(that.where) : that.where != null) return false;
-        return !(whereArgs != null ? !whereArgs.equals(that.whereArgs) : that.whereArgs != null);
+        if (!where.equals(that.where)) return false;
+        return whereArgs.equals(that.whereArgs);
     }
 
     @Override
     public int hashCode() {
         int result = table.hashCode();
-        result = 31 * result + (where != null ? where.hashCode() : 0);
-        result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
+        result = 31 * result + where.hashCode();
+        result = 31 * result + whereArgs.hashCode();
         return result;
     }
 
@@ -170,7 +170,7 @@ public final class UpdateQuery {
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
-            this.whereArgs = Queries.varargsToList(whereArgs);
+            this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
             return this;
         }
 

@@ -4,11 +4,12 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.Queries;
-
 import java.util.List;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Queries.nonNullString;
+import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullList;
+import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListOfStrings;
 
 /**
  * Query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
@@ -20,16 +21,16 @@ public final class Query {
     @NonNull
     private final Uri uri;
 
-    @Nullable
+    @NonNull
     private final List<String> columns;
 
-    @Nullable
+    @NonNull
     private final String where;
 
-    @Nullable
+    @NonNull
     private final List<String> whereArgs;
 
-    @Nullable
+    @NonNull
     private final String sortOrder;
 
     /**
@@ -38,10 +39,10 @@ public final class Query {
      */
     private Query(@NonNull Uri uri, @Nullable List<String> columns, @Nullable String where, @Nullable List<String> whereArgs, @Nullable String sortOrder) {
         this.uri = uri;
-        this.columns = Queries.unmodifiableNullableList(columns);
-        this.where = where;
-        this.whereArgs = Queries.unmodifiableNullableList(whereArgs);
-        this.sortOrder = sortOrder;
+        this.columns = unmodifiableNonNullList(columns);
+        this.where = nonNullString(where);
+        this.whereArgs = unmodifiableNonNullList(whereArgs);
+        this.sortOrder = nonNullString(sortOrder);
     }
 
     /**
@@ -63,11 +64,11 @@ public final class Query {
     /**
      * Gets optional immutable list of columns that should be received.
      * <p>
-     * If list is {@code null} or empty -> all columns will be received.
+     * If list is empty -> all columns will be received.
      *
-     * @return immutable list of columns that should be received.
+     * @return non-null, immutable list of columns that should be received.
      */
-    @Nullable
+    @NonNull
     public List<String> columns() {
         return columns;
     }
@@ -79,11 +80,11 @@ public final class Query {
      * <p>
      * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
      * <p>
-     * If it's {@code null} — Query will retrieve all rows for specified URI.
+     * If it's empty — Query will retrieve all rows for specified URI.
      *
-     * @return nullable {@code WHERE} clause.
+     * @return non-null {@code WHERE} clause.
      */
-    @Nullable
+    @NonNull
     public String where() {
         return where;
     }
@@ -91,9 +92,9 @@ public final class Query {
     /**
      * Gets optional immutable list of arguments for {@link #where()} clause.
      *
-     * @return nullable immutable list of arguments for {@code WHERE} clause.
+     * @return non-null, immutable list of arguments for {@code WHERE} clause.
      */
-    @Nullable
+    @NonNull
     public List<String> whereArgs() {
         return whereArgs;
     }
@@ -102,11 +103,11 @@ public final class Query {
      * Gets sort order.
      * <p>
      * How the rows in the cursor should be sorted.
-     * If {@code null} then the provider is free to define the sort order.
+     * If empty then the provider is free to define the sort order.
      *
-     * @return nullable sort order.
+     * @return non-null sort order.
      */
-    @Nullable
+    @NonNull
     public String sortOrder() {
         return sortOrder;
     }
@@ -119,22 +120,19 @@ public final class Query {
         Query query = (Query) o;
 
         if (!uri.equals(query.uri)) return false;
-        if (columns != null ? !columns.equals(query.columns) : query.columns != null)
-            return false;
-        if (where != null ? !where.equals(query.where) : query.where != null)
-            return false;
-        if (whereArgs != null ? !whereArgs.equals(query.whereArgs) : query.whereArgs != null)
-            return false;
-        return !(sortOrder != null ? !sortOrder.equals(query.sortOrder) : query.sortOrder != null);
+        if (!columns.equals(query.columns)) return false;
+        if (!where.equals(query.where)) return false;
+        if (!whereArgs.equals(query.whereArgs)) return false;
+        return sortOrder.equals(query.sortOrder);
     }
 
     @Override
     public int hashCode() {
         int result = uri.hashCode();
-        result = 31 * result + (columns != null ? columns.hashCode() : 0);
-        result = 31 * result + (where != null ? where.hashCode() : 0);
-        result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
-        result = 31 * result + (sortOrder != null ? sortOrder.hashCode() : 0);
+        result = 31 * result + columns.hashCode();
+        result = 31 * result + where.hashCode();
+        result = 31 * result + whereArgs.hashCode();
+        result = 31 * result + sortOrder.hashCode();
         return result;
     }
 
@@ -220,7 +218,7 @@ public final class Query {
          */
         @NonNull
         public CompleteBuilder columns(@Nullable String... columns) {
-            this.columns = Queries.varargsToList(columns);
+            this.columns = unmodifiableNonNullListOfStrings(columns);
             return this;
         }
 
@@ -254,7 +252,7 @@ public final class Query {
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
-            this.whereArgs = Queries.varargsToList(whereArgs);
+            this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
             return this;
         }
 

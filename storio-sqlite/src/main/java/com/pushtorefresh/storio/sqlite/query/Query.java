@@ -3,11 +3,11 @@ package com.pushtorefresh.storio.sqlite.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.internal.Queries;
-
 import java.util.List;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.Queries.nonNullString;
+import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListOfStrings;
 
 /**
  * Get query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
@@ -21,25 +21,25 @@ public final class Query {
     @NonNull
     private final String table;
 
-    @Nullable
+    @NonNull
     private final List<String> columns;
 
-    @Nullable
+    @NonNull
     private final String where;
 
-    @Nullable
+    @NonNull
     private final List<String> whereArgs;
 
-    @Nullable
+    @NonNull
     private final String groupBy;
 
-    @Nullable
+    @NonNull
     private final String having;
 
-    @Nullable
+    @NonNull
     private final String orderBy;
 
-    @Nullable
+    @NonNull
     private final String limit;
 
     /**
@@ -52,13 +52,13 @@ public final class Query {
                   @Nullable String orderBy, @Nullable String limit) {
         this.distinct = distinct;
         this.table = table;
-        this.columns = Queries.unmodifiableNullableList(columns);
-        this.where = where;
-        this.whereArgs = Queries.unmodifiableNullableList(whereArgs);
-        this.groupBy = groupBy;
-        this.having = having;
-        this.orderBy = orderBy;
-        this.limit = limit;
+        this.columns = unmodifiableNonNullListOfStrings(columns);
+        this.where = nonNullString(where);
+        this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
+        this.groupBy = nonNullString(groupBy);
+        this.having = nonNullString(having);
+        this.orderBy = nonNullString(orderBy);
+        this.limit = nonNullString(limit);
     }
 
     /**
@@ -85,11 +85,11 @@ public final class Query {
     /**
      * Gets optional immutable list of columns that should be received.
      * <p>
-     * If list is {@code null} or empty -> all columns will be received.
+     * If list is empty -> all columns will be received.
      *
-     * @return immutable list of columns that should be received.
+     * @return non-null, immutable list of columns that should be received.
      */
-    @Nullable
+    @NonNull
     public List<String> columns() {
         return columns;
     }
@@ -101,11 +101,11 @@ public final class Query {
      * <p>
      * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
      * <p>
-     * If it's {@code null} — Query will retrieve all rows for the given table.
+     * If empty — Query will retrieve all rows for the given table.
      *
-     * @return nullable {@code WHERE} clause.
+     * @return non-null {@code WHERE} clause.
      */
-    @Nullable
+    @NonNull
     public String where() {
         return where;
     }
@@ -113,9 +113,9 @@ public final class Query {
     /**
      * Gets optional immutable list of arguments for {@link #where()} clause.
      *
-     * @return nullable immutable list of arguments for {@code WHERE} clause.
+     * @return non-null, immutable list of arguments for {@code WHERE} clause.
      */
-    @Nullable
+    @NonNull
     public List<String> whereArgs() {
         return whereArgs;
     }
@@ -127,11 +127,11 @@ public final class Query {
      * <p>
      * Formatted as an SQL {@code GROUP BY} clause (excluding the {@code GROUP BY} itself).
      * <p>
-     * Passing {@code null} will cause the rows to not be grouped.
+     * Passing {@code null} or empty string will cause the rows to not be grouped.
      *
-     * @return nullable {@code GROUP BY} clause.
+     * @return non-null {@code GROUP BY} clause.
      */
-    @Nullable
+    @NonNull
     public String groupBy() {
         return groupBy;
     }
@@ -144,12 +144,12 @@ public final class Query {
      * <p>
      * Formatted as an SQL HAVING clause (excluding the HAVING itself).
      * <p>
-     * Passing {@code null} will cause all row groups to be included,
+     * Passing {@code null} or empty string will cause all row groups to be included,
      * and is required when row grouping is not being used.
      *
-     * @return nullable {@code HAVING} clause.
+     * @return non-null {@code HAVING} clause.
      */
-    @Nullable
+    @NonNull
     public String having() {
         return having;
     }
@@ -161,11 +161,11 @@ public final class Query {
      * <p>
      * Formatted as an SQL {@code ORDER BY} clause (excluding the {@code ORDER BY} itself).
      * <p>
-     * Passing {@code null} will use the default sort order, which may be unordered.
+     * Passing {@code null} or empty string will use the default sort order, which may be unordered.
      *
-     * @return nullable {@code ORDER BY} clause.
+     * @return non-null {@code ORDER BY} clause.
      */
-    @Nullable
+    @NonNull
     public String orderBy() {
         return orderBy;
     }
@@ -177,11 +177,11 @@ public final class Query {
      * <p>
      * Formatted as {@code LIMIT} clause.
      * <p>
-     * Passing {@code null} denotes no {@code LIMIT} clause.
+     * Passing {@code null} or empty String denotes no {@code LIMIT} clause.
      *
-     * @return nullable {@code LIMIT} clause.
+     * @return non-null {@code LIMIT} clause.
      */
-    @Nullable
+    @NonNull
     public String limit() {
         return limit;
     }
@@ -195,27 +195,26 @@ public final class Query {
 
         if (distinct != query.distinct) return false;
         if (!table.equals(query.table)) return false;
-        if (columns != null ? !columns.equals(query.columns) : query.columns != null) return false;
-        if (where != null ? !where.equals(query.where) : query.where != null) return false;
-        if (whereArgs != null ? !whereArgs.equals(query.whereArgs) : query.whereArgs != null)
-            return false;
-        if (groupBy != null ? !groupBy.equals(query.groupBy) : query.groupBy != null) return false;
-        if (having != null ? !having.equals(query.having) : query.having != null) return false;
-        if (orderBy != null ? !orderBy.equals(query.orderBy) : query.orderBy != null) return false;
-        return !(limit != null ? !limit.equals(query.limit) : query.limit != null);
+        if (!columns.equals(query.columns)) return false;
+        if (!where.equals(query.where)) return false;
+        if (!whereArgs.equals(query.whereArgs)) return false;
+        if (!groupBy.equals(query.groupBy)) return false;
+        if (!having.equals(query.having)) return false;
+        if (!orderBy.equals(query.orderBy)) return false;
+        return limit.equals(query.limit);
     }
 
     @Override
     public int hashCode() {
         int result = (distinct ? 1 : 0);
         result = 31 * result + table.hashCode();
-        result = 31 * result + (columns != null ? columns.hashCode() : 0);
-        result = 31 * result + (where != null ? where.hashCode() : 0);
-        result = 31 * result + (whereArgs != null ? whereArgs.hashCode() : 0);
-        result = 31 * result + (groupBy != null ? groupBy.hashCode() : 0);
-        result = 31 * result + (having != null ? having.hashCode() : 0);
-        result = 31 * result + (orderBy != null ? orderBy.hashCode() : 0);
-        result = 31 * result + (limit != null ? limit.hashCode() : 0);
+        result = 31 * result + columns.hashCode();
+        result = 31 * result + where.hashCode();
+        result = 31 * result + whereArgs.hashCode();
+        result = 31 * result + groupBy.hashCode();
+        result = 31 * result + having.hashCode();
+        result = 31 * result + orderBy.hashCode();
+        result = 31 * result + limit.hashCode();
         return result;
     }
 
@@ -311,7 +310,7 @@ public final class Query {
          */
         @NonNull
         public CompleteBuilder columns(@Nullable String... columns) {
-            this.columns = Queries.varargsToList(columns);
+            this.columns = unmodifiableNonNullListOfStrings(columns);
             return this;
         }
 
@@ -350,7 +349,25 @@ public final class Query {
          */
         @NonNull
         public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
-            this.whereArgs = Queries.varargsToList(whereArgs);
+            this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
+            return this;
+        }
+
+        /**
+         * Optional: Specifies arguments for where clause.
+         * <p>
+         * Passed objects will be immediately converted list of
+         * to {@link String} via calling {@link Object#toString()}.
+         * <p>
+         * Default value is {@code null}.
+         *
+         * @param whereArgs list of arguments for where clause.
+         * @return builder.
+         * @see Query#whereArgs()
+         */
+        @NonNull
+        public CompleteBuilder whereArgs(@Nullable List<?> whereArgs) {
+            this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
             return this;
         }
 
@@ -447,6 +464,10 @@ public final class Query {
          */
         @NonNull
         public Query build() {
+            if (where == null && whereArgs != null && !whereArgs.isEmpty()) {
+                throw new IllegalStateException("You can not use whereArgs without where clause");
+            }
+
             return new Query(
                     distinct,
                     table,

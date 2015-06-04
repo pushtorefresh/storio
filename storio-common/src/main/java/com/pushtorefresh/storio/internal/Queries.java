@@ -1,11 +1,16 @@
 package com.pushtorefresh.storio.internal;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Util methods for queries.
@@ -19,16 +24,15 @@ public final class Queries {
     }
 
     /**
-     * Converts varargs of String to {@code List<String>}.
+     * Converts array of objects to {@code List<String>}.
      *
-     * @param args varargs objects that will be converted to list of strings.
-     * @return {@code null} if varargs array is {@code null}
-     * or empty or list of items from varargs.
+     * @param args array objects that will be converted to list of strings.
+     * @return non-null, unmodifiable list of strings.
      */
-    @Nullable
-    public static List<String> varargsToList(@Nullable Object[] args) {
+    @NonNull
+    public static List<String> unmodifiableNonNullListOfStrings(@Nullable Object[] args) {
         if (args == null || args.length == 0) {
-            return null;
+            return emptyList();
         } else {
             final List<String> list = new ArrayList<String>(args.length);
 
@@ -38,50 +42,106 @@ public final class Queries {
                 list.add(arg != null ? arg.toString() : "null");
             }
 
-            return list;
+            return unmodifiableList(list);
         }
     }
 
     /**
-     * Converts list of something to unmodifiable nullable list.
+     * Coverts list of objects to {@code List<String>}.
      *
-     * @param list list to convert, can be {@code null}.
-     * @param <T>  type of items.
-     * @return {@code null} if list is {@code null} or empty OR unmodifiable list of items.
+     * @param args list of objects that will be converted to list of strings.
+     * @return non-null, unmodifiable list of strings.
      */
-    @Nullable
-    public static <T> List<T> unmodifiableNullableList(@Nullable List<T> list) {
-        return list == null || list.isEmpty()
-                ? null
-                : Collections.unmodifiableList(list);
+    @NonNull
+    public static List<String> unmodifiableNonNullListOfStrings(@Nullable List<?> args) {
+        if (args == null || args.isEmpty()) {
+            return emptyList();
+        } else {
+            final List<String> list = new ArrayList<String>(args.size());
+
+            for (Object arg : args) {
+                list.add(arg != null ? arg.toString() : "null");
+            }
+
+            return unmodifiableList(list);
+        }
     }
 
     /**
-     * Converts set of something to unmodifiable nullable set.
-     * @param set set to convert, can be {@code null}.
-     * @param <T> type of items.
-     * @return {@code null} if set is {@code null} or empty OR unmodifiable set of items.
+     * Converts list of something to unmodifiable non-null list.
+     *
+     * @param list list to convert, can be {@code null}.
+     * @return non-null, unmodifiable list of something.
      */
-    @Nullable
-    public static <T> Set<T> unmodifiableNullableSet(@Nullable Set<T> set) {
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public static <T> List<T> unmodifiableNonNullList(@Nullable List<T> list) {
+        return list == null || list.isEmpty()
+                ? (List<T>) emptyList()
+                : unmodifiableList(list);
+    }
+
+    /**
+     * Converts set of something to unmodifiable non-null set.
+     *
+     * @param set set to convert, can be {@code null}.
+     * @return non-null, unmodifiable set of something.
+     */
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public static <T> Set<T> unmodifiableNonNullSet(@Nullable Set<T> set) {
         return set == null || set.isEmpty()
-                ? null
+                ? (Set<T>) emptySet()
                 : Collections.unmodifiableSet(set);
     }
 
     /**
-     * Converts list of strings to array of strings.
+     * Converts list of strings to non-null array of strings.
      *
      * @param list of strings.
-     * @return {@code null} if list is {@code null} or empty or array of strings from list.
+     * @return non-null array of strings.
      */
-    @SuppressWarnings("unchecked")
+    @NonNull
+    public static String[] nonNullArrayOfStrings(@Nullable List<String> list) {
+        return list == null || list.isEmpty()
+                ? new String[]{}
+                : list.toArray(new String[list.size()]);
+    }
+
+    /**
+     * Converts list of strings to nullable array of strings.
+     *
+     * @param list list of strings.
+     * @return nullable array of strings.
+     */
     @Nullable
-    public static String[] listToArray(@Nullable List<String> list) {
+    public static String[] nullableArrayOfStrings(@Nullable List<String> list) {
         return list == null || list.isEmpty()
                 ? null
                 : list.toArray(new String[list.size()]);
     }
 
+    /**
+     * Converts nullable string to non-null empty string if string was null
+     * and returns string as is otherwise.
+     *
+     * @param str string to convert, can be null.
+     * @return non-null string, can be empty.
+     */
+    @NonNull
+    public static String nonNullString(@Nullable String str) {
+        return str == null ? "" : str;
+    }
 
+    /**
+     * Coverts nullable string to nullable string and if string was null or empty
+     * and returns string as is otherwise.
+     *
+     * @param str string to convert, can be null.
+     * @return nullable string, can not be empty.
+     */
+    @Nullable
+    public static String nullableString(@Nullable String str) {
+        return str == null || str.isEmpty() ? null : str;
+    }
 }

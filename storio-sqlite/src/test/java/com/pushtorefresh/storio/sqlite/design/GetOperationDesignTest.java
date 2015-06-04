@@ -49,7 +49,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .cursor()
                 .withQuery(new Query.Builder()
                         .table("users")
-                        .whereArgs("email = ?")
+                        .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
                 .prepare()
