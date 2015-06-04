@@ -8,6 +8,7 @@ import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
+import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +91,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
         return storIOContentResolver
                 .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
                 .map(MapSomethingToExecuteAsBlocking.newInstance(this))
-                .startWith(executeAsBlocking())   // start stream with first query result
+                .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
                 .subscribeOn(Schedulers.io());
     }
 

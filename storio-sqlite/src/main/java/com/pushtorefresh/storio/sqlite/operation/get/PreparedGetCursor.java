@@ -91,7 +91,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
             return storIOSQLite
                     .observeChangesInTables(tables) // each change triggers executeAsBlocking
                     .map(MapSomethingToExecuteAsBlocking.newInstance(this))
-                    .startWith(executeAsBlocking()) // start stream with first query result
+                    .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
                     .subscribeOn(Schedulers.io());
         } else {
             return Observable
