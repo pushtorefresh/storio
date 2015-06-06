@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.sqlite.operation.put;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
@@ -28,9 +29,14 @@ public final class PreparedPutContentValues extends PreparedPut<ContentValues, P
 
     /**
      * Executes Put Operation immediately in current thread.
+     * <p/>
+     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
+     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
+     * So please, call this method on some background thread. See {@link WorkerThread}.
      *
      * @return non-null result of Put Operation.
      */
+    @WorkerThread
     @NonNull
     @Override
     public PutResult executeAsBlocking() {

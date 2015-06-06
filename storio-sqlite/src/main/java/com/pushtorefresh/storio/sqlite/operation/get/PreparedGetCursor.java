@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlite.operation.get;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.operation.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
@@ -39,9 +40,14 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
 
     /**
      * Executes Get Operation immediately in current thread.
+     * <p/>
+     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
+     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
+     * So please, call this method on some background thread. See {@link WorkerThread}.
      *
      * @return non-null {@link Cursor}, can be empty.
      */
+    @WorkerThread
     @NonNull
     public Cursor executeAsBlocking() {
         if (query != null) {

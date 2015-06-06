@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.sqlite.operation.execute;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
@@ -35,9 +36,14 @@ public final class PreparedExecuteSQL implements PreparedOperation<Void> {
 
     /**
      * Executes SQL Operation immediately in current thread.
+     * <p/>
+     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
+     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
+     * So please, call this method on some background thread. See {@link WorkerThread}.
      *
      * @return {@code null}, sorry guys.
      */
+    @WorkerThread
     @Nullable
     @Override
     public Void executeAsBlocking() {

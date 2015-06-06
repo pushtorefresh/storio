@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.operation.group;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
@@ -34,9 +35,14 @@ public class PreparedGroupOperation implements PreparedOperation<GroupOperationR
 
     /**
      * Executes Group Operation immediately in current thread.
+     * <p/>
+     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
+     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
+     * So please, call this method on some background thread. See {@link WorkerThread}.
      *
      * @return non-null result of Group Operation.
      */
+    @WorkerThread
     @NonNull
     @Override
     public GroupOperationResults executeAsBlocking() {
@@ -52,13 +58,13 @@ public class PreparedGroupOperation implements PreparedOperation<GroupOperationR
 
     /**
      * Creates {@link Observable} which will perform Group Operation and send result to observer.
-     * <p>
+     * <p/>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * Group Operation only after subscribing to it. Also, it emits the result once.
-     *
+     * <p/>
      * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Group Operation.
