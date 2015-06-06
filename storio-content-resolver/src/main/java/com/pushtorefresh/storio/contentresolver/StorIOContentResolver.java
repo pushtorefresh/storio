@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.contentresolver.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.contentresolver.operation.get.PreparedGet;
@@ -116,6 +117,7 @@ public abstract class StorIOContentResolver {
          * @param query query.
          * @return cursor with result data or null.
          */
+        @WorkerThread
         @NonNull
         public abstract Cursor query(@NonNull Query query);
 
@@ -126,6 +128,7 @@ public abstract class StorIOContentResolver {
          * @param contentValues data.
          * @return Uri for inserted data.
          */
+        @WorkerThread
         @NonNull
         public abstract Uri insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues);
 
@@ -136,6 +139,7 @@ public abstract class StorIOContentResolver {
          * @param contentValues data.
          * @return number of rows affected.
          */
+        @WorkerThread
         public abstract int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues);
 
         /**
@@ -144,6 +148,7 @@ public abstract class StorIOContentResolver {
          * @param deleteQuery query.
          * @return number of rows deleted.
          */
+        @WorkerThread
         public abstract int delete(@NonNull DeleteQuery deleteQuery);
     }
 }

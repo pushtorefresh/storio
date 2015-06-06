@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.contentresolver.operation.delete;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
@@ -29,9 +30,14 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
 
     /**
      * Executes Delete Operation immediately in current thread.
+     * <p/>
+     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
+     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
+     * So please, call this method on some background thread. See {@link WorkerThread}.
      *
      * @return non-null result of Delete Operation.
      */
+    @WorkerThread
     @NonNull
     @Override
     public DeleteResult executeAsBlocking() {

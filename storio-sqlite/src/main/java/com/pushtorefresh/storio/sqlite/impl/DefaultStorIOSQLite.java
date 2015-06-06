@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.internal.ChangesBus;
 import com.pushtorefresh.storio.sqlite.Changes;
@@ -199,6 +200,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         /**
          * {@inheritDoc}
          */
+        @WorkerThread
         @Override
         public void executeSQL(@NonNull RawQuery rawQuery) {
             sqLiteOpenHelper
@@ -212,6 +214,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         /**
          * {@inheritDoc}
          */
+        @WorkerThread
         @NonNull
         @Override
         public Cursor rawQuery(@NonNull RawQuery rawQuery) {
@@ -226,6 +229,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         /**
          * {@inheritDoc}
          */
+        @WorkerThread
         @NonNull
         @Override
         public Cursor query(@NonNull Query query) {
@@ -246,6 +250,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         /**
          * {@inheritDoc}
          */
+        @WorkerThread
         @Override
         public long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
             return sqLiteOpenHelper
@@ -260,6 +265,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         /**
          * {@inheritDoc}
          */
+        @WorkerThread
         @Override
         public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
             return sqLiteOpenHelper
@@ -275,6 +281,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         /**
          * {@inheritDoc}
          */
+        @WorkerThread
         @Override
         public int delete(@NonNull DeleteQuery deleteQuery) {
             return sqLiteOpenHelper

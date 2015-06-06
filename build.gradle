@@ -35,7 +35,7 @@ ext {
     compileSdkVersion = 22
     minSdkVersion = 14
 
-    supportAnnotations = 'com.android.support:support-annotations:22.1.1'
+    supportAnnotations = 'com.android.support:support-annotations:22.2.0'
     rxJava = 'io.reactivex:rxjava:1.0.11'
 
     dagger = 'com.google.dagger:dagger:2.0'

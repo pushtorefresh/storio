@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
@@ -173,6 +174,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         /**
          * {@inheritDoc}
          */
+        @WorkerThread
         @SuppressLint("Recycle")
         @NonNull
         @Override
@@ -193,6 +195,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         /**
          * {@inheritDoc}
          */
+        @WorkerThread
         @NonNull
         @Override
         public Uri insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues) {
@@ -205,6 +208,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         /**
          * {@inheritDoc}
          */
+        @WorkerThread
         @Override
         public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
             return contentResolver.update(
@@ -218,6 +222,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         /**
          * {@inheritDoc}
          */
+        @WorkerThread
         @Override
         public int delete(@NonNull DeleteQuery deleteQuery) {
             return contentResolver.delete(

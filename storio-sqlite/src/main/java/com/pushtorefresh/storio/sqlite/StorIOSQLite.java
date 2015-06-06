@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.sqlite.operation.delete.PreparedDelete;
 import com.pushtorefresh.storio.sqlite.operation.execute.PreparedExecuteSQL;
@@ -126,6 +127,7 @@ public abstract class StorIOSQLite implements Closeable {
          *
          * @param rawQuery sql query.
          */
+        @WorkerThread
         public abstract void executeSQL(@NonNull RawQuery rawQuery);
 
         /**
@@ -136,6 +138,7 @@ public abstract class StorIOSQLite implements Closeable {
          * @return A Cursor object, which is positioned before the first entry.
          * Note that Cursors are not synchronized, see the documentation for more details.
          */
+        @WorkerThread
         @NonNull
         public abstract Cursor rawQuery(@NonNull RawQuery rawQuery);
 
@@ -147,6 +150,7 @@ public abstract class StorIOSQLite implements Closeable {
          * @return A Cursor object, which is positioned before the first entry.
          * Note that Cursors are not synchronized, see the documentation for more details.
          */
+        @WorkerThread
         @NonNull
         public abstract Cursor query(@NonNull Query query);
 
@@ -158,6 +162,7 @@ public abstract class StorIOSQLite implements Closeable {
          *                      The keys should be the column names and the values the column values.
          * @return id of inserted row.
          */
+        @WorkerThread
         public abstract long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues);
 
         /**
@@ -168,6 +173,7 @@ public abstract class StorIOSQLite implements Closeable {
          *                      {@code null} is a valid value that will be translated to {@code NULL}.
          * @return the number of rows affected.
          */
+        @WorkerThread
         public abstract int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues);
 
         /**
@@ -176,6 +182,7 @@ public abstract class StorIOSQLite implements Closeable {
          * @param deleteQuery query.
          * @return the number of rows deleted.
          */
+        @WorkerThread
         public abstract int delete(@NonNull DeleteQuery deleteQuery);
 
         /**
