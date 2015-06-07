@@ -22,6 +22,8 @@ import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
+import static java.util.Collections.EMPTY_LIST;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * Prepared Get Operation for {@link StorIOSQLite}.
@@ -50,10 +52,10 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
      *
-     * @return non-null {@link List} with mapped results, can be empty.
+     * @return non-null, immutable {@link List} with mapped results, list can be empty.
      */
     @WorkerThread
-    @SuppressWarnings("TryFinallyCanBeTryWithResources") // Min SDK :(
+    @SuppressWarnings({"TryFinallyCanBeTryWithResources", "unchecked"}) // Min SDK :( unchecked for empty list
     @NonNull
     @Override
     public List<T> executeAsBlocking() {
@@ -68,13 +70,19 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         }
 
         try {
-            final List<T> list = new ArrayList<T>(cursor.getCount());
+            final int count = cursor.getCount();
+
+            if (count == 0) {
+                return EMPTY_LIST; // it's immutable
+            }
+
+            final List<T> list = new ArrayList<T>(count);
 
             while (cursor.moveToNext()) {
                 list.add(getResolver.mapFromCursor(cursor));
             }
 
-            return list;
+            return unmodifiableList(list);
         } finally {
             cursor.close();
         }
@@ -95,8 +103,9 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      * Please don't forget to unsubscribe from this {@link Observable} because
      * it's "Hot" and endless.
      *
-     * @return non-null {@link Observable} which will emit non-null
-     * list with mapped results and will be subscribed to changes of tables from query.
+     * @return non-null {@link Observable} which will emit non-null, immutable
+     * {@link List} with mapped results and will be subscribed to changes of tables from query,
+     * list can be empty.
      */
     @NonNull
     @Override

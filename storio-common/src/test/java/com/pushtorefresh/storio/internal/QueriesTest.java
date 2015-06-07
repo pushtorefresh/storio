@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static junit.framework.Assert.assertEquals;
@@ -72,13 +74,13 @@ public class QueriesTest {
 
     @Test
     public void nonEmptyListToUnmodifiableNonNullListOfStrings() {
-        List<String> strings = Arrays.asList("1", "2", "3");
+        List<String> strings = asList("1", "2", "3");
         assertEquals(strings, Queries.unmodifiableNonNullListOfStrings(strings));
     }
 
     @Test
     public void nonEmptyListWithNullElementToUnmodifiableNonNullListOfStrings() {
-        List<String> strings = Arrays.asList("1", null, "3");
+        List<String> strings = asList("1", null, "3");
         List<String> result = Queries.unmodifiableNonNullListOfStrings(strings);
 
         assertEquals("1", result.get(0));
@@ -106,7 +108,7 @@ public class QueriesTest {
 
     @Test
     public void nonEmptyListToUnmodifiableNonNullList() {
-        List<String> list = Arrays.asList("1", "2", "3");
+        List<String> list = asList("1", "2", "3");
         List<String> unmodifiableList = Queries.unmodifiableNonNullList(list);
 
         assertEquals(list.size(), unmodifiableList.size());
@@ -117,14 +119,10 @@ public class QueriesTest {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Test
     public void listToUnmodifiableNonNullListIsReallyUnmodifiable() {
-        List<String> unmodifiableList = Queries.unmodifiableNonNullList(Arrays.asList("1", "2", "3"));
-
-        // UnmodifiableCollection is private class :(
-        String className = unmodifiableList.getClass().getSimpleName();
-        assertTrue(className.equals("UnmodifiableRandomAccessList") || className.equals("UnmodifiableList"));
+        List<String> unmodifiableList = Queries.unmodifiableNonNullList(asList("1", "2", "3"));
+        assertThatListIsImmutable(unmodifiableList);
     }
 
     //endregion
@@ -173,7 +171,7 @@ public class QueriesTest {
 
     @Test
     public void nonEmptyListOfStringsToNonNullArrayOfStrings() {
-        List<String> list = Arrays.asList("1", "2", "3");
+        List<String> list = asList("1", "2", "3");
         String[] array = Queries.nonNullArrayOfStrings(list);
 
         assertEquals(list.size(), array.length);
@@ -200,7 +198,7 @@ public class QueriesTest {
 
     @Test
     public void nonEmptyListOfStringsToNullableArrayOfStrings() {
-        List<String> list = Arrays.asList("1", "2", "3");
+        List<String> list = asList("1", "2", "3");
         String[] array = Queries.nullableArrayOfStrings(list);
 
         assertNotNull(array);
