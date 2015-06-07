@@ -1,7 +1,6 @@
 package com.pushtorefresh.storio.sqlite.operation.execute;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.operation.PreparedOperation;
@@ -21,7 +20,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
 /**
  * Prepared Execute SQL Operation for {@link StorIOSQLite}.
  */
-public final class PreparedExecuteSQL implements PreparedOperation<Void> {
+public final class PreparedExecuteSQL implements PreparedOperation<Object> {
 
     @NonNull
     private final StorIOSQLite storIOSQLite;
@@ -41,21 +40,23 @@ public final class PreparedExecuteSQL implements PreparedOperation<Void> {
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
      *
-     * @return {@code null}, sorry guys.
+     * @return just a new instance of {@link Object}, actually Execute SQL should return {@code void},
+     * but we can not return instance of {@link Void} so we just return {@link Object}
+     * and you don't have to deal with {@code null}.
      */
     @WorkerThread
-    @Nullable
+    @NonNull
     @Override
-    public Void executeAsBlocking() {
+    public Object executeAsBlocking() {
         storIOSQLite.internal().executeSQL(rawQuery);
 
         final Set<String> affectedTables = rawQuery.affectsTables();
 
-        if (affectedTables != null && affectedTables.size() > 0) {
+        if (affectedTables.size() > 0) {
             storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
         }
 
-        return null;
+        return new Object();
     }
 
     /**
@@ -71,11 +72,14 @@ public final class PreparedExecuteSQL implements PreparedOperation<Void> {
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Delete Operation
-     * and send result to observer.
+     * and send result to observer. Result: just a new instance of {@link Object},
+     * actually Execute SQL should return {@code void},
+     * but we can not return instance of {@link Void} so we just return {@link Object}
+     * and you don't have to deal with {@code null}.
      */
     @NonNull
     @Override
-    public Observable<Void> createObservable() {
+    public Observable<Object> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return Observable

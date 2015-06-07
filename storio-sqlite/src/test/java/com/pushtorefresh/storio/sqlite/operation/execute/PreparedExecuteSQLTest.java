@@ -54,7 +54,7 @@ public class PreparedExecuteSQLTest {
     public void executeSQLObservableWithoutNotifications() {
         final Stub stub = Stub.newInstanceWithoutNotification();
 
-        final Observable<Void> observable = stub.storIOSQLite
+        final Observable<Object> observable = stub.storIOSQLite
                 .executeSQL()
                 .withQuery(stub.rawQuery)
                 .prepare()
@@ -67,7 +67,7 @@ public class PreparedExecuteSQLTest {
     public void executeSQLObservableWithNotification() {
         final Stub stub = Stub.newInstanceWithNotification();
 
-        final Observable<Void> observable = stub.storIOSQLite
+        final Observable<Object> observable = stub.storIOSQLite
                 .executeSQL()
                 .withQuery(stub.rawQuery)
                 .prepare()
@@ -137,13 +137,13 @@ public class PreparedExecuteSQLTest {
             }
         }
 
-        void verifyBehavior(@NonNull Observable<Void> observable) {
-            new ObservableBehaviorChecker<Void>()
+        void verifyBehavior(@NonNull Observable<Object> observable) {
+            new ObservableBehaviorChecker<Object>()
                     .observable(observable)
                     .expectedNumberOfEmissions(1)
-                    .testAction(new Action1<Void>() {
+                    .testAction(new Action1<Object>() {
                         @Override
-                        public void call(Void aVoid) {
+                        public void call(Object anObject) {
                             verifyBehavior();
                         }
                     })
