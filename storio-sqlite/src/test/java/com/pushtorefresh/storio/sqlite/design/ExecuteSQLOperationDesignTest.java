@@ -6,22 +6,26 @@ import org.junit.Test;
 
 import rx.Observable;
 
-public class ExecSqlOperationDesignTest extends OperationDesignTest {
+public class ExecuteSQLOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void execSqlBlocking() {
-        Void nothing = storIOSQLite()
+        Object nothing = storIOSQLite()
                 .executeSQL()
-                .withQuery(new RawQuery.Builder().query("ALTER TABLE users ...").build())
+                .withQuery(new RawQuery.Builder()
+                        .query("ALTER TABLE users ...")
+                        .build())
                 .prepare()
                 .executeAsBlocking();
     }
 
     @Test
     public void execSqlObservable() {
-        Observable<Void> observable = storIOSQLite()
+        Observable<Object> observable = storIOSQLite()
                 .executeSQL()
-                .withQuery(new RawQuery.Builder().query("DROP TABLE users").build())
+                .withQuery(new RawQuery.Builder()
+                        .query("DROP TABLE users")
+                        .build())
                 .prepare()
                 .createObservable();
     }
