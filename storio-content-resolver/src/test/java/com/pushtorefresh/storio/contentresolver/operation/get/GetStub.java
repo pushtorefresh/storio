@@ -18,6 +18,7 @@ import java.util.List;
 import rx.Observable;
 import rx.functions.Action1;
 
+import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertSame;
 import static org.mockito.Mockito.mock;
@@ -124,6 +125,7 @@ class GetStub {
         verify(getResolverForTestItems, times(testItems.size())).mapFromCursor(cursor);
         verify(cursor, times(1)).close();
         assertEquals(testItems, actualList);
+        assertThatListIsImmutable(actualList);
     }
 
     void verifyQueryBehaviorForList(@NonNull Observable<List<TestItem>> observable) {

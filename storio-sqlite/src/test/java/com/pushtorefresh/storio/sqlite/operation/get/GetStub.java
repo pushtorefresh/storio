@@ -19,6 +19,7 @@ import java.util.List;
 import rx.Observable;
 import rx.functions.Action1;
 
+import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertSame;
@@ -63,6 +64,9 @@ class GetStub {
         testItems.add(new TestItem());
         testItems.add(new TestItem());
         testItems.add(new TestItem());
+
+        when(cursor.getCount())
+                .thenReturn(testItems.size());
 
         when(cursor.moveToNext()).thenAnswer(new Answer<Boolean>() {
             int invocationsCount = 0;
@@ -138,6 +142,7 @@ class GetStub {
         verify(getResolverForObject, times(testItems.size())).mapFromCursor(cursor);
         verify(cursor, times(1)).close();
         assertEquals(testItems, actualList);
+        assertThatListIsImmutable(actualList);
     }
 
     void verifyQueryBehaviorForList(@NonNull Observable<List<TestItem>> observable) {
@@ -185,6 +190,7 @@ class GetStub {
         verify(getResolverForObject, times(testItems.size())).mapFromCursor(cursor);
         verify(cursor, times(1)).close();
         assertEquals(testItems, actualList);
+        assertThatListIsImmutable(actualList);
     }
 
     void verifyRawQueryBehaviorForList(@NonNull Observable<List<TestItem>> observable) {
