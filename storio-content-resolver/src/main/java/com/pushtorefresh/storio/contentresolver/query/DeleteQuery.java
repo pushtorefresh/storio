@@ -129,6 +129,7 @@ public final class DeleteQuery {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
+            checkNotNull(uri, "Uri should not be null");
             return new CompleteBuilder(Uri.parse(uri));
         }
     }

@@ -260,7 +260,6 @@ StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
 ```
 
 You can override Operation Resolver per each individual Operation, it can be useful for working with `SQL JOIN`.
-Also, as you can see, there is no Reflection, and no performance reduction in compare to manual object mapping code.
 
 To **save you from coding boilerplate classes** we created **Annotation Processor** which will generate `PutResolver`, `GetResolver` and `DeleteResolver` at compile time, you just need to use generated classes
 

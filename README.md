@@ -7,7 +7,7 @@ Currently in development.
 * API for Humans: Type Safety, Immutability & Thread-Safety
 * Convenient builders with compile-time guarantees for required params. Forget about 6-7 `null` in queries
 * Optional Type-Safe Object Mapping, if you don't want to work with `Cursor` and `ContentValues` you don't have to
-* No reflection and no annotations in core, also `StorIO` is not ORM
+* No reflection in Operations and no annotations in the core, also `StorIO` is not ORM
 * Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`
 * `RxJava` as first class citizen, but it's not required dependency!
 * `rx.Observable` from `Get` Operation **can observe changes** in `StorIO` and receive updates automatically
@@ -129,7 +129,6 @@ StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
 ```
 
 You can override Operation Resolver per each individual Operation, it can be useful for working with `SQL JOIN`.
-Also, as you can see, there is no Reflection, and no performance reduction in compare to manual object mapping code.
 
 To **save you from coding boilerplate classes** we created **Annotation Processor** which will generate `PutResolver`, `GetResolver` and `DeleteResolver` at compile time, you just need to use generated classes
 

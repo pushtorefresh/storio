@@ -18,7 +18,7 @@ public class InsertQueryTest {
     }
 
     @SuppressWarnings("ConstantConditions")
-    @Test(expected = RuntimeException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriString() {
         new InsertQuery.Builder()
                 .uri((String) null)

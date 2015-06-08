@@ -1,6 +1,7 @@
 apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -32,6 +33,8 @@ dependencies {
 
     androidTestCompile project(':storio-test-common')
     androidTestCompile rootProject.ext.testingSupportLib
+    androidTestCompile rootProject.ext.autoParcel
+    androidTestApt     rootProject.ext.autoParcelProcessor
 }
 
 task checkstyle(type: Checkstyle) {
