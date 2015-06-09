@@ -38,16 +38,18 @@ ext {
 
 ext.libraries = [
         // Core libraries
-        storIOCommon                   : project(':storio-common'),
         supportAnnotations             : 'com.android.support:support-annotations:22.2.0',
         rxJava                         : 'io.reactivex:rxjava:1.0.12',
-
-        // Libraries for tests and sample app
+        
+        // Parts of StorIO
+        storIOCommon                   : project(':storio-common'),
         storIOSQLite                   : project(':storio-sqlite'),
         storIOContentResolver          : project(':storio-content-resolver'),
         storIOSQLiteAnnotation         : project(':storio-sqlite-annotation'),
         storIOSQLiteAnnotationProcessor: project('storio-sqlite-annotation-processor'),
         storIOTestCommon               : project(':storio-test-common'),
+        
+        // Libraries for tests and sample app
         junit                          : 'junit:junit:4.12',
         mockitoCore                    : 'org.mockito:mockito-core:1.10.19',
         testingSupportLib              : 'com.android.support.test:testing-support-lib:0.1',
