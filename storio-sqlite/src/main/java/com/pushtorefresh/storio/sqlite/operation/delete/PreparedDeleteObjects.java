@@ -194,7 +194,10 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
                 deleteResolver = typeMapping.deleteResolver();
             }
 
-            checkNotNull(deleteResolver, "Please specify DeleteResolver");
+            checkNotNull(deleteResolver, "StorIO can not perform delete of objects = " +
+                    objects + "\nof type " + type +
+                    " without type mapping or Operation resolver." +
+                    "\n Please add type mapping or Operation resolver");
 
             return new PreparedDeleteObjects<T>(
                     storIOSQLite,

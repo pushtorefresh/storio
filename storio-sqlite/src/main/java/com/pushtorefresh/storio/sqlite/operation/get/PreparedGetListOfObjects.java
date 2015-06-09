@@ -55,7 +55,8 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      * @return non-null, immutable {@link List} with mapped results, list can be empty.
      */
     @WorkerThread
-    @SuppressWarnings({"TryFinallyCanBeTryWithResources", "unchecked"}) // Min SDK :( unchecked for empty list
+    @SuppressWarnings({"TryFinallyCanBeTryWithResources", "unchecked"})
+    // Min SDK :( unchecked for empty list
     @NonNull
     @Override
     public List<T> executeAsBlocking() {
@@ -247,7 +248,10 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
                 getResolver = typeMapping.getResolver();
             }
 
-            checkNotNull(getResolver, "Please specify GetResolver");
+            checkNotNull(getResolver, "StorIO can not perform get list of objects " +
+                    "of type " + type +
+                    " without type mapping or Operation resolver." +
+                    "\n Please add type mapping or Operation resolver");
 
             if (query != null) {
                 return new PreparedGetListOfObjects<T>(
