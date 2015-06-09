@@ -24,16 +24,16 @@ android {
 }
 
 dependencies {
-    compile project(':storio-sqlite')
-    compile project(':storio-content-resolver')
+    compile libraries.storIOSQLite
+    compile libraries.storIOContentResolver
 
-    provided rootProject.ext.supportAnnotations
+    provided libraries.supportAnnotations
 
-    testCompile rootProject.ext.junit
-    testCompile rootProject.ext.mockitoCore
-    testCompile project(':storio-test-common')
+    testCompile libraries.junit
+    testCompile libraries.mockitoCore
+    testCompile libraries.storIOTestCommon
 
-    androidTestCompile rootProject.ext.testingSupportLib
+    androidTestCompile libraries.testingSupportLib
 }
 
 task checkstyle(type: Checkstyle) {

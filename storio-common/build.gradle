@@ -20,14 +20,14 @@ android {
 }
 
 dependencies {
-    provided rootProject.ext.supportAnnotations
-    provided rootProject.ext.rxJava
+    provided libraries.supportAnnotations
+    provided libraries.rxJava
 
-    testCompile rootProject.ext.junit
-    testCompile rootProject.ext.mockitoCore
-    testCompile project(':storio-test-common')
+    testCompile libraries.junit
+    testCompile libraries.mockitoCore
+    testCompile libraries.storIOTestCommon
 
-    androidTestCompile rootProject.ext.testingSupportLib
+    androidTestCompile libraries.testingSupportLib
 }
 
 task checkstyle(type: Checkstyle) {

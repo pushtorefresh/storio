@@ -21,20 +21,20 @@ android {
 }
 
 dependencies {
-    compile project(':storio-common')
+    compile libraries.storIOCommon
 
-    provided rootProject.ext.supportAnnotations
-    provided rootProject.ext.rxJava
+    provided libraries.supportAnnotations
+    provided libraries.rxJava
 
-    testCompile rootProject.ext.junit
-    testCompile rootProject.ext.mockitoCore
-    testCompile project(':storio-test-common')
-    testCompile rootProject.ext.guava
+    testCompile libraries.junit
+    testCompile libraries.mockitoCore
+    testCompile libraries.storIOTestCommon
+    testCompile libraries.guava
 
-    androidTestCompile project(':storio-test-common')
-    androidTestCompile rootProject.ext.testingSupportLib
-    androidTestCompile rootProject.ext.autoParcel
-    androidTestApt     rootProject.ext.autoParcelProcessor
+    androidTestCompile libraries.storIOTestCommon
+    androidTestCompile libraries.testingSupportLib
+    androidTestCompile libraries.autoParcel
+    androidTestApt     libraries.autoParcelProcessor
 }
 
 task checkstyle(type: Checkstyle) {

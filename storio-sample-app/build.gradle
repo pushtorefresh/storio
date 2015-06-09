@@ -41,25 +41,25 @@ android {
 }
 
 dependencies {
-    compile project(':storio-sqlite')
-    compile project(':storio-content-resolver')
+    compile libraries.storIOSQLite
+    compile libraries.storIOContentResolver
 
-    compile project(':storio-sqlite-annotation')
-    apt project(':storio-sqlite-annotation-processor')
+    compile libraries.storIOSQLiteAnnotation
+    apt libraries.storIOSQLiteAnnotationProcessor
 
-    compile rootProject.ext.dagger
-    apt rootProject.ext.daggerCompiler
+    compile libraries.dagger
+    apt libraries.daggerCompiler
 
-    compile rootProject.ext.javaxInject
-    compile rootProject.ext.javaxAnnotationApi
+    compile libraries.javaxInject
+    compile libraries.javaxAnnotationApi
 
-    compile rootProject.ext.rxJava
-    compile rootProject.ext.rxAndroid
-    compile rootProject.ext.appCompat
-    compile rootProject.ext.butterKnife
-    compile rootProject.ext.recyclerView
-    compile rootProject.ext.timber
+    compile libraries.rxJava
+    compile libraries.rxAndroid
+    compile libraries.appCompat
+    compile libraries.butterKnife
+    compile libraries.recyclerView
+    compile libraries.timber
 
-    debugCompile   rootProject.ext.leakCanary
-    releaseCompile rootProject.ext.leakCanaryNoOp
+    debugCompile   libraries.leakCanary
+    releaseCompile libraries.leakCanaryNoOp
 }
