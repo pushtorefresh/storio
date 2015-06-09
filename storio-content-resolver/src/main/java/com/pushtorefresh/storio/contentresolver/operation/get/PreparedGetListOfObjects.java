@@ -191,7 +191,10 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
                 getResolver = typeMapping.getResolver();
             }
 
-            checkNotNull(getResolver, "Please specify Get Resolver");
+            checkNotNull(getResolver, "StorIO can not perform get list of objects " +
+                    "of type " + type +
+                    " without type mapping or Operation resolver." +
+                    "\n Please add type mapping or Operation resolver");
 
             return new PreparedGetListOfObjects<T>(
                     storIOContentResolver,

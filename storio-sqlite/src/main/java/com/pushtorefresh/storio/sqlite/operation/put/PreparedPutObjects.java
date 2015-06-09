@@ -184,7 +184,10 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
                 putResolver = typeMapping.putResolver();
             }
 
-            checkNotNull(putResolver, "Please specify PutResolver");
+            checkNotNull(putResolver, "StorIO can not perform put of objects = " +
+                    objects + "\nof type " + type +
+                    " without type mapping or Operation resolver." +
+                    "\n Please add type mapping or Operation resolver");
 
             return new PreparedPutObjects<T>(
                     storIOSQLite,
