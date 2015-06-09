@@ -34,35 +34,46 @@ ext {
     buildToolsVersion = '22.0.1'
     compileSdkVersion = 22
     minSdkVersion = 14
-
-    supportAnnotations = 'com.android.support:support-annotations:22.2.0'
-    rxJava = 'io.reactivex:rxjava:1.0.11'
-
-    dagger = 'com.google.dagger:dagger:2.0'
-    daggerCompiler = 'com.google.dagger:dagger-compiler:2.0'
-
-    javaxInject = 'javax.inject:javax.inject:1'
-    javaxAnnotationApi = 'javax.annotation:javax.annotation-api:1.2'
-
-    butterKnife = 'com.jakewharton:butterknife:6.1.0'
-    appCompat = 'com.android.support:appcompat-v7:22.1.1'
-    recyclerView = 'com.android.support:recyclerview-v7:22.1.1'
-    rxAndroid = 'io.reactivex:rxandroid:0.24.0'
-    timber = 'com.jakewharton.timber:timber:3.0.1'
-    leakCanary = 'com.squareup.leakcanary:leakcanary-android:1.3'
-    leakCanaryNoOp = 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
-
-    autoService = 'com.google.auto.service:auto-service:1.0-rc2'
-    javaPoet = 'com.squareup:javapoet:1.0.0'
-    intellijAnnotations = 'com.intellij:annotations:12.0'
-
-    junit = 'junit:junit:4.12'
-    mockitoCore = 'org.mockito:mockito-core:1.10.19'
-    testingSupportLib = 'com.android.support.test:testing-support-lib:0.1'
-    guava = 'com.google.guava:guava:18.0'
-    autoParcel = 'com.github.frankiesardo:auto-parcel:0.3'
-    autoParcelProcessor = 'com.github.frankiesardo:auto-parcel-processor:0.3'
 }
+
+ext.libraries = [
+        // Core libraries
+        storIOCommon                   : project(':storio-common'),
+        supportAnnotations             : 'com.android.support:support-annotations:22.2.0',
+        rxJava                         : 'io.reactivex:rxjava:1.0.11',
+
+        // Libraries for tests and sample app
+        storIOSQLite                   : project(':storio-sqlite'),
+        storIOContentResolver          : project(':storio-content-resolver'),
+        storIOSQLiteAnnotation         : project(':storio-sqlite-annotation'),
+        storIOSQLiteAnnotationProcessor: project('storio-sqlite-annotation-processor'),
+        storIOTestCommon               : project(':storio-test-common'),
+        junit                          : 'junit:junit:4.12',
+        mockitoCore                    : 'org.mockito:mockito-core:1.10.19',
+        testingSupportLib              : 'com.android.support.test:testing-support-lib:0.1',
+        guava                          : 'com.google.guava:guava:18.0',
+
+        dagger                         : 'com.google.dagger:dagger:2.0',
+        daggerCompiler                 : 'com.google.dagger:dagger-compiler:2.0',
+
+        javaxInject                    : 'javax.inject:javax.inject:1',
+        javaxAnnotationApi             : 'javax.annotation:javax.annotation-api:1.2',
+
+        butterKnife                    : 'com.jakewharton:butterknife:6.1.0',
+        appCompat                      : 'com.android.support:appcompat-v7:22.1.1',
+        recyclerView                   : 'com.android.support:recyclerview-v7:22.1.1',
+        rxAndroid                      : 'io.reactivex:rxandroid:0.24.0',
+        timber                         : 'com.jakewharton.timber:timber:3.0.1',
+        leakCanary                     : 'com.squareup.leakcanary:leakcanary-android:1.3',
+        leakCanaryNoOp                 : 'com.squareup.leakcanary:leakcanary-android-no-op:1.3',
+
+        autoService                    : 'com.google.auto.service:auto-service:1.0-rc2',
+        javaPoet                       : 'com.squareup:javapoet:1.0.0',
+        intellijAnnotations            : 'com.intellij:annotations:12.0',
+
+        autoParcel                     : 'com.github.frankiesardo:auto-parcel:0.3',
+        autoParcelProcessor            : 'com.github.frankiesardo:auto-parcel-processor:0.3'
+]
 
 // Option to disable Pre-Dexing on CI env
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')

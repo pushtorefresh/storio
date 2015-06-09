@@ -4,11 +4,11 @@ targetCompatibility = '1.6'
 sourceCompatibility = '1.6'
 
 dependencies {
-    compile project(':storio-sqlite-annotation')
-    compile rootProject.ext.intellijAnnotations
-    compile rootProject.ext.autoService
-    compile rootProject.ext.javaPoet
+    compile libraries.storIOSQLiteAnnotation
+    compile libraries.intellijAnnotations
+    compile libraries.autoService
+    compile libraries.javaPoet
 
-    testCompile rootProject.ext.junit
-    testCompile rootProject.ext.mockitoCore
+    testCompile libraries.junit
+    testCompile libraries.mockitoCore
 }

@@ -20,13 +20,13 @@ android {
 }
 
 dependencies {
-    provided rootProject.ext.supportAnnotations
-    provided rootProject.ext.rxJava
+    provided libraries.supportAnnotations
+    provided libraries.rxJava
 
-    testCompile rootProject.ext.junit
-    testCompile rootProject.ext.mockitoCore
+    testCompile libraries.junit
+    testCompile libraries.mockitoCore
 
-    androidTestCompile rootProject.ext.testingSupportLib
+    androidTestCompile libraries.testingSupportLib
 }
 
 task checkstyle(type: Checkstyle) {
