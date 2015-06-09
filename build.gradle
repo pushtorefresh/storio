@@ -40,7 +40,7 @@ ext.libraries = [
         // Core libraries
         storIOCommon                   : project(':storio-common'),
         supportAnnotations             : 'com.android.support:support-annotations:22.2.0',
-        rxJava                         : 'io.reactivex:rxjava:1.0.11',
+        rxJava                         : 'io.reactivex:rxjava:1.0.12',
 
         // Libraries for tests and sample app
         storIOSQLite                   : project(':storio-sqlite'),
