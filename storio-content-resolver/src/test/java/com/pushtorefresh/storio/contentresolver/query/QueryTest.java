@@ -21,7 +21,7 @@ public class QueryTest {
     }
 
     @SuppressWarnings("ConstantConditions")
-    @Test(expected = RuntimeException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriString() {
         new Query.Builder()
                 .uri((String) null)

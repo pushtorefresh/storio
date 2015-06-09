@@ -1,49 +1,45 @@
-package com.pushtorefresh.storio.sqlite.impl;
+package com.pushtorefresh.storio.contentresolver.impl;
 
-import android.database.sqlite.SQLiteOpenHelper;
+import android.content.ContentResolver;
 
-import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
-import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResolver;
-import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
+import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
+import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResolver;
+import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
+import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
 
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-public class DefaultStorIOSQLiteTest {
+public class DefaultStorIOContentResolverTest {
 
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
-    public void nullSQLiteOpenHelper() {
-        new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(null);
+    public void nullContentResolver() {
+        new DefaultStorIOContentResolver.Builder()
+                .contentResolver(null);
     }
 
-    @SuppressWarnings({"ConstantConditions", "unchecked"})
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     @Test(expected = NullPointerException.class)
     public void addTypeMappingNullType() {
-        new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(null, new SQLiteTypeMapping.Builder<Object>()
+        new DefaultStorIOContentResolver.Builder()
+                .contentResolver(mock(ContentResolver.class))
+                .addTypeMapping(null, new ContentResolverTypeMapping.Builder<Object>()
                         .putResolver(mock(PutResolver.class))
                         .getResolver(mock(GetResolver.class))
                         .deleteResolver(mock(DeleteResolver.class))
                         .build());
     }
 
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
+    @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void addTypeMappingNullMapping() {
-        new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+        new DefaultStorIOContentResolver.Builder()
+                .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(Object.class, null);
     }
 
@@ -53,11 +49,11 @@ public class DefaultStorIOSQLiteTest {
 
         }
 
-        final StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+                .contentResolver(mock(ContentResolver.class))
                 .build();
 
-        assertNull(storIOSQLite.internal().typeMapping(TestItem.class));
+        assertNull(storIOContentResolver.internal().typeMapping(TestItem.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -71,20 +67,20 @@ public class DefaultStorIOSQLiteTest {
 
         }
 
-        final SQLiteTypeMapping<Entity> entityContentResolverTypeMapping = new SQLiteTypeMapping.Builder<Entity>()
+        final ContentResolverTypeMapping<Entity> entityContentResolverTypeMapping = new ContentResolverTypeMapping.Builder<Entity>()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+                .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(Entity.class, entityContentResolverTypeMapping)
                 .build();
 
-        assertSame(entityContentResolverTypeMapping, storIOSQLite.internal().typeMapping(Entity.class));
+        assertSame(entityContentResolverTypeMapping, storIOContentResolver.internal().typeMapping(Entity.class));
 
-        assertNull(storIOSQLite.internal().typeMapping(TestItem.class));
+        assertNull(storIOContentResolver.internal().typeMapping(TestItem.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -94,18 +90,18 @@ public class DefaultStorIOSQLiteTest {
 
         }
 
-        final SQLiteTypeMapping<TestItem> typeMapping = new SQLiteTypeMapping.Builder<TestItem>()
+        final ContentResolverTypeMapping<TestItem> typeMapping = new ContentResolverTypeMapping.Builder<TestItem>()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+                .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(TestItem.class, typeMapping)
                 .build();
 
-        assertSame(typeMapping, storIOSQLite.internal().typeMapping(TestItem.class));
+        assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItem.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -115,14 +111,14 @@ public class DefaultStorIOSQLiteTest {
 
         }
 
-        final SQLiteTypeMapping<TestItem> typeMapping = new SQLiteTypeMapping.Builder<TestItem>()
+        final ContentResolverTypeMapping<TestItem> typeMapping = new ContentResolverTypeMapping.Builder<TestItem>()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+                .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(TestItem.class, typeMapping)
                 .build();
 
@@ -131,10 +127,10 @@ public class DefaultStorIOSQLiteTest {
         }
 
         // Direct type mapping should still work
-        assertSame(typeMapping, storIOSQLite.internal().typeMapping(TestItem.class));
+        assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItem.class));
 
         // Indirect type mapping should give same type mapping as for parent class
-        assertSame(typeMapping, storIOSQLite.internal().typeMapping(TestItemSubclass.class));
+        assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItemSubclass.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -144,35 +140,33 @@ public class DefaultStorIOSQLiteTest {
 
         }
 
-        final SQLiteTypeMapping<TestItem> typeMapping = new SQLiteTypeMapping.Builder<TestItem>()
+        final ContentResolverTypeMapping<TestItem> typeMapping = new ContentResolverTypeMapping.Builder<TestItem>()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
-
 
         class TestItemSubclass extends TestItem {
 
         }
 
-        final SQLiteTypeMapping<TestItemSubclass> subclassTypeMapping = new SQLiteTypeMapping.Builder<TestItemSubclass>()
+        final ContentResolverTypeMapping<TestItemSubclass> subclassTypeMapping = new ContentResolverTypeMapping.Builder<TestItemSubclass>()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-
-        final StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+                .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(TestItem.class, typeMapping)
                 .addTypeMapping(TestItemSubclass.class, subclassTypeMapping)
                 .build();
 
         // Parent class should have its own type mapping
-        assertSame(typeMapping, storIOSQLite.internal().typeMapping(TestItem.class));
+        assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItem.class));
 
         // Child class should have its own type mapping
-        assertSame(subclassTypeMapping, storIOSQLite.internal().typeMapping(TestItemSubclass.class));
+        assertSame(subclassTypeMapping, storIOContentResolver.internal().typeMapping(TestItemSubclass.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -196,51 +190,34 @@ public class DefaultStorIOSQLiteTest {
 
         }
 
-        final SQLiteTypeMapping<Entity> entitySQLiteTypeMapping = new SQLiteTypeMapping.Builder<Entity>()
+        final ContentResolverTypeMapping<Entity> entitySQLiteTypeMapping = new ContentResolverTypeMapping.Builder<Entity>()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final SQLiteTypeMapping<ConcreteEntity> concreteEntitySQLiteTypeMapping = new SQLiteTypeMapping.Builder<ConcreteEntity>()
+        final ContentResolverTypeMapping<ConcreteEntity> concreteEntitySQLiteTypeMapping = new ContentResolverTypeMapping.Builder<ConcreteEntity>()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+                .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(Entity.class, entitySQLiteTypeMapping)
                 .addTypeMapping(ConcreteEntity.class, concreteEntitySQLiteTypeMapping)
                 .build();
 
         // Direct type mapping for Entity should work
-        assertSame(entitySQLiteTypeMapping, storIOSQLite.internal().typeMapping(Entity.class));
+        assertSame(entitySQLiteTypeMapping, storIOContentResolver.internal().typeMapping(Entity.class));
 
         // Direct type mapping for ConcreteEntity should work
-        assertSame(concreteEntitySQLiteTypeMapping, storIOSQLite.internal().typeMapping(ConcreteEntity.class));
+        assertSame(concreteEntitySQLiteTypeMapping, storIOContentResolver.internal().typeMapping(ConcreteEntity.class));
 
         // Indirect type mapping for AutoValue_Entity should get type mapping for Entity
-        assertSame(entitySQLiteTypeMapping, storIOSQLite.internal().typeMapping(AutoValue_Entity.class));
+        assertSame(entitySQLiteTypeMapping, storIOContentResolver.internal().typeMapping(AutoValue_Entity.class));
 
         // Indirect type mapping for AutoValue_ConcreteEntity should get type mapping for ConcreteEntity, not for Entity!
-        assertSame(concreteEntitySQLiteTypeMapping, storIOSQLite.internal().typeMapping(AutoValue_ConcreteEntity.class));
-    }
-
-    @Test
-    public void shouldCloseSQLiteOpenHelper() throws IOException {
-        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-
-        StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
-
-        // Should not call close before explicit call to close
-        verify(sqLiteOpenHelper, times(0)).close();
-
-        storIOSQLite.close();
-
-        // Should call close on SQLiteOpenHelper
-        verify(sqLiteOpenHelper).close();
+        assertSame(concreteEntitySQLiteTypeMapping, storIOContentResolver.internal().typeMapping(AutoValue_ConcreteEntity.class));
     }
 }

@@ -20,10 +20,10 @@ import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.Query;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import rx.Observable;
 
@@ -31,6 +31,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
 import static com.pushtorefresh.storio.internal.Queries.nullableString;
+import static java.util.Collections.unmodifiableMap;
 
 /**
  * Default, thread-safe implementation of {@link StorIOContentResolver}.
@@ -124,7 +125,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
          * @return builder.
          */
         @NonNull
-        public <T> CompleteBuilder addTypeMapping(@NonNull Class<T> type, ContentResolverTypeMapping<T> typeMapping) {
+        public <T> CompleteBuilder addTypeMapping(@NonNull Class<T> type, @NonNull ContentResolverTypeMapping<T> typeMapping) {
             checkNotNull(type, "Please specify type");
             checkNotNull(typeMapping, "Please specify type mapping");
 
@@ -151,24 +152,83 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     protected class InternalImpl extends Internal {
 
         @Nullable
-        private final Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping;
+        private final Map<Class<?>, ContentResolverTypeMapping<?>> directTypesMapping;
+
+        @NonNull
+        private final Map<Class<?>, ContentResolverTypeMapping<?>> indirectTypesMappingCache
+                = new ConcurrentHashMap<Class<?>, ContentResolverTypeMapping<?>>();
 
         protected InternalImpl(@Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
-            this.typesMapping = typesMapping != null
-                    ? Collections.unmodifiableMap(typesMapping)
+            this.directTypesMapping = typesMapping != null
+                    ? unmodifiableMap(typesMapping)
                     : null;
         }
 
         /**
-         * {@inheritDoc}
+         * Gets type mapping for required type.
+         * <p/>
+         * This implementation can handle subclasses of types, that registered its type mapping.
+         * For example: You've added type mapping for {@code User.class},
+         * and you have {@code UserFromServiceA.class} which extends {@code User.class},
+         * and you didn't add type mapping for {@code UserFromServiceA.class}
+         * because they have same fields and you just want to have multiple classes.
+         * This implementation will find type mapping of {@code User.class}
+         * and use it as type mapping for {@code UserFromServiceA.class}.
+         *
+         * @return direct or indirect type mapping for passed type, or {@code null}.
          */
         @SuppressWarnings("unchecked")
         @Nullable
         @Override
         public <T> ContentResolverTypeMapping<T> typeMapping(@NonNull Class<T> type) {
-            return typesMapping != null
-                    ? (ContentResolverTypeMapping<T>) typesMapping.get(type)
-                    : null;
+            if (directTypesMapping == null) {
+                return null;
+            }
+
+            final ContentResolverTypeMapping<T> directTypeMapping = (ContentResolverTypeMapping<T>) directTypesMapping.get(type);
+
+            if (directTypeMapping != null) {
+                // fffast! O(1)
+                return directTypeMapping;
+            } else {
+                // If no direct type mapping found — search for indirect type mapping
+
+                // May be value already in cache.
+                ContentResolverTypeMapping<T> indirectTypeMapping =
+                        (ContentResolverTypeMapping<T>) indirectTypesMappingCache.get(type);
+
+                if (indirectTypeMapping != null) {
+                    // fffast! O(1)
+                    return indirectTypeMapping;
+                }
+
+                // Okay, we don't have direct type mapping.
+                // And we don't have cache for indirect type mapping.
+                // Let's find indirect type mapping and cache it!
+                Class<?> parentType = type.getSuperclass();
+
+                // Search algorithm:
+                // Walk through all parent types of passed type.
+                // If parent type has direct mapping -> we found indirect type mapping!
+                // If current parent type == Object.class -> there is no indirect type mapping.
+                // Complexity:
+                // O(n) where n is number of parent types of passed type (pretty fast).
+
+                // Stop search if root parent is Object.class
+                while (parentType != Object.class) {
+                    indirectTypeMapping = (ContentResolverTypeMapping<T>) directTypesMapping.get(parentType);
+
+                    if (indirectTypeMapping != null) {
+                        indirectTypesMappingCache.put(type, indirectTypeMapping);
+                        return indirectTypeMapping;
+                    }
+
+                    parentType = parentType.getSuperclass();
+                }
+
+                // No indirect type mapping found.
+                return null;
+            }
         }
 
         /**

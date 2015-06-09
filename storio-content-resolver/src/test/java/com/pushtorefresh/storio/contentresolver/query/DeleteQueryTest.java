@@ -22,7 +22,7 @@ public class DeleteQueryTest {
     }
 
     @SuppressWarnings("ConstantConditions")
-    @Test(expected = RuntimeException.class) // Uri#parse() not mocked
+    @Test(expected = NullPointerException.class) // Uri#parse() not mocked
     public void shouldNotAllowNullUriString() {
         new DeleteQuery.Builder()
                 .uri((String) null)

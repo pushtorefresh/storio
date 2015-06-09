@@ -29,7 +29,7 @@
         <module name="PackageName"/>
         <module name="ParameterName"/>
         <!--<module name="StaticVariableName"/>-->
-        <module name="TypeName"/>
+        <!--<module name="TypeName"/>-->
         <!-- Checks for imports                              -->
         <!-- See http://checkstyle.sf.net/config_import.html -->
         <module name="AvoidStarImport"/>

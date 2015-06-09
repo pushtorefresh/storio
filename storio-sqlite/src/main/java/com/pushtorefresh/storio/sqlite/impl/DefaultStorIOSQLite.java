@@ -18,17 +18,18 @@ import com.pushtorefresh.storio.sqlite.query.RawQuery;
 import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
 import static com.pushtorefresh.storio.internal.Queries.nullableString;
+import static java.util.Collections.unmodifiableMap;
 
 /**
  * Default implementation of {@link StorIOSQLite} for {@link android.database.sqlite.SQLiteDatabase}.
@@ -165,8 +166,13 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @NonNull
         private final Object lock = new Object();
 
+        // Unmodifiable
         @Nullable
-        private final Map<Class<?>, SQLiteTypeMapping<?>> typesMapping;
+        private final Map<Class<?>, SQLiteTypeMapping<?>> directTypesMapping;
+
+        @NonNull
+        private final Map<Class<?>, SQLiteTypeMapping<?>> indirectTypesMappingCache
+                = new ConcurrentHashMap<Class<?>, SQLiteTypeMapping<?>>();
 
         /**
          * Guarded by {@link #lock}.
@@ -180,21 +186,77 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         private final Set<Changes> pendingChanges = new HashSet<Changes>();
 
         protected InternalImpl(@Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
-            this.typesMapping = typesMapping != null
-                    ? Collections.unmodifiableMap(typesMapping)
+            this.directTypesMapping = typesMapping != null
+                    ? unmodifiableMap(typesMapping)
                     : null;
         }
 
         /**
-         * {@inheritDoc}
+         * Gets type mapping for required type.
+         * <p/>
+         * This implementation can handle subclasses of types, that registered its type mapping.
+         * For example: You've added type mapping for {@code User.class},
+         * and you have {@code UserFromServiceA.class} which extends {@code User.class},
+         * and you didn't add type mapping for {@code UserFromServiceA.class}
+         * because they have same fields and you just want to have multiple classes.
+         * This implementation will find type mapping of {@code User.class}
+         * and use it as type mapping for {@code UserFromServiceA.class}.
+         *
+         * @return direct or indirect type mapping for passed type, or {@code null}.
          */
         @SuppressWarnings("unchecked")
         @Nullable
         @Override
-        public <T> SQLiteTypeMapping<T> typeMapping(@NonNull Class<T> type) {
-            return typesMapping != null
-                    ? (SQLiteTypeMapping<T>) typesMapping.get(type)
-                    : null;
+        public <T> SQLiteTypeMapping<T> typeMapping(final @NonNull Class<T> type) {
+            if (directTypesMapping == null) {
+                return null;
+            }
+
+            final SQLiteTypeMapping<T> directTypeMapping = (SQLiteTypeMapping<T>) directTypesMapping.get(type);
+
+            if (directTypeMapping != null) {
+                // fffast! O(1)
+                return directTypeMapping;
+            } else {
+                // If no direct type mapping found — search for indirect type mapping
+
+                // May be value already in cache.
+                SQLiteTypeMapping<T> indirectTypeMapping
+                        = (SQLiteTypeMapping<T>) indirectTypesMappingCache.get(type);
+
+                if (indirectTypeMapping != null) {
+                    // fffast! O(1)
+                    return indirectTypeMapping;
+                }
+
+                // Okay, we don't have direct type mapping.
+                // And we don't have cache for indirect type mapping.
+                // Let's find indirect type mapping and cache it!
+                Class<?> parentType = type.getSuperclass();
+
+                // Search algorithm:
+                // Walk through all parent types of passed type.
+                // If parent type has direct mapping -> we found indirect type mapping!
+                // If current parent type == Object.class -> there is no indirect type mapping.
+                // Complexity:
+                // O(n) where n is number of parent types of passed type (pretty fast).
+
+                // Stop search if root parent is Object.class
+                while (parentType != Object.class) {
+                    indirectTypeMapping = (SQLiteTypeMapping<T>) directTypesMapping.get(parentType);
+
+                    if (indirectTypeMapping != null) {
+                        // Store this typeMapping as known to make resolving O(1) for the next time
+                        indirectTypesMappingCache.put(type, indirectTypeMapping);
+                        return indirectTypeMapping;
+                    }
+
+                    parentType = parentType.getSuperclass();
+                }
+
+                // No indirect type mapping found.
+                return null;
+            }
         }
 
         /**

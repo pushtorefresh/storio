@@ -23,17 +23,21 @@ public class UserTableMeta {
     static final String TABLE = "users";
     static final String COLUMN_ID = "_id";
     static final String COLUMN_EMAIL = "email";
+
     // We all will be very old when Java will support string interpolation :(
     static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + "(" +
             COLUMN_ID + " INTEGER PRIMARY KEY, " +
             COLUMN_EMAIL + " TEXT NOT NULL" +
             ");";
+
     static final Query QUERY_ALL = new Query.Builder()
             .table(TABLE)
             .build();
+
     static final DeleteQuery DELETE_QUERY_ALL = new DeleteQuery.Builder()
             .table(TABLE)
             .build();
+
     static final PutResolver<User> PUT_RESOLVER = new DefaultPutResolver<User>() {
         @NonNull
         @Override
