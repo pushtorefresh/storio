@@ -12,6 +12,11 @@ android {
         targetSdkVersion rootProject.ext.compileSdkVersion
         versionCode 1
         versionName '1.0'
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt' // multiple libs have this file -> cause build error
     }
 
     signingConfigs {
@@ -62,4 +67,7 @@ dependencies {
 
     debugCompile   libraries.leakCanary
     releaseCompile libraries.leakCanaryNoOp
+
+    androidTestCompile libraries.storIOTestCommon
+    androidTestCompile libraries.testingSupportLib
 }

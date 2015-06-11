@@ -9,13 +9,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.sample.SampleApp;
-import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
+import com.pushtorefresh.storio.sample.db.table.TweetSqliteTableMeta;
 
 import javax.inject.Inject;
 
 public class SampleContentProvider extends ContentProvider {
 
-    private static final String AUTHORITY = "com.pushtorefresh.storio.sample_provider";
+    public static final String AUTHORITY = "com.pushtorefresh.storio.sample_provider";
 
     private static final String PATH_TWEETS = "tweets";
     private static final int URI_MATCHER_CODE_TWEETS = 1;
@@ -45,7 +45,7 @@ public class SampleContentProvider extends ContentProvider {
                 return sqLiteOpenHelper
                         .getReadableDatabase()
                         .query(
-                                TweetTableMeta.TABLE,
+                                TweetSqliteTableMeta.TABLE,
                                 projection,
                                 selection,
                                 selectionArgs,
@@ -71,11 +71,11 @@ public class SampleContentProvider extends ContentProvider {
                 final long insertedId = sqLiteOpenHelper
                         .getWritableDatabase()
                         .insert(
-                                TweetTableMeta.TABLE,
+                                TweetSqliteTableMeta.TABLE,
                                 null,
                                 values
                         );
-
+                notifyChanges(uri);
                 return ContentUris.withAppendedId(uri, insertedId);
         }
 
@@ -86,13 +86,15 @@ public class SampleContentProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
-                return sqLiteOpenHelper
+                final int rows = sqLiteOpenHelper
                         .getWritableDatabase()
                         .delete(
-                                TweetTableMeta.TABLE,
+                                TweetSqliteTableMeta.TABLE,
                                 selection,
                                 selectionArgs
                         );
+                notifyChanges(uri);
+                return rows;
         }
 
         return 0;
@@ -102,16 +104,22 @@ public class SampleContentProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
-                return sqLiteOpenHelper
+                final int rows = sqLiteOpenHelper
                         .getWritableDatabase()
                         .update(
-                                TweetTableMeta.TABLE,
+                                TweetSqliteTableMeta.TABLE,
                                 values,
                                 selection,
                                 selectionArgs
                         );
+                notifyChanges(uri);
+                return rows;
         }
 
         return 0;
+    }
+
+    private void notifyChanges(final Uri uri) {
+        getContext().getContentResolver().notifyChange(uri, null);
     }
 }

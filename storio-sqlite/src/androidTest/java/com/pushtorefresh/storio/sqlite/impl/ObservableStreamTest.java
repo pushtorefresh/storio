@@ -13,8 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import rx.Subscription;
-import rx.functions.Action1;
+import rx.Observable;
 
 @RunWith(AndroidJUnit4.class)
 public class ObservableStreamTest extends BaseTest {
@@ -27,25 +26,25 @@ public class ObservableStreamTest extends BaseTest {
 
         @Override
         @NonNull
-        public Subscription subscribe() {
+        public Observable<List<User>> newObservable() {
             return storIOSQLite
                     .get()
                     .listOfObjects(User.class)
                     .withQuery(UserTableMeta.QUERY_ALL)
                     .prepare()
-                    .createObservable()
-                    .subscribe(new Action1<List<User>>() {
-                        @Override
-                        public void call(List<User> users) {
-                            onNextObtained(users);
-                        }
-                    });
+                    .createObservable();
         }
+    }
+
+    @Override public void setUp() throws Exception {
+        super.setUp();
+        // initial users for all tests
+        putUsersBlocking(10);
     }
 
     @Test
     public void insertEmission() {
-        final List<User> initialUsers = putUsersBlocking(10);
+        final List<User> initialUsers = getAllUsersBlocking();
         final List<User> usersForInsert = TestFactory.newUsers(10);
         final List<User> allUsers = new ArrayList<User>(initialUsers.size() + usersForInsert.size());
 
@@ -53,44 +52,34 @@ public class ObservableStreamTest extends BaseTest {
         allUsers.addAll(usersForInsert);
 
         final Queue<List<User>> expectedUsers = new LinkedList<List<User>>();
+        // Should receive initial users firstly
         expectedUsers.add(initialUsers);
+        // after then all = initial + inserted users
         expectedUsers.add(allUsers);
 
         final EmissionChecker emissionChecker = new EmissionChecker(expectedUsers);
-        final Subscription subscription = emissionChecker.subscribe();
-
-        // Should receive initial users
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.beginSubscription();
 
         putUsersBlocking(usersForInsert);
 
-        // Should receive initial users + inserted users
-        emissionChecker.assertThatNextExpectedValueReceived();
-
-        emissionChecker.assertThatNoExpectedValuesLeft();
-
-        subscription.unsubscribe();
+        emissionChecker.waitAllAndUnsubscribe();
     }
 
     @Test
     public void updateEmission() {
-        final List<User> users = putUsersBlocking(10);
-
-        final Queue<List<User>> expectedUsers = new LinkedList<List<User>>();
-
-        final List<User> updatedList = new ArrayList<User>(users.size());
+        final List<User> initialUsers = getAllUsersBlocking();
+        final List<User> updatedList = new ArrayList<User>(initialUsers.size());
 
         int count = 1;
-        for (User user : users) {
+        for (User user : initialUsers) {
             updatedList.add(User.newInstance(user.id(), "new_email" + count++));
         }
-        expectedUsers.add(users);
+
+        final Queue<List<User>> expectedUsers = new LinkedList<List<User>>();
+        expectedUsers.add(initialUsers);
         expectedUsers.add(updatedList);
         final EmissionChecker emissionChecker = new EmissionChecker(expectedUsers);
-        final Subscription subscription = emissionChecker.subscribe();
-
-        // Should receive all users
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.beginSubscription();
 
         storIOSQLite
                 .put()
@@ -98,43 +87,35 @@ public class ObservableStreamTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        // Should receive updated users
-        emissionChecker.assertThatNextExpectedValueReceived();
-
-        emissionChecker.assertThatNoExpectedValuesLeft();
-
-        subscription.unsubscribe();
+        emissionChecker.waitAllAndUnsubscribe();
     }
 
     @Test
     public void deleteEmission() {
-        final List<User> usersThatShouldBeSaved = TestFactory.newUsers(10);
-        final List<User> usersThatShouldBeDeleted = TestFactory.newUsers(10);
-        final List<User> allUsers = new ArrayList<User>();
+        final List<User> allUsers = getAllUsersBlocking();
+        final List<User> usersThatShouldBeSaved = new ArrayList<User>();
+        final List<User> usersThatShouldBeDeleted = new ArrayList<User>();
 
-        allUsers.addAll(usersThatShouldBeSaved);
-        allUsers.addAll(usersThatShouldBeDeleted);
-
-        putUsersBlocking(allUsers);
+        int pos = 0;
+        for (User user : allUsers) {
+            // will delete last part
+            final boolean save = pos < 5;
+            pos++;
+            if (save) {
+                usersThatShouldBeSaved.add(user);
+            } else {
+                usersThatShouldBeDeleted.add(user);
+            }
+        }
 
         final Queue<List<User>> expectedUsers = new LinkedList<List<User>>();
-
-        expectedUsers.add(allUsers);
         expectedUsers.add(usersThatShouldBeSaved);
 
         final EmissionChecker emissionChecker = new EmissionChecker(expectedUsers);
-        final Subscription subscription = emissionChecker.subscribe();
-
-        // Should receive all users
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.beginSubscription();
 
         deleteUsersBlocking(usersThatShouldBeDeleted);
 
-        // Should receive users that should be saved
-        emissionChecker.assertThatNextExpectedValueReceived();
-
-        emissionChecker.assertThatNoExpectedValuesLeft();
-
-        subscription.unsubscribe();
+        emissionChecker.waitAllAndUnsubscribe();
     }
 }

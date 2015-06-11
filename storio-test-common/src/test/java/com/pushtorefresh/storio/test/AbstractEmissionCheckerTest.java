@@ -78,7 +78,7 @@ public class AbstractEmissionCheckerTest {
         Subscription subscription = emissionChecker.subscribe();
 
         // Should not throw exception
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.assertThatAllExpectedValueReceived();
 
         subscription.unsubscribe();
     }
@@ -116,7 +116,7 @@ public class AbstractEmissionCheckerTest {
         Subscription subscription = emissionChecker.subscribe();
 
         try {
-            emissionChecker.assertThatNextExpectedValueReceived();
+            emissionChecker.assertThatAllExpectedValueReceived();
             fail();
         } catch (AssertionError expected) {
             // it's okay
@@ -154,7 +154,7 @@ public class AbstractEmissionCheckerTest {
         Subscription subscription = emissionChecker.subscribe();
 
         try {
-            emissionChecker.assertThatNextExpectedValueReceived();
+            emissionChecker.assertThatAllExpectedValueReceived();
             fail();
         } catch (AssertionError expected) {
             // it's okay
@@ -189,51 +189,12 @@ public class AbstractEmissionCheckerTest {
 
         Subscription subscription = emissionChecker.subscribe();
 
-        publishSubject.onNext("1");
+        for (String expectedValue : expectedValues) {
+            publishSubject.onNext(expectedValue);
+        }
 
-        // "1"
-        emissionChecker.assertThatNextExpectedValueReceived();
-
-        publishSubject.onNext("2");
-
-        // "2"
-        emissionChecker.assertThatNextExpectedValueReceived();
-
-        publishSubject.onNext("3");
-
-        // "3"
-        emissionChecker.assertThatNextExpectedValueReceived();
-
-        // Should not throw exception
-        emissionChecker.assertThatNoExpectedValuesLeft();
+        emissionChecker.assertThatAllExpectedValueReceived();
 
         subscription.unsubscribe();
-    }
-
-    @Test
-    public void shouldNotAssertThatNoExpectedValuesLeft() {
-        Queue<String> expectedValues = new LinkedList<String>();
-        expectedValues.add("expected_value");
-
-        AbstractEmissionChecker<String> emissionChecker = new AbstractEmissionChecker<String>(expectedValues) {
-            @NonNull
-            @Override
-            public Subscription subscribe() {
-                return Observable
-                        .just("expected_value")
-                        .subscribe(); // Don't pass value to emission checker
-            }
-        };
-
-        Subscription subscription = emissionChecker.subscribe();
-
-        try {
-            emissionChecker.assertThatNoExpectedValuesLeft();
-            fail();
-        } catch (AssertionError expected) {
-            // it's okay, we didn't call emissionChecker.assertThatNextExpectedValueReceived()
-        } finally {
-            subscription.unsubscribe();
-        }
     }
 }

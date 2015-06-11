@@ -12,8 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import rx.Subscription;
-import rx.functions.Action1;
+import rx.Observable;
 
 public class ObserveChangesTest extends BaseTest {
 
@@ -25,15 +24,8 @@ public class ObserveChangesTest extends BaseTest {
 
         @Override
         @NonNull
-        public Subscription subscribe() {
-            return storIOSQLite
-                    .observeChangesInTable(UserTableMeta.TABLE)
-                    .subscribe(new Action1<Changes>() {
-                        @Override
-                        public void call(Changes changes) {
-                            onNextObtained(changes);
-                        }
-                    });
+        public Observable<Changes> newObservable() {
+            return storIOSQLite.observeChangesInTable(UserTableMeta.TABLE);
         }
     }
 
@@ -45,20 +37,25 @@ public class ObserveChangesTest extends BaseTest {
         expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE));
 
         final EmissionChecker emissionChecker = new EmissionChecker(expectedChanges);
-        final Subscription subscription = emissionChecker.subscribe();
+
+        emissionChecker.beginSubscription();
 
         putUsersBlocking(users);
 
         // Should receive changes of Users table
-        emissionChecker.assertThatNextExpectedValueReceived();
-
-        emissionChecker.assertThatNoExpectedValuesLeft();
-
-        subscription.unsubscribe();
+        emissionChecker.waitAllAndUnsubscribe();
     }
 
     @Test
     public void updateEmission() {
+        final Queue<Changes> expectedChanges = new LinkedList<Changes>();
+        expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE));
+        expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE));
+
+        final EmissionChecker emissionChecker = new EmissionChecker(expectedChanges);
+
+        emissionChecker.beginSubscription();
+
         final List<User> users = putUsersBlocking(10);
         final List<User> updated = new ArrayList<User>(users.size());
 
@@ -66,43 +63,29 @@ public class ObserveChangesTest extends BaseTest {
             updated.add(User.newInstance(user.id(), user.email()));
         }
 
-        final Queue<Changes> expectedChanges = new LinkedList<Changes>();
-        expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE));
-
-        final EmissionChecker emissionChecker = new EmissionChecker(expectedChanges);
-        final Subscription subscription = emissionChecker.subscribe();
-
         storIOSQLite
                 .put()
                 .objects(User.class, updated)
                 .prepare()
                 .executeAsBlocking();
 
-        // Should receive changes of Users table
-        emissionChecker.assertThatNextExpectedValueReceived();
-
-        emissionChecker.assertThatNoExpectedValuesLeft();
-
-        subscription.unsubscribe();
+        emissionChecker.waitAllAndUnsubscribe();
     }
 
     @Test
     public void deleteEmission() {
-        final List<User> users = putUsersBlocking(10);
-
         final Queue<Changes> expectedChanges = new LinkedList<Changes>();
+        expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE));
         expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE));
 
         final EmissionChecker emissionChecker = new EmissionChecker(expectedChanges);
-        final Subscription subscription = emissionChecker.subscribe();
+        emissionChecker.beginSubscription();
 
+        final List<User> users = putUsersBlocking(10);
+
+        emissionChecker.waitOne();
         deleteUsersBlocking(users);
 
-        // Should receive changes of Users table
-        emissionChecker.assertThatNextExpectedValueReceived();
-
-        emissionChecker.assertThatNoExpectedValuesLeft();
-
-        subscription.unsubscribe();
+        emissionChecker.waitAllAndUnsubscribe();
     }
 }
