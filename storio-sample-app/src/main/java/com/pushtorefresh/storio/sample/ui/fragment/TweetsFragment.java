@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.SampleApp;
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
-import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
+import com.pushtorefresh.storio.sample.db.table.TweetSqliteTableMeta;
 import com.pushtorefresh.storio.sample.ui.DividerItemDecoration;
 import com.pushtorefresh.storio.sample.ui.ToastHelper;
 import com.pushtorefresh.storio.sample.ui.UiStateController;
@@ -93,7 +93,7 @@ public class TweetsFragment extends BaseFragment {
         final Subscription subscription = storIOSQLite
                 .get()
                 .listOfObjects(Tweet.class)
-                .withQuery(TweetTableMeta.QUERY_ALL)
+                .withQuery(TweetSqliteTableMeta.QUERY_ALL)
                 .prepare()
                 .createObservable() // it will be subscribed to changes in tweets table!
                 .delay(1, SECONDS) // for better User Experience

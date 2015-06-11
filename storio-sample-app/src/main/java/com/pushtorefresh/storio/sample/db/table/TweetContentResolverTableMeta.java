@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.content_resolver.impl;
+package com.pushtorefresh.storio.sample.db.table;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -17,26 +17,28 @@ import com.pushtorefresh.storio.contentresolver.operation.put.PutResult;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
+import com.pushtorefresh.storio.sample.db.entity.Tweet;
+import com.pushtorefresh.storio.sample.provider.SampleContentProvider;
 
-class TweetMeta {
+public class TweetContentResolverTableMeta extends TweetTableMeta {
 
-    static final String TABLE = "tweets";
+    public static final String CONTENT_URI = "content://" + SampleContentProvider.AUTHORITY + "/" + TABLE;
 
-    // Custom internal id field name, that used instead of "_id".
-    static final String COLUMN_ID = "tweet_internal_id";
+    public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<Tweet>() {
 
-    static final String COLUMN_AUTHOR_ID = "author_id";
-    static final String COLUMN_CONTENT_TEXT = "content_text";
+        @NonNull
+        @Override
+        public PutResult performPut(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Tweet tweet) {
+            final PutResult putResult = super.performPut(storIOContentResolver, tweet);
 
-    static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + "(" +
-            COLUMN_ID + " INTEGER PRIMARY KEY, " +
-            COLUMN_AUTHOR_ID + " INTEGER NOT NULL, " +
-            COLUMN_CONTENT_TEXT + " TEXT NOT NULL" +
-            ");";
+            if (putResult.wasInserted()) {
+                final Uri insertedUri = putResult.insertedUri();
+                tweet.setId(insertedUri != null ? ContentUris.parseId(insertedUri) : null);
+            }
 
-    static final String CONTENT_URI = "content://" + TestContentProvider.AUTHORITY + "/" + TABLE;
+            return putResult;
+        }
 
-    static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<Tweet>() {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull Tweet object) {
@@ -58,61 +60,42 @@ class TweetMeta {
         @NonNull
         @Override
         protected ContentValues mapToContentValues(@NonNull Tweet tweet) {
-            final ContentValues contentValues = new ContentValues(3); // GC, relax, take it eeeeasy
+            final ContentValues contentValues = new ContentValues(3); // wow, such optimization
 
             contentValues.put(COLUMN_ID, tweet.id());
-            contentValues.put(COLUMN_AUTHOR_ID, tweet.authorId());
-            contentValues.put(COLUMN_CONTENT_TEXT, tweet.contentText());
+            contentValues.put(COLUMN_AUTHOR, tweet.author());
+            contentValues.put(COLUMN_CONTENT, tweet.content());
 
             return contentValues;
         }
-
-        @NonNull
-        @Override
-        public PutResult performPut(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Tweet tweet) {
-            final PutResult putResult = super.performPut(storIOContentResolver, tweet);
-
-            if (putResult.wasInserted()) {
-                final Uri insertedUri = putResult.insertedUri();
-                tweet.setId(insertedUri != null ? ContentUris.parseId(insertedUri) : null);
-            }
-
-            return putResult;
-        }
     };
-
-    static final GetResolver<Tweet> GET_RESOLVER = new DefaultGetResolver<Tweet>() {
+    public static final GetResolver<Tweet> GET_RESOLVER = new DefaultGetResolver<Tweet>() {
         @NonNull
         @Override
         public Tweet mapFromCursor(@NonNull Cursor cursor) {
-            return Tweet.newInstance(
+            return Tweet.newTweet(
                     cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-                    cursor.getLong(cursor.getColumnIndex(COLUMN_AUTHOR_ID)),
-                    cursor.getString(cursor.getColumnIndex(COLUMN_CONTENT_TEXT))
+                    cursor.getString(cursor.getColumnIndex(COLUMN_AUTHOR)),
+                    cursor.getString(cursor.getColumnIndex(COLUMN_CONTENT))
             );
         }
     };
-
-    static final DeleteResolver<Tweet> DELETE_RESOLVER = new DefaultDeleteResolver<Tweet>() {
+    public static final DeleteResolver<Tweet> DELETE_RESOLVER = new DefaultDeleteResolver<Tweet>() {
         @NonNull
         @Override
-        protected DeleteQuery mapToDeleteQuery(@NonNull Tweet tweet) {
+        public DeleteQuery mapToDeleteQuery(@NonNull Tweet object) {
             return new DeleteQuery.Builder()
                     .uri(CONTENT_URI)
                     .where(COLUMN_ID + " = ?")
-                    .whereArgs(tweet.id())
+                    .whereArgs(object.id())
                     .build();
         }
     };
-
-    static final DeleteQuery DELETE_QUERY_ALL = new DeleteQuery.Builder()
-            .uri(CONTENT_URI)
+    public static final DeleteQuery DELETE_ALL = new DeleteQuery.Builder()
+            .uri(Uri.parse(CONTENT_URI))
             .build();
 
-
-    private TweetMeta() {
+    private TweetContentResolverTableMeta() {
         throw new IllegalStateException("No instances please");
     }
-
-
 }

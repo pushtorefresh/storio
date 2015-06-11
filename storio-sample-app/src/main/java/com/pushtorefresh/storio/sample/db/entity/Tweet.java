@@ -61,4 +61,28 @@ public class Tweet {
         return content;
     }
 
+    public void setId(@Nullable Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tweet tweet = (Tweet) o;
+
+        if (id != null ? !id.equals(tweet.id) : tweet.id != null) return false;
+        if (!author.equals(tweet.author)) return false;
+        return content.equals(tweet.content);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + author.hashCode();
+        result = 31 * result + content.hashCode();
+        return result;
+    }
 }
