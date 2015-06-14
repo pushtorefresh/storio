@@ -40,7 +40,7 @@ class GetStub {
         storIOContentResolver = mock(StorIOContentResolver.class);
         internal = mock(StorIOContentResolver.Internal.class);
 
-        query = new Query.Builder()
+        query = Query.builder()
                 .uri(mock(Uri.class))
                 .build();
 

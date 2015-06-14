@@ -26,7 +26,7 @@ public class ArticleMeta {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull Article object) {
-            return new InsertQuery.Builder()
+            return InsertQuery.builder()
                     .uri(CONTENT_URI)
                     .build();
         }
@@ -34,7 +34,7 @@ public class ArticleMeta {
         @NonNull
         @Override
         protected UpdateQuery mapToUpdateQuery(@NonNull Article article) {
-            return new UpdateQuery.Builder()
+            return UpdateQuery.builder()
                     .uri(CONTENT_URI)
                     .where(BaseColumns._ID + " = ?")
                     .whereArgs(article.id())
@@ -60,7 +60,7 @@ public class ArticleMeta {
         @NonNull
         @Override
         protected DeleteQuery mapToDeleteQuery(@NonNull Article article) {
-            return new DeleteQuery.Builder()
+            return DeleteQuery.builder()
                     .uri(CONTENT_URI)
                     .where(BaseColumns._ID + " = ?")
                     .whereArgs(article.id())

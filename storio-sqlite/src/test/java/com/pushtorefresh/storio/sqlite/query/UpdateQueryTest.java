@@ -12,21 +12,21 @@ public class UpdateQueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullTable() {
-        new UpdateQuery.Builder()
+        UpdateQuery.builder()
                 .table(null)
                 .build();
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldNotAllowEmptyTable() {
-        new UpdateQuery.Builder()
+        UpdateQuery.builder()
                 .table("")
                 .build();
     }
 
     @Test
     public void whereClauseShouldNotBeNull() {
-        UpdateQuery updateQuery = new UpdateQuery.Builder()
+        UpdateQuery updateQuery = UpdateQuery.builder()
                 .table("test_table")
                 .build();
 
@@ -36,7 +36,7 @@ public class UpdateQueryTest {
 
     @Test
     public void whereArgsShouldNotBeNull() {
-        UpdateQuery updateQuery = new UpdateQuery.Builder()
+        UpdateQuery updateQuery = UpdateQuery.builder()
                 .table("test_table")
                 .build();
 
@@ -50,7 +50,7 @@ public class UpdateQueryTest {
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
 
-        final UpdateQuery updateQuery = new UpdateQuery.Builder()
+        final UpdateQuery updateQuery = UpdateQuery.builder()
                 .table(table)
                 .where(where)
                 .whereArgs(whereArgs)

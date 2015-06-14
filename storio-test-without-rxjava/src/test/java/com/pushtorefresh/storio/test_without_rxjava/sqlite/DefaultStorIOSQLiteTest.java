@@ -17,7 +17,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiateWithoutRxJava() {
         // Should not fail
-        new DefaultStorIOSQLite.Builder()
+        DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build();
     }
@@ -25,12 +25,12 @@ public class DefaultStorIOSQLiteTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiateGetCursor() {
-        new DefaultStorIOSQLite.Builder()
+        DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .get()
                 .cursor()
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table("test_table")
                         .build())
                 .withGetResolver(mock(GetResolver.class))
@@ -40,12 +40,12 @@ public class DefaultStorIOSQLiteTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiateGetListOfObjects() {
-        new DefaultStorIOSQLite.Builder()
+        DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .get()
                 .listOfObjects(Object.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table("test_table")
                         .build())
                 .withGetResolver(mock(GetResolver.class))
@@ -55,7 +55,7 @@ public class DefaultStorIOSQLiteTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiatePutObject() {
-        new DefaultStorIOSQLite.Builder()
+        DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
@@ -67,7 +67,7 @@ public class DefaultStorIOSQLiteTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiatePutObjectsIterable() {
-        new DefaultStorIOSQLite.Builder()
+        DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
@@ -79,7 +79,7 @@ public class DefaultStorIOSQLiteTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiatePutObjectsVarArgs() {
-        new DefaultStorIOSQLite.Builder()
+        DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
@@ -91,7 +91,7 @@ public class DefaultStorIOSQLiteTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiatePutContentValues() {
-        new DefaultStorIOSQLite.Builder()
+        DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
@@ -103,7 +103,7 @@ public class DefaultStorIOSQLiteTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiatePutContentValuesIterable() {
-        new DefaultStorIOSQLite.Builder()
+        DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
@@ -115,7 +115,7 @@ public class DefaultStorIOSQLiteTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiatePutContentValuesVarArgs() {
-        new DefaultStorIOSQLite.Builder()
+        DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()

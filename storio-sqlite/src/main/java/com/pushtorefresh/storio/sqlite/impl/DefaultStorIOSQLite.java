@@ -93,9 +93,25 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     }
 
     /**
+     * Creates new builder for {@link DefaultStorIOSQLite}.
+     *
+     * @return non-null instance of {@link DefaultStorIOSQLite.Builder}.
+     */
+    @NonNull
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Builder for {@link DefaultStorIOSQLite}.
      */
     public static final class Builder {
+
+        /**
+         * Please use {@link DefaultStorIOSQLite#builder()} instead of this.
+         */
+        Builder() {
+        }
 
         /**
          * Required: Specifies SQLite Open helper for internal usage.

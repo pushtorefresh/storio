@@ -23,7 +23,7 @@ public class DefaultGetResolverTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        final RawQuery rawQuery = new RawQuery.Builder()
+        final RawQuery rawQuery = RawQuery.builder()
                 .query("test sql")
                 .build();
 
@@ -59,7 +59,7 @@ public class DefaultGetResolverTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        final Query query = new Query.Builder()
+        final Query query = Query.builder()
                 .table("test_table")
                 .build();
 

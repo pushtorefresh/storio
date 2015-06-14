@@ -85,9 +85,25 @@ public final class InsertQuery {
     }
 
     /**
+     * Creates new builder for {@link InsertQuery}.
+     *
+     * @return non-null instance of {@link InsertQuery.Builder}.
+     */
+    @NonNull
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Builder for {@link InsertQuery}.
      */
     public static final class Builder {
+
+        /**
+         * Please use {@link InsertQuery#builder()} instead of this.
+         */
+        Builder() {
+        }
 
         /**
          * Required: Specifies table name.

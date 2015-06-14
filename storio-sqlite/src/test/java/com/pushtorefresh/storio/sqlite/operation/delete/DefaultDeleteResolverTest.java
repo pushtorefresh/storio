@@ -24,7 +24,7 @@ public class DefaultDeleteResolverTest {
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
         final String testTable = "test_table";
-        final DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table(testTable)
                 .build();
 

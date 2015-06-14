@@ -14,7 +14,7 @@ public class SQLiteTypeMappingTest {
     @SuppressWarnings({"ConstantConditions", "unchecked"})
     @Test(expected = NullPointerException.class)
     public void nullPutResolver() {
-        new SQLiteTypeMapping.Builder<Object>()
+        SQLiteTypeMapping.builder()
                 .putResolver(null)
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
@@ -24,7 +24,7 @@ public class SQLiteTypeMappingTest {
     @SuppressWarnings({"ConstantConditions", "unchecked"})
     @Test(expected = NullPointerException.class)
     public void nullMapFromCursor() {
-        new SQLiteTypeMapping.Builder<Object>()
+        SQLiteTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(null)
                 .deleteResolver(mock(DeleteResolver.class))
@@ -34,7 +34,7 @@ public class SQLiteTypeMappingTest {
     @SuppressWarnings({"ConstantConditions", "unchecked"})
     @Test(expected = NullPointerException.class)
     public void nullMapToDeleteQuery() {
-        new SQLiteTypeMapping.Builder<Object>()
+        SQLiteTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(null)
@@ -52,7 +52,7 @@ public class SQLiteTypeMappingTest {
         final GetResolver<TestItem> getResolver = mock(GetResolver.class);
         final DeleteResolver<TestItem> deleteResolver = mock(DeleteResolver.class);
 
-        final SQLiteTypeMapping<TestItem> typeMapping = new SQLiteTypeMapping.Builder<TestItem>()
+        final SQLiteTypeMapping<TestItem> typeMapping = SQLiteTypeMapping.<TestItem>builder()
                 .putResolver(putResolver)
                 .getResolver(getResolver)
                 .deleteResolver(deleteResolver)

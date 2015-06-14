@@ -25,7 +25,7 @@ class UserTableMeta {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull User object) {
-            return new InsertQuery.Builder()
+            return InsertQuery.builder()
                     .table(TABLE)
                     .build();
         }
@@ -33,7 +33,7 @@ class UserTableMeta {
         @NonNull
         @Override
         protected UpdateQuery mapToUpdateQuery(@NonNull User user) {
-            return new UpdateQuery.Builder()
+            return UpdateQuery.builder()
                     .table(TABLE)
                     .where(COLUMN_EMAIL + " = ?")
                     .whereArgs(user.email())
@@ -57,7 +57,7 @@ class UserTableMeta {
         @NonNull
         @Override
         public DeleteQuery mapToDeleteQuery(@NonNull User user) {
-            return new DeleteQuery.Builder()
+            return DeleteQuery.builder()
                     .table(TABLE)
                     .where(COLUMN_EMAIL + " = ?")
                     .whereArgs(user.email())

@@ -26,7 +26,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull ContentValues object) {
-            return new InsertQuery.Builder()
+            return InsertQuery.builder()
                     .uri(mock(Uri.class))
                     .build();
         }
@@ -34,7 +34,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         @NonNull
         @Override
         protected UpdateQuery mapToUpdateQuery(@NonNull ContentValues object) {
-            return new UpdateQuery.Builder()
+            return UpdateQuery.builder()
                     .uri(mock(Uri.class))
                     .build();
         }

@@ -49,7 +49,7 @@ public class DeleteResolverGenerator {
                 .addParameter(ParameterSpec.builder(storIOSQLiteTypeClassName, "object")
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
-                .addCode("return new DeleteQuery.Builder()\n" +
+                .addCode("return DeleteQuery.builder()\n" +
                                 INDENT + ".table($S)\n" +
                                 INDENT + ".where($S)\n" +
                                 INDENT + ".whereArgs($L)\n" +

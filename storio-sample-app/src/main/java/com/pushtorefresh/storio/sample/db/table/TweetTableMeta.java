@@ -32,7 +32,7 @@ public class TweetTableMeta {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull Tweet object) {
-            return new InsertQuery.Builder()
+            return InsertQuery.builder()
                     .table(TABLE)
                     .build();
         }
@@ -40,7 +40,7 @@ public class TweetTableMeta {
         @NonNull
         @Override
         protected UpdateQuery mapToUpdateQuery(@NonNull Tweet tweet) {
-            return new UpdateQuery.Builder()
+            return UpdateQuery.builder()
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(tweet.id())
@@ -74,14 +74,14 @@ public class TweetTableMeta {
         @NonNull
         @Override
         public DeleteQuery mapToDeleteQuery(@NonNull Tweet object) {
-            return new DeleteQuery.Builder()
+            return DeleteQuery.builder()
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(object.id())
                     .build();
         }
     };
-    public static final Query QUERY_ALL = new Query.Builder()
+    public static final Query QUERY_ALL = Query.builder()
             .table(TABLE)
             .build();
 

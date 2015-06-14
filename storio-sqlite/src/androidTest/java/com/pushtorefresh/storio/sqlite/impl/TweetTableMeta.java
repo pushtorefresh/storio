@@ -26,14 +26,14 @@ public class TweetTableMeta {
             COLUMN_AUTHOR_ID + " INTEGER NOT NULL, " +
             COLUMN_CONTENT_TEXT + " TEXT NOT NULL" +
             ");";
-    static final DeleteQuery DELETE_QUERY_ALL = new DeleteQuery.Builder()
+    static final DeleteQuery DELETE_QUERY_ALL = DeleteQuery.builder()
             .table(TABLE)
             .build();
     static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<Tweet>() {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull Tweet object) {
-            return new InsertQuery.Builder()
+            return InsertQuery.builder()
                     .table(TABLE)
                     .build();
         }
@@ -41,7 +41,7 @@ public class TweetTableMeta {
         @NonNull
         @Override
         protected UpdateQuery mapToUpdateQuery(@NonNull Tweet tweet) {
-            return new UpdateQuery.Builder()
+            return UpdateQuery.builder()
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(tweet.id())
@@ -75,7 +75,7 @@ public class TweetTableMeta {
         @NonNull
         @Override
         public DeleteQuery mapToDeleteQuery(@NonNull Tweet object) {
-            return new DeleteQuery.Builder()
+            return DeleteQuery.builder()
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(object.id())

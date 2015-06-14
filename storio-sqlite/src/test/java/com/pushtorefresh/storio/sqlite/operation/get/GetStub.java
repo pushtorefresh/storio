@@ -47,11 +47,11 @@ class GetStub {
         when(storIOSQLite.internal())
                 .thenReturn(internal);
 
-        query = new Query.Builder()
+        query = Query.builder()
                 .table("test_table")
                 .build();
 
-        rawQuery = new RawQuery.Builder()
+        rawQuery = RawQuery.builder()
                 .query("test sql")
                 .observesTables("test_table")
                 .build();

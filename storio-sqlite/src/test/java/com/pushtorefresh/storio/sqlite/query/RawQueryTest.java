@@ -14,21 +14,21 @@ public class RawQueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullQuery() {
-        new RawQuery.Builder()
+        RawQuery.builder()
                 .query(null)
                 .build();
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldNotAllowEmptyQuery() {
-        new RawQuery.Builder()
+        RawQuery.builder()
                 .query("")
                 .build();
     }
 
     @Test
     public void argsShouldNotBeNull() {
-        RawQuery rawQuery = new RawQuery.Builder()
+        RawQuery rawQuery = RawQuery.builder()
                 .query("lalala I know SQL")
                 .build();
 
@@ -38,7 +38,7 @@ public class RawQueryTest {
 
     @Test
     public void observesTablesShouldNotBeNull() {
-        RawQuery rawQuery = new RawQuery.Builder()
+        RawQuery rawQuery = RawQuery.builder()
                 .query("lalala I know SQL")
                 .build();
 
@@ -48,7 +48,7 @@ public class RawQueryTest {
 
     @Test
     public void affectsTablesShouldNotBeNull() {
-        RawQuery rawQuery = new RawQuery.Builder()
+        RawQuery rawQuery = RawQuery.builder()
                 .query("lalala I know SQL")
                 .build();
 
@@ -63,7 +63,7 @@ public class RawQueryTest {
         final String[] observesTables = {"table_to_observe_1", "table_to_observe_2"};
         final String[] affectsTables = {"table_to_affect_1", "table_to_affect_2"};
 
-        final RawQuery rawQuery = new RawQuery.Builder()
+        final RawQuery rawQuery = RawQuery.builder()
                 .query(query)
                 .args(args)
                 .observesTables(observesTables)

@@ -25,7 +25,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull ContentValues object) {
-            return new InsertQuery.Builder()
+            return InsertQuery.builder()
                     .table("some_table")
                     .build();
         }
@@ -33,7 +33,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
         @NonNull
         @Override
         protected UpdateQuery mapToUpdateQuery(@NonNull ContentValues contentValues) {
-            return new UpdateQuery.Builder()
+            return UpdateQuery.builder()
                     .table("some_table") // it's just a sample, no need to specify params
                     .build();
         }

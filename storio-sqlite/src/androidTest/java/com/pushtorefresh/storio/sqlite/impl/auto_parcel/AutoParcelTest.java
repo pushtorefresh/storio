@@ -29,9 +29,9 @@ public class AutoParcelTest {
 
     @Before
     public void setUp() {
-        storIOSQLite = new DefaultStorIOSQLite.Builder()
+        storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(new OpenHelper(InstrumentationRegistry.getContext()))
-                .addTypeMapping(Book.class, new SQLiteTypeMapping.Builder<Book>()
+                .addTypeMapping(Book.class, SQLiteTypeMapping.<Book>builder()
                         .putResolver(BookTableMeta.PUT_RESOLVER)
                         .getResolver(BookTableMeta.GET_RESOLVER)
                         .deleteResolver(BookTableMeta.DELETE_RESOLVER)
@@ -41,7 +41,7 @@ public class AutoParcelTest {
         // Clearing books table before each test case
         storIOSQLite
                 .delete()
-                .byQuery(new DeleteQuery.Builder()
+                .byQuery(DeleteQuery.builder()
                         .table(BookTableMeta.TABLE)
                         .build())
                 .prepare()
@@ -67,7 +67,7 @@ public class AutoParcelTest {
         final List<Book> storedBooks = storIOSQLite
                 .get()
                 .listOfObjects(Book.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(BookTableMeta.TABLE)
                         .build())
                 .prepare()
@@ -111,7 +111,7 @@ public class AutoParcelTest {
         final List<Book> storedBooks = storIOSQLite
                 .get()
                 .listOfObjects(Book.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(BookTableMeta.TABLE)
                         .build())
                 .prepare()
@@ -149,7 +149,7 @@ public class AutoParcelTest {
         final List<Book> storedBooks = storIOSQLite
                 .get()
                 .listOfObjects(Book.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(BookTableMeta.TABLE)
                         .build())
                 .prepare()

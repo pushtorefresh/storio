@@ -234,9 +234,25 @@ public final class Query {
     }
 
     /**
+     * Creates new builder for {@link Query}.
+     *
+     * @return non-null instance of {@link Query.Builder}.
+     */
+    @NonNull
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Builder for {@link Query}.
      */
     public static final class Builder {
+
+        /**
+         * Please use {@link Query#builder()} instead of this.
+         */
+        Builder() {
+        }
 
         /**
          * Required: Specifies table name.

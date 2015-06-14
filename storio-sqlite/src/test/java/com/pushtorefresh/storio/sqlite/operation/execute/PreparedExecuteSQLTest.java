@@ -102,12 +102,12 @@ public class PreparedExecuteSQLTest {
             internal = mock(StorIOSQLite.Internal.class);
 
             if (queryWithNotification) {
-                rawQuery = new RawQuery.Builder()
+                rawQuery = RawQuery.builder()
                         .query("DROP TABLE users!")
                         .affectsTables(affectedTables)
                         .build();
             } else {
-                rawQuery = new RawQuery.Builder()
+                rawQuery = RawQuery.builder()
                         .query("DROP TABLE users!")
                         .build();
             }

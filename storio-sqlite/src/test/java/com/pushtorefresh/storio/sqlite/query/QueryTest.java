@@ -14,21 +14,21 @@ public class QueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullTable() {
-        new Query.Builder()
+        Query.builder()
                 .table(null)
                 .build();
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldNotAllowEmptyTable() {
-        new Query.Builder()
+        Query.builder()
                 .table("")
                 .build();
     }
 
     @Test
     public void distinctShouldBeFalseByDefault() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .table("test_table")
                 .build();
 
@@ -37,7 +37,7 @@ public class QueryTest {
 
     @Test
     public void columnsShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .table("test_table")
                 .build();
 
@@ -47,7 +47,7 @@ public class QueryTest {
 
     @Test
     public void whereClauseShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .table("test_table")
                 .build();
 
@@ -57,7 +57,7 @@ public class QueryTest {
 
     @Test
     public void whereArgsShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .table("test_table")
                 .build();
 
@@ -67,7 +67,7 @@ public class QueryTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptionIfWhereArgsSpecifiedWithoutWhereClause() {
-        new Query.Builder()
+        Query.builder()
                 .table("test_table")
                 .whereArgs("someArg") // Without WHERE clause!
                 .build();
@@ -75,7 +75,7 @@ public class QueryTest {
 
     @Test
     public void groupByShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .table("test_table")
                 .build();
 
@@ -85,7 +85,7 @@ public class QueryTest {
 
     @Test
     public void havingShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .table("test_table")
                 .build();
 
@@ -95,7 +95,7 @@ public class QueryTest {
 
     @Test
     public void orderByShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .table("test_table")
                 .build();
 
@@ -105,7 +105,7 @@ public class QueryTest {
 
     @Test
     public void limitShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .table("test_table")
                 .build();
 
@@ -125,7 +125,7 @@ public class QueryTest {
         final String orderBy = "test_order_by";
         final String limit = "test_limit";
 
-        final Query query = new Query.Builder()
+        final Query query = Query.builder()
                 .table(table)
                 .distinct(distinct)
                 .columns(columns)

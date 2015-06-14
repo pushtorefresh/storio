@@ -48,9 +48,25 @@ public final class ContentResolverTypeMapping<T> {
     }
 
     /**
+     * Creates new builder for {@link ContentResolverTypeMapping}.
+     *
+     * @return non-null instance of {@link ContentResolverTypeMapping.Builder}.
+     */
+    @NonNull
+    public static <T> Builder<T> builder() {
+        return new Builder<T>();
+    }
+
+    /**
      * Builder for {@link ContentResolverTypeMapping}.
      */
     public static final class Builder<T> {
+
+        /**
+         * Please use {@link ContentResolverTypeMapping#builder()} instead of this.
+         */
+        Builder() {
+        }
 
         /**
          * Required: Specifies Resolver for Put Operation.

@@ -12,7 +12,7 @@ public class ExecuteSQLOperationDesignTest extends OperationDesignTest {
     public void execSqlBlocking() {
         Object nothing = storIOSQLite()
                 .executeSQL()
-                .withQuery(new RawQuery.Builder()
+                .withQuery(RawQuery.builder()
                         .query("ALTER TABLE users ...")
                         .build())
                 .prepare()
@@ -23,7 +23,7 @@ public class ExecuteSQLOperationDesignTest extends OperationDesignTest {
     public void execSqlObservable() {
         Observable<Object> observable = storIOSQLite()
                 .executeSQL()
-                .withQuery(new RawQuery.Builder()
+                .withQuery(RawQuery.builder()
                         .query("DROP TABLE users")
                         .build())
                 .prepare()
