@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.SampleApp;
 import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
@@ -15,7 +16,8 @@ import javax.inject.Inject;
 
 public class SampleContentProvider extends ContentProvider {
 
-    private static final String AUTHORITY = "com.pushtorefresh.storio.sample_provider";
+    @NonNull
+    public static final String AUTHORITY = "com.pushtorefresh.storio.sample_provider";
 
     private static final String PATH_TWEETS = "tweets";
     private static final int URI_MATCHER_CODE_TWEETS = 1;
@@ -66,43 +68,37 @@ public class SampleContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
+        final long insertedId;
+
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
-                final long insertedId = sqLiteOpenHelper
+                insertedId = sqLiteOpenHelper
                         .getWritableDatabase()
                         .insert(
                                 TweetTableMeta.TABLE,
                                 null,
                                 values
                         );
+                break;
 
-                return ContentUris.withAppendedId(uri, insertedId);
+            default:
+                return null;
         }
 
-        return null;
-    }
-
-    @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        switch (URI_MATCHER.match(uri)) {
-            case URI_MATCHER_CODE_TWEETS:
-                return sqLiteOpenHelper
-                        .getWritableDatabase()
-                        .delete(
-                                TweetTableMeta.TABLE,
-                                selection,
-                                selectionArgs
-                        );
+        if (insertedId != -1) {
+            getContext().getContentResolver().notifyChange(uri, null);
         }
 
-        return 0;
+        return ContentUris.withAppendedId(uri, insertedId);
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        final int numberOfRowsAffected;
+
         switch (URI_MATCHER.match(uri)) {
             case URI_MATCHER_CODE_TWEETS:
-                return sqLiteOpenHelper
+                numberOfRowsAffected = sqLiteOpenHelper
                         .getWritableDatabase()
                         .update(
                                 TweetTableMeta.TABLE,
@@ -110,8 +106,42 @@ public class SampleContentProvider extends ContentProvider {
                                 selection,
                                 selectionArgs
                         );
+                break;
+
+            default:
+                return 0;
         }
 
-        return 0;
+        if (numberOfRowsAffected > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return numberOfRowsAffected;
+    }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        final int numberOfRowsDeleted;
+
+        switch (URI_MATCHER.match(uri)) {
+            case URI_MATCHER_CODE_TWEETS:
+                numberOfRowsDeleted = sqLiteOpenHelper
+                        .getWritableDatabase()
+                        .delete(
+                                TweetTableMeta.TABLE,
+                                selection,
+                                selectionArgs
+                        );
+                break;
+
+            default:
+                return 0;
+        }
+
+        if (numberOfRowsDeleted > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return numberOfRowsDeleted;
     }
 }

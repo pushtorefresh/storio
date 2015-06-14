@@ -17,7 +17,7 @@ import rx.Subscription;
 import rx.functions.Action1;
 
 @RunWith(AndroidJUnit4.class)
-public class ObservableStreamTest extends BaseTest {
+public class RxQueryTest extends BaseTest {
 
     private class EmissionChecker extends AbstractEmissionChecker<List<User>> {
 

@@ -12,6 +12,8 @@ android {
         targetSdkVersion rootProject.ext.compileSdkVersion
         versionCode 1
         versionName '1.0'
+
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     signingConfigs {
@@ -38,6 +40,10 @@ android {
     lintOptions {
         disable 'InvalidPackage' // Dagger
     }
+
+    packagingOptions {
+        exclude 'LICENSE.txt' // multiple libs have this file -> cause build error
+    }
 }
 
 dependencies {
@@ -62,4 +68,7 @@ dependencies {
 
     debugCompile   libraries.leakCanary
     releaseCompile libraries.leakCanaryNoOp
+
+    androidTestCompile libraries.storIOTestCommon
+    androidTestCompile libraries.testingSupportLib
 }
