@@ -9,9 +9,6 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
-    }
-
-    defaultConfig {
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 

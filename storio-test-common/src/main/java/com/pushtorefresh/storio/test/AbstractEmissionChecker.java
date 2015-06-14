@@ -43,7 +43,7 @@ public abstract class AbstractEmissionChecker<T> {
 
         if (!expectedValueReceived.get()) {
             throw new AssertionError("Expected value = " + expectedValues.peek() + " was not received, " +
-                    "timeout = " + timeoutMillis + "ms");
+                    "timeout = " + timeoutMillis + "ms, expectedValues.size = " + expectedValues.size());
         } else {
             // reset flag
             expectedValueReceived.set(false);
