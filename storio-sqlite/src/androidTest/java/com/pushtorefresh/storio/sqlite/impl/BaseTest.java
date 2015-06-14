@@ -131,7 +131,7 @@ public abstract class BaseTest {
     DeleteResults<User> deleteUsersBlocking(@NonNull final List<User> users) {
         final DeleteResults<User> deleteResults = storIOSQLite
                 .delete()
-                .objects(User.class, users)
+                .objects(users)
                 .prepare()
                 .executeAsBlocking();
 

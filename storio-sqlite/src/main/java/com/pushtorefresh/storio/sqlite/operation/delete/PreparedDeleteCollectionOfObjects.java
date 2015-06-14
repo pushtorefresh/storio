@@ -9,15 +9,18 @@ import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
@@ -25,20 +28,20 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  *
  * @param <T> type of objects to delete.
  */
-public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults<T>> {
+public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
     @NonNull
-    private final Iterable<T> objects;
+    private final Collection<T> objects;
 
-    @NonNull
-    private final DeleteResolver<T> deleteResolver;
+    @Nullable
+    private final DeleteResolver<T> explicitDeleteResolver;
 
     private final boolean useTransaction;
 
-    PreparedDeleteObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Iterable<T> objects, @NonNull DeleteResolver<T> deleteResolver, boolean useTransaction) {
+    PreparedDeleteCollectionOfObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects, @NonNull DeleteResolver<T> explicitDeleteResolver, boolean useTransaction) {
         super(storIOSQLite);
         this.objects = objects;
-        this.deleteResolver = deleteResolver;
+        this.explicitDeleteResolver = explicitDeleteResolver;
         this.useTransaction = useTransaction;
     }
 
@@ -51,29 +54,69 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
      *
      * @return non-null results of Delete Operation.
      */
+    @SuppressWarnings("unchecked")
     @WorkerThread
     @NonNull
     @Override
     public DeleteResults<T> executeAsBlocking() {
         final StorIOSQLite.Internal internal = storIOSQLite.internal();
 
-        final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>();
+        // Nullable
+        final List<AbstractMap.SimpleImmutableEntry<T, DeleteResolver<T>>> objectsAndDeleteResolvers;
+
+        if (explicitDeleteResolver != null) {
+            objectsAndDeleteResolvers = null;
+        } else {
+            objectsAndDeleteResolvers
+                    = new ArrayList<AbstractMap.SimpleImmutableEntry<T, DeleteResolver<T>>>(objects.size());
+
+            for (final T object : objects) {
+                final SQLiteTypeMapping<T> typeMapping
+                        = (SQLiteTypeMapping<T>) internal.typeMapping(object.getClass());
+
+                if (typeMapping == null) {
+                    throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
+                            "object = " + object + ", object.class = " + object.getClass() + "," +
+                            "db was not affected by this operation, please add type mapping for this type");
+                }
+
+                objectsAndDeleteResolvers.add(new AbstractMap.SimpleImmutableEntry<T, DeleteResolver<T>>(
+                        object,
+                        typeMapping.deleteResolver()
+                ));
+            }
+        }
+
 
         if (useTransaction) {
             internal.beginTransaction();
         }
 
         try {
-            for (final T object : objects) {
-                final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, object);
+            final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>();
 
-                results.put(
-                        object,
-                        deleteResult
-                );
+            if (explicitDeleteResolver != null) {
+                for (final T object : objects) {
+                    final DeleteResult deleteResult = explicitDeleteResolver.performDelete(storIOSQLite, object);
 
-                if (!useTransaction) {
-                    internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                    results.put(object, deleteResult);
+
+                    if (!useTransaction) {
+                        internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                    }
+                }
+            } else {
+                for (final AbstractMap.SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
+                    final T object = objectAndDeleteResolver.getKey();
+                    final DeleteResolver<T> deleteResolver = objectAndDeleteResolver.getValue();
+
+                    final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, object);
+
+                    results.put(object, deleteResult);
+
+                    if (!useTransaction) {
+                        internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                    }
                 }
             }
 
@@ -90,13 +133,13 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
 
                 internal.notifyAboutChanges(Changes.newInstance(affectedTables));
             }
+
+            return DeleteResults.newInstance(results);
         } finally {
             if (useTransaction) {
                 internal.endTransaction();
             }
         }
-
-        return DeleteResults.newInstance(results);
     }
 
     /**
@@ -124,7 +167,7 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
     }
 
     /**
-     * Builder for {@link PreparedDeleteObjects}.
+     * Builder for {@link PreparedDeleteCollectionOfObjects}.
      *
      * @param <T> type of objects to delete.
      */
@@ -134,21 +177,16 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
         private final StorIOSQLite storIOSQLite;
 
         @NonNull
-        private final Class<T> type;
-
-        @NonNull
-        private final Iterable<T> objects;
+        private final Collection<T> objects;
 
         private DeleteResolver<T> deleteResolver;
 
         private boolean useTransaction = true;
 
-        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type, @NonNull Iterable<T> objects) {
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects) {
             this.storIOSQLite = storIOSQLite;
-            this.type = type;
             this.objects = objects;
         }
-
 
         /**
          * Optional: Defines that Delete Operation will use transaction or not.
@@ -184,22 +222,11 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<DeleteResults
         /**
          * Prepares Delete Operation.
          *
-         * @return {@link PreparedDeleteObjects}.
+         * @return {@link PreparedDeleteCollectionOfObjects}.
          */
         @NonNull
-        public PreparedDeleteObjects<T> prepare() {
-            final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping(type);
-
-            if (deleteResolver == null && typeMapping != null) {
-                deleteResolver = typeMapping.deleteResolver();
-            }
-
-            checkNotNull(deleteResolver, "StorIO can not perform delete of objects = " +
-                    objects + "\nof type " + type +
-                    " without type mapping or Operation resolver." +
-                    "\n Please add type mapping or Operation resolver");
-
-            return new PreparedDeleteObjects<T>(
+        public PreparedDeleteCollectionOfObjects<T> prepare() {
+            return new PreparedDeleteCollectionOfObjects<T>(
                     storIOSQLite,
                     objects,
                     deleteResolver,

@@ -43,7 +43,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
         DeleteResults<User> deleteResult = storIOSQLite()
                 .delete()
-                .objects(User.class, users)
+                .objects(users)
                 .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
@@ -55,7 +55,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
         Observable<DeleteResults<User>> deleteResultObservable = storIOSQLite()
                 .delete()
-                .objects(User.class, users)
+                .objects(users)
                 .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
                 .prepare()
                 .createObservable();
