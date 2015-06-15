@@ -3,6 +3,9 @@ jdk: oraclejdk8
 env:
   matrix:
     - ANDROID_TARGET=android-19  ANDROID_ABI=armeabi-v7a
+  global:
+# To prevent OutOfMemoryError
+    - GRADLE_OPTS="-Xmx512m -XX:MaxPermSize=512m"
 
 android:
   components:
