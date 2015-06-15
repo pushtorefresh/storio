@@ -2,13 +2,13 @@ language: android
 jdk: oraclejdk8
 env:
   matrix:
-    - ANDROID_TARGET=android-18  ANDROID_ABI=armeabi-v7a
+    - ANDROID_TARGET=android-19  ANDROID_ABI=armeabi-v7a
 
 android:
   components:
     - android-22
-    - android-18
-    - sys-img-armeabi-v7a-android-18
+    - android-19
+    - sys-img-armeabi-v7a-android-19
     - build-tools-22.0.1
     - extra-android-m2repository
     - extra-android-support
