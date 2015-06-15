@@ -44,7 +44,7 @@ Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample A
 List<Tweet> tweets = storIOSQLite
   .get()
   .listOfObjects(Tweet.class) // Type safety
-  .withQuery(new Query.Builder() // Query builder
+  .withQuery(Query.builder() // Query builder
     .table("tweets")
     .where("author = ?")
     .whereArgs("artem_zin") // Varargs Object..., no more new String[] {"I", "am", "tired", "of", "this", "shit"}
@@ -67,7 +67,7 @@ storIOSQLite
 ```java
 storIOSQLite
   .delete()
-  .byQuery(new DeleteQuery.Builder()
+  .byQuery(DeleteQuery.builder()
     .table("tweets")
     .where("timestamp <= ?")
     .whereArgs(System.currentTimeMillis() - 86400) // No need to write String.valueOf()
@@ -83,7 +83,7 @@ storIOSQLite
 storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
-  .withQuery(new Query.Builder()
+  .withQuery(Query.builder()
     .table("tweets")
     .build())
   .prepare()
@@ -103,7 +103,7 @@ storIOSQLite
 Cursor cursor = storIOSQLite
   .get()
   .cursor()
-  .withQuery(new Query.Builder() // Or RawQuery
+  .withQuery(Query.builder() // Or RawQuery
     .table("tweets")
     .where("who_cares = ?")
     .whereArgs("nobody")
@@ -116,9 +116,9 @@ Cursor cursor = storIOSQLite
 #####You can set default type mappings when you build instance of `StorIOSQLite` or `StorIOContentResolver`
 
 ```java
-StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
+StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
   .sqliteOpenHelper(someSQLiteOpenHelper)
-  .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
+  .addTypeMapping(Tweet.class, SQLiteTypeMapping.<Tweet>builder()
     .putResolver(new TweetPutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetGetResolver()) // object that knows how to perform Get Operation
     .deleteResolver(new TweetDeleteResolver())  // object that knows how to perform Delete Operation
@@ -167,9 +167,9 @@ Annotation Processor will generate three classes in same package as annotated cl
 You just need to apply them:
 
 ```java
-StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
+StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
   .sqliteOpenHelper(someSQLiteOpenHelper
-  .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
+  .addTypeMapping(Tweet.class, SQLiteTypeMapping.<Tweet>builder()
     .putResolver(new TweetStorIOSQLitePutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetStorIOSQLiteGetResolver()) // object that knows how to perform Get Operation
     .deleteResolver(new TweetStorIOSQLiteDeleteResolver())  // object that knows how to perform Delete Operation
