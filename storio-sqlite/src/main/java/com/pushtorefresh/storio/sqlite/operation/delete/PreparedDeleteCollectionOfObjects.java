@@ -92,9 +92,10 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
             internal.beginTransaction();
         }
 
-        try {
-            final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>();
+        final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>();
+        boolean transactionSuccessful = false;
 
+        try {
             if (explicitDeleteResolver != null) {
                 for (final T object : objects) {
                     final DeleteResult deleteResult = explicitDeleteResolver.performDelete(storIOSQLite, object);
@@ -122,24 +123,28 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
 
             if (useTransaction) {
                 internal.setTransactionSuccessful();
-
-                // if delete was in transaction and it was successful -> notify about changes
-
-                final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be one table
-
-                for (final T object : results.keySet()) {
-                    affectedTables.addAll(results.get(object).affectedTables());
-                }
-
-                internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                transactionSuccessful = true;
             }
-
-            return DeleteResults.newInstance(results);
         } finally {
             if (useTransaction) {
                 internal.endTransaction();
+
+                // if delete was in transaction and it was successful -> notify about changes
+                if (transactionSuccessful) {
+                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be one table
+
+                    for (final T object : results.keySet()) {
+                        affectedTables.addAll(results.get(object).affectedTables());
+                    }
+
+                    // IMPORTANT: Notifying about change should be done after end of transaction
+                    // It'll reduce number of possible deadlock situations
+                    internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                }
             }
         }
+
+        return DeleteResults.newInstance(results);
     }
 
     /**
