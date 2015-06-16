@@ -5,12 +5,15 @@ language: android
 jdk: oraclejdk8
 env:
   matrix:
-    - ANDROID_TARGET=android-22  ANDROID_ABI=armeabi-v7a
+    - ANDROID_TARGET=android-19  ANDROID_ABI=armeabi-v7a
+  global:
+    - ADB_INSTALL_TIMEOUT=20
 
 android:
   components:
+    - android-19
+    - sys-img-armeabi-v7a-android-19
     - android-22
-    - sys-img-armeabi-v7a-android-22
     - build-tools-22.0.1
     - extra-android-m2repository
     - extra-android-support
