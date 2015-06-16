@@ -8,12 +8,12 @@ public class PreparedPutContentValuesTest {
 
     @Test
     public void putContentValuesBlocking() {
-        final PutStub putStub = PutStub.newPutStubForOneContentValues();
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValues();
 
         final PutResult putResult = putStub.storIOSQLite
                 .put()
                 .contentValues(putStub.contentValues.get(0))
-                .withPutResolver(putStub.putResolverForContentValues)
+                .withPutResolver(putStub.putResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -22,12 +22,12 @@ public class PreparedPutContentValuesTest {
 
     @Test
     public void putContentValuesObservable() {
-        final PutStub putStub = PutStub.newPutStubForOneContentValues();
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValues();
 
         final Observable<PutResult> putResultObservable = putStub.storIOSQLite
                 .put()
                 .contentValues(putStub.contentValues.get(0))
-                .withPutResolver(putStub.putResolverForContentValues)
+                .withPutResolver(putStub.putResolver)
                 .prepare()
                 .createObservable();
 

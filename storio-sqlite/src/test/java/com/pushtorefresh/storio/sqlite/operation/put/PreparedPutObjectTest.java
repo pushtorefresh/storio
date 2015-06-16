@@ -8,12 +8,12 @@ public class PreparedPutObjectTest {
 
     @Test
     public void putObjectBlocking() {
-        final PutStub putStub = PutStub.newPutStubForOneObject();
+        final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
 
         final PutResult putResult = putStub.storIOSQLite
                 .put()
-                .object(putStub.testItems.get(0))
-                .withPutResolver(putStub.putResolverForObjects)
+                .object(putStub.items.get(0))
+                .withPutResolver(putStub.putResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -22,12 +22,12 @@ public class PreparedPutObjectTest {
 
     @Test
     public void putObjectObservable() {
-        final PutStub putStub = PutStub.newPutStubForOneObject();
+        final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
 
         final Observable<PutResult> putResultObservable = putStub.storIOSQLite
                 .put()
-                .object(putStub.testItems.get(0))
-                .withPutResolver(putStub.putResolverForObjects)
+                .object(putStub.items.get(0))
+                .withPutResolver(putStub.putResolver)
                 .prepare()
                 .createObservable();
 

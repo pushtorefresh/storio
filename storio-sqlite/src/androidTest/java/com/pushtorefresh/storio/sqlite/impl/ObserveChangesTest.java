@@ -74,7 +74,7 @@ public class ObserveChangesTest extends BaseTest {
 
         storIOSQLite
                 .put()
-                .objects(User.class, updated)
+                .objects(updated)
                 .prepare()
                 .executeAsBlocking();
 

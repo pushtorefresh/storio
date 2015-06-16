@@ -138,7 +138,7 @@ public class TweetsFragment extends BaseFragment {
 
         storIOSQLite
                 .put()
-                .objects(Tweet.class, tweets)
+                .objects(tweets)
                 .prepare()
                 .createObservable()
                 .subscribeOn(Schedulers.io())

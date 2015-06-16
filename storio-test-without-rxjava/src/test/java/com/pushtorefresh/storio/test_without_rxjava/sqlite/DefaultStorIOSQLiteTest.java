@@ -10,6 +10,8 @@ import com.pushtorefresh.storio.sqlite.query.Query;
 
 import org.junit.Test;
 
+import java.util.Collection;
+
 import static org.mockito.Mockito.mock;
 
 public class DefaultStorIOSQLiteTest {
@@ -66,24 +68,12 @@ public class DefaultStorIOSQLiteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void instantiatePutObjectsIterable() {
+    public void instantiatePutCollectionOfObjects() {
         DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build()
                 .put()
-                .objects(Object.class, mock(Iterable.class))
-                .withPutResolver(mock(PutResolver.class))
-                .prepare();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void instantiatePutObjectsVarArgs() {
-        DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .build()
-                .put()
-                .objects(Object.class, mock(Object.class), mock(Object.class))
+                .objects(mock(Collection.class))
                 .withPutResolver(mock(PutResolver.class))
                 .prepare();
     }
