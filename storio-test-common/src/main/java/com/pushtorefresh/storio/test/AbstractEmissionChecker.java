@@ -26,7 +26,7 @@ public abstract class AbstractEmissionChecker<T> {
      * @return timeout in millis.
      */
     protected long timeoutMillis() {
-        return 15000; // 15 seconds
+        return 60000; // 60 seconds
     }
 
     /**
