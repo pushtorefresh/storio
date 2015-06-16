@@ -65,7 +65,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     public void deleteByQueryBlocking() {
         DeleteResult deleteResult = storIOSQLite()
                 .delete()
-                .byQuery(new DeleteQuery.Builder()
+                .byQuery(DeleteQuery.builder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")
@@ -78,7 +78,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     public void deleteByQueryObservable() {
         Observable<DeleteResult> deleteResultObservable = storIOSQLite()
                 .delete()
-                .byQuery(new DeleteQuery.Builder()
+                .byQuery(DeleteQuery.builder()
                         .table("users")
                         .where("email = ?")
                         .whereArgs("artem.zinnatullin@gmail.com")

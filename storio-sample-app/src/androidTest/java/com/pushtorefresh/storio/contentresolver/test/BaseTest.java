@@ -23,9 +23,9 @@ public class BaseTest {
 
     @Before
     public void setUp() {
-        storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+        storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(InstrumentationRegistry.getContext().getContentResolver())
-                .addTypeMapping(Tweet.class, new ContentResolverTypeMapping.Builder<Tweet>()
+                .addTypeMapping(Tweet.class, ContentResolverTypeMapping.<Tweet>builder()
                         .putResolver(TweetMeta.PUT_RESOLVER)
                         .getResolver(TweetMeta.GET_RESOLVER)
                         .deleteResolver(TweetMeta.DELETE_RESOLVER)
@@ -35,7 +35,7 @@ public class BaseTest {
         // Clear content provider
         storIOContentResolver
                 .delete()
-                .byQuery(new DeleteQuery.Builder()
+                .byQuery(DeleteQuery.builder()
                         .uri(TweetMeta.CONTENT_URI)
                         .build())
                 .prepare()

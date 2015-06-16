@@ -120,9 +120,25 @@ public final class RawQuery {
     }
 
     /**
+     * Creates new builder for {@link RawQuery}.
+     *
+     * @return non-null instance of {@link RawQuery.Builder}.
+     */
+    @NonNull
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Builder for {@link RawQuery}.
      */
     public static final class Builder {
+
+        /**
+         * Please use {@link RawQuery#builder()} instead of this.
+         */
+        Builder() {
+        }
 
         /**
          * Required: Specifies SQL query.

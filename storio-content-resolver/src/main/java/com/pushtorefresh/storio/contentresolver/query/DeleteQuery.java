@@ -101,9 +101,25 @@ public final class DeleteQuery {
     }
 
     /**
+     * Creates new builder for {@link DeleteQuery}.
+     *
+     * @return non-null instance of {@link DeleteQuery.Builder}.
+     */
+    @NonNull
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Builder for {@link DeleteQuery}.
      */
     public static final class Builder {
+
+        /**
+         * Please use {@link DeleteQuery#builder()} instead of this.
+         */
+        Builder() {
+        }
 
         /**
          * Required: Specifies uri.

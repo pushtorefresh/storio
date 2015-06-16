@@ -55,7 +55,7 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
     public PutResult performPut(@NonNull StorIOContentResolver storIOContentResolver, @NonNull T object) {
         final UpdateQuery updateQuery = mapToUpdateQuery(object);
 
-        final Query query = new Query.Builder()
+        final Query query = Query.builder()
                 .uri(updateQuery.uri())
                 .where(nullableString(updateQuery.where()))
                 .whereArgs((Object[]) nullableArrayOfStrings(updateQuery.whereArgs()))

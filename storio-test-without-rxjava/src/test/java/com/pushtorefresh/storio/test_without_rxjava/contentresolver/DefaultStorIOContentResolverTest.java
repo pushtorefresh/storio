@@ -20,7 +20,7 @@ public class DefaultStorIOContentResolverTest {
     @Test
     public void instantiateWithoutRxJava() {
         // Should not fail
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build();
     }
@@ -28,12 +28,12 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiateGetCursor() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .get()
                 .cursor()
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .uri(mock(Uri.class))
                         .build())
                 .withGetResolver(mock(GetResolver.class))
@@ -43,12 +43,12 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiateGetListOfObjects() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .get()
                 .listOfObjects(Object.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .uri(mock(Uri.class))
                         .build())
                 .withGetResolver(mock(GetResolver.class))
@@ -58,7 +58,7 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiatePutObject() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .put()
@@ -70,7 +70,7 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiatePutObjects() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .put()
@@ -82,7 +82,7 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiatePutContentValues() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .put()
@@ -94,7 +94,7 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiatePutContentValuesIterable() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .put()
@@ -106,11 +106,11 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiateDeleteByQuery() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .delete()
-                .byQuery(new DeleteQuery.Builder()
+                .byQuery(DeleteQuery.builder()
                         .uri(mock(Uri.class))
                         .build())
                 .withDeleteResolver(mock(DeleteResolver.class))
@@ -120,7 +120,7 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiateDeleteObject() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .delete()
@@ -132,7 +132,7 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("unchecked")
     @Test
     public void instantiateDeleteObjects() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .delete()

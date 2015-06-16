@@ -34,7 +34,7 @@ public class QueryTest extends BaseTest {
             final List<User> usersFromQuery = storIOContentResolver
                     .get()
                     .listOfObjects(User.class)
-                    .withQuery(new Query.Builder()
+                    .withQuery(Query.builder()
                             .uri(UserMeta.CONTENT_URI)
                             .where(UserMeta.COLUMN_EMAIL + "=?")
                             .whereArgs(user.email())
@@ -60,7 +60,7 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQueryOrdered = storIOContentResolver
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .uri(UserMeta.CONTENT_URI)
                         .sortOrder(UserMeta.COLUMN_EMAIL)
                         .build())
@@ -90,7 +90,7 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQueryOrdered = storIOContentResolver
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .uri(UserMeta.CONTENT_URI)
                         .sortOrder(UserMeta.COLUMN_EMAIL + " DESC")
                         .build())
@@ -115,7 +115,7 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromStorage = storIOContentResolver
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .uri(UserMeta.CONTENT_URI)
                         .columns(UserMeta.COLUMN_ID)
                         .build())

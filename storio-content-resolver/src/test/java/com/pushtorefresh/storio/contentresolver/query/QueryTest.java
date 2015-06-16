@@ -15,7 +15,7 @@ public class QueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriObject() {
-        new Query.Builder()
+        Query.builder()
                 .uri((Uri) null)
                 .build();
     }
@@ -23,14 +23,14 @@ public class QueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriString() {
-        new Query.Builder()
+        Query.builder()
                 .uri((String) null)
                 .build();
     }
 
     @Test
     public void columnsShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .uri(mock(Uri.class))
                 .build();
 
@@ -40,7 +40,7 @@ public class QueryTest {
 
     @Test
     public void whereClauseShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .uri(mock(Uri.class))
                 .build();
 
@@ -50,7 +50,7 @@ public class QueryTest {
 
     @Test
     public void whereArgsShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .uri(mock(Uri.class))
                 .build();
 
@@ -60,7 +60,7 @@ public class QueryTest {
 
     @Test
     public void sortOrderShouldNotBeNull() {
-        Query query = new Query.Builder()
+        Query query = Query.builder()
                 .uri(mock(Uri.class))
                 .build();
 
@@ -76,7 +76,7 @@ public class QueryTest {
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
         final String sortOrder = "test_order";
 
-        final Query query = new Query.Builder()
+        final Query query = Query.builder()
                 .uri(uri)
                 .columns(columns)
                 .where(where)

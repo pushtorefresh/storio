@@ -12,7 +12,7 @@ public class InsertQueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriObject() {
-        new InsertQuery.Builder()
+        InsertQuery.builder()
                 .uri((Uri) null)
                 .build();
     }
@@ -20,7 +20,7 @@ public class InsertQueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriString() {
-        new InsertQuery.Builder()
+        InsertQuery.builder()
                 .uri((String) null)
                 .build();
     }
@@ -29,7 +29,7 @@ public class InsertQueryTest {
     public void buildWithNormalValues() {
         final Uri uri = mock(Uri.class);
 
-        final InsertQuery insertQuery = new InsertQuery.Builder()
+        final InsertQuery insertQuery = InsertQuery.builder()
                 .uri(uri)
                 .build();
 

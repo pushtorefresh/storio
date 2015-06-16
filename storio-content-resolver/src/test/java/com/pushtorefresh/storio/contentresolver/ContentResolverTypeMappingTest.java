@@ -14,7 +14,7 @@ public class ContentResolverTypeMappingTest {
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     @Test(expected = NullPointerException.class)
     public void nullPutResolver() {
-        new ContentResolverTypeMapping.Builder<Object>()
+        ContentResolverTypeMapping.builder()
                 .putResolver(null)
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
@@ -24,7 +24,7 @@ public class ContentResolverTypeMappingTest {
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     @Test(expected = NullPointerException.class)
     public void nullGetResolver() {
-        new ContentResolverTypeMapping.Builder<Object>()
+        ContentResolverTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(null)
                 .deleteResolver(mock(DeleteResolver.class))
@@ -34,7 +34,7 @@ public class ContentResolverTypeMappingTest {
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     @Test(expected = NullPointerException.class)
     public void nullDeleteResolver() {
-        new ContentResolverTypeMapping.Builder<Object>()
+        ContentResolverTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(null)
@@ -52,7 +52,7 @@ public class ContentResolverTypeMappingTest {
         final GetResolver<TestItem> getResolver = mock(GetResolver.class);
         final DeleteResolver<TestItem> deleteResolver = mock(DeleteResolver.class);
 
-        final ContentResolverTypeMapping<TestItem> typeMapping = new ContentResolverTypeMapping.Builder<TestItem>()
+        final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
                 .putResolver(putResolver)
                 .getResolver(getResolver)
                 .deleteResolver(deleteResolver)

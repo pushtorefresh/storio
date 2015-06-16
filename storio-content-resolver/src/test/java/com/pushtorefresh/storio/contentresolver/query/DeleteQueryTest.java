@@ -16,7 +16,7 @@ public class DeleteQueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriObject() {
-        new DeleteQuery.Builder()
+        DeleteQuery.builder()
                 .uri((Uri) null) // LOL, via overload we disabled null uri without specifying Type!
                 .build();
     }
@@ -24,14 +24,14 @@ public class DeleteQueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class) // Uri#parse() not mocked
     public void shouldNotAllowNullUriString() {
-        new DeleteQuery.Builder()
+        DeleteQuery.builder()
                 .uri((String) null)
                 .build();
     }
 
     @Test
     public void whereClauseShouldNotBeNull() {
-        DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        DeleteQuery deleteQuery = DeleteQuery.builder()
                 .uri(mock(Uri.class))
                 .where(null)
                 .build();
@@ -41,7 +41,7 @@ public class DeleteQueryTest {
 
     @Test
     public void whereArgsShouldNotBeNull() {
-        DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        DeleteQuery deleteQuery = DeleteQuery.builder()
                 .uri(mock(Uri.class))
                 .where("c1 = s")
                 .build();
@@ -52,7 +52,7 @@ public class DeleteQueryTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptionIfWhereArgsSpecifiedWithoutWhereClause() {
-        new DeleteQuery.Builder()
+        DeleteQuery.builder()
                 .uri(mock(Uri.class))
                 .whereArgs("someArg") // Without WHERE clause!
                 .build();
@@ -64,7 +64,7 @@ public class DeleteQueryTest {
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
 
-        final DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .uri(uri)
                 .where(where)
                 .whereArgs(whereArgs)

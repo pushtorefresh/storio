@@ -19,7 +19,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void deleteByQueryBlocking() {
-        final DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .uri(mock(Uri.class))
                 .where("some_field = ?")
                 .whereArgs("someValue")
@@ -34,7 +34,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void deleteByQueryObservable() {
-        final DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .uri(mock(Uri.class))
                 .where("some_field = ?")
                 .whereArgs("someValue")

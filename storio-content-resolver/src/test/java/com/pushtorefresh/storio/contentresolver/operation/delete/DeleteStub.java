@@ -66,7 +66,7 @@ class DeleteStub {
             when(deleteResolverForTestItems.performDelete(storIOContentResolver, testItem))
                     .thenReturn(deleteResult);
 
-            final DeleteQuery deleteQuery = new DeleteQuery.Builder()
+            final DeleteQuery deleteQuery = DeleteQuery.builder()
                     .uri(testItemUri)
                     .build();
 

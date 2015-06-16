@@ -50,7 +50,7 @@ public class PutResolverGenerator {
                 .addParameter(ParameterSpec.builder(storIOSQLiteTypeClassName, "object")
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
-                .addCode("return new InsertQuery.Builder()\n" +
+                .addCode("return InsertQuery.builder()\n" +
                                 INDENT + ".table($S)\n" +
                                 INDENT + ".build();\n",
                         storIOSQLiteTypeMeta.storIOSQLiteType.table())
@@ -70,7 +70,7 @@ public class PutResolverGenerator {
                 .addParameter(ParameterSpec.builder(storIOSQLiteTypeClassName, "object")
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
-                .addCode("return new UpdateQuery.Builder()\n" +
+                .addCode("return UpdateQuery.builder()\n" +
                                 INDENT + ".table($S)\n" +
                                 INDENT + ".where($S)\n" +
                                 INDENT + ".whereArgs($L)\n" +

@@ -30,11 +30,11 @@ public class UserTableMeta {
             COLUMN_EMAIL + " TEXT NOT NULL" +
             ");";
 
-    static final Query QUERY_ALL = new Query.Builder()
+    static final Query QUERY_ALL = Query.builder()
             .table(TABLE)
             .build();
 
-    static final DeleteQuery DELETE_QUERY_ALL = new DeleteQuery.Builder()
+    static final DeleteQuery DELETE_QUERY_ALL = DeleteQuery.builder()
             .table(TABLE)
             .build();
 
@@ -42,7 +42,7 @@ public class UserTableMeta {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull User user) {
-            return new InsertQuery.Builder()
+            return InsertQuery.builder()
                     .table(TABLE)
                     .build();
         }
@@ -50,7 +50,7 @@ public class UserTableMeta {
         @NonNull
         @Override
         protected UpdateQuery mapToUpdateQuery(@NonNull User user) {
-            return new UpdateQuery.Builder()
+            return UpdateQuery.builder()
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(user.id())
@@ -94,7 +94,7 @@ public class UserTableMeta {
         @NonNull
         @Override
         public DeleteQuery mapToDeleteQuery(@NonNull User user) {
-            return new DeleteQuery.Builder()
+            return DeleteQuery.builder()
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(user.id())

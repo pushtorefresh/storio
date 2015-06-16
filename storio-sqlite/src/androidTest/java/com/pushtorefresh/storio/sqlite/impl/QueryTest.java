@@ -39,7 +39,7 @@ public class QueryTest extends BaseTest {
             final List<User> usersFromQuery = storIOSQLite
                     .get()
                     .listOfObjects(User.class)
-                    .withQuery(new Query.Builder()
+                    .withQuery(Query.builder()
                             .table(UserTableMeta.TABLE)
                             .where(UserTableMeta.COLUMN_EMAIL + "=?")
                             .whereArgs(user.email())
@@ -65,7 +65,7 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQueryOrdered = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(UserTableMeta.TABLE)
                         .orderBy(UserTableMeta.COLUMN_EMAIL)
                         .build())
@@ -95,7 +95,7 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQueryOrdered = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(UserTableMeta.TABLE)
                         .orderBy(UserTableMeta.COLUMN_EMAIL + " DESC")
                         .build())
@@ -121,7 +121,7 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(UserTableMeta.TABLE)
                         .limit(String.valueOf(limit))
                         .build())
@@ -141,7 +141,7 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(UserTableMeta.TABLE)
                         .orderBy(UserTableMeta.COLUMN_EMAIL)
                         .limit(offset + ", " + limit)
@@ -180,7 +180,7 @@ public class QueryTest extends BaseTest {
         final List<User> groupsOfUsers = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(UserTableMeta.TABLE)
                         .columns(UserTableMeta.COLUMN_EMAIL)
                         .groupBy(UserTableMeta.COLUMN_EMAIL)
@@ -221,7 +221,7 @@ public class QueryTest extends BaseTest {
         final List<User> groupsOfUsers = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(UserTableMeta.TABLE)
                         .columns(UserTableMeta.COLUMN_EMAIL)
                         .groupBy(UserTableMeta.COLUMN_EMAIL)
@@ -262,7 +262,7 @@ public class QueryTest extends BaseTest {
         final List<User> uniqueUsersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(UserTableMeta.TABLE)
                         .distinct(true)
                         .columns(UserTableMeta.COLUMN_EMAIL)
@@ -277,7 +277,7 @@ public class QueryTest extends BaseTest {
         final List<User> allUsersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .table(UserTableMeta.TABLE)
                         .distinct(false)
                         .columns(UserTableMeta.COLUMN_EMAIL)
@@ -326,7 +326,7 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new RawQuery.Builder()
+                .withQuery(RawQuery.builder()
                         .query(query)
                         .build())
                 .prepare()
@@ -349,7 +349,7 @@ public class QueryTest extends BaseTest {
         final List<User> usersFromQuery = storIOSQLite
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new RawQuery.Builder()
+                .withQuery(RawQuery.builder()
                         .query(query)
                         .args(testUser.email())
                         .build())
@@ -372,7 +372,7 @@ public class QueryTest extends BaseTest {
 
         storIOSQLite.get()
                 .listOfObjects(User.class)
-                .withQuery(new RawQuery.Builder()
+                .withQuery(RawQuery.builder()
                         .query(query)
                         .args(arg)
                         .build())

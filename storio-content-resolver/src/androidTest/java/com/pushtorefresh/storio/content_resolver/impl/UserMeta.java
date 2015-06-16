@@ -37,7 +37,7 @@ class UserMeta {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull User user) {
-            return new InsertQuery.Builder()
+            return InsertQuery.builder()
                     .uri(CONTENT_URI)
                     .build();
         }
@@ -45,7 +45,7 @@ class UserMeta {
         @NonNull
         @Override
         protected UpdateQuery mapToUpdateQuery(@NonNull User user) {
-            return new UpdateQuery.Builder()
+            return UpdateQuery.builder()
                     .uri(CONTENT_URI)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(user.id())
@@ -92,7 +92,7 @@ class UserMeta {
         @NonNull
         @Override
         protected DeleteQuery mapToDeleteQuery(@NonNull User user) {
-            return new DeleteQuery.Builder()
+            return DeleteQuery.builder()
                     .uri(CONTENT_URI)
                     .where(COLUMN_ID + "=?")
                     .whereArgs(user.id())
@@ -100,7 +100,7 @@ class UserMeta {
         }
     };
 
-    static final DeleteQuery DELETE_QUERY_ALL = new DeleteQuery.Builder()
+    static final DeleteQuery DELETE_QUERY_ALL = DeleteQuery.builder()
             .uri(CONTENT_URI)
             .build();
 

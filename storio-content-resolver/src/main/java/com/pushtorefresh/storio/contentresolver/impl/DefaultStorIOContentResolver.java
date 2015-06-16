@@ -81,9 +81,25 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     }
 
     /**
+     * Creates new builder for {@link DefaultStorIOContentResolver}.
+     *
+     * @return non-null instance of {@link DefaultStorIOContentResolver.Builder}.
+     */
+    @NonNull
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Builder for {@link DefaultStorIOContentResolver}.
      */
     public static final class Builder {
+
+        /**
+         * Please use {@link DefaultStorIOContentResolver#builder()} instead of this.
+         */
+        Builder() {
+        }
 
         /**
          * Required: Specifies {@link ContentResolver} for {@link StorIOContentResolver}.

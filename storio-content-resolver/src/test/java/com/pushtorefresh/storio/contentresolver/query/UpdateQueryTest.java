@@ -15,7 +15,7 @@ public class UpdateQueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriObject() {
-        new UpdateQuery.Builder()
+        UpdateQuery.builder()
                 .uri((Uri) null)
                 .build();
     }
@@ -23,14 +23,14 @@ public class UpdateQueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriString() {
-        new UpdateQuery.Builder()
+        UpdateQuery.builder()
                 .uri((String) null)
                 .build();
     }
 
     @Test
     public void whereClauseShouldNotBeNull() {
-        UpdateQuery updateQuery = new UpdateQuery.Builder()
+        UpdateQuery updateQuery = UpdateQuery.builder()
                 .uri(mock(Uri.class))
                 .build();
 
@@ -40,7 +40,7 @@ public class UpdateQueryTest {
 
     @Test
     public void whereArgsShouldNotBeNull() {
-        UpdateQuery updateQuery = new UpdateQuery.Builder()
+        UpdateQuery updateQuery = UpdateQuery.builder()
                 .uri(mock(Uri.class))
                 .build();
 
@@ -50,7 +50,7 @@ public class UpdateQueryTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptionIfWhereArgsSpecifiedWithoutWhereClause() {
-        new UpdateQuery.Builder()
+        UpdateQuery.builder()
                 .uri(mock(Uri.class))
                 .whereArgs("someArg") // Without WHERE clause!
                 .build();
@@ -62,7 +62,7 @@ public class UpdateQueryTest {
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
 
-        final UpdateQuery updateQuery = new UpdateQuery.Builder()
+        final UpdateQuery updateQuery = UpdateQuery.builder()
                 .uri(uri)
                 .where(where)
                 .whereArgs(whereArgs)

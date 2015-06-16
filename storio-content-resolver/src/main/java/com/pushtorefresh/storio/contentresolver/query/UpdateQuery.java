@@ -96,9 +96,25 @@ public final class UpdateQuery {
     }
 
     /**
+     * Creates new builder for {@link UpdateQuery}.
+     *
+     * @return non-null instance of {@link UpdateQuery.Builder}.
+     */
+    @NonNull
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Builder for {@link UpdateQuery}.
      */
     public static final class Builder {
+
+        /**
+         * Please use {@link UpdateQuery#builder()} instead of this.
+         */
+        Builder() {
+        }
 
         /**
          * Required: Specifies uri.

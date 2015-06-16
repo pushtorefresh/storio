@@ -13,21 +13,21 @@ public class DeleteQueryTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullTable() {
-        new DeleteQuery.Builder()
+        DeleteQuery.builder()
                 .table(null)
                 .build();
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldNotAllowEmptyTable() {
-        new DeleteQuery.Builder()
+        DeleteQuery.builder()
                 .table("")
                 .build();
     }
 
     @Test
     public void whereClauseShouldNotBeNull() {
-        DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table("test_table")
                 .build();
 
@@ -37,7 +37,7 @@ public class DeleteQueryTest {
 
     @Test
     public void whereArgsShouldNotBeNull() {
-        DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table("test_table")
                 .build();
 
@@ -47,7 +47,7 @@ public class DeleteQueryTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptionIfWhereArgsSpecifiedWithoutWhereClause() {
-        new DeleteQuery.Builder()
+        DeleteQuery.builder()
                 .table("test_table")
                 .whereArgs("someArg") // Without WHERE clause!
                 .build();
@@ -59,7 +59,7 @@ public class DeleteQueryTest {
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
 
-        final DeleteQuery deleteQuery = new DeleteQuery.Builder()
+        final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table(table)
                 .where(where)
                 .whereArgs(whereArgs)

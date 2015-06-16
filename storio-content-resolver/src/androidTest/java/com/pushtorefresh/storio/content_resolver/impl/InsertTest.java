@@ -61,7 +61,7 @@ public class InsertTest extends BaseTest {
         final List<Tweet> tweetsFromStorage = storIOContentResolver
                 .get()
                 .listOfObjects(Tweet.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .uri(TweetMeta.CONTENT_URI)
                         .build())
                 .prepare()

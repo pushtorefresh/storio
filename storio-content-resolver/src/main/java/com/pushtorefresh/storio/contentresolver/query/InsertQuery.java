@@ -56,12 +56,28 @@ public final class InsertQuery {
     }
 
     /**
+     * Creates new builder for {@link InsertQuery}.
+     *
+     * @return non-null instance of {@link InsertQuery.Builder}.
+     */
+    @NonNull
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Builder for {@link InsertQuery}.
      * <p/>
      * Yep, it looks stupid with only one parameter — Uri, but think about future,
      * we can add other things later without breaking the API!
      */
     public static final class Builder {
+
+        /**
+         * Please use {@link InsertQuery#builder()} instead of this.
+         */
+        Builder() {
+        }
 
         /**
          * Required: Specifies uri.

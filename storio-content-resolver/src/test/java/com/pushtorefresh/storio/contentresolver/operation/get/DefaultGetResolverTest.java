@@ -23,7 +23,7 @@ public class DefaultGetResolverTest {
         final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
         final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
 
-        final Query query = new Query.Builder()
+        final Query query = Query.builder()
                 .uri(mock(Uri.class))
                 .build();
 

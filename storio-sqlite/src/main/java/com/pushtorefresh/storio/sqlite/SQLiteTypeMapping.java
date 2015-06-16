@@ -48,9 +48,25 @@ public class SQLiteTypeMapping<T> {
     }
 
     /**
+     * Creates new builder for {@link SQLiteTypeMapping}.
+     *
+     * @return non-null instance of {@link SQLiteTypeMapping.Builder}.
+     */
+    @NonNull
+    public static <T> Builder<T> builder() {
+        return new Builder<T>();
+    }
+
+    /**
      * Builder for {@link SQLiteTypeMapping}.
      */
     public static final class Builder<T> {
+
+        /**
+         * Please use {@link SQLiteTypeMapping#builder()} instead of this.
+         */
+        Builder() {
+        }
 
         /**
          * Required: Specifies Resolver for Put Operation.

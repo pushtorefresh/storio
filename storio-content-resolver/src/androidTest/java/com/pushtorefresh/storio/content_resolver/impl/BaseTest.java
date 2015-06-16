@@ -30,14 +30,14 @@ public abstract class BaseTest extends ProviderTestCase2<TestContentProvider> {
     public void setUp() throws Exception {
         super.setUp();
 
-        storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+        storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(getMockContentResolver())
-                .addTypeMapping(User.class, new ContentResolverTypeMapping.Builder<User>()
+                .addTypeMapping(User.class, ContentResolverTypeMapping.<User>builder()
                         .putResolver(UserMeta.PUT_RESOLVER)
                         .getResolver(UserMeta.GET_RESOLVER)
                         .deleteResolver(UserMeta.DELETE_RESOLVER)
                         .build())
-                .addTypeMapping(Tweet.class, new ContentResolverTypeMapping.Builder<Tweet>()
+                .addTypeMapping(Tweet.class, ContentResolverTypeMapping.<Tweet>builder()
                         .putResolver(TweetMeta.PUT_RESOLVER)
                         .getResolver(TweetMeta.GET_RESOLVER)
                         .deleteResolver(TweetMeta.DELETE_RESOLVER)
@@ -63,7 +63,7 @@ public abstract class BaseTest extends ProviderTestCase2<TestContentProvider> {
         return storIOContentResolver
                 .get()
                 .listOfObjects(User.class)
-                .withQuery(new Query.Builder()
+                .withQuery(Query.builder()
                         .uri(UserMeta.CONTENT_URI)
                         .build())
                 .prepare()

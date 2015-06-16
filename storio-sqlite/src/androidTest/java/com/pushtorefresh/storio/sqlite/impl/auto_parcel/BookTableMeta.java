@@ -43,7 +43,7 @@ final class BookTableMeta {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull Book object) {
-            return new InsertQuery.Builder()
+            return InsertQuery.builder()
                     .table(TABLE)
                     .build();
         }
@@ -51,7 +51,7 @@ final class BookTableMeta {
         @NonNull
         @Override
         protected UpdateQuery mapToUpdateQuery(@NonNull Book book) {
-            return new UpdateQuery.Builder()
+            return UpdateQuery.builder()
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(book.id())
@@ -89,7 +89,7 @@ final class BookTableMeta {
         @NonNull
         @Override
         protected DeleteQuery mapToDeleteQuery(@NonNull Book book) {
-            return new DeleteQuery.Builder()
+            return DeleteQuery.builder()
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(book.id())

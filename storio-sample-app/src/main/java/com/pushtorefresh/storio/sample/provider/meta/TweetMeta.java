@@ -28,7 +28,7 @@ public class TweetMeta {
         @NonNull
         @Override
         protected InsertQuery mapToInsertQuery(@NonNull Tweet object) {
-            return new InsertQuery.Builder()
+            return InsertQuery.builder()
                     .uri(CONTENT_URI)
                     .build();
         }
@@ -36,7 +36,7 @@ public class TweetMeta {
         @NonNull
         @Override
         protected UpdateQuery mapToUpdateQuery(@NonNull Tweet tweet) {
-            return new UpdateQuery.Builder()
+            return UpdateQuery.builder()
                     .uri(CONTENT_URI)
                     .where(TweetTableMeta.COLUMN_ID + " = ?")
                     .whereArgs(tweet.id())
@@ -74,7 +74,7 @@ public class TweetMeta {
         @NonNull
         @Override
         protected DeleteQuery mapToDeleteQuery(@NonNull Tweet tweet) {
-            return new DeleteQuery.Builder()
+            return DeleteQuery.builder()
                     .uri(CONTENT_URI)
                     .where(TweetTableMeta.COLUMN_ID + " = ?")
                     .whereArgs(tweet.id())

@@ -34,7 +34,7 @@ public class DefaultDeleteResolverTest {
 
         final Uri expectedUri = mock(Uri.class);
 
-        final DeleteQuery expectedDeleteQuery = new DeleteQuery.Builder()
+        final DeleteQuery expectedDeleteQuery = DeleteQuery.builder()
                 .uri(expectedUri)
                 .where("test where clause")
                 .whereArgs("test")

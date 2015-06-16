@@ -24,9 +24,9 @@ public class DbModule {
     @NonNull
     @Singleton
     public StorIOSQLite provideStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
-        return new DefaultStorIOSQLite.Builder()
+        return DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(sqLiteOpenHelper)
-                .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
+                .addTypeMapping(Tweet.class, SQLiteTypeMapping.<Tweet>builder()
                         .putResolver(new TweetStorIOSQLitePutResolver())
                         .getResolver(new TweetStorIOSQLiteGetResolver())
                         .deleteResolver(new TweetStorIOSQLiteDeleteResolver())

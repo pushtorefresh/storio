@@ -46,7 +46,7 @@ public class DefaultPutResolverTest {
 
         final Uri expectedInsertedUri = mock(Uri.class);
 
-        final Query expectedQuery = new Query.Builder()
+        final Query expectedQuery = Query.builder()
                 .uri(TestItem.CONTENT_URI)
                 .where(TestItem.COLUMN_ID + " = ?")
                 .whereArgs(testItem.getId())
@@ -63,7 +63,7 @@ public class DefaultPutResolverTest {
         when(internal.insert(any(InsertQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedInsertedUri);
 
-        final InsertQuery expectedInsertQuery = new InsertQuery.Builder()
+        final InsertQuery expectedInsertQuery = InsertQuery.builder()
                 .uri(TestItem.CONTENT_URI)
                 .build();
 
@@ -77,7 +77,7 @@ public class DefaultPutResolverTest {
             @NonNull
             @Override
             protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {
-                return new UpdateQuery.Builder()
+                return UpdateQuery.builder()
                         .uri(TestItem.CONTENT_URI)
                         .where(TestItem.COLUMN_ID + " = ?")
                         .whereArgs(object.getId())
@@ -134,7 +134,7 @@ public class DefaultPutResolverTest {
         when(storIOContentResolver.internal())
                 .thenReturn(internal);
 
-        final Query expectedQuery = new Query.Builder()
+        final Query expectedQuery = Query.builder()
                 .uri(TestItem.CONTENT_URI)
                 .where(TestItem.COLUMN_ID + " = ?")
                 .whereArgs(testItem.getId())
@@ -153,7 +153,7 @@ public class DefaultPutResolverTest {
         when(internal.update(any(UpdateQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedNumberOfRowsUpdated);
 
-        final UpdateQuery expectedUpdateQuery = new UpdateQuery.Builder()
+        final UpdateQuery expectedUpdateQuery = UpdateQuery.builder()
                 .uri(TestItem.CONTENT_URI)
                 .where(TestItem.COLUMN_ID + " = ?")
                 .whereArgs(testItem.getId())
@@ -170,7 +170,7 @@ public class DefaultPutResolverTest {
             @NonNull
             @Override
             protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {
-                return new UpdateQuery.Builder()
+                return UpdateQuery.builder()
                         .uri(TestItem.CONTENT_URI)
                         .where(TestItem.COLUMN_ID + " = ?")
                         .whereArgs(object.getId())

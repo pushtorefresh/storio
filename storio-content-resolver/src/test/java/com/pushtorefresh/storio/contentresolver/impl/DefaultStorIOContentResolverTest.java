@@ -19,16 +19,16 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void nullContentResolver() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(null);
     }
 
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     @Test(expected = NullPointerException.class)
     public void addTypeMappingNullType() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(null, new ContentResolverTypeMapping.Builder<Object>()
+                .addTypeMapping(null, ContentResolverTypeMapping.builder()
                         .putResolver(mock(PutResolver.class))
                         .getResolver(mock(GetResolver.class))
                         .deleteResolver(mock(DeleteResolver.class))
@@ -38,7 +38,7 @@ public class DefaultStorIOContentResolverTest {
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void addTypeMappingNullMapping() {
-        new DefaultStorIOContentResolver.Builder()
+        DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(Object.class, null);
     }
@@ -49,7 +49,7 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
-        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build();
 
@@ -67,13 +67,13 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
-        final ContentResolverTypeMapping<Entity> entityContentResolverTypeMapping = new ContentResolverTypeMapping.Builder<Entity>()
+        final ContentResolverTypeMapping<Entity> entityContentResolverTypeMapping = ContentResolverTypeMapping.<Entity>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(Entity.class, entityContentResolverTypeMapping)
                 .build();
@@ -90,13 +90,13 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
-        final ContentResolverTypeMapping<TestItem> typeMapping = new ContentResolverTypeMapping.Builder<TestItem>()
+        final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(TestItem.class, typeMapping)
                 .build();
@@ -111,13 +111,13 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
-        final ContentResolverTypeMapping<TestItem> typeMapping = new ContentResolverTypeMapping.Builder<TestItem>()
+        final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(TestItem.class, typeMapping)
                 .build();
@@ -140,7 +140,7 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
-        final ContentResolverTypeMapping<TestItem> typeMapping = new ContentResolverTypeMapping.Builder<TestItem>()
+        final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
@@ -150,13 +150,13 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
-        final ContentResolverTypeMapping<TestItemSubclass> subclassTypeMapping = new ContentResolverTypeMapping.Builder<TestItemSubclass>()
+        final ContentResolverTypeMapping<TestItemSubclass> subclassTypeMapping = ContentResolverTypeMapping.<TestItemSubclass>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(TestItem.class, typeMapping)
                 .addTypeMapping(TestItemSubclass.class, subclassTypeMapping)
@@ -190,19 +190,19 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
-        final ContentResolverTypeMapping<Entity> entitySQLiteTypeMapping = new ContentResolverTypeMapping.Builder<Entity>()
+        final ContentResolverTypeMapping<Entity> entitySQLiteTypeMapping = ContentResolverTypeMapping.<Entity>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final ContentResolverTypeMapping<ConcreteEntity> concreteEntitySQLiteTypeMapping = new ContentResolverTypeMapping.Builder<ConcreteEntity>()
+        final ContentResolverTypeMapping<ConcreteEntity> concreteEntitySQLiteTypeMapping = ContentResolverTypeMapping.<ConcreteEntity>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOContentResolver storIOContentResolver = new DefaultStorIOContentResolver.Builder()
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .addTypeMapping(Entity.class, entitySQLiteTypeMapping)
                 .addTypeMapping(ConcreteEntity.class, concreteEntitySQLiteTypeMapping)
