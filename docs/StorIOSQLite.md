@@ -199,7 +199,7 @@ List<Tweet> tweets = getSomeTweets();
 
 storIOSQLite
   .delete()
-  .objects(Tweet.class, tweets)
+  .objects(tweets)
   .prepare()
   .executeAsBlocking(); // or createObservable()
 ```

@@ -13,7 +13,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  *
  * @param <T> type to map.
  */
-public final class SQLiteTypeMapping<T> {
+public class SQLiteTypeMapping<T> {
 
     @NonNull
     private final PutResolver<T> putResolver;
