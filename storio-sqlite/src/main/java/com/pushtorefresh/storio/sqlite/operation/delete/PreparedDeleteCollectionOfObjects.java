@@ -9,7 +9,7 @@ import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
-import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,7 +38,10 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
 
     private final boolean useTransaction;
 
-    PreparedDeleteCollectionOfObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects, @NonNull DeleteResolver<T> explicitDeleteResolver, boolean useTransaction) {
+    PreparedDeleteCollectionOfObjects(@NonNull StorIOSQLite storIOSQLite,
+                                      @NonNull Collection<T> objects,
+                                      @Nullable DeleteResolver<T> explicitDeleteResolver,
+                                      boolean useTransaction) {
         super(storIOSQLite);
         this.objects = objects;
         this.explicitDeleteResolver = explicitDeleteResolver;
@@ -62,13 +65,13 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
         final StorIOSQLite.Internal internal = storIOSQLite.internal();
 
         // Nullable
-        final List<AbstractMap.SimpleImmutableEntry<T, DeleteResolver<T>>> objectsAndDeleteResolvers;
+        final List<SimpleImmutableEntry<T, DeleteResolver<T>>> objectsAndDeleteResolvers;
 
         if (explicitDeleteResolver != null) {
             objectsAndDeleteResolvers = null;
         } else {
             objectsAndDeleteResolvers
-                    = new ArrayList<AbstractMap.SimpleImmutableEntry<T, DeleteResolver<T>>>(objects.size());
+                    = new ArrayList<SimpleImmutableEntry<T, DeleteResolver<T>>>(objects.size());
 
             for (final T object : objects) {
                 final SQLiteTypeMapping<T> typeMapping
@@ -80,13 +83,12 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
                             "db was not affected by this operation, please add type mapping for this type");
                 }
 
-                objectsAndDeleteResolvers.add(new AbstractMap.SimpleImmutableEntry<T, DeleteResolver<T>>(
+                objectsAndDeleteResolvers.add(new SimpleImmutableEntry<T, DeleteResolver<T>>(
                         object,
                         typeMapping.deleteResolver()
                 ));
             }
         }
-
 
         if (useTransaction) {
             internal.beginTransaction();
@@ -107,7 +109,7 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
                     }
                 }
             } else {
-                for (final AbstractMap.SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
+                for (final SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
                     final T object = objectAndDeleteResolver.getKey();
                     final DeleteResolver<T> deleteResolver = objectAndDeleteResolver.getValue();
 
