@@ -88,7 +88,7 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
             internal.beginTransaction();
         }
 
-        final Map<T, PutResult> results = new HashMap<T, PutResult>();
+        final Map<T, PutResult> results = new HashMap<T, PutResult>(objects.size());
         boolean transactionSuccessful = false;
 
         try {
