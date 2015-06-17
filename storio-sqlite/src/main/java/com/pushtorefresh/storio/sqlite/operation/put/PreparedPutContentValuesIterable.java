@@ -19,10 +19,13 @@ import rx.schedulers.Schedulers;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
-public final class PreparedPutContentValuesIterable extends PreparedPut<ContentValues, PutResults<ContentValues>> {
+public final class PreparedPutContentValuesIterable extends PreparedPut<PutResults<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValuesIterable;
+
+    @NonNull
+    private final PutResolver<ContentValues> putResolver;
 
     private final boolean useTransaction;
 
@@ -32,8 +35,9 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<ContentV
             @NonNull PutResolver<ContentValues> putResolver,
             boolean useTransaction) {
 
-        super(storIOSQLite, putResolver);
+        super(storIOSQLite);
         this.contentValuesIterable = contentValuesIterable;
+        this.putResolver = putResolver;
         this.useTransaction = useTransaction;
     }
 

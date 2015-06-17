@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operation.put;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
@@ -8,31 +9,38 @@ import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
-public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
+public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>> {
 
     @NonNull
-    private final Iterable<T> objects;
+    private final Collection<T> objects;
 
     private final boolean useTransaction;
 
-    PreparedPutObjects(@NonNull StorIOSQLite storIOSQLite,
-                       @NonNull Iterable<T> objects,
-                       @NonNull PutResolver<T> putResolver,
-                       boolean useTransaction) {
-        super(storIOSQLite, putResolver);
+    @Nullable
+    private final PutResolver<T> explicitPutResolver;
+
+    PreparedPutCollectionOfObjects(@NonNull StorIOSQLite storIOSQLite,
+                                   @NonNull Collection<T> objects,
+                                   @Nullable PutResolver<T> explicitPutResolver,
+                                   boolean useTransaction) {
+        super(storIOSQLite);
         this.objects = objects;
         this.useTransaction = useTransaction;
+        this.explicitPutResolver = explicitPutResolver;
     }
 
     /**
@@ -44,27 +52,67 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
      *
      * @return non-null results of Put Operation.
      */
+    @SuppressWarnings("unchecked")
     @WorkerThread
     @NonNull
     @Override
     public PutResults<T> executeAsBlocking() {
         final StorIOSQLite.Internal internal = storIOSQLite.internal();
-        final Map<T, PutResult> putResults = new HashMap<T, PutResult>();
+
+        // Nullable
+        final List<SimpleImmutableEntry<T, PutResolver<T>>> objectsAndPutResolvers;
+
+        if (explicitPutResolver != null) {
+            objectsAndPutResolvers = null;
+        } else {
+            objectsAndPutResolvers = new ArrayList<SimpleImmutableEntry<T, PutResolver<T>>>(objects.size());
+
+            for (final T object : objects) {
+                final SQLiteTypeMapping<T> typeMapping
+                        = (SQLiteTypeMapping<T>) internal.typeMapping(object.getClass());
+
+                if (typeMapping == null) {
+                    throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
+                            "object = " + object + ", object.class = " + object.getClass() + "," +
+                            "db was not affected by this operation, please add type mapping for this type");
+                }
+
+                objectsAndPutResolvers.add(new SimpleImmutableEntry<T, PutResolver<T>>(
+                        object,
+                        typeMapping.putResolver()
+                ));
+            }
+        }
 
         if (useTransaction) {
             internal.beginTransaction();
         }
 
+        final Map<T, PutResult> results = new HashMap<T, PutResult>();
         boolean transactionSuccessful = false;
 
         try {
-            for (T object : objects) {
-                final PutResult putResult = putResolver.performPut(storIOSQLite, object);
+            if (explicitPutResolver != null) {
+                for (final T object : objects) {
+                    final PutResult putResult = explicitPutResolver.performPut(storIOSQLite, object);
+                    results.put(object, putResult);
 
-                putResults.put(object, putResult);
+                    if (!useTransaction) {
+                        internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                    }
+                }
+            } else {
+                for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
+                    final T object = objectAndPutResolver.getKey();
+                    final PutResolver<T> putResolver = objectAndPutResolver.getValue();
 
-                if (!useTransaction) {
-                    internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                    final PutResult putResult = putResolver.performPut(storIOSQLite, object);
+
+                    results.put(object, putResult);
+
+                    if (!useTransaction) {
+                        internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                    }
                 }
             }
 
@@ -76,19 +124,22 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
             if (useTransaction) {
                 storIOSQLite.internal().endTransaction();
 
+                // if delete was in transaction and it was successful -> notify about changes
                 if (transactionSuccessful) {
                     final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
 
-                    for (final T object : putResults.keySet()) {
-                        affectedTables.addAll(putResults.get(object).affectedTables());
+                    for (final T object : results.keySet()) {
+                        affectedTables.addAll(results.get(object).affectedTables());
                     }
 
+                    // IMPORTANT: Notifying about change should be done after end of transaction
+                    // It'll reduce number of possible deadlock situations
                     storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
                 }
             }
         }
 
-        return PutResults.newInstance(putResults);
+        return PutResults.newInstance(results);
     }
 
     /**
@@ -116,28 +167,24 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
     }
 
     /**
-     * Builder for {@link PreparedPutObjects}
+     * Builder for {@link PreparedPutCollectionOfObjects}
      *
      * @param <T> type of objects to put
      */
     public static final class Builder<T> {
 
         @NonNull
-        private final Class<T> type;
-
-        @NonNull
         private final StorIOSQLite storIOSQLite;
 
         @NonNull
-        private final Iterable<T> objects;
+        private final Collection<T> objects;
 
         private PutResolver<T> putResolver;
 
         private boolean useTransaction = true;
 
-        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type, @NonNull Iterable<T> objects) {
+        Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects) {
             this.storIOSQLite = storIOSQLite;
-            this.type = type;
             this.objects = objects;
         }
 
@@ -174,22 +221,11 @@ public final class PreparedPutObjects<T> extends PreparedPut<T, PutResults<T>> {
         /**
          * Prepares Put Operation
          *
-         * @return {@link PreparedPutObjects} instance
+         * @return {@link PreparedPutCollectionOfObjects} instance
          */
         @NonNull
-        public PreparedPutObjects<T> prepare() {
-            final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping(type);
-
-            if (putResolver == null && typeMapping != null) {
-                putResolver = typeMapping.putResolver();
-            }
-
-            checkNotNull(putResolver, "StorIO can not perform put of objects = " +
-                    objects + "\nof type " + type +
-                    " without type mapping or Operation resolver." +
-                    "\n Please add type mapping or Operation resolver");
-
-            return new PreparedPutObjects<T>(
+        public PreparedPutCollectionOfObjects<T> prepare() {
+            return new PreparedPutCollectionOfObjects<T>(
                     storIOSQLite,
                     objects,
                     putResolver,

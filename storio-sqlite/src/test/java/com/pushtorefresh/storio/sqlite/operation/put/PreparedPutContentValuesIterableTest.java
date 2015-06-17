@@ -10,12 +10,12 @@ public class PreparedPutContentValuesIterableTest {
 
     @Test
     public void putMultipleBlockingWithTransaction() {
-        final PutStub putStub = PutStub.newPutStubForMultipleContentValues(true);
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
 
         final PutResults<ContentValues> putResults = putStub.storIOSQLite
                 .put()
                 .contentValues(putStub.contentValues)
-                .withPutResolver(putStub.putResolverForContentValues)
+                .withPutResolver(putStub.putResolver)
                 .useTransaction(true)
                 .prepare()
                 .executeAsBlocking();
@@ -25,12 +25,12 @@ public class PreparedPutContentValuesIterableTest {
 
     @Test
     public void putMultipleObservableWithTransaction() {
-        final PutStub putStub = PutStub.newPutStubForMultipleContentValues(true);
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
 
         final Observable<PutResults<ContentValues>> putResultsObservable = putStub.storIOSQLite
                 .put()
                 .contentValues(putStub.contentValues)
-                .withPutResolver(putStub.putResolverForContentValues)
+                .withPutResolver(putStub.putResolver)
                 .useTransaction(true)
                 .prepare()
                 .createObservable();
@@ -40,12 +40,12 @@ public class PreparedPutContentValuesIterableTest {
 
     @Test
     public void putMultipleBlockingWithoutTransaction() {
-        final PutStub putStub = PutStub.newPutStubForMultipleContentValues(false);
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(false);
 
         final PutResults<ContentValues> putResults = putStub.storIOSQLite
                 .put()
                 .contentValues(putStub.contentValues)
-                .withPutResolver(putStub.putResolverForContentValues)
+                .withPutResolver(putStub.putResolver)
                 .useTransaction(false)
                 .prepare()
                 .executeAsBlocking();
@@ -55,12 +55,12 @@ public class PreparedPutContentValuesIterableTest {
 
     @Test
     public void putMultipleObservableWithoutTransaction() {
-        final PutStub putStub = PutStub.newPutStubForMultipleContentValues(false);
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(false);
 
         final Observable<PutResults<ContentValues>> putResultsObservable = putStub.storIOSQLite
                 .put()
                 .contentValues(putStub.contentValues)
-                .withPutResolver(putStub.putResolverForContentValues)
+                .withPutResolver(putStub.putResolver)
                 .useTransaction(false)
                 .prepare()
                 .createObservable();

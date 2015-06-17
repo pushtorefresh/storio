@@ -12,7 +12,6 @@ import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import rx.Observable;
@@ -64,54 +63,6 @@ public class PutOperationDesignTest extends OperationDesignTest {
         Observable<PutResult> observablePutResult = storIOSQLite()
                 .put()
                 .object(user)
-                .withPutResolver(UserTableMeta.PUT_RESOLVER)
-                .prepare()
-                .createObservable();
-    }
-
-    @Test
-    public void putObjectsIterableBlocking() {
-        Iterable<User> users = new ArrayList<User>();
-
-        PutResults<User> putResults = storIOSQLite()
-                .put()
-                .objects(User.class, users)
-                .withPutResolver(UserTableMeta.PUT_RESOLVER)
-                .prepare()
-                .executeAsBlocking();
-    }
-
-    @Test
-    public void putObjectsIterableObservable() {
-        Iterable<User> users = new ArrayList<User>();
-
-        Observable<PutResults<User>> putResultsObservable = storIOSQLite()
-                .put()
-                .objects(User.class, users)
-                .withPutResolver(UserTableMeta.PUT_RESOLVER)
-                .prepare()
-                .createObservable();
-    }
-
-    @Test
-    public void putObjectsArrayBlocking() {
-        User[] users = new User[]{};
-
-        PutResults<User> putResults = storIOSQLite()
-                .put()
-                .objects(User.class, users)
-                .withPutResolver(UserTableMeta.PUT_RESOLVER)
-                .prepare()
-                .executeAsBlocking();
-    }
-
-    @Test
-    public void putObjectsArrayObservable() {
-        User[] users = new User[]{};
-
-        Observable<PutResults<User>> putResultsObservable = storIOSQLite()
-                .put()
-                .objects(User.class, users)
                 .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();

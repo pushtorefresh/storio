@@ -7,24 +7,19 @@ import com.pushtorefresh.storio.operation.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Prepared Put Operation for {@link StorIOSQLite} which performs insert or update data
  * in {@link StorIOSQLite}.
- *
- * @param <T> type of data you want to put.
  */
-public abstract class PreparedPut<T, Result> implements PreparedOperation<Result> {
+public abstract class PreparedPut<Result> implements PreparedOperation<Result> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;
 
-    @NonNull
-    protected final PutResolver<T> putResolver;
-
-    PreparedPut(@NonNull StorIOSQLite storIOSQLite, @NonNull PutResolver<T> putResolver) {
+    PreparedPut(@NonNull StorIOSQLite storIOSQLite) {
         this.storIOSQLite = storIOSQLite;
-        this.putResolver = putResolver;
     }
 
     /**
@@ -87,30 +82,13 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         /**
          * Prepares Put Operation for multiple objects.
          *
-         * @param type    type of objects, due to limitations of Generics in Java
-         *                we have to explicitly ask you about type of objects, sorry :(.
          * @param objects objects to put.
          * @param <T>     type of objects.
          * @return builder.
          */
         @NonNull
-        public <T> PreparedPutObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {
-            return new PreparedPutObjects.Builder<T>(storIOSQLite, type, objects);
-        }
-
-        /**
-         * Prepares Put Operation for multiple objects.
-         *
-         * @param type    type of objects, due to limitations of Generics in Java
-         *                we have to explicitly ask you about type of objects, sorry :(.
-         * @param objects objects to put.
-         * @param <T>     type of objects.
-         * @return builder.
-         */
-        @SuppressWarnings("unchecked")
-        @NonNull
-        public <T> PreparedPutObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull T... objects) {
-            return new PreparedPutObjects.Builder<T>(storIOSQLite, type, Arrays.asList(objects));
+        public <T> PreparedPutCollectionOfObjects.Builder<T> objects(@NonNull Collection<T> objects) {
+            return new PreparedPutCollectionOfObjects.Builder<T>(storIOSQLite, objects);
         }
     }
 }

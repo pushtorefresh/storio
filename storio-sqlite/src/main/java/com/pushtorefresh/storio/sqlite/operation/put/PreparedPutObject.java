@@ -19,16 +19,20 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  *
  * @param <T> type of object to put.
  */
-public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
+public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
 
     @NonNull
     private final T object;
 
+    @NonNull
+    private final PutResolver<T> putResolver;
+
     PreparedPutObject(@NonNull StorIOSQLite storIOSQLite,
                       @NonNull T object,
                       @NonNull PutResolver<T> putResolver) {
-        super(storIOSQLite, putResolver);
+        super(storIOSQLite);
         this.object = object;
+        this.putResolver = putResolver;
     }
 
     /**

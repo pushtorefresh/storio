@@ -60,7 +60,7 @@ public class UpdateTest extends BaseTest {
 
         final PutResults<User> insertResults = storIOSQLite
                 .put()
-                .objects(User.class, usersForInsert)
+                .objects(usersForInsert)
                 .prepare()
                 .executeAsBlocking();
 
@@ -74,7 +74,7 @@ public class UpdateTest extends BaseTest {
 
         final PutResults<User> updateResults = storIOSQLite
                 .put()
-                .objects(User.class, usersForUpdate)
+                .objects(usersForUpdate)
                 .prepare()
                 .executeAsBlocking();
 

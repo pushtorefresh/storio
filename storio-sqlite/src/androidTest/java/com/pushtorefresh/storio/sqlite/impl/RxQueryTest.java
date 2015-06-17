@@ -94,7 +94,7 @@ public class RxQueryTest extends BaseTest {
 
         storIOSQLite
                 .put()
-                .objects(User.class, updatedList)
+                .objects(updatedList)
                 .prepare()
                 .executeAsBlocking();
 

@@ -17,14 +17,18 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
 /**
  * Prepared Put Operation for {@link StorIOSQLite}.
  */
-public final class PreparedPutContentValues extends PreparedPut<ContentValues, PutResult> {
+public final class PreparedPutContentValues extends PreparedPut<PutResult> {
 
     @NonNull
     private final ContentValues contentValues;
 
+    @NonNull
+    private final PutResolver<ContentValues> putResolver;
+
     PreparedPutContentValues(@NonNull StorIOSQLite storIOSQLite, @NonNull ContentValues contentValues, @NonNull PutResolver<ContentValues> putResolver) {
-        super(storIOSQLite, putResolver);
+        super(storIOSQLite);
         this.contentValues = contentValues;
+        this.putResolver = putResolver;
     }
 
     /**

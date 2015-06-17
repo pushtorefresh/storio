@@ -105,7 +105,7 @@ public abstract class BaseTest {
     List<User> putUsersBlocking(@NonNull final List<User> users) {
         final PutResults<User> putResults = storIOSQLite
                 .put()
-                .objects(User.class, users)
+                .objects(users)
                 .prepare()
                 .executeAsBlocking();
 
