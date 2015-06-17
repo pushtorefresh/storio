@@ -12,6 +12,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -94,19 +95,10 @@ public class AbstractEmissionCheckerTest {
             public Subscription subscribe() {
                 return Observable
                         .just("another_value")
-                        .subscribe(new Subscriber<String>() {
+                        .subscribeOn(Schedulers.computation())
+                        .subscribe(new Action1<String>() {
                             @Override
-                            public void onCompleted() {
-                                fail();
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                // expected
-                            }
-
-                            @Override
-                            public void onNext(String s) {
+                            public void call(String s) {
                                 onNextObtained(s);
                             }
                         });
