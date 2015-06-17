@@ -8,13 +8,16 @@ import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
@@ -22,14 +25,20 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  *
  * @param <T> type of objects to delete.
  */
-public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResults<T>> {
+public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
     @NonNull
-    private final Iterable<T> objects;
+    private final Collection<T> objects;
 
-    PreparedDeleteObjects(@NonNull StorIOContentResolver storIOContentResolver, @NonNull DeleteResolver<T> deleteResolver, @NonNull Iterable<T> objects) {
-        super(storIOContentResolver, deleteResolver);
+    @Nullable
+    private final DeleteResolver<T> explicitDeleteResolver;
+
+    PreparedDeleteCollectionOfObjects(@NonNull StorIOContentResolver storIOContentResolver,
+                                      @NonNull Collection<T> objects,
+                                      @Nullable DeleteResolver<T> explicitDeleteResolver) {
+        super(storIOContentResolver);
         this.objects = objects;
+        this.explicitDeleteResolver = explicitDeleteResolver;
     }
 
     /**
@@ -41,18 +50,56 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResu
      *
      * @return non-null results of Delete Operation.
      */
+    @SuppressWarnings("unchecked")
     @WorkerThread
     @NonNull
     @Override
     public DeleteResults<T> executeAsBlocking() {
-        final Map<T, DeleteResult> deleteResultsMap = new HashMap<T, DeleteResult>();
+        final StorIOContentResolver.Internal internal = storIOContentResolver.internal();
 
-        for (final T object : objects) {
-            final DeleteResult deleteResult = deleteResolver.performDelete(storIOContentResolver, object);
-            deleteResultsMap.put(object, deleteResult);
+        // Nullable
+        final List<SimpleImmutableEntry> objectsAndDeleteResolvers;
+
+        if (explicitDeleteResolver != null) {
+            objectsAndDeleteResolvers = null;
+        } else {
+            objectsAndDeleteResolvers = new ArrayList<SimpleImmutableEntry>(objects.size());
+
+            for (final T object : objects) {
+                final ContentResolverTypeMapping<T> typeMapping
+                        = (ContentResolverTypeMapping<T>) internal.typeMapping(object.getClass());
+
+                if (typeMapping == null) {
+                    throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
+                            "object = " + object + ", object.class = " + object.getClass() + "," +
+                            "ContentProvider was not affected by this operation, please add type mapping for this type");
+                }
+
+                objectsAndDeleteResolvers.add(new SimpleImmutableEntry(
+                        object,
+                        typeMapping.deleteResolver()
+                ));
+            }
         }
 
-        return DeleteResults.newInstance(deleteResultsMap);
+        final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>(objects.size());
+
+        if (explicitDeleteResolver != null) {
+            for (final T object : objects) {
+                final DeleteResult deleteResult = explicitDeleteResolver.performDelete(storIOContentResolver, object);
+                results.put(object, deleteResult);
+            }
+        } else {
+            for (final SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
+                final T object = objectAndDeleteResolver.getKey();
+                final DeleteResolver<T> deleteResolver = objectAndDeleteResolver.getValue();
+
+                final DeleteResult deleteResult = deleteResolver.performDelete(storIOContentResolver, object);
+                results.put(object, deleteResult);
+            }
+        }
+
+        return DeleteResults.newInstance(results);
     }
 
     /**
@@ -80,7 +127,7 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResu
     }
 
     /**
-     * Builder for {@link PreparedDeleteObjects}.
+     * Builder for {@link PreparedDeleteCollectionOfObjects}.
      *
      * @param <T> type of objects.
      */
@@ -90,23 +137,19 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResu
         private final StorIOContentResolver storIOContentResolver;
 
         @NonNull
-        private final Class<T> type;
+        private final Collection<T> objects;
 
-        @NonNull
-        private final Iterable<T> objects;
-
+        @Nullable
         private DeleteResolver<T> deleteResolver;
 
         /**
-         * Creates builder for {@link PreparedDeleteObjects}.
+         * Creates builder for {@link PreparedDeleteCollectionOfObjects}.
          *
          * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}.
-         * @param type                  type of objects.
          * @param objects               non-null collection of objects to delete.
          */
-        public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Class<T> type, @NonNull Iterable<T> objects) {
+        public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Collection<T> objects) {
             this.storIOContentResolver = storIOContentResolver;
-            this.type = type;
             this.objects = objects;
         }
 
@@ -128,27 +171,16 @@ public final class PreparedDeleteObjects<T> extends PreparedDelete<T, DeleteResu
         }
 
         /**
-         * Builds instance of {@link PreparedDeleteObjects}.
+         * Builds instance of {@link PreparedDeleteCollectionOfObjects}.
          *
-         * @return instance of {@link PreparedDeleteObjects}.
+         * @return instance of {@link PreparedDeleteCollectionOfObjects}.
          */
         @NonNull
-        public PreparedDeleteObjects<T> prepare() {
-            final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping(type);
-
-            if (deleteResolver == null && typeMapping != null) {
-                deleteResolver = typeMapping.deleteResolver();
-            }
-
-            checkNotNull(deleteResolver, "StorIO can not perform delete of objects = " +
-                    objects + "\nof type " + type +
-                    " without type mapping or Operation resolver." +
-                    "\n Please add type mapping or Operation resolver");
-
-            return new PreparedDeleteObjects<T>(
+        public PreparedDeleteCollectionOfObjects<T> prepare() {
+            return new PreparedDeleteCollectionOfObjects<T>(
                     storIOContentResolver,
-                    deleteResolver,
-                    objects
+                    objects,
+                    deleteResolver
             );
         }
     }

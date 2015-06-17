@@ -53,7 +53,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
         DeleteResults<Article> deleteResults = storIOContentResolver()
                 .delete()
-                .objects(Article.class, articles)
+                .objects(articles)
                 .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
@@ -65,7 +65,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
         Observable<DeleteResults<Article>> deleteResultsObservable = storIOContentResolver()
                 .delete()
-                .objects(Article.class, articles)
+                .objects(articles)
                 .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
                 .createObservable();

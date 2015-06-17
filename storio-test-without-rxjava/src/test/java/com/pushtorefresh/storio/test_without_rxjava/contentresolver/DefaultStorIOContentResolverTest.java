@@ -13,6 +13,8 @@ import com.pushtorefresh.storio.contentresolver.query.Query;
 
 import org.junit.Test;
 
+import java.util.Collection;
+
 import static org.mockito.Mockito.mock;
 
 public class DefaultStorIOContentResolverTest {
@@ -131,12 +133,12 @@ public class DefaultStorIOContentResolverTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void instantiateDeleteObjects() {
+    public void instantiateDeleteCollectionOfObjects() {
         DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .delete()
-                .objects(Object.class, mock(Iterable.class))
+                .objects(mock(Collection.class))
                 .withDeleteResolver(mock(DeleteResolver.class))
                 .prepare();
     }

@@ -18,14 +18,20 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  * Prepared Delete Operation for
  * {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
  */
-public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, DeleteResult> {
+public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     @NonNull
     private final DeleteQuery deleteQuery;
 
-    PreparedDeleteByQuery(@NonNull StorIOContentResolver storIOContentResolver, @NonNull DeleteResolver<DeleteQuery> deleteResolver, @NonNull DeleteQuery deleteQuery) {
-        super(storIOContentResolver, deleteResolver);
+    @NonNull
+    private final DeleteResolver<DeleteQuery> deleteResolver;
+
+    PreparedDeleteByQuery(@NonNull StorIOContentResolver storIOContentResolver,
+                          @NonNull DeleteQuery deleteQuery,
+                          @NonNull DeleteResolver<DeleteQuery> deleteResolver) {
+        super(storIOContentResolver);
         this.deleteQuery = deleteQuery;
+        this.deleteResolver = deleteResolver;
     }
 
     /**
@@ -132,8 +138,8 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteQuery, Del
 
             return new PreparedDeleteByQuery(
                     storIOContentResolver,
-                    deleteResolver,
-                    deleteQuery
+                    deleteQuery,
+                    deleteResolver
             );
         }
     }

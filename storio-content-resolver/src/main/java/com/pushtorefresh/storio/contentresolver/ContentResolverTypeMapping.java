@@ -13,7 +13,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  *
  * @param <T> type.
  */
-public final class ContentResolverTypeMapping<T> {
+public class ContentResolverTypeMapping<T> {
 
     @NonNull
     private final PutResolver<T> putResolver;
