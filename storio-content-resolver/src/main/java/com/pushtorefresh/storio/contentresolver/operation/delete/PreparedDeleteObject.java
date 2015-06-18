@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.operation.delete;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
@@ -22,15 +23,15 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
     @NonNull
     private final T object;
 
-    @NonNull
-    private final DeleteResolver<T> deleteResolver;
+    @Nullable
+    private final DeleteResolver<T> explicitDeleteResolver;
 
     PreparedDeleteObject(@NonNull StorIOContentResolver storIOContentResolver,
                          @NonNull T object,
-                         @NonNull DeleteResolver<T> deleteResolver) {
+                         @Nullable DeleteResolver<T> explicitDeleteResolver) {
         super(storIOContentResolver);
         this.object = object;
-        this.deleteResolver = deleteResolver;
+        this.explicitDeleteResolver = explicitDeleteResolver;
     }
 
     /**
@@ -42,10 +43,28 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
      *
      * @return non-null result of Delete Operation.
      */
+    @SuppressWarnings("unchecked")
     @WorkerThread
     @NonNull
     @Override
     public DeleteResult executeAsBlocking() {
+        final DeleteResolver<T> deleteResolver;
+
+        if (explicitDeleteResolver != null) {
+            deleteResolver = explicitDeleteResolver;
+        } else {
+            final ContentResolverTypeMapping<T> typeMapping
+                    = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
+
+            if (typeMapping == null) {
+                throw new IllegalStateException("Object does not have type mapping: " +
+                        "object = " + object + ", object.class = " + object.getClass() + "," +
+                        "ContentProvider was not affected by this operation, please add type mapping for this type");
+            }
+
+            deleteResolver = typeMapping.deleteResolver();
+        }
+
         return deleteResolver.performDelete(storIOContentResolver, object);
     }
 
@@ -124,20 +143,8 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
          *
          * @return new instance of {@link PreparedDeleteObject}.
          */
-        @SuppressWarnings("unchecked")
         @NonNull
         public PreparedDeleteObject<T> prepare() {
-            final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
-
-            if (deleteResolver == null && typeMapping != null) {
-                deleteResolver = typeMapping.deleteResolver();
-            }
-
-            checkNotNull(deleteResolver, "StorIO can not perform delete of object = " +
-                    object + "\nof type " + object.getClass() +
-                    " without type mapping or Operation resolver." +
-                    "\n Please add type mapping or Operation resolver");
-
             return new PreparedDeleteObject<T>(
                     storIOContentResolver,
                     object,

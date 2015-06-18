@@ -2,7 +2,6 @@ package com.pushtorefresh.storio.contentresolver.operation.delete;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
@@ -22,6 +21,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 // stub class to avoid violation of DRY in tests
@@ -39,7 +39,7 @@ class DeleteObjectsStub {
     @NonNull
     final DeleteResolver<TestItem> deleteResolver;
 
-    @Nullable
+    @NonNull
     private final ContentResolverTypeMapping<TestItem> typeMapping;
 
     @NonNull
@@ -65,10 +65,9 @@ class DeleteObjectsStub {
         items = new ArrayList<TestItem>(numberOfTestItems);
         testItemToDeleteResultMap = new HashMap<TestItem, DeleteResult>(numberOfTestItems);
 
-        if (!withTypeMapping) {
-            typeMapping = null;
-        } else {
-            typeMapping = mock(ContentResolverTypeMapping.class);
+        typeMapping = mock(ContentResolverTypeMapping.class);
+
+        if (withTypeMapping) {
             when(typeMapping.deleteResolver()).thenReturn(deleteResolver);
             when(internal.typeMapping(TestItem.class)).thenReturn(typeMapping);
         }
@@ -98,11 +97,23 @@ class DeleteObjectsStub {
     }
 
     @NonNull
-    static DeleteObjectsStub newInstanceForDeleteOneObject() {
+    static DeleteObjectsStub newInstanceForDeleteOneObjectWithoutTypeMapping() {
         return new DeleteObjectsStub(false, 1);
     }
 
+    @NonNull
+    static DeleteObjectsStub newInstanceForDeleteOneObjectWithTypeMapping() {
+        return new DeleteObjectsStub(true, 1);
+    }
+
     void verifyBehaviorForDeleteMultipleObjects(@NonNull DeleteResults<TestItem> deleteResults) {
+        verify(storIOContentResolver).delete();
+
+        if (withTypeMapping || items.size() > 1) {
+            // should be called only once because of Performance!
+            verify(storIOContentResolver).internal();
+        }
+
         // checks that delete was performed same amount of times as count of items
         verify(deleteResolver, times(items.size())).performDelete(eq(storIOContentResolver), any(TestItem.class));
 
@@ -122,6 +133,8 @@ class DeleteObjectsStub {
             verify(internal, times(items.size())).typeMapping(TestItem.class);
             verify(typeMapping, times(items.size())).deleteResolver();
         }
+
+        verifyNoMoreInteractions(storIOContentResolver, internal, typeMapping, deleteResolver);
     }
 
     void verifyBehaviorForDeleteMultipleObjects(@NonNull Observable<DeleteResults<TestItem>> deleteResultsObservable) {
