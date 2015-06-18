@@ -20,16 +20,20 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  * Prepared Put Operation to perform put multiple {@link ContentValues}
  * into {@link StorIOContentResolver}.
  */
-public final class PreparedPutContentValuesIterable extends PreparedPut<ContentValues,
-        PutResults<ContentValues>> {
+public final class PreparedPutContentValuesIterable extends PreparedPut<PutResults<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValues;
 
+    @NonNull
+    private final PutResolver<ContentValues> putResolver;
+
     PreparedPutContentValuesIterable(@NonNull StorIOContentResolver storIOContentResolver,
-                                     @NonNull PutResolver<ContentValues> putResolver, @NonNull Iterable<ContentValues> contentValues) {
-        super(storIOContentResolver, putResolver);
+                                     @NonNull PutResolver<ContentValues> putResolver,
+                                     @NonNull Iterable<ContentValues> contentValues) {
+        super(storIOContentResolver);
         this.contentValues = contentValues;
+        this.putResolver = putResolver;
     }
 
     /**

@@ -71,12 +71,12 @@ public class DefaultStorIOContentResolverTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void instantiatePutObjects() {
+    public void instantiatePutCollectionOfObjects() {
         DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
                 .build()
                 .put()
-                .objects(Object.class, mock(Iterable.class))
+                .objects(mock(Collection.class))
                 .withPutResolver(mock(PutResolver.class))
                 .prepare();
     }

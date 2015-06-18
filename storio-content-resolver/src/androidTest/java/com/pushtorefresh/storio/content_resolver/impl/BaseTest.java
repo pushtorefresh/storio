@@ -98,7 +98,7 @@ public abstract class BaseTest extends ProviderTestCase2<TestContentProvider> {
     List<User> putUsers(@NonNull final List<User> users) {
         final PutResults<User> putResults = storIOContentResolver
                 .put()
-                .objects(User.class, users)
+                .objects(users)
                 .prepare()
                 .executeAsBlocking();
 

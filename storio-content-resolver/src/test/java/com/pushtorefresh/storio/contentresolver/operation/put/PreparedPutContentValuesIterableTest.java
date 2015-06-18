@@ -4,27 +4,18 @@ import android.content.ContentValues;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import rx.Observable;
 
 public class PreparedPutContentValuesIterableTest {
 
     @Test
     public void putContentValuesIterableBlocking() {
-        final PutStub putStub = PutStub.newPutStubForMultipleContentValues();
-
-        final List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
-
-        for (final TestItem testItem : putStub.testItems) {
-            contentValuesList.add(putStub.testItemsToContentValuesMap.get(testItem));
-        }
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues();
 
         final PutResults<ContentValues> putResults = putStub.storIOContentResolver
                 .put()
-                .contentValues(contentValuesList)
-                .withPutResolver(putStub.putResolverForContentValues)
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -33,18 +24,12 @@ public class PreparedPutContentValuesIterableTest {
 
     @Test
     public void putContentValuesIterableObservable() {
-        final PutStub putStub = PutStub.newPutStubForMultipleContentValues();
-
-        final List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
-
-        for (final TestItem testItem : putStub.testItems) {
-            contentValuesList.add(putStub.testItemsToContentValuesMap.get(testItem));
-        }
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues();
 
         final Observable<PutResults<ContentValues>> putResultsObservable = putStub.storIOContentResolver
                 .put()
-                .contentValues(contentValuesList)
-                .withPutResolver(putStub.putResolverForContentValues)
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
                 .prepare()
                 .createObservable();
 

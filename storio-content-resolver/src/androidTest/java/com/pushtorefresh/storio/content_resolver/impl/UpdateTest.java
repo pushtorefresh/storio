@@ -55,7 +55,7 @@ public class UpdateTest extends BaseTest {
 
         final PutResults<User> updateResults = storIOContentResolver
                 .put()
-                .objects(User.class, usersForUpdate)
+                .objects(usersForUpdate)
                 .prepare()
                 .executeAsBlocking();
 

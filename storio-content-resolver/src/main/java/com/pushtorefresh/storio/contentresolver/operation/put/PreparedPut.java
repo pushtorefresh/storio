@@ -6,23 +6,20 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operation.PreparedOperation;
 
+import java.util.Collection;
+
 /**
  * Represents an Operation for {@link StorIOContentResolver} which performs insert or update data
  * in {@link android.content.ContentProvider}.
  *
- * @param <T> type of data you want to put.
  */
-public abstract class PreparedPut<T, Result> implements PreparedOperation<Result> {
+public abstract class PreparedPut<Result> implements PreparedOperation<Result> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;
 
-    @NonNull
-    protected final PutResolver<T> putResolver;
-
-    protected PreparedPut(@NonNull StorIOContentResolver storIOContentResolver, @NonNull PutResolver<T> putResolver) {
+    protected PreparedPut(@NonNull StorIOContentResolver storIOContentResolver) {
         this.storIOContentResolver = storIOContentResolver;
-        this.putResolver = putResolver;
     }
 
     /**
@@ -52,15 +49,13 @@ public abstract class PreparedPut<T, Result> implements PreparedOperation<Result
         /**
          * Prepares Put Operation that should put multiple objects.
          *
-         * @param type    type of objects, due to limitations of Generics in Java
-         *                we have to explicitly ask you about type of objects, sorry :(.
          * @param objects objects to put.
          * @param <T>     type of objects.
-         * @return builder for {@link PreparedPutObjects}.
+         * @return builder for {@link PreparedPutCollectionOfObjects}.
          */
         @NonNull
-        public <T> PreparedPutObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {
-            return new PreparedPutObjects.Builder<T>(storIOContentResolver, type, objects);
+        public <T> PreparedPutCollectionOfObjects.Builder<T> objects(@NonNull Collection<T> objects) {
+            return new PreparedPutCollectionOfObjects.Builder<T>(storIOContentResolver, objects);
         }
 
         /**

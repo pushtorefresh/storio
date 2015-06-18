@@ -11,7 +11,6 @@ import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
@@ -20,16 +19,20 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  *
  * @param <T> type of the object.
  */
-public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
+public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
 
     @NonNull
     private final T object;
 
-    protected PreparedPutObject(@NonNull StorIOContentResolver storIOContentResolver,
-                                @NonNull PutResolver<T> putResolver,
-                                @NonNull T object) {
-        super(storIOContentResolver, putResolver);
+    @Nullable
+    private final PutResolver<T> explicitPutResolver;
+
+    PreparedPutObject(@NonNull StorIOContentResolver storIOContentResolver,
+                      @Nullable PutResolver<T> explicitPutResolver,
+                      @NonNull T object) {
+        super(storIOContentResolver);
         this.object = object;
+        this.explicitPutResolver = explicitPutResolver;
     }
 
     /**
@@ -41,10 +44,28 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
      *
      * @return non-null results of Put Operation.
      */
+    @SuppressWarnings("unchecked")
     @WorkerThread
     @NonNull
     @Override
     public PutResult executeAsBlocking() {
+        final PutResolver<T> putResolver;
+
+        if (explicitPutResolver != null) {
+            putResolver = explicitPutResolver;
+        } else {
+            final ContentResolverTypeMapping<T> typeMapping
+                    = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
+
+            if (typeMapping == null) {
+                throw new IllegalStateException("Object does not have type mapping: " +
+                        "object = " + object + ", object.class = " + object.getClass() + "," +
+                        "ContentProvider was not affected by this operation, please add type mapping for this type");
+            }
+
+            putResolver = typeMapping.putResolver();
+        }
+
         return putResolver.performPut(storIOContentResolver, object);
     }
 
@@ -118,17 +139,6 @@ public final class PreparedPutObject<T> extends PreparedPut<T, PutResult> {
         @SuppressWarnings("unchecked")
         @NonNull
         public PreparedPutObject<T> prepare() {
-            final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
-
-            if (putResolver == null && typeMapping != null) {
-                putResolver = typeMapping.putResolver();
-            }
-
-            checkNotNull(putResolver, "StorIO can not perform put of object = " +
-                    object + "\nof type " + object.getClass() +
-                    " without type mapping or Operation resolver." +
-                    "\n Please add type mapping or Operation resolver");
-
             return new PreparedPutObject<T>(
                     storIOContentResolver,
                     putResolver,
