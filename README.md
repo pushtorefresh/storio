@@ -58,7 +58,7 @@ List<Tweet> tweets = storIOSQLite
 ```java
 storIOSQLite
   .put() // Insert or Update
-  .objects(Tweet.class, newTweets) // Type safety
+  .objects(someTweets) // Type mapping!
   .prepare()
   .executeAsBlocking();
 ```
