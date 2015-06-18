@@ -7,18 +7,26 @@ import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 import rx.functions.Action1;
 
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 // stub class to avoid violation of DRY in tests
@@ -39,6 +47,9 @@ class PutObjectsStub {
     @NonNull
     private final SQLiteTypeMapping<TestItem> typeMapping;
 
+    @NonNull
+    private final Map<TestItem, PutResult> itemsToPutResultsMap;
+
     private final boolean withTypeMapping, useTransaction;
 
     @SuppressWarnings("unchecked")
@@ -55,17 +66,30 @@ class PutObjectsStub {
         when(storIOSQLite.put())
                 .thenReturn(new PreparedPut.Builder(storIOSQLite));
 
-
         items = new ArrayList<TestItem>(numberOfItems);
+        itemsToPutResultsMap = new HashMap<TestItem, PutResult>(numberOfItems);
 
         for (int i = 0; i < numberOfItems; i++) {
-            items.add(TestItem.newInstance());
+            final TestItem testItem = TestItem.newInstance();
+            items.add(testItem);
+
+            final PutResult putResult = mock(PutResult.class);
+
+            when(putResult.affectedTables()).thenReturn(singleton(TestItem.TABLE));
+
+            itemsToPutResultsMap.put(testItem, putResult);
         }
 
         putResolver = (PutResolver<TestItem>) mock(PutResolver.class);
 
         when(putResolver.performPut(eq(storIOSQLite), any(TestItem.class)))
-                .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE));
+                .thenAnswer(new Answer<PutResult>() {
+                    @SuppressWarnings("SuspiciousMethodCalls")
+                    @Override
+                    public PutResult answer(InvocationOnMock invocation) throws Throwable {
+                        return itemsToPutResultsMap.get(invocation.getArguments()[1]);
+                    }
+                });
 
         typeMapping = mock(SQLiteTypeMapping.class);
 
@@ -106,18 +130,37 @@ class PutObjectsStub {
     }
 
     void verifyBehaviorForMultipleObjects(@NonNull PutResults<TestItem> putResults) {
+        // should be called once because of Performance!
+        verify(storIOSQLite).internal();
+
         // only one call to storIOSQLite.put() should occur
         verify(storIOSQLite, times(1)).put();
 
         // number of calls to putResolver's performPut() should be equal to number of objects
         verify(putResolver, times(items.size())).performPut(eq(storIOSQLite), any(TestItem.class));
 
-        // each item should be "put"
         for (final TestItem testItem : items) {
+            // put resolver should be invoked for each item
             verify(putResolver, times(1)).performPut(storIOSQLite, testItem);
+
+            final PutResult expectedPutResult = itemsToPutResultsMap.get(testItem);
+
+            assertEquals(expectedPutResult, putResults.results().get(testItem));
         }
 
+        assertEquals(itemsToPutResultsMap.size(), putResults.results().size());
+
         verifyTransactionBehavior();
+
+        if (withTypeMapping) {
+            // should be called for each item
+            verify(internal, times(items.size())).typeMapping(TestItem.class);
+
+            // should be called for each item
+            verify(typeMapping, times(items.size())).putResolver();
+        }
+
+        verifyNoMoreInteractions(storIOSQLite, internal, typeMapping, putResolver);
     }
 
     void verifyBehaviorForMultipleObjects(@NonNull Observable<PutResults<TestItem>> putResultsObservable) {

@@ -13,7 +13,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  * <p>
  * Instances of this class are immutable.
  */
-public final class PutResult {
+public class PutResult {
 
     @Nullable
     private final Long insertedId;
