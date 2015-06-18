@@ -94,7 +94,7 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
             internal.beginTransaction();
         }
 
-        final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>();
+        final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>(objects.size());
         boolean transactionSuccessful = false;
 
         try {
