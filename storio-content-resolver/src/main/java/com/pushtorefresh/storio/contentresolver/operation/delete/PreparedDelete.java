@@ -6,6 +6,8 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
 import com.pushtorefresh.storio.operation.PreparedOperation;
 
+import java.util.Collection;
+
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
@@ -13,17 +15,13 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  *
  * @param <Result> type of result of Delete Operation.
  */
-public abstract class PreparedDelete<T, Result> implements PreparedOperation<Result> {
+public abstract class PreparedDelete<Result> implements PreparedOperation<Result> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;
 
-    @NonNull
-    protected final DeleteResolver<T> deleteResolver;
-
-    PreparedDelete(@NonNull StorIOContentResolver storIOContentResolver, @NonNull DeleteResolver<T> deleteResolver) {
+    PreparedDelete(@NonNull StorIOContentResolver storIOContentResolver) {
         this.storIOContentResolver = storIOContentResolver;
-        this.deleteResolver = deleteResolver;
     }
 
     /**
@@ -56,17 +54,15 @@ public abstract class PreparedDelete<T, Result> implements PreparedOperation<Res
         }
 
         /**
-         * Creates builder for {@link PreparedDeleteObjects}.
+         * Creates builder for {@link PreparedDeleteCollectionOfObjects}.
          *
-         * @param type    type of objects, due to limitations of Generics in Java
-         *                we have to explicitly ask you about type of objects, sorry :(.
          * @param objects non-null collection of objects to delete.
          * @param <T>     type of objects.
-         * @return builder for {@link PreparedDeleteObjects}.
+         * @return builder for {@link PreparedDeleteCollectionOfObjects}.
          */
         @NonNull
-        public <T> PreparedDeleteObjects.Builder<T> objects(@NonNull Class<T> type, @NonNull Iterable<T> objects) {
-            return new PreparedDeleteObjects.Builder<T>(storIOContentResolver, type, objects);
+        public <T> PreparedDeleteCollectionOfObjects.Builder<T> objects(@NonNull Collection<T> objects) {
+            return new PreparedDeleteCollectionOfObjects.Builder<T>(storIOContentResolver, objects);
         }
 
         /**

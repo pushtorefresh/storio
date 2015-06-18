@@ -124,7 +124,7 @@ public abstract class BaseTest extends ProviderTestCase2<TestContentProvider> {
     DeleteResults<User> deleteUsers(@NonNull final List<User> users) {
         final DeleteResults<User> deleteResults = storIOContentResolver
                 .delete()
-                .objects(User.class, users)
+                .objects(users)
                 .prepare()
                 .executeAsBlocking();
 

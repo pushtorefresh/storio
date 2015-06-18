@@ -7,30 +7,30 @@ import rx.Observable;
 public class PreparedDeleteByQueryTest {
 
     @Test
-    public void deleteBlocking() {
-        final DeleteStub deleteStub = DeleteStub.newInstanceForDeleteByQuery();
+    public void shouldDeleteByQueryBlocking() {
+        final DeleteByQueryStub deleteStub = DeleteByQueryStub.newInstance();
 
         final DeleteResult deleteResult = deleteStub.storIOContentResolver
                 .delete()
-                .byQuery(deleteStub.testItemDeleteQueryMap.get(deleteStub.testItems.get(0)))
-                .withDeleteResolver(deleteStub.deleteResolverForQuery)
+                .byQuery(deleteStub.deleteQuery)
+                .withDeleteResolver(deleteStub.deleteResolver)
                 .prepare()
                 .executeAsBlocking();
 
-        deleteStub.verifyBehaviorForDeleteByQuery(deleteResult);
+        deleteStub.verifyBehavior(deleteResult);
     }
 
     @Test
-    public void deleteObservable() {
-        final DeleteStub deleteStub = DeleteStub.newInstanceForDeleteByQuery();
+    public void shouldDeleteByQueryAsObservable() {
+        final DeleteByQueryStub deleteStub = DeleteByQueryStub.newInstance();
 
         final Observable<DeleteResult> deleteResultObservable = deleteStub.storIOContentResolver
                 .delete()
-                .byQuery(deleteStub.testItemDeleteQueryMap.get(deleteStub.testItems.get(0)))
-                .withDeleteResolver(deleteStub.deleteResolverForQuery)
+                .byQuery(deleteStub.deleteQuery)
+                .withDeleteResolver(deleteStub.deleteResolver)
                 .prepare()
                 .createObservable();
 
-        deleteStub.verifyBehaviorForDeleteByQuery(deleteResultObservable);
+        deleteStub.verifyBehavior(deleteResultObservable);
     }
 }

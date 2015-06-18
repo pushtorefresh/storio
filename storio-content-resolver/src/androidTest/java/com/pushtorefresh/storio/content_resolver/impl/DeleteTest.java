@@ -33,7 +33,7 @@ public class DeleteTest extends BaseTest {
 
         final DeleteResults<User> deleteResults = storIOContentResolver
                 .delete()
-                .objects(User.class, usersToDelete)
+                .objects(usersToDelete)
                 .prepare()
                 .executeAsBlocking();
 

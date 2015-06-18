@@ -8,12 +8,12 @@ public class PreparedDeleteObjectTest {
 
     @Test
     public void deleteObjectBlocking() {
-        final DeleteStub deleteStub = DeleteStub.newInstanceForDeleteOneObject();
+        final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObject();
 
         final DeleteResult deleteResult = deleteStub.storIOContentResolver
                 .delete()
-                .object(deleteStub.testItems.get(0))
-                .withDeleteResolver(deleteStub.deleteResolverForTestItems)
+                .object(deleteStub.items.get(0))
+                .withDeleteResolver(deleteStub.deleteResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -22,12 +22,12 @@ public class PreparedDeleteObjectTest {
 
     @Test
     public void deleteObjectObservable() {
-        final DeleteStub deleteStub = DeleteStub.newInstanceForDeleteOneObject();
+        final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObject();
 
         final Observable<DeleteResult> deleteResultObservable = deleteStub.storIOContentResolver
                 .delete()
-                .object(deleteStub.testItems.get(0))
-                .withDeleteResolver(deleteStub.deleteResolverForTestItems)
+                .object(deleteStub.items.get(0))
+                .withDeleteResolver(deleteStub.deleteResolver)
                 .prepare()
                 .createObservable();
 
