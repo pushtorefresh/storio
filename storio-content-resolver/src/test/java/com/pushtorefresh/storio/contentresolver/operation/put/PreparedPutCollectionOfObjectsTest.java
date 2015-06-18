@@ -10,9 +10,12 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.List;
+
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -22,65 +25,65 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(Enclosed.class)
-public class PreparedPutObjectTest {
-
-    public static class WithTypeMapping {
-
-        @Test
-        public void shouldPutObjectWithoutTypeMappingBlocking() {
-            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
-
-            final PutResult putResult = putStub.storIOContentResolver
-                    .put()
-                    .object(putStub.items.get(0))
-                    .withPutResolver(putStub.putResolver)
-                    .prepare()
-                    .executeAsBlocking();
-
-            putStub.verifyBehaviorForOneObject(putResult);
-        }
-
-        @Test
-        public void shouldPutObjectWithoutTypeMappingAsObservable() {
-            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
-
-            final Observable<PutResult> putResultObservable = putStub.storIOContentResolver
-                    .put()
-                    .object(putStub.items.get(0))
-                    .withPutResolver(putStub.putResolver)
-                    .prepare()
-                    .createObservable();
-
-            putStub.verifyBehaviorForOneObject(putResultObservable);
-        }
-    }
+public class PreparedPutCollectionOfObjectsTest {
 
     public static class WithoutTypeMapping {
 
         @Test
-        public void shouldPutObjectWithTypeMappingBlocking() {
-            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
+        public void shouldPutObjectsWithoutTypeMappingBlocking() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithoutTypeMapping();
 
-            final PutResult putResult = putStub.storIOContentResolver
+            final PutResults<TestItem> putResults = putStub.storIOContentResolver
                     .put()
-                    .object(putStub.items.get(0))
+                    .objects(putStub.items)
+                    .withPutResolver(putStub.putResolver)
                     .prepare()
                     .executeAsBlocking();
 
-            putStub.verifyBehaviorForOneObject(putResult);
+            putStub.verifyBehaviorForMultipleObjects(putResults);
         }
 
         @Test
-        public void shouldPutObjectWithTypeMappingAsObservable() {
-            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
+        public void shouldPutObjectsWithoutTypeMappingAsObservable() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithoutTypeMapping();
 
-            final Observable<PutResult> putResultObservable = putStub.storIOContentResolver
+            final Observable<PutResults<TestItem>> observable = putStub.storIOContentResolver
                     .put()
-                    .object(putStub.items.get(0))
+                    .objects(putStub.items)
+                    .withPutResolver(putStub.putResolver)
                     .prepare()
                     .createObservable();
 
-            putStub.verifyBehaviorForOneObject(putResultObservable);
+            putStub.verifyBehaviorForMultipleObjects(observable);
+        }
+    }
+
+    public static class WithTypeMapping {
+
+        @Test
+        public void shouldPutObjectsWithTypeMappingBlocking() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithTypeMapping();
+
+            final PutResults<TestItem> putResults = putStub.storIOContentResolver
+                    .put()
+                    .objects(putStub.items)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
+
+        @Test
+        public void shouldPutObjectsWithTypeMappingAsObservable() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithTypeMapping();
+
+            final Observable<PutResults<TestItem>> observable = putStub.storIOContentResolver
+                    .put()
+                    .objects(putStub.items)
+                    .prepare()
+                    .createObservable();
+
+            putStub.verifyBehaviorForMultipleObjects(observable);
         }
     }
 
@@ -95,9 +98,11 @@ public class PreparedPutObjectTest {
 
             when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
 
-            final PreparedPut<PutResult> preparedPut = storIOContentResolver
+            final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
+
+            final PreparedPut<PutResults<TestItem>> preparedPut = storIOContentResolver
                     .put()
-                    .object(TestItem.newInstance())
+                    .objects(items)
                     .prepare();
 
             try {
@@ -124,11 +129,13 @@ public class PreparedPutObjectTest {
 
             when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
 
-            final TestSubscriber<PutResult> testSubscriber = new TestSubscriber<PutResult>();
+            final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
+
+            final TestSubscriber<PutResults<TestItem>> testSubscriber = new TestSubscriber<PutResults<TestItem>>();
 
             storIOContentResolver
                     .put()
-                    .object(TestItem.newInstance())
+                    .objects(items)
                     .prepare()
                     .createObservable()
                     .subscribe(testSubscriber);

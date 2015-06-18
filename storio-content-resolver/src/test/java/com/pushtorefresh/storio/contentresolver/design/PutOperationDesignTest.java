@@ -14,6 +14,7 @@ import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import rx.Observable;
@@ -71,24 +72,24 @@ public class PutOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void putObjectsBlocking() {
-        Iterable<Article> articles = new ArrayList<Article>();
+    public void putCollectionOfObjectsBlocking() {
+        Collection<Article> articles = new ArrayList<Article>();
 
         PutResults<Article> putResults = storIOContentResolver()
                 .put()
-                .objects(Article.class, articles)
+                .objects(articles)
                 .withPutResolver(ArticleMeta.PUT_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
     }
 
     @Test
-    public void putObjectsObservable() {
-        Iterable<Article> articles = new ArrayList<Article>();
+    public void putCollectionOfObjectsObservable() {
+        Collection<Article> articles = new ArrayList<Article>();
 
         Observable<PutResults<Article>> putResultsObservable = storIOContentResolver()
                 .put()
-                .objects(Article.class, articles)
+                .objects(articles)
                 .withPutResolver(ArticleMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();

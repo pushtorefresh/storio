@@ -8,12 +8,12 @@ public class PreparedPutContentValuesTest {
 
     @Test
     public void putContentValuesBlocking() {
-        final PutStub putStub = PutStub.newPutStubForOneContentValues();
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValues();
 
         final PutResult putResult = putStub.storIOContentResolver
                 .put()
-                .contentValues(putStub.testItemsToContentValuesMap.get(putStub.testItems.get(0)))
-                .withPutResolver(putStub.putResolverForContentValues)
+                .contentValues(putStub.contentValues.get(0))
+                .withPutResolver(putStub.putResolver)
                 .prepare()
                 .executeAsBlocking();
 
@@ -22,12 +22,12 @@ public class PreparedPutContentValuesTest {
 
     @Test
     public void putContentValuesObservable() {
-        final PutStub putStub = PutStub.newPutStubForOneContentValues();
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValues();
 
         final Observable<PutResult> putResultObservable = putStub.storIOContentResolver
                 .put()
-                .contentValues(putStub.testItemsToContentValuesMap.get(putStub.testItems.get(0)))
-                .withPutResolver(putStub.putResolverForContentValues)
+                .contentValues(putStub.contentValues.get(0))
+                .withPutResolver(putStub.putResolver)
                 .prepare()
                 .createObservable();
 

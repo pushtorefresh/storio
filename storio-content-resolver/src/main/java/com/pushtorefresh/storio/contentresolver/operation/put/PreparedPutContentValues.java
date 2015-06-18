@@ -16,14 +16,20 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
 /**
  * Prepared Put Operation for {@link ContentValues}.
  */
-public final class PreparedPutContentValues extends PreparedPut<ContentValues, PutResult> {
+public final class PreparedPutContentValues extends PreparedPut<PutResult> {
 
     @NonNull
     private final ContentValues contentValues;
 
-    PreparedPutContentValues(@NonNull StorIOContentResolver storIOContentResolver, @NonNull PutResolver<ContentValues> putResolver, @NonNull ContentValues contentValues) {
-        super(storIOContentResolver, putResolver);
+    @NonNull
+    private final PutResolver<ContentValues> putResolver;
+
+    PreparedPutContentValues(@NonNull StorIOContentResolver storIOContentResolver,
+                             @NonNull PutResolver<ContentValues> putResolver,
+                             @NonNull ContentValues contentValues) {
+        super(storIOContentResolver);
         this.contentValues = contentValues;
+        this.putResolver = putResolver;
     }
 
     /**
