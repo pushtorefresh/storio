@@ -3,7 +3,7 @@
 ####0. Create an instance of StorIOSQLite
 
 ```java
-StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
+StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
   .sqliteOpenHelper(yourSqliteOpenHelper)
   .addTypeMapping(SomeType.class, typeMapping) // required for object mapping
   .build();
@@ -18,7 +18,7 @@ It's a good practice to use one instance of `StorIOSQLite` per database, otherwi
 final List<Tweet> tweets = storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
-  .withQuery(new Query.Builder()
+  .withQuery(Query.builder()
     .table("tweets")
     .build())
   .prepare()
@@ -31,7 +31,7 @@ final List<Tweet> tweets = storIOSQLite
 final Cursor tweetsCursor = storIOSQLite
   .get()
   .cursor()
-  .withQuery(new Query.Builder()
+  .withQuery(Query.builder()
     .table("tweets")
     .build())
   .prepare()
@@ -48,7 +48,7 @@ Things become much more interesting with `RxJava`!
 storIOSQLite
   .get()
   .listOfObjects(Tweet.class)
-  .withQuery(new Query.Builder()
+  .withQuery(Query.builder()
     .table("tweets")
     .build())
   .prepare()
@@ -80,7 +80,7 @@ storIOSQLite
 storIOSQLite
   .get()
   .listOfObjects(TweetAndUser.class)
-  .withQuery(new RawQuery.Builder()
+  .withQuery(RawQuery.builder()
     .query("SELECT * FROM tweets JOIN users ON tweets.user_name = users.name WHERE tweets.user_name = ?")
     .args("artem_zin")
     .build())
@@ -153,13 +153,13 @@ storIOSQLite
 ```java
 PutResolver<SomeType> putResolver = new DefaultPutResolver<SomeType>() {
   @Override @NonNull public InsertQuery mapToInsertQuery(@NonNull SomeType object) {
-    return new InsertQuery.Builder()
+    return InsertQuery.builder()
       .table("some_table")
       .build();
   }
   
   @Override @NonNull public UpdateQuery mapToUpdateQuery(@NonNull SomeType object) {
-    return new UpdateQuery.Builder()
+    return UpdateQuery.builder()
       .table("some_table")
       .where("some_column = ?")
       .whereArgs(object.someColumn())
@@ -209,7 +209,7 @@ Delete Resolver
 ```java
 DeleteResolver<SomeType> deleteResolver = new DefaultDeleteResolver<SomeType>() {
   @Override @NonNull public DeleteQuery mapToDeleteQuery(@NonNull SomeType object) {
-    return new DeleteQuery.Builder()
+    return DeleteQuery.builder()
       .table("some_table")
       .where("some_column = ?")
       .whereArgs(object.someColumn())
@@ -229,7 +229,7 @@ Sometimes you need to execute raw sql, `StorIOSQLite` allows you to do it
 ```java
 storIOSQLite
   .executeSQL()
-  .withQuery(new RawQuery.Builder()
+  .withQuery(RawQuery.builder()
     .query("ALTER TABLE ? ADD COLUMN ? INTEGER")
     .args("tweets", "number_of_retweets")
     .affectsTables("tweets") // optional: you can specify affected tables to notify Observers
@@ -247,9 +247,9 @@ Several things about `ExecSql`:
 #####You can set default type mappings when you build instance of `StorIOSQLite` or `StorIOContentResolver`
 
 ```java
-StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
+StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
   .sqliteOpenHelper(someSQLiteOpenHelper
-  .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
+  .addTypeMapping(Tweet.class, SQLiteTypeMapping.<Tweet>builder()
     .putResolver(new TweetPutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetGetResolver()) // object that knows how to perform Get Operation
     .deleteResolver(new TweetDeleteResolver())  // object that knows how to perform Delete Operation
@@ -298,9 +298,9 @@ Annotation Processor will generate three classes in same package as annotated cl
 You just need to apply them:
 
 ```java
-StorIOSQLite storIOSQLite = new DefaultStorIOSQLite.Builder()
+StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
   .sqliteOpenHelper(someSQLiteOpenHelper
-  .addTypeMapping(Tweet.class, new SQLiteTypeMapping.Builder<Tweet>()
+  .addTypeMapping(Tweet.class, SQLiteTypeMapping.<Tweet>builder()
     .putResolver(new TweetStorIOSQLitePutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetStorIOSQLiteGetResolver()) // object that knows how to perform Get Operation
     .deleteResolver(new TweetStorIOSQLiteDeleteResolver())  // object that knows how to perform Delete Operation
