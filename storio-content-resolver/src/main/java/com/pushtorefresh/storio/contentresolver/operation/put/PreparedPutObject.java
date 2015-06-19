@@ -136,7 +136,6 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
          *
          * @return instance of {@link PreparedPutObject}.
          */
-        @SuppressWarnings("unchecked")
         @NonNull
         public PreparedPutObject<T> prepare() {
             return new PreparedPutObject<T>(
