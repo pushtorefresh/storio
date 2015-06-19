@@ -16,7 +16,7 @@ import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListO
  * <p>
  * Instances of this class are Immutable.
  */
-public final class Query {
+public class Query {
 
     @NonNull
     private final Uri uri;
