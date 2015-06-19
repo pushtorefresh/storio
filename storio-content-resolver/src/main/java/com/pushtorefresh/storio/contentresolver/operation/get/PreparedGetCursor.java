@@ -21,14 +21,20 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  * which performs query that retrieves data as {@link Cursor}.
  * from {@link android.content.ContentProvider}.
  */
-public final class PreparedGetCursor extends PreparedGet<Cursor, Cursor> {
+public final class PreparedGetCursor extends PreparedGet<Cursor> {
 
     @NonNull
-    protected final Query query;
+    private final Query query;
 
-    PreparedGetCursor(@NonNull StorIOContentResolver storIOContentResolver, @NonNull GetResolver<Cursor> getResolver, @NonNull Query query) {
-        super(storIOContentResolver, getResolver);
+    @NonNull
+    private final GetResolver<Cursor> getResolver;
+
+    PreparedGetCursor(@NonNull StorIOContentResolver storIOContentResolver,
+                      @NonNull GetResolver<Cursor> getResolver,
+                      @NonNull Query query) {
+        super(storIOContentResolver);
         this.query = query;
+        this.getResolver = getResolver;
     }
 
     /**

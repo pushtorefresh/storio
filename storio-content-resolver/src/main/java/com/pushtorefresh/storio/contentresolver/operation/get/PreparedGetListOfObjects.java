@@ -29,16 +29,25 @@ import static java.util.Collections.unmodifiableList;
  *
  * @param <T> type of result.
  */
-public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
+public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
+
+    @NonNull
+    private final Class<T> type;
 
     @NonNull
     private final Query query;
 
+    @Nullable
+    private final GetResolver<T> explicitGetResolver;
+
     PreparedGetListOfObjects(@NonNull StorIOContentResolver storIOContentResolver,
-                             @NonNull GetResolver<T> getResolver,
-                             @NonNull Query query) {
-        super(storIOContentResolver, getResolver);
+                             @NonNull Class<T> type,
+                             @NonNull Query query,
+                             @Nullable GetResolver<T> explicitGetResolver) {
+        super(storIOContentResolver);
+        this.type = type;
         this.query = query;
+        this.explicitGetResolver = explicitGetResolver;
     }
 
     /**
@@ -55,6 +64,22 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
     @NonNull
     @Override
     public List<T> executeAsBlocking() {
+        final GetResolver<T> getResolver;
+
+        if (explicitGetResolver != null) {
+            getResolver = explicitGetResolver;
+        } else {
+            final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping(type);
+
+            if (typeMapping == null) {
+                throw new IllegalStateException("This type does not have type mapping: " +
+                        "type = " + type + "," +
+                        "ContentProvider was not touched by this operation, please add type mapping for this type");
+            }
+
+            getResolver = typeMapping.getResolver();
+        }
+
         final Cursor cursor = getResolver.performGet(storIOContentResolver, query);
 
         try {
@@ -185,21 +210,11 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<T, List<T>> {
          */
         @NonNull
         public PreparedGetListOfObjects<T> prepare() {
-            final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping(type);
-
-            if (getResolver == null && typeMapping != null) {
-                getResolver = typeMapping.getResolver();
-            }
-
-            checkNotNull(getResolver, "StorIO can not perform get list of objects " +
-                    "of type " + type +
-                    " without type mapping or Operation resolver." +
-                    "\n Please add type mapping or Operation resolver");
-
             return new PreparedGetListOfObjects<T>(
                     storIOContentResolver,
-                    getResolver,
-                    query
+                    type,
+                    query,
+                    getResolver
             );
         }
     }

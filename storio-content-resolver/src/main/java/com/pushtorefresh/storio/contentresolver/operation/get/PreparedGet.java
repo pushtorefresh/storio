@@ -10,17 +10,13 @@ import com.pushtorefresh.storio.operation.PreparedOperation;
  *
  * @param <Result> type of result.
  */
-public abstract class PreparedGet<T, Result> implements PreparedOperation<Result> {
+public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;
 
-    @NonNull
-    protected final GetResolver<T> getResolver;
-
-    PreparedGet(@NonNull StorIOContentResolver storIOContentResolver, @NonNull GetResolver<T> getResolver) {
+    PreparedGet(@NonNull StorIOContentResolver storIOContentResolver) {
         this.storIOContentResolver = storIOContentResolver;
-        this.getResolver = getResolver;
     }
 
     /**
