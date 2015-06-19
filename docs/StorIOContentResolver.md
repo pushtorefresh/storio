@@ -61,13 +61,12 @@ storIOContentResolver
     .build())
   .prepare()
   .createObservable() // Get Result as rx.Observable and subscribe to further updates of Uri from Query!
-  .observeOn(AndroidSchedulers.mainThread()) // Operates on Schedulers.io()
-  .subscribe(new Action1<List<Tweet>>() { // Please don't forget to unsubscribe
-    @Override public void call(List<Tweet> tweets) {
+  .observeOn(mainThread()) // All Rx operations work on Schedulers.io()
+  .subscribe(tweets -> { // Please don't forget to unsubscribe
       // will be called with first result and then after each change of Uri from Query
       adapter.setData(tweets);
     }
-});
+  );
 // don't forget to manage Subscription and unsubscribe in lifecycle methods to prevent memory leaks
 ```
 
@@ -76,7 +75,7 @@ storIOContentResolver
 ```java
 storIOContentResolver
   .observeChangesOfUri(someUri)
-  .subscribe(new Action1<Changes>() { // or apply RxJava Operators such as Debounce, Filter, etc
+  .subscribe(changes -> { // Just subscribe or apply Rx Operators such as Debounce, Filter, etc
     // do what you want!
   });
 ```

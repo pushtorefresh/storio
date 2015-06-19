@@ -10,7 +10,7 @@ Currently in development.
 * No reflection in Operations and no annotations in the core, also `StorIO` is not ORM
 * Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`
 * `RxJava` as first class citizen, but it's not required dependency!
-* `rx.Observable` from `Get` Operation **can observe changes** in `StorIO` and receive updates automatically
+* **Reactive**: `rx.Observable` from `Get` Operation **can observe changes** in `StorIO` and receive updates automatically
 * `StorIO` is replacements for `SQLiteDatabase` and `ContentResolver` APIs
 * `StorIO` + `RxJava` is replacement for `Loaders` API
 * We are working on `MockStorIO` (similar to [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver)) for easy unit testing
@@ -29,9 +29,9 @@ Currently in development.
 ####Documentation:
 
 * [`StorIO SQLite`](docs/StorIOSQLite.md)
-* [`StorIO ContentResolver`](docs/StorIOContentProvider.md)
+* [`StorIO ContentResolver`](docs/StorIOContentResolver.md)
 
-Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample App`:
+Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tests` and `Sample App`:
 
 * [Design tests for StorIO SQLite](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
 * [Design tests for StorIO ContentResolver](storio-content-resolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
@@ -88,14 +88,13 @@ storIOSQLite
     .build())
   .prepare()
   .createObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
-  .observeOn(AndroidSchedulers.mainThread()) // Operates on Schedulers.io()
-  .subscribe(new Action1<List<Tweet>>() { // Please don't forget to unsubscribe
-  	@Override public void call(List<Tweet> tweets) {
+  .observeOn(mainThread()) // All Rx operations work on Schedulers.io()
+  .subscribe(tweets -> { // Please don't forget to unsubscribe
   	  // Will be called with first result and then after each change of tables from Query
   	  // Several changes in transaction -> one notification
   	  adapter.setData(tweets);
   	}
-  });
+  );
 ```
 
 #####Want to work with plain Cursor, no problems
@@ -168,7 +167,7 @@ You just need to apply them:
 
 ```java
 StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-  .sqliteOpenHelper(someSQLiteOpenHelper
+  .sqliteOpenHelper(someSQLiteOpenHelper)
   .addTypeMapping(Tweet.class, SQLiteTypeMapping.<Tweet>builder()
     .putResolver(new TweetStorIOSQLitePutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetStorIOSQLiteGetResolver()) // object that knows how to perform Get Operation
@@ -192,7 +191,7 @@ API of `StorIOContentResolver` is same.
 ####Documentation:
 
 * [`StorIO SQLite`](docs/StorIOSQLite.md)
-* [`StorIO ContentResolver`](docs/StorIOContentProvider.md)
+* [`StorIO ContentResolver`](docs/StorIOContentResolver.md)
 
 Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample App`:
 
