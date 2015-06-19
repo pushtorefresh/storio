@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operation.delete;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
@@ -11,7 +12,6 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
@@ -24,13 +24,15 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
     @NonNull
     private final T object;
 
-    @NonNull
-    private final DeleteResolver<T> deleteResolver;
+    @Nullable
+    private final DeleteResolver<T> explicitDeleteResolver;
 
-    PreparedDeleteObject(@NonNull StorIOSQLite storIOSQLite, @NonNull T object, @NonNull DeleteResolver<T> deleteResolver) {
+    PreparedDeleteObject(@NonNull StorIOSQLite storIOSQLite,
+                         @NonNull T object,
+                         @Nullable DeleteResolver<T> explicitDeleteResolver) {
         super(storIOSQLite);
         this.object = object;
-        this.deleteResolver = deleteResolver;
+        this.explicitDeleteResolver = explicitDeleteResolver;
     }
 
     /**
@@ -42,12 +44,32 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
      *
      * @return non-null result of Delete Operation.
      */
+    @SuppressWarnings("unchecked")
     @WorkerThread
     @NonNull
     @Override
     public DeleteResult executeAsBlocking() {
+        final StorIOSQLite.Internal internal = storIOSQLite.internal();
+
+        final DeleteResolver<T> deleteResolver;
+
+        if (explicitDeleteResolver != null) {
+            deleteResolver = explicitDeleteResolver;
+        } else {
+            final SQLiteTypeMapping<T> typeMapping
+                    = internal.typeMapping((Class<T>) object.getClass());
+
+            if (typeMapping == null) {
+                throw new IllegalStateException("Object does not have type mapping: " +
+                        "object = " + object + ", object.class = " + object.getClass() + "," +
+                        "db was not affected by this operation, please add type mapping for this type");
+            }
+
+            deleteResolver = typeMapping.deleteResolver();
+        }
+
         final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, object);
-        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+        internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
         return deleteResult;
     }
 
@@ -116,20 +138,8 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
          *
          * @return {@link PreparedDeleteObject} instance.
          */
-        @SuppressWarnings("unchecked")
         @NonNull
         public PreparedDeleteObject<T> prepare() {
-            final SQLiteTypeMapping<T> typeDefinition = storIOSQLite.internal().typeMapping((Class<T>) object.getClass());
-
-            if (deleteResolver == null && typeDefinition != null) {
-                deleteResolver = typeDefinition.deleteResolver();
-            }
-
-            checkNotNull(deleteResolver, "StorIO can not perform delete of object = " +
-                    object + "\nof type " + object.getClass() +
-                    " without type mapping or Operation resolver." +
-                    "\n Please add type mapping or Operation resolver");
-
             return new PreparedDeleteObject<T>(
                     storIOSQLite,
                     object,

@@ -13,6 +13,7 @@ import java.util.List;
 import rx.Observable;
 import rx.functions.Action1;
 
+import static java.util.Collections.singletonMap;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -90,7 +91,17 @@ class DeleteStub {
         return new DeleteStub(true, true, 3);
     }
 
-    void verifyBehavior(@NonNull DeleteResults<TestItem> deleteResults) {
+    @NonNull
+    static DeleteStub newStubForOneObjectWithoutTypeMapping() {
+        return new DeleteStub(false, false, 1);
+    }
+
+    @NonNull
+    static DeleteStub newStubForOneObjectWithTypeMapping() {
+        return new DeleteStub(true, false, 1);
+    }
+
+    void verifyBehaviorForMultipleObjects(@NonNull DeleteResults<TestItem> deleteResults) {
         verify(storIOSQLite).delete(); // Only one call to delete should occur
 
         verify(storIOSQLite).internal(); // Only one call to internal should occur
@@ -114,14 +125,31 @@ class DeleteStub {
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver, typeMapping);
     }
 
-    void verifyBehavior(@NonNull Observable<DeleteResults<TestItem>> observable) {
+    void verifyBehaviorForMultipleObjects(@NonNull Observable<DeleteResults<TestItem>> observable) {
         new ObservableBehaviorChecker<DeleteResults<TestItem>>()
                 .observable(observable)
                 .expectedNumberOfEmissions(1)
                 .testAction(new Action1<DeleteResults<TestItem>>() {
                     @Override
                     public void call(DeleteResults<TestItem> deleteResults) {
-                        verifyBehavior(deleteResults);
+                        verifyBehaviorForMultipleObjects(deleteResults);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForOneObject(@NonNull DeleteResult deleteResult) {
+        verifyBehaviorForMultipleObjects(DeleteResults.newInstance(singletonMap(items.get(0), deleteResult)));
+    }
+
+    void verifyBehaviorForOneObject(@NonNull Observable<DeleteResult> observable) {
+        new ObservableBehaviorChecker<DeleteResult>()
+                .observable(observable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<DeleteResult>() {
+                    @Override
+                    public void call(DeleteResult deleteResult) {
+                        verifyBehaviorForOneObject(deleteResult);
                     }
                 })
                 .checkBehaviorOfObservable();

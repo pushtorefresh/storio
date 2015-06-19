@@ -39,7 +39,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .prepare()
                     .executeAsBlocking();
 
-            deleteStub.verifyBehavior(deleteResults);
+            deleteStub.verifyBehaviorForMultipleObjects(deleteResults);
         }
 
         @Test
@@ -55,7 +55,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .prepare()
                     .executeAsBlocking();
 
-            deleteStub.verifyBehavior(deleteResults);
+            deleteStub.verifyBehaviorForMultipleObjects(deleteResults);
         }
 
         @Test
@@ -71,7 +71,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .prepare()
                     .createObservable();
 
-            deleteStub.verifyBehavior(observable);
+            deleteStub.verifyBehaviorForMultipleObjects(observable);
         }
 
         @Test
@@ -87,7 +87,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .prepare()
                     .createObservable();
 
-            deleteStub.verifyBehavior(observable);
+            deleteStub.verifyBehaviorForMultipleObjects(observable);
         }
     }
 
@@ -105,7 +105,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .prepare()
                     .executeAsBlocking();
 
-            deleteStub.verifyBehavior(deleteResults);
+            deleteStub.verifyBehaviorForMultipleObjects(deleteResults);
         }
 
         @Test
@@ -120,7 +120,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .prepare()
                     .executeAsBlocking();
 
-            deleteStub.verifyBehavior(deleteResults);
+            deleteStub.verifyBehaviorForMultipleObjects(deleteResults);
         }
 
         @Test
@@ -135,7 +135,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .prepare()
                     .createObservable();
 
-            deleteStub.verifyBehavior(observable);
+            deleteStub.verifyBehaviorForMultipleObjects(observable);
         }
 
         @Test
@@ -150,7 +150,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .prepare()
                     .createObservable();
 
-            deleteStub.verifyBehavior(observable);
+            deleteStub.verifyBehaviorForMultipleObjects(observable);
         }
     }
 
