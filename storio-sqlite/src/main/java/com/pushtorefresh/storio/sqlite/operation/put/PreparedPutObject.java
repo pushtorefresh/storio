@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operation.put;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.operation.internal.OnSubscribeExecuteAsBlocking;
@@ -11,7 +12,6 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
@@ -24,15 +24,15 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
     @NonNull
     private final T object;
 
-    @NonNull
-    private final PutResolver<T> putResolver;
+    @Nullable
+    private final PutResolver<T> explicitPutResolver;
 
     PreparedPutObject(@NonNull StorIOSQLite storIOSQLite,
                       @NonNull T object,
-                      @NonNull PutResolver<T> putResolver) {
+                      @Nullable PutResolver<T> explicitPutResolver) {
         super(storIOSQLite);
         this.object = object;
-        this.putResolver = putResolver;
+        this.explicitPutResolver = explicitPutResolver;
     }
 
     /**
@@ -44,12 +44,31 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
      *
      * @return non-null result of Put Operation.
      */
+    @SuppressWarnings("unchecked")
     @WorkerThread
     @NonNull
     @Override
     public PutResult executeAsBlocking() {
+        final StorIOSQLite.Internal internal = storIOSQLite.internal();
+
+        final PutResolver<T> putResolver;
+
+        if (explicitPutResolver != null) {
+            putResolver = explicitPutResolver;
+        } else {
+            final SQLiteTypeMapping<T> typeMapping = internal.typeMapping((Class<T>) object.getClass());
+
+            if (typeMapping == null) {
+                throw new IllegalStateException("Object does not have type mapping: " +
+                        "object = " + object + ", object.class = " + object.getClass() + "," +
+                        "db was not affected by this operation, please add type mapping for this type");
+            }
+
+            putResolver = typeMapping.putResolver();
+        }
+
         final PutResult putResult = putResolver.performPut(storIOSQLite, object);
-        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+        internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
         return putResult;
     }
 
@@ -119,20 +138,8 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
          *
          * @return {@link PreparedPutObject} instance.
          */
-        @SuppressWarnings("unchecked")
         @NonNull
         public PreparedPutObject<T> prepare() {
-            final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping((Class<T>) object.getClass());
-
-            if (putResolver == null && typeMapping != null) {
-                putResolver = typeMapping.putResolver();
-            }
-
-            checkNotNull(putResolver, "StorIO can not perform put of object = " +
-                    object + "\nof type " + object.getClass() +
-                    " without type mapping or Operation resolver." +
-                    "\n Please add type mapping or Operation resolver");
-
             return new PreparedPutObject<T>(
                     storIOSQLite,
                     object,

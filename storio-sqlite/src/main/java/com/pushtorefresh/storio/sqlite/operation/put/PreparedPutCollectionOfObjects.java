@@ -117,12 +117,12 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
             }
 
             if (useTransaction) {
-                storIOSQLite.internal().setTransactionSuccessful();
+                internal.setTransactionSuccessful();
                 transactionSuccessful = true;
             }
         } finally {
             if (useTransaction) {
-                storIOSQLite.internal().endTransaction();
+                internal.endTransaction();
 
                 // if delete was in transaction and it was successful -> notify about changes
                 if (transactionSuccessful) {
@@ -134,7 +134,7 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
 
                     // IMPORTANT: Notifying about change should be done after end of transaction
                     // It'll reduce number of possible deadlock situations
-                    storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                    internal.notifyAboutChanges(Changes.newInstance(affectedTables));
                 }
             }
         }
