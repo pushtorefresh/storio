@@ -53,14 +53,13 @@ storIOSQLite
     .build())
   .prepare()
   .createObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
-  .observeOn(AndroidSchedulers.mainThread()) // Operates on Schedulers.io()
-  .subscribe(new Action1<List<Tweet>>() { // Please don't forget to unsubscribe
-    @Override public void call(List<Tweet> tweets) {
+  .observeOn(mainThread()) // All Rx operations work on Schedulers.io()
+  .subscribe(tweets -> { // Please don't forget to unsubscribe
       // will be called with first result and then after each change of tables from Query
       // several changes in transaction -> one notification
       adapter.setData(tweets);
     }
-});
+  );
 // don't forget to manage Subscription and unsubscribe in lifecycle methods to prevent memory leaks
 ```
 
@@ -69,7 +68,7 @@ storIOSQLite
 ```java
 storIOSQLite
   .observeChangesInTable("tweets")
-  .subscribe(new Action1<Changes>() { // or apply RxJava Operators such as Debounce, Filter, etc
+  .subscribe(changes -> { // Just subscribe or apply Rx Operators such as Debounce, Filter, etc
     // do what you want!
   });
 ```
@@ -299,7 +298,7 @@ You just need to apply them:
 
 ```java
 StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-  .sqliteOpenHelper(someSQLiteOpenHelper
+  .sqliteOpenHelper(someSQLiteOpenHelper)
   .addTypeMapping(Tweet.class, SQLiteTypeMapping.<Tweet>builder()
     .putResolver(new TweetStorIOSQLitePutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetStorIOSQLiteGetResolver()) // object that knows how to perform Get Operation
