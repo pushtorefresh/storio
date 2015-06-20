@@ -36,9 +36,9 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 
 /**
  * Annotation processor for StorIOSQLite
- * <p/>
+ * <p>
  * It'll process annotations to generate StorIOSQLite Object-Mapping
- * <p/>
+ * <p>
  * Addition: Annotation Processor should work fast and be optimized because it's part of compilation
  * We don't want to annoy developers, who use StorIO
  */
@@ -294,7 +294,7 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
 
     /**
      * For those who don't familiar with Annotation Processing API — this is the main method of Annotation Processor lifecycle
-     * <p/>
+     * <p>
      * It will be after Java Compiler will find lang elements annotated with annotations from {@link #getSupportedAnnotationTypes()}
      *
      * @param annotations set of annotations
