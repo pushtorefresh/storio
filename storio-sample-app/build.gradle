@@ -2,6 +2,10 @@ apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
+repositories {
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -47,8 +51,11 @@ android {
 }
 
 dependencies {
-    compile libraries.storIOSQLite
-    compile libraries.storIOContentResolver
+    compile 'com.pushtorefresh.storio:sqlite:0.9.1-SNAPSHOT'
+    compile 'com.pushtorefresh.storio:content-resolver:0.9.1-SNAPSHOT'
+
+    //compile libraries.storIOSQLite
+    //compile libraries.storIOContentResolver
 
     compile libraries.storIOSQLiteAnnotation
     apt libraries.storIOSQLiteAnnotationProcessor

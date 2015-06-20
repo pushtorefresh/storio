@@ -12,3 +12,5 @@ dependencies {
     testCompile libraries.junit
     testCompile libraries.mockitoCore
 }
+
+apply from: '../gradle/publish-java-lib.gradle'

@@ -7,10 +7,10 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
+        versionName VERSION_NAME
+        versionCode Integer.parseInt(VERSION_CODE)
         minSdkVersion rootProject.ext.minSdkVersion
-    }
 
-    defaultConfig {
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
@@ -41,3 +41,5 @@ task checkstyle(type: Checkstyle) {
 
     classpath = files()
 }
+
+apply from: '../gradle/publish-android-lib.gradle'
