@@ -28,12 +28,16 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     @NonNull
     private final GetResolver<Cursor> getResolver;
 
-    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver<Cursor> getResolver) {
+    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite,
+                      @NonNull Query query,
+                      @NonNull GetResolver<Cursor> getResolver) {
         super(storIOSQLite, query);
         this.getResolver = getResolver;
     }
 
-    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver<Cursor> getResolver) {
+    PreparedGetCursor(@NonNull StorIOSQLite storIOSQLite,
+                      @NonNull RawQuery rawQuery,
+                      @NonNull GetResolver<Cursor> getResolver) {
         super(storIOSQLite, rawQuery);
         this.getResolver = getResolver;
     }

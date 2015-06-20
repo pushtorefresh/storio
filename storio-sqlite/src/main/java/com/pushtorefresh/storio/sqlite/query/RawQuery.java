@@ -17,7 +17,7 @@ import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullSet;
  * <p/>
  * Instances of this class are immutable.
  */
-public final class RawQuery {
+public class RawQuery {
 
     @NonNull
     private final String query;

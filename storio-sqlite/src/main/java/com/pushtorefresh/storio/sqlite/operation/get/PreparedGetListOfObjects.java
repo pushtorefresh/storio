@@ -33,16 +33,27 @@ import static java.util.Collections.unmodifiableList;
 public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     @NonNull
-    private final GetResolver<T> getResolver;
+    private final Class<T> type;
 
-    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query, @NonNull GetResolver<T> getResolver) {
+    @Nullable
+    private final GetResolver<T> explicitGetResolver;
+
+    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLite,
+                             @NonNull Class<T> type,
+                             @NonNull Query query,
+                             @Nullable GetResolver<T> explicitGetResolver) {
         super(storIOSQLite, query);
-        this.getResolver = getResolver;
+        this.type = type;
+        this.explicitGetResolver = explicitGetResolver;
     }
 
-    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver<T> getResolver) {
+    PreparedGetListOfObjects(@NonNull StorIOSQLite storIOSQLite,
+                             @NonNull Class<T> type,
+                             @NonNull RawQuery rawQuery,
+                             @Nullable GetResolver<T> explicitGetResolver) {
         super(storIOSQLite, rawQuery);
-        this.getResolver = getResolver;
+        this.type = type;
+        this.explicitGetResolver = explicitGetResolver;
     }
 
     /**
@@ -60,6 +71,22 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @NonNull
     @Override
     public List<T> executeAsBlocking() {
+        final GetResolver<T> getResolver;
+
+        if (explicitGetResolver != null) {
+            getResolver = explicitGetResolver;
+        } else {
+            final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping(type);
+
+            if (typeMapping == null) {
+                throw new IllegalStateException("This type does not have type mapping: " +
+                        "type = " + type + "," +
+                        "db was not touched by this operation, please add type mapping for this type");
+            }
+
+            getResolver = typeMapping.getResolver();
+        }
+
         final Cursor cursor;
 
         if (query != null) {
@@ -202,6 +229,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         @Nullable
         private final RawQuery rawQuery;
 
+        @Nullable
         private GetResolver<T> getResolver;
 
         CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Class<T> type, @NonNull Query query) {
@@ -242,26 +270,17 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
          */
         @NonNull
         public PreparedGetListOfObjects<T> prepare() {
-            final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping(type);
-
-            if (getResolver == null && typeMapping != null) {
-                getResolver = typeMapping.getResolver();
-            }
-
-            checkNotNull(getResolver, "StorIO can not perform get list of objects " +
-                    "of type " + type +
-                    " without type mapping or Operation resolver." +
-                    "\n Please add type mapping or Operation resolver");
-
             if (query != null) {
                 return new PreparedGetListOfObjects<T>(
                         storIOSQLite,
+                        type,
                         query,
                         getResolver
                 );
             } else if (rawQuery != null) {
                 return new PreparedGetListOfObjects<T>(
                         storIOSQLite,
+                        type,
                         rawQuery,
                         getResolver
                 );
