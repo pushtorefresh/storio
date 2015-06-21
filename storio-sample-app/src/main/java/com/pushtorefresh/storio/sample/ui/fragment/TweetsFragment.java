@@ -19,7 +19,7 @@ import com.pushtorefresh.storio.sample.ui.ToastHelper;
 import com.pushtorefresh.storio.sample.ui.UiStateController;
 import com.pushtorefresh.storio.sample.ui.adapter.TweetsAdapter;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 
 import java.util.ArrayList;
 import java.util.List;

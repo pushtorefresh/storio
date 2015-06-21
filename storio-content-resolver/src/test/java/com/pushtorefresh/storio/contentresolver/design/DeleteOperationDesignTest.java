@@ -2,9 +2,9 @@ package com.pushtorefresh.storio.contentresolver.design;
 
 import android.net.Uri;
 
-import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResult;
-import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResults;
-import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResult;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResults;
+import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
 
 import org.junit.Test;
 

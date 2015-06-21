@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.sqlite.design;
 
-import com.pushtorefresh.storio.sqlite.query.RawQuery;
+import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
 import org.junit.Test;
 

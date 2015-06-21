@@ -4,15 +4,15 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.operation.delete.DefaultDeleteResolver;
-import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResolver;
-import com.pushtorefresh.storio.sqlite.operation.get.DefaultGetResolver;
-import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
-import com.pushtorefresh.storio.sqlite.operation.put.DefaultPutResolver;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
-import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
-import com.pushtorefresh.storio.sqlite.query.InsertQuery;
-import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
+import com.pushtorefresh.storio.sqlite.operations.delete.DefaultDeleteResolver;
+import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResolver;
+import com.pushtorefresh.storio.sqlite.operations.get.DefaultGetResolver;
+import com.pushtorefresh.storio.sqlite.operations.get.GetResolver;
+import com.pushtorefresh.storio.sqlite.operations.put.DefaultPutResolver;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResolver;
+import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
+import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
+import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import static org.mockito.Mockito.mock;
 

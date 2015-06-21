@@ -3,8 +3,8 @@ package com.pushtorefresh.storio.sample.db.entity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.sqlite.annotation.StorIOSQLiteColumn;
-import com.pushtorefresh.storio.sqlite.annotation.StorIOSQLiteType;
+import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteColumn;
+import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteType;
 
 /**
  * Just for demonstration, real Tweet structure is more complex

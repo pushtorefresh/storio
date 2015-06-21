@@ -7,10 +7,10 @@ import android.support.test.InstrumentationRegistry;
 
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResult;
-import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResults;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResult;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
+import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResult;
+import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResults;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 
 import org.junit.Before;
 

@@ -2,8 +2,8 @@ package com.pushtorefresh.storio.sqlite.design;
 
 import android.database.Cursor;
 
-import com.pushtorefresh.storio.sqlite.query.Query;
-import com.pushtorefresh.storio.sqlite.query.RawQuery;
+import com.pushtorefresh.storio.sqlite.queries.Query;
+import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
 import org.junit.Test;
 

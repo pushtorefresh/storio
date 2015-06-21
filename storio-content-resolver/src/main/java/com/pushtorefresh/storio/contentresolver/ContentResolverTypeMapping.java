@@ -2,9 +2,9 @@ package com.pushtorefresh.storio.contentresolver;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResolver;
-import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResolver;
+import com.pushtorefresh.storio.contentresolver.operations.get.GetResolver;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResolver;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 

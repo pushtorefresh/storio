@@ -6,15 +6,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import com.pushtorefresh.storio.sqlite.operation.delete.PreparedDelete;
-import com.pushtorefresh.storio.sqlite.operation.execute.PreparedExecuteSQL;
-import com.pushtorefresh.storio.sqlite.operation.get.PreparedGet;
-import com.pushtorefresh.storio.sqlite.operation.put.PreparedPut;
-import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
-import com.pushtorefresh.storio.sqlite.query.InsertQuery;
-import com.pushtorefresh.storio.sqlite.query.Query;
-import com.pushtorefresh.storio.sqlite.query.RawQuery;
-import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
+import com.pushtorefresh.storio.sqlite.operations.delete.PreparedDelete;
+import com.pushtorefresh.storio.sqlite.operations.execute.PreparedExecuteSQL;
+import com.pushtorefresh.storio.sqlite.operations.get.PreparedGet;
+import com.pushtorefresh.storio.sqlite.operations.put.PreparedPut;
+import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
+import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
+import com.pushtorefresh.storio.sqlite.queries.Query;
+import com.pushtorefresh.storio.sqlite.queries.RawQuery;
+import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import java.io.Closeable;
 import java.util.Collections;

@@ -4,8 +4,8 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.contentresolver.operation.get.DefaultGetResolver;
-import com.pushtorefresh.storio.contentresolver.query.Query;
+import com.pushtorefresh.storio.contentresolver.operations.get.DefaultGetResolver;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

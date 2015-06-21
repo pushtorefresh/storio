@@ -4,9 +4,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResolver;
-import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
+import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResolver;
+import com.pushtorefresh.storio.sqlite.operations.get.GetResolver;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResolver;
 
 import org.junit.Test;
 

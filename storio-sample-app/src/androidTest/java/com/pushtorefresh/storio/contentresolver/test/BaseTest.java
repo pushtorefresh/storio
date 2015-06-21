@@ -6,7 +6,7 @@ import android.support.test.InstrumentationRegistry;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.impl.DefaultStorIOContentResolver;
-import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
+import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
 import com.pushtorefresh.storio.sample.provider.meta.TweetMeta;
 

@@ -3,8 +3,8 @@ package com.pushtorefresh.storio.sqlite.impl;
 import android.database.Cursor;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.sqlite.operation.put.PutResult;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
