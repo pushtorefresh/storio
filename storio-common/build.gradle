@@ -20,7 +20,7 @@ android {
 }
 
 dependencies {
-    provided libraries.supportAnnotations
+    compile libraries.supportAnnotations
     provided libraries.rxJava
 
     testCompile libraries.junit

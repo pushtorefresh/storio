@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.content_resolver.impl;
 
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResults;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResults;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

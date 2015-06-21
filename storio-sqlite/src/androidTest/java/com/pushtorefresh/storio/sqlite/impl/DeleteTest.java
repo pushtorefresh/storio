@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.impl;
 import android.database.Cursor;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResults;
+import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResults;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

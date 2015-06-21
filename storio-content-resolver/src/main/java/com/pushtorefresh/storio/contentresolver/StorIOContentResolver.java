@@ -7,13 +7,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import com.pushtorefresh.storio.contentresolver.operation.delete.PreparedDelete;
-import com.pushtorefresh.storio.contentresolver.operation.get.PreparedGet;
-import com.pushtorefresh.storio.contentresolver.operation.put.PreparedPut;
-import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
-import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
-import com.pushtorefresh.storio.contentresolver.query.Query;
-import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
+import com.pushtorefresh.storio.contentresolver.operations.delete.PreparedDelete;
+import com.pushtorefresh.storio.contentresolver.operations.get.PreparedGet;
+import com.pushtorefresh.storio.contentresolver.operations.put.PreparedPut;
+import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
+import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
+import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 
 import java.util.Collections;
 import java.util.Set;

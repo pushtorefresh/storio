@@ -2,7 +2,10 @@ include ':storio-common'
 include ':storio-test-common'
 include ':storio-sqlite'
 include ':storio-content-resolver'
-include ':storio-sample-app'
+
+include ':storio-sqlite-annotations'
+include ':storio-sqlite-annotations-processor'
+
 include ':storio-test-without-rxjava'
-include ':storio-sqlite-annotation'
-include ':storio-sqlite-annotation-processor'
+
+include ':storio-sample-app'

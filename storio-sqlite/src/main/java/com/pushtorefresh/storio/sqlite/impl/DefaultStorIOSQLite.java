@@ -11,11 +11,11 @@ import com.pushtorefresh.storio.internal.ChangesBus;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
-import com.pushtorefresh.storio.sqlite.query.InsertQuery;
-import com.pushtorefresh.storio.sqlite.query.Query;
-import com.pushtorefresh.storio.sqlite.query.RawQuery;
-import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
+import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
+import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
+import com.pushtorefresh.storio.sqlite.queries.Query;
+import com.pushtorefresh.storio.sqlite.queries.RawQuery;
+import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import java.io.IOException;
 import java.util.HashMap;

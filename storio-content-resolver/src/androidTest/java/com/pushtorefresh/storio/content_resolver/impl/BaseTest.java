@@ -7,11 +7,11 @@ import android.test.ProviderTestCase2;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.impl.DefaultStorIOContentResolver;
-import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResult;
-import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResults;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResult;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResults;
-import com.pushtorefresh.storio.contentresolver.query.Query;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResult;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResults;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResult;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResults;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Before;
 

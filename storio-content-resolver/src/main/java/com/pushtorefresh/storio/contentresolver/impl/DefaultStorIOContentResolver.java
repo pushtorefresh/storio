@@ -15,10 +15,10 @@ import android.support.annotation.WorkerThread;
 import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
-import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
-import com.pushtorefresh.storio.contentresolver.query.Query;
-import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
+import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
+import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
+import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -5,11 +5,11 @@ import android.content.ContentValues;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.impl.DefaultStorIOContentResolver;
-import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResolver;
-import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
-import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
-import com.pushtorefresh.storio.contentresolver.query.Query;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResolver;
+import com.pushtorefresh.storio.contentresolver.operations.get.GetResolver;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResolver;
+import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
 

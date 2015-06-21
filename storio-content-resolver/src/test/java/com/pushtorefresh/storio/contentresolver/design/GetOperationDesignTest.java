@@ -3,8 +3,8 @@ package com.pushtorefresh.storio.contentresolver.design;
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
-import com.pushtorefresh.storio.contentresolver.query.Query;
+import com.pushtorefresh.storio.contentresolver.operations.get.GetResolver;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
 

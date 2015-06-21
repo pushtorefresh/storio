@@ -3,9 +3,9 @@ package com.pushtorefresh.storio.contentresolver.test;
 import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResult;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResult;
-import com.pushtorefresh.storio.contentresolver.query.Query;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResult;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResult;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
 import com.pushtorefresh.storio.sample.provider.meta.TweetMeta;
 import com.pushtorefresh.storio.test.AbstractEmissionChecker;

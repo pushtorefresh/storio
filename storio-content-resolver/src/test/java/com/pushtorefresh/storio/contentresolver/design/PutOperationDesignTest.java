@@ -4,12 +4,12 @@ import android.content.ContentValues;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.contentresolver.operation.put.DefaultPutResolver;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResult;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResults;
-import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
-import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
+import com.pushtorefresh.storio.contentresolver.operations.put.DefaultPutResolver;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResolver;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResult;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResults;
+import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
+import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 
 import org.junit.Test;
 

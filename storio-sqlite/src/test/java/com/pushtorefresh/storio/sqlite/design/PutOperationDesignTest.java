@@ -3,12 +3,12 @@ package com.pushtorefresh.storio.sqlite.design;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.operation.put.DefaultPutResolver;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResolver;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResult;
-import com.pushtorefresh.storio.sqlite.operation.put.PutResults;
-import com.pushtorefresh.storio.sqlite.query.InsertQuery;
-import com.pushtorefresh.storio.sqlite.query.UpdateQuery;
+import com.pushtorefresh.storio.sqlite.operations.put.DefaultPutResolver;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResolver;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
+import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
+import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import org.junit.Test;
 

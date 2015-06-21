@@ -1,8 +1,8 @@
 package com.pushtorefresh.storio.sqlite.design;
 
-import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResult;
-import com.pushtorefresh.storio.sqlite.operation.delete.DeleteResults;
-import com.pushtorefresh.storio.sqlite.query.DeleteQuery;
+import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResult;
+import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResults;
+import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 
 import org.junit.Test;
 

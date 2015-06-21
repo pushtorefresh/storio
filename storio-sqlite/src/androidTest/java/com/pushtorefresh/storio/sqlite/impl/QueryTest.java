@@ -4,10 +4,10 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.sqlite.operation.get.DefaultGetResolver;
-import com.pushtorefresh.storio.sqlite.operation.get.GetResolver;
-import com.pushtorefresh.storio.sqlite.query.Query;
-import com.pushtorefresh.storio.sqlite.query.RawQuery;
+import com.pushtorefresh.storio.sqlite.operations.get.DefaultGetResolver;
+import com.pushtorefresh.storio.sqlite.operations.get.GetResolver;
+import com.pushtorefresh.storio.sqlite.queries.Query;
+import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

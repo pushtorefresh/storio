@@ -2,8 +2,8 @@ package com.pushtorefresh.storio.content_resolver.impl;
 
 import android.support.test.runner.AndroidJUnit4;
 
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResult;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResults;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResult;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResults;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

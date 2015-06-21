@@ -6,15 +6,15 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.contentresolver.operation.delete.DefaultDeleteResolver;
-import com.pushtorefresh.storio.contentresolver.operation.delete.DeleteResolver;
-import com.pushtorefresh.storio.contentresolver.operation.get.DefaultGetResolver;
-import com.pushtorefresh.storio.contentresolver.operation.get.GetResolver;
-import com.pushtorefresh.storio.contentresolver.operation.put.DefaultPutResolver;
-import com.pushtorefresh.storio.contentresolver.operation.put.PutResolver;
-import com.pushtorefresh.storio.contentresolver.query.DeleteQuery;
-import com.pushtorefresh.storio.contentresolver.query.InsertQuery;
-import com.pushtorefresh.storio.contentresolver.query.UpdateQuery;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DefaultDeleteResolver;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResolver;
+import com.pushtorefresh.storio.contentresolver.operations.get.DefaultGetResolver;
+import com.pushtorefresh.storio.contentresolver.operations.get.GetResolver;
+import com.pushtorefresh.storio.contentresolver.operations.put.DefaultPutResolver;
+import com.pushtorefresh.storio.contentresolver.operations.put.PutResolver;
+import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
+import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
+import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 
 import static org.mockito.Mockito.mock;
 
