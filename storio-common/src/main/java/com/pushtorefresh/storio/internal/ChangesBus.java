@@ -9,7 +9,7 @@ import static com.pushtorefresh.storio.internal.Environment.RX_JAVA_IS_AVAILABLE
 
 /**
  * FOR INTERNAL USAGE ONLY.
- * <p/>
+ * <p>
  * Thread-safe changes bus.
  */
 public final class ChangesBus<T> {

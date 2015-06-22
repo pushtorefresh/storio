@@ -37,7 +37,7 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
 
     /**
      * Executes Put Operation immediately in current thread.
-     * <p/>
+     * <p>
      * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
@@ -74,10 +74,10 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
 
     /**
      * Creates {@link Observable} which will perform Put Operation and send result to observer.
-     * <p/>
+     * <p>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * put only after subscribing to it. Also, it emits the result once.
-     * <p/>
+     * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>Operates on {@link Schedulers#io()}.</dd>
@@ -119,9 +119,9 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
         /**
          * Optional: Specifies {@link PutResolver} for Put Operation
          * which allows you to customize behavior of Put Operation.
-         * <p/>
+         * <p>
          * Can be set via {@link SQLiteTypeMapping}
-         * If it's not set via {@link SQLiteTypeMapping} or explicitly -> exception will be thrown.
+         * If it's not set via {@link SQLiteTypeMapping} or explicitly — exception will be thrown.
          *
          * @param putResolver put resolver.
          * @return builder.

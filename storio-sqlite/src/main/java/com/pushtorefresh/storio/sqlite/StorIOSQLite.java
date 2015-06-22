@@ -24,7 +24,7 @@ import rx.Observable;
 
 /**
  * Powerful but simple abstraction for {@link android.database.sqlite.SQLiteDatabase}.
- * <p/>
+ * <p>
  * It's an abstract class instead of interface because we want to have ability to add some
  * changes without breaking existing implementations.
  */
@@ -111,7 +111,7 @@ public abstract class StorIOSQLite implements Closeable {
 
         /**
          * Gets {@link SQLiteTypeMapping} for required type.
-         * <p/>
+         * <p>
          * Result can be {@code null}.
          *
          * @param type type.
@@ -197,7 +197,7 @@ public abstract class StorIOSQLite implements Closeable {
 
         /**
          * Begins a transaction in EXCLUSIVE mode.
-         * <p/>
+         * <p>
          * Thread will be blocked on call to this method if another thread already in transaction,
          * as soon as first thread will end its transaction this thread will be unblocked.
          * <p>
@@ -208,7 +208,7 @@ public abstract class StorIOSQLite implements Closeable {
          * marked as clean (by calling setTransactionSuccessful). Otherwise they will be committed.
          * </p>
          * <p>Here is the standard idiom for transactions:
-         * <p/>
+         * <p>
          * <pre>
          *   db.beginTransaction();
          *   try {

@@ -103,7 +103,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
 
         /**
          * Required: Specifies {@link ContentResolver} for {@link StorIOContentResolver}.
-         * <p/>
+         * <p>
          * You can get in from any {@link android.content.Context}
          * instance: {@code context.getContentResolver().
          * It's safe to use {@link android.app.Activity} as {@link android.content.Context}.
@@ -182,7 +182,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
 
         /**
          * Gets type mapping for required type.
-         * <p/>
+         * <p>
          * This implementation can handle subclasses of types, that registered its type mapping.
          * For example: You've added type mapping for {@code User.class},
          * and you have {@code UserFromServiceA.class} which extends {@code User.class},

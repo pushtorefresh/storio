@@ -11,7 +11,7 @@ import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListO
 
 /**
  * Update query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
- * <p/>
+ * <p>
  * Instances of this class are immutable.
  */
 public final class UpdateQuery {
@@ -47,11 +47,11 @@ public final class UpdateQuery {
 
     /**
      * Gets {@code WHERE} clause.
-     * <p/>
+     * <p>
      * Optional filter declaring which rows to update.
-     * <p/>
+     * <p>
      * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
-     * <p/>
+     * <p>
      * If empty — Query will update all rows for the given table.
      *
      * @return non-null {@code WHERE} clause.
@@ -153,13 +153,13 @@ public final class UpdateQuery {
 
         /**
          * Optional: Specifies {@code WHERE} clause.
-         * <p/>
+         * <p>
          * Optional filter declaring which rows to return.
-         * <p/>
+         * <p>
          * Formatted as an SQL WHERE clause (excluding the {@code WHERE} itself).
-         * <p/>
+         * <p>
          * Passing {@code null} will UPDATE all rows for the given table.
-         * <p/>
+         * <p>
          * Default value is {@code null}.
          *
          * @param where {@code WHERE} clause.
@@ -174,10 +174,10 @@ public final class UpdateQuery {
 
         /**
          * Optional: Specifies arguments for {@code WHERE} clause.
-         * <p/>
+         * <p>
          * Passed objects will be immediately converted
          * to list of {@link String} via calling {@link Object#toString()}.
-         * <p/>
+         * <p>
          * Default value is {@code null}.
          *
          * @param whereArgs list of arguments for {@code WHERE} clause.

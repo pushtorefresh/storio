@@ -14,7 +14,7 @@ import static java.util.Collections.unmodifiableList;
 
 /**
  * Util methods for queries.
- * <p/>
+ * <p>
  * For internal usage only!
  */
 public final class Queries {

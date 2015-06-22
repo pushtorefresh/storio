@@ -116,9 +116,16 @@ afterEvaluate { project ->
     }
 
     task androidJavadocs(type: Javadoc) {
-        failOnError false
         source = android.sourceSets.main.java.srcDirs
-        classpath += project.files(android.getBootClasspath()) + project.files(configurations.compileJavadoc)
+
+        classpath += project.files(android.getBootClasspath())
+        classpath += configurations.compileJavadoc
+        classpath += configurations.compile + configurations.provided
+
+        failOnError false // Sorry, but we can not make it work with dependencies between modules
+
+        exclude '**/BuildConfig.java'
+        exclude '**/R.java'
     }
 
     task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {

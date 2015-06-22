@@ -9,7 +9,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Immutable container for results of Delete Operation
- * <p/>
+ * <p>
  * Instances of this class are Immutable
  *
  * @param <T> type of objects
