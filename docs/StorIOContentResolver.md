@@ -80,6 +80,25 @@ storIOContentResolver
   });
 ```
 
+######Get result via Rx only once and ignore further changes
+
+```java
+storIOContentResolver
+  .get()
+  .listOfObjects(Tweet.class)
+  .withQuery(Query.builder()
+          .uri(tweetsUri)
+          .build())
+  .prepare()
+  .createObservable() 
+  .take(1) // To get result only once and ignore further changes of this Uri
+  .observeOn(mainThread())
+  .subscribe(tweets -> {
+      // Display data
+    }
+  );
+```
+
 ######Customize behavior of `Get` Operation with `GetResolver`
 
 ```java
