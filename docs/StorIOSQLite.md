@@ -73,6 +73,25 @@ storIOSQLite
   });
 ```
 
+######Get result via Rx only once and ignore further changes
+
+```java
+storIOSQLite
+  .get()
+  .listOfObjects(Tweet.class)
+  .withQuery(Query.builder()
+          .table("tweets")
+          .build())
+  .prepare()
+  .createObservable() 
+  .take(1)  // To get result only once and ignore further changes of this table
+  .observeOn(mainThread())
+  .subscribe(tweets -> {
+      // Display data
+    }
+  );
+```
+
 ######Get result with RawQuery with joins and other SQL things
 
 ```java
