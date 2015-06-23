@@ -7,7 +7,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Insert query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
- * <p/>
+ * <p>
  * Instances of this class are Immutable.
  */
 public final class InsertQuery {
@@ -67,7 +67,7 @@ public final class InsertQuery {
 
     /**
      * Builder for {@link InsertQuery}.
-     * <p/>
+     * <p>
      * Yep, it looks stupid with only one parameter — Uri, but think about future,
      * we can add other things later without breaking the API!
      */

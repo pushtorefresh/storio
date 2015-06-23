@@ -34,7 +34,7 @@ public final class PreparedPutContentValues extends PreparedPut<PutResult> {
 
     /**
      * Executes Put Operation immediately in current thread.
-     * <p/>
+     * <p>
      * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
@@ -50,10 +50,10 @@ public final class PreparedPutContentValues extends PreparedPut<PutResult> {
 
     /**
      * Creates {@link Observable} which will perform Put Operation and send result to observer.
-     * <p/>
+     * <p>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * put only after subscribing to it. Also, it emits the result once.
-     * <p/>
+     * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>Operates on {@link Schedulers#io()}.</dd>
@@ -74,7 +74,7 @@ public final class PreparedPutContentValues extends PreparedPut<PutResult> {
 
     /**
      * Builder for {@link PreparedPutContentValues}.
-     * <p/>
+     * <p>
      * Required: You should specify put resolver see {@link #withPutResolver(PutResolver)}.
      */
     public static final class Builder {

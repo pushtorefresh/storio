@@ -43,7 +43,7 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
 
     /**
      * Executes Delete Operation immediately in current thread.
-     * <p/>
+     * <p>
      * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
@@ -104,10 +104,10 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
 
     /**
      * Creates {@link Observable} which will perform Delete Operation and send result to observer.
-     * <p/>
+     * <p>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * delete only after subscribing to it. Also, it emits the result once.
-     * <p/>
+     * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>Operates on {@link Schedulers#io()}.</dd>
@@ -156,10 +156,10 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
         /**
          * Optional: Specifies resolver for Delete Operation.
          * Allows you to customise behavior of Delete Operation.
-         * <p/>
+         * <p>
          * Can be set via {@link ContentResolverTypeMapping},
          * If value is not set via {@link ContentResolverTypeMapping}
-         * or explicitly -> exception will be thrown.
+         * or explicitly — exception will be thrown.
          *
          * @param deleteResolver nullable resolver for Delete Operation.
          * @return builder.

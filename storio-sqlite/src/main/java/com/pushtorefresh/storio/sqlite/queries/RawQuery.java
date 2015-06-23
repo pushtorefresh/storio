@@ -14,7 +14,7 @@ import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullSet;
 
 /**
  * Raw SQL query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
- * <p/>
+ * <p>
  * Instances of this class are immutable.
  */
 public class RawQuery {
@@ -65,7 +65,7 @@ public class RawQuery {
 
     /**
      * Gets optional immutable set of tables which will be affected by this query.
-     * <p/>
+     * <p>
      * They will be used to notify observers of that tables.
      *
      * @return non-null, immutable set of tables, affected by this query.
@@ -77,7 +77,7 @@ public class RawQuery {
 
     /**
      * Gets optional immutable set of tables that should be observed by this query.
-     * <p/>
+     * <p>
      * They will be used to observe changes of that tables and re-execute this query.
      *
      * @return non-null, immutable set of tables, that should be observed by this query.
@@ -175,10 +175,10 @@ public class RawQuery {
         /**
          * Optional: Specifies arguments for SQL query,
          * please use arguments to avoid SQL injections.
-         * <p/>
+         * <p>
          * Passed objects will be immediately converted
          * to list of {@link String} via calling {@link Object#toString()}.
-         * <p/>
+         * <p>
          * Default value is {@code null}.
          *
          * @param args arguments fro SQL query.
@@ -194,7 +194,7 @@ public class RawQuery {
         /**
          * Optional: Specifies set of tables which will be affected by this query.
          * They will be used to notify observers of that tables.
-         * <p/>
+         * <p>
          * Default value is {@code null}.
          *
          * @param tables set of tables which will be affected by this query.
@@ -214,7 +214,7 @@ public class RawQuery {
         /**
          * Optional: Specifies set of tables that should be observed by this query.
          * They will be used to re-execute query if one of the tables will be changed.
-         * <p/>
+         * <p>
          * Default values is {@code null}.
          *
          * @param tables set of tables that should be observed by this query.

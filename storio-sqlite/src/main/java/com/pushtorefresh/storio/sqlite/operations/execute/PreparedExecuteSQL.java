@@ -35,7 +35,7 @@ public final class PreparedExecuteSQL implements PreparedOperation<Object> {
 
     /**
      * Executes SQL Operation immediately in current thread.
-     * <p/>
+     * <p>
      * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
@@ -62,10 +62,10 @@ public final class PreparedExecuteSQL implements PreparedOperation<Object> {
     /**
      * Creates {@link Observable} which will perform Execute SQL Operation
      * and send result to observer.
-     * <p/>
+     * <p>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * execution of SQL only after subscribing to it. Also, it emits the result once.
-     * <p/>
+     * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>Operates on {@link Schedulers#io()}.</dd>

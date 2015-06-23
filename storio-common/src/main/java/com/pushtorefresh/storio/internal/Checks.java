@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 /**
  * Bunch of check methods
- * <p/>
+ * <p>
  * For internal usage only!
  */
 public final class Checks {

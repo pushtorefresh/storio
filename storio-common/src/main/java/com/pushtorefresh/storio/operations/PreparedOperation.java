@@ -14,7 +14,7 @@ public interface PreparedOperation<Result> {
 
     /**
      * Executes operation synchronously in current thread.
-     * <p/>
+     * <p>
      * Notice: Blocking I/O operation should not be executed on the Main Thread,
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, execute blocking I/O operation only from background thread.
@@ -28,7 +28,7 @@ public interface PreparedOperation<Result> {
 
     /**
      * Creates {@link rx.Observable} that emits result of Operation.
-     * <p/>
+     * <p>
      * Observable may be "Hot" or "Cold", please read documentation of the concrete implementation.
      *
      * @return observable result of operation with only one {@link rx.Observer#onNext(Object)} call.

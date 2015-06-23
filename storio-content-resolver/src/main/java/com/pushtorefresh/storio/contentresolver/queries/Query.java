@@ -64,7 +64,7 @@ public class Query {
     /**
      * Gets optional immutable list of columns that should be received.
      * <p>
-     * If list is empty -> all columns will be received.
+     * If list is empty — all columns will be received.
      *
      * @return non-null, immutable list of columns that should be received.
      */

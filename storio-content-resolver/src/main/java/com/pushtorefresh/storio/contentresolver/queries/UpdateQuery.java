@@ -13,7 +13,7 @@ import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListO
 
 /**
  * Update query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
- * <p/>
+ * <p>
  * Instances of this class are Immutable.
  */
 public final class UpdateQuery {
@@ -39,7 +39,7 @@ public final class UpdateQuery {
 
     /**
      * Gets {@code content://} URI of the insertion request.
-     * <p/>
+     * <p>
      * This can potentially have a record ID if this is an update request for a specific record.
      *
      * @return non-null URI of the update request.
@@ -51,11 +51,11 @@ public final class UpdateQuery {
 
     /**
      * Gets {@code WHERE} clause.
-     * <p/>
+     * <p>
      * Optional filter declaring which rows to update.
-     * <p/>
+     * <p>
      * Formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE} itself).
-     * <p/>
+     * <p>
      * If empty — Query will update all rows for specified URI.
      *
      * @return non-null {@code WHERE} clause.
@@ -165,7 +165,7 @@ public final class UpdateQuery {
 
         /**
          * Optional: Specifies where clause.
-         * <p/>
+         * <p>
          * Default value is {@code null}.
          *
          * @param where an optional filter to match rows to update.
@@ -180,10 +180,10 @@ public final class UpdateQuery {
 
         /**
          * Optional: Specifies arguments for where clause.
-         * <p/>
+         * <p>
          * Passed objects will be immediately converted to
          * list {@link String} via calling {@link Object#toString()}.
-         * <p/>
+         * <p>
          * Default value is {@code null}.
          *
          * @param whereArgs arguments for {@link UpdateQuery#where}.

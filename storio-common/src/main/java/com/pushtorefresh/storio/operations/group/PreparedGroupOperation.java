@@ -17,9 +17,9 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
 
 /**
  * Prepared Group Operation for StorIO implementations.
- * <p/>
+ * <p>
  * Allows group execution of any combination of {@link PreparedOperation}.
- * <p/>
+ * <p>
  * And yes, you can execute {@link PreparedGroupOperation}
  * as part of {@link PreparedGroupOperation}
  * since it implements {@link PreparedOperation} :).
@@ -35,7 +35,7 @@ public class PreparedGroupOperation implements PreparedOperation<GroupOperationR
 
     /**
      * Executes Group Operation immediately in current thread.
-     * <p/>
+     * <p>
      * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
@@ -58,10 +58,10 @@ public class PreparedGroupOperation implements PreparedOperation<GroupOperationR
 
     /**
      * Creates {@link Observable} which will perform Group Operation and send result to observer.
-     * <p/>
+     * <p>
      * Returned {@link Observable} will be "Cold Observable", which means that it performs
      * Group Operation only after subscribing to it. Also, it emits the result once.
-     * <p/>
+     * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>Operates on {@link Schedulers#io()}.</dd>
