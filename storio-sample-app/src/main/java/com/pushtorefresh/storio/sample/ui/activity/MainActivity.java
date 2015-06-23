@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sample.R;
-import com.pushtorefresh.storio.sample.ui.ToastHelper;
+import com.pushtorefresh.storio.sample.ui.Toasts;
 import com.pushtorefresh.storio.sample.ui.activity.db.TweetsSampleActivity;
 
 import butterknife.ButterKnife;
@@ -28,6 +28,6 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.main_content_resolver_sample)
     void openContentResolverSample() {
-        ToastHelper.safeShowShortToast(this, "Not implemented :(");
+        Toasts.safeShowShortToast(this, "Not implemented :(");
     }
 }
