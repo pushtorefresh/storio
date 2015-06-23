@@ -12,9 +12,9 @@ import timber.log.Timber;
  * Toasts are not important so much to crash application
  * This class contains "safe" methods for showing toasts
  */
-public class ToastHelper {
+public class Toasts {
 
-    private ToastHelper() {
+    private Toasts() {
     }
 
     public static void safeShowToast(@Nullable Context context, @Nullable String message, int length) {

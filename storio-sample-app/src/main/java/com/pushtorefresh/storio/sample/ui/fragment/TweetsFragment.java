@@ -15,7 +15,6 @@ import com.pushtorefresh.storio.sample.SampleApp;
 import com.pushtorefresh.storio.sample.db.entity.Tweet;
 import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
 import com.pushtorefresh.storio.sample.ui.DividerItemDecoration;
-import com.pushtorefresh.storio.sample.ui.ToastHelper;
 import com.pushtorefresh.storio.sample.ui.UiStateController;
 import com.pushtorefresh.storio.sample.ui.adapter.TweetsAdapter;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -31,12 +30,12 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Observer;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.pushtorefresh.storio.sample.ui.Toasts.safeShowShortToast;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 public class TweetsFragment extends BaseFragment {
 
@@ -96,9 +95,8 @@ public class TweetsFragment extends BaseFragment {
                 .withQuery(TweetTableMeta.QUERY_ALL)
                 .prepare()
                 .createObservable() // it will be subscribed to changes in tweets table!
-                .delay(1, SECONDS) // for better User Experience
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .delay(1, SECONDS) // for better User Experience :) Actually, StorIO is so fast that we need to delay emissions (it's a joke, or not)
+                .observeOn(mainThread())
                 .subscribe(new Action1<List<Tweet>>() {
                     @Override
                     public void call(List<Tweet> tweets) {
@@ -141,12 +139,11 @@ public class TweetsFragment extends BaseFragment {
                 .objects(tweets)
                 .prepare()
                 .createObservable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(mainThread())
                 .subscribe(new Observer<PutResults<Tweet>>() {
                     @Override
                     public void onError(Throwable e) {
-                        ToastHelper.safeShowShortToast(getActivity(), R.string.tweets_add_error_toast);
+                        safeShowShortToast(getActivity(), R.string.tweets_add_error_toast);
                     }
 
                     @Override
