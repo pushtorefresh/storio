@@ -57,7 +57,7 @@ public class RxQueryTest extends IntegrationTest {
     @Test
     public void queryShouldBeUpdatedAfterInsert() {
         // First of all -> insert some tweets into the Content Provider
-        final List<Tweet> tweets = putTweets(TestFactory.newTweets(10));
+        final List<Tweet> tweets = insertTweets(TestFactory.newTweets(10));
 
         final Queue<List<Tweet>> expectedTweets = new LinkedList<List<Tweet>>();
 
@@ -76,7 +76,7 @@ public class RxQueryTest extends IntegrationTest {
         final Subscription subscription = emissionChecker.subscribe();
 
         // We should receive 10 tweets after subscription
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         final PutResult putResult = storIOContentResolver
                 .put()
@@ -87,7 +87,7 @@ public class RxQueryTest extends IntegrationTest {
         assertTrue(putResult.wasInserted());
 
         // Then we should receive 11 tweets
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         emissionChecker.assertThatNoExpectedValuesLeft();
         subscription.unsubscribe();
@@ -96,7 +96,7 @@ public class RxQueryTest extends IntegrationTest {
     @Test
     public void queryShouldBeUpdatedAfterUpdate() {
         // First of all -> insert some tweets into the Content Provider
-        final List<Tweet> tweets = putTweets(TestFactory.newTweets(10));
+        final List<Tweet> tweets = insertTweets(TestFactory.newTweets(10));
 
         final Queue<List<Tweet>> expectedTweets = new LinkedList<List<Tweet>>();
 
@@ -115,7 +115,7 @@ public class RxQueryTest extends IntegrationTest {
         final Subscription subscription = emissionChecker.subscribe();
 
         // We should receive 10 tweets after subscription
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         final PutResult putResult = storIOContentResolver
                 .put()
@@ -126,7 +126,7 @@ public class RxQueryTest extends IntegrationTest {
         assertTrue(putResult.wasUpdated());
 
         // Then we should receive 10 tweets after update, but first tweet should be changed
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         emissionChecker.assertThatNoExpectedValuesLeft();
         subscription.unsubscribe();
@@ -135,7 +135,7 @@ public class RxQueryTest extends IntegrationTest {
     @Test
     public void queryShouldBeUpdatedAfterDelete() {
         // First of all -> insert some tweets into the Content Provider
-        final List<Tweet> tweets = putTweets(TestFactory.newTweets(10));
+        final List<Tweet> tweets = insertTweets(TestFactory.newTweets(10));
 
         final Queue<List<Tweet>> expectedTweets = new LinkedList<List<Tweet>>();
 
@@ -152,7 +152,7 @@ public class RxQueryTest extends IntegrationTest {
         final Subscription subscription = emissionChecker.subscribe();
 
         // We should receive 10 tweets after subscription
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         final DeleteResult deleteResult = storIOContentResolver
                 .delete()
@@ -163,7 +163,7 @@ public class RxQueryTest extends IntegrationTest {
         assertEquals(1, deleteResult.numberOfRowsDeleted());
 
         // Then we should receive 9 tweets after delete, first tweet should be deleted
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         emissionChecker.assertThatNoExpectedValuesLeft();
         subscription.unsubscribe();

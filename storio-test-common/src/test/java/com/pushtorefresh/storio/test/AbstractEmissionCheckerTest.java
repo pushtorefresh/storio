@@ -79,7 +79,7 @@ public class AbstractEmissionCheckerTest {
         Subscription subscription = emissionChecker.subscribe();
 
         // Should not throw exception
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         subscription.unsubscribe();
     }
@@ -108,7 +108,7 @@ public class AbstractEmissionCheckerTest {
         Subscription subscription = emissionChecker.subscribe();
 
         try {
-            emissionChecker.assertThatNextExpectedValueReceived();
+            emissionChecker.awaitNextExpectedValue();
             fail();
         } catch (AssertionError expected) {
             // it's okay
@@ -146,7 +146,7 @@ public class AbstractEmissionCheckerTest {
         Subscription subscription = emissionChecker.subscribe();
 
         try {
-            emissionChecker.assertThatNextExpectedValueReceived();
+            emissionChecker.awaitNextExpectedValue();
             fail();
         } catch (AssertionError expected) {
             // it's okay
@@ -184,17 +184,17 @@ public class AbstractEmissionCheckerTest {
         publishSubject.onNext("1");
 
         // "1"
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         publishSubject.onNext("2");
 
         // "2"
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         publishSubject.onNext("3");
 
         // "3"
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         // Should not throw exception
         emissionChecker.assertThatNoExpectedValuesLeft();
@@ -223,7 +223,7 @@ public class AbstractEmissionCheckerTest {
             emissionChecker.assertThatNoExpectedValuesLeft();
             fail();
         } catch (AssertionError expected) {
-            // it's okay, we didn't call emissionChecker.assertThatNextExpectedValueReceived()
+            // it's okay, we didn't call emissionChecker.awaitNextExpectedValue()
         } finally {
             subscription.unsubscribe();
         }

@@ -56,7 +56,7 @@ public class ObserveChangesTest extends BaseTest {
         putUsersBlocking(users);
 
         // Should receive changes of Users table
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
@@ -85,7 +85,7 @@ public class ObserveChangesTest extends BaseTest {
                 .executeAsBlocking();
 
         // Should receive changes of Users table
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
@@ -105,7 +105,7 @@ public class ObserveChangesTest extends BaseTest {
         deleteUsersBlocking(users);
 
         // Should receive changes of Users table
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
