@@ -49,7 +49,11 @@ public abstract class AbstractEmissionChecker<T> {
             problem = onNextObtainedThrowable.get();
         }
 
-        if (!expectedValueReceived.get()) {
+        final Throwable throwable = onNextObtainedThrowable.get();
+
+        if (throwable != null) {
+           throw new AssertionError("Throwable occurred while waiting: " + throwable);
+        } else if (!expectedValueReceived.get()) {
             throw new AssertionError("Expected value = " + expectedValues.peek() + " was not received, " +
                     "timeout = " + timeoutMillis + "ms, expectedValues.size = " + expectedValues.size());
         } else {

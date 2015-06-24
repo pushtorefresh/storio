@@ -60,7 +60,7 @@ public class RxChangesObserverTest {
                         mock(Handler.class))
                 .subscribe();
 
-        // Should not unregister before unsubscibe from Subscription
+        // Should not unregister before unsubscribe from Subscription
         verify(contentResolver, times(0)).unregisterContentObserver(any(ContentObserver.class));
 
         subscription.unsubscribe();

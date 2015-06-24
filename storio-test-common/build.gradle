@@ -23,8 +23,6 @@ dependencies {
 
     testCompile libraries.junit
     testCompile libraries.mockitoCore
-
-    androidTestCompile libraries.testingSupportLib
 }
 
 task checkstyle(type: Checkstyle) {

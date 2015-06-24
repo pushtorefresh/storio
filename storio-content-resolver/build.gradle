@@ -24,15 +24,13 @@ android {
 }
 
 dependencies {
-    compile libraries.storIOCommon
+    compile  libraries.storIOCommon
     provided libraries.rxJava
 
     testCompile libraries.junit
     testCompile libraries.mockitoCore
     testCompile libraries.storIOTestCommon
-
-    androidTestCompile libraries.storIOTestCommon
-    androidTestCompile libraries.testingSupportLib
+    testCompile libraries.robolectric
 }
 
 task checkstyle(type: Checkstyle) {

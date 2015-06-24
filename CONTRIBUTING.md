@@ -5,8 +5,8 @@ Actually, we don't want to limit you, so just write clean & good code with tests
 
 ####Building project:
 
-To build and test the project you need to connect emulator or device and then execute:
+To build and test the project you need to execute:
 ```bash
-sh ci/ci.sh
 # from root project directory
+sh ci/ci.sh
 ```

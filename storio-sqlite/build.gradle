@@ -21,18 +21,16 @@ android {
 }
 
 dependencies {
-    compile libraries.storIOCommon
+    compile  libraries.storIOCommon
     provided libraries.rxJava
 
-    testCompile libraries.junit
-    testCompile libraries.mockitoCore
-    testCompile libraries.storIOTestCommon
-    testCompile libraries.guava
-
-    androidTestCompile libraries.storIOTestCommon
-    androidTestCompile libraries.testingSupportLib
-    androidTestCompile libraries.autoParcel
-    androidTestApt     libraries.autoParcelProcessor
+    testCompile  libraries.junit
+    testCompile  libraries.mockitoCore
+    testCompile  libraries.storIOTestCommon
+    testCompile  libraries.guava
+    testCompile  libraries.robolectric
+    testCompile  libraries.autoParcel
+    testProvided libraries.autoParcelProcessor
 }
 
 task checkstyle(type: Checkstyle) {
