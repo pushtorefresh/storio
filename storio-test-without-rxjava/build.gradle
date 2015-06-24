@@ -30,8 +30,6 @@ dependencies {
     testCompile libraries.junit
     testCompile libraries.mockitoCore
     testCompile libraries.storIOTestCommon
-
-    androidTestCompile libraries.testingSupportLib
 }
 
 task checkstyle(type: Checkstyle) {

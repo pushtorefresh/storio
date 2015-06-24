@@ -68,7 +68,4 @@ dependencies {
 
     debugCompile   libraries.leakCanary
     releaseCompile libraries.leakCanaryNoOp
-
-    androidTestCompile libraries.storIOTestCommon
-    androidTestCompile libraries.testingSupportLib
 }
