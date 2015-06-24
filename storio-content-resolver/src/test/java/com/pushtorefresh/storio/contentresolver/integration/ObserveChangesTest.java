@@ -72,7 +72,7 @@ public class ObserveChangesTest extends IntegrationTest {
 
             assertTrue(putResult.wasInserted());
 
-            emissionChecker.assertThatNextExpectedValueReceived();
+            emissionChecker.awaitNextExpectedValue();
         }
 
         emissionChecker.assertThatNoExpectedValuesLeft();
@@ -82,7 +82,7 @@ public class ObserveChangesTest extends IntegrationTest {
     @Test
     public void shouldReceiveChangeAfterEachUpdate() {
         // First of all -> insert some tweets into the Content Provider
-        final List<Tweet> tweets = putTweets(TestFactory.newTweets(10));
+        final List<Tweet> tweets = insertTweets(TestFactory.newTweets(10));
 
         final Queue<Changes> expectedChanges = new LinkedList<Changes>();
 
@@ -103,7 +103,7 @@ public class ObserveChangesTest extends IntegrationTest {
 
             assertTrue(putResult.wasUpdated());
 
-            emissionChecker.assertThatNextExpectedValueReceived();
+            emissionChecker.awaitNextExpectedValue();
         }
 
         emissionChecker.assertThatNoExpectedValuesLeft();
@@ -113,7 +113,7 @@ public class ObserveChangesTest extends IntegrationTest {
     @Test
     public void shouldReceiveChangeAfterEachDelete() {
         // First of all -> insert some tweets into the Content Provider
-        final List<Tweet> tweets = putTweets(TestFactory.newTweets(10));
+        final List<Tweet> tweets = insertTweets(TestFactory.newTweets(10));
 
         final Queue<Changes> expectedChanges = new LinkedList<Changes>();
 
@@ -134,7 +134,7 @@ public class ObserveChangesTest extends IntegrationTest {
 
             assertEquals(1, deleteResult.numberOfRowsDeleted());
 
-            emissionChecker.assertThatNextExpectedValueReceived();
+            emissionChecker.awaitNextExpectedValue();
         }
 
         emissionChecker.assertThatNoExpectedValuesLeft();

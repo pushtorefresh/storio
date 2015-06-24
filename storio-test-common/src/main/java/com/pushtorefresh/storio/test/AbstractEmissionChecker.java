@@ -25,7 +25,7 @@ public abstract class AbstractEmissionChecker<T> {
     }
 
     /**
-     * Returns timeout of assertion for {@link #assertThatNextExpectedValueReceived()}.
+     * Returns timeout of assertion for {@link #awaitNextExpectedValue()}.
      *
      * @return timeout in millis.
      */
@@ -36,7 +36,7 @@ public abstract class AbstractEmissionChecker<T> {
     /**
      * Asserts that next expected value was received.
      */
-    public void assertThatNextExpectedValueReceived() {
+    public void awaitNextExpectedValue() {
         final long startTime = System.currentTimeMillis(); // We can not use SystemClock here :( Not in class path
         final long timeoutMillis = timeoutMillis();
 
@@ -97,7 +97,6 @@ public abstract class AbstractEmissionChecker<T> {
         }
     }
 
-    // TODO: Refactor, probably better to provide Observable itself.
     @NonNull
     public abstract Subscription subscribe();
 }

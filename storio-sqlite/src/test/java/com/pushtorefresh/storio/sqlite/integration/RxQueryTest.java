@@ -63,12 +63,12 @@ public class RxQueryTest extends BaseTest {
         final Subscription subscription = emissionChecker.subscribe();
 
         // Should receive initial users
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         putUsersBlocking(usersForInsert);
 
         // Should receive initial users + inserted users
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
@@ -93,7 +93,7 @@ public class RxQueryTest extends BaseTest {
         final Subscription subscription = emissionChecker.subscribe();
 
         // Should receive all users
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         storIOSQLite
                 .put()
@@ -102,7 +102,7 @@ public class RxQueryTest extends BaseTest {
                 .executeAsBlocking();
 
         // Should receive updated users
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
@@ -129,12 +129,12 @@ public class RxQueryTest extends BaseTest {
         final Subscription subscription = emissionChecker.subscribe();
 
         // Should receive all users
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         deleteUsersBlocking(usersThatShouldBeDeleted);
 
         // Should receive users that should be saved
-        emissionChecker.assertThatNextExpectedValueReceived();
+        emissionChecker.awaitNextExpectedValue();
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
