@@ -106,7 +106,7 @@ public class PutResult {
      * {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, {@code false} otherwise.
      */
     public boolean wasUpdated() {
-        return numberOfRowsUpdated != null;
+        return numberOfRowsUpdated != null && numberOfRowsUpdated > 0;
     }
 
     /**
