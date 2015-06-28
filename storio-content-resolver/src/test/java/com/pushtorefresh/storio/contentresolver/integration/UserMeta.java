@@ -30,8 +30,8 @@ class UserMeta {
             COLUMN_EMAIL + " TEXT NOT NULL" +
             ");";
 
-    static final String CONTENT_URI = "content://" + TestContentProvider.AUTHORITY + "/" + TABLE;
-
+    @NonNull
+    static final Uri CONTENT_URI = Uri.parse("content://" + TestContentProvider.AUTHORITY + "/" + TABLE);
 
     static final PutResolver<User> PUT_RESOLVER = new DefaultPutResolver<User>() {
         @NonNull

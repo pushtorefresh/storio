@@ -228,4 +228,46 @@ public class AbstractEmissionCheckerTest {
             subscription.unsubscribe();
         }
     }
+
+    @Test
+    public void shouldStoreItemsInQueueAndThenAwaitNextExpectedValues() {
+        final Queue<String> expectedValues = new LinkedList<String>();
+
+        expectedValues.add("1");
+        expectedValues.add("2");
+        expectedValues.add("3");
+
+        final PublishSubject<String> publishSubject = PublishSubject.create();
+
+        final AbstractEmissionChecker<String> emissionChecker = new AbstractEmissionChecker<String>(expectedValues) {
+            @NonNull
+            @Override
+            public Subscription subscribe() {
+                return publishSubject
+                        .subscribe(new Action1<String>() {
+                            @Override
+                            public void call(String s) {
+                                onNextObtained(s);
+                            }
+                        });
+            }
+        };
+
+        final Subscription subscription = emissionChecker.subscribe();
+
+        // Notice: We emit several values before awaiting any of them
+
+        publishSubject.onNext("1");
+        publishSubject.onNext("2");
+        publishSubject.onNext("3");
+
+        // Now we should successfully await all these items one by one
+        emissionChecker.awaitNextExpectedValue();
+        emissionChecker.awaitNextExpectedValue();
+        emissionChecker.awaitNextExpectedValue();
+
+        emissionChecker.assertThatNoExpectedValuesLeft();
+
+        subscription.unsubscribe();
+    }
 }

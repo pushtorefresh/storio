@@ -21,14 +21,14 @@ public class InsertTest extends IntegrationTest {
 
     @Test
     public void insertOne() {
-        final User user = putUser();
-        oneUserInStorageCheck(user);
+        final User user = insertUser();
+        checkThatThereIsOnlyOneUserInStorage(user);
     }
 
     @Test
     public void insertCollection() {
-        final List<User> users = putUsers(3);
-        usersInStorageCheck(users);
+        final List<User> users = insertUsers(3);
+        checkThatTheseUsersInStorage(users);
     }
 
     @Test
@@ -36,10 +36,10 @@ public class InsertTest extends IntegrationTest {
         final User user = TestFactory.newUser();
 
         for (int i = 0; i < 2; i++) {
-            putUser(user);
-            oneUserInStorageCheck(user);
+            insertUser(user);
+            checkThatThereIsOnlyOneUserInStorage(user);
             deleteUser(user);
-            noUsersInStorageCheck();
+            checkThatThereAreNoUsersInStorage();
         }
     }
 
@@ -48,7 +48,7 @@ public class InsertTest extends IntegrationTest {
      */
     @Test
     public void insertCollectionWithCustomId() {
-        final List<User> users = putUsers(1);
+        final List<User> users = insertUsers(1);
         final User user = users.get(0);
 
         assertNotNull(user.id());
