@@ -25,13 +25,13 @@ public class QueryTest extends IntegrationTest {
 
     @Test
     public void queryAll() {
-        final List<User> users = putUsers(3);
-        usersInStorageCheck(users);
+        final List<User> users = insertUsers(3);
+        checkThatTheseUsersInStorage(users);
     }
 
     @Test
     public void queryOneByField() {
-        final List<User> users = putUsers(3);
+        final List<User> users = insertUsers(3);
 
         for (User user : users) {
             final List<User> usersFromQuery = storIOContentResolver
@@ -58,7 +58,7 @@ public class QueryTest extends IntegrationTest {
         // Reverse sorting by email before inserting, for the purity of the experiment.
         Collections.reverse(users);
 
-        putUsers(users);
+        insertUsers(users);
 
         final List<User> usersFromQueryOrdered = storIOContentResolver
                 .get()
@@ -88,7 +88,7 @@ public class QueryTest extends IntegrationTest {
         // Sorting by email before inserting, for the purity of the experiment.
         Collections.sort(users);
 
-        putUsers(users);
+        insertUsers(users);
 
         final List<User> usersFromQueryOrdered = storIOContentResolver
                 .get()
@@ -113,7 +113,7 @@ public class QueryTest extends IntegrationTest {
 
     @Test
     public void queryProjection() {
-        final List<User> users = putUsers(3);
+        final List<User> users = insertUsers(3);
 
         final List<User> usersFromStorage = storIOContentResolver
                 .get()

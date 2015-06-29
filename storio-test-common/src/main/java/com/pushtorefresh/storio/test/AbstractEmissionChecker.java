@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
@@ -15,13 +14,14 @@ public abstract class AbstractEmissionChecker<T> {
     private final Queue<T> expectedValues;
 
     @NonNull
-    private final AtomicBoolean expectedValueReceived = new AtomicBoolean(false);
+    private final Queue<T> obtainedValues;
 
     @NonNull
     private final AtomicReference<Throwable> onNextObtainedThrowable = new AtomicReference<Throwable>(null);
 
     public AbstractEmissionChecker(@NonNull Queue<T> expectedValues) {
         this.expectedValues = new ConcurrentLinkedQueue<T>(expectedValues);
+        this.obtainedValues = new ConcurrentLinkedQueue<T>();
     }
 
     /**
@@ -30,7 +30,7 @@ public abstract class AbstractEmissionChecker<T> {
      * @return timeout in millis.
      */
     protected long timeoutMillis() {
-        return 60000; // 60 seconds
+        return 15000; // 15 seconds
     }
 
     /**
@@ -39,26 +39,35 @@ public abstract class AbstractEmissionChecker<T> {
     public void awaitNextExpectedValue() {
         final long startTime = System.currentTimeMillis(); // We can not use SystemClock here :( Not in class path
         final long timeoutMillis = timeoutMillis();
+        final T expected = expectedValues.remove();
 
         Throwable problem = onNextObtainedThrowable.get();
 
-        while (!expectedValueReceived.get()
+        boolean expectedValueWasReceived = false;
+
+        while (!expectedValueWasReceived
                 && problem == null
                 && !(System.currentTimeMillis() - startTime > timeoutMillis)) {
             Thread.yield();
             problem = onNextObtainedThrowable.get();
+
+            if (obtainedValues.size() > 0) {
+                final T obtained = obtainedValues.remove();
+
+                if (expected.equals(obtained)) {
+                    expectedValueWasReceived = true;
+                } else {
+                    throw new AssertionError("Obtained item not equals to expected: obtained = "
+                            + obtained + ", expected = " + expected);
+                }
+            }
         }
 
-        final Throwable throwable = onNextObtainedThrowable.get();
-
-        if (throwable != null) {
-           throw new AssertionError("Throwable occurred while waiting: " + throwable);
-        } else if (!expectedValueReceived.get()) {
+        if (problem != null) {
+           throw new AssertionError("Throwable occurred while waiting: " + problem);
+        } else if (!expectedValueWasReceived) {
             throw new AssertionError("Expected value = " + expectedValues.peek() + " was not received, " +
                     "timeout = " + timeoutMillis + "ms, expectedValues.size = " + expectedValues.size());
-        } else {
-            // reset flag
-            expectedValueReceived.set(false);
         }
     }
 
@@ -78,16 +87,7 @@ public abstract class AbstractEmissionChecker<T> {
      */
     protected void onNextObtained(@NonNull T obtained) {
         try {
-            final T expectedItem = expectedValues.remove();
-
-            if (!expectedItem.equals(obtained)) {
-                throw new AssertionError("Obtained item not equals to expected: obtained = "
-                        + obtained + ", expected = " + expectedItem);
-            } else if (expectedValueReceived.get()) {
-                throw new AssertionError("Incorrect state");
-            }
-
-            expectedValueReceived.set(true);
+            obtainedValues.add(obtained);
         } catch (Throwable throwable) {
             // Catch everything, it's not a bug, it's a feature
             // Really, we don't want to break contract of Emission Checker if something goes wrong

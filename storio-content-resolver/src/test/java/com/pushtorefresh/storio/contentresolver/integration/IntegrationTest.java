@@ -10,7 +10,6 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.impl.DefaultStorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResult;
 import com.pushtorefresh.storio.contentresolver.operations.put.PutResult;
-import com.pushtorefresh.storio.contentresolver.operations.put.PutResults;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.test.AbstractEmissionChecker;
 
@@ -26,6 +25,7 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -85,44 +85,99 @@ public abstract class IntegrationTest {
     }
 
     @NonNull
-    User putUser() {
-        return putUser(TestFactory.newUser());
+    User insertUser() {
+        return insertUser(TestFactory.newUser());
     }
 
     @NonNull
-    User putUser(@NonNull final User user) {
-        final PutResult putResult = storIOContentResolver
-                .put()
-                .object(user)
+    User insertUser(@NonNull final User user) {
+        return insertUsers(singletonList(user)).get(0);
+    }
+
+    @NonNull
+    List<User> insertUsers(final int size) {
+        return insertUsers(TestFactory.newUsers(size));
+    }
+
+    @NonNull
+    List<User> insertUsers(@NonNull final List<User> users) {
+        final Queue<Changes> expectedChanges = new LinkedList<Changes>();
+
+        for (int i = 0; i < users.size(); i++) {
+            // One change per insert
+            expectedChanges.add(Changes.newInstance(UserMeta.CONTENT_URI));
+        }
+
+        final AbstractEmissionChecker<Changes> emissionChecker = new AbstractEmissionChecker<Changes>(expectedChanges) {
+            @NonNull
+            @Override
+            public Subscription subscribe() {
+                return storIOContentResolver
+                        .observeChangesOfUri(UserMeta.CONTENT_URI)
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new Action1<Changes>() {
+                            @Override
+                            public void call(Changes changes) {
+                                onNextObtained(changes);
+                            }
+                        });
+            }
+        };
+
+        final Subscription subscription = emissionChecker.subscribe();
+
+        for (User user : users) {
+            final PutResult putResult = storIOContentResolver
+                    .put()
+                    .object(user)
+                    .prepare()
+                    .executeAsBlocking();
+
+            assertTrue(putResult.wasInserted());
+
+            emissionChecker.awaitNextExpectedValue();
+        }
+
+        emissionChecker.assertThatNoExpectedValuesLeft();
+        subscription.unsubscribe();
+
+        final List<User> storedUsers = storIOContentResolver
+                .get()
+                .listOfObjects(User.class)
+                .withQuery(Query.builder()
+                        .uri(UserMeta.CONTENT_URI)
+                        .build())
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(putResult);
-        assertTrue(putResult.wasInserted());
-
-        return user;
-    }
-
-    @NonNull
-    List<User> putUsers(final int size) {
-        return putUsers(TestFactory.newUsers(size));
-    }
-
-    @NonNull
-    List<User> putUsers(@NonNull final List<User> users) {
-        final PutResults<User> putResults = storIOContentResolver
-                .put()
-                .objects(users)
-                .prepare()
-                .executeAsBlocking();
-
-        assertEquals(users.size(), putResults.numberOfInserts());
+        assertEquals(users, storedUsers);
 
         return users;
     }
 
     @NonNull
     DeleteResult deleteUser(@NonNull final User user) {
+        final Queue<Changes> expectedChanges = new LinkedList<Changes>();
+        expectedChanges.add(Changes.newInstance(UserMeta.CONTENT_URI));
+
+        final AbstractEmissionChecker<Changes> emissionChecker = new AbstractEmissionChecker<Changes>(expectedChanges) {
+            @NonNull
+            @Override
+            public Subscription subscribe() {
+                return storIOContentResolver
+                        .observeChangesOfUri(UserMeta.CONTENT_URI)
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new Action1<Changes>() {
+                            @Override
+                            public void call(Changes changes) {
+                                onNextObtained(changes);
+                            }
+                        });
+            }
+        };
+
+        final Subscription subscription = emissionChecker.subscribe();
+
         final DeleteResult deleteResult = storIOContentResolver
                 .delete()
                 .object(user)
@@ -131,34 +186,39 @@ public abstract class IntegrationTest {
 
         assertEquals(1, deleteResult.numberOfRowsDeleted());
 
+        emissionChecker.awaitNextExpectedValue();
+        emissionChecker.assertThatNoExpectedValuesLeft();
+
+        subscription.unsubscribe();
+
         return deleteResult;
     }
 
-    void oneUserInStorageCheck(@NonNull final User user) {
+    void checkThatThereIsOnlyOneUserInStorage(@NonNull final User user) {
         final List<User> usersFromStorage = getAllUsers();
         assertNotNull(usersFromStorage);
         assertEquals(1, usersFromStorage.size());
         assertEquals(user, usersFromStorage.get(0));
     }
 
-    void usersInStorageCheck(@NonNull final List<User> users) {
+    void checkThatTheseUsersInStorage(@NonNull final List<User> users) {
         final List<User> usersFromStorage = getAllUsers();
         assertNotNull(usersFromStorage);
         assertEquals(users.size(), usersFromStorage.size());
         assertEquals(users, usersFromStorage);
     }
 
-    void noUsersInStorageCheck() {
+    void checkThatThereAreNoUsersInStorage() {
         final List<User> usersFromStorage = getAllUsers();
         assertNotNull(usersFromStorage);
         assertTrue(usersFromStorage.isEmpty());
     }
 
     @NonNull
-    List<Tweet> insertTweets(@NonNull List<Tweet> tweetsToInsert) {
+    List<Tweet> insertTweets(@NonNull List<Tweet> tweets) {
         final Queue<Changes> expectedChanges = new LinkedList<Changes>();
 
-        for (int i = 0; i < tweetsToInsert.size(); i++) {
+        for (int i = 0; i < tweets.size(); i++) {
             // One change per insert
             expectedChanges.add(Changes.newInstance(TweetMeta.CONTENT_URI));
         }
@@ -181,7 +241,7 @@ public abstract class IntegrationTest {
 
         final Subscription subscription = emissionChecker.subscribe();
 
-        for (final Tweet tweet : tweetsToInsert) {
+        for (final Tweet tweet : tweets) {
             final PutResult putResult = storIOContentResolver
                     .put()
                     .object(tweet)
@@ -196,7 +256,7 @@ public abstract class IntegrationTest {
         emissionChecker.assertThatNoExpectedValuesLeft();
         subscription.unsubscribe();
 
-        final List<Tweet> tweets = storIOContentResolver
+        final List<Tweet> storedTweets = storIOContentResolver
                 .get()
                 .listOfObjects(Tweet.class)
                 .withQuery(Query.builder()
@@ -205,10 +265,8 @@ public abstract class IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(tweetsToInsert, tweets);
+        assertEquals(tweets, storedTweets);
 
-
-
-        return tweets;
+        return storedTweets;
     }
 }
