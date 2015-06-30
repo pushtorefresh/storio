@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+
 /**
  * Immutable container for single result of Put Operation.
  */
@@ -19,6 +21,12 @@ public final class PutResult {
     private final Uri affectedUri;
 
     private PutResult(@Nullable Uri insertedUri, @Nullable Integer numberOfRowsUpdated, @NonNull Uri affectedUri) {
+        if (numberOfRowsUpdated != null && numberOfRowsUpdated < 1) {
+            throw new IllegalStateException("Number of rows updated must be > 0");
+        }
+
+        checkNotNull(affectedUri, "affectedUri must not be null");
+
         this.insertedUri = insertedUri;
         this.numberOfRowsUpdated = numberOfRowsUpdated;
         this.affectedUri = affectedUri;
@@ -33,13 +41,14 @@ public final class PutResult {
      */
     @NonNull
     public static PutResult newInsertResult(@NonNull Uri insertedUri, @NonNull Uri affectedUri) {
+        checkNotNull(insertedUri, "insertedUri must not be null");
         return new PutResult(insertedUri, null, affectedUri);
     }
 
     /**
      * Creates {@link PutResult} for update.
      *
-     * @param numberOfRowsUpdated number of rows that were updated.
+     * @param numberOfRowsUpdated number of rows that were updated, must be greater than 0.
      * @param affectedUri         Uri that was affected by update.
      * @return new {@link PutResult} instance.
      */
@@ -78,7 +87,7 @@ public final class PutResult {
      * {@code false} otherwise.
      */
     public boolean wasUpdated() {
-        return numberOfRowsUpdated != null && numberOfRowsUpdated > 0;
+        return numberOfRowsUpdated != null;
     }
 
     /**
@@ -105,7 +114,7 @@ public final class PutResult {
     /**
      * Gets number of updated rows.
      *
-     * @return null if nothing was updated or number of updated rows.
+     * @return {@code null} if nothing was updated or number of rows updated {@code (> 0)}.
      */
     @Nullable
     public Integer numberOfRowsUpdated() {

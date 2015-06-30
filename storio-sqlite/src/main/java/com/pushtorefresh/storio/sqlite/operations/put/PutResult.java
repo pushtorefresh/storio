@@ -3,10 +3,12 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Collections;
 import java.util.Set;
 
+import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static java.util.Collections.singleton;
+import static java.util.Collections.unmodifiableSet;
 
 /**
  * Immutable container for result of Put Operation.
@@ -25,10 +27,23 @@ public class PutResult {
     private final Set<String> affectedTables;
 
     private PutResult(@Nullable Long insertedId, @Nullable Integer numberOfRowsUpdated, @NonNull Set<String> affectedTables) {
-        checkNotNull(affectedTables, "Please specify affected tables");
+        if (numberOfRowsUpdated != null && numberOfRowsUpdated < 1) {
+            throw new IllegalArgumentException("Number of rows updated must be > 0");
+        }
+
+        checkNotNull(affectedTables, "affectedTables must not be null");
+
+        if (affectedTables.size() < 1) {
+            throw new IllegalArgumentException("affectedTables must contain at least one element");
+        }
+
+        for (String table : affectedTables) {
+            checkNotEmpty(table, "affectedTable must not be null or empty, affectedTables = " + affectedTables);
+        }
+
         this.insertedId = insertedId;
         this.numberOfRowsUpdated = numberOfRowsUpdated;
-        this.affectedTables = Collections.unmodifiableSet(affectedTables);
+        this.affectedTables = unmodifiableSet(affectedTables);
     }
 
     /**
@@ -52,13 +67,13 @@ public class PutResult {
      */
     @NonNull
     public static PutResult newInsertResult(long insertedId, @NonNull String affectedTable) {
-        return new PutResult(insertedId, null, Collections.singleton(affectedTable));
+        return new PutResult(insertedId, null, singleton(affectedTable));
     }
 
     /**
      * Creates {@link PutResult} of update.
      *
-     * @param numberOfRowsUpdated number of rows that were updated.
+     * @param numberOfRowsUpdated number of rows that were updated, must be greater than 0.
      * @param affectedTables      tables that were affected.
      * @return new {@link PutResult} instance.
      */
@@ -70,13 +85,13 @@ public class PutResult {
     /**
      * Creates {@link PutResult} of update.
      *
-     * @param numberOfRowsUpdated number of rows that were updated.
+     * @param numberOfRowsUpdated number of rows that were updated, must be greater than 0.
      * @param affectedTable       table that was affected.
      * @return new {@link PutResult} instance.
      */
     @NonNull
     public static PutResult newUpdateResult(int numberOfRowsUpdated, @NonNull String affectedTable) {
-        return new PutResult(null, numberOfRowsUpdated, Collections.singleton(affectedTable));
+        return new PutResult(null, numberOfRowsUpdated, singleton(affectedTable));
     }
 
     /**
@@ -106,7 +121,7 @@ public class PutResult {
      * {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, {@code false} otherwise.
      */
     public boolean wasUpdated() {
-        return numberOfRowsUpdated != null && numberOfRowsUpdated > 0;
+        return numberOfRowsUpdated != null;
     }
 
     /**
@@ -132,7 +147,7 @@ public class PutResult {
     /**
      * Gets number of rows updated.
      *
-     * @return {@code null} if nothing was updated or number of updated rows.
+     * @return {@code null} if nothing was updated or number of updated rows {@code (> 0)}.
      */
     @Nullable
     public Integer numberOfRowsUpdated() {
