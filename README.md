@@ -1,7 +1,5 @@
 #### StorIO — modern API for SQLiteDatabase and ContentResolver
 
-Currently in development.
-
 #####Overview:
 * Powerful & Simple set of Operations: `Put`, `Get`, `Delete`
 * API for Humans: Type Safety, Immutability & Thread-Safety
@@ -36,6 +34,21 @@ Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tes
 * [Design tests for StorIO SQLite](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
 * [Design tests for StorIO ContentResolver](storio-content-resolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
 * [Sample App](storio-sample-app)
+
+
+####Download:
+```groovy
+// If you need StorIO for SQLite
+compile 'com.pushtorefresh.storio:sqlite:1.0.0'
+
+// If you need StorIO for ContentResolver
+compile 'com.pushtorefresh.storio:content-resolver:1.0.0'
+
+// Notice that RxJava is optional dependency for StorIO,
+// So if you need it -> please add it manually.
+```
+
+You can find all releases on [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.pushtorefresh%22%20AND%20a%3A%22storio%22).
 
 ####Some examples
 
@@ -134,10 +147,10 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 ```groovy
 dependencies {
 	// At the moment there is annotation processor only for StorIOSQLite 
-	compile 'com.pushtorefresh.storio:sqlite-annotations:not-published-yet'
+	compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
 
 	// We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
-	apt 'com.pushtorefresh.storio:sqlite-annotation-processors:not-published-yet'
+	apt 'com.pushtorefresh.storio:sqlite-annotation-processors:insert-latest-version-here'
 }
 ```
 
