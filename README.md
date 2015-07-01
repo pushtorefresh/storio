@@ -48,7 +48,7 @@ compile 'com.pushtorefresh.storio:content-resolver:1.0.0'
 // So if you need it -> please add it manually.
 ```
 
-You can find all releases on [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.pushtorefresh%22%20AND%20a%3A%22storio%22).
+You can find all releases on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.pushtorefresh.storio%22).
 
 ####Some examples
 
