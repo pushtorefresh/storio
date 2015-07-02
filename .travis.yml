@@ -13,11 +13,11 @@ android:
     - extra-android-support
 
 script:
-  - sh ci/ci.sh
+  - sh ci.sh
 
 notifications:
   email: false
-  
+
 cache:
   directories:
     - $HOME/.m2
