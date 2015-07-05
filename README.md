@@ -26,6 +26,7 @@
 
 ####Documentation:
 
+* [`Why we made StorIO`](https://engineering.pushtorefresh.com/)
 * [`StorIO SQLite`](docs/StorIOSQLite.md)
 * [`StorIO ContentResolver`](docs/StorIOContentResolver.md)
 
@@ -34,7 +35,6 @@ Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tes
 * [Design tests for StorIO SQLite](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
 * [Design tests for StorIO ContentResolver](storio-content-resolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
 * [Sample App](storio-sample-app)
-
 
 ####Download:
 ```groovy
