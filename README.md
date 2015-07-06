@@ -26,7 +26,7 @@
 
 ####Documentation:
 
-* [`Why we made StorIO`](https://engineering.pushtorefresh.com/)
+* [`Why we made StorIO`](https://engineering.pushtorefresh.com/2015/07/02/storio-modern-replacement-for-sqlitedatabase-and-contentresolver-apis/)
 * [`StorIO SQLite`](docs/StorIOSQLite.md)
 * [`StorIO ContentResolver`](docs/StorIOContentResolver.md)
 
@@ -203,6 +203,7 @@ API of `StorIOContentResolver` is same.
 
 ####Documentation:
 
+* [`Why we made StorIO`](https://engineering.pushtorefresh.com/2015/07/02/storio-modern-replacement-for-sqlitedatabase-and-contentresolver-apis/)
 * [`StorIO SQLite`](docs/StorIOSQLite.md)
 * [`StorIO ContentResolver`](docs/StorIOContentResolver.md)
 
