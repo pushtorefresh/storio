@@ -150,7 +150,7 @@ dependencies {
 	compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
 
 	// We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
-	apt 'com.pushtorefresh.storio:sqlite-annotation-processors:insert-latest-version-here'
+	apt 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
 }
 ```
 
