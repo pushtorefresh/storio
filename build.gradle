@@ -40,7 +40,7 @@ ext.libraries = [
         // Core libraries
         supportAnnotations             : 'com.android.support:support-annotations:22.2.0',
         rxJava                         : 'io.reactivex:rxjava:1.0.12',
-        
+
         // Parts of StorIO
         storIOCommon                   : project(':storio-common'),
         storIOSQLite                   : project(':storio-sqlite'),
@@ -48,7 +48,7 @@ ext.libraries = [
         storIOSQLiteAnnotation         : project(':storio-sqlite-annotations'),
         storIOSQLiteAnnotationProcessor: project(':storio-sqlite-annotations-processor'),
         storIOTestCommon               : project(':storio-test-common'),
-        
+
         // Libraries for tests and sample app
         junit                          : 'junit:junit:4.12',
         mockitoCore                    : 'org.mockito:mockito-core:1.10.19',
@@ -94,6 +94,12 @@ subprojects {
             // StorIO should support Java 6
             project.android.compileOptions.sourceCompatibility = JavaVersion.VERSION_1_6
             project.android.compileOptions.targetCompatibility = JavaVersion.VERSION_1_6
+
+            project.android.testOptions.unitTests.all {
+                testLogging {
+                    events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+                }
+            }
         }
     }
 }
