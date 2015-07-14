@@ -215,6 +215,18 @@ Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample A
 
 ----
 
+####Versioning:
+Because StorIO works with important things like User data and so on, we use Semantic Versioning 2.0.0 scheme for releases (http://semver.org).
+
+Short example:
+`1.2.3` -> `MAJOR.MINOR.PATCH`
+
+* `MAJOR` version changes when we make incompatible API changes.
+* `MINOR` version changes when we add functionality in a backwards-compatible manner.
+* `PATCH` version changes when we make backwards-compatible bug fixes.
+
+Please read [`CHANGELOG`](CHANGELOG.md) and check what part of the version has changed, before switching to new version.
+
 ####Architecture:
 `StorIOSQLite` and `StorIOContentResolver` — are abstractions with default implementations: `DefaultStorIOSQLite` and `DefaultStorIOContentResolver`.
 
