@@ -41,15 +41,11 @@ public abstract class AbstractEmissionChecker<T> {
         final long timeoutMillis = timeoutMillis();
         final T expected = expectedValues.remove();
 
-        Throwable problem = onNextObtainedThrowable.get();
-
         boolean expectedValueWasReceived = false;
 
         while (!expectedValueWasReceived
-                && problem == null
+                && onNextObtainedThrowable.get() == null
                 && !(System.currentTimeMillis() - startTime > timeoutMillis)) {
-            Thread.yield();
-            problem = onNextObtainedThrowable.get();
 
             if (obtainedValues.size() > 0) {
                 final T obtained = obtainedValues.remove();
@@ -61,13 +57,15 @@ public abstract class AbstractEmissionChecker<T> {
                             + obtained + ", expected = " + expected);
                 }
             }
+
+            Thread.yield(); // let other threads work
         }
 
-        if (problem != null) {
-           throw new AssertionError("Throwable occurred while waiting: " + problem);
+        if (onNextObtainedThrowable.get() != null) {
+           throw new AssertionError("Throwable occurred while waiting: " + onNextObtainedThrowable.get());
         } else if (!expectedValueWasReceived) {
-            throw new AssertionError("Expected value = " + expectedValues.peek() + " was not received, " +
-                    "timeout = " + timeoutMillis + "ms, expectedValues.size = " + expectedValues.size());
+            throw new AssertionError("Expected value = " + expected + " was not received, " +
+                    "timeout = " + timeoutMillis + "ms, expectedValues.size = " + expectedValues.size() + ", obtainedValues = " + obtainedValues);
         }
     }
 
