@@ -114,7 +114,6 @@ public abstract class IntegrationTest {
             public Subscription subscribe() {
                 return storIOContentResolver
                         .observeChangesOfUri(UserMeta.CONTENT_URI)
-                        .subscribeOn(Schedulers.io())
                         .subscribe(new Action1<Changes>() {
                             @Override
                             public void call(Changes changes) {

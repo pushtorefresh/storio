@@ -45,7 +45,7 @@ public abstract class AbstractEmissionChecker<T> {
         final T expected;
 
         synchronized (lock) {
-            expected = expectedValues.remove();
+            expected = expectedValues.peek();
         }
 
         boolean expectedValueWasReceived = false;
@@ -59,6 +59,7 @@ public abstract class AbstractEmissionChecker<T> {
                     final T obtained = obtainedValues.remove();
 
                     if (expected.equals(obtained)) {
+                        expectedValues.remove();
                         expectedValueWasReceived = true;
                     } else {
                         throw new AssertionError("Obtained item not equals to expected: obtained = "
@@ -97,6 +98,13 @@ public abstract class AbstractEmissionChecker<T> {
     protected void onNextObtained(@NonNull T obtained) {
         synchronized (lock) {
             try {
+                if (expectedValues.size() == 0) {
+                    throw new IllegalStateException("Received emission, but no more " +
+                            "emissions were expected: obtained " + obtained +
+                            ", expectedValues = " + expectedValues +
+                            ", obtainedValues = " + obtainedValues);
+                }
+
                 obtainedValues.add(obtained);
             } catch (Throwable throwable) {
                 // Catch everything, it's not a bug, it's a feature
