@@ -2,8 +2,8 @@ package com.pushtorefresh.storio.test;
 
 import android.support.annotation.NonNull;
 
+import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
@@ -19,9 +19,12 @@ public abstract class AbstractEmissionChecker<T> {
     @NonNull
     private final AtomicReference<Throwable> onNextObtainedThrowable = new AtomicReference<Throwable>(null);
 
+    @NonNull
+    private final Object lock = new Object();
+
     public AbstractEmissionChecker(@NonNull Queue<T> expectedValues) {
-        this.expectedValues = new ConcurrentLinkedQueue<T>(expectedValues);
-        this.obtainedValues = new ConcurrentLinkedQueue<T>();
+        this.expectedValues = new LinkedList<T>(expectedValues);
+        this.obtainedValues = new LinkedList<T>();
     }
 
     /**
@@ -30,7 +33,7 @@ public abstract class AbstractEmissionChecker<T> {
      * @return timeout in millis.
      */
     protected long timeoutMillis() {
-        return 15000; // 15 seconds
+        return 60000; // 60 seconds
     }
 
     /**
@@ -39,35 +42,40 @@ public abstract class AbstractEmissionChecker<T> {
     public void awaitNextExpectedValue() {
         final long startTime = System.currentTimeMillis(); // We can not use SystemClock here :( Not in class path
         final long timeoutMillis = timeoutMillis();
-        final T expected = expectedValues.remove();
+        final T expected;
 
-        Throwable problem = onNextObtainedThrowable.get();
+        synchronized (lock) {
+            expected = expectedValues.peek();
+        }
 
         boolean expectedValueWasReceived = false;
 
         while (!expectedValueWasReceived
-                && problem == null
+                && onNextObtainedThrowable.get() == null
                 && !(System.currentTimeMillis() - startTime > timeoutMillis)) {
-            Thread.yield();
-            problem = onNextObtainedThrowable.get();
 
-            if (obtainedValues.size() > 0) {
-                final T obtained = obtainedValues.remove();
+            synchronized (lock) {
+                if (obtainedValues.size() > 0) {
+                    final T obtained = obtainedValues.remove();
 
-                if (expected.equals(obtained)) {
-                    expectedValueWasReceived = true;
-                } else {
-                    throw new AssertionError("Obtained item not equals to expected: obtained = "
-                            + obtained + ", expected = " + expected);
+                    if (expected.equals(obtained)) {
+                        expectedValues.remove();
+                        expectedValueWasReceived = true;
+                    } else {
+                        throw new AssertionError("Obtained item not equals to expected: obtained = "
+                                + obtained + ", expected = " + expected);
+                    }
                 }
             }
+
+            Thread.yield(); // let other threads work
         }
 
-        if (problem != null) {
-           throw new AssertionError("Throwable occurred while waiting: " + problem);
+        if (onNextObtainedThrowable.get() != null) {
+            throw new AssertionError("Throwable occurred while waiting: " + onNextObtainedThrowable.get());
         } else if (!expectedValueWasReceived) {
-            throw new AssertionError("Expected value = " + expectedValues.peek() + " was not received, " +
-                    "timeout = " + timeoutMillis + "ms, expectedValues.size = " + expectedValues.size());
+            throw new AssertionError("Expected value = " + expected + " was not received, " +
+                    "timeout = " + timeoutMillis + "ms, expectedValues.size = " + expectedValues.size() + ", obtainedValues = " + obtainedValues);
         }
     }
 
@@ -75,8 +83,10 @@ public abstract class AbstractEmissionChecker<T> {
      * Asserts that all expected values were received.
      */
     public void assertThatNoExpectedValuesLeft() {
-        if (expectedValues.size() != 0) {
-            throw new AssertionError("Not all expected values were received: queue = " + expectedValues);
+        synchronized (lock) {
+            if (expectedValues.size() != 0) {
+                throw new AssertionError("Not all expected values were received: queue = " + expectedValues);
+            }
         }
     }
 
@@ -86,14 +96,23 @@ public abstract class AbstractEmissionChecker<T> {
      * @param obtained new value.
      */
     protected void onNextObtained(@NonNull T obtained) {
-        try {
-            obtainedValues.add(obtained);
-        } catch (Throwable throwable) {
-            // Catch everything, it's not a bug, it's a feature
-            // Really, we don't want to break contract of Emission Checker if something goes wrong
-            // Because problem can be handled via rx.Observable's Subscriber
-            // And if so -> it'll break behavior of Emission Checker
-            onNextObtainedThrowable.set(throwable);
+        synchronized (lock) {
+            try {
+                if (expectedValues.size() == 0) {
+                    throw new IllegalStateException("Received emission, but no more " +
+                            "emissions were expected: obtained " + obtained +
+                            ", expectedValues = " + expectedValues +
+                            ", obtainedValues = " + obtainedValues);
+                }
+
+                obtainedValues.add(obtained);
+            } catch (Throwable throwable) {
+                // Catch everything, it's not a bug, it's a feature
+                // Really, we don't want to break contract of Emission Checker if something goes wrong
+                // Because problem can be handled via rx.Observable's Subscriber
+                // And if so -> it'll break behavior of Emission Checker
+                onNextObtainedThrowable.set(throwable);
+            }
         }
     }
 

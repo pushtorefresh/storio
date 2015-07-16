@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.integration;
 
 import android.content.ContentResolver;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowContentResolver;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -25,6 +27,7 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -58,6 +61,34 @@ public abstract class IntegrationTest {
                         .build())
                 .build();
 
+        clearContentProvider();
+    }
+
+    private void clearContentProvider() {
+        final Queue<Changes> expectedChanges = new LinkedList<Changes>(
+                asList(
+                        Changes.newInstance(UserMeta.CONTENT_URI),
+                        Changes.newInstance(TweetMeta.CONTENT_URI)
+                )
+        );
+
+        final AbstractEmissionChecker<Changes> emissionChecker = new AbstractEmissionChecker<Changes>(expectedChanges) {
+            @NonNull
+            @Override
+            public Subscription subscribe() {
+                return storIOContentResolver
+                        .observeChangesOfUris(new HashSet<Uri>(asList(UserMeta.CONTENT_URI, TweetMeta.CONTENT_URI)))
+                        .subscribe(new Action1<Changes>() {
+                            @Override
+                            public void call(Changes changes) {
+                                onNextObtained(changes);
+                            }
+                        });
+            }
+        };
+
+        final Subscription subscription = emissionChecker.subscribe();
+
         // clearing before each test case
         storIOContentResolver
                 .delete()
@@ -65,11 +96,19 @@ public abstract class IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
+        emissionChecker.awaitNextExpectedValue();
+
         storIOContentResolver
                 .delete()
                 .byQuery(TweetMeta.DELETE_QUERY_ALL)
                 .prepare()
                 .executeAsBlocking();
+
+        emissionChecker.awaitNextExpectedValue();
+
+        emissionChecker.assertThatNoExpectedValuesLeft();
+
+        subscription.unsubscribe();
     }
 
     @Nullable
@@ -114,7 +153,6 @@ public abstract class IntegrationTest {
             public Subscription subscribe() {
                 return storIOContentResolver
                         .observeChangesOfUri(UserMeta.CONTENT_URI)
-                        .subscribeOn(Schedulers.io())
                         .subscribe(new Action1<Changes>() {
                             @Override
                             public void call(Changes changes) {
