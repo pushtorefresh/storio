@@ -39,6 +39,8 @@ import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 public class TweetsFragment extends BaseFragment {
 
+    // In this sample app we use dependency injection (DI) to keep the code clean
+    // Just remember that it's already configured instance of StorIOSQLite from DbModule
     @Inject
     StorIOSQLite storIOSQLite;
 
@@ -100,6 +102,12 @@ public class TweetsFragment extends BaseFragment {
                 .subscribe(new Action1<List<Tweet>>() {
                     @Override
                     public void call(List<Tweet> tweets) {
+                        // Remember: subscriber will automatically receive updates
+                        // Of tables from Query (tweets table in our case)
+                        // This makes your code really Reactive and nice!
+
+                        // We guarantee, that list of objects will never be null (also we use @NonNull/@Nullable)
+                        // So you just need to check if it's empty or not
                         if (tweets.isEmpty()) {
                             uiStateController.setUiStateEmpty();
                             tweetsAdapter.setTweets(null);
@@ -111,13 +119,21 @@ public class TweetsFragment extends BaseFragment {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        // In cases when you are not sure that query will be successful
+                        // You can prevent crash of the application via error handler
                         Timber.e(throwable, "reloadData()");
                         uiStateController.setUiStateError();
                         tweetsAdapter.setTweets(null);
                     }
                 });
 
-        unsubscribeOnStop(subscription); // preventing memory leak
+        // Preventing memory leak (other Observables: Put, Delete emit result once so memory leak won't live long)
+        // Because rx.Observable from Get Operation is endless (it watches for changes of tables from query)
+        // You can easily create memory leak (in this case you'll leak the Fragment and all it's fields)
+        // So please, PLEASE manage your subscriptions
+        // We suggest same mechanism via storing all subscriptions that you want to unsubscribe
+        // In something like CompositeSubscription and unsubscribe them in appropriate moment of component lifecycle
+        unsubscribeOnStop(subscription);
     }
 
     @OnClick(R.id.tweets_empty_ui_add_tweets_button)
@@ -134,12 +150,13 @@ public class TweetsFragment extends BaseFragment {
         tweets.add(Tweet.newTweet("AndroidWeekly", "Special issue #1: StorIO — forget about SQLiteDatabase, ContentResolver APIs, ORMs sucks!"));
         tweets.add(Tweet.newTweet("Apple", "Yosemite update: fixes for Wifi issues, yosemite-wifi-patch#142"));
 
+        // Looks/reads nice, isn't it?
         storIOSQLite
                 .put()
                 .objects(tweets)
                 .prepare()
                 .createObservable()
-                .observeOn(mainThread())
+                .observeOn(mainThread()) // Remember, all Observables in StorIO already subscribed on Schedulers.io(), you just need to set observeOn()
                 .subscribe(new Observer<PutResults<Tweet>>() {
                     @Override
                     public void onError(Throwable e) {
@@ -148,12 +165,12 @@ public class TweetsFragment extends BaseFragment {
 
                     @Override
                     public void onNext(PutResults<Tweet> putResults) {
-                        // handled via reactive stream! see reloadData()
+                        // After successful Put Operation our subscriber in reloadData() will receive update!
                     }
 
                     @Override
                     public void onCompleted() {
-                        // no impl
+                        // no impl required
                     }
                 });
     }

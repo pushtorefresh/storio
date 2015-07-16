@@ -16,7 +16,10 @@ public class SampleApp extends Application {
     @Nullable
     private volatile AppComponent appComponent;
 
-    // Monitors Memory Leaks
+    // Monitors Memory Leaks, because why not!
+    // You can play with sample app and Rx subscriptions
+    // To see how it can leak memory if you won't unsubscribe.
+    @NonNull
     private RefWatcher refWatcher;
 
     @NonNull
