@@ -249,4 +249,7 @@ Every Operation can be executed as rx.Observable. Get Operations will be automat
 Every Observable runs on `Schedulers.io()` by default, currently we don't offer overloads to pass your `Scheduler`, feel free to send PRs!
 
 ----
+Master branch build status: [![Master branch build status](https://travis-ci.org/pushtorefresh/storio.svg?branch=master)](https://travis-ci.org/pushtorefresh/storio)
+
+
 **Made with love** in [Pushtorefresh.com](https://pushtorefresh.com) by [@artem_zin](https://twitter.com/artem_zin) and [@nikitin-da](https://github.com/nikitin-da)
