@@ -13,7 +13,8 @@ public class DbOpenHelper extends SQLiteOpenHelper {
         super(context, "sample_db", null, 1);
     }
 
-    // better than static final field -> allows VM to unload useless String
+    // Better than static final field -> allows VM to unload useless String
+    // Because you need this string only once per application life on the device
     @NonNull
     private static String getCreateTweetTableQuery() {
         return "CREATE TABLE " + TweetTableMeta.TABLE + "("

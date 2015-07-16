@@ -20,6 +20,10 @@ import dagger.Provides;
 @Module
 public class DbModule {
 
+    // We suggest to keep one instance of StorIO (SQLite or ContentResolver)
+    // It's thread safe and so on, so just share it.
+    // But if you need you can have multiple instances of StorIO
+    // (SQLite or ContentResolver) with different settings such as type mapping, logging and so on.
     @Provides
     @NonNull
     @Singleton

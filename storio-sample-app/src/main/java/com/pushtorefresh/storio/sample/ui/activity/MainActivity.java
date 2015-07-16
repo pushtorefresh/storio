@@ -28,6 +28,6 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.main_content_resolver_sample)
     void openContentResolverSample() {
-        Toasts.safeShowShortToast(this, "Not implemented :(");
+        Toasts.safeShowShortToast(this, "Not implemented yet :(");
     }
 }
