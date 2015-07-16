@@ -22,6 +22,7 @@
 * Simple concept of just three main Operations: `Put`, `Get`, `Delete` -> less bugs
 * Almost everything is immutable and thread-safe -> less bugs
 * Builders for everything make code much, much more readable and obvious -> less bugs
+* `StorIO` annotated with `@NonNull` and `@Nullable` annotations -> less bugs
 * Less bugs -> less bugs
 
 ####Documentation:
