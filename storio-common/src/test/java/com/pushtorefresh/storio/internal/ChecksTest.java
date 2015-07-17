@@ -4,10 +4,19 @@ import org.junit.Test;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.test.Tests.assertThatConstructorIsPrivateAndThrowsException;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
 public class ChecksTest {
+
+    @Test
+    public void constructorShouldBePrivateAndThrowException() {
+        assertThatConstructorIsPrivateAndThrowsException(
+                Checks.class,
+                new IllegalStateException("No instances please.")
+        );
+    }
 
     @Test
     public void checkNotNullPositive() {

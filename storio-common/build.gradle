@@ -25,6 +25,7 @@ dependencies {
 
     testCompile libraries.junit
     testCompile libraries.mockitoCore
+    testCompile libraries.equalsVerifier
     testCompile libraries.storIOTestCommon
 }
 

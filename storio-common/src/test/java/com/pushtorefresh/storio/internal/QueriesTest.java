@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
+import static com.pushtorefresh.storio.test.Tests.assertThatConstructorIsPrivateAndThrowsException;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
@@ -17,6 +18,14 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 public class QueriesTest {
+
+    @Test
+    public void constructorShouldBePrivateAndThrowException() {
+        assertThatConstructorIsPrivateAndThrowsException(
+                Queries.class,
+                new IllegalStateException("No instances please")
+        );
+    }
 
     //region Tests for Queries.unmodifiableNonNullListOfStrings()
 
