@@ -40,4 +40,5 @@ task checkstyle(type: Checkstyle) {
     classpath = files()
 }
 
+apply from: '../gradle/jacoco-android.gradle'
 apply from: '../gradle/publish-android-lib.gradle'

@@ -36,3 +36,5 @@ task checkstyle(type: Checkstyle) {
 
     classpath = files()
 }
+
+apply from: '../gradle/jacoco-android.gradle'

@@ -15,12 +15,18 @@ buildscript {
         // APT compile-time annotation processing
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
 
+        // Jacoco Test Coverage Plugin
+        // (addition to standard Jacoco plugin, allows us fail the build if coverage is not enough)
+        // https://github.com/palantir/gradle-jacoco-coverage
+        classpath 'com.palantir:jacoco-coverage:0.2.0'
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
 allprojects {
+
     repositories {
         jcenter()
     }
@@ -81,9 +87,10 @@ ext.libraries = [
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')
 
 subprojects {
+
     project.plugins.whenPluginAdded { plugin ->
-        if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name)
-                || "com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
+        if ('com.android.build.gradle.AppPlugin'.equals(plugin.class.name)
+                || 'com.android.build.gradle.LibraryPlugin'.equals(plugin.class.name)) {
 
             // enable or disable pre-dexing
             project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
