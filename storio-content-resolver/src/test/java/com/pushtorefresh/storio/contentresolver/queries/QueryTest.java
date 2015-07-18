@@ -2,27 +2,37 @@ package com.pushtorefresh.storio.contentresolver.queries;
 
 import android.net.Uri;
 
-import org.junit.Test;
+import com.pushtorefresh.storio.contentresolver.BuildConfig;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
+
+import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
+@RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
+@Config(constants = BuildConfig.class, sdk = 21)
 public class QueryTest {
 
-    @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriObject() {
+        //noinspection ConstantConditions
         Query.builder()
                 .uri((Uri) null)
                 .build();
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullUriString() {
+        //noinspection ConstantConditions
         Query.builder()
                 .uri((String) null)
                 .build();
@@ -89,5 +99,26 @@ public class QueryTest {
         assertEquals(where, query.where());
         assertEquals(asList(whereArgs), query.whereArgs());
         assertEquals(sortOrder, query.sortOrder());
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(Query.class)
+                .allFieldsShouldBeUsed()
+                .withPrefabValues(Uri.class, Uri.parse("content://1"), Uri.parse("content://2"))
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        checkToString(Query.builder()
+                        .uri("content://test")
+                        .where("some_column = ? AND another_column = ?")
+                        .whereArgs("1", "2")
+                        .columns("some_column", "third_column")
+                        .sortOrder("ASC")
+                        .build()
+        );
     }
 }

@@ -106,7 +106,7 @@ public class PreparedGetListOfObjectsTest {
             final PreparedGet<List<TestItem>> preparedGet = storIOContentResolver
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(mock(Query.class))
+                    .withQuery(Query.builder().uri(mock(Uri.class)).build())
                     .prepare();
 
             try {
@@ -140,7 +140,7 @@ public class PreparedGetListOfObjectsTest {
             storIOContentResolver
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(mock(Query.class))
+                    .withQuery(Query.builder().uri(mock(Uri.class)).build())
                     .prepare()
                     .createObservable()
                     .subscribe(testSubscriber);

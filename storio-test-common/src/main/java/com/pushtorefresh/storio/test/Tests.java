@@ -44,7 +44,7 @@ public class Tests {
         try {//noinspection unchecked
             final Class<T> clazz = (Class<T>) object.getClass();
 
-            final String toString = object.toString();
+            final String objectToString = object.toString();
 
             final Field[] fields = clazz.getDeclaredFields();
 
@@ -57,7 +57,13 @@ public class Tests {
                     continue;
                 }
 
-                if (!toString.contains(field.getName() + "=" + field.get(object).toString())) {
+                final Object fieldValue = field.get(object);
+                final String fieldValueToString = fieldValue == null ? "null" : fieldValue.toString();
+
+                if (    // For regular fields
+                        !objectToString.contains(field.getName() + "=" + fieldValueToString)
+                        // IDEA generates ='value' for Strings
+                        && !objectToString.contains(field.getName() + "='" + fieldValueToString)) {
                     throw new AssertionError("toString() does not contain field = "
                             + field.getName() + ", object = " + object);
                 }

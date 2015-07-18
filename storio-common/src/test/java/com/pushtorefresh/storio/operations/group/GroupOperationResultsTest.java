@@ -3,7 +3,6 @@ package com.pushtorefresh.storio.operations.group;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.operations.PreparedOperation;
-import com.pushtorefresh.storio.test.Tests;
 
 import org.junit.Test;
 
@@ -13,6 +12,7 @@ import java.util.Map;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import rx.Observable;
 
+import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -42,7 +42,7 @@ public class GroupOperationResultsTest {
     }
 
     @Test
-    public void verifyEqualsAndHashCode() {
+    public void verifyEqualsAndHashCodeImplementation() {
         EqualsVerifier
                 .forClass(GroupOperationResults.class)
                 .allFieldsShouldBeUsed()
@@ -50,7 +50,7 @@ public class GroupOperationResultsTest {
     }
 
     @Test
-    public void checkToString() {
+    public void checkToStringImplementation() {
         GroupOperationResults groupOperationResults = GroupOperationResults.newInstance(new HashMap<PreparedOperation<?>, Object>() {
             {
                 put(new PreparedOperation<Object>() {
@@ -76,6 +76,6 @@ public class GroupOperationResultsTest {
             }
         });
 
-        Tests.checkToString(groupOperationResults);
+        checkToString(groupOperationResults);
     }
 }
