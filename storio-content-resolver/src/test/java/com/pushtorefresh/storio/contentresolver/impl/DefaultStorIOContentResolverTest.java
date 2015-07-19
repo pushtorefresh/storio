@@ -83,13 +83,13 @@ public class DefaultStorIOContentResolverTest {
         assertNull(storIOContentResolver.internal().typeMapping(TestItem.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void directTypeMappingShouldWork() {
         class TestItem {
 
         }
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
@@ -104,13 +104,13 @@ public class DefaultStorIOContentResolverTest {
         assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItem.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void indirectTypeMappingShouldWork() {
         class TestItem {
 
         }
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
@@ -133,13 +133,43 @@ public class DefaultStorIOContentResolverTest {
         assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItemSubclass.class));
     }
 
-    @SuppressWarnings("unchecked")
+    @Test
+    public void indirectTypeMappingShouldCacheValue() {
+        class TestItem {
+
+        }
+
+        //noinspection unchecked
+        final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
+                .putResolver(mock(PutResolver.class))
+                .getResolver(mock(GetResolver.class))
+                .deleteResolver(mock(DeleteResolver.class))
+                .build();
+
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+                .contentResolver(mock(ContentResolver.class))
+                .addTypeMapping(TestItem.class, typeMapping)
+                .build();
+
+        class TestItemSubclass extends TestItem {
+
+        }
+
+        // Indirect type mapping should give same type mapping as for parent class
+        assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItemSubclass.class));
+
+        // Next call should be faster (we can not check this exactly)
+        // But test coverage tool will check that we executed cache branch
+        assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItemSubclass.class));
+    }
+
     @Test
     public void typeMappingShouldWorkInCaseOfMoreConcreteTypeMapping() {
         class TestItem {
 
         }
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
@@ -150,6 +180,7 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<TestItemSubclass> subclassTypeMapping = ContentResolverTypeMapping.<TestItemSubclass>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
@@ -169,7 +200,6 @@ public class DefaultStorIOContentResolverTest {
         assertSame(subclassTypeMapping, storIOContentResolver.internal().typeMapping(TestItemSubclass.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void typeMappingShouldFindIndirectTypeMappingInCaseOfComplexInheritance() {
         // Good test case — inheritance with AutoValue/AutoParcel
@@ -190,12 +220,14 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<Entity> entitySQLiteTypeMapping = ContentResolverTypeMapping.<Entity>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<ConcreteEntity> concreteEntitySQLiteTypeMapping = ContentResolverTypeMapping.<ConcreteEntity>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))

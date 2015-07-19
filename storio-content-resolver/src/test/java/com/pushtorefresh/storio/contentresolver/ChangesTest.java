@@ -3,14 +3,22 @@ package com.pushtorefresh.storio.contentresolver;
 import android.net.Uri;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
+import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
+@RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
+@Config(constants = BuildConfig.class, sdk = 21)
 public class ChangesTest {
 
     @SuppressWarnings("ConstantConditions")
@@ -43,5 +51,19 @@ public class ChangesTest {
         final Changes changes = Changes.newInstance(affectedUris);
 
         assertEquals(affectedUris, changes.affectedUris());
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(Changes.class)
+                .allFieldsShouldBeUsed()
+                .withPrefabValues(Uri.class, Uri.parse("content://1"), Uri.parse("content://2"))
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        checkToString(Changes.newInstance(Uri.parse("content://testUri")));
     }
 }

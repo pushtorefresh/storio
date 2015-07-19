@@ -2,15 +2,25 @@ package com.pushtorefresh.storio.contentresolver.operations.delete;
 
 import android.net.Uri;
 
+import com.pushtorefresh.storio.contentresolver.BuildConfig;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
+import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
+@RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
+@Config(constants = BuildConfig.class, sdk = 21)
 public class DeleteResultTest {
 
     @SuppressWarnings("ConstantConditions")
@@ -49,5 +59,19 @@ public class DeleteResultTest {
 
         final DeleteResult deleteResult = DeleteResult.newInstance(3, affectedUris);
         assertEquals(affectedUris, deleteResult.affectedUris());
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(DeleteResult.class)
+                .allFieldsShouldBeUsed()
+                .withPrefabValues(Uri.class, Uri.parse("content://1"), Uri.parse("content://2"))
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        checkToString(DeleteResult.newInstance(1, Uri.parse("content://testUri")));
     }
 }

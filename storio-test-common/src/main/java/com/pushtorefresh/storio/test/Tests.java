@@ -41,7 +41,8 @@ public class Tests {
     }
 
     public static <T> void checkToString(@NonNull T object) {
-        try {//noinspection unchecked
+        try {
+            //noinspection unchecked
             final Class<T> clazz = (Class<T>) object.getClass();
 
             final String objectToString = object.toString();
@@ -57,13 +58,18 @@ public class Tests {
                     continue;
                 }
 
+                if (Modifier.isTransient(field.getModifiers())) {
+                    // Transient field should not be part of toString()
+                    continue;
+                }
+
                 final Object fieldValue = field.get(object);
                 final String fieldValueToString = fieldValue == null ? "null" : fieldValue.toString();
 
                 if (    // For regular fields
                         !objectToString.contains(field.getName() + "=" + fieldValueToString)
-                        // IDEA generates ='value' for Strings
-                        && !objectToString.contains(field.getName() + "='" + fieldValueToString)) {
+                                // IDEA generates ='value' for Strings
+                                && !objectToString.contains(field.getName() + "='" + fieldValueToString)) {
                     throw new AssertionError("toString() does not contain field = "
                             + field.getName() + ", object = " + object);
                 }
