@@ -21,8 +21,8 @@ public final class PutResult {
     private final Uri affectedUri;
 
     private PutResult(@Nullable Uri insertedUri, @Nullable Integer numberOfRowsUpdated, @NonNull Uri affectedUri) {
-        if (numberOfRowsUpdated != null && numberOfRowsUpdated < 1) {
-            throw new IllegalStateException("Number of rows updated must be > 0");
+        if (numberOfRowsUpdated != null && numberOfRowsUpdated < 0) {
+            throw new IllegalStateException("Number of rows updated must be >= 0");
         }
 
         checkNotNull(affectedUri, "affectedUri must not be null");
@@ -48,7 +48,7 @@ public final class PutResult {
     /**
      * Creates {@link PutResult} for update.
      *
-     * @param numberOfRowsUpdated number of rows that were updated, must be greater than 0.
+     * @param numberOfRowsUpdated number of rows that were updated, must be {@code >= 0}.
      * @param affectedUri         Uri that was affected by update.
      * @return new {@link PutResult} instance.
      */
@@ -85,6 +85,11 @@ public final class PutResult {
      * @return {@code true} if something was updated in
      * {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver},
      * {@code false} otherwise.
+     * Notice, that {@code 0} updated rows is okay case, for example: your custom {@link PutResolver}
+     * may check that there is already stored row with same columns, so no insert will be done,
+     * and no actual update should be performed.
+     * But also, keep in mind, that {@link DefaultPutResolver} will return same value
+     * that will return {@link android.content.ContentResolver}.
      */
     public boolean wasUpdated() {
         return numberOfRowsUpdated != null;
@@ -114,7 +119,7 @@ public final class PutResult {
     /**
      * Gets number of updated rows.
      *
-     * @return {@code null} if nothing was updated or number of rows updated {@code (> 0)}.
+     * @return {@code null} if nothing was updated or number of rows updated {@code (>= 0)}.
      */
     @Nullable
     public Integer numberOfRowsUpdated() {

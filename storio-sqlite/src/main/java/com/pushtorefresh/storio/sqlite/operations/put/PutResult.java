@@ -27,8 +27,8 @@ public class PutResult {
     private final Set<String> affectedTables;
 
     private PutResult(@Nullable Long insertedId, @Nullable Integer numberOfRowsUpdated, @NonNull Set<String> affectedTables) {
-        if (numberOfRowsUpdated != null && numberOfRowsUpdated < 1) {
-            throw new IllegalArgumentException("Number of rows updated must be > 0");
+        if (numberOfRowsUpdated != null && numberOfRowsUpdated < 0) {
+            throw new IllegalArgumentException("Number of rows updated must be >= 0");
         }
 
         checkNotNull(affectedTables, "affectedTables must not be null");
@@ -73,7 +73,7 @@ public class PutResult {
     /**
      * Creates {@link PutResult} of update.
      *
-     * @param numberOfRowsUpdated number of rows that were updated, must be greater than 0.
+     * @param numberOfRowsUpdated number of rows that were updated, must be {@code >= 0}.
      * @param affectedTables      tables that were affected.
      * @return new {@link PutResult} instance.
      */
@@ -85,7 +85,7 @@ public class PutResult {
     /**
      * Creates {@link PutResult} of update.
      *
-     * @param numberOfRowsUpdated number of rows that were updated, must be greater than 0.
+     * @param numberOfRowsUpdated number of rows that were updated, must be {@code >= 0}.
      * @param affectedTable       table that was affected.
      * @return new {@link PutResult} instance.
      */
@@ -119,6 +119,12 @@ public class PutResult {
      *
      * @return {@code true} if something was updated in
      * {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, {@code false} otherwise.
+     * Notice, that {@code 0} updated rows is okay case, for example: your custom {@link PutResolver}
+     * may check that there is already stored row with same columns, so no insert will be done,
+     * and no actual update should be performed.
+     * But also, keep in mind, that {@link DefaultPutResolver} will return same value
+     * that will return {@link android.database.sqlite.SQLiteDatabase}, which will return {@code 1}
+     * even if all columns were same.
      */
     public boolean wasUpdated() {
         return numberOfRowsUpdated != null;
@@ -147,7 +153,7 @@ public class PutResult {
     /**
      * Gets number of rows updated.
      *
-     * @return {@code null} if nothing was updated or number of updated rows {@code (> 0)}.
+     * @return {@code null} if nothing was updated or number of updated rows {@code (>= 0)}.
      */
     @Nullable
     public Integer numberOfRowsUpdated() {
