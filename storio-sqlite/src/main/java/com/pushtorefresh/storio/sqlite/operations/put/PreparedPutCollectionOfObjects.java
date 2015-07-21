@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
@@ -57,89 +58,94 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
     @NonNull
     @Override
     public PutResults<T> executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLite.internal();
-
-        // Nullable
-        final List<SimpleImmutableEntry<T, PutResolver<T>>> objectsAndPutResolvers;
-
-        if (explicitPutResolver != null) {
-            objectsAndPutResolvers = null;
-        } else {
-            objectsAndPutResolvers = new ArrayList<SimpleImmutableEntry<T, PutResolver<T>>>(objects.size());
-
-            for (final T object : objects) {
-                final SQLiteTypeMapping<T> typeMapping
-                        = (SQLiteTypeMapping<T>) internal.typeMapping(object.getClass());
-
-                if (typeMapping == null) {
-                    throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
-                            "object = " + object + ", object.class = " + object.getClass() + "," +
-                            "db was not affected by this operation, please add type mapping for this type");
-                }
-
-                objectsAndPutResolvers.add(new SimpleImmutableEntry<T, PutResolver<T>>(
-                        object,
-                        typeMapping.putResolver()
-                ));
-            }
-        }
-
-        if (useTransaction) {
-            internal.beginTransaction();
-        }
-
-        final Map<T, PutResult> results = new HashMap<T, PutResult>(objects.size());
-        boolean transactionSuccessful = false;
-
         try {
+            final StorIOSQLite.Internal internal = storIOSQLite.internal();
+
+            // Nullable
+            final List<SimpleImmutableEntry<T, PutResolver<T>>> objectsAndPutResolvers;
+
             if (explicitPutResolver != null) {
-                for (final T object : objects) {
-                    final PutResult putResult = explicitPutResolver.performPut(storIOSQLite, object);
-                    results.put(object, putResult);
-
-                    if (!useTransaction) {
-                        internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
-                    }
-                }
+                objectsAndPutResolvers = null;
             } else {
-                for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
-                    final T object = objectAndPutResolver.getKey();
-                    final PutResolver<T> putResolver = objectAndPutResolver.getValue();
+                objectsAndPutResolvers = new ArrayList<SimpleImmutableEntry<T, PutResolver<T>>>(objects.size());
 
-                    final PutResult putResult = putResolver.performPut(storIOSQLite, object);
+                for (final T object : objects) {
+                    final SQLiteTypeMapping<T> typeMapping
+                            = (SQLiteTypeMapping<T>) internal.typeMapping(object.getClass());
 
-                    results.put(object, putResult);
-
-                    if (!useTransaction) {
-                        internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                    if (typeMapping == null) {
+                        throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
+                                "object = " + object + ", object.class = " + object.getClass() + "," +
+                                "db was not affected by this operation, please add type mapping for this type");
                     }
+
+                    objectsAndPutResolvers.add(new SimpleImmutableEntry<T, PutResolver<T>>(
+                            object,
+                            typeMapping.putResolver()
+                    ));
                 }
             }
 
             if (useTransaction) {
-                internal.setTransactionSuccessful();
-                transactionSuccessful = true;
+                internal.beginTransaction();
             }
-        } finally {
-            if (useTransaction) {
-                internal.endTransaction();
 
-                // if delete was in transaction and it was successful -> notify about changes
-                if (transactionSuccessful) {
-                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+            final Map<T, PutResult> results = new HashMap<T, PutResult>(objects.size());
+            boolean transactionSuccessful = false;
 
-                    for (final T object : results.keySet()) {
-                        affectedTables.addAll(results.get(object).affectedTables());
+            try {
+                if (explicitPutResolver != null) {
+                    for (final T object : objects) {
+                        final PutResult putResult = explicitPutResolver.performPut(storIOSQLite, object);
+                        results.put(object, putResult);
+
+                        if (!useTransaction) {
+                            internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                        }
                     }
+                } else {
+                    for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
+                        final T object = objectAndPutResolver.getKey();
+                        final PutResolver<T> putResolver = objectAndPutResolver.getValue();
 
-                    // IMPORTANT: Notifying about change should be done after end of transaction
-                    // It'll reduce number of possible deadlock situations
-                    internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                        final PutResult putResult = putResolver.performPut(storIOSQLite, object);
+
+                        results.put(object, putResult);
+
+                        if (!useTransaction) {
+                            internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                        }
+                    }
+                }
+
+                if (useTransaction) {
+                    internal.setTransactionSuccessful();
+                    transactionSuccessful = true;
+                }
+            } finally {
+                if (useTransaction) {
+                    internal.endTransaction();
+
+                    // if delete was in transaction and it was successful -> notify about changes
+                    if (transactionSuccessful) {
+                        final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+
+                        for (final T object : results.keySet()) {
+                            affectedTables.addAll(results.get(object).affectedTables());
+                        }
+
+                        // IMPORTANT: Notifying about change should be done after end of transaction
+                        // It'll reduce number of possible deadlock situations
+                        internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                    }
                 }
             }
+
+            return PutResults.newInstance(results);
+
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
         }
-
-        return PutResults.newInstance(results);
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.pushtorefresh.storio.sqlite.operations.delete;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.TestUtils;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 
 import org.junit.Test;
@@ -100,8 +102,9 @@ public class PreparedDeleteObjectTest {
             try {
                 preparedDelete.executeAsBlocking();
                 fail();
-            } catch (IllegalStateException expected) {
+            } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
+                TestUtils.checkException(expected, IllegalStateException.class);
             }
 
             verify(storIOSQLite).delete();
@@ -131,7 +134,7 @@ public class PreparedDeleteObjectTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            testSubscriber.assertError(IllegalStateException.class);
+            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
 
             verify(storIOSQLite).delete();
             verify(storIOSQLite).internal();

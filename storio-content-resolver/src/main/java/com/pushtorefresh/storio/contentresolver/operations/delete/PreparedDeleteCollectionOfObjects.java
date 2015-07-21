@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
@@ -55,51 +56,56 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
     @NonNull
     @Override
     public DeleteResults<T> executeAsBlocking() {
-        final StorIOContentResolver.Internal internal = storIOContentResolver.internal();
+        try {
+            final StorIOContentResolver.Internal internal = storIOContentResolver.internal();
 
-        // Nullable
-        final List<SimpleImmutableEntry> objectsAndDeleteResolvers;
+            // Nullable
+            final List<SimpleImmutableEntry> objectsAndDeleteResolvers;
 
-        if (explicitDeleteResolver != null) {
-            objectsAndDeleteResolvers = null;
-        } else {
-            objectsAndDeleteResolvers = new ArrayList<SimpleImmutableEntry>(objects.size());
+            if (explicitDeleteResolver != null) {
+                objectsAndDeleteResolvers = null;
+            } else {
+                objectsAndDeleteResolvers = new ArrayList<SimpleImmutableEntry>(objects.size());
 
-            for (final T object : objects) {
-                final ContentResolverTypeMapping<T> typeMapping
-                        = (ContentResolverTypeMapping<T>) internal.typeMapping(object.getClass());
+                for (final T object : objects) {
+                    final ContentResolverTypeMapping<T> typeMapping
+                            = (ContentResolverTypeMapping<T>) internal.typeMapping(object.getClass());
 
-                if (typeMapping == null) {
-                    throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
-                            "object = " + object + ", object.class = " + object.getClass() + "," +
-                            "ContentProvider was not affected by this operation, please add type mapping for this type");
+                    if (typeMapping == null) {
+                        throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
+                                "object = " + object + ", object.class = " + object.getClass() + "," +
+                                "ContentProvider was not affected by this operation, please add type mapping for this type");
+                    }
+
+                    objectsAndDeleteResolvers.add(new SimpleImmutableEntry(
+                            object,
+                            typeMapping.deleteResolver()
+                    ));
                 }
-
-                objectsAndDeleteResolvers.add(new SimpleImmutableEntry(
-                        object,
-                        typeMapping.deleteResolver()
-                ));
             }
+
+            final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>(objects.size());
+
+            if (explicitDeleteResolver != null) {
+                for (final T object : objects) {
+                    final DeleteResult deleteResult = explicitDeleteResolver.performDelete(storIOContentResolver, object);
+                    results.put(object, deleteResult);
+                }
+            } else {
+                for (final SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
+                    final T object = objectAndDeleteResolver.getKey();
+                    final DeleteResolver<T> deleteResolver = objectAndDeleteResolver.getValue();
+
+                    final DeleteResult deleteResult = deleteResolver.performDelete(storIOContentResolver, object);
+                    results.put(object, deleteResult);
+                }
+            }
+
+            return DeleteResults.newInstance(results);
+
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
         }
-
-        final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>(objects.size());
-
-        if (explicitDeleteResolver != null) {
-            for (final T object : objects) {
-                final DeleteResult deleteResult = explicitDeleteResolver.performDelete(storIOContentResolver, object);
-                results.put(object, deleteResult);
-            }
-        } else {
-            for (final SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
-                final T object = objectAndDeleteResolver.getKey();
-                final DeleteResolver<T> deleteResolver = objectAndDeleteResolver.getValue();
-
-                final DeleteResult deleteResult = deleteResolver.performDelete(storIOContentResolver, object);
-                results.put(object, deleteResult);
-            }
-        }
-
-        return DeleteResults.newInstance(results);
     }
 
     /**

@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -44,9 +45,13 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     @NonNull
     @Override
     public DeleteResult executeAsBlocking() {
-        final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
-        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
-        return deleteResult;
+        try {
+            final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
+            storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+            return deleteResult;
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
+        }
     }
 
     /**

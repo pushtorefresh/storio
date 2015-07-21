@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
@@ -64,40 +65,44 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @NonNull
     @Override
     public List<T> executeAsBlocking() {
-        final GetResolver<T> getResolver;
-
-        if (explicitGetResolver != null) {
-            getResolver = explicitGetResolver;
-        } else {
-            final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping(type);
-
-            if (typeMapping == null) {
-                throw new IllegalStateException("This type does not have type mapping: " +
-                        "type = " + type + "," +
-                        "ContentProvider was not touched by this operation, please add type mapping for this type");
-            }
-
-            getResolver = typeMapping.getResolver();
-        }
-
-        final Cursor cursor = getResolver.performGet(storIOContentResolver, query);
-
         try {
-            final int count = cursor.getCount();
+            final GetResolver<T> getResolver;
 
-            if (count == 0) {
-                return EMPTY_LIST; // it's immutable
+            if (explicitGetResolver != null) {
+                getResolver = explicitGetResolver;
             } else {
-                final List<T> list = new ArrayList<T>(count);
+                final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping(type);
 
-                while (cursor.moveToNext()) {
-                    list.add(getResolver.mapFromCursor(cursor));
+                if (typeMapping == null) {
+                    throw new IllegalStateException("This type does not have type mapping: " +
+                            "type = " + type + "," +
+                            "ContentProvider was not touched by this operation, please add type mapping for this type");
                 }
 
-                return unmodifiableList(list);
+                getResolver = typeMapping.getResolver();
             }
-        } finally {
-            cursor.close();
+
+            final Cursor cursor = getResolver.performGet(storIOContentResolver, query);
+
+            try {
+                final int count = cursor.getCount();
+
+                if (count == 0) {
+                    return EMPTY_LIST; // it's immutable
+                } else {
+                    final List<T> list = new ArrayList<T>(count);
+
+                    while (cursor.moveToNext()) {
+                        list.add(getResolver.mapFromCursor(cursor));
+                    }
+
+                    return unmodifiableList(list);
+                }
+            } finally {
+                cursor.close();
+            }
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
         }
     }
 

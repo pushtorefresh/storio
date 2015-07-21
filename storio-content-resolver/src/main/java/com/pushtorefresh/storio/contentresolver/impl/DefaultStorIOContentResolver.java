@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -263,9 +262,11 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
                     nullableString(query.sortOrder())
             );
 
-            return cursor == null
-                    ? new MatrixCursor(null, 0)
-                    : cursor;
+            if (cursor == null) {
+                throw new IllegalStateException("Cursor returned by content provider is null");
+            }
+
+            return cursor;
         }
 
         /**

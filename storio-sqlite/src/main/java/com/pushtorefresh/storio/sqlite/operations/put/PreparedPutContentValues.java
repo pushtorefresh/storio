@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -44,9 +45,13 @@ public final class PreparedPutContentValues extends PreparedPut<PutResult> {
     @NonNull
     @Override
     public PutResult executeAsBlocking() {
-        final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
-        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
-        return putResult;
+        try {
+            final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
+            storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+            return putResult;
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
+        }
     }
 
     /**

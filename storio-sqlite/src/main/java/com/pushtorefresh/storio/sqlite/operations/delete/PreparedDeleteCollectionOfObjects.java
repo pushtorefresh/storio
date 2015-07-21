@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
@@ -62,91 +63,96 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
     @NonNull
     @Override
     public DeleteResults<T> executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLite.internal();
-
-        // Nullable
-        final List<SimpleImmutableEntry<T, DeleteResolver<T>>> objectsAndDeleteResolvers;
-
-        if (explicitDeleteResolver != null) {
-            objectsAndDeleteResolvers = null;
-        } else {
-            objectsAndDeleteResolvers
-                    = new ArrayList<SimpleImmutableEntry<T, DeleteResolver<T>>>(objects.size());
-
-            for (final T object : objects) {
-                final SQLiteTypeMapping<T> typeMapping
-                        = (SQLiteTypeMapping<T>) internal.typeMapping(object.getClass());
-
-                if (typeMapping == null) {
-                    throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
-                            "object = " + object + ", object.class = " + object.getClass() + "," +
-                            "db was not affected by this operation, please add type mapping for this type");
-                }
-
-                objectsAndDeleteResolvers.add(new SimpleImmutableEntry<T, DeleteResolver<T>>(
-                        object,
-                        typeMapping.deleteResolver()
-                ));
-            }
-        }
-
-        if (useTransaction) {
-            internal.beginTransaction();
-        }
-
-        final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>(objects.size());
-        boolean transactionSuccessful = false;
-
         try {
+            final StorIOSQLite.Internal internal = storIOSQLite.internal();
+
+            // Nullable
+            final List<SimpleImmutableEntry<T, DeleteResolver<T>>> objectsAndDeleteResolvers;
+
             if (explicitDeleteResolver != null) {
-                for (final T object : objects) {
-                    final DeleteResult deleteResult = explicitDeleteResolver.performDelete(storIOSQLite, object);
-
-                    results.put(object, deleteResult);
-
-                    if (!useTransaction) {
-                        internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
-                    }
-                }
+                objectsAndDeleteResolvers = null;
             } else {
-                for (final SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
-                    final T object = objectAndDeleteResolver.getKey();
-                    final DeleteResolver<T> deleteResolver = objectAndDeleteResolver.getValue();
+                objectsAndDeleteResolvers
+                        = new ArrayList<SimpleImmutableEntry<T, DeleteResolver<T>>>(objects.size());
 
-                    final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, object);
+                for (final T object : objects) {
+                    final SQLiteTypeMapping<T> typeMapping
+                            = (SQLiteTypeMapping<T>) internal.typeMapping(object.getClass());
 
-                    results.put(object, deleteResult);
-
-                    if (!useTransaction) {
-                        internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                    if (typeMapping == null) {
+                        throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
+                                "object = " + object + ", object.class = " + object.getClass() + "," +
+                                "db was not affected by this operation, please add type mapping for this type");
                     }
+
+                    objectsAndDeleteResolvers.add(new SimpleImmutableEntry<T, DeleteResolver<T>>(
+                            object,
+                            typeMapping.deleteResolver()
+                    ));
                 }
             }
 
             if (useTransaction) {
-                internal.setTransactionSuccessful();
-                transactionSuccessful = true;
+                internal.beginTransaction();
             }
-        } finally {
-            if (useTransaction) {
-                internal.endTransaction();
 
-                // if delete was in transaction and it was successful -> notify about changes
-                if (transactionSuccessful) {
-                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be one table
+            final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>(objects.size());
+            boolean transactionSuccessful = false;
 
-                    for (final T object : results.keySet()) {
-                        affectedTables.addAll(results.get(object).affectedTables());
+            try {
+                if (explicitDeleteResolver != null) {
+                    for (final T object : objects) {
+                        final DeleteResult deleteResult = explicitDeleteResolver.performDelete(storIOSQLite, object);
+
+                        results.put(object, deleteResult);
+
+                        if (!useTransaction) {
+                            internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                        }
                     }
+                } else {
+                    for (final SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
+                        final T object = objectAndDeleteResolver.getKey();
+                        final DeleteResolver<T> deleteResolver = objectAndDeleteResolver.getValue();
 
-                    // IMPORTANT: Notifying about change should be done after end of transaction
-                    // It'll reduce number of possible deadlock situations
-                    internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                        final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, object);
+
+                        results.put(object, deleteResult);
+
+                        if (!useTransaction) {
+                            internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                        }
+                    }
+                }
+
+                if (useTransaction) {
+                    internal.setTransactionSuccessful();
+                    transactionSuccessful = true;
+                }
+            } finally {
+                if (useTransaction) {
+                    internal.endTransaction();
+
+                    // if delete was in transaction and it was successful -> notify about changes
+                    if (transactionSuccessful) {
+                        final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be one table
+
+                        for (final T object : results.keySet()) {
+                            affectedTables.addAll(results.get(object).affectedTables());
+                        }
+
+                        // IMPORTANT: Notifying about change should be done after end of transaction
+                        // It'll reduce number of possible deadlock situations
+                        internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                    }
                 }
             }
+
+            return DeleteResults.newInstance(results);
+
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
         }
-
-        return DeleteResults.newInstance(results);
     }
 
     /**
