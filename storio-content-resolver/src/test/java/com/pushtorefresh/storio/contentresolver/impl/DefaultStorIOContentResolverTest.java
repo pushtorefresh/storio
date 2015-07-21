@@ -1,18 +1,26 @@
 package com.pushtorefresh.storio.contentresolver.impl;
 
 import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio.contentresolver.operations.get.GetResolver;
 import com.pushtorefresh.storio.contentresolver.operations.put.PutResolver;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DefaultStorIOContentResolverTest {
 
@@ -251,5 +259,31 @@ public class DefaultStorIOContentResolverTest {
 
         // Indirect type mapping for AutoValue_ConcreteEntity should get type mapping for ConcreteEntity, not for Entity!
         assertSame(concreteEntitySQLiteTypeMapping, storIOContentResolver.internal().typeMapping(AutoValue_ConcreteEntity.class));
+    }
+
+    // Actually, this will be fixed in 1.1.0
+    // But for coverage and to assert current behavior we have this test
+    @Test
+    public void shouldReturnEmptyCursorIfContentResolverReturnsNull() {
+        ContentResolver contentResolver = mock(ContentResolver.class);
+
+        StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+                .contentResolver(contentResolver)
+                .build();
+
+        Query query = Query.builder()
+                .uri(mock(Uri.class))
+                .build();
+
+        when(contentResolver
+                .query(any(Uri.class), any(String[].class), anyString(), any(String[].class), anyString()))
+                .thenReturn(null); // Notice, we returning null instead of Cursor
+
+        Cursor actualCursor = storIOContentResolver
+                .internal()
+                .query(query);
+
+        assertNotNull(actualCursor);
+        assertEquals(0, actualCursor.getCount());
     }
 }

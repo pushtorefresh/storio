@@ -30,6 +30,10 @@ allprojects {
     repositories {
         jcenter()
     }
+
+    tasks.withType(JavaForkOptions) {
+        jvmArgs '-Djava.awt.headless=true'
+    }
 }
 
 task wrapper(type: Wrapper) {

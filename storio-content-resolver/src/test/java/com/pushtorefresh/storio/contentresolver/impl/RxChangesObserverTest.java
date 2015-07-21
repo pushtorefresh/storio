@@ -8,22 +8,64 @@ import android.os.Handler;
 import com.pushtorefresh.storio.contentresolver.Changes;
 
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Subscription;
 
+import static com.pushtorefresh.storio.test.Tests.assertThatConstructorIsPrivateAndThrowsException;
 import static java.util.Collections.singleton;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class RxChangesObserverTest {
+
+    @Test
+    public void constructorShouldBePrivateAndThrowException() {
+        assertThatConstructorIsPrivateAndThrowsException(
+                RxChangesObserver.class,
+                new IllegalStateException("No instances please.")
+        );
+    }
+
+    @Test
+    public void contentObserverShouldReturnFalseOnDeliverSelfNotifications() {
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        Set<Uri> uris = singleton(mock(Uri.class));
+
+        final AtomicReference<ContentObserver> contentObserver = new AtomicReference<ContentObserver>();
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                contentObserver.set((ContentObserver) invocation.getArguments()[2]);
+                return null;
+            }
+        }).when(contentResolver)
+                .registerContentObserver(any(Uri.class), eq(true), any(ContentObserver.class));
+
+
+        Handler handler = mock(Handler.class);
+
+        Observable<Changes> observable = RxChangesObserver.observeChanges(contentResolver, uris, handler);
+
+        Subscription subscription = observable.subscribe();
+
+        assertFalse(contentObserver.get().deliverSelfNotifications());
+
+        subscription.unsubscribe();
+    }
 
     @Test
     public void shouldRegisterContentObserverAfterSubscribingToObservable() {
@@ -97,5 +139,7 @@ public class RxChangesObserverTest {
         for (Uri uri : uris) {
             verify(contentResolver).registerContentObserver(eq(uri), anyBoolean(), any(ContentObserver.class));
         }
+
+        subscription.unsubscribe();
     }
 }
