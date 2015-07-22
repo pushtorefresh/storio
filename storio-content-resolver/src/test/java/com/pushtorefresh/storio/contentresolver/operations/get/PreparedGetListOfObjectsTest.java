@@ -198,8 +198,9 @@ public class PreparedGetListOfObjectsTest {
                         .executeAsBlocking();
 
                 fail();
-            } catch (IllegalStateException expected) {
-                assertEquals("Breaking execution", expected.getMessage());
+            } catch (StorIOException expected) {
+                IllegalStateException cause = (IllegalStateException) expected.getCause();
+                assertEquals("Breaking execution", cause.getMessage());
 
                 // Main check: in case of exception cursor must be closed
                 verify(cursor).close();

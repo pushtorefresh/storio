@@ -1,7 +1,6 @@
 package com.pushtorefresh.storio.contentresolver.impl;
 
 import android.content.ContentResolver;
-import android.database.Cursor;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
@@ -14,7 +13,6 @@ import com.pushtorefresh.storio.contentresolver.queries.Query;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
@@ -261,10 +259,8 @@ public class DefaultStorIOContentResolverTest {
         assertSame(concreteEntitySQLiteTypeMapping, storIOContentResolver.internal().typeMapping(AutoValue_ConcreteEntity.class));
     }
 
-    // Actually, this will be fixed in 1.1.0
-    // But for coverage and to assert current behavior we have this test
     @Test
-    public void shouldReturnEmptyCursorIfContentResolverReturnsNull() {
+    public void shouldThrowExceptionIfContentResolverReturnsNull() {
         ContentResolver contentResolver = mock(ContentResolver.class);
 
         StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
@@ -277,13 +273,14 @@ public class DefaultStorIOContentResolverTest {
 
         when(contentResolver
                 .query(any(Uri.class), any(String[].class), anyString(), any(String[].class), anyString()))
-                .thenReturn(null); // Notice, we returning null instead of Cursor
+                .thenReturn(null); // Notice, we return null instead of Cursor
 
-        Cursor actualCursor = storIOContentResolver
-                .internal()
-                .query(query);
-
-        assertNotNull(actualCursor);
-        assertEquals(0, actualCursor.getCount());
+        try {
+            storIOContentResolver
+                    .internal()
+                    .query(query);
+        } catch (IllegalStateException expected) {
+            assertEquals("Cursor returned by content provider is null", expected.getMessage());
+        }
     }
 }
