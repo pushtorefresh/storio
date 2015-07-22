@@ -10,13 +10,6 @@ public class StorIOException extends RuntimeException {
     /**
      * {@inheritDoc}
      */
-    public StorIOException() {
-        super();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public StorIOException(@NonNull final String detailMessage) {
         super(detailMessage);
     }
