@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
@@ -49,28 +50,33 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
     @NonNull
     @Override
     public DeleteResult executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLite.internal();
+        try {
+            final StorIOSQLite.Internal internal = storIOSQLite.internal();
 
-        final DeleteResolver<T> deleteResolver;
+            final DeleteResolver<T> deleteResolver;
 
-        if (explicitDeleteResolver != null) {
-            deleteResolver = explicitDeleteResolver;
-        } else {
-            final SQLiteTypeMapping<T> typeMapping
-                    = internal.typeMapping((Class<T>) object.getClass());
+            if (explicitDeleteResolver != null) {
+                deleteResolver = explicitDeleteResolver;
+            } else {
+                final SQLiteTypeMapping<T> typeMapping
+                        = internal.typeMapping((Class<T>) object.getClass());
 
-            if (typeMapping == null) {
-                throw new IllegalStateException("Object does not have type mapping: " +
-                        "object = " + object + ", object.class = " + object.getClass() + "," +
-                        "db was not affected by this operation, please add type mapping for this type");
+                if (typeMapping == null) {
+                    throw new IllegalStateException("Object does not have type mapping: " +
+                            "object = " + object + ", object.class = " + object.getClass() + "," +
+                            "db was not affected by this operation, please add type mapping for this type");
+                }
+
+                deleteResolver = typeMapping.deleteResolver();
             }
 
-            deleteResolver = typeMapping.deleteResolver();
-        }
+            final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, object);
+            internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+            return deleteResult;
 
-        final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, object);
-        internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
-        return deleteResult;
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
+        }
     }
 
     /**

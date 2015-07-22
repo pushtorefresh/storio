@@ -1,9 +1,13 @@
 package com.pushtorefresh.storio.contentresolver.integration;
 
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
+import com.pushtorefresh.storio.contentresolver.TestUtils;
 import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResult;
+import com.pushtorefresh.storio.contentresolver.operations.get.PreparedGetCursor;
 import com.pushtorefresh.storio.contentresolver.operations.put.PutResult;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.test.AbstractEmissionChecker;
@@ -20,6 +24,7 @@ import java.util.Queue;
 
 import rx.Subscription;
 import rx.functions.Action1;
+import rx.observers.TestSubscriber;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -167,5 +172,25 @@ public class RxQueryTest extends IntegrationTest {
 
         emissionChecker.assertThatNoExpectedValuesLeft();
         subscription.unsubscribe();
+    }
+
+    @Test
+    public void shouldThrowExceptionIfCursorNullObservable() {
+        final PreparedGetCursor queryWithNullResult = createQueryWithNullResult();
+
+        final TestSubscriber<Cursor> testSubscriber = new TestSubscriber<Cursor>();
+
+        queryWithNullResult
+                .createObservable()
+                .subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertNoValues();
+
+        TestUtils.checkException(
+                testSubscriber,
+                StorIOException.class,
+                IllegalStateException.class,
+                "Cursor returned by content provider is null");
     }
 }

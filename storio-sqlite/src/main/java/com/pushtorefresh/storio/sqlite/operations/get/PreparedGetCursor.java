@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -54,12 +55,16 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     @WorkerThread
     @NonNull
     public Cursor executeAsBlocking() {
-        if (query != null) {
-            return getResolver.performGet(storIOSQLite, query);
-        } else if (rawQuery != null) {
-            return getResolver.performGet(storIOSQLite, rawQuery);
-        } else {
-            throw new IllegalStateException("Please specify query");
+        try {
+            if (query != null) {
+                return getResolver.performGet(storIOSQLite, query);
+            } else if (rawQuery != null) {
+                return getResolver.performGet(storIOSQLite, rawQuery);
+            } else {
+                throw new IllegalStateException("Please specify query");
+            }
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
         }
     }
 

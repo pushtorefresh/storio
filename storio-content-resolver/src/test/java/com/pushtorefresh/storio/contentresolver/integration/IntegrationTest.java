@@ -5,17 +5,22 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.contentresolver.BuildConfig;
 import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.impl.DefaultStorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResult;
+import com.pushtorefresh.storio.contentresolver.operations.get.PreparedGetCursor;
 import com.pushtorefresh.storio.contentresolver.operations.put.PutResult;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.test.AbstractEmissionChecker;
 
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowContentResolver;
 
 import java.util.HashSet;
@@ -32,7 +37,13 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public abstract class IntegrationTest {
 
     @NonNull // Initialized in setUp()
@@ -306,5 +317,33 @@ public abstract class IntegrationTest {
         assertEquals(tweets, storedTweets);
 
         return storedTweets;
+    }
+
+    @NonNull
+    PreparedGetCursor createQueryWithNullResult() {
+
+        final ContentResolver internalContentResolver = mock(ContentResolver.class);
+        when(internalContentResolver
+                .query(any(Uri.class),
+                        any(String[].class),
+                        anyString(),
+                        any(String[].class),
+                        anyString()))
+                .thenReturn(null);
+
+        final DefaultStorIOContentResolver defaultStorIOContentResolver = DefaultStorIOContentResolver.builder()
+                .contentResolver(internalContentResolver)
+                .addTypeMapping(User.class, ContentResolverTypeMapping.<User>builder()
+                        .putResolver(UserMeta.PUT_RESOLVER)
+                        .getResolver(UserMeta.GET_RESOLVER)
+                        .deleteResolver(UserMeta.DELETE_RESOLVER)
+                        .build())
+                .build();
+
+        return defaultStorIOContentResolver
+                .get()
+                .cursor()
+                .withQuery(mock(Query.class))
+                .prepare();
     }
 }

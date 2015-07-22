@@ -136,13 +136,11 @@ public class PutResultTest {
     }
 
     @Test
-    public void shouldNotCreateUpdateResultWith0RowsUpdated() {
-        try {
-            PutResult.newUpdateResult(0, "table");
-            fail();
-        } catch (IllegalArgumentException expected) {
-            assertEquals("Number of rows updated must be > 0", expected.getMessage());
-        }
+    public void shouldAllowCreatingUpdateResultWith0RowsUpdated() {
+        PutResult putResult = PutResult.newUpdateResult(0, "table");
+        assertTrue(putResult.wasUpdated());
+        assertFalse(putResult.wasInserted());
+        assertEquals(Integer.valueOf(0), putResult.numberOfRowsUpdated());
     }
 
     @Test
@@ -151,7 +149,7 @@ public class PutResultTest {
             PutResult.newUpdateResult(-1, "table");
             fail();
         } catch (IllegalArgumentException expected) {
-            assertEquals("Number of rows updated must be > 0", expected.getMessage());
+            assertEquals("Number of rows updated must be >= 0", expected.getMessage());
         }
     }
 

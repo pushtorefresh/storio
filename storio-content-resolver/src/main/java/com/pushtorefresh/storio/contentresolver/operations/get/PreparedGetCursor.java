@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
@@ -50,7 +51,11 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     @NonNull
     @Override
     public Cursor executeAsBlocking() {
-        return getResolver.performGet(storIOContentResolver, query);
+        try {
+            return getResolver.performGet(storIOContentResolver, query);
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
+        }
     }
 
     /**

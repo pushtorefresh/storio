@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
@@ -55,51 +56,56 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
     @NonNull
     @Override
     public PutResults<T> executeAsBlocking() {
-        final StorIOContentResolver.Internal internal = storIOContentResolver.internal();
+        try {
+            final StorIOContentResolver.Internal internal = storIOContentResolver.internal();
 
-        // Nullable
-        final List<SimpleImmutableEntry<T, PutResolver<T>>> objectsAndPutResolvers;
+            // Nullable
+            final List<SimpleImmutableEntry<T, PutResolver<T>>> objectsAndPutResolvers;
 
-        if (explicitPutResolver != null) {
-            objectsAndPutResolvers = null;
-        } else {
-            objectsAndPutResolvers = new ArrayList<SimpleImmutableEntry<T, PutResolver<T>>>(objects.size());
+            if (explicitPutResolver != null) {
+                objectsAndPutResolvers = null;
+            } else {
+                objectsAndPutResolvers = new ArrayList<SimpleImmutableEntry<T, PutResolver<T>>>(objects.size());
 
-            for (final T object : objects) {
-                final ContentResolverTypeMapping<T> typeMapping
-                        = (ContentResolverTypeMapping<T>) internal.typeMapping(object.getClass());
+                for (final T object : objects) {
+                    final ContentResolverTypeMapping<T> typeMapping
+                            = (ContentResolverTypeMapping<T>) internal.typeMapping(object.getClass());
 
-                if (typeMapping == null) {
-                    throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
-                            "object = " + object + ", object.class = " + object.getClass() + "," +
-                            "ContentProvider was not affected by this operation, please add type mapping for this type");
+                    if (typeMapping == null) {
+                        throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
+                                "object = " + object + ", object.class = " + object.getClass() + "," +
+                                "ContentProvider was not affected by this operation, please add type mapping for this type");
+                    }
+
+                    objectsAndPutResolvers.add(new SimpleImmutableEntry<T, PutResolver<T>>(
+                            object,
+                            typeMapping.putResolver()
+                    ));
                 }
-
-                objectsAndPutResolvers.add(new SimpleImmutableEntry<T, PutResolver<T>>(
-                        object,
-                        typeMapping.putResolver()
-                ));
             }
+
+            final Map<T, PutResult> results = new HashMap<T, PutResult>(objects.size());
+
+            if (explicitPutResolver != null) {
+                for (final T object : objects) {
+                    final PutResult putResult = explicitPutResolver.performPut(storIOContentResolver, object);
+                    results.put(object, putResult);
+                }
+            } else {
+                for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
+                    final T object = objectAndPutResolver.getKey();
+                    final PutResolver<T> putResolver = objectAndPutResolver.getValue();
+
+                    final PutResult putResult = putResolver.performPut(storIOContentResolver, object);
+                    results.put(object, putResult);
+                }
+            }
+
+            return PutResults.newInstance(results);
+
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
         }
-
-        final Map<T, PutResult> results = new HashMap<T, PutResult>(objects.size());
-
-        if (explicitPutResolver != null) {
-            for (final T object : objects) {
-                final PutResult putResult = explicitPutResolver.performPut(storIOContentResolver, object);
-                results.put(object, putResult);
-            }
-        } else {
-            for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
-                final T object = objectAndPutResolver.getKey();
-                final PutResolver<T> putResolver = objectAndPutResolver.getValue();
-
-                final PutResult putResult = putResolver.performPut(storIOContentResolver, object);
-                results.put(object, putResult);
-            }
-        }
-
-        return PutResults.newInstance(results);
     }
 
     /**

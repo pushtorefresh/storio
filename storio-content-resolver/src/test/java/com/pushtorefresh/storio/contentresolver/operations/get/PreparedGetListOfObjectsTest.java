@@ -3,8 +3,10 @@ package com.pushtorefresh.storio.contentresolver.operations.get;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.TestUtils;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
@@ -114,8 +116,9 @@ public class PreparedGetListOfObjectsTest {
             try {
                 preparedGet.executeAsBlocking();
                 fail();
-            } catch (IllegalStateException expected) {
+            } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
+                TestUtils.checkException(expected, IllegalStateException.class);
             }
 
             verify(storIOContentResolver).get();
@@ -149,7 +152,7 @@ public class PreparedGetListOfObjectsTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            testSubscriber.assertError(IllegalStateException.class);
+            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
 
             verify(storIOContentResolver).get();
             verify(storIOContentResolver).internal();

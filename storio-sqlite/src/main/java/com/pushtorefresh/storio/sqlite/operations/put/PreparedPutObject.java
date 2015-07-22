@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
@@ -49,27 +50,32 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
     @NonNull
     @Override
     public PutResult executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLite.internal();
+        try {
+            final StorIOSQLite.Internal internal = storIOSQLite.internal();
 
-        final PutResolver<T> putResolver;
+            final PutResolver<T> putResolver;
 
-        if (explicitPutResolver != null) {
-            putResolver = explicitPutResolver;
-        } else {
-            final SQLiteTypeMapping<T> typeMapping = internal.typeMapping((Class<T>) object.getClass());
+            if (explicitPutResolver != null) {
+                putResolver = explicitPutResolver;
+            } else {
+                final SQLiteTypeMapping<T> typeMapping = internal.typeMapping((Class<T>) object.getClass());
 
-            if (typeMapping == null) {
-                throw new IllegalStateException("Object does not have type mapping: " +
-                        "object = " + object + ", object.class = " + object.getClass() + "," +
-                        "db was not affected by this operation, please add type mapping for this type");
+                if (typeMapping == null) {
+                    throw new IllegalStateException("Object does not have type mapping: " +
+                            "object = " + object + ", object.class = " + object.getClass() + "," +
+                            "db was not affected by this operation, please add type mapping for this type");
+                }
+
+                putResolver = typeMapping.putResolver();
             }
 
-            putResolver = typeMapping.putResolver();
-        }
+            final PutResult putResult = putResolver.performPut(storIOSQLite, object);
+            internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+            return putResult;
 
-        final PutResult putResult = putResolver.performPut(storIOSQLite, object);
-        internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
-        return putResult;
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
+        }
     }
 
     /**

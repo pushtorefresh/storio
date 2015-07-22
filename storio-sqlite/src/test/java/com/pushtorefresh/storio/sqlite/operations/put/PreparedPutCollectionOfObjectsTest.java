@@ -2,7 +2,9 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 
 import android.content.ContentValues;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.TestUtils;
 import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
 import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
@@ -179,8 +181,9 @@ public class PreparedPutCollectionOfObjectsTest {
             try {
                 preparedPut.executeAsBlocking();
                 fail();
-            } catch (IllegalStateException expected) {
+            } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
+                TestUtils.checkException(expected, IllegalStateException.class);
             }
 
             verify(storIOSQLite).put();
@@ -214,7 +217,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            testSubscriber.assertError(IllegalStateException.class);
+            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).internal();
@@ -244,8 +247,9 @@ public class PreparedPutCollectionOfObjectsTest {
             try {
                 preparedPut.executeAsBlocking();
                 fail();
-            } catch (IllegalStateException expected) {
+            } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
+                TestUtils.checkException(expected, IllegalStateException.class);
             }
 
             verify(storIOSQLite).put();
@@ -279,7 +283,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            testSubscriber.assertError(IllegalStateException.class);
+            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).internal();
