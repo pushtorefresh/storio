@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
@@ -48,24 +49,29 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
     @NonNull
     @Override
     public DeleteResult executeAsBlocking() {
-        final DeleteResolver<T> deleteResolver;
+        try {
+            final DeleteResolver<T> deleteResolver;
 
-        if (explicitDeleteResolver != null) {
-            deleteResolver = explicitDeleteResolver;
-        } else {
-            final ContentResolverTypeMapping<T> typeMapping
-                    = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
+            if (explicitDeleteResolver != null) {
+                deleteResolver = explicitDeleteResolver;
+            } else {
+                final ContentResolverTypeMapping<T> typeMapping
+                        = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
 
-            if (typeMapping == null) {
-                throw new IllegalStateException("Object does not have type mapping: " +
-                        "object = " + object + ", object.class = " + object.getClass() + "," +
-                        "ContentProvider was not affected by this operation, please add type mapping for this type");
+                if (typeMapping == null) {
+                    throw new IllegalStateException("Object does not have type mapping: " +
+                            "object = " + object + ", object.class = " + object.getClass() + "," +
+                            "ContentProvider was not affected by this operation, please add type mapping for this type");
+                }
+
+                deleteResolver = typeMapping.deleteResolver();
             }
 
-            deleteResolver = typeMapping.deleteResolver();
-        }
+            return deleteResolver.performDelete(storIOContentResolver, object);
 
-        return deleteResolver.performDelete(storIOContentResolver, object);
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
+        }
     }
 
     /**

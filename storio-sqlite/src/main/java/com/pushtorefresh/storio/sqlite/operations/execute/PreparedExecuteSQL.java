@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlite.operations.execute;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
@@ -48,15 +49,19 @@ public final class PreparedExecuteSQL implements PreparedOperation<Object> {
     @NonNull
     @Override
     public Object executeAsBlocking() {
-        storIOSQLite.internal().executeSQL(rawQuery);
+        try {
+            storIOSQLite.internal().executeSQL(rawQuery);
 
-        final Set<String> affectedTables = rawQuery.affectsTables();
+            final Set<String> affectedTables = rawQuery.affectsTables();
 
-        if (affectedTables.size() > 0) {
-            storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+            if (affectedTables.size() > 0) {
+                storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+            }
+
+            return new Object();
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
         }
-
-        return new Object();
     }
 
     /**

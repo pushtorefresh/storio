@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
@@ -49,24 +50,28 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
     @NonNull
     @Override
     public PutResult executeAsBlocking() {
-        final PutResolver<T> putResolver;
+        try {
+            final PutResolver<T> putResolver;
 
-        if (explicitPutResolver != null) {
-            putResolver = explicitPutResolver;
-        } else {
-            final ContentResolverTypeMapping<T> typeMapping
-                    = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
+            if (explicitPutResolver != null) {
+                putResolver = explicitPutResolver;
+            } else {
+                final ContentResolverTypeMapping<T> typeMapping
+                        = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
 
-            if (typeMapping == null) {
-                throw new IllegalStateException("Object does not have type mapping: " +
-                        "object = " + object + ", object.class = " + object.getClass() + "," +
-                        "ContentProvider was not affected by this operation, please add type mapping for this type");
+                if (typeMapping == null) {
+                    throw new IllegalStateException("Object does not have type mapping: " +
+                            "object = " + object + ", object.class = " + object.getClass() + "," +
+                            "ContentProvider was not affected by this operation, please add type mapping for this type");
+                }
+
+                putResolver = typeMapping.putResolver();
             }
 
-            putResolver = typeMapping.putResolver();
+            return putResolver.performPut(storIOContentResolver, object);
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
         }
-
-        return putResolver.performPut(storIOContentResolver, object);
     }
 
     /**

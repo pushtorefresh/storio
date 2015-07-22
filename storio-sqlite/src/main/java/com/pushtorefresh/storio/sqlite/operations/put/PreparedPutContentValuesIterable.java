@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -54,47 +55,52 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
     @NonNull
     @Override
     public PutResults<ContentValues> executeAsBlocking() {
-        final StorIOSQLite.Internal internal = storIOSQLite.internal();
-
-        final Map<ContentValues, PutResult> putResults = new HashMap<ContentValues, PutResult>();
-
-        if (useTransaction) {
-            internal.beginTransaction();
-        }
-
-        boolean transactionSuccessful = false;
-
         try {
-            for (ContentValues contentValues : contentValuesIterable) {
-                final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
-                putResults.put(contentValues, putResult);
+            final StorIOSQLite.Internal internal = storIOSQLite.internal();
 
-                if (!useTransaction) {
-                    internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
-                }
-            }
+            final Map<ContentValues, PutResult> putResults = new HashMap<ContentValues, PutResult>();
 
             if (useTransaction) {
-                storIOSQLite.internal().setTransactionSuccessful();
-                transactionSuccessful = true;
+                internal.beginTransaction();
             }
-        } finally {
-            if (useTransaction) {
-                storIOSQLite.internal().endTransaction();
 
-                if (transactionSuccessful) {
-                    final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+            boolean transactionSuccessful = false;
 
-                    for (final ContentValues contentValues : putResults.keySet()) {
-                        affectedTables.addAll(putResults.get(contentValues).affectedTables());
+            try {
+                for (ContentValues contentValues : contentValuesIterable) {
+                    final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
+                    putResults.put(contentValues, putResult);
+
+                    if (!useTransaction) {
+                        internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                     }
+                }
 
-                    storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                if (useTransaction) {
+                    storIOSQLite.internal().setTransactionSuccessful();
+                    transactionSuccessful = true;
+                }
+            } finally {
+                if (useTransaction) {
+                    storIOSQLite.internal().endTransaction();
+
+                    if (transactionSuccessful) {
+                        final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+
+                        for (final ContentValues contentValues : putResults.keySet()) {
+                            affectedTables.addAll(putResults.get(contentValues).affectedTables());
+                        }
+
+                        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                    }
                 }
             }
-        }
 
-        return PutResults.newInstance(putResults);
+            return PutResults.newInstance(putResults);
+
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
+        }
     }
 
     /**

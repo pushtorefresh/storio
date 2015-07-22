@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 
@@ -49,14 +50,18 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
     @NonNull
     @Override
     public PutResults<ContentValues> executeAsBlocking() {
-        final Map<ContentValues, PutResult> putResultsMap = new HashMap<ContentValues, PutResult>();
+        try {
+            final Map<ContentValues, PutResult> putResultsMap = new HashMap<ContentValues, PutResult>();
 
-        for (final ContentValues cv : contentValues) {
-            final PutResult putResult = putResolver.performPut(storIOContentResolver, cv);
-            putResultsMap.put(cv, putResult);
+            for (final ContentValues cv : contentValues) {
+                final PutResult putResult = putResolver.performPut(storIOContentResolver, cv);
+                putResultsMap.put(cv, putResult);
+            }
+
+            return PutResults.newInstance(putResultsMap);
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
         }
-
-        return PutResults.newInstance(putResultsMap);
     }
 
     /**

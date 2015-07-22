@@ -2,7 +2,9 @@ package com.pushtorefresh.storio.contentresolver.operations.put;
 
 import android.content.ContentValues;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.TestUtils;
 import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 
@@ -108,8 +110,9 @@ public class PreparedPutCollectionOfObjectsTest {
             try {
                 preparedPut.executeAsBlocking();
                 fail();
-            } catch (IllegalStateException expected) {
+            } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
+                TestUtils.checkException(expected, IllegalStateException.class);
             }
 
             verify(storIOContentResolver).put();
@@ -142,7 +145,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            testSubscriber.assertError(IllegalStateException.class);
+            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).internal();

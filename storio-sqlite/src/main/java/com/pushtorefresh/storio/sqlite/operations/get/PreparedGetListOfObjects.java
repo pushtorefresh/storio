@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
@@ -71,48 +72,52 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @NonNull
     @Override
     public List<T> executeAsBlocking() {
-        final GetResolver<T> getResolver;
-
-        if (explicitGetResolver != null) {
-            getResolver = explicitGetResolver;
-        } else {
-            final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping(type);
-
-            if (typeMapping == null) {
-                throw new IllegalStateException("This type does not have type mapping: " +
-                        "type = " + type + "," +
-                        "db was not touched by this operation, please add type mapping for this type");
-            }
-
-            getResolver = typeMapping.getResolver();
-        }
-
-        final Cursor cursor;
-
-        if (query != null) {
-            cursor = getResolver.performGet(storIOSQLite, query);
-        } else if (rawQuery != null) {
-            cursor = getResolver.performGet(storIOSQLite, rawQuery);
-        } else {
-            throw new IllegalStateException("Please specify query");
-        }
-
         try {
-            final int count = cursor.getCount();
+            final GetResolver<T> getResolver;
 
-            if (count == 0) {
-                return EMPTY_LIST; // it's immutable
+            if (explicitGetResolver != null) {
+                getResolver = explicitGetResolver;
+            } else {
+                final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping(type);
+
+                if (typeMapping == null) {
+                    throw new IllegalStateException("This type does not have type mapping: " +
+                            "type = " + type + "," +
+                            "db was not touched by this operation, please add type mapping for this type");
+                }
+
+                getResolver = typeMapping.getResolver();
             }
 
-            final List<T> list = new ArrayList<T>(count);
+            final Cursor cursor;
 
-            while (cursor.moveToNext()) {
-                list.add(getResolver.mapFromCursor(cursor));
+            if (query != null) {
+                cursor = getResolver.performGet(storIOSQLite, query);
+            } else if (rawQuery != null) {
+                cursor = getResolver.performGet(storIOSQLite, rawQuery);
+            } else {
+                throw new IllegalStateException("Please specify query");
             }
 
-            return unmodifiableList(list);
-        } finally {
-            cursor.close();
+            try {
+                final int count = cursor.getCount();
+
+                if (count == 0) {
+                    return EMPTY_LIST; // it's immutable
+                }
+
+                final List<T> list = new ArrayList<T>(count);
+
+                while (cursor.moveToNext()) {
+                    list.add(getResolver.mapFromCursor(cursor));
+                }
+
+                return unmodifiableList(list);
+            } finally {
+                cursor.close();
+            }
+        } catch (Exception exception) {
+            throw new StorIOException(exception);
         }
     }
 

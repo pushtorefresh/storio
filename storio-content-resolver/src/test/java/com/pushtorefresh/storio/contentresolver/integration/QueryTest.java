@@ -3,8 +3,11 @@ package com.pushtorefresh.storio.contentresolver.integration;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
+import com.pushtorefresh.storio.contentresolver.TestUtils;
 import com.pushtorefresh.storio.contentresolver.operations.get.DefaultGetResolver;
+import com.pushtorefresh.storio.contentresolver.operations.get.PreparedGetCursor;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
@@ -18,6 +21,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -141,6 +145,21 @@ public class QueryTest extends IntegrationTest {
             final User userFromStorage = usersFromStorage.get(i);
             assertEquals(user.id(), userFromStorage.id());
             assertNull(userFromStorage.email());
+        }
+    }
+
+    @Test
+    public void shouldThrowExceptionIfCursorNullBlocking() {
+        final PreparedGetCursor queryWithNullResult = createQueryWithNullResult();
+        try {
+            queryWithNullResult.executeAsBlocking();
+            fail("StorIOException should be thrown");
+        } catch (StorIOException expected) {
+            // it's okay, cursor was null
+            TestUtils.checkException(
+                    expected,
+                    IllegalStateException.class,
+                    "Cursor returned by content provider is null");
         }
     }
 }
