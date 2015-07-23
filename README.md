@@ -8,7 +8,7 @@
 * No reflection in Operations and no annotations in the core, also `StorIO` is not ORM
 * Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`
 * `RxJava` as first class citizen, but it's not required dependency!
-* **Reactive**: `rx.Observable` from `Get` Operation **can observe changes** in `StorIO` and receive updates automatically
+* **Reactive**: `rx.Observable` from `Get` Operation **will observe changes** in `StorIO` (`SQLite` or `ContentProvider`) and receive updates automatically
 * `StorIO` is replacements for `SQLiteDatabase` and `ContentResolver` APIs
 * `StorIO` + `RxJava` is replacement for `Loaders` API
 * We are working on `MockStorIO` (similar to [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver)) for easy unit testing
