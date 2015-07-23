@@ -2,6 +2,8 @@ package com.pushtorefresh.storio.contentresolver;
 
 import android.net.Uri;
 
+import com.pushtorefresh.storio.test.ToStringChecker;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -12,7 +14,6 @@ import java.util.Set;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -64,6 +65,8 @@ public class ChangesTest {
 
     @Test
     public void checkToStringImplementation() {
-        checkToString(Changes.newInstance(Uri.parse("content://testUri")));
+        ToStringChecker
+                .forClass(Changes.class)
+                .check();
     }
 }

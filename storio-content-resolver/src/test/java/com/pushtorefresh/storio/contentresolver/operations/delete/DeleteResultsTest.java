@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.contentresolver.operations.delete;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
+import com.pushtorefresh.storio.test.ToStringChecker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +15,6 @@ import java.util.Map;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -77,11 +77,8 @@ public class DeleteResultsTest {
 
     @Test
     public void checkToStringImplementation() {
-        checkToString(DeleteResults.newInstance(new HashMap<Object, DeleteResult>() {
-            {
-                put("key1", DeleteResult.newInstance(1, Uri.parse("content://testUri1")));
-                put("key2", DeleteResult.newInstance(1, Uri.parse("content://testUri2")));
-            }
-        }));
+        ToStringChecker
+                .forClass(DeleteResults.class)
+                .check();
     }
 }

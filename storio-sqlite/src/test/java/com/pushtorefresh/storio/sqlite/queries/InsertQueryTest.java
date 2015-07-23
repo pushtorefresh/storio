@@ -1,6 +1,10 @@
 package com.pushtorefresh.storio.sqlite.queries;
 
+import com.pushtorefresh.storio.test.ToStringChecker;
+
 import org.junit.Test;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -43,5 +47,20 @@ public class InsertQueryTest {
 
         assertEquals(table, insertQuery.table());
         assertEquals(nullColumnHack, insertQuery.nullColumnHack());
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(InsertQuery.class)
+                .allFieldsShouldBeUsed()
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        ToStringChecker
+                .forClass(InsertQuery.class)
+                .check();
     }
 }

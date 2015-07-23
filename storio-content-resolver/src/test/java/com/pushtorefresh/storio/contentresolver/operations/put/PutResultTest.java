@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.contentresolver.operations.put;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
+import com.pushtorefresh.storio.test.ToStringChecker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +12,6 @@ import org.robolectric.annotation.Config;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
@@ -130,9 +130,8 @@ public class PutResultTest {
 
     @Test
     public void checkToStringImplementation() {
-        checkToString(PutResult.newInsertResult(
-                        Uri.parse("content://testInsertedUri"),
-                        Uri.parse("content://testAffectedUri"))
-        );
+        ToStringChecker
+                .forClass(PutResult.class)
+                .check();
     }
 }

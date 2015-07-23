@@ -1,9 +1,13 @@
 package com.pushtorefresh.storio.sqlite.operations.delete;
 
+import com.pushtorefresh.storio.test.ToStringChecker;
+
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -36,5 +40,20 @@ public class DeleteResultsTest {
 
         assertFalse(deleteResults.wasNotDeleted("testString"));
         assertTrue(deleteResults.wasNotDeleted("should not be deleted"));
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(DeleteResults.class)
+                .allFieldsShouldBeUsed()
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        ToStringChecker
+                .forClass(DeleteResults.class)
+                .check();
     }
 }

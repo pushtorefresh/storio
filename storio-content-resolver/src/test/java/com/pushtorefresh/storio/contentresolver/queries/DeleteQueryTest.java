@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.contentresolver.queries;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
+import com.pushtorefresh.storio.test.ToStringChecker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +14,6 @@ import java.util.Arrays;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -88,11 +88,8 @@ public class DeleteQueryTest {
 
     @Test
     public void checkToStringImplementation() {
-        checkToString(DeleteQuery.builder()
-                .uri("content://test")
-                .where("column1 = ? AND column2 = ?")
-                .whereArgs("value1", "value2")
-                .build()
-        );
+        ToStringChecker
+                .forClass(DeleteQuery.class)
+                .check();
     }
 }

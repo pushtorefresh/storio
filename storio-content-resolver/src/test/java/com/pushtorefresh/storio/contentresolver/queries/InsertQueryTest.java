@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.contentresolver.queries;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
+import com.pushtorefresh.storio.test.ToStringChecker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +12,6 @@ import org.robolectric.annotation.Config;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
@@ -57,9 +57,8 @@ public class InsertQueryTest {
 
     @Test
     public void checkToStringImplementation() {
-        checkToString(InsertQuery.builder()
-                        .uri("content://test")
-                        .build()
-        );
+        ToStringChecker
+                .forClass(InsertQuery.class)
+                .check();
     }
 }

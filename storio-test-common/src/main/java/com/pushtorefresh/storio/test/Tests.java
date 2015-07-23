@@ -3,7 +3,6 @@ package com.pushtorefresh.storio.test;
 import android.support.annotation.NonNull;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
@@ -33,45 +32,6 @@ public class Tests {
                 if (!expectedThrowable.getMessage().equals(cause.getMessage())) {
                     throw new AssertionError("Constructor thrown exception with " +
                             "unexpected message: expected = " + expectedThrowable.getMessage() + ", actual = " + cause.getMessage());
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static <T> void checkToString(@NonNull T object) {
-        try {
-            //noinspection unchecked
-            final Class<T> clazz = (Class<T>) object.getClass();
-
-            final String objectToString = object.toString();
-
-            final Field[] fields = clazz.getDeclaredFields();
-
-            for (Field field : fields) {
-                field.setAccessible(true);
-
-                if (field.getName().equals("$jacocoData")) {
-                    // Jacoco coverage tool can add field for internal usage
-                    // It wont affect release code, of course.
-                    continue;
-                }
-
-                if (Modifier.isTransient(field.getModifiers())) {
-                    // Transient field should not be part of toString()
-                    continue;
-                }
-
-                final Object fieldValue = field.get(object);
-                final String fieldValueToString = fieldValue == null ? "null" : fieldValue.toString();
-
-                if (    // For regular fields
-                        !objectToString.contains(field.getName() + "=" + fieldValueToString)
-                                // IDEA generates ='value' for Strings
-                                && !objectToString.contains(field.getName() + "='" + fieldValueToString)) {
-                    throw new AssertionError("toString() does not contain field = "
-                            + field.getName() + ", object = " + object);
                 }
             }
         } catch (Exception e) {

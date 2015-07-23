@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.contentresolver.queries;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
+import com.pushtorefresh.storio.test.ToStringChecker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +12,6 @@ import org.robolectric.annotation.Config;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -86,11 +86,8 @@ public class UpdateQueryTest {
 
     @Test
     public void checkToStringImplementation() {
-        checkToString(UpdateQuery.builder()
-                        .uri("content://test")
-                        .where("column1 = ? AND column2 = ?")
-                        .whereArgs("val1", "val2")
-                        .build()
-        );
+        ToStringChecker
+                .forClass(UpdateQuery.class)
+                .check();
     }
 }

@@ -14,7 +14,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  *
  * @param <T> type of objects
  */
-public class DeleteResults<T> {
+public final class DeleteResults<T> {
 
     @NonNull
     private final Map<T, DeleteResult> results;

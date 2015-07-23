@@ -14,7 +14,7 @@ import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListO
  * <p>
  * Instances of this class are immutable.
  */
-public class Query {
+public final class Query {
 
     private final boolean distinct;
 
@@ -457,7 +457,10 @@ public class Query {
          * <p>
          * Optional specifier that limits the number of rows returned by the query.
          * <p>
-         * Formatted as {@code LIMIT} clause.
+         * Formatted as {@code LIMIT} clause: {@code "[offset], rows"}. Examples:
+         * <ul>
+         * <li>{@code "5"} — will limit output to first five rows.</li>
+         * <li>{@code "5, 12"} — will limit output to 12 rows with start offset {@code == 5}.</li>
          * <p>
          * Passing {@code null} denotes no {@code LIMIT} clause.
          * <p>

@@ -19,10 +19,10 @@ public final class PutResults<T> {
     private final Map<T, PutResult> results;
 
     @Nullable
-    private volatile Integer numberOfInsertsCache;
+    private transient volatile Integer numberOfInsertsCache;
 
     @Nullable
-    private volatile Integer numberOfUpdatesCache;
+    private transient volatile Integer numberOfUpdatesCache;
 
     private PutResults(@NonNull Map<T, PutResult> putResults) {
         this.results = Collections.unmodifiableMap(putResults);
@@ -80,7 +80,6 @@ public final class PutResults<T> {
      *
      * @return number of updates from all {@link #results()}.
      */
-    @SuppressWarnings("ConstantConditions")
     public int numberOfUpdates() {
         final Integer cachedValue = numberOfUpdatesCache;
 
@@ -94,6 +93,7 @@ public final class PutResults<T> {
             final PutResult putResult = results.get(object);
 
             if (putResult.wasUpdated()) {
+                //noinspection ConstantConditions
                 numberOfUpdates += putResult.numberOfRowsUpdated();
             }
         }

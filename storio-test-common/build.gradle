@@ -21,8 +21,9 @@ dependencies {
     provided libraries.supportAnnotations
     provided libraries.rxJava
 
+    compile libraries.mockitoCore
+
     testCompile libraries.junit
-    testCompile libraries.mockitoCore
 }
 
 task checkstyle(type: Checkstyle) {

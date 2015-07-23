@@ -1,8 +1,7 @@
 package com.pushtorefresh.storio.operations.group;
 
-import android.support.annotation.NonNull;
-
 import com.pushtorefresh.storio.operations.PreparedOperation;
+import com.pushtorefresh.storio.test.ToStringChecker;
 
 import org.junit.Test;
 
@@ -10,9 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-import rx.Observable;
 
-import static com.pushtorefresh.storio.test.Tests.checkToString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -51,31 +48,8 @@ public class GroupOperationResultsTest {
 
     @Test
     public void checkToStringImplementation() {
-        GroupOperationResults groupOperationResults = GroupOperationResults.newInstance(new HashMap<PreparedOperation<?>, Object>() {
-            {
-                put(new PreparedOperation<Object>() {
-                    @NonNull
-                    @Override
-                    public Object executeAsBlocking() {
-                        //noinspection ConstantConditions
-                        return null;
-                    }
-
-                    @NonNull
-                    @Override
-                    public Observable<Object> createObservable() {
-                        //noinspection ConstantConditions
-                        return null;
-                    }
-
-                    @Override
-                    public String toString() {
-                        return "some operation";
-                    }
-                }, "some value");
-            }
-        });
-
-        checkToString(groupOperationResults);
+        ToStringChecker
+                .forClass(GroupOperationResults.class)
+                .check();
     }
 }

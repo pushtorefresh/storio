@@ -1,11 +1,16 @@
 package com.pushtorefresh.storio.sqlite.queries;
 
+import com.pushtorefresh.storio.test.ToStringChecker;
+
 import org.junit.Test;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class UpdateQueryTest {
 
@@ -59,5 +64,44 @@ public class UpdateQueryTest {
         assertEquals(table, updateQuery.table());
         assertEquals(where, updateQuery.where());
         assertEquals(asList(whereArgs), updateQuery.whereArgs());
+    }
+
+    @Test
+    public void shouldThrowExceptionIfWhereArgsSpecifiedWithoutWhereClause() {
+        try {
+            UpdateQuery.builder()
+                    .table("test_table")
+                    .whereArgs("someArg") // Without WHERE clause!
+                    .build();
+            fail();
+        } catch (IllegalStateException expected) {
+            assertEquals("You can not use whereArgs without where clause", expected.getMessage());
+        }
+    }
+
+    @Test
+    public void shouldAllowNullWhereArgsWithoutWhereClause() {
+        //noinspection NullArgumentToVariableArgMethod
+        UpdateQuery.builder()
+                .table("test_table")
+                .whereArgs(null)
+                .build();
+
+        // We don't expect any exceptions here
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(UpdateQuery.class)
+                .allFieldsShouldBeUsed()
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        ToStringChecker
+                .forClass(UpdateQuery.class)
+                .check();
     }
 }
