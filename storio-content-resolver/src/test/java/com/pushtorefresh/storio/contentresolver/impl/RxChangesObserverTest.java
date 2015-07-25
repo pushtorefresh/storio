@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Handler;
 
 import com.pushtorefresh.storio.contentresolver.Changes;
+import com.pushtorefresh.storio.test.PrivateConstructorChecker;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -18,7 +19,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Observable;
 import rx.Subscription;
 
-import static com.pushtorefresh.storio.test.Tests.assertThatConstructorIsPrivateAndThrowsException;
 import static java.util.Collections.singleton;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
@@ -33,10 +33,11 @@ public class RxChangesObserverTest {
 
     @Test
     public void constructorShouldBePrivateAndThrowException() {
-        assertThatConstructorIsPrivateAndThrowsException(
-                RxChangesObserver.class,
-                new IllegalStateException("No instances please.")
-        );
+        PrivateConstructorChecker
+                .forClass(RxChangesObserver.class)
+                .expectedTypeOfException(IllegalStateException.class)
+                .expectedExceptionMessage("No instances please.")
+                .check();
     }
 
     @Test

@@ -13,13 +13,13 @@ public class PrivateConstructorChecker<T> {
     private final Class<T> clazz;
 
     @Nullable
-    private final Class<?> expectedTypeOfException;
+    private final Class<? extends Throwable> expectedTypeOfException;
 
     @Nullable
     private final String expectedExceptionMessage;
 
     private PrivateConstructorChecker(@NonNull Class<T> clazz,
-                                      @Nullable Class<?> expectedTypeOfException,
+                                      @Nullable Class<? extends Throwable> expectedTypeOfException,
                                       @Nullable String expectedExceptionMessage) {
         this.clazz = clazz;
         this.expectedTypeOfException = expectedTypeOfException;
@@ -32,7 +32,7 @@ public class PrivateConstructorChecker<T> {
         private final Class<T> clazz;
 
         @Nullable
-        private Class<?> expectedTypeOfException;
+        private Class<? extends Throwable> expectedTypeOfException;
 
         @Nullable
         private String expectedExceptionMessage;
@@ -42,29 +42,28 @@ public class PrivateConstructorChecker<T> {
         }
 
         @NonNull
-        public Builder<T> shouldThrowExceptionOfType(@NonNull Class<?> expectedTypeOfException) {
+        public Builder<T> expectedTypeOfException(@NonNull Class<? extends Throwable> expectedTypeOfException) {
             this.expectedTypeOfException = expectedTypeOfException;
             return this;
         }
 
         @NonNull
         public Builder<T> expectedExceptionMessage(@Nullable String expectedExceptionMessage) {
-            this.expectedTypeOfException = expectedTypeOfException;
+            this.expectedExceptionMessage = expectedExceptionMessage;
             return this;
         }
 
-        @NonNull
-        public PrivateConstructorChecker<T> prepare() {
+        public void check() {
             if (expectedExceptionMessage != null && expectedTypeOfException == null) {
                 throw new IllegalStateException("You can not set expected exception message " +
                         "without expected exception type");
             }
 
-            return new PrivateConstructorChecker<T>(
+            new PrivateConstructorChecker<T>(
                     clazz,
                     expectedTypeOfException,
                     expectedExceptionMessage
-            );
+            ).check();
         }
     }
 
@@ -94,14 +93,16 @@ public class PrivateConstructorChecker<T> {
         try {
             constructor.newInstance();
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Can not instantiate instance of " + clazz, e);
         } catch (IllegalAccessException e) {
             // Fixed by setAccessible(true)
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
+            final Throwable cause = e.getCause();
+
             // It's okay case if we expect some exception from this constructor
             if (expectedTypeOfException != null) {
-                if (!expectedTypeOfException.equals(e.getClass())) {
+                if (!expectedTypeOfException.equals(cause.getClass())) {
                     throw new IllegalStateException("Expected exception of type = "
                             + expectedTypeOfException + ", but was exception of type = "
                             + e
@@ -109,10 +110,10 @@ public class PrivateConstructorChecker<T> {
                 }
 
                 if (expectedExceptionMessage != null) {
-                    if (!expectedExceptionMessage.equals(e.getMessage())) {
+                    if (!expectedExceptionMessage.equals(cause.getMessage())) {
                         throw new IllegalStateException("Expected exception message = '"
                                 + expectedExceptionMessage + "', but was = '"
-                                + e.getMessage() + "'",
+                                + cause.getMessage() + "'",
                                 e
                         );
                     }

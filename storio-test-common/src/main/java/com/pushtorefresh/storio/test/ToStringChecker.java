@@ -22,7 +22,7 @@ public class ToStringChecker<T> {
     @NonNull
     private final Class<T> clazz;
 
-    private ToStringChecker(@NonNull Class<T> clazz) {
+    ToStringChecker(@NonNull Class<T> clazz) {
         this.clazz = clazz;
     }
 
@@ -125,7 +125,7 @@ public class ToStringChecker<T> {
     }
 
     @NonNull
-    private Object createSampleValueOfType(@NonNull Class<?> type) {
+    Object createSampleValueOfType(@NonNull Class<?> type) {
         if (type.equals(Boolean.class) || type.equals(boolean.class)) {
             return true;
         } else if (type.equals(Integer.class) || type.equals(int.class)) {
@@ -152,7 +152,7 @@ public class ToStringChecker<T> {
             for (Field field : fields) {
                 final String fieldValueToString = field.get(object).toString();
 
-                if (    // For regular fields
+                if (// For regular fields
                         !objectToString.contains(field.getName() + "=" + fieldValueToString)
                                 // IDEA generates ='value' for Strings
                                 && !objectToString.contains(field.getName() + "='" + fieldValueToString)) {

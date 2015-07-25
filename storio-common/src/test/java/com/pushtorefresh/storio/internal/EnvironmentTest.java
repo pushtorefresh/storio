@@ -1,10 +1,11 @@
 package com.pushtorefresh.storio.internal;
 
+import com.pushtorefresh.storio.test.PrivateConstructorChecker;
+
 import org.junit.Test;
 
 import java.lang.reflect.Field;
 
-import static com.pushtorefresh.storio.test.Tests.assertThatConstructorIsPrivateAndThrowsException;
 import static java.lang.reflect.Modifier.FINAL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -14,10 +15,11 @@ public class EnvironmentTest {
 
     @Test
     public void constructorShouldBePrivateAndThrowException() {
-        assertThatConstructorIsPrivateAndThrowsException(
-                Environment.class,
-                new IllegalStateException("No instances please")
-        );
+        PrivateConstructorChecker
+                .forClass(Environment.class)
+                .expectedTypeOfException(IllegalStateException.class)
+                .expectedExceptionMessage("No instances please")
+                .check();
     }
 
     @Test

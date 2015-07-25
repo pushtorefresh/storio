@@ -1,5 +1,7 @@
 package com.pushtorefresh.storio.internal;
 
+import com.pushtorefresh.storio.test.PrivateConstructorChecker;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -9,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
-import static com.pushtorefresh.storio.test.Tests.assertThatConstructorIsPrivateAndThrowsException;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
@@ -21,10 +22,11 @@ public class QueriesTest {
 
     @Test
     public void constructorShouldBePrivateAndThrowException() {
-        assertThatConstructorIsPrivateAndThrowsException(
-                Queries.class,
-                new IllegalStateException("No instances please")
-        );
+        PrivateConstructorChecker
+                .forClass(Queries.class)
+                .expectedTypeOfException(IllegalStateException.class)
+                .expectedExceptionMessage("No instances please")
+                .check();
     }
 
     //region Tests for Queries.unmodifiableNonNullListOfStrings()
