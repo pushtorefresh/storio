@@ -4,8 +4,6 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
-
 public final class Asserts {
 
     private Asserts() {
@@ -28,11 +26,6 @@ public final class Asserts {
             // it's okay
         }
 
-        try {
-            list.addAll(asList("1", "2", "3"));
-            throw new AssertionError("List is not immutable: list = " + list);
-        } catch (UnsupportedOperationException expected) {
-            // it's okay
-        }
+        // All modify operations failed, list is probably immutable
     }
 }

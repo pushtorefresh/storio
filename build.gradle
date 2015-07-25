@@ -15,14 +15,26 @@ buildscript {
         // APT compile-time annotation processing
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
 
+        // Jacoco Test Coverage Plugin
+        // (addition to standard Jacoco plugin, allows us fail the build if coverage is not enough)
+        // https://github.com/palantir/gradle-jacoco-coverage
+        classpath 'com.palantir:jacoco-coverage:0.2.0'
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
 allprojects {
+
     repositories {
         jcenter()
+    }
+
+    // Workaround for preventing Gradle from stealing focus from other apps
+    // https://gist.github.com/artem-zinnatullin/4c250e04636e25797165
+    tasks.withType(JavaForkOptions) {
+        jvmArgs '-Djava.awt.headless=true'
     }
 }
 
@@ -52,6 +64,7 @@ ext.libraries = [
         // Libraries for tests and sample app
         junit                          : 'junit:junit:4.12',
         mockitoCore                    : 'org.mockito:mockito-core:1.10.19',
+        equalsVerifier                 : 'nl.jqno.equalsverifier:equalsverifier:1.7.2',
         guava                          : 'com.google.guava:guava:18.0',
         robolectric                    : 'org.robolectric:robolectric:3.0-rc3',
 
@@ -81,9 +94,10 @@ ext.libraries = [
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')
 
 subprojects {
+
     project.plugins.whenPluginAdded { plugin ->
-        if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name)
-                || "com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
+        if ('com.android.build.gradle.AppPlugin'.equals(plugin.class.name)
+                || 'com.android.build.gradle.LibraryPlugin'.equals(plugin.class.name)) {
 
             // enable or disable pre-dexing
             project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
