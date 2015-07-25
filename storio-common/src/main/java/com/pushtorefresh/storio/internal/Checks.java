@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 public final class Checks {
 
     private Checks() {
-        throw new IllegalStateException("No instances please");
+        throw new IllegalStateException("No instances please.");
     }
 
     /**

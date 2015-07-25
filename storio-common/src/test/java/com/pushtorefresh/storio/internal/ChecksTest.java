@@ -1,5 +1,7 @@
 package com.pushtorefresh.storio.internal;
 
+import com.pushtorefresh.storio.test.PrivateConstructorChecker;
+
 import org.junit.Test;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
@@ -8,6 +10,15 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
 public class ChecksTest {
+
+    @Test
+    public void constructorShouldBePrivateAndThrowException() {
+        PrivateConstructorChecker
+                .forClass(Checks.class)
+                .expectedTypeOfException(IllegalStateException.class)
+                .expectedExceptionMessage("No instances please.")
+                .check();
+    }
 
     @Test
     public void checkNotNullPositive() {

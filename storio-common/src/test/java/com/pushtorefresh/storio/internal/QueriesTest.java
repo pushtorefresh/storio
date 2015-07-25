@@ -1,5 +1,7 @@
 package com.pushtorefresh.storio.internal;
 
+import com.pushtorefresh.storio.test.PrivateConstructorChecker;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -17,6 +19,15 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 public class QueriesTest {
+
+    @Test
+    public void constructorShouldBePrivateAndThrowException() {
+        PrivateConstructorChecker
+                .forClass(Queries.class)
+                .expectedTypeOfException(IllegalStateException.class)
+                .expectedExceptionMessage("No instances please")
+                .check();
+    }
 
     //region Tests for Queries.unmodifiableNonNullListOfStrings()
 
