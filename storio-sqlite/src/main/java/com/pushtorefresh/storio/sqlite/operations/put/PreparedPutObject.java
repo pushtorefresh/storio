@@ -70,9 +70,10 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
             }
 
             final PutResult putResult = putResolver.performPut(storIOSQLite, object);
-            internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
-            return putResult;
 
+            internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+
+            return putResult;
         } catch (Exception exception) {
             throw new StorIOException(exception);
         }

@@ -370,24 +370,6 @@ public final class Query {
         }
 
         /**
-         * Optional: Specifies arguments for where clause.
-         * <p>
-         * Passed objects will be immediately converted list of
-         * to {@link String} via calling {@link Object#toString()}.
-         * <p>
-         * Default value is {@code null}.
-         *
-         * @param whereArgs list of arguments for where clause.
-         * @return builder.
-         * @see Query#whereArgs()
-         */
-        @NonNull
-        public CompleteBuilder whereArgs(@Nullable List<?> whereArgs) {
-            this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
-            return this;
-        }
-
-        /**
          * Optional: Specifies {@code GROUP BY} clause.
          * <p>
          * Optional filter declaring how to group rows.

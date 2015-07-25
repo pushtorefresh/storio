@@ -77,12 +77,12 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
                 }
 
                 if (useTransaction) {
-                    storIOSQLite.internal().setTransactionSuccessful();
+                    internal.setTransactionSuccessful();
                     transactionSuccessful = true;
                 }
             } finally {
                 if (useTransaction) {
-                    storIOSQLite.internal().endTransaction();
+                    internal.endTransaction();
 
                     if (transactionSuccessful) {
                         final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
@@ -91,7 +91,7 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
                             affectedTables.addAll(putResults.get(contentValues).affectedTables());
                         }
 
-                        storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                        internal.notifyAboutChanges(Changes.newInstance(affectedTables));
                     }
                 }
             }
