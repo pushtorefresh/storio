@@ -1,0 +1,43 @@
+apply plugin: 'jacoco'
+apply plugin: 'jacoco-coverage'
+
+jacoco {
+    version '0.7.4.201502262128'
+}
+
+// JaCoCo Test Reports, thanks to Nenick
+task jacocoReport(type: JacocoReport, dependsOn: 'test') {
+    group = 'Reporting'
+    description = 'Generate Jacoco coverage reports after running tests.'
+
+    reports {
+        xml {
+            enabled true // coveralls
+            destination "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        }
+
+        html {
+            enabled true
+            destination "${project.buildDir}/reports/jacoco/test/html"
+        }
+    }
+
+    // use hidden configuration, for details look into JacocoPlugin.groovy
+    jacocoClasspath = project.configurations['androidJacocoAnt']
+
+    // exclude auto-generated classes and tests
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*',
+                      'android/**/*.*']
+
+    def debugTree = fileTree(dir: "${project.buildDir}/intermediates/classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = fileTree(dir: project.projectDir, includes: ['**/*.exec', '**/*.ec'])
+}
+
+jacocoCoverage {
+    // Enfore minimum code coverage of 80% for every Java file
+    fileThreshold 0.8
+}

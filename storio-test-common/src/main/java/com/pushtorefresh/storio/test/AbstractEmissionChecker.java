@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
 
@@ -15,9 +14,6 @@ public abstract class AbstractEmissionChecker<T> {
 
     @NonNull
     private final Queue<T> obtainedValues;
-
-    @NonNull
-    private final AtomicReference<Throwable> onNextObtainedThrowable = new AtomicReference<Throwable>(null);
 
     @NonNull
     private final Object lock = new Object();
@@ -51,7 +47,6 @@ public abstract class AbstractEmissionChecker<T> {
         boolean expectedValueWasReceived = false;
 
         while (!expectedValueWasReceived
-                && onNextObtainedThrowable.get() == null
                 && !(System.currentTimeMillis() - startTime > timeoutMillis)) {
 
             synchronized (lock) {
@@ -71,9 +66,7 @@ public abstract class AbstractEmissionChecker<T> {
             Thread.yield(); // let other threads work
         }
 
-        if (onNextObtainedThrowable.get() != null) {
-            throw new AssertionError("Throwable occurred while waiting: " + onNextObtainedThrowable.get());
-        } else if (!expectedValueWasReceived) {
+        if (!expectedValueWasReceived) {
             throw new AssertionError("Expected value = " + expected + " was not received, " +
                     "timeout = " + timeoutMillis + "ms, expectedValues.size = " + expectedValues.size() + ", obtainedValues = " + obtainedValues);
         }
@@ -97,22 +90,14 @@ public abstract class AbstractEmissionChecker<T> {
      */
     protected void onNextObtained(@NonNull T obtained) {
         synchronized (lock) {
-            try {
-                if (expectedValues.size() == 0) {
-                    throw new IllegalStateException("Received emission, but no more " +
-                            "emissions were expected: obtained " + obtained +
-                            ", expectedValues = " + expectedValues +
-                            ", obtainedValues = " + obtainedValues);
-                }
-
-                obtainedValues.add(obtained);
-            } catch (Throwable throwable) {
-                // Catch everything, it's not a bug, it's a feature
-                // Really, we don't want to break contract of Emission Checker if something goes wrong
-                // Because problem can be handled via rx.Observable's Subscriber
-                // And if so -> it'll break behavior of Emission Checker
-                onNextObtainedThrowable.set(throwable);
+            if (expectedValues.size() == 0) {
+                throw new IllegalStateException("Received emission, but no more " +
+                        "emissions were expected: obtained " + obtained +
+                        ", expectedValues = " + expectedValues +
+                        ", obtainedValues = " + obtainedValues);
             }
+
+            obtainedValues.add(obtained);
         }
     }
 

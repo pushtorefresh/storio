@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -269,5 +270,51 @@ public class AbstractEmissionCheckerTest {
         emissionChecker.assertThatNoExpectedValuesLeft();
 
         subscription.unsubscribe();
+    }
+
+    @Test
+    public void shouldThrowExcepionBecauseObservableEmittedUnexpectedItemAfterExpectedSequence() {
+        final Queue<String> expectedValues = new LinkedList<String>();
+
+        expectedValues.add("1");
+        expectedValues.add("2");
+        expectedValues.add("3");
+
+        final PublishSubject<String> publishSubject = PublishSubject.create();
+
+        final AbstractEmissionChecker<String> emissionChecker = new AbstractEmissionChecker<String>(expectedValues) {
+            @NonNull
+            @Override
+            public Subscription subscribe() {
+                return publishSubject
+                        .subscribe(new Action1<String>() {
+                            @Override
+                            public void call(String s) {
+                                onNextObtained(s);
+                            }
+                        });
+            }
+        };
+
+        final Subscription subscription = emissionChecker.subscribe();
+
+        publishSubject.onNext("1");
+        publishSubject.onNext("2");
+        publishSubject.onNext("3");
+
+        emissionChecker.awaitNextExpectedValue();
+        emissionChecker.awaitNextExpectedValue();
+        emissionChecker.awaitNextExpectedValue();
+
+        emissionChecker.assertThatNoExpectedValuesLeft();
+
+        try {
+            publishSubject.onNext("4");
+            fail();
+        } catch (OnErrorNotImplementedException expected) {
+            assertTrue(expected.getCause().getMessage().startsWith("Received emission, but no more emissions were expected: obtained "));
+        } finally {
+            subscription.unsubscribe();
+        }
     }
 }
