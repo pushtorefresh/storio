@@ -321,8 +321,8 @@ public abstract class IntegrationTest {
 
     @NonNull
     PreparedGetCursor createQueryWithNullResult() {
-
         final ContentResolver internalContentResolver = mock(ContentResolver.class);
+
         when(internalContentResolver
                 .query(any(Uri.class),
                         any(String[].class),
@@ -343,7 +343,9 @@ public abstract class IntegrationTest {
         return defaultStorIOContentResolver
                 .get()
                 .cursor()
-                .withQuery(mock(Query.class))
+                .withQuery(Query.builder()
+                        .uri(mock(Uri.class))
+                        .build())
                 .prepare();
     }
 }

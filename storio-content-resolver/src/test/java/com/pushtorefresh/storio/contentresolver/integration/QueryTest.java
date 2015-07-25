@@ -151,6 +151,7 @@ public class QueryTest extends IntegrationTest {
     @Test
     public void shouldThrowExceptionIfCursorNullBlocking() {
         final PreparedGetCursor queryWithNullResult = createQueryWithNullResult();
+
         try {
             queryWithNullResult.executeAsBlocking();
             fail("StorIOException should be thrown");

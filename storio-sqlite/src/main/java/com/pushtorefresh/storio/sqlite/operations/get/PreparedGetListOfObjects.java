@@ -229,10 +229,10 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         private final Class<T> type;
 
         @Nullable
-        private final Query query;
+        Query query;
 
         @Nullable
-        private final RawQuery rawQuery;
+        RawQuery rawQuery;
 
         @Nullable
         private GetResolver<T> getResolver;

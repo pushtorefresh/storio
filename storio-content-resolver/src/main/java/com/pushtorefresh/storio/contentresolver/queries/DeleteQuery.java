@@ -205,10 +205,6 @@ public final class DeleteQuery {
          */
         @NonNull
         public DeleteQuery build() {
-            if (where == null && whereArgs != null && !whereArgs.isEmpty()) {
-                throw new IllegalStateException("You can not use whereArgs without where clause");
-            }
-
             return new DeleteQuery(
                     uri,
                     where,

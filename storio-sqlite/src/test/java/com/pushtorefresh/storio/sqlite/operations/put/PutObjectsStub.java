@@ -18,7 +18,6 @@ import java.util.Map;
 import rx.Observable;
 import rx.functions.Action1;
 
-import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -73,9 +72,7 @@ class PutObjectsStub {
             final TestItem testItem = TestItem.newInstance();
             items.add(testItem);
 
-            final PutResult putResult = mock(PutResult.class);
-
-            when(putResult.affectedTables()).thenReturn(singleton(TestItem.TABLE));
+            final PutResult putResult = PutResult.newInsertResult(1, TestItem.TABLE);
 
             itemsToPutResultsMap.put(testItem, putResult);
         }

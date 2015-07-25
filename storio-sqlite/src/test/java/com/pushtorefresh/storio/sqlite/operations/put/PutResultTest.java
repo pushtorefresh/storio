@@ -2,10 +2,14 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.test.ToStringChecker;
+
 import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
@@ -194,5 +198,20 @@ public class PutResultTest {
         } catch (IllegalStateException expected) {
             assertTrue(expected.getMessage().contains("affectedTable must not be null or empty, affectedTables = "));
         }
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(PutResult.class)
+                .allFieldsShouldBeUsed()
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        ToStringChecker
+                .forClass(PutResult.class)
+                .check();
     }
 }

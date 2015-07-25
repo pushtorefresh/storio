@@ -29,6 +29,7 @@ dependencies {
 
     testCompile libraries.junit
     testCompile libraries.mockitoCore
+    testCompile libraries.equalsVerifier
     testCompile libraries.storIOTestCommon
     testCompile libraries.robolectric
 }
@@ -45,4 +46,5 @@ task checkstyle(type: Checkstyle) {
     classpath = files()
 }
 
+apply from: '../gradle/jacoco-android.gradle'
 apply from: '../gradle/publish-android-lib.gradle'

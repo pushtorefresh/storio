@@ -1,8 +1,12 @@
 package com.pushtorefresh.storio.sqlite.queries;
 
+import com.pushtorefresh.storio.test.ToStringChecker;
+
 import org.junit.Test;
 
 import java.util.Arrays;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,9 +15,9 @@ import static org.junit.Assert.assertTrue;
 
 public class QueryTest {
 
-    @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void shouldNotAllowNullTable() {
+        //noinspection ConstantConditions
         Query.builder()
                 .table(null)
                 .build();
@@ -146,5 +150,20 @@ public class QueryTest {
         assertEquals(having, query.having());
         assertEquals(orderBy, query.orderBy());
         assertEquals(limit, query.limit());
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(Query.class)
+                .allFieldsShouldBeUsed()
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        ToStringChecker
+                .forClass(Query.class)
+                .check();
     }
 }

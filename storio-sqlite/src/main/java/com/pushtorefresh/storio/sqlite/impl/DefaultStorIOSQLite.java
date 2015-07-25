@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.RX_JAVA_IS_IN_THE_CLASS_PATH;
 import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
 import static com.pushtorefresh.storio.internal.Queries.nullableString;
 import static java.util.Collections.unmodifiableMap;
@@ -42,7 +43,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     private final SQLiteOpenHelper sqLiteOpenHelper;
 
     @NonNull
-    private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>();
+    private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>(RX_JAVA_IS_IN_THE_CLASS_PATH);
 
     /**
      * Implementation of {@link StorIOSQLite.Internal}.

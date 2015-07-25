@@ -68,11 +68,16 @@ class GetObjectsStub {
         when(storIOSQLite.internal())
                 .thenReturn(internal);
 
-        query = mock(Query.class);
-        when(query.table()).thenReturn("test_table");
+        query = Query
+                .builder()
+                .table("test_table")
+                .build();
 
-        rawQuery = mock(RawQuery.class);
-        when(rawQuery.observesTables()).thenReturn(singleton("test_table"));
+        rawQuery = RawQuery
+                .builder()
+                .query("select * from who_cares")
+                .observesTables("test_table")
+                .build();
 
         getResolver = mock(GetResolver.class);
         cursor = mock(Cursor.class);

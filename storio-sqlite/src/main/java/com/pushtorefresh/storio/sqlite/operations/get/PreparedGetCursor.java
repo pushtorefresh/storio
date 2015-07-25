@@ -99,7 +99,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
         } else if (rawQuery != null) {
             tables = rawQuery.observesTables();
         } else {
-            throw new IllegalStateException("Please specify query");
+            throw new StorIOException("Please specify query");
         }
 
         if (!tables.isEmpty()) {
@@ -163,7 +163,8 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      */
     public static final class CompleteBuilder {
 
-        private static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
+        @NonNull
+        static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
             @NonNull
             @Override
             public Cursor mapFromCursor(@NonNull Cursor cursor) {
@@ -174,9 +175,9 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
         @NonNull
         private final StorIOSQLite storIOSQLite;
 
-        private final Query query;
+        Query query;
 
-        private final RawQuery rawQuery;
+        RawQuery rawQuery;
 
         private GetResolver<Cursor> getResolver;
 

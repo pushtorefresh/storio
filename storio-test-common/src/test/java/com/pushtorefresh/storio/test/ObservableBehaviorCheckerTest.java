@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.functions.Action1;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -14,11 +15,11 @@ import static org.mockito.Mockito.verify;
 
 public class ObservableBehaviorCheckerTest {
 
-    @SuppressWarnings("unchecked")
     @Test
     public void assertThatObservableEmitsOncePositive() {
         final String testString = "Test string";
         final Observable<String> testObservable = Observable.just(testString);
+        //noinspection unchecked
         final Action1<String> testAction = mock(Action1.class);
 
         new ObservableBehaviorChecker<String>()
@@ -47,5 +48,53 @@ public class ObservableBehaviorCheckerTest {
                         }
                     }
                 }).checkBehaviorOfObservable();
+    }
+
+    @Test
+    public void shouldDenyUsingNullObservable() {
+        try {
+            //noinspection ConstantConditions
+            new ObservableBehaviorChecker<Object>()
+                    .observable(null)
+                    .expectedNumberOfEmissions(1)
+                    .testAction(new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+
+                        }
+                    }).checkBehaviorOfObservable();
+        } catch (NullPointerException expected) {
+            assertEquals("Please specify fields", expected.getMessage());
+        }
+    }
+
+    @Test
+    public void shouldDenyUsingNullExpectedNumberOfEmissions() {
+        try {
+            //noinspection ConstantConditions
+            new ObservableBehaviorChecker<Object>()
+                    .observable(Observable.just(new Object()))
+                    .testAction(new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+
+                        }
+                    }).checkBehaviorOfObservable();
+        } catch (NullPointerException expected) {
+            assertEquals("Please specify fields", expected.getMessage());
+        }
+    }
+
+    @Test
+    public void shouldDenyUsingNullTestAction() {
+        try {
+            //noinspection ConstantConditions
+            new ObservableBehaviorChecker<Object>()
+                    .observable(Observable.just(new Object()))
+                    .expectedNumberOfEmissions(1)
+                    .checkBehaviorOfObservable();
+        } catch (NullPointerException expected) {
+            assertEquals("Please specify fields", expected.getMessage());
+        }
     }
 }
