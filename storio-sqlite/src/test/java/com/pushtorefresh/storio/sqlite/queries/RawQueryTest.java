@@ -1,10 +1,14 @@
 package com.pushtorefresh.storio.sqlite.queries;
 
 import com.google.common.collect.HashMultiset;
+import com.pushtorefresh.storio.test.ToStringChecker;
 
 import org.junit.Test;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -57,6 +61,28 @@ public class RawQueryTest {
     }
 
     @Test
+    public void shouldRewriteAffectsTablesOnSecondCall() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .affectsTables("first_call")
+                .affectsTables("second_call")
+                .build();
+
+        assertEquals(singleton("second_call"), rawQuery.affectsTables());
+    }
+
+    @Test
+    public void shouldRewriteObservesTablesOnSecondCall() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .observesTables("first_call")
+                .observesTables("second_call")
+                .build();
+
+        assertEquals(singleton("second_call"), rawQuery.observesTables());
+    }
+
+    @Test
     public void buildWithNormalValues() {
         final String query = "test_query";
         final Object[] args = {"arg1", "arg2", "arg3"};
@@ -74,5 +100,20 @@ public class RawQueryTest {
         assertEquals(asList(args), rawQuery.args());
         assertEquals(HashMultiset.create(asList(observesTables)), HashMultiset.create(rawQuery.observesTables()));
         assertEquals(HashMultiset.create(asList(affectsTables)), HashMultiset.create(rawQuery.affectsTables()));
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(RawQuery.class)
+                .allFieldsShouldBeUsed()
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        ToStringChecker
+                .forClass(RawQuery.class)
+                .check();
     }
 }

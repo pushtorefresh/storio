@@ -17,7 +17,7 @@ import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullSet;
  * <p>
  * Instances of this class are immutable.
  */
-public class RawQuery {
+public final class RawQuery {
 
     @NonNull
     private final String query;
@@ -203,11 +203,14 @@ public class RawQuery {
          */
         @NonNull
         public CompleteBuilder affectsTables(@NonNull String... tables) {
-            if (this.affectsTables == null) {
-                this.affectsTables = new HashSet<String>(tables.length);
+            if (affectsTables == null) {
+                affectsTables = new HashSet<String>(tables.length);
+            } else {
+                affectsTables.clear();
             }
 
-            Collections.addAll(this.affectsTables, tables);
+            Collections.addAll(affectsTables, tables);
+
             return this;
         }
 
@@ -223,11 +226,14 @@ public class RawQuery {
          */
         @NonNull
         public CompleteBuilder observesTables(@NonNull String... tables) {
-            if (this.observesTables == null) {
-                this.observesTables = new HashSet<String>(tables.length);
+            if (observesTables == null) {
+                observesTables = new HashSet<String>(tables.length);
+            } else {
+                observesTables.clear();
             }
 
             Collections.addAll(this.observesTables, tables);
+
             return this;
         }
 

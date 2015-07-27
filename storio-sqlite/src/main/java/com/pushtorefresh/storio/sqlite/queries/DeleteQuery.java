@@ -143,8 +143,10 @@ public final class DeleteQuery {
         @NonNull
         private final String table;
 
+        @Nullable
         private String where;
 
+        @Nullable
         private List<String> whereArgs;
 
         CompleteBuilder(@NonNull String table) {
