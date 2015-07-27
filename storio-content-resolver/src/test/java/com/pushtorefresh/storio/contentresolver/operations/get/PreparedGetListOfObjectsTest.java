@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.contentresolver.operations.get;
 
+import android.database.Cursor;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.StorIOException;
@@ -17,6 +18,7 @@ import java.util.List;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -108,7 +110,7 @@ public class PreparedGetListOfObjectsTest {
             final PreparedGet<List<TestItem>> preparedGet = storIOContentResolver
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(mock(Query.class))
+                    .withQuery(Query.builder().uri(mock(Uri.class)).build())
                     .prepare();
 
             try {
@@ -143,7 +145,7 @@ public class PreparedGetListOfObjectsTest {
             storIOContentResolver
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(mock(Query.class))
+                    .withQuery(Query.builder().uri(mock(Uri.class)).build())
                     .prepare()
                     .createObservable()
                     .subscribe(testSubscriber);
@@ -159,6 +161,55 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOContentResolver).observeChangesOfUri(any(Uri.class));
 
             verifyNoMoreInteractions(storIOContentResolver, internal);
+        }
+    }
+
+    // With Enclosed runner we can not have tests in root class
+    public static class OtherTests {
+
+        @Test
+        public void shouldCloseCursorInCaseOfException() {
+            StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+
+            Query query = Query.builder()
+                    .uri(mock(Uri.class))
+                    .build();
+
+            //noinspection unchecked
+            GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            Cursor cursor = mock(Cursor.class);
+
+            when(getResolver.performGet(storIOContentResolver, query))
+                    .thenReturn(cursor);
+
+            when(getResolver.mapFromCursor(cursor))
+                    .thenThrow(new IllegalStateException("Breaking execution"));
+
+            when(cursor.getCount()).thenReturn(1);
+
+            when(cursor.moveToNext()).thenReturn(true);
+
+            try {
+                new PreparedGetListOfObjects.Builder<Object>(storIOContentResolver, Object.class)
+                        .withQuery(query)
+                        .withGetResolver(getResolver)
+                        .prepare()
+                        .executeAsBlocking();
+
+                fail();
+            } catch (StorIOException expected) {
+                IllegalStateException cause = (IllegalStateException) expected.getCause();
+                assertEquals("Breaking execution", cause.getMessage());
+
+                // Main check: in case of exception cursor must be closed
+                verify(cursor).close();
+
+                verify(cursor).getCount();
+                verify(cursor).moveToNext();
+
+                verifyNoMoreInteractions(storIOContentResolver, cursor);
+            }
         }
     }
 }

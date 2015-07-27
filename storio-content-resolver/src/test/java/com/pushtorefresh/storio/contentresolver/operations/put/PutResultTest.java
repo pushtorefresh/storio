@@ -2,7 +2,15 @@ package com.pushtorefresh.storio.contentresolver.operations.put;
 
 import android.net.Uri;
 
+import com.pushtorefresh.storio.contentresolver.BuildConfig;
+import com.pushtorefresh.storio.test.ToStringChecker;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -12,6 +20,8 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 
+@RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
+@Config(constants = BuildConfig.class, sdk = 21)
 public class PutResultTest {
 
     @Test
@@ -109,4 +119,19 @@ public class PutResultTest {
         }
     }
 
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(PutResult.class)
+                .allFieldsShouldBeUsed()
+                .withPrefabValues(Uri.class, Uri.parse("content://1"), Uri.parse("content://2"))
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        ToStringChecker
+                .forClass(PutResult.class)
+                .check();
+    }
 }

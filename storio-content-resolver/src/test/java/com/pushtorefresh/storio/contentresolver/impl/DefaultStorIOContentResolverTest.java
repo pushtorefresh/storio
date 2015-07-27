@@ -1,18 +1,24 @@
 package com.pushtorefresh.storio.contentresolver.impl;
 
 import android.content.ContentResolver;
+import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio.contentresolver.operations.get.GetResolver;
 import com.pushtorefresh.storio.contentresolver.operations.put.PutResolver;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DefaultStorIOContentResolverTest {
 
@@ -83,13 +89,13 @@ public class DefaultStorIOContentResolverTest {
         assertNull(storIOContentResolver.internal().typeMapping(TestItem.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void directTypeMappingShouldWork() {
         class TestItem {
 
         }
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
@@ -104,13 +110,13 @@ public class DefaultStorIOContentResolverTest {
         assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItem.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void indirectTypeMappingShouldWork() {
         class TestItem {
 
         }
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
@@ -133,13 +139,43 @@ public class DefaultStorIOContentResolverTest {
         assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItemSubclass.class));
     }
 
-    @SuppressWarnings("unchecked")
+    @Test
+    public void indirectTypeMappingShouldCacheValue() {
+        class TestItem {
+
+        }
+
+        //noinspection unchecked
+        final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
+                .putResolver(mock(PutResolver.class))
+                .getResolver(mock(GetResolver.class))
+                .deleteResolver(mock(DeleteResolver.class))
+                .build();
+
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+                .contentResolver(mock(ContentResolver.class))
+                .addTypeMapping(TestItem.class, typeMapping)
+                .build();
+
+        class TestItemSubclass extends TestItem {
+
+        }
+
+        // Indirect type mapping should give same type mapping as for parent class
+        assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItemSubclass.class));
+
+        // Next call should be faster (we can not check this exactly)
+        // But test coverage tool will check that we executed cache branch
+        assertSame(typeMapping, storIOContentResolver.internal().typeMapping(TestItemSubclass.class));
+    }
+
     @Test
     public void typeMappingShouldWorkInCaseOfMoreConcreteTypeMapping() {
         class TestItem {
 
         }
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
@@ -150,6 +186,7 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<TestItemSubclass> subclassTypeMapping = ContentResolverTypeMapping.<TestItemSubclass>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
@@ -169,7 +206,6 @@ public class DefaultStorIOContentResolverTest {
         assertSame(subclassTypeMapping, storIOContentResolver.internal().typeMapping(TestItemSubclass.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void typeMappingShouldFindIndirectTypeMappingInCaseOfComplexInheritance() {
         // Good test case — inheritance with AutoValue/AutoParcel
@@ -190,12 +226,14 @@ public class DefaultStorIOContentResolverTest {
 
         }
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<Entity> entitySQLiteTypeMapping = ContentResolverTypeMapping.<Entity>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
+        //noinspection unchecked
         final ContentResolverTypeMapping<ConcreteEntity> concreteEntitySQLiteTypeMapping = ContentResolverTypeMapping.<ConcreteEntity>builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
@@ -219,5 +257,30 @@ public class DefaultStorIOContentResolverTest {
 
         // Indirect type mapping for AutoValue_ConcreteEntity should get type mapping for ConcreteEntity, not for Entity!
         assertSame(concreteEntitySQLiteTypeMapping, storIOContentResolver.internal().typeMapping(AutoValue_ConcreteEntity.class));
+    }
+
+    @Test
+    public void shouldThrowExceptionIfContentResolverReturnsNull() {
+        ContentResolver contentResolver = mock(ContentResolver.class);
+
+        StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+                .contentResolver(contentResolver)
+                .build();
+
+        Query query = Query.builder()
+                .uri(mock(Uri.class))
+                .build();
+
+        when(contentResolver
+                .query(any(Uri.class), any(String[].class), anyString(), any(String[].class), anyString()))
+                .thenReturn(null); // Notice, we return null instead of Cursor
+
+        try {
+            storIOContentResolver
+                    .internal()
+                    .query(query);
+        } catch (IllegalStateException expected) {
+            assertEquals("Cursor returned by content provider is null", expected.getMessage());
+        }
     }
 }

@@ -16,11 +16,13 @@ public final class PutResults<T> {
     @NonNull
     private final Map<T, PutResult> results;
 
+    // Marked as transient to correct equals/hashCode/toString checks (tests)
     @Nullable
-    private volatile Integer numberOfInsertsCache;
+    private volatile transient Integer numberOfInsertsCache;
 
+    // Marked as transient to correct equals/hashCode/toString checks (tests)
     @Nullable
-    private volatile Integer numberOfUpdatesCache;
+    private volatile transient Integer numberOfUpdatesCache;
 
     private PutResults(@NonNull Map<T, PutResult> putResults) {
         this.results = Collections.unmodifiableMap(putResults);

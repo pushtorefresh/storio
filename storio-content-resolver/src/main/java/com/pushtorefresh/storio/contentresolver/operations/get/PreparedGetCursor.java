@@ -119,7 +119,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      */
     public static final class CompleteBuilder {
 
-        private static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
+        static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
             @NonNull
             @Override
             public Cursor mapFromCursor(@NonNull Cursor cursor) {

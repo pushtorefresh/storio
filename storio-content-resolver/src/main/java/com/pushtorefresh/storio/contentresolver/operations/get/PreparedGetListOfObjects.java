@@ -61,7 +61,6 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      * @return non-null, immutable {@link List} with mapped results, list can be empty.
      */
     @WorkerThread
-    @SuppressWarnings("unchecked") // for empty list
     @NonNull
     @Override
     public List<T> executeAsBlocking() {
@@ -88,6 +87,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
                 final int count = cursor.getCount();
 
                 if (count == 0) {
+                    //noinspection unchecked
                     return EMPTY_LIST; // it's immutable
                 } else {
                     final List<T> list = new ArrayList<T>(count);
