@@ -95,6 +95,15 @@ public final class UpdateQuery {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "UpdateQuery{" +
+                "uri=" + uri +
+                ", where='" + where + '\'' +
+                ", whereArgs=" + whereArgs +
+                '}';
+    }
+
     /**
      * Creates new builder for {@link UpdateQuery}.
      *
@@ -203,10 +212,6 @@ public final class UpdateQuery {
          */
         @NonNull
         public UpdateQuery build() {
-            if (where == null && whereArgs != null && !whereArgs.isEmpty()) {
-                throw new IllegalStateException("You can not use whereArgs without where clause");
-            }
-
             return new UpdateQuery(
                     uri,
                     where,

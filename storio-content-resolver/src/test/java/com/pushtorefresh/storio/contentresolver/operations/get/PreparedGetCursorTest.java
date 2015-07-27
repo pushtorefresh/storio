@@ -1,10 +1,20 @@
 package com.pushtorefresh.storio.contentresolver.operations.get;
 
 import android.database.Cursor;
+import android.net.Uri;
+
+import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
 
 import rx.Observable;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class PreparedGetCursorTest {
 
@@ -38,5 +48,40 @@ public class PreparedGetCursorTest {
                 .take(1);
 
         getStub.verifyQueryBehaviorForCursor(cursorObservable);
+    }
+
+    @Test
+    public void shouldUseStandardGetResolverWithoutExplicitlyPassed() {
+        StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+
+        StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+
+        when(storIOContentResolver.internal()).thenReturn(internal);
+
+        Query query = Query.builder()
+                .uri(mock(Uri.class))
+                .build();
+
+        new PreparedGetCursor.Builder(storIOContentResolver)
+                .withQuery(query)
+                .prepare()
+                .executeAsBlocking();
+
+        verify(storIOContentResolver).internal();
+        verify(internal).query(query);
+
+        verifyNoMoreInteractions(storIOContentResolver, internal);
+    }
+
+    @Test
+    public void checkThatStandardGetResolverDoesNotModifyCursor() {
+        Cursor cursor = mock(Cursor.class);
+
+        Cursor cursorAfterMap = PreparedGetCursor
+                .CompleteBuilder
+                .STANDARD_GET_RESOLVER
+                .mapFromCursor(cursor);
+
+        assertEquals(cursor, cursorAfterMap);
     }
 }
