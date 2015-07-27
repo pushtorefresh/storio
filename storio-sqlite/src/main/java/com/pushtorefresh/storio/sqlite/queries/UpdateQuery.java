@@ -197,6 +197,10 @@ public final class UpdateQuery {
          */
         @NonNull
         public UpdateQuery build() {
+            if (where == null && whereArgs != null && !whereArgs.isEmpty()) {
+                throw new IllegalStateException("You can not use whereArgs without where clause");
+            }
+
             return new UpdateQuery(
                     table,
                     where,

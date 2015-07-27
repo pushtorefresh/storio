@@ -1,6 +1,9 @@
 package com.pushtorefresh.storio.sqlite.operations.get;
 
+import android.database.Cursor;
+
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.TestUtils;
 import com.pushtorefresh.storio.sqlite.queries.Query;
@@ -16,9 +19,12 @@ import java.util.Set;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
+import static java.util.Collections.singleton;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -167,7 +173,7 @@ public class PreparedGetListOfObjectsTest {
             final PreparedGet<List<TestItem>> preparedGet = storIOSQLite
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(mock(Query.class))
+                    .withQuery(Query.builder().table("test_table").build())
                     .prepare();
 
             try {
@@ -196,7 +202,7 @@ public class PreparedGetListOfObjectsTest {
             final PreparedGet<List<TestItem>> preparedGet = storIOSQLite
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(mock(RawQuery.class))
+                    .withQuery(RawQuery.builder().query("test query").build())
                     .prepare();
 
             try {
@@ -230,7 +236,7 @@ public class PreparedGetListOfObjectsTest {
             storIOSQLite
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(mock(Query.class))
+                    .withQuery(Query.builder().table("test_table").build())
                     .prepare()
                     .createObservable()
                     .subscribe(testSubscriber);
@@ -260,7 +266,7 @@ public class PreparedGetListOfObjectsTest {
             storIOSQLite
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(mock(RawQuery.class))
+                    .withQuery(RawQuery.builder().query("test query").build())
                     .prepare()
                     .createObservable()
                     .subscribe(testSubscriber);
@@ -277,4 +283,166 @@ public class PreparedGetListOfObjectsTest {
         }
     }
 
+    // Because we run tests on this class with Enclosed runner, we need to wrap other tests into class
+    public static class OtherTests {
+
+        @Test
+        public void completeBuilderShouldThrowExceptionIfNoQueryWasSet() {
+            PreparedGetListOfObjects.CompleteBuilder completeBuilder = new PreparedGetListOfObjects.Builder<Object>(mock(StorIOSQLite.class), Object.class)
+                    .withQuery(Query.builder().table("test_table").build()); // We will null it later;
+
+            completeBuilder.query = null;
+
+            try {
+                completeBuilder.prepare();
+                fail();
+            } catch (IllegalStateException expected) {
+                assertEquals("Please specify Query or RawQuery", expected.getMessage());
+            }
+        }
+
+        @Test
+        public void executeAsBlockingShouldThrowExceptionIfNoQueryWasSet() {
+            //noinspection unchecked,ConstantConditions
+            PreparedGetListOfObjects<Object> preparedGetListOfObjects
+                    = new PreparedGetListOfObjects<Object>(
+                    mock(StorIOSQLite.class),
+                    Object.class,
+                    (Query) null,
+                    (GetResolver<Object>) mock(GetResolver.class)
+            );
+
+            try {
+                preparedGetListOfObjects.executeAsBlocking();
+                fail();
+            } catch (StorIOException expected) {
+                IllegalStateException cause = (IllegalStateException) expected.getCause();
+                assertEquals("Please specify query", cause.getMessage());
+            }
+        }
+
+        @Test
+        public void createObservableShouldThrowExceptionIfNoQueryWasSet() {
+            //noinspection unchecked,ConstantConditions
+            PreparedGetListOfObjects<Object> preparedGetListOfObjects
+                    = new PreparedGetListOfObjects<Object>(
+                    mock(StorIOSQLite.class),
+                    Object.class,
+                    (Query) null,
+                    (GetResolver<Object>) mock(GetResolver.class)
+            );
+
+            try {
+                preparedGetListOfObjects.createObservable();
+                fail();
+            } catch (IllegalStateException expected) {
+                assertEquals("Please specify query", expected.getMessage());
+            }
+        }
+
+        @Test
+        public void cursorMustBeClosedInCaseOfExceptionForExecuteAsBlocking() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final Cursor cursor = mock(Cursor.class);
+
+            when(cursor.getCount()).thenReturn(10);
+
+            when(cursor.moveToNext()).thenReturn(true);
+
+            when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
+                    .thenReturn(cursor);
+
+            when(getResolver.mapFromCursor(cursor))
+                    .thenThrow(new IllegalStateException("test exception"));
+
+            PreparedGetListOfObjects<Object> preparedGetListOfObjects =
+                    new PreparedGetListOfObjects<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            Query.builder().table("test_table").build(),
+                            getResolver
+                    );
+
+            try {
+                preparedGetListOfObjects.executeAsBlocking();
+                fail();
+            } catch (StorIOException exception) {
+                IllegalStateException cause = (IllegalStateException) exception.getCause();
+                assertEquals("test exception", cause.getMessage());
+
+                // Cursor must be closed in case of exception
+                verify(cursor).close();
+
+                verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
+                verify(getResolver).mapFromCursor(cursor);
+                verify(cursor).getCount();
+                verify(cursor).moveToNext();
+
+                verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
+            }
+        }
+
+        @Test
+        public void cursorMustBeClosedInCaseOfExceptionForObservable() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            when(storIOSQLite.observeChangesInTables(eq(singleton("test_table"))))
+                    .thenReturn(Observable.<Changes>empty());
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final Cursor cursor = mock(Cursor.class);
+
+            when(cursor.getCount()).thenReturn(10);
+
+            when(cursor.moveToNext()).thenReturn(true);
+
+            when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
+                    .thenReturn(cursor);
+
+            when(getResolver.mapFromCursor(cursor))
+                    .thenThrow(new IllegalStateException("test exception"));
+
+            PreparedGetListOfObjects<Object> preparedGetListOfObjects =
+                    new PreparedGetListOfObjects<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            Query.builder().table("test_table").build(),
+                            getResolver
+                    );
+
+            final TestSubscriber<List<Object>> testSubscriber = new TestSubscriber<List<Object>>();
+
+            preparedGetListOfObjects
+                    .createObservable()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+
+            testSubscriber.assertNoValues();
+            testSubscriber.assertError(StorIOException.class);
+
+            StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+
+            IllegalStateException cause = (IllegalStateException) storIOException.getCause();
+            assertEquals("test exception", cause.getMessage());
+
+            // Cursor must be closed in case of exception
+            verify(cursor).close();
+
+            //noinspection unchecked
+            verify(storIOSQLite).observeChangesInTables(anySet());
+            verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
+            verify(getResolver).mapFromCursor(cursor);
+            verify(cursor).getCount();
+            verify(cursor).moveToNext();
+
+            verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
+        }
+    }
 }

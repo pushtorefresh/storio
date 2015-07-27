@@ -1,24 +1,28 @@
 package com.pushtorefresh.storio.sqlite.operations.delete;
 
+import com.pushtorefresh.storio.test.ToStringChecker;
+
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 import static org.junit.Assert.assertEquals;
 
 public class DeleteResultTest {
 
-    @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void nullAffectedTable() {
+        //noinspection ConstantConditions
         DeleteResult.newInstance(0, (String) null);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
     public void nullAffectedTables() {
+        //noinspection ConstantConditions
         DeleteResult.newInstance(0, (Set<String>) null);
     }
 
@@ -43,5 +47,20 @@ public class DeleteResultTest {
         final DeleteResult deleteResult = DeleteResult.newInstance(2, affectedTables);
 
         assertEquals(affectedTables, deleteResult.affectedTables());
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(DeleteResult.class)
+                .allFieldsShouldBeUsed()
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        ToStringChecker
+                .forClass(DeleteResult.class)
+                .check();
     }
 }

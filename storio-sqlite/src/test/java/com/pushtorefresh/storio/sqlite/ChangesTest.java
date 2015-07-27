@@ -1,9 +1,13 @@
 package com.pushtorefresh.storio.sqlite;
 
+import com.pushtorefresh.storio.test.ToStringChecker;
+
 import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -43,5 +47,20 @@ public class ChangesTest {
 
         final Changes changes = Changes.newInstance(affectedTables);
         assertEquals(affectedTables, changes.affectedTables());
+    }
+
+    @Test
+    public void verifyEqualsAndHashCodeImplementation() {
+        EqualsVerifier
+                .forClass(Changes.class)
+                .allFieldsShouldBeUsed()
+                .verify();
+    }
+
+    @Test
+    public void checkToStringImplementation() {
+        ToStringChecker
+                .forClass(Changes.class)
+                .check();
     }
 }

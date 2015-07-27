@@ -15,7 +15,7 @@ import static java.util.Collections.unmodifiableSet;
  * <p>
  * Instances of this class are immutable.
  */
-public class PutResult {
+public final class PutResult {
 
     @Nullable
     private final Long insertedId;
