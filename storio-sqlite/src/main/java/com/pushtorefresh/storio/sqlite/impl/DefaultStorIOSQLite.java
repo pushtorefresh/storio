@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.internal.ChangesBus;
+import com.pushtorefresh.storio.internal.Environment;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -33,7 +34,7 @@ import static java.util.Collections.unmodifiableMap;
 
 /**
  * Default implementation of {@link StorIOSQLite} for {@link android.database.sqlite.SQLiteDatabase}.
- * <p>
+ * <p/>
  * Thread-safe.
  */
 public class DefaultStorIOSQLite extends StorIOSQLite {
@@ -42,7 +43,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     private final SQLiteOpenHelper sqLiteOpenHelper;
 
     @NonNull
-    private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>();
+    private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>(Environment.RX_JAVA_IS_IN_THE_CLASS_PATH);
 
     /**
      * Implementation of {@link StorIOSQLite.Internal}.
@@ -82,7 +83,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
 
     /**
      * Closes underlying {@link SQLiteOpenHelper}.
-     * <p>
+     * <p/>
      * All calls to this instance of {@link StorIOSQLite}
      * after call to this method can produce exceptions
      * and undefined behavior.
@@ -115,7 +116,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
 
         /**
          * Required: Specifies SQLite Open helper for internal usage.
-         * <p>
+         * <p/>
          *
          * @param sqliteOpenHelper a SQLiteOpenHelper for internal usage.
          * @return builder.
@@ -209,7 +210,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
 
         /**
          * Gets type mapping for required type.
-         * <p>
+         * <p/>
          * This implementation can handle subclasses of types, that registered its type mapping.
          * For example: You've added type mapping for {@code User.class},
          * and you have {@code UserFromServiceA.class} which extends {@code User.class},
