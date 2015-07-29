@@ -1,0 +1,242 @@
+package com.pushtorefresh.storio.contentresolver.integration;
+
+import android.database.Cursor;
+
+import com.pushtorefresh.storio.contentresolver.BuildConfig;
+import com.pushtorefresh.storio.contentresolver.Changes;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResult;
+import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResults;
+import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
+
+import org.assertj.android.api.Assertions;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
+
+import rx.observers.TestSubscriber;
+
+import static java.util.Collections.singletonList;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
+public class DeleteOperationTest extends IntegrationTest {
+
+    @Test
+    public void deleteByQueryExecuteAsBlocking() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(2)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItemToInsert = TestItem.create(null, "value");
+        contentResolver.insert(TestItem.CONTENT_URI, testItemToInsert.toContentValues());
+
+        Cursor firstDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(firstDbState).hasCount(1);
+
+        DeleteResult deleteResult = storIOContentResolver
+                .delete()
+                .byQuery(DeleteQuery.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .build())
+                .prepare()
+                .executeAsBlocking();
+
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
+
+        Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(secondDbState).hasCount(0);
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void deleteByQueryAsObservable() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(2)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItemToInsert = TestItem.create(null, "value");
+        contentResolver.insert(TestItem.CONTENT_URI, testItemToInsert.toContentValues());
+
+        Cursor firstDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(firstDbState).hasCount(1);
+
+        DeleteResult deleteResult = storIOContentResolver
+                .delete()
+                .byQuery(DeleteQuery.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .build())
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .first();
+
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
+
+        Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(secondDbState).hasCount(0);
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void deleteObjectExecuteAsBlocking() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(2)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItemToInsert = TestItem.create(null, "value");
+        contentResolver.insert(TestItem.CONTENT_URI, testItemToInsert.toContentValues());
+
+        Cursor firstDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(firstDbState).hasCount(1);
+
+        //noinspection ConstantConditions
+        assertThat(firstDbState.moveToFirst()).isTrue();
+
+        TestItem testItem = TestItem.fromCursor(firstDbState);
+
+        DeleteResult deleteResult = storIOContentResolver
+                .delete()
+                .object(testItem)
+                .prepare()
+                .executeAsBlocking();
+
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
+
+        Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(secondDbState).hasCount(0);
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void deleteObjectCreateObservable() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(2)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItemToInsert = TestItem.create(null, "value");
+        contentResolver.insert(TestItem.CONTENT_URI, testItemToInsert.toContentValues());
+
+        Cursor firstDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(firstDbState).hasCount(1);
+
+        //noinspection ConstantConditions
+        assertThat(firstDbState.moveToFirst()).isTrue();
+
+        TestItem testItem = TestItem.fromCursor(firstDbState);
+
+        DeleteResult deleteResult = storIOContentResolver
+                .delete()
+                .object(testItem)
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .first();
+
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
+
+        Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(secondDbState).hasCount(0);
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void deleteObjectsExecuteAsBlocking() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(2)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItemToInsert = TestItem.create(null, "value");
+        contentResolver.insert(TestItem.CONTENT_URI, testItemToInsert.toContentValues());
+
+        Cursor firstDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(firstDbState).hasCount(1);
+
+        //noinspection ConstantConditions
+        assertThat(firstDbState.moveToFirst()).isTrue();
+
+        TestItem testItem = TestItem.fromCursor(firstDbState);
+
+        DeleteResults<TestItem> deleteResults = storIOContentResolver
+                .delete()
+                .objects(singletonList(testItem))
+                .prepare()
+                .executeAsBlocking();
+
+        assertThat(deleteResults.wasDeleted(testItem)).isTrue();
+
+        Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(secondDbState).hasCount(0);
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void deleteObjectsAsObservable() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(2)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItemToInsert = TestItem.create(null, "value");
+        contentResolver.insert(TestItem.CONTENT_URI, testItemToInsert.toContentValues());
+
+        Cursor firstDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(firstDbState).hasCount(1);
+
+        //noinspection ConstantConditions
+        assertThat(firstDbState.moveToFirst()).isTrue();
+
+        TestItem testItem = TestItem.fromCursor(firstDbState);
+
+        DeleteResults<TestItem> deleteResults = storIOContentResolver
+                .delete()
+                .objects(singletonList(testItem))
+                .prepare()
+                .createObservable()
+                .toBlocking()
+                .first();
+
+        assertThat(deleteResults.wasDeleted(testItem)).isTrue();
+
+        Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+        Assertions.assertThat(secondDbState).hasCount(0);
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
+    }
+}
