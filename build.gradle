@@ -36,7 +36,7 @@ allprojects {
     tasks.withType(JavaForkOptions) {
         jvmArgs '-Djava.awt.headless=true'
     }
-    
+
     project.plugins.whenPluginAdded { plugin ->
 
         // Ignore 'debug' buildType for library projects
@@ -82,6 +82,7 @@ ext.libraries = [
         powerMockMockito               : 'org.powermock:powermock-api-mockito:1.6.2',
 
         equalsVerifier                 : 'nl.jqno.equalsverifier:equalsverifier:1.7.2',
+        privateConstructorChecker      : 'com.pushtorefresh.java-private-constructor-checker:checker:1.0.0',
         guava                          : 'com.google.guava:guava:18.0',
         robolectric                    : 'org.robolectric:robolectric:3.0',
 

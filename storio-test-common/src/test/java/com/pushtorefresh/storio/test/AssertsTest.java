@@ -1,5 +1,7 @@
 package com.pushtorefresh.storio.test;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
+
 import org.junit.Test;
 
 import java.util.ArrayList;

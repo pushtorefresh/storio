@@ -5,8 +5,8 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
 import com.pushtorefresh.storio.contentresolver.Changes;
-import com.pushtorefresh.storio.test.PrivateConstructorChecker;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;

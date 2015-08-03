@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.internal;
 
-import com.pushtorefresh.storio.test.PrivateConstructorChecker;
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
 
 import org.junit.Test;
 

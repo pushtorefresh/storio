@@ -24,6 +24,7 @@ dependencies {
     compile libraries.mockitoCore
 
     testCompile libraries.junit
+    testCompile libraries.privateConstructorChecker
 }
 
 task checkstyle(type: Checkstyle) {
