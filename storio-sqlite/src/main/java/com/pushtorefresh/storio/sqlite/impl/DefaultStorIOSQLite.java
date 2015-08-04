@@ -20,6 +20,7 @@ import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -388,9 +389,11 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         private void notifyAboutPendingChangesIfNotInTransaction() {
             if (numberOfRunningTransactions == 0) {
-                for (Changes changes : pendingChanges) {
-                    pendingChanges.remove(changes);
-                    changesBus.onNext(changes);
+                final Iterator<Changes> iterator = pendingChanges.iterator();
+
+                while (iterator.hasNext()) {
+                    changesBus.onNext(iterator.next());
+                    iterator.remove();
                 }
             }
         }

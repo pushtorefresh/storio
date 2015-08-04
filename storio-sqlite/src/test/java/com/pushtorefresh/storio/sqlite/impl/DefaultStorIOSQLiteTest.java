@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlite.impl;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResolver;
@@ -276,5 +277,47 @@ public class DefaultStorIOSQLiteTest {
         verify(sqLiteOpenHelper).getWritableDatabase();
         verify(sqLiteDatabase).execSQL(eq(rawQuery.query()), eq(new String[]{"arg1", "arg2"}));
         verifyNoMoreInteractions(sqLiteOpenHelper, sqLiteDatabase);
+    }
+
+    // See https://github.com/pushtorefresh/storio/issues/478
+    @Test
+    public void nestedTransactionShouldWorkOkay() {
+        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
+        SQLiteDatabase sqLiteDatabase = mock(SQLiteDatabase.class);
+
+        when(sqLiteOpenHelper.getWritableDatabase()).thenReturn(sqLiteDatabase);
+
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .build();
+
+        // External transaction
+        storIOSQLite.internal().beginTransaction();
+
+        try {
+            try {
+                // Nested transaction
+                storIOSQLite.internal().beginTransaction();
+
+                storIOSQLite
+                        .internal()
+                        .notifyAboutChanges(Changes.newInstance("table1"));
+
+                storIOSQLite
+                        .internal()
+                        .notifyAboutChanges(Changes.newInstance("table2"));
+
+                // Finishing nested transaction
+                storIOSQLite.internal().setTransactionSuccessful();
+            } finally {
+                storIOSQLite.internal().endTransaction();
+            }
+
+            // Marking external transaction as successful
+            storIOSQLite.internal().setTransactionSuccessful();
+        } finally {
+            // Finishing external transaction
+            storIOSQLite.internal().endTransaction();
+        }
     }
 }
