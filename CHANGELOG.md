@@ -1,6 +1,21 @@
 StorIO Change Log
 ==========
 
+## Version 1.1.1
+
+_2015_08_4_
+
+*  **Fix for nested transactions in StorIOSQLite.**
+* Switch to PrivateConstructorChecker!
+* Ignore debug buildType for library projects — faster CI.
+
+
+**Changes:**
+
+* [PR 479](https://github.com/pushtorefresh/storio/pull/479) Fix ConcurrentModificationException in DefaultStorIOSQLite in case of nested transactions
+* [PR 477](https://github.com/pushtorefresh/storio/pull/477) Switch to PrivateConstructorChecker!
+* [PR 473](https://github.com/pushtorefresh/storio/pull/473) Ignore debug buildType for library projects
+
 ## Version 1.1.0
 
 _2015_07_27_
