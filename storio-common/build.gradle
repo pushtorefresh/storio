@@ -28,6 +28,7 @@ dependencies {
     testCompile libraries.powerMockJUnit
     testCompile libraries.powerMockMockito
     testCompile libraries.equalsVerifier
+    testCompile libraries.privateConstructorChecker
     testCompile libraries.storIOTestCommon
 }
 
