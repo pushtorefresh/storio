@@ -1,6 +1,18 @@
 StorIO Change Log
 ==========
 
+## Version 1.1.2
+
+_2015_08_5_
+
+*  **Fix for possible deadlock because of internal SQLiteDatabase synchronization.** See issue #[481](https://github.com/pushtorefresh/storio/issues/481).
+*  **Thanks to [@tadas-subonis](https://github.com/tadas-subonis)!**
+
+**Changes:**
+
+* [PR 482](https://github.com/pushtorefresh/storio/pull/482) Fix possible deadlock caused by internal synchronization in SQLiteDatabase
+
+
 ## Version 1.1.1
 
 _2015_08_4_
@@ -8,6 +20,7 @@ _2015_08_4_
 *  **Fix for nested transactions in StorIOSQLite.**
 * Switch to PrivateConstructorChecker!
 * Ignore debug buildType for library projects — faster CI.
+*  **Thanks to [@tadas-subonis](https://github.com/tadas-subonis)!**
 
 
 **Changes:**
