@@ -91,6 +91,8 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
                             affectedTables.addAll(putResults.get(contentValues).affectedTables());
                         }
 
+                        // IMPORTANT: Notifying about change should be done after end of transaction
+                        // It'll reduce number of possible deadlock situations
                         internal.notifyAboutChanges(Changes.newInstance(affectedTables));
                     }
                 }

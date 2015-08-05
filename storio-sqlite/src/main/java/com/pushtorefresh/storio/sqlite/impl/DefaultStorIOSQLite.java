@@ -403,11 +403,11 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void beginTransaction() {
-            synchronized (lock) {
-                sqLiteOpenHelper
-                        .getWritableDatabase()
-                        .beginTransaction();
+            sqLiteOpenHelper
+                    .getWritableDatabase()
+                    .beginTransaction();
 
+            synchronized (lock) {
                 numberOfRunningTransactions++;
             }
         }
@@ -417,11 +417,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void setTransactionSuccessful() {
-            synchronized (lock) {
-                sqLiteOpenHelper
-                        .getWritableDatabase()
-                        .setTransactionSuccessful();
-            }
+            // SQLiteDatabase has it's own synchronization
+            sqLiteOpenHelper
+                    .getWritableDatabase()
+                    .setTransactionSuccessful();
         }
 
         /**
@@ -429,11 +428,12 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void endTransaction() {
-            synchronized (lock) {
-                sqLiteOpenHelper
-                        .getWritableDatabase()
-                        .endTransaction();
+            // SQLiteDatabase has it's own synchronization
+            sqLiteOpenHelper
+                    .getWritableDatabase()
+                    .endTransaction();
 
+            synchronized (lock) {
                 numberOfRunningTransactions--;
                 notifyAboutPendingChangesIfNotInTransaction();
             }
