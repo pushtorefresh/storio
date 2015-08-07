@@ -29,8 +29,8 @@ import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.RX_JAVA_IS_IN_THE_CLASS_PATH;
-import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
-import static com.pushtorefresh.storio.internal.Queries.nullableString;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableString;
 import static java.util.Collections.unmodifiableMap;
 
 /**

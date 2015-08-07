@@ -17,6 +17,10 @@ android {
     packagingOptions {
         exclude 'LICENSE.txt' // multiple libs have this file -> cause build error
     }
+
+    lintOptions {
+        disable 'InvalidPackage' // AssertJ references java.nio package, which is not available on Android
+    }
 }
 
 dependencies {
@@ -24,6 +28,7 @@ dependencies {
     provided libraries.rxJava
 
     testCompile libraries.junit
+    testCompile libraries.assertJ
     testCompile libraries.mockitoCore
     testCompile libraries.powerMockJUnit
     testCompile libraries.powerMockMockito
