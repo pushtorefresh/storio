@@ -1,6 +1,17 @@
 StorIO Change Log
 ==========
 
+## Version 1.2.0
+
+_2015_08_7_
+
+*  **Add `Queries` class with common utils for queries, now you can generate placeholders!
+
+**Changes:**
+
+* [PR 485](https://github.com/pushtorefresh/storio/pull/485) Add public Queries utils with function for generating placeholders
+
+
 ## Version 1.1.2
 
 _2015_08_5_
