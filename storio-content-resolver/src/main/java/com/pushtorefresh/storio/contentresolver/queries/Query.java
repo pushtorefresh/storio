@@ -7,9 +7,9 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
-import static com.pushtorefresh.storio.internal.Queries.nonNullString;
-import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullList;
-import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.nonNullString;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullList;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullListOfStrings;
 
 /**
  * Query for {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.

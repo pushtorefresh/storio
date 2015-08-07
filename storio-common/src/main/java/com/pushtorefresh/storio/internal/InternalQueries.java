@@ -17,9 +17,9 @@ import static java.util.Collections.unmodifiableList;
  * <p>
  * For internal usage only!
  */
-public final class Queries {
+public final class InternalQueries {
 
-    private Queries() {
+    private InternalQueries() {
         throw new IllegalStateException("No instances please");
     }
 

@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
-import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListOfStrings;
-import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullSet;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullListOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullSet;
 
 /**
  * Raw SQL query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.

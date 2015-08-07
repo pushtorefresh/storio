@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
-import static com.pushtorefresh.storio.internal.Queries.nonNullString;
-import static com.pushtorefresh.storio.internal.Queries.unmodifiableNonNullListOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.nonNullString;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullListOfStrings;
 
 /**
  * Delete query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.

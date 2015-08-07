@@ -28,8 +28,8 @@ import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
-import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
-import static com.pushtorefresh.storio.internal.Queries.nullableString;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableString;
 import static java.util.Collections.unmodifiableMap;
 
 /**

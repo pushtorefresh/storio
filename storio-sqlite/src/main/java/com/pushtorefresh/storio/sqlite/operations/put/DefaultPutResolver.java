@@ -9,8 +9,8 @@ import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
-import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
-import static com.pushtorefresh.storio.internal.Queries.nullableString;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableString;
 
 /**
  * Default implementation of {@link PutResolver}.

@@ -10,8 +10,8 @@ import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 
-import static com.pushtorefresh.storio.internal.Queries.nullableArrayOfStrings;
-import static com.pushtorefresh.storio.internal.Queries.nullableString;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableString;
 
 /**
  * Default thread-safe implementation of {@link PutResolver}.
