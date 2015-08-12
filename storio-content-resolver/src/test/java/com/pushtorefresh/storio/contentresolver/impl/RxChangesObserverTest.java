@@ -20,7 +20,7 @@ import rx.Observable;
 import rx.Subscription;
 
 import static java.util.Collections.singleton;
-import static org.junit.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
@@ -63,7 +63,7 @@ public class RxChangesObserverTest {
 
         Subscription subscription = observable.subscribe();
 
-        assertFalse(contentObserver.get().deliverSelfNotifications());
+        assertThat(contentObserver.get().deliverSelfNotifications()).isFalse();
 
         subscription.unsubscribe();
     }

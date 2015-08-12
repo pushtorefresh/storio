@@ -5,7 +5,6 @@ import android.database.Cursor;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.TestUtils;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
@@ -20,8 +19,8 @@ import rx.Observable;
 import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singleton;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.eq;
@@ -178,10 +177,10 @@ public class PreparedGetListOfObjectsTest {
 
             try {
                 preparedGet.executeAsBlocking();
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
-                TestUtils.checkException(expected, IllegalStateException.class);
+                assertThat(expected).hasCauseInstanceOf(IllegalStateException.class);
             }
 
             verify(storIOSQLite).get();
@@ -207,10 +206,10 @@ public class PreparedGetListOfObjectsTest {
 
             try {
                 preparedGet.executeAsBlocking();
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
-                TestUtils.checkException(expected, IllegalStateException.class);
+                assertThat(expected).hasCauseInstanceOf(IllegalStateException.class);
             }
 
             verify(storIOSQLite).get();
@@ -243,7 +242,9 @@ public class PreparedGetListOfObjectsTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).internal();
@@ -273,7 +274,9 @@ public class PreparedGetListOfObjectsTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).internal();
@@ -295,9 +298,9 @@ public class PreparedGetListOfObjectsTest {
 
             try {
                 completeBuilder.prepare();
-                fail();
+                failBecauseExceptionWasNotThrown(IllegalStateException.class);
             } catch (IllegalStateException expected) {
-                assertEquals("Please specify Query or RawQuery", expected.getMessage());
+                assertThat(expected).hasMessage("Please specify Query or RawQuery");
             }
         }
 
@@ -314,10 +317,10 @@ public class PreparedGetListOfObjectsTest {
 
             try {
                 preparedGetListOfObjects.executeAsBlocking();
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
                 IllegalStateException cause = (IllegalStateException) expected.getCause();
-                assertEquals("Please specify query", cause.getMessage());
+                assertThat(cause).hasMessage("Please specify query");
             }
         }
 
@@ -334,9 +337,9 @@ public class PreparedGetListOfObjectsTest {
 
             try {
                 preparedGetListOfObjects.createObservable();
-                fail();
+                failBecauseExceptionWasNotThrown(IllegalStateException.class);
             } catch (IllegalStateException expected) {
-                assertEquals("Please specify query", expected.getMessage());
+                assertThat(expected).hasMessage("Please specify query");
             }
         }
 
@@ -369,10 +372,10 @@ public class PreparedGetListOfObjectsTest {
 
             try {
                 preparedGetListOfObjects.executeAsBlocking();
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException exception) {
                 IllegalStateException cause = (IllegalStateException) exception.getCause();
-                assertEquals("test exception", cause.getMessage());
+                assertThat(cause).hasMessage("test exception");
 
                 // Cursor must be closed in case of exception
                 verify(cursor).close();
@@ -430,7 +433,7 @@ public class PreparedGetListOfObjectsTest {
             StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
 
             IllegalStateException cause = (IllegalStateException) storIOException.getCause();
-            assertEquals("test exception", cause.getMessage());
+            assertThat(cause).hasMessage("test exception");
 
             // Cursor must be closed in case of exception
             verify(cursor).close();

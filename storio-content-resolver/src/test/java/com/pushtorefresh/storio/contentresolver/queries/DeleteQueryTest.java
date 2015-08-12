@@ -14,9 +14,7 @@ import java.util.Arrays;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
@@ -46,7 +44,7 @@ public class DeleteQueryTest {
                 .where(null)
                 .build();
 
-        assertEquals("", deleteQuery.where());
+        assertThat(deleteQuery.where()).isEqualTo("");
     }
 
     @Test
@@ -56,8 +54,8 @@ public class DeleteQueryTest {
                 .where("c1 = s")
                 .build();
 
-        assertNotNull(deleteQuery.whereArgs());
-        assertTrue(deleteQuery.whereArgs().isEmpty());
+        assertThat(deleteQuery.whereArgs()).isNotNull();
+        assertThat(deleteQuery.whereArgs().isEmpty()).isTrue();
     }
 
     @Test
@@ -72,9 +70,9 @@ public class DeleteQueryTest {
                 .whereArgs(whereArgs)
                 .build();
 
-        assertEquals(uri, deleteQuery.uri());
-        assertEquals(where, deleteQuery.where());
-        assertEquals(Arrays.asList(whereArgs), deleteQuery.whereArgs());
+        assertThat(deleteQuery.uri()).isEqualTo(uri);
+        assertThat(deleteQuery.where()).isEqualTo(where);
+        assertThat(deleteQuery.whereArgs()).isEqualTo(Arrays.asList(whereArgs));
     }
 
     @Test

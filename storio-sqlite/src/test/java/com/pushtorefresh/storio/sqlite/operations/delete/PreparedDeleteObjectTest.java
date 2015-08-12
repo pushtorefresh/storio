@@ -2,7 +2,6 @@ package com.pushtorefresh.storio.sqlite.operations.delete;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.TestUtils;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 
 import org.junit.Test;
@@ -12,7 +11,8 @@ import org.junit.runner.RunWith;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -101,10 +101,10 @@ public class PreparedDeleteObjectTest {
 
             try {
                 preparedDelete.executeAsBlocking();
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
-                TestUtils.checkException(expected, IllegalStateException.class);
+                assertThat(expected).hasCauseInstanceOf(IllegalStateException.class);
             }
 
             verify(storIOSQLite).delete();
@@ -134,7 +134,8 @@ public class PreparedDeleteObjectTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
+            assertThat(testSubscriber.getOnErrorEvents().get(0)).
+                hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).delete();
             verify(storIOSQLite).internal();

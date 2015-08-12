@@ -13,9 +13,7 @@ import org.robolectric.annotation.Config;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
@@ -44,8 +42,8 @@ public class QueryTest {
                 .uri(mock(Uri.class))
                 .build();
 
-        assertNotNull(query.columns());
-        assertTrue(query.columns().isEmpty());
+        assertThat(query.columns()).isNotNull();
+        assertThat(query.columns()).isEmpty();
     }
 
     @Test
@@ -54,8 +52,7 @@ public class QueryTest {
                 .uri(mock(Uri.class))
                 .build();
 
-        assertNotNull(query.where());
-        assertEquals("", query.where());
+        assertThat(query.where()).isEqualTo("");
     }
 
     @Test
@@ -64,8 +61,8 @@ public class QueryTest {
                 .uri(mock(Uri.class))
                 .build();
 
-        assertNotNull(query.whereArgs());
-        assertTrue(query.whereArgs().isEmpty());
+        assertThat(query.whereArgs()).isNotNull();
+        assertThat(query.whereArgs()).isEmpty();
     }
 
     @Test
@@ -74,8 +71,7 @@ public class QueryTest {
                 .uri(mock(Uri.class))
                 .build();
 
-        assertNotNull(query.sortOrder());
-        assertEquals("", query.sortOrder());
+        assertThat(query.sortOrder()).isEqualTo("");
     }
 
     @Test
@@ -94,11 +90,11 @@ public class QueryTest {
                 .sortOrder(sortOrder)
                 .build();
 
-        assertEquals(uri, query.uri());
-        assertEquals(asList(columns), query.columns());
-        assertEquals(where, query.where());
-        assertEquals(asList(whereArgs), query.whereArgs());
-        assertEquals(sortOrder, query.sortOrder());
+        assertThat(query.uri()).isEqualTo(uri);
+        assertThat(query.columns()).isEqualTo(asList(columns));
+        assertThat(query.where()).isEqualTo(where);
+        assertThat(query.whereArgs()).isEqualTo(asList(whereArgs));
+        assertThat(query.sortOrder()).isEqualTo(sortOrder);
     }
 
     @Test

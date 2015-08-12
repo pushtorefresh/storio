@@ -15,7 +15,7 @@ import java.util.Map;
 import rx.Observable;
 import rx.functions.Action1;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -124,10 +124,10 @@ class DeleteObjectsStub {
             final DeleteResult expectedDeleteResult = testItemToDeleteResultMap.get(testItem);
 
             // checks that delete results contains result of deletion of each item
-            assertEquals(expectedDeleteResult, deleteResults.results().get(testItem));
+            assertThat(deleteResults.results().get(testItem)).isEqualTo(expectedDeleteResult);
         }
 
-        assertEquals(items.size(), deleteResults.results().size());
+        assertThat(deleteResults.results()).hasSize(items.size());
 
         if (withTypeMapping) {
             verify(internal, times(items.size())).typeMapping(TestItem.class);

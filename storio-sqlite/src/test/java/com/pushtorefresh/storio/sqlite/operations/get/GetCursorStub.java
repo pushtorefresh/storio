@@ -13,8 +13,7 @@ import rx.Observable;
 import rx.functions.Action1;
 
 import static java.util.Collections.singleton;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -70,7 +69,7 @@ class GetCursorStub {
         when(storIOSQLite.observeChangesInTables(eq(singleton(query.table()))))
                 .thenReturn(Observable.<Changes>empty());
 
-        assertNotNull(rawQuery.observesTables());
+        assertThat(rawQuery.observesTables()).isNotNull();
 
         when(storIOSQLite.observeChangesInTables(rawQuery.observesTables()))
                 .thenReturn(Observable.<Changes>empty());
@@ -88,10 +87,10 @@ class GetCursorStub {
     }
 
     void verifyQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
-        assertNotNull(actualCursor);
+        assertThat(actualCursor).isNotNull();
         verify(storIOSQLite).get();
         verify(getResolverForCursor).performGet(storIOSQLite, query);
-        assertSame(cursor, actualCursor);
+        assertThat(actualCursor).isSameAs(cursor);
         verifyNoMoreInteractions(storIOSQLite, internal, cursor);
     }
 
@@ -111,10 +110,10 @@ class GetCursorStub {
     }
 
     void verifyRawQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
-        assertNotNull(actualCursor);
+        assertThat(actualCursor).isNotNull();
         verify(storIOSQLite, times(1)).get();
         verify(getResolverForCursor, times(1)).performGet(storIOSQLite, rawQuery);
-        assertSame(cursor, actualCursor);
+        assertThat(actualCursor).isSameAs(cursor);
         verifyNoMoreInteractions(storIOSQLite, internal, cursor);
     }
 
@@ -132,6 +131,6 @@ class GetCursorStub {
                 })
                 .checkBehaviorOfObservable();
 
-        assertNotNull(rawQuery.observesTables());
+        assertThat(rawQuery.observesTables()).isNotNull();
     }
 }

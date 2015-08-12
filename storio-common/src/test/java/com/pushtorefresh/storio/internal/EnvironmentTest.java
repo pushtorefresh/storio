@@ -7,9 +7,8 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 
 import static java.lang.reflect.Modifier.FINAL;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class EnvironmentTest {
 
@@ -24,7 +23,7 @@ public class EnvironmentTest {
 
     @Test
     public void rxJavaShouldBeInClassPath() {
-        assertTrue(Environment.RX_JAVA_IS_IN_THE_CLASS_PATH);
+        assertThat(Environment.RX_JAVA_IS_IN_THE_CLASS_PATH).isTrue();
     }
 
     @Test
@@ -44,12 +43,10 @@ public class EnvironmentTest {
 
         try {
             Environment.throwExceptionIfRxJavaIsNotAvailable("yolo");
-            fail();
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException expected) {
-            assertEquals("yolo requires RxJava in classpath," +
-                            " please add it as compile dependency to the application",
-                    expected.getMessage()
-            );
+            assertThat(expected).hasMessage("yolo requires RxJava in classpath," +
+                            " please add it as compile dependency to the application");
         } finally {
             // Return previous value of the field
             field.set(null, prevValue);

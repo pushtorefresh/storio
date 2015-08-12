@@ -22,9 +22,7 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -62,7 +60,7 @@ public class DeleteTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(1, deleteResult.numberOfRowsDeleted());
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
 
         emissionChecker.awaitNextExpectedValue();
         emissionChecker.assertThatNoExpectedValuesLeft();
@@ -110,7 +108,7 @@ public class DeleteTest extends IntegrationTest {
                 .executeAsBlocking();
 
         for (User user : usersToDelete) {
-            assertTrue(deleteResults.wasDeleted(user));
+            assertThat(deleteResults.wasDeleted(user)).isTrue();
             emissionChecker.awaitNextExpectedValue();
         }
 
@@ -119,16 +117,17 @@ public class DeleteTest extends IntegrationTest {
 
         final List<User> storedUsers = getAllUsers();
 
-        assertNotNull(storedUsers);
+        assertThat(storedUsers).isNotNull();
 
         for (User user : allUsers) {
             final boolean shouldBeDeleted = usersToDelete.contains(user);
 
             // Check that we deleted what we going to.
-            assertEquals(shouldBeDeleted, deleteResults.wasDeleted(user));
+            assertThat(deleteResults.wasDeleted(user)).isEqualTo(shouldBeDeleted);
 
             // Check that everything that should be kept exist
-            assertEquals(!shouldBeDeleted, storedUsers.contains(user));
+            //noinspection ConstantConditions
+            assertThat(storedUsers.contains(user)).isEqualTo(!shouldBeDeleted);
         }
     }
 }

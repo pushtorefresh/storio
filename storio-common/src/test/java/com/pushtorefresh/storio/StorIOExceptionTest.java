@@ -2,15 +2,16 @@ package com.pushtorefresh.storio;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class StorIOExceptionTest {
 
     @Test
     public void checkConstructorWithDetailMessage() {
         StorIOException storIOException = new StorIOException("test detail message");
-        assertEquals("test detail message", storIOException.getMessage());
+        assertThat(storIOException)
+                .hasMessage("test detail message")
+                .hasNoCause();
     }
 
     @Test
@@ -18,8 +19,8 @@ public class StorIOExceptionTest {
         Throwable testThrowable = new RuntimeException("yo");
         StorIOException storIOException = new StorIOException("test detail message", testThrowable);
 
-        assertEquals("test detail message", storIOException.getMessage());
-        assertSame(testThrowable, storIOException.getCause());
+        assertThat(storIOException).hasMessage("test detail message");
+        assertThat(storIOException.getCause()).isSameAs(testThrowable);
     }
 
     @Test
@@ -27,6 +28,6 @@ public class StorIOExceptionTest {
         Throwable testThrowable = new RuntimeException("yo");
         StorIOException storIOException = new StorIOException(testThrowable);
 
-        assertSame(testThrowable, storIOException.getCause());
+        assertThat(storIOException.getCause()).isSameAs(testThrowable);
     }
 }

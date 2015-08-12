@@ -17,11 +17,8 @@ import java.util.Map;
 
 import rx.functions.Func1;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -119,11 +116,11 @@ public class DefaultPutResolverTest {
         verify(internal, times(0)).update(any(UpdateQuery.class), any(ContentValues.class));
 
         // put result checks
-        assertTrue(putResult.wasInserted());
-        assertFalse(putResult.wasUpdated());
+        assertThat(putResult.wasInserted()).isTrue();
+        assertThat(putResult.wasUpdated()).isFalse();
 
-        assertEquals(expectedInsertedId, putResult.insertedId());
-        assertNull(putResult.numberOfRowsUpdated());
+        assertThat(putResult.insertedId()).isEqualTo(expectedInsertedId);
+        assertThat(putResult.numberOfRowsUpdated()).isNull();
     }
 
     /**
@@ -216,11 +213,11 @@ public class DefaultPutResolverTest {
         verify(internal, times(0)).insert(any(InsertQuery.class), any(ContentValues.class));
 
         // put result checks
-        assertFalse(putResult.wasInserted());
-        assertTrue(putResult.wasUpdated());
+        assertThat(putResult.wasInserted()).isFalse();
+        assertThat(putResult.wasUpdated()).isTrue();
 
-        assertEquals(expectedNumberOfRowsUpdated, putResult.numberOfRowsUpdated());
-        assertNull(putResult.insertedId());
+        assertThat(putResult.numberOfRowsUpdated()).isEqualTo(expectedNumberOfRowsUpdated);
+        assertThat(putResult.insertedId()).isNull();
     }
 
     private static class TestItem {

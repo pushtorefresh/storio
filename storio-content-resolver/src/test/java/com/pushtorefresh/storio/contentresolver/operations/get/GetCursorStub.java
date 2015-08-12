@@ -12,7 +12,7 @@ import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 import rx.Observable;
 import rx.functions.Action1;
 
-import static junit.framework.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,7 +72,7 @@ class GetCursorStub {
     void verifyQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
         verify(storIOContentResolver, times(1)).get();
         verify(getResolver, times(1)).performGet(storIOContentResolver, query);
-        assertSame(cursor, actualCursor);
+        assertThat(actualCursor).isSameAs(cursor);
         verify(cursor, times(0)).close();
         verifyNoMoreInteractions(storIOContentResolver, internal, getResolver, cursor);
     }

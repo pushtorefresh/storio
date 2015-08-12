@@ -28,6 +28,7 @@ dependencies {
     provided libraries.supportAnnotations
 
     testCompile libraries.junit
+    testCompile libraries.assertJ
     testCompile libraries.mockitoCore
     testCompile libraries.storIOTestCommon
 }

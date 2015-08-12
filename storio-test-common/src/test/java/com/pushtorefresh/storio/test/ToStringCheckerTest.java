@@ -11,9 +11,8 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class ToStringCheckerTest {
 
@@ -57,12 +56,10 @@ public class ToStringCheckerTest {
                     .forClass(ClassWithIncorrectToString.class)
                     .check();
 
-            fail();
+            failBecauseExceptionWasNotThrown(AssertionError.class);
         } catch (AssertionError expected) {
-            assertEquals("toString() does not contain field = a, " +
-                    "object = ClassWithIncorrectToString{b='some_string'}",
-                    expected.getMessage()
-            );
+            assertThat(expected).hasMessage("toString() does not contain field = a, " +
+                            "object = ClassWithIncorrectToString{b='some_string'}");
         }
     }
 
@@ -71,7 +68,7 @@ public class ToStringCheckerTest {
         Object sample = new ToStringChecker<Object>(Object.class)
                 .createSampleValueOfType(int.class);
 
-        assertEquals(1, sample);
+        assertThat(sample).isEqualTo(1);
     }
 
     @Test
@@ -79,7 +76,7 @@ public class ToStringCheckerTest {
         Object sample = new ToStringChecker<Object>(Object.class)
                 .createSampleValueOfType(Integer.class);
 
-        assertEquals(1, sample);
+        assertThat(sample).isEqualTo(1);
     }
 
     @Test
@@ -87,7 +84,7 @@ public class ToStringCheckerTest {
         Object sample = new ToStringChecker<Object>(Object.class)
                 .createSampleValueOfType(long.class);
 
-        assertEquals(1L, sample);
+        assertThat(sample).isEqualTo(1L);
     }
 
     @Test
@@ -95,7 +92,7 @@ public class ToStringCheckerTest {
         Object sample = new ToStringChecker<Object>(Object.class)
                 .createSampleValueOfType(Long.class);
 
-        assertEquals(1L, sample);
+        assertThat(sample).isEqualTo(1L);
     }
 
     @Test
@@ -103,7 +100,7 @@ public class ToStringCheckerTest {
         Object sample = new ToStringChecker<Object>(Object.class)
                 .createSampleValueOfType(String.class);
 
-        assertEquals("some_string", sample);
+        assertThat(sample).isEqualTo("some_string");
     }
 
     @Test
@@ -112,7 +109,7 @@ public class ToStringCheckerTest {
                 .createSampleValueOfType(List.class);
 
         //noinspection AssertEqualsBetweenInconvertibleTypes
-        assertEquals(asList("1", "2", "3"), sample);
+        assertThat(sample).isEqualTo(asList("1", "2", "3"));
     }
 
     @Test
@@ -121,7 +118,7 @@ public class ToStringCheckerTest {
                 .createSampleValueOfType(Map.class);
 
         //noinspection AssertEqualsBetweenInconvertibleTypes
-        assertEquals(singletonMap("map_key", "map_value"), sample);
+        assertThat(sample).isEqualTo(singletonMap("map_key", "map_value"));
     }
 
     @Test
@@ -130,7 +127,7 @@ public class ToStringCheckerTest {
                 .createSampleValueOfType(Set.class);
 
         //noinspection AssertEqualsBetweenInconvertibleTypes
-        assertEquals(singleton("set_item"), sample);
+        assertThat(sample).isEqualTo(singleton("set_item"));
     }
 
     @Test
@@ -139,6 +136,6 @@ public class ToStringCheckerTest {
                 .createSampleValueOfType(Uri.class);
 
         // We can not check equality of Uri instance here…
-        assertTrue(sample instanceof Uri);
+        assertThat(sample).isInstanceOf(Uri.class);
     }
 }

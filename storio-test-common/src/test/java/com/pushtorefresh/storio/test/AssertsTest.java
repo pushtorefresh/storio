@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -51,9 +51,9 @@ public class AssertsTest {
 
         try {
             Asserts.assertThatListIsImmutable(list);
-            fail();
+            failBecauseExceptionWasNotThrown(AssertionError.class);
         } catch (AssertionError expected) {
-            assertEquals("List is not immutable: list = " + list, expected.getMessage());
+            assertThat(expected).hasMessage("List is not immutable: list = " + list);
         }
 
         verify(list).add(anyObject());
@@ -70,9 +70,9 @@ public class AssertsTest {
 
         try {
             Asserts.assertThatListIsImmutable(list);
-            fail();
+            failBecauseExceptionWasNotThrown(AssertionError.class);
         } catch (AssertionError expected) {
-            assertEquals("List is not immutable: list = " + list, expected.getMessage());
+            assertThat(expected).hasMessage("List is not immutable: list = " + list);
         }
 
         verify(list).add(anyObject());

@@ -17,9 +17,8 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class AbstractEmissionCheckerTest {
 
@@ -47,12 +46,12 @@ public class AbstractEmissionCheckerTest {
         };
 
         // Should not subscribe before manual call to subscribe
-        assertFalse(onSubscribeWasCalled.get());
+        assertThat(onSubscribeWasCalled.get()).isFalse();
 
         Subscription subscription = emissionChecker.subscribe();
 
         // Should subscribe to observable
-        assertTrue(onSubscribeWasCalled.get());
+        assertThat(onSubscribeWasCalled.get()).isTrue();
 
         subscription.unsubscribe();
     }
@@ -110,7 +109,7 @@ public class AbstractEmissionCheckerTest {
 
         try {
             emissionChecker.awaitNextExpectedValue();
-            fail();
+            failBecauseExceptionWasNotThrown(AssertionError.class);
         } catch (AssertionError expected) {
             // it's okay
         } finally {
@@ -148,7 +147,7 @@ public class AbstractEmissionCheckerTest {
 
         try {
             emissionChecker.awaitNextExpectedValue();
-            fail();
+            failBecauseExceptionWasNotThrown(AssertionError.class);
         } catch (AssertionError expected) {
             // it's okay
         } finally {
@@ -222,7 +221,7 @@ public class AbstractEmissionCheckerTest {
 
         try {
             emissionChecker.assertThatNoExpectedValuesLeft();
-            fail();
+            failBecauseExceptionWasNotThrown(AssertionError.class);
         } catch (AssertionError expected) {
             // it's okay, we didn't call emissionChecker.awaitNextExpectedValue()
         } finally {
@@ -310,9 +309,10 @@ public class AbstractEmissionCheckerTest {
 
         try {
             publishSubject.onNext("4");
-            fail();
+            failBecauseExceptionWasNotThrown(OnErrorNotImplementedException.class);
         } catch (OnErrorNotImplementedException expected) {
-            assertTrue(expected.getCause().getMessage().startsWith("Received emission, but no more emissions were expected: obtained "));
+            assertThat(expected.getCause())
+                    .hasMessage("Received emission, but no more emissions were expected: obtained 4, expectedValues = [], obtainedValues = []");
         } finally {
             subscription.unsubscribe();
         }

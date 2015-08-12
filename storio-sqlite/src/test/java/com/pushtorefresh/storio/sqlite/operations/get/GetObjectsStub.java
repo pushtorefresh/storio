@@ -21,8 +21,7 @@ import rx.functions.Action1;
 
 import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
 import static java.util.Collections.singleton;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -105,7 +104,7 @@ class GetObjectsStub {
         when(storIOSQLite.observeChangesInTables(eq(singleton(query.table()))))
                 .thenReturn(Observable.<Changes>empty());
 
-        assertNotNull(rawQuery.observesTables());
+        assertThat(rawQuery.observesTables()).isNotNull();
 
         when(storIOSQLite.observeChangesInTables(rawQuery.observesTables()))
                 .thenReturn(Observable.<Changes>empty());
@@ -166,7 +165,7 @@ class GetObjectsStub {
         verify(cursor, times(1)).close();
 
         // actual items should be equals to expected
-        assertEquals(items, actualList);
+        assertThat(actualList).isEqualTo(items);
 
         // list should be immutable!
         assertThatListIsImmutable(actualList);
@@ -202,12 +201,12 @@ class GetObjectsStub {
     }
 
     void verifyRawQueryBehavior(@NonNull List<TestItem> actualList) {
-        assertNotNull(actualList);
+        assertThat(actualList).isNotNull();
         verify(storIOSQLite, times(1)).get();
         verify(getResolver, times(1)).performGet(storIOSQLite, rawQuery);
         verify(getResolver, times(items.size())).mapFromCursor(cursor);
         verify(cursor, times(1)).close();
-        assertEquals(items, actualList);
+        assertThat(actualList).isEqualTo(items);
         assertThatListIsImmutable(actualList);
     }
 
@@ -226,6 +225,6 @@ class GetObjectsStub {
                 })
                 .checkBehaviorOfObservable();
 
-        assertNotNull(rawQuery.observesTables());
+        assertThat(rawQuery.observesTables()).isNotNull();
     }
 }

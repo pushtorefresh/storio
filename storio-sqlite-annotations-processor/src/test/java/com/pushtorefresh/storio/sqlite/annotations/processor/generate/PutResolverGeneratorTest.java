@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,7 +54,7 @@ public class PutResolverGeneratorTest {
         final StringBuilder out = new StringBuilder();
         javaFile.writeTo(out);
 
-        assertEquals("package com.test;\n" +
+        assertThat(out.toString()).isEqualTo("package com.test;\n" +
                 "\n" +
                 "import android.content.ContentValues;\n" +
                 "import android.support.annotation.NonNull;\n" +
@@ -104,6 +104,6 @@ public class PutResolverGeneratorTest {
                 "\n" +
                 "        return contentValues;\n" +
                 "    }\n" +
-                "}\n", out.toString());
+                "}\n");
     }
 }

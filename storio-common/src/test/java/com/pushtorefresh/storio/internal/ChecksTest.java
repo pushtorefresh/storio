@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class ChecksTest {
 
@@ -34,9 +34,9 @@ public class ChecksTest {
     public void checkNotNullExceptionMessage() {
         try {
             checkNotNull(null, "expected message");
-            fail("NullPointerException should be thrown");
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException e) {
-            assertEquals("expected message", e.getMessage());
+            assertThat(e).hasMessage("expected message");
         }
     }
 
@@ -59,9 +59,9 @@ public class ChecksTest {
     public void checkNotEmptyExceptionMessage() {
         try {
             checkNotEmpty(null, "expected message");
-            fail("NullPointerException should be thrown");
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException e) {
-            assertEquals("expected message", e.getMessage());
+            assertThat(e).hasMessage("expected message");
         }
     }
 
@@ -69,9 +69,9 @@ public class ChecksTest {
     public void checkNotEmptyEmptyExceptionMessage() {
         try {
             checkNotEmpty("", "expected message");
-            fail("IllegalStateException should be thrown");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException e) {
-            assertEquals("expected message", e.getMessage());
+            assertThat(e).hasMessage("expected message");
         }
     }
 }

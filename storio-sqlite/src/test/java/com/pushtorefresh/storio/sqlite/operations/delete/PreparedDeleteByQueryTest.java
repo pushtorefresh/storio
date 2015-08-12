@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import rx.observers.TestSubscriber;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
@@ -47,7 +47,7 @@ public class PreparedDeleteByQueryTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(expectedDeleteResult, actualDeleteResult);
+        assertThat(actualDeleteResult).isEqualTo(expectedDeleteResult);
 
 
         verify(storIOSQLite).internal();
@@ -114,10 +114,10 @@ public class PreparedDeleteByQueryTest {
                     .prepare()
                     .executeAsBlocking();
 
-            fail();
+            failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
             IllegalStateException cause = (IllegalStateException) expected.getCause();
-            assertEquals("test exception", cause.getMessage());
+            assertThat(cause).hasMessage("test exception");
 
             verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
@@ -153,7 +153,7 @@ public class PreparedDeleteByQueryTest {
         StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
-        assertEquals("test exception", cause.getMessage());
+        assertThat(cause).hasMessage("test exception");
 
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);

@@ -4,13 +4,13 @@ import com.pushtorefresh.storio.internal.Environment;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnvironmentTest {
 
     @Test
     public void noRxJavaInClassPath() {
-        assertFalse(Environment.RX_JAVA_IS_IN_THE_CLASS_PATH);
+        assertThat(Environment.RX_JAVA_IS_IN_THE_CLASS_PATH).isFalse();
     }
 
     @Test(expected = ClassNotFoundException.class)

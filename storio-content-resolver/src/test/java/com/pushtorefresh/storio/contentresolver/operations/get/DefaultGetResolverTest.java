@@ -9,7 +9,7 @@ import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
 
-import static junit.framework.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -39,7 +39,7 @@ public class DefaultGetResolverTest {
             @NonNull
             @Override
             public TestItem mapFromCursor(@NonNull Cursor cursor) {
-                assertSame(expectedCursor, cursor);
+                assertThat(cursor).isSameAs(expectedCursor);
                 return new TestItem();
             }
         };
@@ -52,7 +52,7 @@ public class DefaultGetResolverTest {
         // and this request should be equals to original
         verify(internal, times(1)).query(query);
 
-        assertSame(expectedCursor, actualCursor);
+        assertThat(actualCursor).isSameAs(expectedCursor);
     }
 
     private static class TestItem {

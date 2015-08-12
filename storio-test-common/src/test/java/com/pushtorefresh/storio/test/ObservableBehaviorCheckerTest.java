@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.functions.Action1;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -64,7 +64,7 @@ public class ObservableBehaviorCheckerTest {
                         }
                     }).checkBehaviorOfObservable();
         } catch (NullPointerException expected) {
-            assertEquals("Please specify fields", expected.getMessage());
+            assertThat(expected).hasMessage("Please specify fields");
         }
     }
 
@@ -81,7 +81,7 @@ public class ObservableBehaviorCheckerTest {
                         }
                     }).checkBehaviorOfObservable();
         } catch (NullPointerException expected) {
-            assertEquals("Please specify fields", expected.getMessage());
+            assertThat(expected).hasMessage("Please specify fields");
         }
     }
 
@@ -94,7 +94,7 @@ public class ObservableBehaviorCheckerTest {
                     .expectedNumberOfEmissions(1)
                     .checkBehaviorOfObservable();
         } catch (NullPointerException expected) {
-            assertEquals("Please specify fields", expected.getMessage());
+            assertThat(expected).hasMessage("Please specify fields");
         }
     }
 }

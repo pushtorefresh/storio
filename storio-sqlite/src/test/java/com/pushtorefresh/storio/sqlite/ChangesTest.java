@@ -9,8 +9,7 @@ import java.util.Set;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ChangesTest {
 
@@ -34,8 +33,8 @@ public class ChangesTest {
     @Test
     public void newInstanceOneAffectedTable() {
         final Changes changes = Changes.newInstance("test_table");
-        assertEquals(1, changes.affectedTables().size());
-        assertTrue(changes.affectedTables().contains("test_table"));
+        assertThat(changes.affectedTables()).hasSize(1);
+        assertThat(changes.affectedTables()).contains("test_table");
     }
 
     @Test
@@ -46,7 +45,7 @@ public class ChangesTest {
         affectedTables.add("test_table_3");
 
         final Changes changes = Changes.newInstance(affectedTables);
-        assertEquals(affectedTables, changes.affectedTables());
+        assertThat(changes.affectedTables()).isEqualTo(affectedTables);
     }
 
     @Test

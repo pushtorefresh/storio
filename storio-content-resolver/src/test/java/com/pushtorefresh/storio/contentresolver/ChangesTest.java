@@ -14,8 +14,7 @@ import java.util.Set;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
@@ -38,8 +37,8 @@ public class ChangesTest {
     public void newInstanceOneAffectedUri() {
         final Uri uri = mock(Uri.class);
         final Changes changes = Changes.newInstance(uri);
-        assertEquals(1, changes.affectedUris().size());
-        assertTrue(changes.affectedUris().contains(uri));
+        assertThat(changes.affectedUris()).hasSize(1);
+        assertThat(changes.affectedUris()).contains(uri);
     }
 
     @Test
@@ -51,7 +50,7 @@ public class ChangesTest {
 
         final Changes changes = Changes.newInstance(affectedUris);
 
-        assertEquals(affectedUris, changes.affectedUris());
+        assertThat(changes.affectedUris()).isEqualTo(affectedUris);
     }
 
     @Test

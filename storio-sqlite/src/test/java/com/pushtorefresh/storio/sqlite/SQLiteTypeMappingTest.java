@@ -6,7 +6,7 @@ import com.pushtorefresh.storio.sqlite.operations.put.PutResolver;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class SQLiteTypeMappingTest {
@@ -58,8 +58,8 @@ public class SQLiteTypeMappingTest {
                 .deleteResolver(deleteResolver)
                 .build();
 
-        assertEquals(putResolver, typeMapping.putResolver());
-        assertEquals(getResolver, typeMapping.getResolver());
-        assertEquals(deleteResolver, typeMapping.deleteResolver());
+        assertThat(typeMapping.putResolver()).isSameAs(putResolver);
+        assertThat(typeMapping.getResolver()).isSameAs(getResolver);
+        assertThat(typeMapping.deleteResolver()).isSameAs(deleteResolver);
     }
 }

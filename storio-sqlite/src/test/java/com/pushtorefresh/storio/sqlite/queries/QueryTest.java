@@ -8,10 +8,7 @@ import java.util.Arrays;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class QueryTest {
 
@@ -36,7 +33,7 @@ public class QueryTest {
                 .table("test_table")
                 .build();
 
-        assertFalse(query.distinct());
+        assertThat(query.distinct()).isFalse();
     }
 
     @Test
@@ -45,8 +42,8 @@ public class QueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(query.columns());
-        assertTrue(query.columns().isEmpty());
+        assertThat(query.columns()).isNotNull();
+        assertThat(query.columns()).isEmpty();
     }
 
     @Test
@@ -55,8 +52,7 @@ public class QueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(query.where());
-        assertEquals("", query.where());
+        assertThat(query.where()).isEqualTo("");
     }
 
     @Test
@@ -65,8 +61,7 @@ public class QueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(query.whereArgs());
-        assertTrue(query.whereArgs().isEmpty());
+        assertThat(query.whereArgs()).isEmpty();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -83,8 +78,7 @@ public class QueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(query.groupBy());
-        assertEquals("", query.groupBy());
+        assertThat(query.groupBy()).isEqualTo("");
     }
 
     @Test
@@ -93,8 +87,7 @@ public class QueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(query.having());
-        assertEquals("", query.having());
+        assertThat(query.having()).isEqualTo("");
     }
 
     @Test
@@ -103,8 +96,7 @@ public class QueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(query.orderBy());
-        assertEquals("", query.orderBy());
+        assertThat(query.orderBy()).isEqualTo("");
     }
 
     @Test
@@ -113,8 +105,7 @@ public class QueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(query.limit());
-        assertEquals("", query.limit());
+        assertThat(query.limit()).isEqualTo("");
     }
 
     @Test
@@ -141,15 +132,15 @@ public class QueryTest {
                 .limit(limit)
                 .build();
 
-        assertEquals(table, query.table());
-        assertEquals(distinct, query.distinct());
-        assertEquals(Arrays.asList(columns), query.columns());
-        assertEquals(where, query.where());
-        assertEquals(Arrays.asList(whereArgs), query.whereArgs());
-        assertEquals(groupBy, query.groupBy());
-        assertEquals(having, query.having());
-        assertEquals(orderBy, query.orderBy());
-        assertEquals(limit, query.limit());
+        assertThat(query.table()).isEqualTo(table);
+        assertThat(query.distinct()).isEqualTo(distinct);
+        assertThat(query.columns()).isEqualTo(Arrays.asList(columns));
+        assertThat(query.where()).isEqualTo(where);
+        assertThat(query.whereArgs()).isEqualTo(Arrays.asList(whereArgs));
+        assertThat(query.groupBy()).isEqualTo(groupBy);
+        assertThat(query.having()).isEqualTo(having);
+        assertThat(query.orderBy()).isEqualTo(orderBy);
+        assertThat(query.limit()).isEqualTo(limit);
     }
 
     @Test

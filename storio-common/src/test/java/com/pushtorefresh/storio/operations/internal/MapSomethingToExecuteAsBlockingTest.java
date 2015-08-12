@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import rx.Observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,6 +32,6 @@ public class MapSomethingToExecuteAsBlockingTest {
         verify(preparedOperation, times(1)).executeAsBlocking();
         verify(preparedOperation, times(0)).createObservable();
 
-        assertEquals(expectedMapResult, actualMapResult);
+        assertThat(actualMapResult).isEqualTo(expectedMapResult);
     }
 }

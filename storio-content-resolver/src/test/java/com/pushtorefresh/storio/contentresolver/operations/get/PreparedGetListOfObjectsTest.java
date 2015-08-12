@@ -6,7 +6,6 @@ import android.net.Uri;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio.contentresolver.TestUtils;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
@@ -18,8 +17,8 @@ import java.util.List;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -115,10 +114,10 @@ public class PreparedGetListOfObjectsTest {
 
             try {
                 preparedGet.executeAsBlocking();
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
-                TestUtils.checkException(expected, IllegalStateException.class);
+                assertThat(expected).hasCauseInstanceOf(IllegalStateException.class);
             }
 
             verify(storIOContentResolver).get();
@@ -152,7 +151,9 @@ public class PreparedGetListOfObjectsTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).get();
             verify(storIOContentResolver).internal();
@@ -197,10 +198,11 @@ public class PreparedGetListOfObjectsTest {
                         .prepare()
                         .executeAsBlocking();
 
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
-                IllegalStateException cause = (IllegalStateException) expected.getCause();
-                assertEquals("Breaking execution", cause.getMessage());
+                assertThat(expected.getCause())
+                        .isInstanceOf(IllegalStateException.class)
+                        .hasMessage("Breaking execution");
 
                 // Main check: in case of exception cursor must be closed
                 verify(cursor).close();

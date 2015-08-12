@@ -12,7 +12,7 @@ import org.robolectric.annotation.Config;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
@@ -43,7 +43,7 @@ public class InsertQueryTest {
                 .uri(uri)
                 .build();
 
-        assertEquals(uri, insertQuery.uri());
+        assertThat(insertQuery.uri()).isEqualTo(uri);
     }
 
     @Test

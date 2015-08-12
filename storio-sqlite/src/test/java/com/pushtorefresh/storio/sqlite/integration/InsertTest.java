@@ -11,9 +11,7 @@ import org.robolectric.annotation.Config;
 
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -27,13 +25,13 @@ public class InsertTest extends BaseTest {
         final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
 
         // asserting that values was really inserted to db
-        assertEquals(1, cursor.getCount());
-        assertTrue(cursor.moveToFirst());
+        assertThat(cursor.getCount()).isEqualTo(1);
+        assertThat(cursor.moveToFirst()).isTrue();
 
         final User insertedUser = UserTableMeta.GET_RESOLVER.mapFromCursor(cursor);
 
-        assertNotNull(insertedUser.id());
-        assertTrue(user.equalsExceptId(insertedUser));
+        assertThat(insertedUser.id()).isNotNull();
+        assertThat(user.equalsExceptId(insertedUser)).isTrue();
 
         cursor.close();
     }
@@ -45,11 +43,11 @@ public class InsertTest extends BaseTest {
         // asserting that values was really inserted to db
         final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
 
-        assertEquals(users.size(), cursor.getCount());
+        assertThat(cursor.getCount()).isEqualTo(users.size());
 
         for (int i = 0; i < users.size(); i++) {
-            assertTrue(cursor.moveToNext());
-            assertEquals(users.get(i), UserTableMeta.GET_RESOLVER.mapFromCursor(cursor));
+            assertThat(cursor.moveToNext()).isTrue();
+            assertThat(UserTableMeta.GET_RESOLVER.mapFromCursor(cursor)).isEqualTo(users.get(i));
         }
 
         cursor.close();
@@ -64,17 +62,17 @@ public class InsertTest extends BaseTest {
 
             final List<User> existUsers = getAllUsersBlocking();
 
-            assertNotNull(existUsers);
-            assertEquals(1, existUsers.size());
+            assertThat(existUsers).isNotNull();
+            assertThat(existUsers).hasSize(1);
 
             final Cursor cursorAfterPut = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
-            assertEquals(1, cursorAfterPut.getCount());
+            assertThat(cursorAfterPut.getCount()).isEqualTo(1);
             cursorAfterPut.close();
 
             deleteUserBlocking(user);
 
             final Cursor cursorAfterDelete = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
-            assertEquals(0, cursorAfterDelete.getCount());
+            assertThat(cursorAfterDelete.getCount()).isEqualTo(0);
             cursorAfterDelete.close();
         }
     }

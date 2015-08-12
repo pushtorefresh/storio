@@ -10,7 +10,7 @@ import java.util.Set;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DeleteResultTest {
 
@@ -29,13 +29,13 @@ public class DeleteResultTest {
     @Test
     public void numberOfRowsDeleted() {
         final DeleteResult deleteResult = DeleteResult.newInstance(3, "test_table");
-        assertEquals(3, deleteResult.numberOfRowsDeleted());
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(3);
     }
 
     @Test
     public void oneAffectedTable() {
         final DeleteResult deleteResult = DeleteResult.newInstance(2, "test_table");
-        assertEquals(Collections.singleton("test_table"), deleteResult.affectedTables());
+        assertThat(deleteResult.affectedTables()).isEqualTo(Collections.singleton("test_table"));
     }
 
     @Test
@@ -46,7 +46,7 @@ public class DeleteResultTest {
 
         final DeleteResult deleteResult = DeleteResult.newInstance(2, affectedTables);
 
-        assertEquals(affectedTables, deleteResult.affectedTables());
+        assertThat(deleteResult.affectedTables()).isEqualTo(affectedTables);
     }
 
     @Test

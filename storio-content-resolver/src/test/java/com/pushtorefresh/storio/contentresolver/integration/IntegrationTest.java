@@ -34,9 +34,7 @@ import rx.schedulers.Schedulers;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -182,7 +180,7 @@ public abstract class IntegrationTest {
                     .prepare()
                     .executeAsBlocking();
 
-            assertTrue(putResult.wasInserted());
+            assertThat(putResult.wasInserted()).isTrue();
 
             emissionChecker.awaitNextExpectedValue();
         }
@@ -199,7 +197,7 @@ public abstract class IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(users, storedUsers);
+        assertThat(storedUsers).isEqualTo(users);
 
         return users;
     }
@@ -233,7 +231,7 @@ public abstract class IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(1, deleteResult.numberOfRowsDeleted());
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
 
         emissionChecker.awaitNextExpectedValue();
         emissionChecker.assertThatNoExpectedValuesLeft();
@@ -245,22 +243,25 @@ public abstract class IntegrationTest {
 
     void checkThatThereIsOnlyOneUserInStorage(@NonNull final User user) {
         final List<User> usersFromStorage = getAllUsers();
-        assertNotNull(usersFromStorage);
-        assertEquals(1, usersFromStorage.size());
-        assertEquals(user, usersFromStorage.get(0));
+        assertThat(usersFromStorage).isNotNull();
+        //noinspection ConstantConditions
+        assertThat(usersFromStorage).hasSize(1);
+        assertThat(usersFromStorage.get(0)).isEqualTo(user);
     }
 
     void checkThatTheseUsersInStorage(@NonNull final List<User> users) {
         final List<User> usersFromStorage = getAllUsers();
-        assertNotNull(usersFromStorage);
-        assertEquals(users.size(), usersFromStorage.size());
-        assertEquals(users, usersFromStorage);
+        assertThat(usersFromStorage).isNotNull();
+        //noinspection ConstantConditions
+        assertThat(usersFromStorage.size()).isEqualTo(users.size());
+        assertThat(usersFromStorage).isEqualTo(users);
     }
 
     void checkThatThereAreNoUsersInStorage() {
         final List<User> usersFromStorage = getAllUsers();
-        assertNotNull(usersFromStorage);
-        assertTrue(usersFromStorage.isEmpty());
+        assertThat(usersFromStorage).isNotNull();
+        //noinspection ConstantConditions
+        assertThat(usersFromStorage.isEmpty()).isTrue();
     }
 
     @NonNull
@@ -297,7 +298,7 @@ public abstract class IntegrationTest {
                     .prepare()
                     .executeAsBlocking();
 
-            assertTrue(putResult.wasInserted());
+            assertThat(putResult.wasInserted()).isTrue();
 
             emissionChecker.awaitNextExpectedValue();
         }
@@ -314,7 +315,7 @@ public abstract class IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(tweets, storedTweets);
+        assertThat(storedTweets).isEqualTo(tweets);
 
         return storedTweets;
     }

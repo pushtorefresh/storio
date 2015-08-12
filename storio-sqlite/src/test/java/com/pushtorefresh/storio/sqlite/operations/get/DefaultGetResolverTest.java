@@ -9,7 +9,7 @@ import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
 import org.junit.Test;
 
-import static junit.framework.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -51,7 +51,7 @@ public class DefaultGetResolverTest {
         // and this request should be equals to original
         verify(internal, times(1)).rawQuery(rawQuery);
 
-        assertSame(expectedCursor, actualCursor);
+        assertThat(actualCursor).isSameAs(expectedCursor);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class DefaultGetResolverTest {
         // and this request should be equals to original
         verify(internal, times(1)).query(query);
 
-        assertSame(expectedCursor, actualCursor);
+        assertThat(actualCursor).isSameAs(expectedCursor);
     }
 
     private static class TestItem {

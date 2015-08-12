@@ -5,7 +5,7 @@ import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class QueriesTest {
 
@@ -20,9 +20,11 @@ public class QueriesTest {
     public void placeholdersMinus1() {
         try {
             Queries.placeholders(-1);
-            fail("Should throw exception");
+            failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
         } catch (IllegalArgumentException expected) {
-            assertThat(expected).hasMessage("numberOfPlaceholders must be > 0, but was = -1");
+            assertThat(expected)
+                    .hasMessage("numberOfPlaceholders must be > 0, but was = -1")
+                    .hasNoCause();
         }
     }
 
@@ -30,9 +32,11 @@ public class QueriesTest {
     public void placeholders0() {
         try {
             Queries.placeholders(0);
-            fail("Should throw exception");
+            failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
         } catch (IllegalArgumentException expected) {
-            assertThat(expected).hasMessage("numberOfPlaceholders must be > 0, but was = 0");
+            assertThat(expected)
+                    .hasMessage("numberOfPlaceholders must be > 0, but was = 0")
+                    .hasNoCause();
         }
     }
 
