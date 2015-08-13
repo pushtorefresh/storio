@@ -13,8 +13,8 @@ import rx.Observable;
 import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
@@ -107,10 +107,10 @@ public class PreparedPutContentValuesIterableTest {
                     .prepare()
                     .executeAsBlocking();
 
-            fail();
+            failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
             IllegalStateException cause = (IllegalStateException) expected.getCause();
-            assertEquals("test exception", cause.getMessage());
+            assertThat(cause).hasMessage("test exception");
 
             verify(internal).beginTransaction();
             verify(internal, never()).setTransactionSuccessful();
@@ -155,7 +155,7 @@ public class PreparedPutContentValuesIterableTest {
         StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
-        assertEquals("test exception", cause.getMessage());
+        assertThat(cause).hasMessage("test exception");
 
         verify(internal).beginTransaction();
         verify(internal, never()).setTransactionSuccessful();
@@ -186,10 +186,10 @@ public class PreparedPutContentValuesIterableTest {
                     .prepare()
                     .executeAsBlocking();
 
-            fail();
+            failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
             IllegalStateException cause = (IllegalStateException) expected.getCause();
-            assertEquals("test exception", cause.getMessage());
+            assertThat(cause).hasMessage("test exception");
 
             // Main check of this test
             verify(internal, never()).endTransaction();
@@ -230,7 +230,7 @@ public class PreparedPutContentValuesIterableTest {
         StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
-        assertEquals("test exception", cause.getMessage());
+        assertThat(cause).hasMessage("test exception");
 
         // Main check of this test
         verify(internal, never()).endTransaction();

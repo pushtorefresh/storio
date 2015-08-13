@@ -14,9 +14,8 @@ import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singleton;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -103,10 +102,10 @@ public class PreparedGetCursorTest {
                     .prepare()
                     .executeAsBlocking();
 
-            fail();
+            failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
             IllegalStateException cause = (IllegalStateException) expected.getCause();
-            assertEquals("test exception", cause.getMessage());
+            assertThat(cause).hasMessage("test exception");
         }
     }
 
@@ -137,7 +136,7 @@ public class PreparedGetCursorTest {
 
         StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
         IllegalStateException cause = (IllegalStateException) storIOException.getCause();
-        assertEquals("test exception", cause.getMessage());
+        assertThat(cause).hasMessage("test exception");
 
         testSubscriber.unsubscribe();
     }
@@ -151,9 +150,9 @@ public class PreparedGetCursorTest {
 
         try {
             completeBuilder.prepare();
-            fail();
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException expected) {
-            assertEquals("Please specify query", expected.getMessage());
+            assertThat(expected).hasMessage("Please specify query");
         }
     }
 
@@ -165,10 +164,10 @@ public class PreparedGetCursorTest {
 
         try {
             preparedGetCursor.executeAsBlocking();
-            fail();
+            failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
             IllegalStateException cause = (IllegalStateException) expected.getCause();
-            assertEquals("Please specify query", cause.getMessage());
+            assertThat(cause).hasMessage("Please specify query");
         }
     }
 
@@ -180,9 +179,9 @@ public class PreparedGetCursorTest {
 
         try {
             preparedGetCursor.createObservable();
-            fail();
+            failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
-            assertEquals("Please specify query", expected.getMessage());
+            assertThat(expected).hasMessage("Please specify query");
         }
     }
 
@@ -193,6 +192,6 @@ public class PreparedGetCursorTest {
 
         final Cursor cursor = mock(Cursor.class);
 
-        assertSame(cursor, standardGetResolver.mapFromCursor(cursor));
+        assertThat(standardGetResolver.mapFromCursor(cursor)).isSameAs(cursor);
     }
 }

@@ -9,9 +9,7 @@ import java.util.Map;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DeleteResultsTest {
 
@@ -25,7 +23,7 @@ public class DeleteResultsTest {
     public void results() {
         final Map<Object, DeleteResult> results = new HashMap<Object, DeleteResult>();
         final DeleteResults<Object> deleteResults = DeleteResults.newInstance(results);
-        assertEquals(results, deleteResults.results());
+        assertThat(deleteResults.results()).isEqualTo(results);
     }
 
     @Test
@@ -35,11 +33,11 @@ public class DeleteResultsTest {
 
         final DeleteResults<String> deleteResults = DeleteResults.newInstance(results);
 
-        assertTrue(deleteResults.wasDeleted("testString"));
-        assertFalse(deleteResults.wasDeleted("should not be deleted"));
+        assertThat(deleteResults.wasDeleted("testString")).isTrue();
+        assertThat(deleteResults.wasDeleted("should not be deleted")).isFalse();
 
-        assertFalse(deleteResults.wasNotDeleted("testString"));
-        assertTrue(deleteResults.wasNotDeleted("should not be deleted"));
+        assertThat(deleteResults.wasNotDeleted("testString")).isFalse();
+        assertThat(deleteResults.wasNotDeleted("should not be deleted")).isTrue();
     }
 
     @Test

@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
-import com.pushtorefresh.storio.contentresolver.TestUtils;
 import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResult;
 import com.pushtorefresh.storio.contentresolver.operations.get.PreparedGetCursor;
 import com.pushtorefresh.storio.contentresolver.operations.put.PutResult;
@@ -26,8 +25,7 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -89,7 +87,7 @@ public class RxQueryTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertTrue(putResult.wasInserted());
+        assertThat(putResult.wasInserted()).isTrue();
 
         // Then we should receive 11 tweets
         emissionChecker.awaitNextExpectedValue();
@@ -128,7 +126,7 @@ public class RxQueryTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertTrue(putResult.wasUpdated());
+        assertThat(putResult.wasUpdated()).isTrue();
 
         // Then we should receive 10 tweets after update, but first tweet should be changed
         emissionChecker.awaitNextExpectedValue();
@@ -165,7 +163,7 @@ public class RxQueryTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(1, deleteResult.numberOfRowsDeleted());
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
 
         // Then we should receive 9 tweets after delete, first tweet should be deleted
         emissionChecker.awaitNextExpectedValue();
@@ -187,10 +185,10 @@ public class RxQueryTest extends IntegrationTest {
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertNoValues();
 
-        TestUtils.checkException(
-                testSubscriber,
-                StorIOException.class,
-                IllegalStateException.class,
-                "Cursor returned by content provider is null");
+        Throwable expected = testSubscriber.getOnErrorEvents().get(0);
+        assertThat(expected).isInstanceOf(StorIOException.class);
+        assertThat(expected.getCause())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Cursor returned by content provider is null");
     }
 }

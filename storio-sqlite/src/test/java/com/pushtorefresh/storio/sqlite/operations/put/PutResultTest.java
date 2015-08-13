@@ -13,26 +13,23 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class PutResultTest {
 
     void checkCreateInsertResult(long insertedId, @NonNull Set<String> affectedTables, @NonNull PutResult insertResult) {
-        assertTrue(insertResult.wasInserted());
-        assertFalse(insertResult.wasUpdated());
+        assertThat(insertResult.wasInserted()).isTrue();
+        assertThat(insertResult.wasUpdated()).isFalse();
 
-        assertFalse(insertResult.wasNotInserted());
-        assertTrue(insertResult.wasNotUpdated());
+        assertThat(insertResult.wasNotInserted()).isFalse();
+        assertThat(insertResult.wasNotUpdated()).isTrue();
 
         //noinspection ConstantConditions
-        assertEquals(insertedId, (long) insertResult.insertedId());
-        assertEquals(affectedTables, insertResult.affectedTables());
+        assertThat((long) insertResult.insertedId()).isEqualTo(insertedId);
+        assertThat(insertResult.affectedTables()).isEqualTo(affectedTables);
 
-        assertNull(insertResult.numberOfRowsUpdated());
+        assertThat(insertResult.numberOfRowsUpdated()).isNull();
     }
 
     @Test
@@ -64,9 +61,9 @@ public class PutResultTest {
         try {
             //noinspection ConstantConditions
             PutResult.newInsertResult(1, (Set<String>) null);
-            fail();
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
-            assertEquals("affectedTables must not be null", expected.getMessage());
+            assertThat(expected).hasMessage("affectedTables must not be null");
         }
     }
 
@@ -74,9 +71,9 @@ public class PutResultTest {
     public void shouldNotCreateInsertResultWithEmptyAffectedTables() {
         try {
             PutResult.newInsertResult(1, new HashSet<String>());
-            fail();
+            failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
         } catch (IllegalArgumentException expected) {
-            assertEquals("affectedTables must contain at least one element", expected.getMessage());
+            assertThat(expected).hasMessage("affectedTables must contain at least one element");
         }
     }
 
@@ -85,9 +82,9 @@ public class PutResultTest {
         try {
             //noinspection ConstantConditions
             PutResult.newInsertResult(1, (String) null);
-            fail();
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
-            assertTrue(expected.getMessage().contains("affectedTable must not be null or empty, affectedTables = "));
+            assertThat(expected).hasMessageStartingWith("affectedTable must not be null or empty, affectedTables = ");
         }
     }
 
@@ -95,24 +92,24 @@ public class PutResultTest {
     public void shouldNotCreateInsertResultWithEmptyAffectedTable() {
         try {
             PutResult.newInsertResult(1, "");
-            fail();
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException expected) {
-            assertTrue(expected.getMessage().contains("affectedTable must not be null or empty, affectedTables = "));
+            assertThat(expected).hasMessageStartingWith("affectedTable must not be null or empty, affectedTables = ");
         }
     }
 
     void checkCreateUpdateResult(int numberOfRowsUpdated, @NonNull Set<String> affectedTables, @NonNull PutResult updateResult) {
-        assertTrue(updateResult.wasUpdated());
-        assertFalse(updateResult.wasInserted());
+        assertThat(updateResult.wasUpdated()).isTrue();
+        assertThat(updateResult.wasInserted()).isFalse();
 
-        assertFalse(updateResult.wasNotUpdated());
-        assertTrue(updateResult.wasNotInserted());
+        assertThat(updateResult.wasNotUpdated()).isFalse();
+        assertThat(updateResult.wasNotInserted()).isTrue();
 
         //noinspection ConstantConditions
-        assertEquals(numberOfRowsUpdated, (int) updateResult.numberOfRowsUpdated());
-        assertEquals(affectedTables, updateResult.affectedTables());
+        assertThat((int) updateResult.numberOfRowsUpdated()).isEqualTo(numberOfRowsUpdated);
+        assertThat(updateResult.affectedTables()).isEqualTo(affectedTables);
 
-        assertNull(updateResult.insertedId());
+        assertThat(updateResult.insertedId()).isNull();
     }
 
     @Test
@@ -142,18 +139,18 @@ public class PutResultTest {
     @Test
     public void shouldAllowCreatingUpdateResultWith0RowsUpdated() {
         PutResult putResult = PutResult.newUpdateResult(0, "table");
-        assertTrue(putResult.wasUpdated());
-        assertFalse(putResult.wasInserted());
-        assertEquals(Integer.valueOf(0), putResult.numberOfRowsUpdated());
+        assertThat(putResult.wasUpdated()).isTrue();
+        assertThat(putResult.wasInserted()).isFalse();
+        assertThat(putResult.numberOfRowsUpdated()).isEqualTo(Integer.valueOf(0));
     }
 
     @Test
     public void shouldNotCreateUpdateResultWithNegativeNumberOfRowsUpdated() {
         try {
             PutResult.newUpdateResult(-1, "table");
-            fail();
+            failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
         } catch (IllegalArgumentException expected) {
-            assertEquals("Number of rows updated must be >= 0", expected.getMessage());
+            assertThat(expected).hasMessage("Number of rows updated must be >= 0");
         }
     }
 
@@ -162,9 +159,9 @@ public class PutResultTest {
         try {
             //noinspection ConstantConditions
             PutResult.newUpdateResult(1, (Set<String>) null);
-            fail();
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
-            assertEquals("affectedTables must not be null", expected.getMessage());
+            assertThat(expected).hasMessage("affectedTables must not be null");
         }
     }
 
@@ -172,9 +169,9 @@ public class PutResultTest {
     public void shouldNotCreateUpdateResultWithEmptyAffectedTables() {
         try {
             PutResult.newUpdateResult(1, new HashSet<String>());
-            fail();
+            failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
         } catch (IllegalArgumentException expected) {
-            assertEquals("affectedTables must contain at least one element", expected.getMessage());
+            assertThat(expected).hasMessage("affectedTables must contain at least one element");
         }
     }
 
@@ -183,9 +180,9 @@ public class PutResultTest {
         try {
             //noinspection ConstantConditions
             PutResult.newUpdateResult(1, (String) null);
-            fail();
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
-            assertTrue(expected.getMessage().contains("affectedTable must not be null or empty, affectedTables = "));
+            assertThat(expected).hasMessageStartingWith("affectedTable must not be null or empty, affectedTables = ");
         }
     }
 
@@ -194,9 +191,9 @@ public class PutResultTest {
     public void shouldNotCreateUpdateResultWithEmptyAffectedTable() {
         try {
             PutResult.newUpdateResult(1, "");
-            fail();
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException expected) {
-            assertTrue(expected.getMessage().contains("affectedTable must not be null or empty, affectedTables = "));
+            assertThat(expected).hasMessageStartingWith("affectedTable must not be null or empty, affectedTables = ");
         }
     }
 

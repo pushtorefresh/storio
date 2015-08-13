@@ -15,8 +15,7 @@ import java.util.Set;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
@@ -38,15 +37,15 @@ public class DeleteResultTest {
     @Test
     public void numberOfRowsDeleted() {
         final DeleteResult deleteResult = DeleteResult.newInstance(3, mock(Uri.class));
-        assertEquals(3, deleteResult.numberOfRowsDeleted());
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(3);
     }
 
     @Test
     public void affectedUri() {
         final Uri affectedUri = mock(Uri.class);
         final DeleteResult deleteResult = DeleteResult.newInstance(2, affectedUri);
-        assertEquals(1, deleteResult.affectedUris().size());
-        assertTrue(deleteResult.affectedUris().contains(affectedUri));
+        assertThat(deleteResult.affectedUris()).hasSize(1);
+        assertThat(deleteResult.affectedUris()).contains(affectedUri);
     }
 
     @Test
@@ -58,7 +57,7 @@ public class DeleteResultTest {
         affectedUris.add(mock(Uri.class));
 
         final DeleteResult deleteResult = DeleteResult.newInstance(3, affectedUris);
-        assertEquals(affectedUris, deleteResult.affectedUris());
+        assertThat(deleteResult.affectedUris()).isEqualTo(affectedUris);
     }
 
     @Test

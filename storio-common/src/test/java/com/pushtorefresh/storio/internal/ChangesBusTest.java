@@ -8,22 +8,21 @@ import rx.Observable;
 import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 public class ChangesBusTest {
 
     @Test
     public void asObservableShouldNotReturnNullIfRxJavaInClassPath() {
         ChangesBus<String> changesBus = new ChangesBus<String>(true);
-        assertNotNull(changesBus.asObservable());
+        assertThat(changesBus.asObservable()).isNotNull();
     }
 
     @Test
     public void asObservableShouldReturnNullIfRxJavaIsNotInTheClassPath() {
         ChangesBus<String> changesBus = new ChangesBus<String>(false);
-        assertNull(changesBus.asObservable());
+        assertThat(changesBus.asObservable()).isNull();
     }
 
     @Test
@@ -44,8 +43,9 @@ public class ChangesBusTest {
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
 
         Observable<String> observable = changesBus.asObservable();
-        assertNotNull(observable);
+        assertThat(observable).isNotNull();
 
+        //noinspection ConstantConditions
         observable.subscribe(testSubscriber);
 
         List<String> messages = asList("My", "life", "my", "rules", "please?");

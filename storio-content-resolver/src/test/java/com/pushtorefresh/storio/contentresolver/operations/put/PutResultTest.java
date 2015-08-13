@@ -12,12 +12,8 @@ import org.robolectric.annotation.Config;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
@@ -31,16 +27,16 @@ public class PutResultTest {
 
         final PutResult insertResult = PutResult.newInsertResult(insertedUri, affectedUri);
 
-        assertTrue(insertResult.wasInserted());
-        assertFalse(insertResult.wasUpdated());
+        assertThat(insertResult.wasInserted()).isTrue();
+        assertThat(insertResult.wasUpdated()).isFalse();
 
-        assertFalse(insertResult.wasNotInserted());
-        assertTrue(insertResult.wasNotUpdated());
+        assertThat(insertResult.wasNotInserted()).isFalse();
+        assertThat(insertResult.wasNotUpdated()).isTrue();
 
-        assertSame(insertedUri, insertResult.insertedUri());
-        assertSame(affectedUri, insertResult.affectedUri());
+        assertThat(insertResult.insertedUri()).isSameAs(insertedUri);
+        assertThat(insertResult.affectedUri()).isSameAs(affectedUri);
 
-        assertNull(insertResult.numberOfRowsUpdated());
+        assertThat(insertResult.numberOfRowsUpdated()).isNull();
     }
 
     @Test
@@ -48,9 +44,9 @@ public class PutResultTest {
         try {
             //noinspection ConstantConditions
             PutResult.newInsertResult(null, mock(Uri.class));
-            fail();
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
-            assertEquals("insertedUri must not be null", expected.getMessage());
+            assertThat(expected).hasMessage("insertedUri must not be null");
         }
     }
 
@@ -59,9 +55,9 @@ public class PutResultTest {
         try {
             //noinspection ConstantConditions
             PutResult.newInsertResult(mock(Uri.class), null);
-            fail();
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
-            assertEquals("affectedUri must not be null", expected.getMessage());
+            assertThat(expected).hasMessage("affectedUri must not be null");
         }
     }
 
@@ -72,34 +68,34 @@ public class PutResultTest {
 
         final PutResult updateResult = PutResult.newUpdateResult(numberOfRowsUpdated, affectedUri);
 
-        assertTrue(updateResult.wasUpdated());
-        assertFalse(updateResult.wasInserted());
+        assertThat(updateResult.wasUpdated()).isTrue();
+        assertThat(updateResult.wasInserted()).isFalse();
 
-        assertFalse(updateResult.wasNotUpdated());
-        assertTrue(updateResult.wasNotInserted());
+        assertThat(updateResult.wasNotUpdated()).isFalse();
+        assertThat(updateResult.wasNotInserted()).isTrue();
 
         //noinspection ConstantConditions
-        assertEquals(numberOfRowsUpdated, (int) updateResult.numberOfRowsUpdated());
-        assertSame(affectedUri, updateResult.affectedUri());
+        assertThat((int) updateResult.numberOfRowsUpdated()).isEqualTo(numberOfRowsUpdated);
+        assertThat(updateResult.affectedUri()).isSameAs(affectedUri);
 
-        assertNull(updateResult.insertedUri());
+        assertThat(updateResult.insertedUri()).isNull();
     }
 
     @Test
     public void shouldAllowCreatingUpdateResultWith0RowsUpdated() {
         PutResult putResult = PutResult.newUpdateResult(0, mock(Uri.class));
-        assertTrue(putResult.wasUpdated());
-        assertFalse(putResult.wasInserted());
-        assertEquals(Integer.valueOf(0), putResult.numberOfRowsUpdated());
+        assertThat(putResult.wasUpdated()).isTrue();
+        assertThat(putResult.wasInserted()).isFalse();
+        assertThat(putResult.numberOfRowsUpdated()).isEqualTo(Integer.valueOf(0));
     }
 
     @Test
     public void shouldNotCreateUpdateResultWithNegativeNumberOfRowsUpdated() {
         try {
             PutResult.newUpdateResult(-1, mock(Uri.class));
-            fail();
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException expected) {
-            assertEquals("Number of rows updated must be >= 0", expected.getMessage());
+            assertThat(expected).hasMessage("Number of rows updated must be >= 0");
         }
     }
 
@@ -113,9 +109,9 @@ public class PutResultTest {
         try {
             //noinspection ConstantConditions
             PutResult.newUpdateResult(1, null);
-            fail();
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
-            assertEquals("affectedUri must not be null", expected.getMessage());
+            assertThat(expected).hasMessage("affectedUri must not be null");
         }
     }
 

@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
-import com.pushtorefresh.storio.contentresolver.TestUtils;
 import com.pushtorefresh.storio.contentresolver.operations.get.DefaultGetResolver;
 import com.pushtorefresh.storio.contentresolver.operations.get.PreparedGetCursor;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
@@ -18,10 +17,8 @@ import org.robolectric.annotation.Config;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -49,9 +46,9 @@ public class QueryTest extends IntegrationTest {
                     .prepare()
                     .executeAsBlocking();
 
-            assertNotNull(usersFromQuery);
-            assertEquals(usersFromQuery.size(), 1);
-            assertEquals(usersFromQuery.get(0), user);
+            assertThat(usersFromQuery).isNotNull();
+            assertThat(usersFromQuery).hasSize(1);
+            assertThat(usersFromQuery.get(0)).isEqualTo(user);
         }
     }
 
@@ -74,14 +71,14 @@ public class QueryTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(usersFromQueryOrdered);
-        assertEquals(users.size(), usersFromQueryOrdered.size());
+        assertThat(usersFromQueryOrdered).isNotNull();
+        assertThat(usersFromQueryOrdered).hasSize(users.size());
 
         // Sorting by email for check ordering.
         Collections.sort(users);
 
         for (int i = 0; i < users.size(); i++) {
-            assertEquals(users.get(i), usersFromQueryOrdered.get(i));
+            assertThat(usersFromQueryOrdered.get(i)).isEqualTo(users.get(i));
         }
     }
 
@@ -104,14 +101,14 @@ public class QueryTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(usersFromQueryOrdered);
-        assertEquals(users.size(), usersFromQueryOrdered.size());
+        assertThat(usersFromQueryOrdered).isNotNull();
+        assertThat(usersFromQueryOrdered).hasSize(users.size());
 
         // Reverse sorting by email for check ordering.
         Collections.reverse(users);
 
         for (int i = 0; i < users.size(); i++) {
-            assertEquals(users.get(i), usersFromQueryOrdered.get(i));
+            assertThat(usersFromQueryOrdered.get(i)).isEqualTo(users.get(i));
         }
     }
 
@@ -137,14 +134,14 @@ public class QueryTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(usersFromStorage);
-        assertEquals(users.size(), usersFromStorage.size());
+        assertThat(usersFromStorage).isNotNull();
+        assertThat(usersFromStorage.size()).isEqualTo(users.size());
 
         for (int i = 0; i < users.size(); i++) {
             final User user = users.get(i);
             final User userFromStorage = usersFromStorage.get(i);
-            assertEquals(user.id(), userFromStorage.id());
-            assertNull(userFromStorage.email());
+            assertThat(userFromStorage.id()).isEqualTo(user.id());
+            assertThat(userFromStorage.email()).isNull();
         }
     }
 
@@ -154,13 +151,12 @@ public class QueryTest extends IntegrationTest {
 
         try {
             queryWithNullResult.executeAsBlocking();
-            fail("StorIOException should be thrown");
+            failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
             // it's okay, cursor was null
-            TestUtils.checkException(
-                    expected,
-                    IllegalStateException.class,
-                    "Cursor returned by content provider is null");
+            assertThat(expected.getCause())
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("Cursor returned by content provider is null");
         }
     }
 }

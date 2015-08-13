@@ -10,8 +10,8 @@ import org.junit.runner.RunWith;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -95,15 +95,13 @@ public class PreparedPutObjectTest {
                 new PreparedPutObject.Builder<Object>(storIOSQLite, object)
                         .prepare()
                         .executeAsBlocking();
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
                 IllegalStateException cause = (IllegalStateException) expected.getCause();
 
-                assertEquals("Object does not have type mapping: " +
+                assertThat(cause).hasMessage("Object does not have type mapping: " +
                                 "object = " + object + ", object.class = " + object.getClass() + "," +
-                                "db was not affected by this operation, please add type mapping for this type",
-                        cause.getMessage()
-                );
+                                "db was not affected by this operation, please add type mapping for this type");
 
                 verify(storIOSQLite).internal();
                 verify(internal).typeMapping(Object.class);
@@ -136,11 +134,9 @@ public class PreparedPutObjectTest {
 
             IllegalStateException cause = (IllegalStateException) expected.getCause();
 
-            assertEquals("Object does not have type mapping: " +
+            assertThat(cause).hasMessage("Object does not have type mapping: " +
                             "object = " + object + ", object.class = " + object.getClass() + "," +
-                            "db was not affected by this operation, please add type mapping for this type",
-                    cause.getMessage()
-            );
+                            "db was not affected by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).internal();
             verify(internal).typeMapping(Object.class);

@@ -14,8 +14,7 @@ import org.robolectric.annotation.Config;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -31,7 +30,7 @@ public class UpdateTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertTrue(insertResult.wasInserted());
+        assertThat(insertResult.wasInserted()).isTrue();
 
         final User userForUpdate = User.newInstance(
                 userForInsert.id(), // using id of inserted user
@@ -44,15 +43,15 @@ public class UpdateTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertTrue(updateResult.wasUpdated());
+        assertThat(updateResult.wasUpdated()).isTrue();
 
         final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
 
-        assertEquals(1, cursor.getCount()); // update should not add new rows!
-        assertTrue(cursor.moveToFirst());
+        assertThat(cursor.getCount()).isEqualTo(1); // update should not add new rows!
+        assertThat(cursor.moveToFirst()).isTrue();
 
         final User updatedUser = UserTableMeta.GET_RESOLVER.mapFromCursor(cursor);
-        assertEquals(userForUpdate, updatedUser);
+        assertThat(updatedUser).isEqualTo(userForUpdate);
 
         cursor.close();
     }
@@ -67,7 +66,7 @@ public class UpdateTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(usersForInsert.size(), insertResults.numberOfInserts());
+        assertThat(insertResults.numberOfInserts()).isEqualTo(usersForInsert.size());
 
         final List<User> usersForUpdate = new ArrayList<User>(usersForInsert.size());
 
@@ -81,15 +80,15 @@ public class UpdateTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(usersForUpdate.size(), updateResults.numberOfUpdates());
+        assertThat(updateResults.numberOfUpdates()).isEqualTo(usersForUpdate.size());
 
         final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
 
-        assertEquals(usersForUpdate.size(), cursor.getCount()); // update should not add new rows!
+        assertThat(cursor.getCount()).isEqualTo(usersForUpdate.size()); // update should not add new rows!
 
         for (int i = 0; i < usersForUpdate.size(); i++) {
-            assertTrue(cursor.moveToNext());
-            assertEquals(usersForUpdate.get(i), UserTableMeta.GET_RESOLVER.mapFromCursor(cursor));
+            assertThat(cursor.moveToNext()).isTrue();
+            assertThat(UserTableMeta.GET_RESOLVER.mapFromCursor(cursor)).isEqualTo(usersForUpdate.get(i));
         }
 
         cursor.close();

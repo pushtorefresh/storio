@@ -10,7 +10,7 @@ import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 import rx.Observable;
 import rx.functions.Action1;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -71,7 +71,7 @@ class DeleteByQueryStub {
         verify(deleteResolver, times(1)).performDelete(any(StorIOContentResolver.class), any(DeleteQuery.class));
 
         // checks that actual delete result equals to expected
-        assertEquals(deleteResult, actualDeleteResult);
+        assertThat(actualDeleteResult).isEqualTo(deleteResult);
     }
 
     void verifyBehavior(@NonNull Observable<DeleteResult> deleteResultObservable) {

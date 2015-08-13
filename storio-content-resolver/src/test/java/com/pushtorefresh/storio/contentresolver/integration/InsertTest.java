@@ -11,9 +11,7 @@ import org.robolectric.annotation.Config;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -51,7 +49,7 @@ public class InsertTest extends IntegrationTest {
         final List<User> users = insertUsers(1);
         final User user = users.get(0);
 
-        assertNotNull(user.id());
+        assertThat(user.id()).isNotNull();
 
         final Tweet tweet = TestFactory.newTweet();
 
@@ -61,8 +59,8 @@ public class InsertTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(putResult);
-        assertTrue(putResult.wasInserted());
+        assertThat(putResult).isNotNull();
+        assertThat(putResult.wasInserted()).isTrue();
 
         final List<Tweet> tweetsFromStorage = storIOContentResolver
                 .get()
@@ -73,8 +71,8 @@ public class InsertTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(tweetsFromStorage);
-        assertEquals(1, tweetsFromStorage.size());
-        assertEquals(tweet, tweetsFromStorage.get(0));
+        assertThat(tweetsFromStorage).isNotNull();
+        assertThat(tweetsFromStorage.size()).isEqualTo(1);
+        assertThat(tweetsFromStorage.get(0)).isEqualTo(tweet);
     }
 }

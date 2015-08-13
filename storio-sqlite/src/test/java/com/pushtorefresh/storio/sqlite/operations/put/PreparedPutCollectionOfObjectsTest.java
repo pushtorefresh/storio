@@ -4,7 +4,6 @@ import android.content.ContentValues;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio.sqlite.TestUtils;
 import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
 import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
@@ -19,8 +18,8 @@ import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.same;
@@ -184,10 +183,10 @@ public class PreparedPutCollectionOfObjectsTest {
 
             try {
                 preparedPut.executeAsBlocking();
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
-                TestUtils.checkException(expected, IllegalStateException.class);
+                assertThat(expected).hasCauseInstanceOf(IllegalStateException.class);
             }
 
             verify(storIOSQLite).put();
@@ -221,7 +220,9 @@ public class PreparedPutCollectionOfObjectsTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).internal();
@@ -250,10 +251,10 @@ public class PreparedPutCollectionOfObjectsTest {
 
             try {
                 preparedPut.executeAsBlocking();
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
                 // it's okay, no type mapping was found
-                TestUtils.checkException(expected, IllegalStateException.class);
+                assertThat(expected).hasCauseInstanceOf(IllegalStateException.class);
             }
 
             verify(storIOSQLite).put();
@@ -287,7 +288,9 @@ public class PreparedPutCollectionOfObjectsTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            TestUtils.checkException(testSubscriber, StorIOException.class, IllegalStateException.class);
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).internal();
@@ -322,10 +325,10 @@ public class PreparedPutCollectionOfObjectsTest {
                         .prepare()
                         .executeAsBlocking();
 
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
                 IllegalStateException cause = (IllegalStateException) expected.getCause();
-                assertEquals("test exception", cause.getMessage());
+                assertThat(cause).hasMessage("test exception");
 
                 verify(internal).beginTransaction();
                 verify(internal, never()).setTransactionSuccessful();
@@ -368,7 +371,7 @@ public class PreparedPutCollectionOfObjectsTest {
             //noinspection ThrowableResultOfMethodCallIgnored
             StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
             IllegalStateException cause = (IllegalStateException) expected.getCause();
-            assertEquals("test exception", cause.getMessage());
+            assertThat(cause).hasMessage("test exception");
 
             verify(internal).beginTransaction();
             verify(internal, never()).setTransactionSuccessful();
@@ -401,10 +404,10 @@ public class PreparedPutCollectionOfObjectsTest {
                         .prepare()
                         .executeAsBlocking();
 
-                fail();
+                failBecauseExceptionWasNotThrown(StorIOException.class);
             } catch (StorIOException expected) {
                 IllegalStateException cause = (IllegalStateException) expected.getCause();
-                assertEquals("test exception", cause.getMessage());
+                assertThat(cause).hasMessage("test exception");
 
                 // Main checks of this test
                 verify(internal, never()).beginTransaction();
@@ -449,7 +452,7 @@ public class PreparedPutCollectionOfObjectsTest {
             StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
 
             IllegalStateException cause = (IllegalStateException) expected.getCause();
-            assertEquals("test exception", cause.getMessage());
+            assertThat(cause).hasMessage("test exception");
 
             // Main checks of this test
             verify(internal, never()).beginTransaction();

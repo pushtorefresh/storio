@@ -15,8 +15,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -63,7 +62,7 @@ public class DefaultStorIOSQLiteTest {
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build();
 
-        assertNull(storIOSQLite.internal().typeMapping(TestItem.class));
+        assertThat(storIOSQLite.internal().typeMapping(TestItem.class)).isNull();
     }
 
     @Test
@@ -88,9 +87,9 @@ public class DefaultStorIOSQLiteTest {
                 .addTypeMapping(Entity.class, entityContentResolverTypeMapping)
                 .build();
 
-        assertSame(entityContentResolverTypeMapping, storIOSQLite.internal().typeMapping(Entity.class));
+        assertThat(storIOSQLite.internal().typeMapping(Entity.class)).isSameAs(entityContentResolverTypeMapping);
 
-        assertNull(storIOSQLite.internal().typeMapping(TestItem.class));
+        assertThat(storIOSQLite.internal().typeMapping(TestItem.class)).isNull();
     }
 
     @Test
@@ -111,7 +110,7 @@ public class DefaultStorIOSQLiteTest {
                 .addTypeMapping(TestItem.class, typeMapping)
                 .build();
 
-        assertSame(typeMapping, storIOSQLite.internal().typeMapping(TestItem.class));
+        assertThat(storIOSQLite.internal().typeMapping(TestItem.class)).isSameAs(typeMapping);
     }
 
     @Test
@@ -137,10 +136,10 @@ public class DefaultStorIOSQLiteTest {
         }
 
         // Direct type mapping should still work
-        assertSame(typeMapping, storIOSQLite.internal().typeMapping(TestItem.class));
+        assertThat(storIOSQLite.internal().typeMapping(TestItem.class)).isSameAs(typeMapping);
 
         // Indirect type mapping should give same type mapping as for parent class
-        assertSame(typeMapping, storIOSQLite.internal().typeMapping(TestItemSubclass.class));
+        assertThat(storIOSQLite.internal().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
     }
 
     @Test
@@ -176,10 +175,10 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         // Parent class should have its own type mapping
-        assertSame(typeMapping, storIOSQLite.internal().typeMapping(TestItem.class));
+        assertThat(storIOSQLite.internal().typeMapping(TestItem.class)).isSameAs(typeMapping);
 
         // Child class should have its own type mapping
-        assertSame(subclassTypeMapping, storIOSQLite.internal().typeMapping(TestItemSubclass.class));
+        assertThat(storIOSQLite.internal().typeMapping(TestItemSubclass.class)).isSameAs(subclassTypeMapping);
     }
 
     @Test
@@ -223,16 +222,16 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         // Direct type mapping for Entity should work
-        assertSame(entitySQLiteTypeMapping, storIOSQLite.internal().typeMapping(Entity.class));
+        assertThat(storIOSQLite.internal().typeMapping(Entity.class)).isSameAs(entitySQLiteTypeMapping);
 
         // Direct type mapping for ConcreteEntity should work
-        assertSame(concreteEntitySQLiteTypeMapping, storIOSQLite.internal().typeMapping(ConcreteEntity.class));
+        assertThat(storIOSQLite.internal().typeMapping(ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
 
         // Indirect type mapping for AutoValue_Entity should get type mapping for Entity
-        assertSame(entitySQLiteTypeMapping, storIOSQLite.internal().typeMapping(AutoValue_Entity.class));
+        assertThat(storIOSQLite.internal().typeMapping(AutoValue_Entity.class)).isSameAs(entitySQLiteTypeMapping);
 
         // Indirect type mapping for AutoValue_ConcreteEntity should get type mapping for ConcreteEntity, not for Entity!
-        assertSame(concreteEntitySQLiteTypeMapping, storIOSQLite.internal().typeMapping(AutoValue_ConcreteEntity.class));
+        assertThat(storIOSQLite.internal().typeMapping(AutoValue_ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
     }
 
     @Test

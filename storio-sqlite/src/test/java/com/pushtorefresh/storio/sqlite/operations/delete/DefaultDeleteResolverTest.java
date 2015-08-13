@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-import static junit.framework.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -49,8 +49,8 @@ public class DefaultDeleteResolverTest {
         verify(internal, times(1)).delete(any(DeleteQuery.class));
         verify(internal, times(1)).delete(deleteQuery);
 
-        assertEquals(1, deleteResult.numberOfRowsDeleted());
-        assertEquals(Collections.singleton(testTable), deleteResult.affectedTables());
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
+        assertThat(deleteResult.affectedTables()).isEqualTo(Collections.singleton(testTable));
     }
 
     private static class TestItem {

@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import rx.Observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -82,6 +82,6 @@ public class PreparedGetCursorTest {
                 .STANDARD_GET_RESOLVER
                 .mapFromCursor(cursor);
 
-        assertEquals(cursor, cursorAfterMap);
+        assertThat(cursorAfterMap).isEqualTo(cursor);
     }
 }

@@ -13,7 +13,7 @@ import org.robolectric.annotation.Config;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -24,13 +24,13 @@ public class DeleteTest extends BaseTest {
         final User user = putUserBlocking();
 
         final Cursor cursorAfterInsert = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
-        assertEquals(1, cursorAfterInsert.getCount());
+        assertThat(cursorAfterInsert.getCount()).isEqualTo(1);
         cursorAfterInsert.close();
 
         deleteUserBlocking(user);
 
         final Cursor cursorAfterDelete = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
-        assertEquals(0, cursorAfterDelete.getCount());
+        assertThat(cursorAfterDelete.getCount()).isEqualTo(0);
         cursorAfterDelete.close();
     }
 
@@ -52,16 +52,16 @@ public class DeleteTest extends BaseTest {
 
         final List<User> usersAfterDelete = getAllUsersBlocking();
 
-        assertEquals(allUsers.size() / 2, usersAfterDelete.size());
+        assertThat(usersAfterDelete).hasSize(allUsers.size() / 2);
 
         for (User user : allUsers) {
             final boolean shouldBeDeleted = usersToDelete.contains(user);
 
             // Check that we deleted what we going to.
-            assertEquals(shouldBeDeleted, deleteResults.wasDeleted(user));
+            assertThat(deleteResults.wasDeleted(user)).isEqualTo(shouldBeDeleted);
 
             // Check that we didn't delete users that we didn't want to
-            assertEquals(!shouldBeDeleted, usersAfterDelete.contains(user));
+            assertThat(usersAfterDelete.contains(user)).isEqualTo(!shouldBeDeleted);
         }
     }
 }

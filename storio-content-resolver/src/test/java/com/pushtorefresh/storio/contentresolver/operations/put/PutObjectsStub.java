@@ -15,7 +15,7 @@ import java.util.Map;
 import rx.Observable;
 import rx.functions.Action1;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -126,10 +126,10 @@ class PutObjectsStub {
             verify(putResolver, times(1)).performPut(storIOContentResolver, testItem);
 
             final PutResult expectedPutResult = itemsToPutResultsMap.get(testItem);
-            assertEquals(expectedPutResult, putResults.results().get(testItem));
+            assertThat(putResults.results().get(testItem)).isEqualTo(expectedPutResult);
         }
 
-        assertEquals(itemsToPutResultsMap.size(), putResults.results().size());
+        assertThat(putResults.results()).hasSize(itemsToPutResultsMap.size());
 
         if (withTypeMapping) {
             verify(internal, times(items.size())).typeMapping(TestItem.class);

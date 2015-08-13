@@ -13,9 +13,7 @@ import org.robolectric.annotation.Config;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
@@ -44,8 +42,7 @@ public class UpdateQueryTest {
                 .uri(mock(Uri.class))
                 .build();
 
-        assertNotNull(updateQuery.where());
-        assertEquals("", updateQuery.where());
+        assertThat(updateQuery.where()).isEqualTo("");
     }
 
     @Test
@@ -54,8 +51,8 @@ public class UpdateQueryTest {
                 .uri(mock(Uri.class))
                 .build();
 
-        assertNotNull(updateQuery.whereArgs());
-        assertTrue(updateQuery.whereArgs().isEmpty());
+        assertThat(updateQuery.whereArgs()).isNotNull();
+        assertThat(updateQuery.whereArgs()).isEmpty();
     }
 
     @Test
@@ -70,9 +67,9 @@ public class UpdateQueryTest {
                 .whereArgs(whereArgs)
                 .build();
 
-        assertEquals(uri, updateQuery.uri());
-        assertEquals(where, updateQuery.where());
-        assertEquals(asList(whereArgs), updateQuery.whereArgs());
+        assertThat(updateQuery.uri()).isEqualTo(uri);
+        assertThat(updateQuery.where()).isEqualTo(where);
+        assertThat(updateQuery.whereArgs()).isEqualTo(asList(whereArgs));
     }
 
     @Test

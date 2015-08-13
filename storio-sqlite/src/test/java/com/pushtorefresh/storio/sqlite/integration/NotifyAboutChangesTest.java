@@ -22,8 +22,7 @@ import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -106,8 +105,8 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         // notice, that order of received notification can be different
         // but in total, they should be equal
-        assertEquals(expectedChanges.size(), testSubscriber.getOnNextEvents().size());
-        assertTrue(expectedChanges.containsAll(testSubscriber.getOnNextEvents()));
+        assertThat(testSubscriber.getOnNextEvents()).hasSize(expectedChanges.size());
+        assertThat(expectedChanges.containsAll(testSubscriber.getOnNextEvents())).isTrue();
     }
 
     @Test
@@ -132,7 +131,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         }
 
         // While we in transaction, no changes should be sent
-        assertEquals(0, testSubscriber.getOnNextEvents().size());
+        assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
 
         storIOSQLite
                 .internal()
@@ -184,10 +183,10 @@ public class NotifyAboutChangesTest extends BaseTest {
         // Steady!
         startAllThreadsLock.countDown(); // Go!
 
-        assertTrue(allThreadsFinishedLock.await(20, SECONDS));
+        assertThat(allThreadsFinishedLock.await(20, SECONDS)).isTrue();
 
         // While we in transaction, no changes should be sent
-        assertEquals(0, testSubscriber.getOnNextEvents().size());
+        assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
 
         storIOSQLite
                 .internal()

@@ -20,8 +20,7 @@ import org.robolectric.annotation.Config;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -65,7 +64,7 @@ public class AutoParcelTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertTrue(putResult.wasInserted());
+        assertThat(putResult.wasInserted()).isTrue();
 
         final List<Book> storedBooks = storIOSQLite
                 .get()
@@ -76,9 +75,9 @@ public class AutoParcelTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(1, storedBooks.size());
+        assertThat(storedBooks).hasSize(1);
 
-        assertEquals(book, storedBooks.get(0));
+        assertThat(storedBooks.get(0)).isEqualTo(book);
     }
 
     @Test
@@ -95,7 +94,7 @@ public class AutoParcelTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertTrue(putResult1.wasInserted());
+        assertThat(putResult1.wasInserted()).isTrue();
 
         final Book bookWithUpdatedInfo = Book.builder()
                 .id(1) // Same id, should be updated
@@ -109,7 +108,7 @@ public class AutoParcelTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertTrue(putResult2.wasUpdated());
+        assertThat(putResult2.wasUpdated()).isTrue();
 
         final List<Book> storedBooks = storIOSQLite
                 .get()
@@ -120,9 +119,9 @@ public class AutoParcelTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(1, storedBooks.size());
+        assertThat(storedBooks).hasSize(1);
 
-        assertEquals(bookWithUpdatedInfo, storedBooks.get(0));
+        assertThat(storedBooks.get(0)).isEqualTo(bookWithUpdatedInfo);
     }
 
     @Test
@@ -139,7 +138,7 @@ public class AutoParcelTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertTrue(putResult.wasInserted());
+        assertThat(putResult.wasInserted()).isTrue();
 
         final DeleteResult deleteResult = storIOSQLite
                 .delete()
@@ -147,7 +146,7 @@ public class AutoParcelTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(1, deleteResult.numberOfRowsDeleted());
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
 
         final List<Book> storedBooks = storIOSQLite
                 .get()
@@ -158,6 +157,6 @@ public class AutoParcelTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(0, storedBooks.size());
+        assertThat(storedBooks).hasSize(0);
     }
 }

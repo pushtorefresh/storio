@@ -10,7 +10,7 @@ import java.util.Map;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PutResultsTest {
 
@@ -23,11 +23,11 @@ public class PutResultsTest {
 
         final PutResults<String> putResults = PutResults.newInstance(putResultMap);
 
-        assertEquals(0, putResults.numberOfInserts());
+        assertThat(putResults.numberOfInserts()).isEqualTo(0);
 
         // We cache this value, so let's test that cache works too
         // (coverage tool will report it as untested branch if we won't check this)
-        assertEquals(0, putResults.numberOfInserts());
+        assertThat(putResults.numberOfInserts()).isEqualTo(0);
     }
 
     @Test
@@ -39,11 +39,11 @@ public class PutResultsTest {
 
         final PutResults<String> putResults = PutResults.newInstance(putResultMap);
 
-        assertEquals(0, putResults.numberOfUpdates());
+        assertThat(putResults.numberOfUpdates()).isEqualTo(0);
 
         // We cache this value, so let's test that cache works too
         // (coverage tool will report it as untested branch if we won't check this)
-        assertEquals(0, putResults.numberOfUpdates());
+        assertThat(putResults.numberOfUpdates()).isEqualTo(0);
     }
 
     @Test
@@ -60,8 +60,8 @@ public class PutResultsTest {
 
         final PutResults<String> putResults = PutResults.newInstance(putResultMap);
 
-        assertEquals(3, putResults.numberOfInserts());
-        assertEquals(6, putResults.numberOfUpdates());
+        assertThat(putResults.numberOfInserts()).isEqualTo(3);
+        assertThat(putResults.numberOfUpdates()).isEqualTo(6);
     }
 
     @Test

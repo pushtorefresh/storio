@@ -8,10 +8,8 @@ import java.util.Arrays;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class DeleteQueryTest {
 
@@ -36,8 +34,7 @@ public class DeleteQueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(deleteQuery.where());
-        assertEquals("", deleteQuery.where());
+        assertThat(deleteQuery.where()).isEqualTo("");
     }
 
     @Test
@@ -46,8 +43,8 @@ public class DeleteQueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(deleteQuery.whereArgs());
-        assertTrue(deleteQuery.whereArgs().isEmpty());
+        assertThat(deleteQuery.whereArgs()).isNotNull();
+        assertThat(deleteQuery.whereArgs()).isEmpty();
     }
 
     @Test
@@ -57,9 +54,9 @@ public class DeleteQueryTest {
                     .table("test_table")
                     .whereArgs("someArg") // Without WHERE clause!
                     .build();
-            fail();
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException expected) {
-            assertEquals("You can not use whereArgs without where clause", expected.getMessage());
+            assertThat(expected).hasMessage("You can not use whereArgs without where clause");
         }
     }
 
@@ -86,9 +83,9 @@ public class DeleteQueryTest {
                 .whereArgs(whereArgs)
                 .build();
 
-        assertEquals(table, deleteQuery.table());
-        assertEquals(where, deleteQuery.where());
-        assertEquals(Arrays.asList(whereArgs), deleteQuery.whereArgs());
+        assertThat(deleteQuery.table()).isEqualTo(table);
+        assertThat(deleteQuery.where()).isEqualTo(where);
+        assertThat(deleteQuery.whereArgs()).isEqualTo(Arrays.asList(whereArgs));
     }
 
     @Test

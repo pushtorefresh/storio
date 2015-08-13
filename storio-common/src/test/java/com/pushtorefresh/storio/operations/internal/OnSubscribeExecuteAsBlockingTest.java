@@ -11,7 +11,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import rx.Observable;
 import rx.Subscriber;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,7 +39,7 @@ public class OnSubscribeExecuteAsBlockingTest {
         verify(preparedOperation, times(1)).executeAsBlocking();
         verify(preparedOperation, times(0)).createObservable();
 
-        assertEquals(expectedResult, actualResult);
+        assertThat(actualResult).isEqualTo(expectedResult);
     }
 
     @Test

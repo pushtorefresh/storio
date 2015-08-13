@@ -6,8 +6,7 @@ import org.junit.Test;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class InsertQueryTest {
 
@@ -32,7 +31,7 @@ public class InsertQueryTest {
                 .table("test_table")
                 .build();
 
-        assertNull(insertQuery.nullColumnHack());
+        assertThat(insertQuery.nullColumnHack()).isNull();
     }
 
     @Test
@@ -45,8 +44,8 @@ public class InsertQueryTest {
                 .nullColumnHack(nullColumnHack)
                 .build();
 
-        assertEquals(table, insertQuery.table());
-        assertEquals(nullColumnHack, insertQuery.nullColumnHack());
+        assertThat(insertQuery.table()).isEqualTo(table);
+        assertThat(insertQuery.nullColumnHack()).isEqualTo(nullColumnHack);
     }
 
     @Test

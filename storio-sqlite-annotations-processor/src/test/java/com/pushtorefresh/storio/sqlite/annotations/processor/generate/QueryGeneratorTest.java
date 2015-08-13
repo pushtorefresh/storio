@@ -9,7 +9,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,7 +24,7 @@ public class QueryGeneratorTest {
     @Test
     public void createWhereNoColumns() {
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta(null, null, null);
-        assertEquals(Collections.emptyMap(), QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object"));
+        assertThat(QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object")).isEqualTo(Collections.emptyMap());
     }
 
     @Test
@@ -39,7 +39,7 @@ public class QueryGeneratorTest {
         when(storIOSQLiteColumn2.key()).thenReturn(false);
         storIOSQLiteTypeMeta.columns.put("column2", new StorIOSQLiteColumnMeta(null, null, null, null, storIOSQLiteColumn2));
 
-        assertEquals(Collections.emptyMap(), QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object"));
+        assertThat(QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object")).isEqualTo(Collections.emptyMap());
     }
 
     @Test
@@ -61,8 +61,8 @@ public class QueryGeneratorTest {
 
         final Map<String, String> where = QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object");
 
-        assertEquals("column2 = ?", where.get(QueryGenerator.WHERE_CLAUSE));
-        assertEquals("object.testField1", where.get(QueryGenerator.WHERE_ARGS));
+        assertThat(where.get(QueryGenerator.WHERE_CLAUSE)).isEqualTo("column2 = ?");
+        assertThat(where.get(QueryGenerator.WHERE_ARGS)).isEqualTo("object.testField1");
     }
 
     @Test
@@ -85,7 +85,7 @@ public class QueryGeneratorTest {
 
         final Map<String, String> where = QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object");
 
-        assertEquals("column1 = ? AND column3 = ?", where.get(QueryGenerator.WHERE_CLAUSE));
-        assertEquals("object.testField1, object.testField3", where.get(QueryGenerator.WHERE_ARGS));
+        assertThat(where.get(QueryGenerator.WHERE_CLAUSE)).isEqualTo("column1 = ? AND column3 = ?");
+        assertThat(where.get(QueryGenerator.WHERE_ARGS)).isEqualTo("object.testField1, object.testField3");
     }
 }

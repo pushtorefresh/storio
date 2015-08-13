@@ -7,10 +7,8 @@ import org.junit.Test;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class UpdateQueryTest {
 
@@ -35,8 +33,7 @@ public class UpdateQueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(updateQuery.where());
-        assertEquals("", updateQuery.where());
+        assertThat(updateQuery.where()).isEqualTo("");
     }
 
     @Test
@@ -45,8 +42,8 @@ public class UpdateQueryTest {
                 .table("test_table")
                 .build();
 
-        assertNotNull(updateQuery.whereArgs());
-        assertTrue(updateQuery.whereArgs().isEmpty());
+        assertThat(updateQuery.whereArgs()).isNotNull();
+        assertThat(updateQuery.whereArgs()).isEmpty();
     }
 
     @Test
@@ -61,9 +58,9 @@ public class UpdateQueryTest {
                 .whereArgs(whereArgs)
                 .build();
 
-        assertEquals(table, updateQuery.table());
-        assertEquals(where, updateQuery.where());
-        assertEquals(asList(whereArgs), updateQuery.whereArgs());
+        assertThat(updateQuery.table()).isEqualTo(table);
+        assertThat(updateQuery.where()).isEqualTo(where);
+        assertThat(updateQuery.whereArgs()).isEqualTo(asList(whereArgs));
     }
 
     @Test
@@ -73,9 +70,9 @@ public class UpdateQueryTest {
                     .table("test_table")
                     .whereArgs("someArg") // Without WHERE clause!
                     .build();
-            fail();
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException expected) {
-            assertEquals("You can not use whereArgs without where clause", expected.getMessage());
+            assertThat(expected).hasMessage("You can not use whereArgs without where clause");
         }
     }
 

@@ -14,9 +14,7 @@ import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class InternalQueriesTest {
 
@@ -35,13 +33,13 @@ public class InternalQueriesTest {
     @Test
     public void nullArrayToUnmodifiableNonNullListOfStrings() {
         Object[] array = null;
-        assertEquals(emptyList(), InternalQueries.unmodifiableNonNullListOfStrings(array));
+        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(array)).isEqualTo(emptyList());
     }
 
     @Test
     public void emptyArrayToUnmodifiableNonNullListOfStrings() {
         Object[] array = {};
-        assertEquals(emptyList(), InternalQueries.unmodifiableNonNullListOfStrings(array));
+        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(array)).isEqualTo(emptyList());
     }
 
     @Test
@@ -49,10 +47,10 @@ public class InternalQueriesTest {
         Object[] array = {"1", "2", "3"};
         List<String> list = InternalQueries.unmodifiableNonNullListOfStrings(array);
 
-        assertEquals(array.length, list.size());
+        assertThat(list).hasSize(array.length);
 
         for (int i = 0; i < array.length; i++) {
-            assertEquals(array[i], list.get(i));
+            assertThat(list.get(i)).isEqualTo(array[i]);
         }
     }
 
@@ -61,9 +59,9 @@ public class InternalQueriesTest {
         Object[] array = {"1", null, "3"};
         List<String> strings = InternalQueries.unmodifiableNonNullListOfStrings(array);
 
-        assertEquals("1", strings.get(0));
-        assertEquals("null", strings.get(1));
-        assertEquals("3", strings.get(2));
+        assertThat(strings.get(0)).isEqualTo("1");
+        assertThat(strings.get(1)).isEqualTo("null");
+        assertThat(strings.get(2)).isEqualTo("3");
     }
 
     //endregion
@@ -74,19 +72,19 @@ public class InternalQueriesTest {
     @Test
     public void nullListToUnmodifiableNonNullListOfStrings() {
         List<Object> list = null;
-        assertEquals(emptyList(), InternalQueries.unmodifiableNonNullListOfStrings(list));
+        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(list)).isEqualTo(emptyList());
     }
 
     @Test
     public void emptyListToUnmodifiableNonNullListOfStrings() {
         List<Object> list = new ArrayList<Object>();
-        assertEquals(emptyList(), InternalQueries.unmodifiableNonNullListOfStrings(list));
+        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(list)).isEqualTo(emptyList());
     }
 
     @Test
     public void nonEmptyListToUnmodifiableNonNullListOfStrings() {
         List<String> strings = asList("1", "2", "3");
-        assertEquals(strings, InternalQueries.unmodifiableNonNullListOfStrings(strings));
+        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(strings)).isEqualTo(strings);
     }
 
     @Test
@@ -94,11 +92,10 @@ public class InternalQueriesTest {
         List<String> strings = asList("1", null, "3");
         List<String> result = InternalQueries.unmodifiableNonNullListOfStrings(strings);
 
-        assertEquals("1", result.get(0));
-        assertEquals("null", result.get(1));
-        assertEquals("3", result.get(2));
+        assertThat(result.get(0)).isEqualTo("1");
+        assertThat(result.get(1)).isEqualTo("null");
+        assertThat(result.get(2)).isEqualTo("3");
     }
-
 
     //endregion
 
@@ -108,13 +105,13 @@ public class InternalQueriesTest {
     @Test
     public void nullListToUnmodifiableNonNullList() {
         List<String> list = null;
-        assertEquals(emptyList(), InternalQueries.unmodifiableNonNullList(list));
+        assertThat(InternalQueries.unmodifiableNonNullList(list)).isEqualTo(emptyList());
     }
 
     @Test
     public void emptyListToUnmodifiableNonNullList() {
         List<String> list = new ArrayList<String>();
-        assertEquals(emptyList(), InternalQueries.unmodifiableNonNullList(list));
+        assertThat(InternalQueries.unmodifiableNonNullList(list)).isEqualTo(emptyList());
     }
 
     @Test
@@ -122,11 +119,11 @@ public class InternalQueriesTest {
         List<String> list = asList("1", "2", "3");
         List<String> unmodifiableList = InternalQueries.unmodifiableNonNullList(list);
 
-        assertEquals(list.size(), unmodifiableList.size());
+        assertThat(unmodifiableList).hasSize(list.size());
 
         // don't believe equals from List :)
         for (int i = 0; i < list.size(); i++) {
-            assertEquals(list.get(i), unmodifiableList.get(i));
+            assertThat(list.get(i)).isEqualTo(unmodifiableList.get(i));
         }
     }
 
@@ -142,12 +139,12 @@ public class InternalQueriesTest {
 
     @Test
     public void nullSetToUnmodifiableNonNullSet() {
-        assertEquals(emptySet(), InternalQueries.unmodifiableNonNullSet(null));
+        assertThat(InternalQueries.unmodifiableNonNullSet(null)).isEqualTo(emptySet());
     }
 
     @Test
     public void emptySetToUnmodifiableNonNullSet() {
-        assertEquals(emptySet(), InternalQueries.unmodifiableNonNullSet(new HashSet<Object>()));
+        assertThat(InternalQueries.unmodifiableNonNullSet(new HashSet<Object>())).isEqualTo(emptySet());
     }
 
     @Test
@@ -160,7 +157,7 @@ public class InternalQueriesTest {
 
         Set<String> unmodifiableSet = InternalQueries.unmodifiableNonNullSet(testSet);
 
-        assertEquals(testSet, unmodifiableSet);
+        assertThat(unmodifiableSet).isEqualTo(testSet);
     }
 
     //endregion
@@ -171,13 +168,13 @@ public class InternalQueriesTest {
     @Test
     public void nullListOfStringsToNonNullArrayOfStrings() {
         List<String> list = null;
-        assertTrue(Arrays.equals(new String[]{}, InternalQueries.nonNullArrayOfStrings(list)));
+        assertThat(Arrays.equals(new String[]{}, InternalQueries.nonNullArrayOfStrings(list))).isTrue();
     }
 
     @Test
     public void emptyListOfStringsToNonNullArrayOfStrings() {
         List<String> list = new ArrayList<String>();
-        assertTrue(Arrays.equals(new String[]{}, InternalQueries.nonNullArrayOfStrings(list)));
+        assertThat(Arrays.equals(new String[]{}, InternalQueries.nonNullArrayOfStrings(list))).isTrue();
     }
 
     @Test
@@ -185,10 +182,10 @@ public class InternalQueriesTest {
         List<String> list = asList("1", "2", "3");
         String[] array = InternalQueries.nonNullArrayOfStrings(list);
 
-        assertEquals(list.size(), array.length);
+        assertThat(array.length).isEqualTo(list.size());
 
         for (int i = 0; i < list.size(); i++) {
-            assertEquals(list.get(i), array[i]);
+            assertThat(array[i]).isEqualTo(list.get(i));
         }
     }
 
@@ -198,13 +195,13 @@ public class InternalQueriesTest {
 
     @Test
     public void nullListOfStringsToNullableArrayOfString() {
-        assertEquals(null, InternalQueries.nullableArrayOfStrings(null));
+        assertThat(InternalQueries.nullableArrayOfStrings(null)).isNull();
     }
 
     @Test
     public void emptyListOfStringsToNullableArrayOfString() {
         List<String> list = new ArrayList<String>();
-        assertEquals(null, InternalQueries.nullableArrayOfStrings(list));
+        assertThat(InternalQueries.nullableArrayOfStrings(list)).isNull();
     }
 
     @Test
@@ -212,11 +209,13 @@ public class InternalQueriesTest {
         List<String> list = asList("1", "2", "3");
         String[] array = InternalQueries.nullableArrayOfStrings(list);
 
-        assertNotNull(array);
-        assertEquals(list.size(), array.length);
+        assertThat(array).isNotNull();
+
+        //noinspection ConstantConditions
+        assertThat(array.length).isEqualTo(list.size());
 
         for (int i = 0; i < list.size(); i++) {
-            assertEquals(list.get(i), array[i]);
+            assertThat(array[i]).isEqualTo(list.get(i));
         }
     }
 
@@ -226,17 +225,17 @@ public class InternalQueriesTest {
 
     @Test
     public void nonNullStringFromNull() {
-        assertEquals("", InternalQueries.nonNullString(null));
+        assertThat(InternalQueries.nonNullString(null)).isEqualTo("");
     }
 
     @Test
     public void nonNullStringFromEmptyString() {
-        assertEquals("", InternalQueries.nonNullString(""));
+        assertThat(InternalQueries.nonNullString("")).isEqualTo("");
     }
 
     @Test
     public void nonNullStringFromNormalString() {
-        assertEquals("123", InternalQueries.nonNullString("123"));
+        assertThat(InternalQueries.nonNullString("123")).isEqualTo("123");
     }
 
     //endregion
@@ -245,17 +244,17 @@ public class InternalQueriesTest {
 
     @Test
     public void nullableStringFromNull() {
-        assertEquals(null, InternalQueries.nullableString(null));
+        assertThat(InternalQueries.nullableString(null)).isNull();
     }
 
     @Test
     public void nullableStringFromEmptyString() {
-        assertEquals(null, InternalQueries.nullableString(""));
+        assertThat(InternalQueries.nullableString("")).isNull();
     }
 
     @Test
     public void nullableStringFromNormalString() {
-        assertEquals("123", InternalQueries.nullableString("123"));
+        assertThat(InternalQueries.nullableString("123")).isEqualTo("123");
     }
 
     //endregion

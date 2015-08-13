@@ -19,9 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -31,7 +29,7 @@ public class QueryTest extends BaseTest {
     public void queryAll() {
         final List<User> users = putUsersBlocking(3);
         final List<User> usersFromQuery = getAllUsersBlocking();
-        assertTrue(users.equals(usersFromQuery));
+        assertThat(users.equals(usersFromQuery)).isTrue();
     }
 
     @Test
@@ -50,9 +48,9 @@ public class QueryTest extends BaseTest {
                     .prepare()
                     .executeAsBlocking();
 
-            assertNotNull(usersFromQuery);
-            assertEquals(usersFromQuery.size(), 1);
-            assertEquals(usersFromQuery.get(0), user);
+            assertThat(usersFromQuery).isNotNull();
+            assertThat(usersFromQuery).hasSize(1);
+            assertThat(usersFromQuery.get(0)).isEqualTo(user);
         }
     }
 
@@ -75,14 +73,14 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(usersFromQueryOrdered);
-        assertEquals(users.size(), usersFromQueryOrdered.size());
+        assertThat(usersFromQueryOrdered).isNotNull();
+        assertThat(usersFromQueryOrdered).hasSize(users.size());
 
         // Sorting by email for check ordering.
         Collections.sort(users);
 
         for (int i = 0; i < users.size(); i++) {
-            assertEquals(users.get(i), usersFromQueryOrdered.get(i));
+            assertThat(usersFromQueryOrdered.get(i)).isEqualTo(users.get(i));
         }
     }
 
@@ -105,14 +103,14 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(usersFromQueryOrdered);
-        assertEquals(users.size(), usersFromQueryOrdered.size());
+        assertThat(usersFromQueryOrdered).isNotNull();
+        assertThat(usersFromQueryOrdered).hasSize(users.size());
 
         // Reverse sorting by email for check ordering.
         Collections.reverse(users);
 
         for (int i = 0; i < users.size(); i++) {
-            assertEquals(users.get(i), usersFromQueryOrdered.get(i));
+            assertThat(usersFromQueryOrdered.get(i)).isEqualTo(users.get(i));
         }
     }
 
@@ -131,8 +129,8 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(usersFromQuery);
-        assertEquals(usersFromQuery.size(), limit);
+        assertThat(usersFromQuery).isNotNull();
+        assertThat(usersFromQuery).hasSize(limit);
     }
 
     @Test
@@ -152,14 +150,14 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(usersFromQuery);
-        assertEquals(Math.min(limit, users.size() - offset), usersFromQuery.size());
+        assertThat(usersFromQuery).isNotNull();
+        assertThat(usersFromQuery).hasSize(Math.min(limit, users.size() - offset));
 
         Collections.sort(users);
 
         int position = 0;
         for (int i = offset; i < offset + limit; i++) {
-            assertEquals(users.get(i), usersFromQuery.get(position++));
+            assertThat(usersFromQuery.get(position++)).isEqualTo(users.get(i));
         }
     }
 
@@ -198,8 +196,8 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(groupsOfUsers);
-        assertEquals(2, groupsOfUsers.size());
+        assertThat(groupsOfUsers).isNotNull();
+        assertThat(groupsOfUsers).hasSize(2);
     }
 
     @Test
@@ -240,8 +238,8 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(groupsOfUsers);
-        assertEquals(1, groupsOfUsers.size());
+        assertThat(groupsOfUsers).isNotNull();
+        assertThat(groupsOfUsers).hasSize(1);
     }
 
     @Test
@@ -274,8 +272,8 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(uniqueUsersFromQuery);
-        assertEquals(1, uniqueUsersFromQuery.size());
+        assertThat(uniqueUsersFromQuery).isNotNull();
+        assertThat(uniqueUsersFromQuery).hasSize(1);
 
         final List<User> allUsersFromQuery = storIOSQLite
                 .get()
@@ -289,8 +287,8 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(allUsersFromQuery);
-        assertEquals(users.size(), allUsersFromQuery.size());
+        assertThat(allUsersFromQuery).isNotNull();
+        assertThat(allUsersFromQuery).hasSize(users.size());
     }
 
     @Test
@@ -335,7 +333,7 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(usersWithLongName, usersFromQuery);
+        assertThat(usersFromQuery).isEqualTo(usersWithLongName);
     }
 
     @Test
@@ -359,9 +357,9 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(usersFromQuery);
-        assertEquals(1, usersFromQuery.size());
-        assertEquals(testUser, usersFromQuery.get(0));
+        assertThat(usersFromQuery).isNotNull();
+        assertThat(usersFromQuery).hasSize(1);
+        assertThat(usersFromQuery.get(0)).isEqualTo(testUser);
     }
 
     @Test
@@ -382,6 +380,6 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(users, getAllUsersBlocking());
+        assertThat(getAllUsersBlocking()).isEqualTo(users);
     }
 }

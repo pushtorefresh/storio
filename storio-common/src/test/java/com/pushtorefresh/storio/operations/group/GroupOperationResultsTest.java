@@ -10,8 +10,8 @@ import java.util.Map;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
 
 public class GroupOperationResultsTest {
@@ -21,8 +21,11 @@ public class GroupOperationResultsTest {
         try {
             //noinspection ConstantConditions
             GroupOperationResults.newInstance(null);
-            fail();
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Please specify results of Group Operation")
+                    .hasNoCause();
         }
     }
 
@@ -35,7 +38,7 @@ public class GroupOperationResultsTest {
         results.put(mock(PreparedOperation.class), mock(Object.class));
 
         final GroupOperationResults groupOperationResults = GroupOperationResults.newInstance(results);
-        assertEquals(results, groupOperationResults.results());
+        assertThat(groupOperationResults.results()).isEqualTo(results);
     }
 
     @Test

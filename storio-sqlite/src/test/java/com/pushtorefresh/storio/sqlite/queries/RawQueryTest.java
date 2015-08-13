@@ -9,9 +9,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RawQueryTest {
 
@@ -36,8 +34,8 @@ public class RawQueryTest {
                 .query("lalala I know SQL")
                 .build();
 
-        assertNotNull(rawQuery.args());
-        assertTrue(rawQuery.args().isEmpty());
+        assertThat(rawQuery.args()).isNotNull();
+        assertThat(rawQuery.args()).isEmpty();
     }
 
     @Test
@@ -46,8 +44,8 @@ public class RawQueryTest {
                 .query("lalala I know SQL")
                 .build();
 
-        assertNotNull(rawQuery.observesTables());
-        assertTrue(rawQuery.observesTables().isEmpty());
+        assertThat(rawQuery.observesTables()).isNotNull();
+        assertThat(rawQuery.observesTables()).isEmpty();
     }
 
     @Test
@@ -56,8 +54,8 @@ public class RawQueryTest {
                 .query("lalala I know SQL")
                 .build();
 
-        assertNotNull(rawQuery.affectsTables());
-        assertTrue(rawQuery.affectsTables().isEmpty());
+        assertThat(rawQuery.affectsTables()).isNotNull();
+        assertThat(rawQuery.affectsTables()).isEmpty();
     }
 
     @Test
@@ -68,7 +66,7 @@ public class RawQueryTest {
                 .affectsTables("second_call")
                 .build();
 
-        assertEquals(singleton("second_call"), rawQuery.affectsTables());
+        assertThat(rawQuery.affectsTables()).isEqualTo(singleton("second_call"));
     }
 
     @Test
@@ -79,7 +77,7 @@ public class RawQueryTest {
                 .observesTables("second_call")
                 .build();
 
-        assertEquals(singleton("second_call"), rawQuery.observesTables());
+        assertThat(rawQuery.observesTables()).isEqualTo(singleton("second_call"));
     }
 
     @Test
@@ -96,10 +94,10 @@ public class RawQueryTest {
                 .affectsTables(affectsTables)
                 .build();
 
-        assertEquals(query, rawQuery.query());
-        assertEquals(asList(args), rawQuery.args());
-        assertEquals(HashMultiset.create(asList(observesTables)), HashMultiset.create(rawQuery.observesTables()));
-        assertEquals(HashMultiset.create(asList(affectsTables)), HashMultiset.create(rawQuery.affectsTables()));
+        assertThat(rawQuery.query()).isEqualTo(query);
+        assertThat(rawQuery.args()).isEqualTo(asList(args));
+        assertThat(HashMultiset.create(rawQuery.observesTables())).isEqualTo(HashMultiset.create(asList(observesTables)));
+        assertThat(HashMultiset.create(rawQuery.affectsTables())).isEqualTo(HashMultiset.create(asList(affectsTables)));
     }
 
     @Test

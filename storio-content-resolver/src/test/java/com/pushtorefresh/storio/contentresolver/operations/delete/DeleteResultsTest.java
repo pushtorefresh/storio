@@ -15,9 +15,7 @@ import java.util.Map;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
@@ -38,7 +36,7 @@ public class DeleteResultsTest {
 
         final DeleteResults<String> deleteResults = DeleteResults.newInstance(results);
 
-        assertEquals(results, deleteResults.results());
+        assertThat(deleteResults.results()).isEqualTo(results);
     }
 
     @Test
@@ -49,9 +47,9 @@ public class DeleteResultsTest {
 
         final DeleteResults<String> deleteResults = DeleteResults.newInstance(results);
 
-        assertTrue(deleteResults.wasDeleted("testString1"));
-        assertTrue(deleteResults.wasDeleted("testString2"));
-        assertFalse(deleteResults.wasDeleted("testString3"));
+        assertThat(deleteResults.wasDeleted("testString1")).isTrue();
+        assertThat(deleteResults.wasDeleted("testString2")).isTrue();
+        assertThat(deleteResults.wasDeleted("testString3")).isFalse();
     }
 
     @Test
@@ -62,9 +60,9 @@ public class DeleteResultsTest {
 
         final DeleteResults<String> deleteResults = DeleteResults.newInstance(results);
 
-        assertFalse(deleteResults.wasNotDeleted("testString1"));
-        assertFalse(deleteResults.wasNotDeleted("testString2"));
-        assertTrue(deleteResults.wasNotDeleted("testString3"));
+        assertThat(deleteResults.wasNotDeleted("testString1")).isFalse();
+        assertThat(deleteResults.wasNotDeleted("testString2")).isFalse();
+        assertThat(deleteResults.wasNotDeleted("testString3")).isTrue();
     }
 
     @Test

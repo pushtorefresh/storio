@@ -8,9 +8,7 @@ import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -46,7 +44,7 @@ public class DefaultDeleteResolverTest {
             @NonNull
             @Override
             protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {
-                assertSame(testItem, object);
+                assertThat(object).isSameAs(testItem);
                 return expectedDeleteQuery;
             }
         };
@@ -61,8 +59,8 @@ public class DefaultDeleteResolverTest {
         verify(internal, times(1)).delete(any(DeleteQuery.class));
 
         // delete result checks
-        assertEquals(expectedNumberOfRowsDeleted, deleteResult.numberOfRowsDeleted());
-        assertEquals(1, deleteResult.affectedUris().size());
-        assertTrue(deleteResult.affectedUris().contains(expectedUri));
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(expectedNumberOfRowsDeleted);
+        assertThat(deleteResult.affectedUris()).hasSize(1);
+        assertThat(deleteResult.affectedUris()).contains(expectedUri);
     }
 }

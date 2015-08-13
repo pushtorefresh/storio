@@ -25,8 +25,9 @@ dependencies {
     provided libraries.rxJava
 
     testCompile  libraries.junit
+    testCompile  libraries.assertJ
     testCompile  libraries.mockitoCore
-    testCompile libraries.equalsVerifier
+    testCompile  libraries.equalsVerifier
     testCompile  libraries.storIOTestCommon
     testCompile  libraries.guava
     testCompile  libraries.robolectric

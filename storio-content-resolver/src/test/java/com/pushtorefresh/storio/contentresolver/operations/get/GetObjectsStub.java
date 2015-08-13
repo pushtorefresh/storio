@@ -20,7 +20,7 @@ import rx.Observable;
 import rx.functions.Action1;
 
 import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
-import static junit.framework.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -146,7 +146,7 @@ class GetObjectsStub {
         verify(cursor).close();
 
         // checks that items are okay
-        assertEquals(items, actualList);
+        assertThat(actualList).isEqualTo(items);
 
         // returned list should be immutable
         assertThatListIsImmutable(actualList);

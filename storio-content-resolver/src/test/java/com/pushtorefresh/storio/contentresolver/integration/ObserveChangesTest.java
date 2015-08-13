@@ -21,8 +21,7 @@ import rx.Subscription;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -70,7 +69,7 @@ public class ObserveChangesTest extends IntegrationTest {
                     .prepare()
                     .executeAsBlocking();
 
-            assertTrue(putResult.wasInserted());
+            assertThat(putResult.wasInserted()).isTrue();
 
             emissionChecker.awaitNextExpectedValue();
         }
@@ -101,7 +100,7 @@ public class ObserveChangesTest extends IntegrationTest {
                     .prepare()
                     .executeAsBlocking();
 
-            assertTrue(putResult.wasUpdated());
+            assertThat(putResult.wasUpdated()).isTrue();
 
             emissionChecker.awaitNextExpectedValue();
         }
@@ -132,7 +131,7 @@ public class ObserveChangesTest extends IntegrationTest {
                     .prepare()
                     .executeAsBlocking();
 
-            assertEquals(1, deleteResult.numberOfRowsDeleted());
+            assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
 
             emissionChecker.awaitNextExpectedValue();
         }

@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.sqlite.BuildConfig;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
@@ -13,14 +14,17 @@ import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 
 import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public abstract class BaseTest {
 
     @NonNull
@@ -91,8 +95,8 @@ public abstract class BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertNotNull(putResult);
-        assertTrue(putResult.wasInserted());
+        assertThat(putResult).isNotNull();
+        assertThat(putResult.wasInserted()).isTrue();
         return user;
     }
 
@@ -110,7 +114,7 @@ public abstract class BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(users.size(), putResults.numberOfInserts());
+        assertThat(putResults.numberOfInserts()).isEqualTo(users.size());
 
         return users;
     }
@@ -123,7 +127,7 @@ public abstract class BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertEquals(1, deleteResult.numberOfRowsDeleted());
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
 
         return deleteResult;
     }
@@ -137,7 +141,7 @@ public abstract class BaseTest {
                 .executeAsBlocking();
 
         for (User user : users) {
-            assertTrue(deleteResults.wasDeleted(user));
+            assertThat(deleteResults.wasDeleted(user)).isTrue();
         }
 
         return deleteResults;

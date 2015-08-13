@@ -6,7 +6,7 @@ import com.pushtorefresh.storio.contentresolver.operations.put.PutResolver;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertSame;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class ContentResolverTypeMappingTest {
@@ -58,8 +58,8 @@ public class ContentResolverTypeMappingTest {
                 .deleteResolver(deleteResolver)
                 .build();
 
-        assertSame(putResolver, typeMapping.putResolver());
-        assertSame(getResolver, typeMapping.getResolver());
-        assertSame(deleteResolver, typeMapping.deleteResolver());
+        assertThat(typeMapping.putResolver()).isSameAs(putResolver);
+        assertThat(typeMapping.getResolver()).isSameAs(getResolver);
+        assertThat(typeMapping.deleteResolver()).isSameAs(deleteResolver);
     }
 }
