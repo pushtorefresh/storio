@@ -20,10 +20,10 @@ import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 
@@ -192,16 +192,14 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         private final Map<Class<?>, SQLiteTypeMapping<?>> indirectTypesMappingCache
                 = new ConcurrentHashMap<Class<?>, SQLiteTypeMapping<?>>();
 
-        /**
-         * Guarded by {@link #lock}.
-         */
-        private int numberOfRunningTransactions = 0;
+        @NonNull
+        private AtomicInteger numberOfRunningTransactions = new AtomicInteger(0);
 
         /**
          * Guarded by {@link #lock}.
          */
         @NonNull
-        private final Set<Changes> pendingChanges = new HashSet<Changes>();
+        private Set<Changes> pendingChanges = new HashSet<Changes>(5);
 
         protected InternalImpl(@Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
             this.directTypesMapping = typesMapping != null
@@ -378,22 +376,33 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void notifyAboutChanges(@NonNull Changes changes) {
-            synchronized (lock) {
-                pendingChanges.add(changes);
+            // Fast path, no synchronization required
+            if (numberOfRunningTransactions.get() == 0) {
+                changesBus.onNext(changes);
+            } else {
+                synchronized (lock) {
+                    pendingChanges.add(changes);
+                }
+
                 notifyAboutPendingChangesIfNotInTransaction();
             }
         }
 
-        /**
-         * Access to this method MUST BE guarded by synchronization on {@link #lock}.
-         */
         private void notifyAboutPendingChangesIfNotInTransaction() {
-            if (numberOfRunningTransactions == 0) {
-                final Iterator<Changes> iterator = pendingChanges.iterator();
+            final Set<Changes> changesToSend;
 
-                while (iterator.hasNext()) {
-                    changesBus.onNext(iterator.next());
-                    iterator.remove();
+            if (numberOfRunningTransactions.get() == 0) {
+                synchronized (lock) {
+                    changesToSend = pendingChanges;
+                    pendingChanges = new HashSet<Changes>(5);
+                }
+            } else {
+                changesToSend = null;
+            }
+
+            if (changesToSend != null) {
+                for (Changes changes : changesToSend) {
+                    changesBus.onNext(changes);
                 }
             }
         }
@@ -407,9 +416,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                     .getWritableDatabase()
                     .beginTransaction();
 
-            synchronized (lock) {
-                numberOfRunningTransactions++;
-            }
+            numberOfRunningTransactions.incrementAndGet();
         }
 
         /**
@@ -417,7 +424,6 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void setTransactionSuccessful() {
-            // SQLiteDatabase has it's own synchronization
             sqLiteOpenHelper
                     .getWritableDatabase()
                     .setTransactionSuccessful();
@@ -428,15 +434,12 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void endTransaction() {
-            // SQLiteDatabase has it's own synchronization
             sqLiteOpenHelper
                     .getWritableDatabase()
                     .endTransaction();
 
-            synchronized (lock) {
-                numberOfRunningTransactions--;
-                notifyAboutPendingChangesIfNotInTransaction();
-            }
+            numberOfRunningTransactions.decrementAndGet();
+            notifyAboutPendingChangesIfNotInTransaction();
         }
     }
 }

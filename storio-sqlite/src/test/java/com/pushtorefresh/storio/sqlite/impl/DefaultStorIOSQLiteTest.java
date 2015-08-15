@@ -280,7 +280,7 @@ public class DefaultStorIOSQLiteTest {
 
     // See https://github.com/pushtorefresh/storio/issues/478
     @Test
-    public void nestedTransactionShouldWorkOkay() {
+    public void nestedTransactionShouldWorkNormally() {
         SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
         SQLiteDatabase sqLiteDatabase = mock(SQLiteDatabase.class);
 
