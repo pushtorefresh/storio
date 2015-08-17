@@ -1,11 +1,24 @@
 StorIO Change Log
 ==========
 
+## Version 1.2.1
+
+_2015_08_17_
+
+*  **`StorIOSQLite`: Remove unnecessary synchronization, prevent possible deadlocks, faster & better!**
+*  **Use AssertJ for test!**
+
+**Changes:**
+
+* [PR 491](https://github.com/pushtorefresh/storio/pull/491) Remove unnecessary synchronization, prevent possible deadlocks, faster & better
+* [PR 490](https://github.com/pushtorefresh/storio/pull/490) Use AssertJ for test
+
+
 ## Version 1.2.0
 
 _2015_08_7_
 
-*  **Add `Queries` class with common utils for queries, now you can generate placeholders!
+*  **Add `Queries` class with common utils for queries**, now you can generate placeholders!
 
 **Changes:**
 
