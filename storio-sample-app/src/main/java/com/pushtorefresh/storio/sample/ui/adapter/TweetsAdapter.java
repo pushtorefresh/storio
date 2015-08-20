@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.pushtorefresh.storio.sample.R;
-import com.pushtorefresh.storio.sample.db.entity.Tweet;
+import com.pushtorefresh.storio.sample.db.entities.Tweet;
 
 import java.util.List;
 
