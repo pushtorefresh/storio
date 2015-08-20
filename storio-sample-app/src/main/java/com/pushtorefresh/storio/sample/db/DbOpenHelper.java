@@ -5,7 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
+import com.pushtorefresh.storio.sample.db.tables.TweetsTable;
+import com.pushtorefresh.storio.sample.db.tables.UsersTable;
 
 public class DbOpenHelper extends SQLiteOpenHelper {
 
@@ -13,20 +14,10 @@ public class DbOpenHelper extends SQLiteOpenHelper {
         super(context, "sample_db", null, 1);
     }
 
-    // Better than static final field -> allows VM to unload useless String
-    // Because you need this string only once per application life on the device
-    @NonNull
-    private static String getCreateTweetTableQuery() {
-        return "CREATE TABLE " + TweetTableMeta.TABLE + "("
-                + TweetTableMeta.COLUMN_ID + " INTEGER NOT NULL PRIMARY KEY, "
-                + TweetTableMeta.COLUMN_AUTHOR + " TEXT NOT NULL, "
-                + TweetTableMeta.COLUMN_CONTENT + " TEXT NOT NULL"
-                + ");";
-    }
-
     @Override
     public void onCreate(@NonNull SQLiteDatabase db) {
-        db.execSQL(getCreateTweetTableQuery());
+        db.execSQL(TweetsTable.getCreateTableQuery());
+        db.execSQL(UsersTable.getCreateTableQuery());
     }
 
     @Override

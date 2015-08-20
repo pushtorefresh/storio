@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 
 import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.SampleApp;
-import com.pushtorefresh.storio.sample.db.entity.Tweet;
-import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
+import com.pushtorefresh.storio.sample.db.entities.Tweet;
+import com.pushtorefresh.storio.sample.db.tables.TweetsTable;
 import com.pushtorefresh.storio.sample.ui.DividerItemDecoration;
 import com.pushtorefresh.storio.sample.ui.UiStateController;
 import com.pushtorefresh.storio.sample.ui.adapter.TweetsAdapter;
@@ -94,7 +94,7 @@ public class TweetsFragment extends BaseFragment {
         final Subscription subscription = storIOSQLite
                 .get()
                 .listOfObjects(Tweet.class)
-                .withQuery(TweetTableMeta.QUERY_ALL)
+                .withQuery(TweetsTable.QUERY_ALL)
                 .prepare()
                 .createObservable() // it will be subscribed to changes in tweets table!
                 .delay(1, SECONDS) // for better User Experience :) Actually, StorIO is so fast that we need to delay emissions (it's a joke, or not)

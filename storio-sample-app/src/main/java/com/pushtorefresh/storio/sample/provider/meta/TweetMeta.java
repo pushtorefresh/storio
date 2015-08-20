@@ -14,8 +14,8 @@ import com.pushtorefresh.storio.contentresolver.operations.put.PutResolver;
 import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
 import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
-import com.pushtorefresh.storio.sample.db.entity.Tweet;
-import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
+import com.pushtorefresh.storio.sample.db.entities.Tweet;
+import com.pushtorefresh.storio.sample.db.tables.TweetsTable;
 import com.pushtorefresh.storio.sample.provider.SampleContentProvider;
 
 public class TweetMeta {
@@ -38,7 +38,7 @@ public class TweetMeta {
         protected UpdateQuery mapToUpdateQuery(@NonNull Tweet tweet) {
             return UpdateQuery.builder()
                     .uri(CONTENT_URI)
-                    .where(TweetTableMeta.COLUMN_ID + " = ?")
+                    .where(TweetsTable.COLUMN_ID + " = ?")
                     .whereArgs(tweet.id())
                     .build();
         }
@@ -48,9 +48,9 @@ public class TweetMeta {
         protected ContentValues mapToContentValues(@NonNull Tweet object) {
             ContentValues contentValues = new ContentValues();
 
-            contentValues.put(TweetTableMeta.COLUMN_ID, object.id());
-            contentValues.put(TweetTableMeta.COLUMN_AUTHOR, object.author());
-            contentValues.put(TweetTableMeta.COLUMN_CONTENT, object.content());
+            contentValues.put(TweetsTable.COLUMN_ID, object.id());
+            contentValues.put(TweetsTable.COLUMN_AUTHOR, object.author());
+            contentValues.put(TweetsTable.COLUMN_CONTENT, object.content());
 
             return contentValues;
         }
@@ -62,9 +62,9 @@ public class TweetMeta {
         @Override
         public Tweet mapFromCursor(@NonNull Cursor cursor) {
             return Tweet.newTweet(
-                    cursor.getLong(cursor.getColumnIndexOrThrow(TweetTableMeta.COLUMN_ID)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(TweetTableMeta.COLUMN_AUTHOR)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(TweetTableMeta.COLUMN_CONTENT))
+                    cursor.getLong(cursor.getColumnIndexOrThrow(TweetsTable.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(TweetsTable.COLUMN_AUTHOR)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(TweetsTable.COLUMN_CONTENT))
             );
         }
     };
@@ -76,7 +76,7 @@ public class TweetMeta {
         protected DeleteQuery mapToDeleteQuery(@NonNull Tweet tweet) {
             return DeleteQuery.builder()
                     .uri(CONTENT_URI)
-                    .where(TweetTableMeta.COLUMN_ID + " = ?")
+                    .where(TweetsTable.COLUMN_ID + " = ?")
                     .whereArgs(tweet.id())
                     .build();
         }

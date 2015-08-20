@@ -4,10 +4,18 @@ import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sample.db.entity.Tweet;
-import com.pushtorefresh.storio.sample.db.entity.TweetStorIOSQLiteDeleteResolver;
-import com.pushtorefresh.storio.sample.db.entity.TweetStorIOSQLiteGetResolver;
-import com.pushtorefresh.storio.sample.db.entity.TweetStorIOSQLitePutResolver;
+import com.pushtorefresh.storio.sample.db.entities.Tweet;
+import com.pushtorefresh.storio.sample.db.entities.TweetStorIOSQLiteDeleteResolver;
+import com.pushtorefresh.storio.sample.db.entities.TweetStorIOSQLiteGetResolver;
+import com.pushtorefresh.storio.sample.db.entities.TweetStorIOSQLitePutResolver;
+import com.pushtorefresh.storio.sample.db.entities.TweetWithUser;
+import com.pushtorefresh.storio.sample.db.entities.User;
+import com.pushtorefresh.storio.sample.db.entities.UserStorIOSQLiteDeleteResolver;
+import com.pushtorefresh.storio.sample.db.entities.UserStorIOSQLiteGetResolver;
+import com.pushtorefresh.storio.sample.db.entities.UserStorIOSQLitePutResolver;
+import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserDeleteResolver;
+import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserGetResolver;
+import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserPutResolver;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
@@ -24,6 +32,7 @@ public class DbModule {
     // It's thread safe and so on, so just share it.
     // But if you need you can have multiple instances of StorIO
     // (SQLite or ContentResolver) with different settings such as type mapping, logging and so on.
+    // But keep in mind that different instances of StorIOSQLite won't share notifications!
     @Provides
     @NonNull
     @Singleton
@@ -35,13 +44,23 @@ public class DbModule {
                         .getResolver(new TweetStorIOSQLiteGetResolver())
                         .deleteResolver(new TweetStorIOSQLiteDeleteResolver())
                         .build())
+                .addTypeMapping(User.class, SQLiteTypeMapping.<User>builder()
+                        .putResolver(new UserStorIOSQLitePutResolver())
+                        .getResolver(new UserStorIOSQLiteGetResolver())
+                        .deleteResolver(new UserStorIOSQLiteDeleteResolver())
+                        .build())
+                .addTypeMapping(TweetWithUser.class, SQLiteTypeMapping.<TweetWithUser>builder()
+                        .putResolver(new TweetWithUserPutResolver())
+                        .getResolver(new TweetWithUserGetResolver())
+                        .deleteResolver(new TweetWithUserDeleteResolver())
+                        .build())
                 .build();
     }
 
     @Provides
     @NonNull
     @Singleton
-    public SQLiteOpenHelper provideSQSqLiteOpenHelper(@NonNull Context context) {
+    public SQLiteOpenHelper provideSQLiteOpenHelper(@NonNull Context context) {
         return new DbOpenHelper(context);
     }
 }

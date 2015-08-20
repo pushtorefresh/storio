@@ -10,7 +10,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.SampleApp;
-import com.pushtorefresh.storio.sample.db.table.TweetTableMeta;
+import com.pushtorefresh.storio.sample.db.tables.TweetsTable;
 
 import javax.inject.Inject;
 
@@ -47,7 +47,7 @@ public class SampleContentProvider extends ContentProvider {
                 return sqLiteOpenHelper
                         .getReadableDatabase()
                         .query(
-                                TweetTableMeta.TABLE,
+                                TweetsTable.TABLE,
                                 projection,
                                 selection,
                                 selectionArgs,
@@ -75,7 +75,7 @@ public class SampleContentProvider extends ContentProvider {
                 insertedId = sqLiteOpenHelper
                         .getWritableDatabase()
                         .insert(
-                                TweetTableMeta.TABLE,
+                                TweetsTable.TABLE,
                                 null,
                                 values
                         );
@@ -101,7 +101,7 @@ public class SampleContentProvider extends ContentProvider {
                 numberOfRowsAffected = sqLiteOpenHelper
                         .getWritableDatabase()
                         .update(
-                                TweetTableMeta.TABLE,
+                                TweetsTable.TABLE,
                                 values,
                                 selection,
                                 selectionArgs
@@ -128,7 +128,7 @@ public class SampleContentProvider extends ContentProvider {
                 numberOfRowsDeleted = sqLiteOpenHelper
                         .getWritableDatabase()
                         .delete(
-                                TweetTableMeta.TABLE,
+                                TweetsTable.TABLE,
                                 selection,
                                 selectionArgs
                         );
