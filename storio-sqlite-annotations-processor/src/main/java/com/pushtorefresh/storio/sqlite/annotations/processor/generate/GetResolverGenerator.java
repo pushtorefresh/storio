@@ -17,6 +17,7 @@ import static com.pushtorefresh.storio.sqlite.annotations.processor.generate.Com
 import static com.pushtorefresh.storio.sqlite.annotations.processor.generate.Common.INDENT;
 import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.BOOLEAN;
 import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.BOOLEAN_OBJECT;
+import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.BYTE_ARRAY;
 import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.DOUBLE;
 import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.DOUBLE_OBJECT;
 import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.FLOAT;
@@ -84,12 +85,13 @@ public class GetResolverGenerator {
                 getFromCursor = "getDouble(" + columnIndex + ")";
             } else if (javaType == STRING) {
                 getFromCursor = "getString(" + columnIndex + ")";
+            } else if (javaType == BYTE_ARRAY) {
+                getFromCursor = "getBlob(" + columnIndex + ")";
             } else {
                 throw new ProcessingException(columnMeta.element, "Can not generate GetResolver for field");
             }
 
-            builder
-                    .addStatement("object.$L = cursor.$L", columnMeta.fieldName, getFromCursor);
+            builder.addStatement("object.$L = cursor.$L", columnMeta.fieldName, getFromCursor);
         }
 
         return builder

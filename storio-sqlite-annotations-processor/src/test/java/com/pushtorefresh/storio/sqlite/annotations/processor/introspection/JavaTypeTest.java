@@ -1,5 +1,7 @@
 package com.pushtorefresh.storio.sqlite.annotations.processor.introspection;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import javax.lang.model.type.TypeKind;
@@ -7,6 +9,7 @@ import javax.lang.model.type.TypeMirror;
 
 import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.BOOLEAN;
 import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.BOOLEAN_OBJECT;
+import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.BYTE_ARRAY;
 import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.DOUBLE;
 import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.DOUBLE_OBJECT;
 import static com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType.FLOAT;
@@ -24,7 +27,8 @@ import static org.mockito.Mockito.when;
 
 public class JavaTypeTest {
 
-    private static TypeMirror mockTypeMirror(TypeKind typeKind, String typeName) {
+    @NotNull
+    private static TypeMirror mockTypeMirror(@Nullable TypeKind typeKind, @Nullable String typeName) {
         final TypeMirror typeMirror = mock(TypeMirror.class);
 
         when(typeMirror.getKind())
@@ -44,7 +48,7 @@ public class JavaTypeTest {
 
     @Test
     public void fromBooleanObject() {
-        final TypeMirror typeMirror = mockTypeMirror(null, "java.lang.Boolean");
+        final TypeMirror typeMirror = mockTypeMirror(null, Boolean.class.getCanonicalName());
         assertThat(JavaType.from(typeMirror)).isEqualTo(BOOLEAN_OBJECT);
     }
 
@@ -56,7 +60,7 @@ public class JavaTypeTest {
 
     @Test
     public void fromShortObject() {
-        final TypeMirror typeMirror = mockTypeMirror(null, "java.lang.Short");
+        final TypeMirror typeMirror = mockTypeMirror(null, Short.class.getCanonicalName());
         assertThat(JavaType.from(typeMirror)).isEqualTo(SHORT_OBJECT);
     }
 
@@ -68,7 +72,7 @@ public class JavaTypeTest {
 
     @Test
     public void fromIntegerObject() {
-        final TypeMirror typeMirror = mockTypeMirror(null, "java.lang.Integer");
+        final TypeMirror typeMirror = mockTypeMirror(null, Integer.class.getCanonicalName());
         assertThat(JavaType.from(typeMirror)).isEqualTo(INTEGER_OBJECT);
     }
 
@@ -80,7 +84,7 @@ public class JavaTypeTest {
 
     @Test
     public void fromLongObject() {
-        final TypeMirror typeMirror = mockTypeMirror(null, "java.lang.Long");
+        final TypeMirror typeMirror = mockTypeMirror(null, Long.class.getCanonicalName());
         assertThat(JavaType.from(typeMirror)).isEqualTo(LONG_OBJECT);
     }
 
@@ -92,7 +96,7 @@ public class JavaTypeTest {
 
     @Test
     public void fromFloatObject() {
-        final TypeMirror typeMirror = mockTypeMirror(null, "java.lang.Float");
+        final TypeMirror typeMirror = mockTypeMirror(null, Float.class.getCanonicalName());
         assertThat(JavaType.from(typeMirror)).isEqualTo(FLOAT_OBJECT);
     }
 
@@ -104,13 +108,19 @@ public class JavaTypeTest {
 
     @Test
     public void fromDoubleObject() {
-        final TypeMirror typeMirror = mockTypeMirror(null, "java.lang.Double");
+        final TypeMirror typeMirror = mockTypeMirror(null, Double.class.getCanonicalName());
         assertThat(JavaType.from(typeMirror)).isEqualTo(DOUBLE_OBJECT);
     }
 
     @Test
     public void fromString() {
-        final TypeMirror typeMirror = mockTypeMirror(null, "java.lang.String");
+        final TypeMirror typeMirror = mockTypeMirror(null, String.class.getCanonicalName());
         assertThat(JavaType.from(typeMirror)).isEqualTo(STRING);
+    }
+
+    @Test
+    public void fromByteArray() {
+        final TypeMirror typeMirror = mockTypeMirror(null, byte[].class.getCanonicalName());
+        assertThat(JavaType.from(typeMirror)).isEqualTo(BYTE_ARRAY);
     }
 }
