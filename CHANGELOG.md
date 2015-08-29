@@ -1,6 +1,19 @@
 StorIO Change Log
 ==========
 
+## Version 1.3.0
+
+_2015_08_29_
+
+*  **StorIOSQLite Annotation Processor now supports blobs `byte[]`!**
+*  We've added example of relations implementation (R from ORM) to the Sample App!
+
+**Changes:**
+
+* [PR 498](https://github.com/pushtorefresh/storio/pull/498) Add support for `byte[]` into StorIOSQLite annotation processor
+* [PR 494](https://github.com/pushtorefresh/storio/pull/494) Relations example!
+
+
 ## Version 1.2.1
 
 _2015_08_17_
