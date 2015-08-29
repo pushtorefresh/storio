@@ -19,7 +19,8 @@ public enum JavaType {
     FLOAT_OBJECT,
     DOUBLE,
     DOUBLE_OBJECT,
-    STRING;
+    STRING,
+    BYTE_ARRAY;
 
     @NotNull
     public static JavaType from(@NotNull TypeMirror typeMirror) {
@@ -28,30 +29,32 @@ public enum JavaType {
 
         if (typeKind == TypeKind.BOOLEAN) {
             return BOOLEAN;
-        } else if ("java.lang.Boolean".equals(typeName)) {
+        } else if (Boolean.class.getCanonicalName().equals(typeName)) {
             return BOOLEAN_OBJECT;
         } else if (typeKind == TypeKind.SHORT) {
             return SHORT;
-        } else if ("java.lang.Short".equals(typeName)) {
+        } else if (Short.class.getCanonicalName().equals(typeName)) {
             return SHORT_OBJECT;
         } else if (typeKind == TypeKind.INT) {
             return INTEGER;
-        } else if ("java.lang.Integer".equals(typeName)) {
+        } else if (Integer.class.getCanonicalName().equals(typeName)) {
             return INTEGER_OBJECT;
         } else if (typeKind == TypeKind.LONG) {
             return LONG;
-        } else if ("java.lang.Long".equals(typeName)) {
+        } else if (Long.class.getCanonicalName().equals(typeName)) {
             return LONG_OBJECT;
         } else if (typeKind == TypeKind.FLOAT) {
             return FLOAT;
-        } else if ("java.lang.Float".equals(typeName)) {
+        } else if (Float.class.getCanonicalName().equals(typeName)) {
             return FLOAT_OBJECT;
         } else if (typeKind == TypeKind.DOUBLE) {
             return DOUBLE;
-        } else if ("java.lang.Double".equals(typeName)) {
+        } else if (Double.class.getCanonicalName().equals(typeName)) {
             return DOUBLE_OBJECT;
-        } else if ("java.lang.String".equals(typeName)) {
+        } else if (String.class.getCanonicalName().equals(typeName)) {
             return STRING;
+        } else if (byte[].class.getCanonicalName().equals(typeName)) {
+            return BYTE_ARRAY;
         } else {
             throw new IllegalArgumentException("Unsupported type: " + typeMirror);
         }
