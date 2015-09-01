@@ -192,6 +192,8 @@ StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
   .build(); // This instance of StorIOSQLite will know how to work with Tweet objects
 ```
 
+BTW: [Here is a class](storio-sample-app/src/main/java/com/pushtorefresh/storio/sample/db/entities/AllSupportedTypes.java) with all types of fields, supported by StorIO SQLite Annotation Processor.
+
 Few tips about Operation Resolvers:
 
 * If your entities are immutable or they have builders or they use AutoValue/AutoParcel -> write your own Operation Resolvers
