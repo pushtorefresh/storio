@@ -25,8 +25,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Observer;
 import rx.Subscription;
@@ -46,7 +46,7 @@ public class TweetsFragment extends BaseFragment {
 
     UiStateController uiStateController;
 
-    @InjectView(R.id.tweets_recycler_view)
+    @Bind(R.id.tweets_recycler_view)
     RecyclerView recyclerView;
 
     TweetsAdapter tweetsAdapter;
@@ -66,7 +66,7 @@ public class TweetsFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(tweetsAdapter);
