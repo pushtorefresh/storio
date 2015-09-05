@@ -13,8 +13,8 @@ import com.pushtorefresh.storio.sample.db.entities.Tweet;
 
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
 
@@ -46,15 +46,15 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @InjectView(R.id.list_item_tweet_author)
+        @Bind(R.id.list_item_tweet_author)
         TextView authorTextView;
 
-        @InjectView(R.id.list_item_tweet_content)
+        @Bind(R.id.list_item_tweet_content)
         TextView contentTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }
