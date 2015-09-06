@@ -19,14 +19,26 @@ public class PersonDeleteResolver extends DeleteResolver<Person> {
     @Override
     public DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull Person person) {
         // We can even reuse StorIO methods
+        
+        storIOSQLite.internal().beginTransaction();
+
+        // first delete person
+        storIOSQLite
+                .internal()
+                .delete(DeleteQuery.builder()
+                        .table(PersonsTable.TABLE)
+                        .where(PersonsTable.COLUMN_ID + " = ?")
+                        .whereArgs(person.getId())
+                        .build());
+
+        // delete cars
         storIOSQLite
                 .delete()
-
-                // TODO here I have a problem with Person-class: Is this right?
-                .objects(asList(person, person.getCars()))
-
-                .prepare() // BTW: it will use transaction!
+                .objects(person.getCars())
+                .prepare()
                 .executeAsBlocking();
+
+        storIOSQLite.internal().endTransaction();
 
         final Set<String> affectedTables = new HashSet<String>(2);
 
