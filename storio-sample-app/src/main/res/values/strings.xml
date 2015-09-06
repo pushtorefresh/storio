@@ -10,4 +10,20 @@
     <string name="main_tweets_sample">Tweets — Db sample</string>
     <string name="main_content_provider_sample">Contacts — ContentResolver sample</string>
     <string name="tweets_db_sample_label">Tweets — Db Sample</string>
+
+    <!-- Person-Cars-example -->
+    <string name="main_person_cars_sample">Person-Cars — Db sample</string>
+    <string name="person_cars_loading">Loading person-cars…</string>
+    <string name="person_cars_error">Unfortunately, error has occurred :(</string>
+    <string name="person_cars_empty">No person-cars :(</string>
+    <string name="person_cars_add_person_cars">Add person-cars</string>
+    <string name="person_cars_add_error_toast">Can not add person-cars</string>
+
+    <!-- Queen_Ants-example -->
+    <string name="main_queen_ants_sample">Queen-Ants — Db sample</string>
+    <string name="queen_ants_loading">Loading queen-ants…</string>
+    <string name="queen_ants_error">Unfortunately, error has occurred :(</string>
+    <string name="queen_ants_empty">No queen-ants :(</string>
+    <string name="queen_ants_add_queen_ants">Add queen-ants</string>
+    <string name="queen_ants_add_error_toast">Can not add queen-ants</string>
 </resources>

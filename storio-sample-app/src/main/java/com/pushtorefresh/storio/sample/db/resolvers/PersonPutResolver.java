@@ -2,6 +2,8 @@ package com.pushtorefresh.storio.sample.db.resolvers;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
+import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 import com.pushtorefresh.storio.sample.db.entities.Person;
 import com.pushtorefresh.storio.sample.db.tables.CarsTable;
 import com.pushtorefresh.storio.sample.db.tables.PersonsTable;
@@ -21,14 +23,33 @@ public class PersonPutResolver extends PutResolver<Person> {
     @Override
     public PutResult performPut(@NonNull StorIOSQLite storIOSQLite, @NonNull Person person) {
         // We can even reuse StorIO methods
-        final PutResults<Object> putResults = storIOSQLite
-                .put()
+        final PutResults<Object> putResults;
 
-                // TODO here I need help
-                .objects(asList(person, person.getCars()))
+        if (person.getId() == null ) {
+            // insert
+            putResults = storIOSQLite
+                    .internal()
+                    .insert(InsertQuery.builder()
+                    .uri())
+        }
+        else {
+            // update
+            putResults = storIOSQLite
+                    .internal()
+                    .update(UpdateQuery.builder().)
+        }
 
-                .prepare() // BTW: it will use transaction!
-                .executeAsBlocking();
+
+
+
+//        final PutResults<Object> putResults = storIOSQLite
+//                .put()
+//
+//                // TODO here I need help
+//                .objects(asList(person, person.getCars()))
+//
+//                .prepare() // BTW: it will use transaction!
+//                .executeAsBlocking();
 
         final Set<String> affectedTables = new HashSet<String>(2);
 

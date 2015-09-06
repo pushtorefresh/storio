@@ -33,7 +33,7 @@ public class SampleApp extends Application {
         refWatcher = LeakCanary.install(this);
         Timber.plant(new Timber.DebugTree());
 
-        if (false) {
+        if (true) {
             this.deleteDatabase("sample_db");
         }
     }

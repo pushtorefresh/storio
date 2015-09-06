@@ -23,6 +23,24 @@
             android:text="@string/main_tweets_sample" />
 
         <TextView
+            android:id="@+id/main_person_cars_db_sample"
+            style="@style/MainSampleItem"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_main_tweets_sample"
+            android:text="@string/main_person_cars_sample" />
+
+        <TextView
+            android:id="@+id/main_queen_ants_db_sample"
+            style="@style/MainSampleItem"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_main_tweets_sample"
+            android:text="@string/main_queen_ants_sample" />
+
+        <TextView
             android:id="@+id/main_content_resolver_sample"
             style="@style/MainSampleItem"
             android:layout_width="match_parent"

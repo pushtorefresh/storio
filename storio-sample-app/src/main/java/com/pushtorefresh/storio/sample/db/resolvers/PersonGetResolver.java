@@ -27,8 +27,8 @@ public class PersonGetResolver extends DefaultGetResolver<Person> {
         while (cursor.moveToNext()) {
             cars.add(Car.newCar(
                     cursor.getLong(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_ID)),
-                    person.getId(),
-                    cursor.getString(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_MODEL))
+                    cursor.getString(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_MODEL)),
+                    person.getId()
             ));
         }
 

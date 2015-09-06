@@ -8,6 +8,7 @@ import com.pushtorefresh.storio.sample.db.tables.PersonsTable;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResult;
+import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +20,11 @@ public class PersonDeleteResolver extends DeleteResolver<Person> {
     @Override
     public DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull Person person) {
         // We can even reuse StorIO methods
+<<<<<<< Updated upstream
         
+=======
+
+>>>>>>> Stashed changes
         storIOSQLite.internal().beginTransaction();
 
         // first delete person
@@ -39,9 +44,13 @@ public class PersonDeleteResolver extends DeleteResolver<Person> {
                 .executeAsBlocking();
 
         storIOSQLite.internal().endTransaction();
+<<<<<<< Updated upstream
 
         final Set<String> affectedTables = new HashSet<String>(2);
+=======
+>>>>>>> Stashed changes
 
+        final Set<String> affectedTables = new HashSet<>(2);
         affectedTables.add(PersonsTable.TABLE);
         affectedTables.add(CarsTable.TABLE);
 

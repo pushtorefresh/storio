@@ -4,11 +4,19 @@ import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.sample.db.entities.Ant;
+import com.pushtorefresh.storio.sample.db.entities.AntStorIOSQLiteDeleteResolver;
+import com.pushtorefresh.storio.sample.db.entities.AntStorIOSQLiteGetResolver;
+import com.pushtorefresh.storio.sample.db.entities.AntStorIOSQLitePutResolver;
 import com.pushtorefresh.storio.sample.db.entities.Car;
 import com.pushtorefresh.storio.sample.db.entities.CarStorIOSQLiteDeleteResolver;
 import com.pushtorefresh.storio.sample.db.entities.CarStorIOSQLiteGetResolver;
 import com.pushtorefresh.storio.sample.db.entities.CarStorIOSQLitePutResolver;
 import com.pushtorefresh.storio.sample.db.entities.Person;
+import com.pushtorefresh.storio.sample.db.entities.Queen;
+import com.pushtorefresh.storio.sample.db.entities.QueenStorIOSQLiteDeleteResolver;
+import com.pushtorefresh.storio.sample.db.entities.QueenStorIOSQLiteGetResolver;
+import com.pushtorefresh.storio.sample.db.entities.QueenStorIOSQLitePutResolver;
 import com.pushtorefresh.storio.sample.db.entities.Tweet;
 import com.pushtorefresh.storio.sample.db.entities.TweetStorIOSQLiteDeleteResolver;
 import com.pushtorefresh.storio.sample.db.entities.TweetStorIOSQLiteGetResolver;
@@ -62,6 +70,7 @@ public class DbModule {
                         .getResolver(new TweetWithUserGetResolver())
                         .deleteResolver(new TweetWithUserDeleteResolver())
                         .build())
+
                 .addTypeMapping(Person.class, SQLiteTypeMapping.<Person>builder()
                         .putResolver(new PersonPutResolver())
                         .getResolver(new PersonGetResolver())
@@ -72,6 +81,18 @@ public class DbModule {
                         .getResolver(new CarStorIOSQLiteGetResolver())
                         .deleteResolver(new CarStorIOSQLiteDeleteResolver())
                         .build())
+
+                .addTypeMapping(Queen.class, SQLiteTypeMapping.<Queen>builder()
+                        .putResolver(new QueenStorIOSQLitePutResolver())
+                        .getResolver(new QueenStorIOSQLiteGetResolver())
+                        .deleteResolver(new QueenStorIOSQLiteDeleteResolver())
+                        .build())
+                .addTypeMapping(Ant.class, SQLiteTypeMapping.<Ant>builder()
+                        .putResolver(new AntStorIOSQLitePutResolver())
+                        .getResolver(new AntStorIOSQLiteGetResolver())
+                        .deleteResolver(new AntStorIOSQLiteDeleteResolver())
+                        .build())
+
                 .build();
     }
 

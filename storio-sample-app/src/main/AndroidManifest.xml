@@ -23,6 +23,10 @@
             android:name=".ui.activity.db.TweetsSampleActivity"
             android:label="@string/tweets_db_sample_label" />
 
+        <activity
+            android:name=".ui.activity.db.QueenAntsSampleActivity"
+            android:label="@string/main_queen_ants_sample" />
+
         <provider
             android:name=".provider.SampleContentProvider"
             android:authorities="com.pushtorefresh.storio.sample_provider"
