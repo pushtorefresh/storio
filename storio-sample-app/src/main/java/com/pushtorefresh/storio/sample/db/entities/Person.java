@@ -3,26 +3,26 @@ package com.pushtorefresh.storio.sample.db.entities;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio.sample.db.tables.PersonsTable;
-import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteColumn;
-import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteType;
+//import com.pushtorefresh.storio.sample.db.tables.PersonsTable;
+//import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteColumn;
+//import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@StorIOSQLiteType(table = PersonsTable.TABLE)
+//@StorIOSQLiteType(table = PersonsTable.TABLE)
 public class Person {
 
     /**
      * If object was not inserted into db, id will be null
      */
     @Nullable
-    @StorIOSQLiteColumn(name = PersonsTable.COLUMN_ID, key = true)
-    Long id;
+//    @StorIOSQLiteColumn(name = PersonsTable.COLUMN_ID, key = true)
+    public Long id;
 
     @NonNull
-    @StorIOSQLiteColumn(name = PersonsTable.COLUMN_NICK)
-    String name;
+//    @StorIOSQLiteColumn(name = PersonsTable.COLUMN_NAME)
+    public String name;
 
     @NonNull
     List<Car> cars = new ArrayList<Car>();

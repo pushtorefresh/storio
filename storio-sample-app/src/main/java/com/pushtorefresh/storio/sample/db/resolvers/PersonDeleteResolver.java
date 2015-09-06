@@ -13,28 +13,19 @@ import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
-
 public class PersonDeleteResolver extends DeleteResolver<Person> {
+
     @NonNull
     @Override
     public DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull Person person) {
         // We can even reuse StorIO methods
-<<<<<<< Updated upstream
-        
-=======
 
->>>>>>> Stashed changes
         storIOSQLite.internal().beginTransaction();
 
         // first delete person
         storIOSQLite
                 .internal()
-                .delete(DeleteQuery.builder()
-                        .table(PersonsTable.TABLE)
-                        .where(PersonsTable.COLUMN_ID + " = ?")
-                        .whereArgs(person.getId())
-                        .build());
+                .delete(mapToDeleteQuery(person));
 
         // delete cars
         storIOSQLite
@@ -44,16 +35,20 @@ public class PersonDeleteResolver extends DeleteResolver<Person> {
                 .executeAsBlocking();
 
         storIOSQLite.internal().endTransaction();
-<<<<<<< Updated upstream
 
         final Set<String> affectedTables = new HashSet<String>(2);
-=======
->>>>>>> Stashed changes
-
-        final Set<String> affectedTables = new HashSet<>(2);
         affectedTables.add(PersonsTable.TABLE);
         affectedTables.add(CarsTable.TABLE);
 
         return DeleteResult.newInstance(2, affectedTables);
+    }
+
+    @NonNull
+    protected DeleteQuery mapToDeleteQuery(@NonNull Person object) {
+        return DeleteQuery.builder()
+                .table(PersonsTable.TABLE)
+                .where(PersonsTable.COLUMN_ID + " = ?")
+                .whereArgs(object.getId())
+                .build();
     }
 }
