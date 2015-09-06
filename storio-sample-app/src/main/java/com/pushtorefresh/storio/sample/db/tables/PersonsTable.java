@@ -2,6 +2,8 @@ package com.pushtorefresh.storio.sample.db.tables;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.sqlite.queries.Query;
+
 // We suggest to store table meta such as table name, columns names, queries, etc in separate class
 // Because it makes code of the Entity itself cleaner and easier to read/understand/support
 public class PersonsTable {
@@ -14,6 +16,11 @@ public class PersonsTable {
 
     @NonNull
     public static final String COLUMN_NAME = "name";
+
+    @NonNull
+    public static final Query QUERY_ALL = Query.builder()
+            .table(TABLE)
+            .build();
 
     // This is just class with Meta Data, we don't need instances
     private PersonsTable() {

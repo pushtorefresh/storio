@@ -15,7 +15,7 @@ public class QueensTable {
     public static final String COLUMN_ID = "_id";
 
     @NonNull
-    public static final String COLUMN_NICK = "nick";
+    public static final String COLUMN_NAME = "nick";
 
     @NonNull
     public static final Query QUERY_ALL = Query.builder()
@@ -33,7 +33,7 @@ public class QueensTable {
     public static String getCreateTableQuery() {
         return "CREATE TABLE " + TABLE + "("
                 + COLUMN_ID     + " INTEGER NOT NULL PRIMARY KEY, "
-                + COLUMN_NICK   + " TEXT NOT NULL UNIQUE"
+                + COLUMN_NAME + " TEXT NOT NULL UNIQUE"
                 + ");";
     }
 }

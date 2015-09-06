@@ -142,11 +142,6 @@ public class QueenAntsFragment extends BaseFragment {
     void addQueenAnts() {
         final List<Queen> queens = new ArrayList<>();
 
-        // TODO: 2 possibilities
-        // 1) create person, add new cars to that persons -> save persons
-        // 2) create cars and add to existing persons; save persons
-
-        // 1)
         Queen queen = Queen.newQueen("Jennifer");
         queen.getAnts(null).add(Ant.newAnt("ant jen-1"));
         queen.getAnts(null).add(Ant.newAnt("ant jen-2"));
@@ -160,105 +155,5 @@ public class QueenAntsFragment extends BaseFragment {
 
         Queen.saveQueen(storIOSQLite, queens);
 
-        // Looks/reads nice, isn't it?
-//        storIOSQLite
-//                .put()
-//                .objects(queens)
-//                .prepare()
-//                .createObservable()
-//                .observeOn(mainThread()) // Remember, all Observables in StorIO already subscribed on Schedulers.io(), you just need to set observeOn()
-//                .subscribe(new Observer<PutResults<Queen>>() {
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        safeShowShortToast(getActivity(), R.string.queen_ants_add_error_toast);
-//                    }
-//
-//                    @Override
-//                    public void onNext(PutResults<Queen> putResults) {
-//                        // After successful Put Operation our subscriber in reloadData() will receive update!
-//                    }
-//
-//                    @Override
-//                    public void onCompleted() {
-//                        // no impl required
-//                    }
-//                });
-        ////////////////////////////////////////////////////////////////
-
-//        persons.clear();
-//
-//        ////////////////////////////////////////////////////////////////
-//        // 2)
-//        persons.add(Person.newPerson("Michael"));
-//        persons.add(Person.newPerson("Sam"));
-//        persons.add(Person.newPerson("Betty"));
-//
-//        // a) now save the persons
-//        storIOSQLite
-//                .put()
-//                .objects(persons)
-//                .prepare()
-//                .createObservable()
-//                .observeOn(mainThread()) // Remember, all Observables in StorIO already subscribed on Schedulers.io(), you just need to set observeOn()
-//                .subscribe(new Observer<PutResults<Person>>() {
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        safeShowShortToast(getActivity(), R.string.person_cars_add_error_toast);
-//                    }
-//
-//                    @Override
-//                    public void onNext(PutResults<Person> putResults) {
-//                        // After successful Put Operation our subscriber in reloadData() will receive update!
-//                    }
-//
-//                    @Override
-//                    public void onCompleted() {
-//                        // no impl required
-//                    }
-//                });
-//
-//        // b) now create the cars and save them
-//        persons.get(0).getCars().add(Car.newCar("Toyota Yaris"));
-//        persons.get(0).getCars().add(Car.newCar("VW Golf"));
-//
-//        persons.get(1).getCars().add(Car.newCar("Honda Accord"));
-//        persons.get(1).getCars().add(Car.newCar("Cadillac De Ville Coupe"));
-//        persons.get(1).getCars().add(Car.newCar("Austin Healey 3000 BJ8"));
-//
-//        persons.get(2).getCars().add(Car.newCar("Lotus Elise"));
-//
-//        tweets.add(Tweet.newTweet("artem_zin", "Checkout StorIO — modern API for SQLiteDatabase & ContentResolver"));
-//        tweets.add(Tweet.newTweet("HackerNews", "It's revolution! Dolphins can write news on HackerNews with our new app!"));
-//        tweets.add(Tweet.newTweet("AndroidDevReddit", "Awesome library — StorIO"));
-//        tweets.add(Tweet.newTweet("Facebook", "Facebook community in Twitter is more popular than Facebook community in Facebook and Instagram!"));
-//        tweets.add(Tweet.newTweet("Google", "Android be together not the same: AOSP, AOSP + Google Apps, Samsung Android"));
-//        tweets.add(Tweet.newTweet("Reddit", "Now we can send funny gifs directly into your brain via Oculus Rift app!"));
-//        tweets.add(Tweet.newTweet("ElonMusk", "Tesla Model S OTA update with Android Auto 5.2, fixes for memory leaks"));
-//        tweets.add(Tweet.newTweet("AndroidWeekly", "Special issue #1: StorIO — forget about SQLiteDatabase, ContentResolver APIs, ORMs sucks!"));
-//        tweets.add(Tweet.newTweet("Apple", "Yosemite update: fixes for Wifi issues, yosemite-wifi-patch#142"));
-//
-//        // Looks/reads nice, isn't it?
-//        storIOSQLite
-//                .put()
-//                .objects(persons)
-//                .prepare()
-//                .createObservable()
-//                .observeOn(mainThread()) // Remember, all Observables in StorIO already subscribed on Schedulers.io(), you just need to set observeOn()
-//                .subscribe(new Observer<PutResults<Person>>() {
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        safeShowShortToast(getActivity(), R.string.person_cars_add_error_toast);
-//                    }
-//
-//                    @Override
-//                    public void onNext(PutResults<Person> putResults) {
-//                        // After successful Put Operation our subscriber in reloadData() will receive update!
-//                    }
-//
-//                    @Override
-//                    public void onCompleted() {
-//                        // no impl required
-//                    }
-//                });
     }
 }

@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.db.tables.AntsTable;
 import com.pushtorefresh.storio.sample.db.tables.QueensTable;
 import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteColumn;
@@ -16,13 +15,9 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import timber.log.Timber;
 
 import static com.pushtorefresh.storio.sample.ui.Toasts.safeShowShortToast;
 import static rx.android.schedulers.AndroidSchedulers.mainThread;
@@ -38,11 +33,10 @@ public class Queen {
     Long id;
 
     @NonNull
-    @StorIOSQLiteColumn(name = QueensTable.COLUMN_NICK)
-    String name;
+    @StorIOSQLiteColumn(name = QueensTable.COLUMN_NAME)
+    String name = "";
 
-    @NonNull
-    List<Ant> ants = new ArrayList<Ant>();
+    List<Ant> ants = null;
 
     // In this sample app we use dependency injection (DI) to keep the code clean
     // Just remember that it's already configured instance of StorIOSQLite from DbModule
@@ -79,20 +73,22 @@ public class Queen {
                 .subscribe(new Observer<PutResults<Queen>>() {
                     @Override
                     public void onError(Throwable e) {
-                        Log.d("Queen", "#000");
+                        Log.d("Queen", "saveQueen::onError");
 //                        safeShowShortToast(getActivity(), R.string.queen_ants_add_error_toast);
                     }
 
                     @Override
                     public void onNext(PutResults<Queen> putResults) {
                         // After successful Put Operation our subscriber in reloadData() will receive update!
+                        Log.d("Queen", "saveQueen::onNext");
+                        // TODO ???
                         Log.d("Queen", "queen.id is still null -> here it's not possible to save ants");
                     }
 
                     @Override
                     public void onCompleted() {
                         // no impl required
-                        Log.d("Queen", "#002");
+                        Log.d("Queen", "saveQueen::onCompleted");
                     }
                 });
     }
@@ -117,7 +113,9 @@ public class Queen {
 
     @NonNull
     public List<Ant> getAnts(StorIOSQLite storIOSQLite) {
-        if ( storIOSQLite != null && ants.size() == 0 ) {
+        if ( storIOSQLite != null && ants != null ) {
+            ants = new ArrayList<>();
+
             final Subscription subscription = storIOSQLite
                     .get()
                     .listOfObjects(Ant.class)
