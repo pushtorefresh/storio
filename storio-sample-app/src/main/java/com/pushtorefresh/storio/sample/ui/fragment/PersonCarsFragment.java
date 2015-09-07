@@ -23,7 +23,6 @@ import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -32,7 +31,6 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Observer;
 import rx.Subscription;
-import rx.functions.Action1;
 import timber.log.Timber;
 
 import static com.pushtorefresh.storio.sample.ui.Toasts.safeShowShortToast;
@@ -95,48 +93,29 @@ public class PersonCarsFragment extends BaseFragment {
         final Subscription subscription = storIOSQLite
                 .get()
                 .listOfObjects(Person.class)
-
-                // TODO How to load all persons with all cars?
                 .withQuery(PersonsTable.QUERY_ALL)
-
                 .prepare()
-                .createObservable() // it will be subscribed to changes in tweets table!
-                .delay(1, TimeUnit.SECONDS) // for better User Experience :) Actually, StorIO is so fast that we need to delay emissions (it's a joke, or not)
+                .createObservable()
                 .observeOn(mainThread())
-                .subscribe(new Action1<List<Person>>() {
-                    @Override
-                    public void call(List<Person> persons) {
-                        // Remember: subscriber will automatically receive updates
-                        // Of tables from Query (tweets table in our case)
-                        // This makes your code really Reactive and nice!
-
-                        // We guarantee, that list of objects will never be null (also we use @NonNull/@Nullable)
-                        // So you just need to check if it's empty or not
-                        if (persons.isEmpty()) {
-                            uiStateController.setUiStateEmpty();
-                            personCarsAdapter.setPersons(null);
-                        } else {
-                            uiStateController.setUiStateContent();
-                            personCarsAdapter.setPersons(persons);
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        // In cases when you are not sure that query will be successful
-                        // You can prevent crash of the application via error handler
-                        Timber.e(throwable, "reloadData()");
-                        uiStateController.setUiStateError();
+                .subscribe(persons -> {
+                    if (persons.isEmpty()) {
+                        uiStateController.setUiStateEmpty();
                         personCarsAdapter.setPersons(null);
+                    } else {
+                        // now load all cars
+                        int count = persons.size();
+                        for (int i=0; i<count; i++) {
+                            persons.get(i).getCars(storIOSQLite);
+                        }
+                        uiStateController.setUiStateContent();
+                        personCarsAdapter.setPersons(persons);
                     }
+                }, throwable -> {
+                    Timber.e(throwable, "reloadData()");
+                    uiStateController.setUiStateError();
+                    personCarsAdapter.setPersons(null);
                 });
 
-        // Preventing memory leak (other Observables: Put, Delete emit result once so memory leak won't live long)
-        // Because rx.Observable from Get Operation is endless (it watches for changes of tables from query)
-        // You can easily create memory leak (in this case you'll leak the Fragment and all it's fields)
-        // So please, PLEASE manage your subscriptions
-        // We suggest same mechanism via storing all subscriptions that you want to unsubscribe
-        // In something like CompositeSubscription and unsubscribe them in appropriate moment of component lifecycle
         unsubscribeOnStop(subscription);
     }
 
@@ -145,18 +124,17 @@ public class PersonCarsFragment extends BaseFragment {
     void addPersonCars() {
         final List<Person> persons = new ArrayList<>();
 
-        // TODO: 2 possibilities
         // 1) create person, add new cars to that persons -> save persons
         // 2) create cars and add to existing persons; save persons
 
         // 1)
         Person person = Person.newPerson("Jennifer");
-        person.getCars().add(Car.newCar("BMW X3"));
-        person.getCars().add(Car.newCar("Chevrolet Tahoe"));
+        person.getCars(storIOSQLite).add(Car.newCar("BMW X3"));
+        person.getCars(storIOSQLite).add(Car.newCar("Chevrolet Tahoe"));
         persons.add(person);
 
         person = Person.newPerson("Sam");
-        person.getCars().add(Car.newCar("Maserati GranTurismo"));
+        person.getCars(storIOSQLite).add(Car.newCar("Maserati GranTurismo"));
         persons.add(person);
 
         storIOSQLite
@@ -216,14 +194,14 @@ public class PersonCarsFragment extends BaseFragment {
                 });
 
         // b) now create the cars and save them
-        persons.get(0).getCars().add(Car.newCar("Toyota Yaris"));
-        persons.get(0).getCars().add(Car.newCar("VW Golf"));
+        persons.get(0).getCars(storIOSQLite).add(Car.newCar("Toyota Yaris"));
+        persons.get(0).getCars(storIOSQLite).add(Car.newCar("VW Golf"));
 
-        persons.get(1).getCars().add(Car.newCar("Honda Accord"));
-        persons.get(1).getCars().add(Car.newCar("Cadillac De Ville Coupe"));
-        persons.get(1).getCars().add(Car.newCar("Austin Healey 3000 BJ8"));
+        persons.get(1).getCars(storIOSQLite).add(Car.newCar("Honda Accord"));
+        persons.get(1).getCars(storIOSQLite).add(Car.newCar("Cadillac De Ville Coupe"));
+        persons.get(1).getCars(storIOSQLite).add(Car.newCar("Austin Healey 3000 BJ8"));
 
-        persons.get(2).getCars().add(Car.newCar("Lotus Elise"));
+        persons.get(2).getCars(storIOSQLite).add(Car.newCar("Lotus Elise"));
 
         storIOSQLite
                 .put()
