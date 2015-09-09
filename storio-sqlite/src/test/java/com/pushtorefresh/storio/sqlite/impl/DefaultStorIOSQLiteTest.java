@@ -252,13 +252,11 @@ public class DefaultStorIOSQLiteTest {
     }
 
     @Test
-    public void shouldPassSQLToExecSQL() {
+    public void shouldPassSQLWithArgsToExecSQL() {
         SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-
         SQLiteDatabase sqLiteDatabase = mock(SQLiteDatabase.class);
 
-        when(sqLiteOpenHelper.getWritableDatabase())
-                .thenReturn(sqLiteDatabase);
+        when(sqLiteOpenHelper.getWritableDatabase()).thenReturn(sqLiteDatabase);
 
         StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(sqLiteOpenHelper)
@@ -275,6 +273,30 @@ public class DefaultStorIOSQLiteTest {
 
         verify(sqLiteOpenHelper).getWritableDatabase();
         verify(sqLiteDatabase).execSQL(eq(rawQuery.query()), eq(new String[]{"arg1", "arg2"}));
+        verifyNoMoreInteractions(sqLiteOpenHelper, sqLiteDatabase);
+    }
+
+    @Test
+    public void shouldPassSQLWithoutArgsToExecSQL() {
+        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
+        SQLiteDatabase sqLiteDatabase = mock(SQLiteDatabase.class);
+
+        when(sqLiteOpenHelper.getWritableDatabase()).thenReturn(sqLiteDatabase);
+
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .build();
+
+        RawQuery rawQuery = RawQuery.builder()
+                .query("DROP TABLE IF EXISTS someTable")
+                .build(); // No args!
+
+        storIOSQLite
+                .internal()
+                .executeSQL(rawQuery);
+
+        verify(sqLiteOpenHelper).getWritableDatabase();
+        verify(sqLiteDatabase).execSQL(eq(rawQuery.query()));
         verifyNoMoreInteractions(sqLiteOpenHelper, sqLiteDatabase);
     }
 
