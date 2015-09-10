@@ -1,6 +1,20 @@
 StorIO Change Log
 ==========
 
+## Version 1.3.1
+
+_2015_09_10_
+
+*  Add info about all types of fields supported by StorIO Annotation Processor!
+*  Updated build tools and dependencies! (Gradle Plugin 1.4.0-beta1, sdk 23, RxJava 1.0.14, RxAndroid 1.0.1, Support Libs 23.0.1, Private Constructor Checker 1.1.0, Dagger 2.0.1, ButterKnife 7.0.1)
+*  **Fix SQLiteDatabase.execSQL() without args!**
+
+**Changes:**
+
+* [PR 503](https://github.com/pushtorefresh/storio/pull/503) Annotation processor supported types
+* [PR 504](https://github.com/pushtorefresh/storio/pull/504) New build tools and dependencies
+* [PR 510](https://github.com/pushtorefresh/storio/pull/510) Raw query without arguments fix
+
 ## Version 1.3.0
 
 _2015_08_29_
