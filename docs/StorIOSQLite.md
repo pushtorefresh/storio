@@ -248,8 +248,7 @@ Sometimes you need to execute raw sql, `StorIOSQLite` allows you to do it
 storIOSQLite
   .executeSQL()
   .withQuery(RawQuery.builder()
-    .query("ALTER TABLE ? ADD COLUMN ? INTEGER")
-    .args("tweets", "number_of_retweets")
+    .query("ALTER TABLE tweets ADD COLUMN number_of_retweets INTEGER")
     .affectsTables("tweets") // optional: you can specify affected tables to notify Observers
     .build())
   .prepare()
