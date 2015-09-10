@@ -26,6 +26,8 @@ public class TweetsTable {
     @NonNull
     public static final String COLUMN_CONTENT = "content";
 
+    public static final String COLUMN_SOME_BYTES = "some_bytes";
+
     // Yep, with StorIO you can safely store queries as objects and reuse them, they are immutable
     @NonNull
     public static final Query QUERY_ALL = Query.builder()
@@ -44,7 +46,8 @@ public class TweetsTable {
         return "CREATE TABLE " + TABLE + "("
                 + COLUMN_ID + " INTEGER NOT NULL PRIMARY KEY, "
                 + COLUMN_AUTHOR + " TEXT NOT NULL, "
-                + COLUMN_CONTENT + " TEXT NOT NULL"
+                + COLUMN_CONTENT + " TEXT NOT NULL,"
+                + COLUMN_SOME_BYTES + " BLOB "
                 + ");";
     }
 }
