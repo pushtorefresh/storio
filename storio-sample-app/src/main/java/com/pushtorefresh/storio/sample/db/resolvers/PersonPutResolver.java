@@ -61,7 +61,7 @@ public class PersonPutResolver extends PutResolver<Person> {
     protected UpdateQuery mapToUpdateQuery(@NonNull Person object) {
         return UpdateQuery.builder()
                 .table(PersonsTable.TABLE)
-                .where(PersonsTable.COLUMN_ID + " = ?")
+                .where(PersonsTable.COLUMN_ID + "= ?")
                 .whereArgs(object.id)
                 .build();
     }

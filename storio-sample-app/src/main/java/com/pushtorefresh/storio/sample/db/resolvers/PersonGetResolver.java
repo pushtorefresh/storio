@@ -5,10 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.db.entities.Person;
 import com.pushtorefresh.storio.sample.db.tables.UsersTable;
-import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.get.DefaultGetResolver;
-import com.pushtorefresh.storio.sqlite.queries.Query;
-import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
 public class PersonGetResolver extends DefaultGetResolver<Person> {
 
