@@ -9,6 +9,7 @@ import java.util.Arrays;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class QueryTest {
 
@@ -109,6 +110,51 @@ public class QueryTest {
     }
 
     @Test
+    public void integerLimitShouldBePositive() {
+        try {
+            Query query = Query.builder()
+                    .table("test_table")
+                    .limit(-1)
+                    .build();
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasNoCause()
+                    .hasMessage("Parameter `limit` should be positive, but was = -1");
+        }
+    }
+
+    @Test
+    public void limitOffsetShouldNotBeNegative() {
+        try {
+            Query query = Query.builder()
+                    .table("test_table")
+                    .limit(-1, 10)
+                    .build();
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasNoCause()
+                    .hasMessage("Parameter `offset` should not be negative, but was = -1");
+        }
+    }
+
+    @Test
+    public void limitQuantityShouldBePositive() {
+        try {
+            Query query = Query.builder()
+                    .table("test_table")
+                    .limit(0, -1)
+                    .build();
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasNoCause()
+                    .hasMessage("Parameter `quantity` should be positive, but was = -1");
+        }
+    }
+
+    @Test
     public void buildWithNormalValues() {
         final String table = "test_table";
         final boolean distinct = true;
@@ -141,6 +187,26 @@ public class QueryTest {
         assertThat(query.having()).isEqualTo(having);
         assertThat(query.orderBy()).isEqualTo(orderBy);
         assertThat(query.limit()).isEqualTo(limit);
+    }
+
+    @Test
+    public void integerLimitWithNormalValue() {
+        Query query = Query.builder()
+                .table("test_table")
+                .limit(10)
+                .build();
+
+        assertThat(query.limit()).isEqualTo("10");
+    }
+
+    @Test
+    public void limitOffsetQuantityWithNormalValue() {
+        Query query = Query.builder()
+                .table("test_table")
+                .limit(10, 20)
+                .build();
+
+        assertThat(query.limit()).isEqualTo("10, 20");
     }
 
     @Test
