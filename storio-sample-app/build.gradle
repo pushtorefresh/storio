@@ -68,4 +68,9 @@ dependencies {
 
     debugCompile   libraries.leakCanary
     releaseCompile libraries.leakCanaryNoOp
+
+    testCompile  libraries.junit
+    testCompile  libraries.assertJ
+    testCompile  libraries.robolectric
+    testCompile libraries.leakCanaryNoOp
 }

@@ -37,4 +37,14 @@ public class User {
         user.nick = nick;
         return user;
     }
+
+    @Nullable
+    public Long id() {
+        return id;
+    }
+
+    @NonNull
+    public String nick() {
+        return nick;
+    }
 }

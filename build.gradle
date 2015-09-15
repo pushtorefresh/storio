@@ -101,8 +101,8 @@ ext.libraries = [
         recyclerView                   : 'com.android.support:recyclerview-v7:' + supportLibsVersion,
         rxAndroid                      : 'io.reactivex:rxandroid:1.0.1',
         timber                         : 'com.jakewharton.timber:timber:3.0.1',
-        leakCanary                     : 'com.squareup.leakcanary:leakcanary-android:1.3',
-        leakCanaryNoOp                 : 'com.squareup.leakcanary:leakcanary-android-no-op:1.3',
+        leakCanary                     : 'com.squareup.leakcanary:leakcanary-android:1.3.1',
+        leakCanaryNoOp                 : 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1',
 
         autoService                    : 'com.google.auto.service:auto-service:1.0-rc2',
         javaPoet                       : 'com.squareup:javapoet:1.2.0',
