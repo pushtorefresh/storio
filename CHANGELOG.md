@@ -1,6 +1,18 @@
 StorIO Change Log
 ==========
 
+## Version 1.4.0
+
+_2015_09_15_
+
+*  `Query.limit()` now accepts integers! Better API for everybody! Thanks @vokilam for the suggestion!
+*  Little fix for the sample app. Thanks @cpeppas!
+
+**Changes:**
+
+* [PR 517](https://github.com/pushtorefresh/storio/pull/517) Limit method accept integer args
+* [PR 514](https://github.com/pushtorefresh/storio/pull/514) adding somebytes column that was missing from CREATE TABLE TweetsTable
+
 ## Version 1.3.1
 
 _2015_09_10_
