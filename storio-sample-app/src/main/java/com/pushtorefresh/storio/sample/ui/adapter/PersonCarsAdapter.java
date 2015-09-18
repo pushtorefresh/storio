@@ -9,13 +9,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.pushtorefresh.storio.sample.R;
-import com.pushtorefresh.storio.sample.db.entities.Car;
 import com.pushtorefresh.storio.sample.db.entities.Person;
 
 import java.util.List;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class PersonCarsAdapter extends RecyclerView.Adapter<PersonCarsAdapter.ViewHolder> {
 
@@ -43,14 +42,7 @@ public class PersonCarsAdapter extends RecyclerView.Adapter<PersonCarsAdapter.Vi
 
         holder.personTextView.setText("Owner: " + person.name());
 
-        String allCars = "Cars: ";
-        allCars += android.text.TextUtils.join(",", person.cars());
-//        List<Car> cars = person.cars();
-//        for (Car car : cars) {
-//            allCars += ", " + car.model();
-//        }
-//        allCars = allCars.substring(0, allCars.length()-2);
-        holder.carsTextView.setText(allCars);
+        holder.carsTextView.setText("Cars: " + android.text.TextUtils.join(", ", person.cars()));
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

@@ -3,12 +3,18 @@ package com.pushtorefresh.storio.sample.db.entities;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.UUID;
+
 public final class Car {
 
-    @Nullable
-    private final Long id;
+//    @Nullable
+//    private final Long id;
 
-    private final long personId;
+    @NonNull
+    private final String uuid;
+
+//    private final long personId;
+    private final String personUuid;
 
     @NonNull
     private final String model;
@@ -20,18 +26,28 @@ public final class Car {
 //    }
 
     private Car(Builder builder) {
-        id          = builder.id;
-        personId    = builder.personId;
+        uuid        = builder.uuid;
+//        id          = builder.id;
+        personUuid  = builder.personUuid;
         model       = builder.model;
     }
 
+//    @Nullable
+//    public Long id() {
+//        return id;
+//    }
+
     @Nullable
-    public Long id() {
-        return id;
+    public String uuid() {
+        return uuid;
     }
 
-    public long personId() {
-        return personId;
+//    public long personId() {
+//        return personId;
+//    }
+
+    public String personUuid() {
+        return personUuid;
     }
 
     @NonNull
@@ -41,37 +57,61 @@ public final class Car {
 
     @Override
     public String toString() {
-        return "Car{" +
-                "id=" + id +
-                ", personId=" + personId +
-                ", model='" + model + '\'' +
-                '}';
+        if (true) {
+            return model  + " (uuid=" + uuid + ")";
+        }
+        else {
+            return "Car{" +
+//                    "id=" + id +
+                    "uuid=" + uuid +
+//                    ", personId=" + personId +
+                    ", personUuid=" + personUuid +
+                    ", model='" + model + '\'' +
+                    '}';
+        }
     }
 
+//////////////////////////////////////////////////////////////////
+// builder
+//////////////////////////////////////////////////////////////////
     public static class Builder {
 
-        @Nullable
-        private Long id = null;
+        @NonNull
+        private /*final*/ String uuid;
 
-        private long personId = 0;
+//        @Nullable
+//        private Long id = null;
+
+        private String personUuid = "";
 
         @NonNull
         private String model = "";
 
-        public Builder id(@Nullable Long value) {
-            id = value;
+        public Builder(@NonNull String model) {
+            uuid = UUID.randomUUID().toString();
+
+            this.model = model;
+        }
+
+//        public Builder id(@Nullable Long value) {
+//            id = value;
+//            return this;
+//        }
+
+        public Builder uuid(@NonNull String value) {
+            uuid = value;
             return this;
         }
 
-        public Builder personId(long value) {
-            personId = value;
+        public Builder personUuid(String value) {
+            personUuid = value;
             return this;
         }
 
-        public Builder model(@NonNull String value) {
-            model = value;
-            return this;
-        }
+//        public Builder model(@NonNull String value) {
+//            model = value;
+//            return this;
+//        }
 
         public Car build() {
             return new Car(this);

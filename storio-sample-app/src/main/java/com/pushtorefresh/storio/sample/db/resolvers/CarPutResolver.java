@@ -14,10 +14,11 @@ public final class CarPutResolver extends DefaultPutResolver<Car> {
     @NonNull
     @Override
     protected InsertQuery mapToInsertQuery(@NonNull Car object) {
+        return CarsTable.INSERT_QUERY_CAR;
         // You can save this as static final!
-        return InsertQuery.builder()
-                .table(CarsTable.TABLE_NAME)
-                .build();
+//        return InsertQuery.builder()
+//                .table(CarsTable.TABLE_NAME)
+//                .build();
     }
 
     @NonNull
@@ -25,8 +26,10 @@ public final class CarPutResolver extends DefaultPutResolver<Car> {
     protected UpdateQuery mapToUpdateQuery(@NonNull Car car) {
         return UpdateQuery.builder()
                 .table(CarsTable.TABLE_NAME)
-                .where(CarsTable.COLUMN_ID + "=?")
-                .whereArgs(car.id())
+//                .where(CarsTable.COLUMN_ID + "=?")
+//                .whereArgs(car.id())
+                .where(CarsTable.COLUMN_UUID + "=?")
+                .whereArgs(car.uuid())
                 .build();
     }
 
@@ -35,8 +38,10 @@ public final class CarPutResolver extends DefaultPutResolver<Car> {
     protected ContentValues mapToContentValues(@NonNull Car car) {
         final ContentValues contentValues = new ContentValues(3);
 
-        contentValues.put(CarsTable.COLUMN_ID, car.id());
-        contentValues.put(CarsTable.COLUMN_PERSON_ID, car.personId());
+//        contentValues.put(CarsTable.COLUMN_ID, car.id());
+        contentValues.put(CarsTable.COLUMN_UUID, car.uuid());
+//        contentValues.put(CarsTable.COLUMN_PERSON_ID, car.personId());
+        contentValues.put(CarsTable.COLUMN_PERSON_UUID, car.personUuid());
         contentValues.put(CarsTable.COLUMN_MODEL, car.model());
 
         return contentValues;

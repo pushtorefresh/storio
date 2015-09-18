@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,8 @@ import static java.util.Arrays.asList;
 import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 public class PersonCarsFragment extends BaseFragment {
+
+    private final String TAG = this.getClass().getSimpleName();
 
     // In this sample app we use dependency injection (DI) to keep the code clean
     // Just remember that it's already configured instance of StorIOSQLite from DbModule
@@ -103,6 +106,7 @@ public class PersonCarsFragment extends BaseFragment {
                 .createObservable()
                 .observeOn(mainThread())
                 .subscribe(persons -> {
+                    Log.d(TAG, "before - get");
                     if (persons.isEmpty()) {
                         uiStateController.setUiStateEmpty();
                         personCarsAdapter.setPersons(null);
@@ -110,6 +114,7 @@ public class PersonCarsFragment extends BaseFragment {
                         uiStateController.setUiStateContent();
                         personCarsAdapter.setPersons(persons);
                     }
+                    Log.d(TAG, "after - get");
                 }, throwable -> {
                     Timber.e(throwable, "reloadData()");
                     uiStateController.setUiStateError();
@@ -123,22 +128,35 @@ public class PersonCarsFragment extends BaseFragment {
     @OnClick(R.id.person_cars_empty_ui_add_person_cars_button)
     void addPersonCars() {
         final List<Person> persons = new ArrayList<>();
-//        final List<Car> cars = new ArrayList<>();
 
-//        cars.add(new Car("BMW X3"));
-//        cars.add(new Car("Chevrolet Tahoe"));
-//        Person person = new Person(null, "Jennifer", Collections.<Car>emptyList());
-        Person person = new Person(null, "Jennifer",
-                asList(new Car.Builder().model("BMW X3").build(), new Car.Builder().model("Chevrolet Tahoe").build())
-        );
+        Person person = new Person
+                .Builder("Jennifer")
+                .cars(asList(new Car.Builder("BMW X3").build(), new Car.Builder("Chevrolet Tahoe").build()))
+                .build();
         persons.add(person);
 
-//        cars.clear();
-
-//        cars.add(new Car("Maserati GranTurismo"));
-        person = new Person(null, "Sam", Collections.<Car>emptyList());
+        person = new Person
+                .Builder("Sam")
+                .cars(asList(new Car.Builder("Maserati GranTurismo").build(),
+                        new Car.Builder("Cadillac De Ville Coupe").build(),
+                        new Car.Builder("Austin Healey 3000 BJ8").build()))
+                .build();
         persons.add(person);
 
+        person = new Person
+                .Builder("person x")
+                .cars(asList(new Car.Builder("car x").build(), new Car.Builder("car y").build(), new Car.Builder("car z").build()))
+                .build();
+
+        // huge example
+        for (int i=0; i<1000; i++) {
+//            person = new Person(null, "person "+i,
+//                    asList(new Car.Builder("car "+i).build(), new Car.Builder("car "+i).build(), new Car.Builder("car "+i).build())
+//            );
+            persons.add(person);
+        }
+
+        Log.d(TAG, "before - put");
         storIOSQLite
                 .put()
                 .objects(persons)
@@ -161,5 +179,6 @@ public class PersonCarsFragment extends BaseFragment {
                         // no impl required
                     }
                 });
+        Log.d(TAG, "after - put");
     }
 }

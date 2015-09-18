@@ -17,9 +17,9 @@ public final class PersonDeleteResolver extends DeleteResolver<Person> {
     @NonNull
     @Override
     public DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull Person person) {
-        if (person.id() == null) {
-            throw new IllegalStateException("Can not delete person without id! Person = " + person);
-        }
+//        if (person.id() == null) {
+//            throw new IllegalStateException("Can not delete person without id! Person = " + person);
+//        }
 
         // For consistency and performance (we are going to affect two tables)
         // we will open transaction
@@ -30,13 +30,14 @@ public final class PersonDeleteResolver extends DeleteResolver<Person> {
                     .internal()
                     .delete(DeleteQuery.builder()
                                     .table(PersonsTable.TABLE_NAME)
-                                    .where(PersonsTable.COLUMN_ID)
-                                    .whereArgs(person.id())
+//                                    .where(PersonsTable.COLUMN_ID)
+//                                    .whereArgs(person.id())
+                                    .where(PersonsTable.COLUMN_UUID)
+                                    .whereArgs(person.uuid())
                                     .build()
                     );
 
-            // Cars table will be affected only if person has cars!
-            final Set<String> affectedTables = new HashSet<String>(2);
+            final Set<String> affectedTables = new HashSet<>(2);
             affectedTables.add(PersonsTable.TABLE_NAME);
 
             if (!person.cars().isEmpty()) {

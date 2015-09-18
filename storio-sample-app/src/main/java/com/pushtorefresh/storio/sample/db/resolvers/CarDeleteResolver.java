@@ -13,8 +13,10 @@ public final class CarDeleteResolver extends DefaultDeleteResolver<Car> {
     protected DeleteQuery mapToDeleteQuery(@NonNull Car car) {
         return DeleteQuery.builder()
                 .table(CarsTable.TABLE_NAME)
-                .where(CarsTable.COLUMN_ID + "=?")
-                .whereArgs(car.id())
+//                .where(CarsTable.COLUMN_ID + "=?")
+//                .whereArgs(car.id())
+                .where(CarsTable.COLUMN_UUID + "=?")
+                .whereArgs(car.uuid())
                 .build();
     }
 }
