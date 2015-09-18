@@ -80,6 +80,9 @@ public final class PersonPutResolver extends PutResolver<Person> {
                             .prepare()
                             .executeAsBlocking();
                 }
+                if (0<count) {
+                    affectedTables.add(CarsTable.TABLE_NAME);
+                }
             }
 
             storIOSQLite.internal().setTransactionSuccessful();
