@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.sample.db.entities.Car;
+import com.pushtorefresh.storio.sample.db.entities.Person;
 import com.pushtorefresh.storio.sample.db.entities.Tweet;
 import com.pushtorefresh.storio.sample.db.entities.TweetStorIOSQLiteDeleteResolver;
 import com.pushtorefresh.storio.sample.db.entities.TweetStorIOSQLiteGetResolver;
@@ -13,6 +15,12 @@ import com.pushtorefresh.storio.sample.db.entities.User;
 import com.pushtorefresh.storio.sample.db.entities.UserStorIOSQLiteDeleteResolver;
 import com.pushtorefresh.storio.sample.db.entities.UserStorIOSQLiteGetResolver;
 import com.pushtorefresh.storio.sample.db.entities.UserStorIOSQLitePutResolver;
+import com.pushtorefresh.storio.sample.db.resolvers.CarDeleteResolver;
+import com.pushtorefresh.storio.sample.db.resolvers.CarGetResolver;
+import com.pushtorefresh.storio.sample.db.resolvers.CarPutResolver;
+import com.pushtorefresh.storio.sample.db.resolvers.PersonDeleteResolver;
+import com.pushtorefresh.storio.sample.db.resolvers.PersonGetResolver;
+import com.pushtorefresh.storio.sample.db.resolvers.PersonPutResolver;
 import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserDeleteResolver;
 import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserGetResolver;
 import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserPutResolver;
@@ -54,6 +62,18 @@ public class DbModule {
                         .getResolver(new TweetWithUserGetResolver())
                         .deleteResolver(new TweetWithUserDeleteResolver())
                         .build())
+
+                .addTypeMapping(Person.class, SQLiteTypeMapping.<Person>builder()
+                        .putResolver(new PersonPutResolver())
+                        .getResolver(new PersonGetResolver())
+                        .deleteResolver(new PersonDeleteResolver())
+                        .build())
+                .addTypeMapping(Car.class, SQLiteTypeMapping.<Car>builder()
+                        .putResolver(new CarPutResolver())
+                        .getResolver(new CarGetResolver())
+                        .deleteResolver(new CarDeleteResolver())
+                        .build())
+
                 .build();
     }
 

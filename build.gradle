@@ -22,7 +22,15 @@ buildscript {
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+
+        // https://github.com/evant/gradle-retrolambda
+        classpath 'me.tatarka:gradle-retrolambda:3.2.0'
+        // https://github.com/evant/android-retrolambda-lombok
+        classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
     }
+
+    // Exclude the version that the android plugin depends on.
+    configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }
 
 allprojects {
