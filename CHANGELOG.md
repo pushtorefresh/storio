@@ -1,6 +1,45 @@
 StorIO Change Log
 ==========
 
+## Version 1.4.0
+
+_2015_09_15_
+
+*  `Query.limit()` now accepts integers! Better API for everybody! Thanks @vokilam for the suggestion!
+*  Little fix for the sample app. Thanks @cpeppas!
+
+**Changes:**
+
+* [PR 517](https://github.com/pushtorefresh/storio/pull/517) Limit method accept integer args
+* [PR 514](https://github.com/pushtorefresh/storio/pull/514) adding somebytes column that was missing from CREATE TABLE TweetsTable
+
+## Version 1.3.1
+
+_2015_09_10_
+
+*  Add info about all types of fields supported by StorIO Annotation Processor!
+*  Updated build tools and dependencies! (Gradle Plugin 1.4.0-beta1, sdk 23, RxJava 1.0.14, RxAndroid 1.0.1, Support Libs 23.0.1, Private Constructor Checker 1.1.0, Dagger 2.0.1, ButterKnife 7.0.1)
+*  **Fix SQLiteDatabase.execSQL() without args!**
+
+**Changes:**
+
+* [PR 503](https://github.com/pushtorefresh/storio/pull/503) Annotation processor supported types
+* [PR 504](https://github.com/pushtorefresh/storio/pull/504) New build tools and dependencies
+* [PR 510](https://github.com/pushtorefresh/storio/pull/510) Raw query without arguments fix
+
+## Version 1.3.0
+
+_2015_08_29_
+
+*  **StorIOSQLite Annotation Processor now supports blobs `byte[]`!**
+*  We've added example of relations implementation (R from ORM) to the Sample App!
+
+**Changes:**
+
+* [PR 498](https://github.com/pushtorefresh/storio/pull/498) Add support for `byte[]` into StorIOSQLite annotation processor
+* [PR 494](https://github.com/pushtorefresh/storio/pull/494) Relations example!
+
+
 ## Version 1.2.1
 
 _2015_08_17_

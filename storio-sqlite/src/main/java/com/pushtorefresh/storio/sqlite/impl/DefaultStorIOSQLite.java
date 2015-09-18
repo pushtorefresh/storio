@@ -281,12 +281,18 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @WorkerThread
         @Override
         public void executeSQL(@NonNull RawQuery rawQuery) {
-            sqLiteOpenHelper
-                    .getWritableDatabase()
-                    .execSQL(
-                            rawQuery.query(),
-                            nullableArrayOfStrings(rawQuery.args())
-                    );
+            if (rawQuery.args().isEmpty()) {
+                sqLiteOpenHelper
+                        .getWritableDatabase()
+                        .execSQL(rawQuery.query());
+            } else {
+                sqLiteOpenHelper
+                        .getWritableDatabase()
+                        .execSQL(
+                                rawQuery.query(),
+                                rawQuery.args().toArray(new String[rawQuery.args().size()])
+                        );
+            }
         }
 
         /**

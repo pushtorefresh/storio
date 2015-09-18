@@ -469,10 +469,63 @@ public final class Query {
          * @param limit {@code LIMIT} clause.
          * @return builder.
          * @see Query#limit()
+         * @see CompleteBuilder#limit(int)
+         * @see CompleteBuilder#limit(int, int)
+         * @see <a href="https://www.sqlite.org/lang_select.html#limitoffset">The LIMIT clause documentation</a>
          */
         @NonNull
         public CompleteBuilder limit(@Nullable String limit) {
             this.limit = limit;
+            return this;
+        }
+
+        /**
+         * Optional: Specifies {@code LIMIT} clause.
+         * <p>
+         * Optional specifier that limits the number of rows returned by the query.
+         *
+         * @param limit positive number of rows returned by the query.
+         * @return builder.
+         * @see Query#limit()
+         * @see CompleteBuilder#limit(String)
+         * @see CompleteBuilder#limit(int, int)
+         * @see <a href="https://www.sqlite.org/lang_select.html#limitoffset">The LIMIT clause documentation</a>
+         */
+        @NonNull
+        public CompleteBuilder limit(final int limit) {
+            if (limit <= 0) {
+                throw new IllegalStateException("Parameter `limit` should be positive, but was = " + limit);
+            }
+            this.limit = String.valueOf(limit);
+            return this;
+        }
+
+        /**
+         * Optional: Specifies {@code LIMIT} clause.
+         * <p>
+         * Optional specifier that limits the number of rows returned by the query.
+         * <p>
+         * Examples:
+         * <ul>
+         * <li>{@code "offset = 5, quantity = 12"} — will limit output to 12 rows with start offset 5.</li>
+         *
+         * @param offset non-negative start position.
+         * @param quantity positive number of queried rows.
+         * @return builder.
+         * @see Query#limit()
+         * @see CompleteBuilder#limit(String)
+         * @see CompleteBuilder#limit(int)
+         * @see <a href="https://www.sqlite.org/lang_select.html#limitoffset">The LIMIT clause documentation</a>
+         */
+        @NonNull
+        public CompleteBuilder limit(final int offset, final int quantity) {
+            if (offset < 0) {
+                throw new IllegalStateException("Parameter `offset` should not be negative, but was = " + offset);
+            }
+            if (quantity <= 0) {
+                throw new IllegalStateException("Parameter `quantity` should be positive, but was = " + quantity);
+            }
+            this.limit = String.valueOf(offset) + ", " + String.valueOf(quantity);
             return this;
         }
 

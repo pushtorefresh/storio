@@ -248,8 +248,7 @@ Sometimes you need to execute raw sql, `StorIOSQLite` allows you to do it
 storIOSQLite
   .executeSQL()
   .withQuery(RawQuery.builder()
-    .query("ALTER TABLE ? ADD COLUMN ? INTEGER")
-    .args("tweets", "number_of_retweets")
+    .query("ALTER TABLE tweets ADD COLUMN number_of_retweets INTEGER")
     .affectsTables("tweets") // optional: you can specify affected tables to notify Observers
     .build())
   .prepare()
@@ -327,6 +326,8 @@ StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
   // other options
   .build(); // This instance of StorIOSQLite will know how to work with Tweet objects
 ```
+
+BTW: [Here is a class](../storio-sample-app/src/main/java/com/pushtorefresh/storio/sample/db/entities/AllSupportedTypes.java) with all types of fields, supported by StorIO SQLite Annotation Processor.
 
 Few tips about Operation Resolvers:
 
