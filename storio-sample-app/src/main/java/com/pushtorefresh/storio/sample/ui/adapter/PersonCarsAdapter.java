@@ -44,11 +44,12 @@ public class PersonCarsAdapter extends RecyclerView.Adapter<PersonCarsAdapter.Vi
         holder.personTextView.setText("Owner: " + person.name());
 
         String allCars = "Cars: ";
-        List<Car> cars = person.cars();
-        for (Car car : cars) {
-            allCars += ", " + car.model();
-        }
-        allCars = allCars.substring(0, allCars.length()-2);
+        allCars += android.text.TextUtils.join(",", person.cars());
+//        List<Car> cars = person.cars();
+//        for (Car car : cars) {
+//            allCars += ", " + car.model();
+//        }
+//        allCars = allCars.substring(0, allCars.length()-2);
         holder.carsTextView.setText(allCars);
     }
 

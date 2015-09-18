@@ -36,6 +36,7 @@ import rx.Subscription;
 import timber.log.Timber;
 
 import static com.pushtorefresh.storio.sample.ui.Toasts.safeShowShortToast;
+import static java.util.Arrays.asList;
 import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 public class PersonCarsFragment extends BaseFragment {
@@ -126,7 +127,10 @@ public class PersonCarsFragment extends BaseFragment {
 
 //        cars.add(new Car("BMW X3"));
 //        cars.add(new Car("Chevrolet Tahoe"));
-        Person person = new Person(null, "Jennifer", Collections.<Car>emptyList());
+//        Person person = new Person(null, "Jennifer", Collections.<Car>emptyList());
+        Person person = new Person(null, "Jennifer",
+                asList(new Car.Builder().model("BMW X3").build(), new Car.Builder().model("Chevrolet Tahoe").build())
+        );
         persons.add(person);
 
 //        cars.clear();

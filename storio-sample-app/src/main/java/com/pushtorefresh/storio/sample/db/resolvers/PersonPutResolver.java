@@ -3,16 +3,20 @@ package com.pushtorefresh.storio.sample.db.resolvers;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.sample.db.entities.Car;
 import com.pushtorefresh.storio.sample.db.entities.Person;
 import com.pushtorefresh.storio.sample.db.tables.CarsTable;
 import com.pushtorefresh.storio.sample.db.tables.PersonsTable;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResolver;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
+import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
+import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class PersonPutResolver extends PutResolver<Person> {
@@ -29,7 +33,7 @@ public final class PersonPutResolver extends PutResolver<Person> {
             contentValues.put(PersonsTable.COLUMN_ID, person.id());
             contentValues.put(PersonsTable.COLUMN_NAME, person.name());
 
-            final Set<String> affectedTables = new HashSet<String>(2);
+            final Set<String> affectedTables = new HashSet<>(2);
             affectedTables.add(PersonsTable.TABLE_NAME);
 
             // If person already has an Id — it was inserted into the db
@@ -66,6 +70,16 @@ public final class PersonPutResolver extends PutResolver<Person> {
                                         .build(),
                                 contentValues
                         );
+
+                List<Car> cars = person.cars();
+                int count = cars.size();
+                for (int i=0; i<count; i++) {
+                    storIOSQLite
+                            .put()
+                            .object(new Car.Builder().personId(personId).model(person.cars().get(i).model()).build())
+                            .prepare()
+                            .executeAsBlocking();
+                }
             }
 
             storIOSQLite.internal().setTransactionSuccessful();

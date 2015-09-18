@@ -33,7 +33,7 @@ public final class PersonGetResolver extends GetResolver<Person> {
         // BTW, you don't need a transaction here
         // StorIO will wrap mapFromCursor() into the transaction if needed
 
-        try {
+//        try {
             final long personId = cursor.getLong(cursor.getColumnIndexOrThrow(PersonsTable.COLUMN_ID));
             final String personName = cursor.getString(cursor.getColumnIndexOrThrow(PersonsTable.COLUMN_NAME));
 
@@ -49,10 +49,10 @@ public final class PersonGetResolver extends GetResolver<Person> {
                     .executeAsBlocking();
 
             return new Person(personId, personName, personCars);
-        } finally {
-            // Releasing StorIOSQLite reference
-            storIOSQLiteFromPerformGet.set(null);
-        }
+//        } finally {
+//             // Releasing StorIOSQLite reference
+//            storIOSQLiteFromPerformGet.set(null);
+//        }
     }
 
     @NonNull

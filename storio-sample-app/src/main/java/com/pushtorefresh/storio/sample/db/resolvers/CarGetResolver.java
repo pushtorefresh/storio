@@ -11,10 +11,15 @@ public final class CarGetResolver extends DefaultGetResolver<Car> {
     @NonNull
     @Override
     public Car mapFromCursor(@NonNull Cursor cursor) {
-        return new Car(
-                cursor.getLong(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_ID)),
-                cursor.getLong(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_PERSON_ID)),
-                cursor.getString(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_MODEL))
-        );
+//        return new Car(
+//                cursor.getLong(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_ID)),
+//                cursor.getLong(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_PERSON_ID)),
+//                cursor.getString(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_MODEL))
+//        );
+        return new Car.Builder()
+                .id(cursor.getLong(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_ID)))
+                .personId(cursor.getLong(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_PERSON_ID)))
+                .model(cursor.getString(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_MODEL)))
+                .build();
     }
 }
