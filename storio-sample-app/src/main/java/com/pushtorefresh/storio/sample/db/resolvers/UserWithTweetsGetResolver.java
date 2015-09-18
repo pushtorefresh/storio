@@ -38,32 +38,25 @@ public final class UserWithTweetsGetResolver extends GetResolver<UserWithTweets>
     public UserWithTweets mapFromCursor(@NonNull Cursor cursor) {
         final StorIOSQLite storIOSQLite = storIOSQLiteFromPerformGet.get();
 
-        // BTW, you don't need a transaction here
-        // StorIO will wrap mapFromCursor() into the transaction if needed
-        try {
-            // Or you can manually parse cursor (it will be sliiightly faster)
-            final User user = userGetResolver.mapFromCursor(cursor);
+        // Or you can manually parse cursor (it will be sliiightly faster)
+        final User user = userGetResolver.mapFromCursor(cursor);
 
-            // Yep, you can reuse StorIO here!
-            // Or, you can do manual low level requests here
-            // BTW, if you profiled your app and found that such queries are not very fast
-            // You can always add some optimized version for particular queries to improve the performance
-            final List<Tweet> tweetsOfTheUser = storIOSQLite
-                    .get()
-                    .listOfObjects(Tweet.class)
-                    .withQuery(Query.builder()
-                            .table(TweetsTable.TABLE)
-                            .where(TweetsTable.COLUMN_AUTHOR + "=?")
-                            .whereArgs(user.nick())
-                            .build())
-                    .prepare()
-                    .executeAsBlocking();
+        // Yep, you can reuse StorIO here!
+        // Or, you can do manual low level requests here
+        // BTW, if you profiled your app and found that such queries are not very fast
+        // You can always add some optimized version for particular queries to improve the performance
+        final List<Tweet> tweetsOfTheUser = storIOSQLite
+                .get()
+                .listOfObjects(Tweet.class)
+                .withQuery(Query.builder()
+                        .table(TweetsTable.TABLE)
+                        .where(TweetsTable.COLUMN_AUTHOR + "=?")
+                        .whereArgs(user.nick())
+                        .build())
+                .prepare()
+                .executeAsBlocking();
 
-            return new UserWithTweets(user, tweetsOfTheUser);
-        } finally {
-            // Releasing StorIOSQLite reference
-            storIOSQLiteFromPerformGet.set(null);
-        }
+        return new UserWithTweets(user, tweetsOfTheUser);
     }
 
     @NonNull
