@@ -13,42 +13,47 @@ import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PersonDeleteResolver extends DeleteResolver<Person> {
-
+public final class PersonDeleteResolver extends DeleteResolver<Person> {
     @NonNull
     @Override
     public DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull Person person) {
-        // We can even reuse StorIO methods
+        if (person.id() == null) {
+            throw new IllegalStateException("Can not delete person without id! Person = " + person);
+        }
 
+        // For consistency and performance (we are going to affect two tables)
+        // we will open transaction
         storIOSQLite.internal().beginTransaction();
 
-        // first delete person
-        storIOSQLite
-                .internal()
-                .delete(mapToDeleteQuery(person));
+        try {
+            storIOSQLite
+                    .internal()
+                    .delete(DeleteQuery.builder()
+                                    .table(PersonsTable.TABLE_NAME)
+                                    .where(PersonsTable.COLUMN_ID)
+                                    .whereArgs(person.id())
+                                    .build()
+                    );
 
-        // delete cars
-        storIOSQLite
-                .delete()
-                .objects(person.getCars())
-                .prepare()
-                .executeAsBlocking();
+            // Cars table will be affected only if person has cars!
+            final Set<String> affectedTables = new HashSet<String>(2);
+            affectedTables.add(PersonsTable.TABLE_NAME);
 
-        storIOSQLite.internal().endTransaction();
+            if (!person.cars().isEmpty()) {
+                storIOSQLite
+                        .delete()
+                        .objects(person.cars())
+                        .prepare()
+                        .executeAsBlocking();
 
-        final Set<String> affectedTables = new HashSet<String>(2);
-        affectedTables.add(PersonsTable.TABLE);
-        affectedTables.add(CarsTable.TABLE);
+                affectedTables.add(CarsTable.TABLE_NAME);
+            }
 
-        return DeleteResult.newInstance(2, affectedTables);
-    }
+            storIOSQLite.internal().setTransactionSuccessful();
 
-    @NonNull
-    protected DeleteQuery mapToDeleteQuery(@NonNull Person object) {
-        return DeleteQuery.builder()
-                .table(PersonsTable.TABLE)
-                .where(PersonsTable.COLUMN_ID + " = ?")
-                .whereArgs(object.getId())
-                .build();
+            return DeleteResult.newInstance(1, affectedTables);
+        } finally {
+            storIOSQLite.internal().endTransaction();
+        }
     }
 }

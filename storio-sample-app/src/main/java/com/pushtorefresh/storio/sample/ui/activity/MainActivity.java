@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.ui.Toasts;
-import com.pushtorefresh.storio.sample.ui.activity.db.QueenAntsSampleActivity;
+import com.pushtorefresh.storio.sample.ui.activity.db.PersonCarsSampleActivity;
 import com.pushtorefresh.storio.sample.ui.activity.db.TweetsSampleActivity;
 
 import butterknife.ButterKnife;
@@ -29,12 +29,7 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.main_person_cars_db_sample)
     void openPersonCarsDbSample() {
-        startActivity(new Intent(this, TweetsSampleActivity.class));
-    }
-
-    @OnClick(R.id.main_queen_ants_db_sample)
-    void openQueenAntsDbSample() {
-        startActivity(new Intent(this, QueenAntsSampleActivity.class));
+        startActivity(new Intent(this, PersonCarsSampleActivity.class));
     }
 
     @OnClick(R.id.main_content_resolver_sample)

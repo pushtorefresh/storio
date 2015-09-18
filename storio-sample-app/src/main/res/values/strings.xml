@@ -18,12 +18,4 @@
     <string name="person_cars_empty">No person-cars :(</string>
     <string name="person_cars_add_person_cars">Add person-cars</string>
     <string name="person_cars_add_error_toast">Can not add person-cars</string>
-
-    <!-- Queen_Ants-example -->
-    <string name="main_queen_ants_sample">Queen-Ants — Db sample</string>
-    <string name="queen_ants_loading">Loading queen-ants…</string>
-    <string name="queen_ants_error">Unfortunately, error has occurred :(</string>
-    <string name="queen_ants_empty">No queen-ants :(</string>
-    <string name="queen_ants_add_queen_ants">Add queen-ants</string>
-    <string name="queen_ants_add_error_toast">Can not add queen-ants</string>
 </resources>

@@ -24,8 +24,8 @@
             android:label="@string/tweets_db_sample_label" />
 
         <activity
-            android:name=".ui.activity.db.QueenAntsSampleActivity"
-            android:label="@string/main_queen_ants_sample" />
+            android:name=".ui.activity.db.PersonCarsSampleActivity"
+            android:label="@string/main_person_cars_sample" />
 
         <provider
             android:name=".provider.SampleContentProvider"

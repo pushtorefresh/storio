@@ -20,14 +20,16 @@ import com.pushtorefresh.storio.sample.ui.UiStateController;
 import com.pushtorefresh.storio.sample.ui.adapter.PersonCarsAdapter;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
+import com.pushtorefresh.storio.sqlite.queries.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import rx.Observer;
 import rx.Subscription;
@@ -45,7 +47,7 @@ public class PersonCarsFragment extends BaseFragment {
 
     UiStateController uiStateController;
 
-    @InjectView(R.id.person_cars_recycler_view)
+    @Bind(R.id.person_cars_recycler_view)
     RecyclerView recyclerView;
 
     PersonCarsAdapter personCarsAdapter;
@@ -65,7 +67,7 @@ public class PersonCarsFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(personCarsAdapter);
@@ -93,7 +95,9 @@ public class PersonCarsFragment extends BaseFragment {
         final Subscription subscription = storIOSQLite
                 .get()
                 .listOfObjects(Person.class)
-                .withQuery(PersonsTable.QUERY_ALL)
+                .withQuery(Query.builder()
+                        .table(PersonsTable.TABLE_NAME)
+                        .build())
                 .prepare()
                 .createObservable()
                 .observeOn(mainThread())
@@ -102,11 +106,6 @@ public class PersonCarsFragment extends BaseFragment {
                         uiStateController.setUiStateEmpty();
                         personCarsAdapter.setPersons(null);
                     } else {
-                        // now load all cars
-                        int count = persons.size();
-                        for (int i=0; i<count; i++) {
-                            persons.get(i).getCars(storIOSQLite);
-                        }
                         uiStateController.setUiStateContent();
                         personCarsAdapter.setPersons(persons);
                     }
@@ -123,85 +122,18 @@ public class PersonCarsFragment extends BaseFragment {
     @OnClick(R.id.person_cars_empty_ui_add_person_cars_button)
     void addPersonCars() {
         final List<Person> persons = new ArrayList<>();
+//        final List<Car> cars = new ArrayList<>();
 
-        // 1) create person, add new cars to that persons -> save persons
-        // 2) create cars and add to existing persons; save persons
-
-        // 1)
-        Person person = Person.newPerson("Jennifer");
-        person.getCars(storIOSQLite).add(Car.newCar("BMW X3"));
-        person.getCars(storIOSQLite).add(Car.newCar("Chevrolet Tahoe"));
+//        cars.add(new Car("BMW X3"));
+//        cars.add(new Car("Chevrolet Tahoe"));
+        Person person = new Person(null, "Jennifer", Collections.<Car>emptyList());
         persons.add(person);
 
-        person = Person.newPerson("Sam");
-        person.getCars(storIOSQLite).add(Car.newCar("Maserati GranTurismo"));
+//        cars.clear();
+
+//        cars.add(new Car("Maserati GranTurismo"));
+        person = new Person(null, "Sam", Collections.<Car>emptyList());
         persons.add(person);
-
-        storIOSQLite
-                .put()
-                .objects(persons)
-                .prepare()
-                .createObservable()
-                .observeOn(mainThread()) // Remember, all Observables in StorIO already subscribed on Schedulers.io(), you just need to set observeOn()
-                .subscribe(new Observer<PutResults<Person>>() {
-                    @Override
-                    public void onError(Throwable e) {
-                        safeShowShortToast(getActivity(), R.string.person_cars_add_error_toast);
-                    }
-
-                    @Override
-                    public void onNext(PutResults<Person> putResults) {
-                        // After successful Put Operation our subscriber in reloadData() will receive update!
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        // no impl required
-                    }
-                });
-        ////////////////////////////////////////////////////////////////
-
-        persons.clear();
-
-        ////////////////////////////////////////////////////////////////
-        // 2)
-        persons.add(Person.newPerson("Michael"));
-        persons.add(Person.newPerson("Sam"));
-        persons.add(Person.newPerson("Betty"));
-
-        // a) now save the persons
-        storIOSQLite
-                .put()
-                .objects(persons)
-                .prepare()
-                .createObservable()
-                .observeOn(mainThread()) // Remember, all Observables in StorIO already subscribed on Schedulers.io(), you just need to set observeOn()
-                .subscribe(new Observer<PutResults<Person>>() {
-                    @Override
-                    public void onError(Throwable e) {
-                        safeShowShortToast(getActivity(), R.string.person_cars_add_error_toast);
-                    }
-
-                    @Override
-                    public void onNext(PutResults<Person> putResults) {
-                        // After successful Put Operation our subscriber in reloadData() will receive update!
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        // no impl required
-                    }
-                });
-
-        // b) now create the cars and save them
-        persons.get(0).getCars(storIOSQLite).add(Car.newCar("Toyota Yaris"));
-        persons.get(0).getCars(storIOSQLite).add(Car.newCar("VW Golf"));
-
-        persons.get(1).getCars(storIOSQLite).add(Car.newCar("Honda Accord"));
-        persons.get(1).getCars(storIOSQLite).add(Car.newCar("Cadillac De Ville Coupe"));
-        persons.get(1).getCars(storIOSQLite).add(Car.newCar("Austin Healey 3000 BJ8"));
-
-        persons.get(2).getCars(storIOSQLite).add(Car.newCar("Lotus Elise"));
 
         storIOSQLite
                 .put()

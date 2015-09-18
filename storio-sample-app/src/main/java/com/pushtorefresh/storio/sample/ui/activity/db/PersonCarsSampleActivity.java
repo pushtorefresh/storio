@@ -10,7 +10,7 @@ public class PersonCarsSampleActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tweets_sample);
+        setContentView(R.layout.activity_person_cars_sample);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }

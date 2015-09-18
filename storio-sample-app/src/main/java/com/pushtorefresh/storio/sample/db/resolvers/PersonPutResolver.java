@@ -9,70 +9,72 @@ import com.pushtorefresh.storio.sample.db.tables.PersonsTable;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResolver;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
-import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
 import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class PersonPutResolver extends PutResolver<Person> {
-
+public final class PersonPutResolver extends PutResolver<Person> {
     @NonNull
     @Override
     public PutResult performPut(@NonNull StorIOSQLite storIOSQLite, @NonNull Person person) {
-        // We can even reuse StorIO methods
+        // For consistency and performance (we are going to affect two tables)
+        // we will open transaction
+        storIOSQLite.internal().beginTransaction();
 
-        // TODO putResults?
-        final PutResults<Object> putResults = null;
+        try {
+            final ContentValues contentValues = new ContentValues(2);
 
-        if (person.getId() == null ) {
-            // insert
-            storIOSQLite
-                    .internal()
-                    .insert(mapToInsertQuery(person), mapToContentValues(person));
+            contentValues.put(PersonsTable.COLUMN_ID, person.id());
+            contentValues.put(PersonsTable.COLUMN_NAME, person.name());
+
+            final Set<String> affectedTables = new HashSet<String>(2);
+            affectedTables.add(PersonsTable.TABLE_NAME);
+
+            // If person already has an Id — it was inserted into the db
+            // Otherwise, we will insert person and then get his/her id!
+            final long personId;
+
+            if (person.id() != null) {
+                personId = person.id();
+
+                storIOSQLite
+                        .internal()
+                        .update(UpdateQuery.builder()
+                                        .table(PersonsTable.TABLE_NAME)
+                                        .where(PersonsTable.COLUMN_ID + "=?")
+                                        .whereArgs(person.id())
+                                        .build(),
+                                contentValues);
+
+                // Cars table will be affected only if person already had an Id and has cars!
+                if (!person.cars().isEmpty()) {
+                    storIOSQLite
+                            .put()
+                            .objects(person.cars())
+                            .prepare()
+                            .executeAsBlocking();
+
+                    affectedTables.add(CarsTable.TABLE_NAME);
+                }
+            } else {
+                personId = storIOSQLite
+                        .internal()
+                        .insert(InsertQuery.builder() // You can save InsertQuery as static final!
+                                        .table(PersonsTable.TABLE_NAME)
+                                        .build(),
+                                contentValues
+                        );
+            }
+
+            storIOSQLite.internal().setTransactionSuccessful();
+
+            return person.id() != null
+                    ? PutResult.newUpdateResult(1, affectedTables)
+                    : PutResult.newInsertResult(personId, affectedTables);
+        } finally {
+            storIOSQLite.internal().endTransaction();
         }
-        else {
-            // update
-            storIOSQLite
-                    .internal()
-                    .update(mapToUpdateQuery(person), mapToContentValues(person));
-        }
-
-        final Set<String> affectedTables = new HashSet<String>(2);
-
-        affectedTables.add(PersonsTable.TABLE);
-        affectedTables.add(CarsTable.TABLE);
-
-        // Actually, it's not very clear what PutResult should we return here…
-        // Because there is no table for this pair of tweet and user
-        // So, let's just return Update Result
-        return PutResult.newUpdateResult(putResults.numberOfUpdates(), affectedTables);
-    }
-
-    @NonNull
-    protected InsertQuery mapToInsertQuery(@NonNull Person object) {
-        return InsertQuery.builder()
-                .table(PersonsTable.TABLE)
-                .build();
-    }
-
-    @NonNull
-    protected UpdateQuery mapToUpdateQuery(@NonNull Person object) {
-        return UpdateQuery.builder()
-                .table(PersonsTable.TABLE)
-                .where(PersonsTable.COLUMN_ID + "= ?")
-                .whereArgs(object.id)
-                .build();
-    }
-
-    @NonNull
-    public ContentValues mapToContentValues(@NonNull Person object) {
-        ContentValues contentValues = new ContentValues(2);
-
-        contentValues.put(PersonsTable.COLUMN_NAME, object.name);
-        contentValues.put(PersonsTable.COLUMN_ID, object.id);
-
-        return contentValues;
     }
 }

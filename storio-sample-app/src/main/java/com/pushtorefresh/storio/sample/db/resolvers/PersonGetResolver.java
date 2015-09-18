@@ -3,52 +3,69 @@ package com.pushtorefresh.storio.sample.db.resolvers;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.sample.db.entities.Car;
 import com.pushtorefresh.storio.sample.db.entities.Person;
-import com.pushtorefresh.storio.sample.db.tables.UsersTable;
-import com.pushtorefresh.storio.sqlite.operations.get.DefaultGetResolver;
+import com.pushtorefresh.storio.sample.db.tables.CarsTable;
+import com.pushtorefresh.storio.sample.db.tables.PersonsTable;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.get.GetResolver;
+import com.pushtorefresh.storio.sqlite.queries.Query;
+import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
-public class PersonGetResolver extends DefaultGetResolver<Person> {
+import java.util.Collections;
+import java.util.List;
 
-//    @NonNull
-//    @Override
-//    public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
-//
-//        // TODO should be used to get persons AND cars
-//
-//        RawQuery rQ = RawQuery.builder()
-//                .query("select p._id, p.name, c._id, c.model from persons p left join cars c on p.id=c.id_person")
-//                .build();
-//
-//        return storIOSQLite.internal().rawQuery(rQ);
-//    }
-//
-//    @NonNull
-//    @Override
-//    public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
-//
-//        // TODO should not be used to get persons AND cars
-//
-//        return storIOSQLite.internal().query(query);
-//    }
+public final class PersonGetResolver extends GetResolver<Person> {
+
+    // Sorry for this hack :(
+    // We will pass you an instance of StorIO
+    // into the mapFromCursor() in v2.0.0.
+    //
+    // At the moment, you can save this instance in performGet() and then null it at the end
+    @NonNull
+    private final ThreadLocal<StorIOSQLite> storIOSQLiteFromPerformGet = new ThreadLocal<StorIOSQLite>();
 
     @NonNull
     @Override
     public Person mapFromCursor(@NonNull Cursor cursor) {
-        final Person person = Person.newPerson(
-                cursor.getLong(cursor.getColumnIndexOrThrow(UsersTable.COLUMN_ID)),
-                cursor.getString(cursor.getColumnIndexOrThrow(UsersTable.COLUMN_NICK))
-        );
+        final StorIOSQLite storIOSQLite = storIOSQLiteFromPerformGet.get();
 
-//        List<Car> cars = new ArrayList<>();
-//        while (cursor.moveToNext()) {
-//            cars.add(Car.newCar(
-//                    cursor.getLong(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_ID)),
-//                    cursor.getString(cursor.getColumnIndexOrThrow(CarsTable.COLUMN_MODEL)),
-//                    person.getId()
-//            ));
-//        }
-//        person.setCars(cars);
+        // BTW, you don't need a transaction here
+        // StorIO will wrap mapFromCursor() into the transaction if needed
 
-        return person;
+        try {
+            final long personId = cursor.getLong(cursor.getColumnIndexOrThrow(PersonsTable.COLUMN_ID));
+            final String personName = cursor.getString(cursor.getColumnIndexOrThrow(PersonsTable.COLUMN_NAME));
+
+            final List<Car> personCars = storIOSQLite
+                    .get()
+                    .listOfObjects(Car.class)
+                    .withQuery(Query.builder()
+                            .table(CarsTable.TABLE_NAME)
+                            .where(CarsTable.COLUMN_PERSON_ID + "=?")
+                            .whereArgs(personId)
+                            .build())
+                    .prepare()
+                    .executeAsBlocking();
+
+            return new Person(personId, personName, personCars);
+        } finally {
+            // Releasing StorIOSQLite reference
+            storIOSQLiteFromPerformGet.set(null);
+        }
+    }
+
+    @NonNull
+    @Override
+    public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
+        storIOSQLiteFromPerformGet.set(storIOSQLite);
+        return storIOSQLite.internal().rawQuery(rawQuery);
+    }
+
+    @NonNull
+    @Override
+    public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
+        storIOSQLiteFromPerformGet.set(storIOSQLite);
+        return storIOSQLite.internal().query(query);
     }
 }

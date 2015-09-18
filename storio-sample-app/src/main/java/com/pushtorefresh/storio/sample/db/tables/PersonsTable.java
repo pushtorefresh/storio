@@ -2,14 +2,14 @@ package com.pushtorefresh.storio.sample.db.tables;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.queries.Query;
+public final class PersonsTable {
 
-// We suggest to store table meta such as table name, columns names, queries, etc in separate class
-// Because it makes code of the Entity itself cleaner and easier to read/understand/support
-public class PersonsTable {
+    private PersonsTable() {
+        throw new IllegalStateException("No instances please!");
+    }
 
     @NonNull
-    public static final String TABLE = "persons";
+    public static final String TABLE_NAME = "persons";
 
     @NonNull
     public static final String COLUMN_ID = "_id";
@@ -18,22 +18,10 @@ public class PersonsTable {
     public static final String COLUMN_NAME = "name";
 
     @NonNull
-    public static final Query QUERY_ALL = Query.builder()
-            .table(TABLE)
-            .build();
-
-    // This is just class with Meta Data, we don't need instances
-    private PersonsTable() {
-        throw new IllegalStateException("No instances please");
-    }
-
-    // Better than static final field -> allows VM to unload useless String
-    // Because you need this string only once per application life on the device
-    @NonNull
     public static String getCreateTableQuery() {
-        return "CREATE TABLE " + TABLE + "("
+        return "CREATE TABLE " + TABLE_NAME + "("
                 + COLUMN_ID + " INTEGER NOT NULL PRIMARY KEY, "
-                + COLUMN_NAME + " TEXT NOT NULL UNIQUE"
+                + COLUMN_NAME + " TEXT NOT NULL"
                 + ");";
     }
 }

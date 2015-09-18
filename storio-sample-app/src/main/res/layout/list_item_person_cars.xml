@@ -13,7 +13,7 @@
         android:id="@+id/list_item_person_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/text_secondary"
+        android:textColor="@color/text_primary"
         tools:text="person" />
 
     <TextView
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/text_secondary"
         tools:text="many cars" />
 
 </LinearLayout>

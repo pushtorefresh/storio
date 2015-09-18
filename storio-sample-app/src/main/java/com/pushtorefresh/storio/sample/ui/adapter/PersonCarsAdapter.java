@@ -15,7 +15,7 @@ import com.pushtorefresh.storio.sample.db.entities.Person;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class PersonCarsAdapter extends RecyclerView.Adapter<PersonCarsAdapter.ViewHolder> {
 
@@ -41,12 +41,12 @@ public class PersonCarsAdapter extends RecyclerView.Adapter<PersonCarsAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Person person = persons.get(position);
 
-        holder.personTextView.setText("Owner: " + person.getName());
+        holder.personTextView.setText("Owner: " + person.name());
 
         String allCars = "Cars: ";
-        List<Car> cars = person.getCars();
+        List<Car> cars = person.cars();
         for (Car car : cars) {
-            allCars += ", " + car.getModel();
+            allCars += ", " + car.model();
         }
         allCars = allCars.substring(0, allCars.length()-2);
         holder.carsTextView.setText(allCars);
@@ -54,15 +54,15 @@ public class PersonCarsAdapter extends RecyclerView.Adapter<PersonCarsAdapter.Vi
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @InjectView(R.id.list_item_person_data)
+        @Bind(R.id.list_item_person_data)
         TextView personTextView;
 
-        @InjectView(R.id.list_item_cars)
+        @Bind(R.id.list_item_cars)
         TextView carsTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            ButterKnife.inject(this, itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }
