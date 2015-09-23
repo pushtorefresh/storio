@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.sqlite.operations.put;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -94,6 +95,7 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
      * and send result to observer.
      */
     @NonNull
+    @CheckResult
     @Override
     public Observable<PutResult> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");

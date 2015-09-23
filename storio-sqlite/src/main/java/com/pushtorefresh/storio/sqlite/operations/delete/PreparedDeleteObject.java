@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.sqlite.operations.delete;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -94,6 +95,7 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
      * and send result to observer.
      */
     @NonNull
+    @CheckResult
     @Override
     public Observable<DeleteResult> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");

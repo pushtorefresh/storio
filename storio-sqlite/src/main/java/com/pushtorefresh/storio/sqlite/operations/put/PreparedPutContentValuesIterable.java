@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operations.put;
 
 import android.content.ContentValues;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
@@ -120,6 +121,7 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
      * and send result to observer.
      */
     @NonNull
+    @CheckResult
     @Override
     public Observable<PutResults<ContentValues>> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");

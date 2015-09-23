@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.sqlite.operations.execute;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
@@ -83,6 +84,7 @@ public final class PreparedExecuteSQL implements PreparedOperation<Object> {
      * and you don't have to deal with {@code null}.
      */
     @NonNull
+    @CheckResult
     @Override
     public Observable<Object> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
