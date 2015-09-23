@@ -166,6 +166,26 @@ public abstract class StorIOSQLite implements Closeable {
         public abstract long insert(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues);
 
         /**
+         * Inserts a row into the database.
+         *
+         * @param insertQuery       query.
+         * @param contentValues     map that contains the initial column values for the row.
+         *                          The keys should be the column names and the values the column values.
+         * @param conflictAlgorithm for insert conflict resolver.
+         * @return the row ID of the newly inserted row OR the primary key of the existing row
+         * if the input param 'conflictAlgorithm' = {@link android.database.sqlite.SQLiteDatabase#CONFLICT_IGNORE}
+         * OR -1 if any error.
+         * @see android.database.sqlite.SQLiteDatabase#insertWithOnConflict(String, String, ContentValues, int)
+         * @see android.database.sqlite.SQLiteDatabase#CONFLICT_REPLACE
+         * @see android.database.sqlite.SQLiteDatabase#CONFLICT_ABORT
+         * @see android.database.sqlite.SQLiteDatabase#CONFLICT_FAIL
+         * @see android.database.sqlite.SQLiteDatabase#CONFLICT_ROLLBACK
+         * @see android.database.sqlite.SQLiteDatabase#CONFLICT_IGNORE
+         */
+        @WorkerThread
+        public abstract long insertWithOnConflict(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues, int conflictAlgorithm);
+
+        /**
          * Updates one or multiple rows in the database.
          *
          * @param updateQuery   query.

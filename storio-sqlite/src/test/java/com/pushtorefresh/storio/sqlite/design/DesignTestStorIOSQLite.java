@@ -60,6 +60,11 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
         }
 
         @Override
+        public long insertWithOnConflict(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues, int conflictAlgorithm) {
+            return 0;
+        }
+
+        @Override
         public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
             return 0;
         }

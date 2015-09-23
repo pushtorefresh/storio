@@ -351,6 +351,22 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @WorkerThread
         @Override
+        public long insertWithOnConflict(@NonNull InsertQuery insertQuery, @NonNull ContentValues contentValues, int conflictAlgorithm) {
+            return sqLiteOpenHelper
+                    .getWritableDatabase()
+                    .insertWithOnConflict(
+                            insertQuery.table(),
+                            insertQuery.nullColumnHack(),
+                            contentValues,
+                            conflictAlgorithm
+                    );
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @WorkerThread
+        @Override
         public int update(@NonNull UpdateQuery updateQuery, @NonNull ContentValues contentValues) {
             return sqLiteOpenHelper
                     .getWritableDatabase()
