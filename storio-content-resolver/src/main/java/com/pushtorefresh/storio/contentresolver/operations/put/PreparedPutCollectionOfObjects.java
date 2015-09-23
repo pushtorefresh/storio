@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.contentresolver.operations.put;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -123,6 +124,7 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
      * and send result to observer.
      */
     @NonNull
+    @CheckResult
     @Override
     public Observable<PutResults<T>> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");

@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operations.get;
 
 import android.database.Cursor;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -87,6 +88,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      * list with mapped results and will be subscribed to changes of tables from query.
      */
     @NonNull
+    @CheckResult
     @Override
     public Observable<Cursor> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");

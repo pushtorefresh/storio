@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.operations;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
@@ -34,5 +35,6 @@ public interface PreparedOperation<Result> {
      * @return observable result of operation with only one {@link rx.Observer#onNext(Object)} call.
      */
     @NonNull
+    @CheckResult
     Observable<Result> createObservable();
 }
