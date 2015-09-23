@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.sqlite.impl;
 
+import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -9,6 +10,7 @@ import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio.sqlite.operations.get.GetResolver;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResolver;
+import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
 import org.junit.Test;
@@ -17,6 +19,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -340,5 +343,35 @@ public class DefaultStorIOSQLiteTest {
             // Finishing external transaction
             storIOSQLite.internal().endTransaction();
         }
+    }
+
+    @Test
+    public void shouldPassArgsToInsertWithOnConflict() {
+        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
+        SQLiteDatabase sqLiteDatabase = mock(SQLiteDatabase.class);
+
+        when(sqLiteOpenHelper.getWritableDatabase()).thenReturn(sqLiteDatabase);
+
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .build();
+
+        InsertQuery insertQuery = InsertQuery.builder()
+                .table("test_table")
+                .nullColumnHack("custom_null_hack")
+                .build();
+
+        ContentValues contentValues = mock(ContentValues.class);
+
+        int conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK;
+
+        storIOSQLite.internal().insertWithOnConflict(insertQuery, contentValues, conflictAlgorithm);
+
+        verify(sqLiteDatabase).insertWithOnConflict(
+                eq("test_table"),
+                eq("custom_null_hack"),
+                same(contentValues),
+                eq(SQLiteDatabase.CONFLICT_ROLLBACK)
+        );
     }
 }
