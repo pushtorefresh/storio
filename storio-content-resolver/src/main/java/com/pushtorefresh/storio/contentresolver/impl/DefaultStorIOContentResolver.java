@@ -46,14 +46,12 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     @NonNull
     private final Handler contentObserverHandler;
 
-    protected DefaultStorIOContentResolver(@NonNull ContentResolver contentResolver, @Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
+    protected DefaultStorIOContentResolver(@NonNull ContentResolver contentResolver,
+                                           @NonNull Handler contentObserverHandler,
+                                           @Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
         this.contentResolver = contentResolver;
+        this.contentObserverHandler = contentObserverHandler;
         internal = new InternalImpl(typesMapping);
-
-        final HandlerThread handlerThread = new HandlerThread("StorIOContentResolverNotificationsThread");
-        handlerThread.start(); // multithreading: don't block me, bro!
-
-        contentObserverHandler = new Handler(handlerThread.getLooper());
     }
 
     /**
@@ -125,7 +123,11 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         @NonNull
         private final ContentResolver contentResolver;
 
+        @Nullable
         private Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping;
+
+        @Nullable
+        private Handler contentObserverHandler;
 
         CompleteBuilder(@NonNull ContentResolver contentResolver) {
             this.contentResolver = contentResolver;
@@ -153,6 +155,15 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
             return this;
         }
 
+        @NonNull
+        public <T> CompleteBuilder contentObserverHandler(@NonNull Handler contentObserverHandler) {
+            checkNotNull(contentObserverHandler, "contentObserverHandler should not be null");
+
+            this.contentObserverHandler = contentObserverHandler;
+
+            return this;
+        }
+
         /**
          * Builds new instance of {@link DefaultStorIOContentResolver}.
          *
@@ -160,7 +171,13 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
          */
         @NonNull
         public DefaultStorIOContentResolver build() {
-            return new DefaultStorIOContentResolver(contentResolver, typesMapping);
+            if (contentObserverHandler == null) {
+                final HandlerThread handlerThread = new HandlerThread("StorIOContentResolverNotificationsThread");
+                handlerThread.start(); // multithreading: don't block me, bro!
+                contentObserverHandler = new Handler(handlerThread.getLooper());
+            }
+
+            return new DefaultStorIOContentResolver(contentResolver, contentObserverHandler, typesMapping);
         }
     }
 

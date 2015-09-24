@@ -81,6 +81,7 @@ ext.libraries = [
         // Libraries for tests and sample app
         junit                          : 'junit:junit:4.12',
         assertJ                        : 'org.assertj:assertj-core:1.7.1',
+        assertJAndroid                 : 'com.squareup.assertj:assertj-android:1.0.1',
         mockitoCore                    : 'org.mockito:mockito-core:1.10.19',
         powerMockJUnit                 : 'org.powermock:powermock-module-junit4:1.6.2',
         powerMockMockito               : 'org.powermock:powermock-api-mockito:1.6.2',
