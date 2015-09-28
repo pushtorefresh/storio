@@ -429,4 +429,18 @@ public class QueryTest extends BaseTest {
 
         assertThat(getAllUsersBlocking()).isEqualTo(users);
     }
+
+    @Test
+    public void getNumberOfResults() {
+        putUsersBlocking(8);
+
+        Integer numberOfResults = storIOSQLite
+                .get()
+                .numberOfResults()
+                .withQuery(UserTableMeta.QUERY_ALL)
+                .prepare()
+                .executeAsBlocking();
+
+        assertThat(numberOfResults).isEqualTo(8);
+    }
 }

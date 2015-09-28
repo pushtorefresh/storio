@@ -69,6 +69,15 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
         public <T> PreparedGetListOfObjects.Builder<T> listOfObjects(@NonNull Class<T> type) {
             return new PreparedGetListOfObjects.Builder<T>(storIOSQLite, type);
         }
-    }
 
+        /**
+         * Returns builder for Get Operation that returns number of results.
+         *
+         * @return builder for Get Operation that returns number of results.
+         */
+        @NonNull
+        public PreparedGetNumberOfResults.Builder numberOfResults() {
+            return new PreparedGetNumberOfResults.Builder(storIOSQLite);
+        }
+    }
 }
