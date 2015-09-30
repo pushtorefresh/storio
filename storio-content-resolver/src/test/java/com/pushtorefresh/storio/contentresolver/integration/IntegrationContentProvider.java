@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -78,6 +79,32 @@ public class IntegrationContentProvider extends ContentProvider {
                 return insertedUri;
         }
 
+        throw new IllegalArgumentException("Unknown uri = " + uri);
+    }
+
+    @Override
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
+        switch (uriMatcher.match(uri)) {
+            case CODE_TEST_ITEM_MATCH:
+                SQLiteDatabase sqLiteDatabase = sqLiteOpenHelper.getWritableDatabase();
+                try {
+                    sqLiteDatabase.beginTransaction();
+
+                    for (ContentValues value : values) {
+                        sqLiteDatabase.insert(
+                                IntegrationSQLiteOpenHelper.TABLE_TEST_ITEMS,
+                                null,
+                                value);
+                    }
+                    sqLiteDatabase.setTransactionSuccessful();
+                } finally {
+                    sqLiteDatabase.endTransaction();
+                }
+
+                getContext().getContentResolver().notifyChange(uri, null);
+
+                return values.length;
+        }
         throw new IllegalArgumentException("Unknown uri = " + uri);
     }
 

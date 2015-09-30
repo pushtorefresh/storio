@@ -1,7 +1,6 @@
 package com.pushtorefresh.storio.contentresolver.operations.get;
 
 import android.database.Cursor;
-import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -18,19 +17,12 @@ import rx.schedulers.Schedulers;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
-/**
- * Represents Get Operation for {@link StorIOContentResolver}
- * which performs query that retrieves data as {@link Cursor}.
- * from {@link android.content.ContentProvider}.
- */
-public final class PreparedGetCursor extends PreparedGet<Cursor> {
+public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
 
     @NonNull
-    private final GetResolver<Cursor> getResolver;
+    private final GetResolver<Integer> getResolver;
 
-    PreparedGetCursor(@NonNull StorIOContentResolver storIOContentResolver,
-                      @NonNull GetResolver<Cursor> getResolver,
-                      @NonNull Query query) {
+    PreparedGetNumberOfResults(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Query query, @NonNull GetResolver<Integer> getResolver) {
         super(storIOContentResolver, query);
         this.getResolver = getResolver;
     }
@@ -42,25 +34,33 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
      *
-     * @return non-null {@link Cursor}, can be empty.
+     * @return non-null {@link Integer} with number of results of the query.
      */
     @WorkerThread
     @NonNull
     @Override
-    public Cursor executeAsBlocking() {
+    public Integer executeAsBlocking() {
+        final Cursor cursor;
+
         try {
-            return getResolver.performGet(storIOContentResolver, query);
+            cursor = getResolver.performGet(storIOContentResolver, query);
+            try {
+                return getResolver.mapFromCursor(cursor);
+            } finally {
+                cursor.close();
+            }
         } catch (Exception exception) {
             throw new StorIOException(exception);
         }
     }
 
     /**
-     * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
      * and will emit result each time change occurs.
      * <p>
      * First result will be emitted immediately after subscription,
-     * other emissions will occur only if changes of {@link #query} Uri will occur.
+     * other emissions will occur only if changes of tables from query will occur during lifetime of
+     * the {@link Observable}.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>Operates on {@link Schedulers#io()}.</dd>
@@ -70,12 +70,11 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      * it's "Hot" and endless.
      *
      * @return non-null {@link Observable} which will emit non-null
-     * list with mapped results and will be subscribed to changes of {@link #query} Uri.
+     * number of results of the executed query and will be subscribed to changes of tables from query.
      */
     @NonNull
-    @CheckResult
     @Override
-    public Observable<Cursor> createObservable() {
+    public Observable<Integer> createObservable() {
         throwExceptionIfRxJavaIsNotAvailable("createObservable()");
 
         return storIOContentResolver
@@ -86,42 +85,43 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Builder for {@link PreparedGetCursor}.
-     * <p>
-     * Required: You should specify query see {@link #withQuery(Query)}.
+     * Builder for {@link PreparedGetNumberOfResults}.
      */
-    public static final class Builder {
+     public static final class Builder {
 
         @NonNull
-        final StorIOContentResolver storIOContentResolver;
+        private final StorIOContentResolver storIOContentResolver;
 
-        public Builder(@NonNull StorIOContentResolver storIOContentResolver) {
+        Builder(@NonNull StorIOContentResolver storIOContentResolver) {
             this.storIOContentResolver = storIOContentResolver;
         }
 
         /**
-         * Required: Specifies {@link Query} for Get Operation.
+         * Required: Specifies query which will be passed to {@link StorIOContentResolver}
+         * to get list of objects.
          *
-         * @param query query.
+         * @param query non-null query.
          * @return builder.
+         * @see Query
          */
         @NonNull
         public CompleteBuilder withQuery(@NonNull Query query) {
-            checkNotNull(query, "Please specify Query");
+            checkNotNull(query, "Please specify query");
             return new CompleteBuilder(storIOContentResolver, query);
         }
     }
 
     /**
-     * Compile-time safe part of builder for {@link PreparedGetCursor}.
+     * Compile-time safe part of builder for {@link PreparedGetNumberOfResults}.
      */
     public static final class CompleteBuilder {
 
-        static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
+        @NonNull
+        static final GetResolver<Integer> STANDARD_GET_RESOLVER = new DefaultGetResolver<Integer>() {
             @NonNull
             @Override
-            public Cursor mapFromCursor(@NonNull Cursor cursor) {
-                return cursor; // easy
+            public Integer mapFromCursor(@NonNull Cursor cursor) {
+                return cursor.getCount();
             }
         };
 
@@ -131,7 +131,8 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
         @NonNull
         private final Query query;
 
-        private GetResolver<Cursor> getResolver;
+        @Nullable
+        private GetResolver<Integer> getResolver;
 
         CompleteBuilder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Query query) {
             this.storIOContentResolver = storIOContentResolver;
@@ -139,37 +140,36 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
         }
 
         /**
-         * Optional: Specifies {@link GetResolver} for Get Operation
-         * which allows you to customize behavior of Get Operation.
+         * Optional: Specifies resolver for Get Operation which can be used
+         * to provide custom behavior of Get Operation.
          * <p>
-         * If no value will be set, builder will use resolver that
-         * simply redirects query to {@link StorIOContentResolver}.
          *
-         * @param getResolver GetResolver.
+         * @param getResolver nullable resolver for Get Operation.
          * @return builder.
          */
         @NonNull
-        public CompleteBuilder withGetResolver(@Nullable GetResolver<Cursor> getResolver) {
+        public CompleteBuilder withGetResolver(@Nullable GetResolver<Integer> getResolver) {
             this.getResolver = getResolver;
             return this;
         }
 
         /**
-         * Prepares Get Operation.
+         * Builds new instance of {@link PreparedGetNumberOfResults}.
          *
-         * @return {@link PreparedGetCursor} instance.
+         * @return new instance of {@link PreparedGetNumberOfResults}.
          */
         @NonNull
-        public PreparedGetCursor prepare() {
+        public PreparedGetNumberOfResults prepare() {
             if (getResolver == null) {
                 getResolver = STANDARD_GET_RESOLVER;
             }
 
-            return new PreparedGetCursor(
+            return new PreparedGetNumberOfResults(
                     storIOContentResolver,
-                    getResolver,
-                    query
+                    query,
+                    getResolver
             );
         }
     }
+
 }

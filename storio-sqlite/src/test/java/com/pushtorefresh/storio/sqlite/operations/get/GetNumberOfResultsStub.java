@@ -43,7 +43,6 @@ class GetNumberOfResultsStub {
     @NonNull
     private final Integer numberOfResults;
 
-    @SuppressWarnings("unchecked")
     private GetNumberOfResultsStub() {
         storIOSQLite = mock(StorIOSQLite.class);
         internal = mock(StorIOSQLite.Internal.class);
@@ -62,6 +61,7 @@ class GetNumberOfResultsStub {
                 .observesTables("test_table")
                 .build();
 
+        //noinspection unchecked
         getResolverForNumberOfResults = mock(GetResolver.class);
         cursor = mock(Cursor.class);
 

@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.contentresolver.integration;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
@@ -164,5 +165,39 @@ public class GetOperationTest extends IntegrationTest {
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
         changesTestSubscriber.assertNoErrors();
         changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void getNumberOfResults() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
+        final int testItemsQuantity = 8;
+
+        ContentValues[] contentValues = new ContentValues[testItemsQuantity];
+        for (int i = 0; i < testItemsQuantity; ++i) {
+            TestItem testItemToInsert = TestItem.create(null, "value");
+            contentValues[i] = testItemToInsert.toContentValues();
+        }
+        contentResolver.bulkInsert(TestItem.CONTENT_URI, contentValues);
+
+        Integer numberOfResults = storIOContentResolver
+                .get()
+                .numberOfResults()
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .build())
+                .prepare()
+                .executeAsBlocking();
+
+        assertThat(numberOfResults).isEqualTo(testItemsQuantity);
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
     }
 }
