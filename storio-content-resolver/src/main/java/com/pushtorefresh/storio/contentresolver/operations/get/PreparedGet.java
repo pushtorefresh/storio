@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.contentresolver.operations.get;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.operations.PreparedOperation;
 
 /**
@@ -15,8 +16,12 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;
 
-    PreparedGet(@NonNull StorIOContentResolver storIOContentResolver) {
+    @NonNull
+    protected final Query query;
+
+    PreparedGet(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Query query) {
         this.storIOContentResolver = storIOContentResolver;
+        this.query = query;
     }
 
     /**
@@ -51,6 +56,16 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
         @NonNull
         public <T> PreparedGetListOfObjects.Builder<T> listOfObjects(@NonNull Class<T> type) {
             return new PreparedGetListOfObjects.Builder<T>(storIOContentResolver, type);
+        }
+
+        /**
+        * Returns builder for Get Operation that returns number of results.
+        *
+        * @return builder for Get Operation that returns number of results.
+        */
+        @NonNull
+        public PreparedGetNumberOfResults.Builder numberOfResults() {
+            return new PreparedGetNumberOfResults.Builder(storIOContentResolver);
         }
     }
 }

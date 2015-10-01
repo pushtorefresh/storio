@@ -36,9 +36,6 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @NonNull
     private final Class<T> type;
 
-    @NonNull
-    private final Query query;
-
     @Nullable
     private final GetResolver<T> explicitGetResolver;
 
@@ -46,9 +43,8 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
                              @NonNull Class<T> type,
                              @NonNull Query query,
                              @Nullable GetResolver<T> explicitGetResolver) {
-        super(storIOContentResolver);
+        super(storIOContentResolver, query);
         this.type = type;
-        this.query = query;
         this.explicitGetResolver = explicitGetResolver;
     }
 
@@ -140,7 +136,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Compile-time safe part of builder for {@link PreparedGetListOfObjects}.
+     * Builder for {@link PreparedGetListOfObjects}.
      *
      * @param <T> type of objects for query.
      */

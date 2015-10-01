@@ -117,6 +117,9 @@ public final class PreparedGetNumberOfResults extends PreparedGet<Integer> {
         }
     }
 
+    /**
+     * Builder for {@link PreparedGetNumberOfResults}.
+     */
     public static final class Builder {
 
         @NonNull
@@ -155,6 +158,9 @@ public final class PreparedGetNumberOfResults extends PreparedGet<Integer> {
         }
     }
 
+    /**
+     * Compile-time safe part of builder for {@link PreparedGetNumberOfResults}.
+     */
     public static final class CompleteBuilder {
 
         @NonNull
@@ -205,9 +211,9 @@ public final class PreparedGetNumberOfResults extends PreparedGet<Integer> {
         }
 
         /**
-         * Builds new instance of {@link PreparedGetListOfObjects}.
+         * Builds new instance of {@link PreparedGetNumberOfResults}.
          *
-         * @return new instance of {@link PreparedGetListOfObjects}.
+         * @return new instance of {@link PreparedGetNumberOfResults}.
          */
         @NonNull
         public PreparedGetNumberOfResults prepare() {
