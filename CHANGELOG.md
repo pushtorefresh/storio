@@ -1,6 +1,23 @@
 StorIO Change Log
 ==========
 
+## Version 1.5.0
+
+_2015_10_01_
+
+* `get().numberOfResults()` for both SQLite and ContentResolver!
+* `@CheckResult` annotation for better IDE experience!
+* `insertWithOnConflict()` for StorIOSQLite.
+* We've added example of composite entity! 
+
+**Changes:**
+
+* [PR 534](https://github.com/pushtorefresh/storio/pull/534) Add StorIOContentResolver get().numberOfResults()!
+* [PR 533](https://github.com/pushtorefresh/storio/pull/533) Add StorIOSQLite get().numberOfResults()! 
+* [PR 531](https://github.com/pushtorefresh/storio/pull/531) Add @CheckResult annotation, makes life in the Android Studio Better!
+* [PR 530](https://github.com/pushtorefresh/storio/pull/530) Add insertWithOnConflict() for StorIOSQLite!
+* [PR 520](https://github.com/pushtorefresh/storio/pull/520) Example of UserWithTweets entity with custom Put/Get/Delete resolvers
+
 ## Version 1.4.0
 
 _2015_09_15_
