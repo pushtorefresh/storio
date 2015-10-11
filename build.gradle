@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         // Android Gradle plugin
-        classpath 'com.android.tools.build:gradle:1.4.0-beta1'
+        classpath 'com.android.tools.build:gradle:1.4.0-beta6'
 
         // Resolves android-sdk dependencies
         classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
@@ -57,7 +57,7 @@ task wrapper(type: Wrapper) {
 }
 
 ext {
-    buildToolsVersion = '23'
+    buildToolsVersion = '23.0.1'
     compileSdkVersion = 23
     minSdkVersion = 14
 }
