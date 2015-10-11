@@ -15,26 +15,52 @@ import java.util.Arrays;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
 @Config(constants = BuildConfig.class, sdk = 21)
 public class DeleteQueryTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldNotAllowNullUriObject() {
-        //noinspection ConstantConditions
-        DeleteQuery.builder()
-                .uri((Uri) null) // LOL, via overload we disabled null uri without specifying Type!
-                .build();
+        try {
+            //noinspection ConstantConditions
+            DeleteQuery.builder()
+                    .uri((Uri) null); // LOL, via overload we disabled null uri without specifying Type!
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Please specify uri")
+                    .hasNoCause();
+        }
     }
 
-    @Test(expected = NullPointerException.class) // Uri#parse() not mocked
-    public void shouldNotAllowNullUriString() {
-        //noinspection ConstantConditions
-        DeleteQuery.builder()
-                .uri((String) null)
-                .build();
+    @Test
+    public void shouldNotAllowNullUriString() { // Uri#parse() not mocked
+        try {
+            //noinspection ConstantConditions
+            DeleteQuery.builder()
+                    .uri((String) null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Uri should not be null")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void shouldNotAllowEmptyUriString() {
+        try {
+            DeleteQuery.builder()
+                    .uri("");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasMessage("Uri should not be null")
+                    .hasNoCause();
+        }
     }
 
     @Test
@@ -56,6 +82,93 @@ public class DeleteQueryTest {
 
         assertThat(deleteQuery.whereArgs()).isNotNull();
         assertThat(deleteQuery.whereArgs().isEmpty()).isTrue();
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowNullUriObject() {
+        try {
+            //noinspection ConstantConditions
+            DeleteQuery.builder()
+                    .uri(mock(Uri.class))
+                    .uri((Uri) null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Please specify uri")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowNullUriString() {
+        try {
+            //noinspection ConstantConditions
+            DeleteQuery.builder()
+                    .uri(mock(Uri.class))
+                    .uri((String) null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Uri should not be null")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowEmptyUriString() {
+        try {
+            DeleteQuery.builder()
+                    .uri(mock(Uri.class))
+                    .uri("");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasMessage("Uri should not be null")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldUpdateUriObject() {
+        Uri oldUri = mock(Uri.class);
+        Uri newUri = mock(Uri.class);
+
+        DeleteQuery query = DeleteQuery.builder()
+                .uri(oldUri)
+                .uri(newUri)
+                .build();
+
+        assertThat(query.uri()).isSameAs(newUri);
+    }
+
+    @Test
+    public void completeBuilderShouldUpdateUriString() {
+        Uri oldUri = Uri.parse("content://1");
+        String newUri = "content://2";
+
+        DeleteQuery query = DeleteQuery.builder()
+                .uri(oldUri)
+                .uri(newUri)
+                .build();
+
+        assertThat(query.uri()).isEqualTo(Uri.parse(newUri));
+    }
+
+    @Test
+    public void createdThroughToBuilderQueryShouldBeEqual() {
+        final Uri uri = mock(Uri.class);
+        final String where = "test_where";
+        final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+
+        final DeleteQuery firstQuery = DeleteQuery.builder()
+                .uri(uri)
+                .where(where)
+                .whereArgs(whereArgs)
+                .build();
+
+        final DeleteQuery secondQuery = firstQuery.toBuilder().build();
+
+        assertThat(secondQuery).isEqualTo(firstQuery);
     }
 
     @Test

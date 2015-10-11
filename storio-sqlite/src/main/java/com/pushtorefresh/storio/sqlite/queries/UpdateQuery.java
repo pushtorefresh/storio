@@ -71,6 +71,17 @@ public final class UpdateQuery {
         return whereArgs;
     }
 
+    /**
+     * Returns the new builder that has the same content as this query.
+     * It can be used to create new queries.
+     *
+     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     */
+    @NonNull
+    public CompleteBuilder toBuilder() {
+        return new CompleteBuilder(this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -141,7 +152,7 @@ public final class UpdateQuery {
     public static final class CompleteBuilder {
 
         @NonNull
-        private final String table;
+        private String table;
 
         private String where;
 
@@ -149,6 +160,26 @@ public final class UpdateQuery {
 
         CompleteBuilder(@NonNull String table) {
             this.table = table;
+        }
+
+        CompleteBuilder(@NonNull UpdateQuery updateQuery) {
+            this.table = updateQuery.table;
+            this.where = updateQuery.where;
+            this.whereArgs = updateQuery.whereArgs;
+        }
+
+        /**
+         * Specifies table name.
+         *
+         * @param table non-null and not empty table name.
+         * @return builder.
+         * @see UpdateQuery#table()
+         */
+        @NonNull
+        public CompleteBuilder table(@NonNull String table) {
+            checkNotEmpty(table, "Table name is null or empty");
+            this.table = table;
+            return this;
         }
 
         /**

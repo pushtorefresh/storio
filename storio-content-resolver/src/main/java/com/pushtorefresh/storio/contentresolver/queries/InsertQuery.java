@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.contentresolver.queries;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
@@ -31,6 +32,17 @@ public final class InsertQuery {
     @NonNull
     public Uri uri() {
         return uri;
+    }
+
+    /**
+     * Returns the new builder that has the same content as this query.
+     * It can be used to create new queries.
+     *
+     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     */
+    @NonNull
+    public CompleteBuilder toBuilder() {
+        return new CompleteBuilder(this);
     }
 
     @Override
@@ -101,7 +113,7 @@ public final class InsertQuery {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
-            checkNotNull(uri, "Uri should not be null");
+            checkNotEmpty(uri, "Uri should not be null");
             return new CompleteBuilder(Uri.parse(uri));
         }
     }
@@ -112,10 +124,44 @@ public final class InsertQuery {
     public static final class CompleteBuilder {
 
         @NonNull
-        private final Uri uri;
+        private Uri uri;
 
         CompleteBuilder(@NonNull Uri uri) {
             this.uri = uri;
+        }
+
+        CompleteBuilder(@NonNull InsertQuery insertQuery) {
+            this.uri = insertQuery.uri;
+        }
+
+        /**
+         * Specifies uri.
+         *
+         * @param uri full {@code URI} to query, including a row ID
+         *            (if a specific record is requested).
+         * @return builder.
+         * @see InsertQuery#uri()
+         */
+        @NonNull
+        public CompleteBuilder uri(@NonNull Uri uri) {
+            checkNotNull(uri, "Please specify uri");
+            this.uri = uri;
+            return this;
+        }
+
+        /**
+         * Specifies uri.
+         *
+         * @param uri full {@code URI} to query,
+         *            including a row ID (if a specific record is requested).
+         * @return builder.
+         * @see InsertQuery#uri()
+         */
+        @NonNull
+        public CompleteBuilder uri(@NonNull String uri) {
+            checkNotEmpty(uri, "Uri should not be null");
+            this.uri = Uri.parse(uri);
+            return this;
         }
 
         /**

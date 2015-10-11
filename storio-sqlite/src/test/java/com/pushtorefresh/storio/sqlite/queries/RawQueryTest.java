@@ -10,22 +10,35 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class RawQueryTest {
 
-    @SuppressWarnings("ConstantConditions")
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldNotAllowNullQuery() {
-        RawQuery.builder()
-                .query(null)
-                .build();
+        try {
+            //noinspection ConstantConditions
+            RawQuery.builder()
+                    .query(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Query is null or empty")
+                    .hasNoCause();
+        }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldNotAllowEmptyQuery() {
-        RawQuery.builder()
-                .query("")
-                .build();
+        try {
+            RawQuery.builder()
+                    .query("");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasMessage("Query is null or empty")
+                    .hasNoCause();
+        }
     }
 
     @Test
@@ -78,6 +91,64 @@ public class RawQueryTest {
                 .build();
 
         assertThat(rawQuery.observesTables()).isEqualTo(singleton("second_call"));
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowNullQuery() {
+        try {
+            //noinspection ConstantConditions
+            RawQuery.builder()
+                    .query("test_query")
+                    .query(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Query is null or empty")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowEmptyQuery() {
+        try {
+            RawQuery.builder()
+                    .query("test_query")
+                    .query("");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasMessage("Query is null or empty")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldUpdateTable() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("old_query")
+                .query("new_query")
+                .build();
+
+        assertThat(rawQuery.query()).isEqualTo("new_query");
+    }
+
+    @Test
+    public void createdThroughToBuilderQueryShouldBeEqual() {
+        final String query = "test_query";
+        final Object[] args = {"arg1", "arg2", "arg3"};
+        final String[] observesTables = {"table_to_observe_1", "table_to_observe_2"};
+        final String[] affectsTables = {"table_to_affect_1", "table_to_affect_2"};
+
+        final RawQuery firstQuery = RawQuery.builder()
+                .query(query)
+                .args(args)
+                .observesTables(observesTables)
+                .affectsTables(affectsTables)
+                .build();
+
+        final RawQuery secondQuery = firstQuery.toBuilder().build();
+
+        assertThat(secondQuery).isEqualTo(firstQuery);
     }
 
     @Test

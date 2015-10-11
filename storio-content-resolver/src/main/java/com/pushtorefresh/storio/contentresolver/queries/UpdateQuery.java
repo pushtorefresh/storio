@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
+import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.InternalQueries.nonNullString;
 import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullList;
@@ -73,6 +74,17 @@ public final class UpdateQuery {
     @NonNull
     public List<String> whereArgs() {
         return whereArgs;
+    }
+
+    /**
+     * Returns the new builder that has the same content as this query.
+     * It can be used to create new queries.
+     *
+     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     */
+    @NonNull
+    public CompleteBuilder toBuilder() {
+        return new CompleteBuilder(this);
     }
 
     @Override
@@ -151,7 +163,7 @@ public final class UpdateQuery {
          */
         @NonNull
         public CompleteBuilder uri(@NonNull String uri) {
-            checkNotNull(uri, "Uri should not be null");
+            checkNotEmpty(uri, "Uri should not be null");
             return new CompleteBuilder(Uri.parse(uri));
         }
     }
@@ -162,7 +174,7 @@ public final class UpdateQuery {
     public static final class CompleteBuilder {
 
         @NonNull
-        private final Uri uri;
+        private Uri uri;
 
         private String where;
 
@@ -170,6 +182,42 @@ public final class UpdateQuery {
 
         CompleteBuilder(@NonNull Uri uri) {
             this.uri = uri;
+        }
+
+        CompleteBuilder(@NonNull UpdateQuery deleteQuery) {
+            this.uri = deleteQuery.uri;
+            this.where = deleteQuery.where;
+            this.whereArgs = deleteQuery.whereArgs;
+        }
+
+        /**
+         * Specifies uri.
+         *
+         * @param uri full {@code URI} to query, including a row ID
+         *            (if a specific record is requested).
+         * @return builder.
+         * @see UpdateQuery#uri()
+         */
+        @NonNull
+        public CompleteBuilder uri(@NonNull Uri uri) {
+            checkNotNull(uri, "Please specify uri");
+            this.uri = uri;
+            return this;
+        }
+
+        /**
+         * Specifies uri.
+         *
+         * @param uri full {@code URI} to query,
+         *            including a row ID (if a specific record is requested).
+         * @return builder.
+         * @see UpdateQuery#uri()
+         */
+        @NonNull
+        public CompleteBuilder uri(@NonNull String uri) {
+            checkNotEmpty(uri, "Uri should not be null");
+            this.uri = Uri.parse(uri);
+            return this;
         }
 
         /**
