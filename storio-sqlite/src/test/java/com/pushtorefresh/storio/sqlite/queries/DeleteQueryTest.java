@@ -13,19 +13,31 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class DeleteQueryTest {
 
-    @SuppressWarnings("ConstantConditions")
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldNotAllowNullTable() {
-        DeleteQuery.builder()
-                .table(null)
-                .build();
+        try {
+            //noinspection ConstantConditions
+            DeleteQuery.builder()
+                    .table(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Table name is null or empty")
+                    .hasNoCause();
+        }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldNotAllowEmptyTable() {
-        DeleteQuery.builder()
-                .table("")
-                .build();
+        try {
+            DeleteQuery.builder()
+                    .table("");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasMessage("Table name is null or empty")
+                    .hasNoCause();
+        }
     }
 
     @Test
@@ -45,6 +57,62 @@ public class DeleteQueryTest {
 
         assertThat(deleteQuery.whereArgs()).isNotNull();
         assertThat(deleteQuery.whereArgs()).isEmpty();
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowNullTable() {
+        try {
+            //noinspection ConstantConditions
+            DeleteQuery.builder()
+                    .table("test_table")
+                    .table(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Table name is null or empty")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowEmptyTable() {
+        try {
+            DeleteQuery.builder()
+                    .table("test_table")
+                    .table("");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasMessage("Table name is null or empty")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldUpdateTable() {
+        DeleteQuery query = DeleteQuery.builder()
+                .table("old_table")
+                .table("new_table")
+                .build();
+
+        assertThat(query.table()).isEqualTo("new_table");
+    }
+
+    @Test
+    public void createdThroughToBuilderQueryShouldBeEqual() {
+        final String table = "test_table";
+        final String where = "test_where";
+        final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+
+        final DeleteQuery firstQuery = DeleteQuery.builder()
+                .table(table)
+                .where(where)
+                .whereArgs(whereArgs)
+                .build();
+
+        final DeleteQuery secondQuery = firstQuery.toBuilder().build();
+
+        assertThat(secondQuery).isEqualTo(firstQuery);
     }
 
     @Test

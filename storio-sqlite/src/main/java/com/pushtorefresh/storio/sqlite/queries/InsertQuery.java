@@ -55,6 +55,17 @@ public final class InsertQuery {
         return nullColumnHack;
     }
 
+    /**
+     * Returns the new builder that has the same content as this query.
+     * It can be used to create new queries.
+     *
+     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     */
+    @NonNull
+    public CompleteBuilder toBuilder() {
+        return new CompleteBuilder(this);
+    }
+
     @Override
     public boolean equals(@Nullable Object o) {
         if (this == o) return true;
@@ -125,12 +136,31 @@ public final class InsertQuery {
     public static final class CompleteBuilder {
 
         @NonNull
-        private final String table;
+        private String table;
 
         private String nullColumnHack;
 
         CompleteBuilder(@NonNull String table) {
             this.table = table;
+        }
+
+        CompleteBuilder(@NonNull InsertQuery insertQuery) {
+            this.table = insertQuery.table;
+            this.nullColumnHack = insertQuery.nullColumnHack;
+        }
+
+        /**
+         * Specifies table name.
+         *
+         * @param table non-null and not empty table name.
+         * @return builder.
+         * @see InsertQuery#table()
+         */
+        @NonNull
+        public CompleteBuilder table(@NonNull String table) {
+            checkNotEmpty(table, "Table name is null or empty");
+            this.table = table;
+            return this;
         }
 
         /**

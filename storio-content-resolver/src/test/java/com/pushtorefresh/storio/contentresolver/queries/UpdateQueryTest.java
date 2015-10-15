@@ -14,26 +14,52 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
 @Config(constants = BuildConfig.class, sdk = 21)
 public class UpdateQueryTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldNotAllowNullUriObject() {
-        //noinspection ConstantConditions
-        UpdateQuery.builder()
-                .uri((Uri) null)
-                .build();
+        try {
+            //noinspection ConstantConditions
+            UpdateQuery.builder()
+                    .uri((Uri) null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Please specify uri")
+                    .hasNoCause();
+        }
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldNotAllowNullUriString() {
-        //noinspection ConstantConditions
-        UpdateQuery.builder()
-                .uri((String) null)
-                .build();
+        try {
+            //noinspection ConstantConditions
+            UpdateQuery.builder()
+                    .uri((String) null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Uri should not be null")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void shouldNotAllowEmptyUriString() {
+        try {
+            UpdateQuery.builder()
+                    .uri("");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasMessage("Uri should not be null")
+                    .hasNoCause();
+        }
     }
 
     @Test
@@ -53,6 +79,93 @@ public class UpdateQueryTest {
 
         assertThat(updateQuery.whereArgs()).isNotNull();
         assertThat(updateQuery.whereArgs()).isEmpty();
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowNullUriObject() {
+        try {
+            //noinspection ConstantConditions
+            UpdateQuery.builder()
+                    .uri(mock(Uri.class))
+                    .uri((Uri) null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Please specify uri")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowNullUriString() {
+        try {
+            //noinspection ConstantConditions
+            UpdateQuery.builder()
+                    .uri(mock(Uri.class))
+                    .uri((String) null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Uri should not be null")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowEmptyUriString() {
+        try {
+            UpdateQuery.builder()
+                    .uri(mock(Uri.class))
+                    .uri("");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasMessage("Uri should not be null")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldUpdateUriObject() {
+        Uri oldUri = mock(Uri.class);
+        Uri newUri = mock(Uri.class);
+
+        UpdateQuery query = UpdateQuery.builder()
+                .uri(oldUri)
+                .uri(newUri)
+                .build();
+
+        assertThat(query.uri()).isSameAs(newUri);
+    }
+
+    @Test
+    public void completeBuilderShouldUpdateUriString() {
+        Uri oldUri = Uri.parse("content://1");
+        String newUri = "content://2";
+
+        UpdateQuery query = UpdateQuery.builder()
+                .uri(oldUri)
+                .uri(newUri)
+                .build();
+
+        assertThat(query.uri()).isEqualTo(Uri.parse(newUri));
+    }
+
+    @Test
+    public void createdThroughToBuilderQueryShouldBeEqual() {
+        final Uri uri = mock(Uri.class);
+        final String where = "test_where";
+        final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+
+        final UpdateQuery firstQuery = UpdateQuery.builder()
+                .uri(uri)
+                .where(where)
+                .whereArgs(whereArgs)
+                .build();
+
+        final UpdateQuery secondQuery = firstQuery.toBuilder().build();
+
+        assertThat(secondQuery).isEqualTo(firstQuery);
     }
 
     @Test

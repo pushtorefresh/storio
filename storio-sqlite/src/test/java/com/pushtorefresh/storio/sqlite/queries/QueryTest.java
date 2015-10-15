@@ -13,19 +13,31 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class QueryTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldNotAllowNullTable() {
-        //noinspection ConstantConditions
-        Query.builder()
-                .table(null)
-                .build();
+        try {
+            //noinspection ConstantConditions
+            Query.builder()
+                    .table(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasNoCause()
+                    .hasMessage("Table name is null or empty");
+        }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldNotAllowEmptyTable() {
-        Query.builder()
-                .table("")
-                .build();
+        try {
+            Query.builder()
+                    .table("");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasNoCause()
+                    .hasMessage("Table name is null or empty");
+        }
     }
 
     @Test
@@ -65,12 +77,19 @@ public class QueryTest {
         assertThat(query.whereArgs()).isEmpty();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionIfWhereArgsSpecifiedWithoutWhereClause() {
-        Query.builder()
-                .table("test_table")
-                .whereArgs("someArg") // Without WHERE clause!
-                .build();
+        try {
+            Query.builder()
+                    .table("test_table")
+                    .whereArgs("someArg")
+                    .build(); // Without WHERE clause!
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasNoCause()
+                    .hasMessage("You can not use whereArgs without where clause");
+        }
     }
 
     @Test
@@ -152,6 +171,74 @@ public class QueryTest {
                     .hasNoCause()
                     .hasMessage("Parameter `quantity` should be positive, but was = -1");
         }
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowNullTable() {
+        try {
+            //noinspection ConstantConditions
+            Query.builder()
+                    .table("test_table")
+                    .table(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected)
+                    .hasMessage("Table name is null or empty")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldNotAllowEmptyTable() {
+        try {
+            Query.builder()
+                    .table("test_table")
+                    .table("");
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException expected) {
+            assertThat(expected)
+                    .hasMessage("Table name is null or empty")
+                    .hasNoCause();
+        }
+    }
+
+    @Test
+    public void completeBuilderShouldUpdateTable() {
+        Query query = Query.builder()
+                .table("old_table")
+                .table("new_table")
+                .build();
+
+        assertThat(query.table()).isEqualTo("new_table");
+    }
+
+    @Test
+    public void createdThroughToBuilderQueryShouldBeEqual() {
+        final String table = "test_table";
+        final boolean distinct = true;
+        final String[] columns = {"column1", "column2", "column3"};
+        final String where = "test_where";
+        final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+        final String groupBy = "test_group_by";
+        final String having = "test_having";
+        final String orderBy = "test_order_by";
+        final String limit = "test_limit";
+
+        final Query firstQuery = Query.builder()
+                .table(table)
+                .distinct(distinct)
+                .columns(columns)
+                .where(where)
+                .whereArgs(whereArgs)
+                .groupBy(groupBy)
+                .having(having)
+                .orderBy(orderBy)
+                .limit(limit)
+                .build();
+
+        final Query secondQuery = firstQuery.toBuilder().build();
+
+        assertThat(secondQuery).isEqualTo(firstQuery);
     }
 
     @Test

@@ -87,6 +87,17 @@ public final class RawQuery {
         return observesTables;
     }
 
+    /**
+     * Returns the new builder that has the same content as this query.
+     * It can be used to create new queries.
+     *
+     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     */
+    @NonNull
+    public CompleteBuilder toBuilder() {
+        return new CompleteBuilder(this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -160,7 +171,7 @@ public final class RawQuery {
     public static final class CompleteBuilder {
 
         @NonNull
-        private final String query;
+        private String query;
 
         private List<String> args;
 
@@ -170,6 +181,27 @@ public final class RawQuery {
 
         CompleteBuilder(@NonNull String query) {
             this.query = query;
+        }
+
+        CompleteBuilder(@NonNull RawQuery rawQuery) {
+            this.query = rawQuery.query;
+            this.args = rawQuery.args;
+            this.affectsTables = rawQuery.affectsTables;
+            this.observesTables = rawQuery.observesTables;
+        }
+
+        /**
+         * Specifies SQL query.
+         *
+         * @param query SQL query.
+         * @return builder.
+         * @see RawQuery#query()
+         */
+        @NonNull
+        public CompleteBuilder query(@NonNull String query) {
+            checkNotEmpty(query, "Query is null or empty");
+            this.query = query;
+            return this;
         }
 
         /**
