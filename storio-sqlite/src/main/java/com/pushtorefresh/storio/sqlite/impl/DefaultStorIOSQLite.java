@@ -60,17 +60,26 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     /**
      * {@inheritDoc}
      */
-    @Override
     @NonNull
-    public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
+    @Override
+    public Observable<Changes> observeChanges() {
         final Observable<Changes> rxBus = changesBus.asObservable();
 
         if (rxBus == null) {
             throw new IllegalStateException("Observing changes in StorIOSQLite requires RxJava");
         }
 
+        return rxBus;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NonNull
+    public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
         // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
-        return ChangesFilter.apply(rxBus, tables);
+        return ChangesFilter.apply(observeChanges(), tables);
     }
 
     /**
@@ -398,6 +407,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @Override
         public void notifyAboutChanges(@NonNull Changes changes) {
+            checkNotNull(changes, "Changes can not be null");
+
             // Fast path, no synchronization required
             if (numberOfRunningTransactions.get() == 0) {
                 changesBus.onNext(changes);
