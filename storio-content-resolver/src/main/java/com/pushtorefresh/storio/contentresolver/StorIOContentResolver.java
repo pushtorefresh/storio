@@ -59,25 +59,27 @@ public abstract class StorIOContentResolver {
     }
 
     /**
-     * Subscribes to changes of required Uris.
+     * Allows observe changes of required set of {@link Uri}.
+     * <p/>
+     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * that you should manually unsubscribe from it to prevent memory leak.
+     * Also, it can cause BackPressure problems.
      *
      * @param uris set of {@link Uri} that should be monitored.
      * @return {@link Observable} of {@link Changes} subscribed to changes of required Uris.
-     * <p>Notice, that returned {@link Observable} is "Hot Observable", which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
-     * Also, it can cause BackPressure problems.
      */
     @NonNull
     public abstract Observable<Changes> observeChangesOfUris(@NonNull Set<Uri> uris);
 
     /**
-     * Subscribes to changes of required Uri.
+     * Allows observe changes of required {@link Uri}.
+     * <p/>
+     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * that you should manually unsubscribe from it to prevent memory leak.
+     * Also, it can cause BackPressure problems.
      *
      * @param uri {@link Uri} that should be monitored.
      * @return {@link Observable} of {@link Changes} subscribed to changes of required Uri.
-     * <p>Notice, that returned {@link Observable} is "Hot Observable", which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
-     * Also, it can cause BackPressure problems.
      */
     @NonNull
     public Observable<Changes> observeChangesOfUri(@NonNull Uri uri) {
@@ -101,7 +103,7 @@ public abstract class StorIOContentResolver {
 
         /**
          * Gets {@link ContentResolverTypeMapping} for required type.
-         * <p>
+         * <p/>
          * Result can be {@code null}.
          *
          * @param type type.

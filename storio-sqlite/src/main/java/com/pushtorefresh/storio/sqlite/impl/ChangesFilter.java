@@ -9,6 +9,8 @@ import java.util.Set;
 import rx.Observable;
 import rx.functions.Func1;
 
+import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+
 /**
  * FOR INTERNAL USAGE ONLY.
  * <p>
@@ -25,6 +27,7 @@ final class ChangesFilter implements Func1<Changes, Boolean> {
 
     @NonNull
     static Observable<Changes> apply(@NonNull Observable<Changes> rxBus, @NonNull Set<String> tables) {
+        checkNotNull(tables, "Set of tables can not be null");
         return rxBus
                 .filter(new ChangesFilter(tables));
     }

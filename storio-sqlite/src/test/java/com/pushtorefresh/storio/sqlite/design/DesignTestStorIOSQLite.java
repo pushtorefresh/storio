@@ -103,6 +103,12 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
 
     @NonNull
     @Override
+    public Observable<Changes> observeChanges() {
+        return Observable.empty();
+    }
+
+    @NonNull
+    @Override
     public PreparedExecuteSQL.Builder executeSQL() {
         return new PreparedExecuteSQL.Builder(this);
     }

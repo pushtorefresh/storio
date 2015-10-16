@@ -16,8 +16,13 @@ import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
+import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
@@ -373,5 +378,168 @@ public class DefaultStorIOSQLiteTest {
                 same(contentValues),
                 eq(SQLiteDatabase.CONFLICT_ROLLBACK)
         );
+    }
+
+    @Test
+    public void notifyAboutChangesShouldNotAcceptNullAsChanges() {
+        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
+
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .build();
+
+        StorIOSQLite.Internal internal = storIOSQLite.internal();
+        assertThat(internal).isNotNull();
+
+        try {
+            internal.notifyAboutChanges(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected).hasMessage("Changes can not be null");
+        }
+    }
+
+    @Test
+    public void observeChangesAndNotifyAboutChangesShouldWorkCorrectly() {
+        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
+
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .build();
+
+        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
+
+        storIOSQLite
+                .observeChanges()
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+
+        Changes changes = Changes.newInstance("test_table");
+
+        storIOSQLite
+                .internal()
+                .notifyAboutChanges(changes);
+
+        testSubscriber.assertValue(changes);
+        testSubscriber.assertNoErrors();
+
+        testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void observeChangesInTablesShouldNotAcceptNullAsTables() {
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .build();
+
+        try {
+            storIOSQLite.observeChangesInTables(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected).hasMessage("Set of tables can not be null");
+        }
+    }
+
+    @Test
+    public void observeChangesInTables() {
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .build();
+
+        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
+
+        Set<String> tables = new HashSet<String>(2);
+        tables.add("table1");
+        tables.add("table2");
+
+        storIOSQLite
+                .observeChangesInTables(tables)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+
+        Changes changes1 = Changes.newInstance("table1");
+
+        storIOSQLite
+                .internal()
+                .notifyAboutChanges(changes1);
+
+        testSubscriber.assertValue(changes1);
+
+        Changes changes2 = Changes.newInstance("table2");
+
+        storIOSQLite
+                .internal()
+                .notifyAboutChanges(changes2);
+
+        testSubscriber.assertValues(changes1, changes2);
+
+        Changes changes3 = Changes.newInstance("table3");
+
+        storIOSQLite
+                .internal()
+                .notifyAboutChanges(changes3);
+
+        // changes3 or any other changes are not expected here
+        testSubscriber.assertValues(changes1, changes2);
+        testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void observeChangesInTableShouldNotAcceptNullAsTables() {
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .build();
+
+        try {
+            storIOSQLite.observeChangesInTable(null);
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected).hasMessage("Table can not be null or empty");
+        }
+    }
+
+    @Test
+    public void observeChangesInTable() {
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .build();
+
+        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
+
+        storIOSQLite
+                .observeChangesInTable("table1")
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+
+        Changes changes1 = Changes.newInstance("table2");
+
+        storIOSQLite
+                .internal()
+                .notifyAboutChanges(changes1);
+
+        testSubscriber.assertNoValues();
+
+        Changes changes2 = Changes.newInstance("table1");
+
+        storIOSQLite
+                .internal()
+                .notifyAboutChanges(changes2);
+
+        testSubscriber.assertValue(changes2);
+
+        Changes changes3 = Changes.newInstance("table3");
+
+        storIOSQLite
+                .internal()
+                .notifyAboutChanges(changes3);
+
+        // Subscriber should not see changes of table2 and table3
+        testSubscriber.assertValue(changes2);
+        testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
     }
 }

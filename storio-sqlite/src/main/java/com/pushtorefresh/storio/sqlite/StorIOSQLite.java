@@ -22,9 +22,11 @@ import java.util.Set;
 
 import rx.Observable;
 
+import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
+
 /**
  * Powerful but simple abstraction for {@link android.database.sqlite.SQLiteDatabase}.
- * <p>
+ * <p/>
  * It's an abstract class instead of interface because we want to have ability to add some
  * changes without breaking existing implementations.
  */
@@ -75,7 +77,39 @@ public abstract class StorIOSQLite implements Closeable {
     }
 
     /**
-     * Subscribes to changes of required tables.
+     * Allows observe changes in all tables of the db.
+     * <p/>
+     * Notice that {@link StorIOSQLite} knows only about changes
+     * that happened as a result of Put or Delete Operations executed
+     * on this instance of {@link StorIOSQLite}.
+     * <p/>
+     * Emission may happen on any thread that performed Put or Delete operation,
+     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
+     * if you need to receive events on a special thread.
+     * <p/>
+     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * that you should manually unsubscribe from it to prevent memory leak.
+     * Also, it can cause BackPressure problems.
+     *
+     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of all tables.
+     */
+    @NonNull
+    public abstract Observable<Changes> observeChanges();
+
+    /**
+     * Allows observe changes of required tables.
+     * <p/>
+     * Notice that {@link StorIOSQLite} knows only about changes
+     * that happened as a result of Put or Delete Operations executed
+     * on this instance of {@link StorIOSQLite}.
+     * <p/>
+     * Emission may happen on any thread that performed Put or Delete operation,
+     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
+     * if you need to receive events on a special thread.
+     * <p/>
+     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * that you should manually unsubscribe from it to prevent memory leak.
+     * Also, it can cause BackPressure problems.
      *
      * @param tables set of table names that should be monitored.
      * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required tables.
@@ -84,13 +118,26 @@ public abstract class StorIOSQLite implements Closeable {
     public abstract Observable<Changes> observeChangesInTables(@NonNull Set<String> tables);
 
     /**
-     * Subscribes to changes of required table.
+     * Allows observer changes of required table.
+     * <p/>
+     * Notice that {@link StorIOSQLite} knows only about changes
+     * that happened as a result of Put or Delete Operations executed
+     * on this instance of {@link StorIOSQLite}.
+     * <p/>
+     * Emission may happen on any thread that performed Put or Delete operation,
+     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
+     * if you need to receive events on a special thread.
+     * <p/>
+     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * that you should manually unsubscribe from it to prevent memory leak.
+     * Also, it can cause BackPressure problems.
      *
      * @param table table name to monitor.
      * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required table.
      */
     @NonNull
     public Observable<Changes> observeChangesInTable(@NonNull String table) {
+        checkNotEmpty(table, "Table can not be null or empty");
         return observeChangesInTables(Collections.singleton(table));
     }
 
@@ -111,7 +158,7 @@ public abstract class StorIOSQLite implements Closeable {
 
         /**
          * Gets {@link SQLiteTypeMapping} for required type.
-         * <p>
+         * <p/>
          * Result can be {@code null}.
          *
          * @param type type.
@@ -228,7 +275,7 @@ public abstract class StorIOSQLite implements Closeable {
          * marked as clean (by calling setTransactionSuccessful). Otherwise they will be committed.
          * </p>
          * <p>Here is the standard idiom for transactions:
-         * <p>
+         * <p/>
          * <pre>
          *   db.beginTransaction();
          *   try {
