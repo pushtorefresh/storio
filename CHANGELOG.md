@@ -1,6 +1,21 @@
 StorIO Change Log
 ==========
 
+## Version 1.6.0
+
+_2015_10_19_
+
+* Convert any `Query` back to its `Builder` via `toBuilder()`!
+* Observe all changes in `StorIOSQLite` via `observeChanges()`!
+* Retrieve `ContentResolver` from `StorIOContentResolver` via `StorIOContentResolver.internal().contentResolver()`
+
+**Changes:**
+
+* [PR 544](https://github.com/pushtorefresh/storio/pull/544) Add getter for underlying ContentResolver to the StorIOContentResolver
+* [PR 543](https://github.com/pushtorefresh/storio/pull/543) Add API for observing all changes in StorIOSQLite
+* [PR 539](https://github.com/pushtorefresh/storio/pull/539) Add toBuilder() for queries
+* [PR 538](https://github.com/pushtorefresh/storio/pull/538) Switch back to Android Gradle Plugin 1.3.1
+
 ## Version 1.5.0
 
 _2015_10_01_
