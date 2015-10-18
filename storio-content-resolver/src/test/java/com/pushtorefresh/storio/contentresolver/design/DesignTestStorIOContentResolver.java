@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.contentresolver.design;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -68,6 +69,13 @@ class DesignTestStorIOContentResolver extends StorIOContentResolver {
         public int delete(@NonNull DeleteQuery deleteQuery) {
             // no impl
             return 0;
+        }
+
+        @NonNull
+        @Override
+        public ContentResolver contentResolver() {
+            // no impl
+            return null;
         }
     }
 }

@@ -287,4 +287,15 @@ public class DefaultStorIOContentResolverTest {
             assertThat(expected).hasMessage("Cursor returned by content provider is null");
         }
     }
+
+    @Test
+    public void shouldReturnSameContentResolver() {
+        ContentResolver contentResolver = mock(ContentResolver.class);
+
+        StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+                .contentResolver(contentResolver)
+                .build();
+
+        assertThat(storIOContentResolver.internal().contentResolver()).isSameAs(contentResolver);
+    }
 }
