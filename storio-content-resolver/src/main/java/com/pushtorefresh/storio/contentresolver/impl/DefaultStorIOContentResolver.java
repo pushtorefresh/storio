@@ -325,5 +325,14 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
                     nullableArrayOfStrings(deleteQuery.whereArgs())
             );
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public ContentResolver contentResolver() {
+            return contentResolver;
+        }
     }
 }

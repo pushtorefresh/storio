@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.contentresolver;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -152,5 +153,14 @@ public abstract class StorIOContentResolver {
          */
         @WorkerThread
         public abstract int delete(@NonNull DeleteQuery deleteQuery);
+
+        /**
+         * Returns {@link ContentResolver} that can be used for operations
+         * like {@link ContentResolver#applyBatch(String, java.util.ArrayList)} and so on!
+         *
+         * @return {@link ContentResolver}.
+         */
+        @NonNull
+        public abstract ContentResolver contentResolver();
     }
 }
