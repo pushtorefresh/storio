@@ -1,9 +1,9 @@
-package com.pushtorefresh.storio.sqlite.annotations.processor.generate;
+package com.pushtorefresh.storio.contentresolver.annotations.processor.generate;
 
-import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteColumn;
-import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteType;
-import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteColumnMeta;
-import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta;
+import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverColumn;
+import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverType;
+import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverColumnMeta;
+import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
 import com.squareup.javapoet.JavaFile;
 
 import org.junit.Test;
@@ -16,45 +16,42 @@ import static org.mockito.Mockito.when;
 
 public class PutResolverGeneratorTest {
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void generateJavaFile() throws IOException {
         final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
 
-        final StorIOSQLiteType storIOSQLiteType = mock(StorIOSQLiteType.class);
+        final StorIOContentResolverType storIOContentResolverType = mock(StorIOContentResolverType.class);
 
-        when(storIOSQLiteType.table()).thenReturn("test_table");
+        when(storIOContentResolverType.uri()).thenReturn("content://test");
 
-        final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta("TestItem", "com.test", storIOSQLiteType);
+        final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = new StorIOContentResolverTypeMeta("TestItem", "com.test", storIOContentResolverType);
 
-        final StorIOSQLiteColumn storIOSQLiteColumn1 = mock(StorIOSQLiteColumn.class);
-        when(storIOSQLiteColumn1.name()).thenReturn("column1");
-        when(storIOSQLiteColumn1.key()).thenReturn(true);
-
-        //noinspection ConstantConditions
-        final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta1 = new StorIOSQLiteColumnMeta(
+        final StorIOContentResolverColumn storIOContentResolverColumn1 = mock(StorIOContentResolverColumn.class);
+        when(storIOContentResolverColumn1.name()).thenReturn("column1");
+        when(storIOContentResolverColumn1.key()).thenReturn(true);
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta1 = new StorIOContentResolverColumnMeta(
                 null,
                 null,
                 "column1Field",
                 null,
-                storIOSQLiteColumn1
+                storIOContentResolverColumn1
         );
-        storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
+        storIOContentResolverTypeMeta.columns.put("column1", storIOContentResolverColumnMeta1);
 
-        final StorIOSQLiteColumn storIOSQLiteColumn2 = mock(StorIOSQLiteColumn.class);
-        when(storIOSQLiteColumn2.name()).thenReturn("column2");
-        when(storIOSQLiteColumn2.key()).thenReturn(false);
-
-        //noinspection ConstantConditions
-        final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta2 = new StorIOSQLiteColumnMeta(
+        final StorIOContentResolverColumn storIOContentResolverColumn2 = mock(StorIOContentResolverColumn.class);
+        when(storIOContentResolverColumn2.name()).thenReturn("column2");
+        when(storIOContentResolverColumn2.key()).thenReturn(false);
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta2 = new StorIOContentResolverColumnMeta(
                 null,
                 null,
                 "column2Field",
                 null,
-                storIOSQLiteColumn2
+                storIOContentResolverColumn2
         );
-        storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
+        storIOContentResolverTypeMeta.columns.put("column2", storIOContentResolverColumnMeta2);
 
-        final JavaFile javaFile = putResolverGenerator.generateJavaFile(storIOSQLiteTypeMeta);
+        final JavaFile javaFile = putResolverGenerator.generateJavaFile(storIOContentResolverTypeMeta);
         final StringBuilder out = new StringBuilder();
         javaFile.writeTo(out);
 
@@ -62,15 +59,15 @@ public class PutResolverGeneratorTest {
                 "\n" +
                 "import android.content.ContentValues;\n" +
                 "import android.support.annotation.NonNull;\n" +
-                "import com.pushtorefresh.storio.sqlite.operations.put.DefaultPutResolver;\n" +
-                "import com.pushtorefresh.storio.sqlite.queries.InsertQuery;\n" +
-                "import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;\n" +
+                "import com.pushtorefresh.storio.contentresolver.operations.put.DefaultPutResolver;\n" +
+                "import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;\n" +
+                "import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;\n" +
                 "import java.lang.Override;\n" +
                 "\n" +
                 "/**\n" +
                 " * Generated resolver for Put Operation\n" +
                 " */\n" +
-                "public class TestItemStorIOSQLitePutResolver extends DefaultPutResolver<TestItem> {\n" +
+                "public class TestItemStorIOContentResolverPutResolver extends DefaultPutResolver<TestItem> {\n" +
                 "    /**\n" +
                 "     * {@inheritDoc}\n" +
                 "     */\n" +
@@ -78,7 +75,7 @@ public class PutResolverGeneratorTest {
                 "    @NonNull\n" +
                 "    protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
                 "        return InsertQuery.builder()\n" +
-                "            .table(\"test_table\")\n" +
+                "            .uri(\"content://test\")\n" +
                 "            .build();\n" +
                 "    }\n" +
                 "\n" +
@@ -89,7 +86,7 @@ public class PutResolverGeneratorTest {
                 "    @NonNull\n" +
                 "    protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
                 "        return UpdateQuery.builder()\n" +
-                "            .table(\"test_table\")\n" +
+                "            .uri(\"content://test\")\n" +
                 "            .where(\"column1 = ?\")\n" +
                 "            .whereArgs(object.column1Field)\n" +
                 "            .build();\n" +

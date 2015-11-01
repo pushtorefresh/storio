@@ -100,7 +100,7 @@ public class PreparedPutObjectTest {
                 IllegalStateException cause = (IllegalStateException) expected.getCause();
 
                 assertThat(cause).hasMessage("Object does not have type mapping: " +
-                                "object = " + object + ", object.class = " + object.getClass() + "," +
+                                "object = " + object + ", object.class = " + object.getClass() + ", " +
                                 "db was not affected by this operation, please add type mapping for this type");
 
                 verify(storIOSQLite).internal();
@@ -135,7 +135,7 @@ public class PreparedPutObjectTest {
             IllegalStateException cause = (IllegalStateException) expected.getCause();
 
             assertThat(cause).hasMessage("Object does not have type mapping: " +
-                            "object = " + object + ", object.class = " + object.getClass() + "," +
+                            "object = " + object + ", object.class = " + object.getClass() + ", " +
                             "db was not affected by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).internal();

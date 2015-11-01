@@ -234,7 +234,7 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
 
     private static void validateAnnotatedClassesAndColumns(@NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
         // check that each annotated class has columns with at least one key column
-        for (Map.Entry<TypeElement, StorIOSQLiteTypeMeta> annotatedClass : annotatedClasses.entrySet()) {
+        for (final Map.Entry<TypeElement, StorIOSQLiteTypeMeta> annotatedClass : annotatedClasses.entrySet()) {
             if (annotatedClass.getValue().columns.size() == 0) {
                 throw new ProcessingException(annotatedClass.getKey(),
                         "Class marked with "
@@ -246,7 +246,7 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
 
             boolean hasAtLeastOneKeyColumn = false;
 
-            for (StorIOSQLiteColumnMeta columnMeta : annotatedClass.getValue().columns.values()) {
+            for (final StorIOSQLiteColumnMeta columnMeta : annotatedClass.getValue().columns.values()) {
                 if (columnMeta.storIOSQLiteColumn.key()) {
                     hasAtLeastOneKeyColumn = true;
                     break;
@@ -295,7 +295,7 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
     /**
      * For those who don't familiar with Annotation Processing API — this is the main method of Annotation Processor lifecycle
      * <p>
-     * It will be after Java Compiler will find lang elements annotated with annotations from {@link #getSupportedAnnotationTypes()}
+     * It will be called after Java Compiler will find lang elements annotated with annotations from {@link #getSupportedAnnotationTypes()}
      *
      * @param annotations set of annotations
      * @param roundEnv    environment of current processing round

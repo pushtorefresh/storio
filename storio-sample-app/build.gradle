@@ -50,8 +50,8 @@ dependencies {
     compile libraries.storIOSQLite
     compile libraries.storIOContentResolver
 
-    compile libraries.storIOSQLiteAnnotation
-    apt libraries.storIOSQLiteAnnotationProcessor
+    compile libraries.storIOSQLiteAnnotations
+    apt libraries.storIOSQLiteAnnotationsProcessor
 
     compile libraries.dagger
     apt libraries.daggerCompiler

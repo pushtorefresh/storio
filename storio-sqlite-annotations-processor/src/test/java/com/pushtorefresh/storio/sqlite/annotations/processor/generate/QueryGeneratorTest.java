@@ -10,23 +10,31 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class QueryGeneratorTest {
 
-    @SuppressWarnings("ConstantConditions")
-    @Test(expected = NullPointerException.class)
+    @Test
     public void createWhereNullStorIOSQLiteTypeMeta() {
-        QueryGenerator.createWhere(null, "object");
+        try {
+            //noinspection ConstantConditions
+            QueryGenerator.createWhere(null, "object");
+            failBecauseExceptionWasNotThrown(NullPointerException.class);
+        } catch (NullPointerException expected) {
+            assertThat(expected).hasNoCause();
+        }
     }
 
     @Test
     public void createWhereNoColumns() {
+        //noinspection ConstantConditions
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta(null, null, null);
         assertThat(QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object")).isEqualTo(Collections.emptyMap());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void createWhereNoKeyColumns() {
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta(null, null, null);
@@ -42,6 +50,7 @@ public class QueryGeneratorTest {
         assertThat(QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object")).isEqualTo(Collections.emptyMap());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void createWhereOneKeyColumn() {
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta(null, null, null);
@@ -65,6 +74,7 @@ public class QueryGeneratorTest {
         assertThat(where.get(QueryGenerator.WHERE_ARGS)).isEqualTo("object.testField1");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     public void createWhereMultipleKeyColumns() {
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta(null, null, null);

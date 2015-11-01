@@ -31,6 +31,8 @@ public class GetResolverGeneratorTest {
 
         final StorIOSQLiteColumn storIOSQLiteColumn1 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn1.name()).thenReturn("column1");
+
+        //noinspection ConstantConditions
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta1 = new StorIOSQLiteColumnMeta(
                 null,
                 null,
@@ -42,6 +44,8 @@ public class GetResolverGeneratorTest {
 
         final StorIOSQLiteColumn storIOSQLiteColumn2 = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn2.name()).thenReturn("column2");
+
+        //noinspection ConstantConditions
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta2 = new StorIOSQLiteColumnMeta(
                 null,
                 null,
