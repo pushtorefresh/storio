@@ -1,6 +1,16 @@
 StorIO Change Log
 ==========
 
+## Version 1.6.1
+
+_2015_11_7_
+
+* `StorIOContentReslver` fix for observing changes of Uris on Android API < 16
+
+**Changes:**
+
+* [PR 550](https://github.com/pushtorefresh/storio/pull/550) StorIOContentReslver fix for observing changes of Uris on Android API < 16
+
 ## Version 1.6.0
 
 _2015_10_19_
