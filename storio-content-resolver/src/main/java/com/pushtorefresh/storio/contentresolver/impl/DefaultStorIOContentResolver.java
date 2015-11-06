@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -65,7 +66,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
 
         // indirect usage of RxJava
         // required to avoid problems with ClassLoader when RxJava is not in ClassPath
-        return RxChangesObserver.observeChanges(contentResolver, uris, contentObserverHandler);
+        return RxChangesObserver.observeChanges(contentResolver, uris, contentObserverHandler, Build.VERSION.SDK_INT);
     }
 
     /**

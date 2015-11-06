@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.contentresolver.impl;
 import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 
@@ -27,37 +28,67 @@ final class RxChangesObserver {
     }
 
     @NonNull
-    static Observable<Changes> observeChanges(@NonNull final ContentResolver contentResolver, @NonNull final Set<Uri> uris, @NonNull final Handler handler) {
+    static Observable<Changes> observeChanges(@NonNull final ContentResolver contentResolver,
+                                              @NonNull final Set<Uri> uris,
+                                              @NonNull final Handler handler,
+                                              final int sdkVersion) {
         return Observable.create(new Observable.OnSubscribe<Changes>() {
             @Override
             public void call(final Subscriber<? super Changes> subscriber) {
-                final ContentObserver contentObserver = new ContentObserver(handler) {
-                    @Override
-                    public boolean deliverSelfNotifications() {
-                        return false;
+                // Use one ContentObserver for all passed Uris on API >= 16
+                if (sdkVersion >= Build.VERSION_CODES.JELLY_BEAN) {
+                    final ContentObserver contentObserver = new ContentObserver(handler) {
+                        @Override
+                        public boolean deliverSelfNotifications() {
+                            return false;
+                        }
+
+                        @Override
+                        public void onChange(boolean selfChange, Uri uri) {
+                            subscriber.onNext(Changes.newInstance(uri));
+                        }
+                    };
+
+                    for (Uri uri : uris) {
+                        contentResolver.registerContentObserver(
+                                uri,
+                                true,
+                                contentObserver
+                        );
                     }
 
-                    @Override
-                    public void onChange(boolean selfChange, Uri uri) {
-                        subscriber.onNext(Changes.newInstance(uri));
-                    }
-                };
+                    subscriber.add(Subscriptions.create(new Action0() {
+                        @Override
+                        public void call() {
+                            // Prevent memory leak on unsubscribe from Observable
+                            contentResolver.unregisterContentObserver(contentObserver);
+                        }
+                    }));
+                } else {
+                    // Register separate ContentObserver for each uri on API < 16
+                    for (final Uri uri : uris) {
+                        final ContentObserver contentObserver = new ContentObserver(handler) {
+                            @Override
+                            public boolean deliverSelfNotifications() {
+                                return false;
+                            }
 
-                for (Uri uri : uris) {
-                    contentResolver.registerContentObserver(
-                            uri,
-                            true,
-                            contentObserver
-                    );
+                            @Override
+                            public void onChange(boolean selfChange) {
+                                subscriber.onNext(Changes.newInstance(uri));
+                            }
+                        };
+
+                        contentResolver.registerContentObserver(uri, true, contentObserver);
+                        subscriber.add(Subscriptions.create(new Action0() {
+                            @Override
+                            public void call() {
+                                // Prevent memory leak on unsubscribe from Observable
+                                contentResolver.unregisterContentObserver(contentObserver);
+                            }
+                        }));
+                    }
                 }
-
-                subscriber.add(Subscriptions.create(new Action0() {
-                    @Override
-                    public void call() {
-                        // Preventing memory leak on unsubscribe from Observable
-                        contentResolver.unregisterContentObserver(contentObserver);
-                    }
-                }));
             }
         });
     }
