@@ -16,7 +16,7 @@ public @interface StorIOSQLiteColumn {
     /**
      * Required: specifies column name
      *
-     * @return non-null column name
+     * @return not-null column name
      */
     String name();
 

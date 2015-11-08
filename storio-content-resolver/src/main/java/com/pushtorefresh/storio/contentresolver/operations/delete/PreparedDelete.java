@@ -35,7 +35,7 @@ public abstract class PreparedDelete<Result> implements PreparedOperation<Result
         /**
          * Creates new builder for {@link PreparedDelete}.
          *
-         * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}.
+         * @param storIOContentResolver not-null instance of {@link StorIOContentResolver}.
          */
         public Builder(@NonNull StorIOContentResolver storIOContentResolver) {
             checkNotNull(storIOContentResolver, "Please specify StorIOContentResolver");
@@ -45,7 +45,7 @@ public abstract class PreparedDelete<Result> implements PreparedOperation<Result
         /**
          * Creates builder for {@link PreparedDeleteByQuery}.
          *
-         * @param deleteQuery non-null delete query.
+         * @param deleteQuery not-null delete query.
          * @return builder for {@link PreparedDeleteByQuery}.
          */
         @NonNull
@@ -56,7 +56,7 @@ public abstract class PreparedDelete<Result> implements PreparedOperation<Result
         /**
          * Creates builder for {@link PreparedDeleteCollectionOfObjects}.
          *
-         * @param objects non-null collection of objects to delete.
+         * @param objects not-null collection of objects to delete.
          * @param <T>     type of objects.
          * @return builder for {@link PreparedDeleteCollectionOfObjects}.
          */
@@ -68,7 +68,7 @@ public abstract class PreparedDelete<Result> implements PreparedOperation<Result
         /**
          * Creates builder for {@link PreparedDeleteObject}.
          *
-         * @param object non-null object to delete.
+         * @param object not-null object to delete.
          * @param <T>    type of object.
          * @return builder for {@link PreparedDeleteObject}.
          */

@@ -19,7 +19,7 @@ public abstract class GetResolver<T> {
      *
      * @param cursor not closed {@link Cursor} with already set position
      *               that should be parsed and converted to object of required type.
-     * @return non-null object of required type with data parsed from passed {@link Cursor}.
+     * @return not-null object of required type with data parsed from passed {@link Cursor}.
      */
     @NonNull
     public abstract T mapFromCursor(@NonNull Cursor cursor);
@@ -29,7 +29,7 @@ public abstract class GetResolver<T> {
      *
      * @param storIOSQLite {@link StorIOSQLite} instance to perform get from.
      * @param rawQuery     query that should be performed.
-     * @return non-null, not closed {@link Cursor} that can be empty
+     * @return not-null, not closed {@link Cursor} that can be empty
      * or contain data with results of Get Operation.
      */
     @NonNull
@@ -40,7 +40,7 @@ public abstract class GetResolver<T> {
      *
      * @param storIOSQLite {@link StorIOSQLite} instance to perform get from.
      * @param query        query that should be performed.
-     * @return non-null, not closed {@link Cursor} that can be empty
+     * @return not-null, not closed {@link Cursor} that can be empty
      * or contain data with results of Get Operation.
      */
     @NonNull

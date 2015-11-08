@@ -24,7 +24,7 @@ public final class MapSomethingToExecuteAsBlocking<Something, Result> implements
     /**
      * Creates new instance of {@link MapSomethingToExecuteAsBlocking}
      *
-     * @param preparedOperation non-null instance of {@link PreparedOperation} which will be used to react on calls to rx function
+     * @param preparedOperation not-null instance of {@link PreparedOperation} which will be used to react on calls to rx function
      * @param <Something>       type of map argument
      * @param <Result>          type of result of rx map function
      * @return new instance of {@link MapSomethingToExecuteAsBlocking}

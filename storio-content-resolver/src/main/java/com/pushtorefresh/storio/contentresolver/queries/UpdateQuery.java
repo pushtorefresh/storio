@@ -43,7 +43,7 @@ public final class UpdateQuery {
      * <p>
      * This can potentially have a record ID if this is an update request for a specific record.
      *
-     * @return non-null URI of the update request.
+     * @return not-null URI of the update request.
      */
     @NonNull
     public Uri uri() {
@@ -59,7 +59,7 @@ public final class UpdateQuery {
      * <p>
      * If empty — Query will update all rows for specified URI.
      *
-     * @return non-null {@code WHERE} clause.
+     * @return not-null {@code WHERE} clause.
      */
     @NonNull
     public String where() {
@@ -69,7 +69,7 @@ public final class UpdateQuery {
     /**
      * Gets optional immutable list of arguments for {@link #where()} clause.
      *
-     * @return non-null, immutable list of arguments for {@code WHERE} clause.
+     * @return not-null, immutable list of arguments for {@code WHERE} clause.
      */
     @NonNull
     public List<String> whereArgs() {
@@ -80,7 +80,7 @@ public final class UpdateQuery {
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
-     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     * @return not-null new instance of {@link CompleteBuilder} with content of this query.
      */
     @NonNull
     public CompleteBuilder toBuilder() {
@@ -119,7 +119,7 @@ public final class UpdateQuery {
     /**
      * Creates new builder for {@link UpdateQuery}.
      *
-     * @return non-null instance of {@link UpdateQuery.Builder}.
+     * @return not-null instance of {@link UpdateQuery.Builder}.
      */
     @NonNull
     public static Builder builder() {

@@ -17,8 +17,8 @@ public abstract class PutResolver<T> {
      * into {@link StorIOContentResolver}.
      *
      * @param storIOContentResolver instance of {@link StorIOContentResolver}.
-     * @param object                non-null object of required type to put.
-     * @return non-null result of Put Operation.
+     * @param object                not-null object of required type to put.
+     * @return not-null result of Put Operation.
      */
     @NonNull
     public abstract PutResult performPut(@NonNull StorIOContentResolver storIOContentResolver, @NonNull T object);

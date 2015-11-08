@@ -23,7 +23,7 @@ public final class GroupOperationResults {
     /**
      * Creates new {@link GroupOperationResults}
      *
-     * @param results non-null map of pairs (operation, resultOfOperation)
+     * @param results not-null map of pairs (operation, resultOfOperation)
      */
     private GroupOperationResults(@NonNull Map<PreparedOperation<?>, Object> results) {
         this.results = Collections.unmodifiableMap(results);
@@ -32,7 +32,7 @@ public final class GroupOperationResults {
     /**
      * Creates new instance of {@link GroupOperationResults}
      *
-     * @param results non-null map of pairs (operation, resultOfOperation)
+     * @param results not-null map of pairs (operation, resultOfOperation)
      * @return immutable container for results of {@link PreparedGroupOperation}
      */
     @NonNull
@@ -44,7 +44,7 @@ public final class GroupOperationResults {
     /**
      * Gets immutable map of pairs (operation, resultOfOperation)
      *
-     * @return non-null map of pairs (operation, resultOfOperation)
+     * @return not-null map of pairs (operation, resultOfOperation)
      */
     @NonNull
     public Map<PreparedOperation<?>, Object> results() {

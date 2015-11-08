@@ -21,7 +21,7 @@ public interface PreparedOperation<Result> {
      * So please, execute blocking I/O operation only from background thread.
      * See {@link WorkerThread}.
      *
-     * @return non-null result of operation.
+     * @return not-null result of operation.
      */
     @NonNull
     @WorkerThread

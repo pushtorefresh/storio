@@ -16,7 +16,7 @@ public abstract class DeleteResolver<T> {
      *
      * @param storIOSQLite {@link StorIOSQLite} instance to perform delete on.
      * @param object       object that should be deleted.
-     * @return non-null result of Delete Operation.
+     * @return not-null result of Delete Operation.
      */
     @NonNull
     public abstract DeleteResult performDelete(@NonNull StorIOSQLite storIOSQLite, @NonNull T object);

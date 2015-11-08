@@ -29,7 +29,7 @@ public final class DeleteResult {
      * Creates new instance of immutable container for results of Delete Operation.
      *
      * @param numberOfRowsDeleted number of rows that were deleted.
-     * @param affectedUris        non-null set of Uris that wer affected.
+     * @param affectedUris        not-null set of Uris that wer affected.
      * @return new instance of immutable container for results of Delete Operation.
      */
     @NonNull
@@ -42,7 +42,7 @@ public final class DeleteResult {
      * Creates new instance of immutable container for results of Delete Operation.
      *
      * @param numberOfRowsDeleted number of rows that were deleted.
-     * @param affectedUri         non-null Uri that was affected.
+     * @param affectedUri         not-null Uri that was affected.
      * @return new instance of immutable container for results of Delete Operation.
      */
     @NonNull

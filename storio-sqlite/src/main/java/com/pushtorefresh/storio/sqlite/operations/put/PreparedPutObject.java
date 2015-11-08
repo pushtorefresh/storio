@@ -44,7 +44,7 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
      *
-     * @return non-null result of Put Operation.
+     * @return not-null result of Put Operation.
      */
     @SuppressWarnings("unchecked")
     @WorkerThread
@@ -91,7 +91,7 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
      * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
-     * @return non-null {@link Observable} which will perform Put Operation.
+     * @return not-null {@link Observable} which will perform Put Operation.
      * and send result to observer.
      */
     @NonNull

@@ -24,8 +24,8 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
     /**
      * Converts object of required type to {@link InsertQuery}.
      *
-     * @param object non-null object that should be converted to {@link InsertQuery}.
-     * @return non-null {@link InsertQuery}.
+     * @param object not-null object that should be converted to {@link InsertQuery}.
+     * @return not-null {@link InsertQuery}.
      */
     @NonNull
     protected abstract InsertQuery mapToInsertQuery(@NonNull T object);
@@ -33,8 +33,8 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
     /**
      * Converts object of required type to {@link UpdateQuery}.
      *
-     * @param object non-null object that should be converted to {@link UpdateQuery}.
-     * @return non-null {@link UpdateQuery}.
+     * @param object not-null object that should be converted to {@link UpdateQuery}.
+     * @return not-null {@link UpdateQuery}.
      */
     @NonNull
     protected abstract UpdateQuery mapToUpdateQuery(@NonNull T object);
@@ -42,8 +42,8 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
     /**
      * Converts object of required type to {@link ContentValues}.
      *
-     * @param object non-null object that should be converted to {@link ContentValues}.
-     * @return non-null {@link ContentValues}.
+     * @param object not-null object that should be converted to {@link ContentValues}.
+     * @return not-null {@link ContentValues}.
      */
     @NonNull
     protected abstract ContentValues mapToContentValues(@NonNull T object);

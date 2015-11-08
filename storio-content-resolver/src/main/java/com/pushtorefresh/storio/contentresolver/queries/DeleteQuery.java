@@ -41,7 +41,7 @@ public final class DeleteQuery {
     /**
      * Gets full {@code URI} to query, including a row ID (if a specific record is requested).
      *
-     * @return non-null URI to query.
+     * @return not-null URI to query.
      */
     @NonNull
     public Uri uri() {
@@ -55,7 +55,7 @@ public final class DeleteQuery {
      * <p>
      * If empty — all rows will be deleted.
      *
-     * @return non-null {@code WHERE} clause.
+     * @return not-null {@code WHERE} clause.
      */
     @NonNull
     public String where() {
@@ -65,7 +65,7 @@ public final class DeleteQuery {
     /**
      * Gets optional immutable list of arguments for {@link #where()} clause.
      *
-     * @return non-null, immutable list of arguments for {@code WHERE} clause.
+     * @return not-null, immutable list of arguments for {@code WHERE} clause.
      */
     @NonNull
     public List<String> whereArgs() {
@@ -76,7 +76,7 @@ public final class DeleteQuery {
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
-     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     * @return not-null new instance of {@link CompleteBuilder} with content of this query.
      */
     @NonNull
     public CompleteBuilder toBuilder() {
@@ -115,7 +115,7 @@ public final class DeleteQuery {
     /**
      * Creates new builder for {@link DeleteQuery}.
      *
-     * @return non-null instance of {@link DeleteQuery.Builder}.
+     * @return not-null instance of {@link DeleteQuery.Builder}.
      */
     @NonNull
     public static Builder builder() {

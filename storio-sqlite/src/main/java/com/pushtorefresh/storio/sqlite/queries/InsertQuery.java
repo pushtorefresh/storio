@@ -30,7 +30,7 @@ public final class InsertQuery {
     /**
      * Gets table name.
      *
-     * @return non-null table name.
+     * @return not-null table name.
      */
     @NonNull
     public String table() {
@@ -59,7 +59,7 @@ public final class InsertQuery {
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
-     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     * @return not-null new instance of {@link CompleteBuilder} with content of this query.
      */
     @NonNull
     public CompleteBuilder toBuilder() {
@@ -98,7 +98,7 @@ public final class InsertQuery {
     /**
      * Creates new builder for {@link InsertQuery}.
      *
-     * @return non-null instance of {@link InsertQuery.Builder}.
+     * @return not-null instance of {@link InsertQuery.Builder}.
      */
     @NonNull
     public static Builder builder() {
@@ -119,7 +119,7 @@ public final class InsertQuery {
         /**
          * Required: Specifies table name.
          *
-         * @param table non-null and not empty table name.
+         * @param table not-null and not empty table name.
          * @return builder.
          * @see InsertQuery#table()
          */
@@ -152,7 +152,7 @@ public final class InsertQuery {
         /**
          * Specifies table name.
          *
-         * @param table non-null and not empty table name.
+         * @param table not-null and not empty table name.
          * @return builder.
          * @see InsertQuery#table()
          */

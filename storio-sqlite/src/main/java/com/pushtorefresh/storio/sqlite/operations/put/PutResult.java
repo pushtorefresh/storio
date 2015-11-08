@@ -163,7 +163,7 @@ public final class PutResult {
     /**
      * Gets names of affected tables.
      *
-     * @return non-null unmodifiable set of affected tables.
+     * @return not-null unmodifiable set of affected tables.
      */
     @NonNull
     public Set<String> affectedTables() {

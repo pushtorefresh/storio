@@ -34,7 +34,7 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
      *
-     * @return non-null {@link Integer} with number of results of the query.
+     * @return not-null {@link Integer} with number of results of the query.
      */
     @WorkerThread
     @NonNull
@@ -69,7 +69,7 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
      * Please don't forget to unsubscribe from this {@link Observable} because
      * it's "Hot" and endless.
      *
-     * @return non-null {@link Observable} which will emit non-null
+     * @return not-null {@link Observable} which will emit not-null
      * number of results of the executed query and will be subscribed to changes of tables from query.
      */
     @NonNull
@@ -100,7 +100,7 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
          * Required: Specifies query which will be passed to {@link StorIOContentResolver}
          * to get list of objects.
          *
-         * @param query non-null query.
+         * @param query not-null query.
          * @return builder.
          * @see Query
          */

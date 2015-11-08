@@ -16,7 +16,7 @@ public abstract class GetResolver<T> {
      *
      * @param cursor not closed {@link Cursor} with already set position
      *               that should be parsed and converted to object of required type.
-     * @return non-null object of required type with data parsed from passed {@link Cursor}.
+     * @return not-null object of required type with data parsed from passed {@link Cursor}.
      */
     @NonNull
     public abstract T mapFromCursor(@NonNull Cursor cursor);
@@ -24,9 +24,9 @@ public abstract class GetResolver<T> {
     /**
      * Performs Get Operation
      *
-     * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}.
-     * @param query                 non-null query that should be processed.
-     * @return non-null, not closed {@link Cursor} that can be empty or contain
+     * @param storIOContentResolver not-null instance of {@link StorIOContentResolver}.
+     * @param query                 not-null query that should be processed.
+     * @return not-null, not closed {@link Cursor} that can be empty or contain
      * data with results of Get Operation.
      * <p>
      * Notice, that {@link android.content.ContentProvider} can return null {@link Cursor}

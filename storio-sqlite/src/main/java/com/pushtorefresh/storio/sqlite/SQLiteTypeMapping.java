@@ -50,7 +50,7 @@ public class SQLiteTypeMapping<T> {
     /**
      * Creates new builder for {@link SQLiteTypeMapping}.
      *
-     * @return non-null instance of {@link SQLiteTypeMapping.Builder}.
+     * @return not-null instance of {@link SQLiteTypeMapping.Builder}.
      */
     @NonNull
     public static <T> Builder<T> builder() {
@@ -71,7 +71,7 @@ public class SQLiteTypeMapping<T> {
         /**
          * Required: Specifies Resolver for Put Operation.
          *
-         * @param putResolver non-null resolver for Put Operation.
+         * @param putResolver not-null resolver for Put Operation.
          * @return builder.
          */
         @NonNull
@@ -98,7 +98,7 @@ public class SQLiteTypeMapping<T> {
         /**
          * Required: Specifies Resolver for Get Operation.
          *
-         * @param getResolver non-null resolver for Get Operation.
+         * @param getResolver not-null resolver for Get Operation.
          * @return builder.
          */
         @NonNull
@@ -129,7 +129,7 @@ public class SQLiteTypeMapping<T> {
         /**
          * Required: Specifies Resolver for Delete Operation.
          *
-         * @param deleteResolver non-null resolver for Delete Operation.
+         * @param deleteResolver not-null resolver for Delete Operation.
          * @return builder.
          */
         @NonNull

@@ -44,7 +44,7 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
      *
-     * @return non-null result of Delete Operation.
+     * @return not-null result of Delete Operation.
      */
     @SuppressWarnings("unchecked")
     @WorkerThread
@@ -91,7 +91,7 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
      * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
-     * @return non-null {@link Observable} which will perform Delete Operation.
+     * @return not-null {@link Observable} which will perform Delete Operation.
      * and send result to observer.
      */
     @NonNull
