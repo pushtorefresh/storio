@@ -61,13 +61,13 @@ ext {
     minSdkVersion = 14
 }
 
-def supportLibsVersion = '23.0.1'
+def supportLibsVersion = '23.1.0'
 def daggerVersion = '2.0.1'
 
 ext.libraries = [
         // Core libraries
         supportAnnotations             : 'com.android.support:support-annotations:' + supportLibsVersion,
-        rxJava                         : 'io.reactivex:rxjava:1.0.14',
+        rxJava                         : 'io.reactivex:rxjava:1.0.15',
 
         // Parts of StorIO
         storIOCommon                   : project(':storio-common'),
