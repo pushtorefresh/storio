@@ -81,7 +81,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     /**
      * Creates new builder for {@link DefaultStorIOContentResolver}.
      *
-     * @return non-null instance of {@link DefaultStorIOContentResolver.Builder}.
+     * @return not-null instance of {@link DefaultStorIOContentResolver.Builder}.
      */
     @NonNull
     public static Builder builder() {
@@ -106,7 +106,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
          * instance: {@code context.getContentResolver().
          * It's safe to use {@link android.app.Activity} as {@link android.content.Context}.
          *
-         * @param contentResolver non-null instance of {@link ContentResolver}.
+         * @param contentResolver not-null instance of {@link ContentResolver}.
          * @return builder.
          */
         @NonNull

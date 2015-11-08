@@ -77,7 +77,7 @@ public final class PreparedExecuteSQL implements PreparedOperation<Object> {
      * <dd>Operates on {@link Schedulers#io()}.</dd>
      * </dl>
      *
-     * @return non-null {@link Observable} which will perform Delete Operation
+     * @return not-null {@link Observable} which will perform Delete Operation
      * and send result to observer. Result: just a new instance of {@link Object},
      * actually Execute SQL should return {@code void},
      * but we can not return instance of {@link Void} so we just return {@link Object}

@@ -27,7 +27,7 @@ public final class InternalQueries {
      * Converts array of objects to {@code List<String>}.
      *
      * @param args array objects that will be converted to list of strings.
-     * @return non-null, unmodifiable list of strings.
+     * @return not-null, unmodifiable list of strings.
      */
     @NonNull
     public static List<String> unmodifiableNonNullListOfStrings(@Nullable Object[] args) {
@@ -50,7 +50,7 @@ public final class InternalQueries {
      * Coverts list of objects to {@code List<String>}.
      *
      * @param args list of objects that will be converted to list of strings.
-     * @return non-null, unmodifiable list of strings.
+     * @return not-null, unmodifiable list of strings.
      */
     @NonNull
     public static List<String> unmodifiableNonNullListOfStrings(@Nullable List<?> args) {
@@ -68,10 +68,10 @@ public final class InternalQueries {
     }
 
     /**
-     * Converts list of something to unmodifiable non-null list.
+     * Converts list of something to unmodifiable not-null list.
      *
      * @param list list to convert, can be {@code null}.
-     * @return non-null, unmodifiable list of something.
+     * @return not-null, unmodifiable list of something.
      */
     @SuppressWarnings("unchecked")
     @NonNull
@@ -82,10 +82,10 @@ public final class InternalQueries {
     }
 
     /**
-     * Converts set of something to unmodifiable non-null set.
+     * Converts set of something to unmodifiable not-null set.
      *
      * @param set set to convert, can be {@code null}.
-     * @return non-null, unmodifiable set of something.
+     * @return not-null, unmodifiable set of something.
      */
     @SuppressWarnings("unchecked")
     @NonNull
@@ -96,10 +96,10 @@ public final class InternalQueries {
     }
 
     /**
-     * Converts list of strings to non-null array of strings.
+     * Converts list of strings to not-null array of strings.
      *
      * @param list of strings.
-     * @return non-null array of strings.
+     * @return not-null array of strings.
      */
     @NonNull
     public static String[] nonNullArrayOfStrings(@Nullable List<String> list) {
@@ -122,11 +122,11 @@ public final class InternalQueries {
     }
 
     /**
-     * Converts nullable string to non-null empty string if string was null
+     * Converts nullable string to not-null empty string if string was null
      * and returns string as is otherwise.
      *
      * @param str string to convert, can be null.
-     * @return non-null string, can be empty.
+     * @return not-null string, can be empty.
      */
     @NonNull
     public static String nonNullString(@Nullable String str) {

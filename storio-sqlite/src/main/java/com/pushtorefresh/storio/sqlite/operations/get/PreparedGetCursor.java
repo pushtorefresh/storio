@@ -51,7 +51,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
      * So please, call this method on some background thread. See {@link WorkerThread}.
      *
-     * @return non-null {@link Cursor}, can be empty.
+     * @return not-null {@link Cursor}, can be empty.
      */
     @WorkerThread
     @NonNull
@@ -84,7 +84,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      * Please don't forget to unsubscribe from this {@link Observable} because
      * it's "Hot" and endless.
      *
-     * @return non-null {@link Observable} which will emit non-null
+     * @return not-null {@link Observable} which will emit not-null
      * list with mapped results and will be subscribed to changes of tables from query.
      */
     @NonNull

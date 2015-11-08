@@ -55,7 +55,7 @@ public final class Query {
      * add to a {@code WHERE} or {@code HAVING} clause,
      * specifying that {@code _id} value.
      *
-     * @return non-null URI to query.
+     * @return not-null URI to query.
      */
     @NonNull
     public Uri uri() {
@@ -67,7 +67,7 @@ public final class Query {
      * <p>
      * If list is empty — all columns will be received.
      *
-     * @return non-null, immutable list of columns that should be received.
+     * @return not-null, immutable list of columns that should be received.
      */
     @NonNull
     public List<String> columns() {
@@ -83,7 +83,7 @@ public final class Query {
      * <p>
      * If it's empty — Query will retrieve all rows for specified URI.
      *
-     * @return non-null {@code WHERE} clause.
+     * @return not-null {@code WHERE} clause.
      */
     @NonNull
     public String where() {
@@ -93,7 +93,7 @@ public final class Query {
     /**
      * Gets optional immutable list of arguments for {@link #where()} clause.
      *
-     * @return non-null, immutable list of arguments for {@code WHERE} clause.
+     * @return not-null, immutable list of arguments for {@code WHERE} clause.
      */
     @NonNull
     public List<String> whereArgs() {
@@ -106,7 +106,7 @@ public final class Query {
      * How the rows in the cursor should be sorted.
      * If empty then the provider is free to define the sort order.
      *
-     * @return non-null sort order.
+     * @return not-null sort order.
      */
     @NonNull
     public String sortOrder() {
@@ -117,7 +117,7 @@ public final class Query {
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
-     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     * @return not-null new instance of {@link CompleteBuilder} with content of this query.
      */
     @NonNull
     public CompleteBuilder toBuilder() {
@@ -162,7 +162,7 @@ public final class Query {
     /**
      * Creates new builder for {@link Query}.
      *
-     * @return non-null instance of {@link Query.Builder}.
+     * @return not-null instance of {@link Query.Builder}.
      */
     @NonNull
     public static Builder builder() {

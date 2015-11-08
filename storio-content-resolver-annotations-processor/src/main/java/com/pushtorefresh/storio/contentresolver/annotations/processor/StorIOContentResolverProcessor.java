@@ -53,7 +53,7 @@ public class StorIOContentResolverProcessor extends AbstractProcessor {
      * Processes class annotations
      *
      * @param roundEnvironment environment
-     * @return non-null unmodifiable map(element, typeMeta)
+     * @return not-null unmodifiable map(element, typeMeta)
      */
     private static Map<TypeElement, StorIOContentResolverTypeMeta> processAnnotatedClasses(@NotNull final RoundEnvironment roundEnvironment, @NotNull final Elements elementUtils) {
         final Set<? extends Element> elementsAnnotatedWithStorIOContentResolverType
@@ -197,7 +197,7 @@ public class StorIOContentResolverProcessor extends AbstractProcessor {
      * Processes annotated field and returns result of processing or throws exception
      *
      * @param annotatedField field that was annotated with {@link StorIOContentResolverColumn}
-     * @return non-null {@link StorIOContentResolverColumnMeta} with meta information about field
+     * @return not-null {@link StorIOContentResolverColumnMeta} with meta information about field
      */
     @NotNull
     private static StorIOContentResolverColumnMeta processAnnotatedField(@NotNull final Element annotatedField) {

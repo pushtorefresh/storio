@@ -22,7 +22,7 @@ public class ProcessingException extends RuntimeException {
     }
 
     /**
-     * @return non-null element that caused exception
+     * @return not-null element that caused exception
      */
     @NotNull
     public Element element() {

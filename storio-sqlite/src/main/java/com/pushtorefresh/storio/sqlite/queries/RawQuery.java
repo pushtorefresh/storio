@@ -46,7 +46,7 @@ public final class RawQuery {
     /**
      * Raw SQL query. Can contain {@code ?} for binding arguments.
      *
-     * @return non-null SQL query.
+     * @return not-null SQL query.
      */
     @NonNull
     public String query() {
@@ -56,7 +56,7 @@ public final class RawQuery {
     /**
      * Gets optional immutable list of arguments for {@link #query()}.
      *
-     * @return non-null, immutable list of arguments for query.
+     * @return not-null, immutable list of arguments for query.
      */
     @NonNull
     public List<String> args() {
@@ -68,7 +68,7 @@ public final class RawQuery {
      * <p>
      * They will be used to notify observers of that tables.
      *
-     * @return non-null, immutable set of tables, affected by this query.
+     * @return not-null, immutable set of tables, affected by this query.
      */
     @NonNull
     public Set<String> affectsTables() {
@@ -80,7 +80,7 @@ public final class RawQuery {
      * <p>
      * They will be used to observe changes of that tables and re-execute this query.
      *
-     * @return non-null, immutable set of tables, that should be observed by this query.
+     * @return not-null, immutable set of tables, that should be observed by this query.
      */
     @NonNull
     public Set<String> observesTables() {
@@ -91,7 +91,7 @@ public final class RawQuery {
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
-     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     * @return not-null new instance of {@link CompleteBuilder} with content of this query.
      */
     @NonNull
     public CompleteBuilder toBuilder() {
@@ -133,7 +133,7 @@ public final class RawQuery {
     /**
      * Creates new builder for {@link RawQuery}.
      *
-     * @return non-null instance of {@link RawQuery.Builder}.
+     * @return not-null instance of {@link RawQuery.Builder}.
      */
     @NonNull
     public static Builder builder() {

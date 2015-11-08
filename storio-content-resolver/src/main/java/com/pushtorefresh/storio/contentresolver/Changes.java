@@ -32,7 +32,7 @@ public final class Changes {
      * Creates immutable container of information about one
      * or more changes in {@link StorIOContentResolver}.
      *
-     * @param affectedUris non-null set of affected Uris.
+     * @param affectedUris not-null set of affected Uris.
      * @return new immutable instance of {@link Changes}.
      */
     @NonNull
@@ -45,7 +45,7 @@ public final class Changes {
      * Creates immutable container of information about one
      * or more changes in {@link StorIOContentResolver}.
      *
-     * @param affectedUri non-null Uri that was affected.
+     * @param affectedUri not-null Uri that was affected.
      * @return new immutable instance of {@link Changes}.
      */
     @NonNull

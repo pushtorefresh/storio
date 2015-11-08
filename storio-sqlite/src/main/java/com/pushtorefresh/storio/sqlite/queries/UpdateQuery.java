@@ -38,7 +38,7 @@ public final class UpdateQuery {
     /**
      * Gets table name.
      *
-     * @return non-null table name.
+     * @return not-null table name.
      */
     @NonNull
     public String table() {
@@ -54,7 +54,7 @@ public final class UpdateQuery {
      * <p>
      * If empty — Query will update all rows for the given table.
      *
-     * @return non-null {@code WHERE} clause.
+     * @return not-null {@code WHERE} clause.
      */
     @NonNull
     public String where() {
@@ -64,7 +64,7 @@ public final class UpdateQuery {
     /**
      * Gets optional immutable list of arguments for {@link #where()} clause.
      *
-     * @return non-null, immutable list of arguments for {@code WHERE} clause.
+     * @return not-null, immutable list of arguments for {@code WHERE} clause.
      */
     @NonNull
     public List<String> whereArgs() {
@@ -75,7 +75,7 @@ public final class UpdateQuery {
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
-     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     * @return not-null new instance of {@link CompleteBuilder} with content of this query.
      */
     @NonNull
     public CompleteBuilder toBuilder() {
@@ -114,7 +114,7 @@ public final class UpdateQuery {
     /**
      * Creates new builder for {@link UpdateQuery}.
      *
-     * @return non-null instance of {@link UpdateQuery.Builder}.
+     * @return not-null instance of {@link UpdateQuery.Builder}.
      */
     @NonNull
     public static Builder builder() {
@@ -135,7 +135,7 @@ public final class UpdateQuery {
         /**
          * Required: Specifies table name.
          *
-         * @param table non-null table name.
+         * @param table not-null table name.
          * @return builder.
          * @see UpdateQuery#table()
          */
@@ -171,7 +171,7 @@ public final class UpdateQuery {
         /**
          * Specifies table name.
          *
-         * @param table non-null and not empty table name.
+         * @param table not-null and not empty table name.
          * @return builder.
          * @see UpdateQuery#table()
          */

@@ -27,7 +27,7 @@ public final class InsertQuery {
     /**
      * Gets {@code content://} URI of the insertion request.
      *
-     * @return non-null URI of the insertion request.
+     * @return not-null URI of the insertion request.
      */
     @NonNull
     public Uri uri() {
@@ -38,7 +38,7 @@ public final class InsertQuery {
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
-     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     * @return not-null new instance of {@link CompleteBuilder} with content of this query.
      */
     @NonNull
     public CompleteBuilder toBuilder() {
@@ -70,7 +70,7 @@ public final class InsertQuery {
     /**
      * Creates new builder for {@link InsertQuery}.
      *
-     * @return non-null instance of {@link InsertQuery.Builder}.
+     * @return not-null instance of {@link InsertQuery.Builder}.
      */
     @NonNull
     public static Builder builder() {

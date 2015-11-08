@@ -31,7 +31,7 @@ public final class Changes {
     /**
      * Creates new instance of {@link Changes}.
      *
-     * @param affectedTables non-null set of affected tables.
+     * @param affectedTables not-null set of affected tables.
      * @return new immutable instance of {@link Changes}.
      */
     @NonNull

@@ -17,8 +17,8 @@ public abstract class DefaultDeleteResolver<T> extends DeleteResolver<T> {
     /**
      * Converts object of required type to {@link DeleteQuery}.
      *
-     * @param object non-null object that should be converted to {@link DeleteQuery}.
-     * @return non-null {@link DeleteQuery}.
+     * @param object not-null object that should be converted to {@link DeleteQuery}.
+     * @return not-null {@link DeleteQuery}.
      */
     @NonNull
     protected abstract DeleteQuery mapToDeleteQuery(@NonNull T object);

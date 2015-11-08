@@ -54,7 +54,7 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
      * Processes class annotations
      *
      * @param roundEnvironment environment
-     * @return non-null unmodifiable map(element, typeMeta)
+     * @return not-null unmodifiable map(element, typeMeta)
      */
     @NotNull
     private static Map<TypeElement, StorIOSQLiteTypeMeta> processAnnotatedClasses(@NotNull final RoundEnvironment roundEnvironment, @NotNull final Elements elementUtils) {
@@ -198,7 +198,7 @@ public class StorIOSQLiteProcessor extends AbstractProcessor {
      * Processes annotated field and returns result of processing or throws exception
      *
      * @param annotatedField field that was annotated with {@link StorIOSQLiteColumn}
-     * @return non-null {@link StorIOSQLiteColumnMeta} with meta information about field
+     * @return not-null {@link StorIOSQLiteColumnMeta} with meta information about field
      */
     @NotNull
     private static StorIOSQLiteColumnMeta processAnnotatedField(@NotNull final Element annotatedField) {

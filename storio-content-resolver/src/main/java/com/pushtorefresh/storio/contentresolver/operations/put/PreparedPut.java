@@ -61,7 +61,7 @@ public abstract class PreparedPut<Result> implements PreparedOperation<Result> {
         /**
          * Prepares Put Operation that should put one instance of {@link ContentValues}.
          *
-         * @param contentValues non-null content values to put.
+         * @param contentValues not-null content values to put.
          * @return builder for {@link PreparedPutContentValues}.
          */
         @NonNull
@@ -72,7 +72,7 @@ public abstract class PreparedPut<Result> implements PreparedOperation<Result> {
         /**
          * Prepares Put Operation that should put several instances of {@link ContentValues}.
          *
-         * @param contentValues non-null collection of {@link ContentValues}.
+         * @param contentValues not-null collection of {@link ContentValues}.
          * @return builder for {@link PreparedPutContentValuesIterable}.
          */
         @NonNull

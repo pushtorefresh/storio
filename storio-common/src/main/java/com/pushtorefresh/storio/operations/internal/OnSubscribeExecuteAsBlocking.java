@@ -25,7 +25,7 @@ public final class OnSubscribeExecuteAsBlocking<Result> implements Observable.On
     /**
      * Creates new instance of {@link OnSubscribeExecuteAsBlocking}
      *
-     * @param preparedOperation non-null instance of {@link PreparedOperation} which will be used to provide result to subscribers
+     * @param preparedOperation not-null instance of {@link PreparedOperation} which will be used to provide result to subscribers
      * @param <Result>          type of result of {@link PreparedOperation}
      * @return new instance of {@link OnSubscribeExecuteAsBlocking}
      */

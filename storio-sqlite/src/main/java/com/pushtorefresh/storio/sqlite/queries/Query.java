@@ -75,7 +75,7 @@ public final class Query {
     /**
      * Gets table name.
      *
-     * @return non-null table name.
+     * @return not-null table name.
      */
     @NonNull
     public String table() {
@@ -87,7 +87,7 @@ public final class Query {
      * <p>
      * If list is empty — all columns will be received.
      *
-     * @return non-null, immutable list of columns that should be received.
+     * @return not-null, immutable list of columns that should be received.
      */
     @NonNull
     public List<String> columns() {
@@ -103,7 +103,7 @@ public final class Query {
      * <p>
      * If empty — Query will retrieve all rows for the given table.
      *
-     * @return non-null {@code WHERE} clause.
+     * @return not-null {@code WHERE} clause.
      */
     @NonNull
     public String where() {
@@ -113,7 +113,7 @@ public final class Query {
     /**
      * Gets optional immutable list of arguments for {@link #where()} clause.
      *
-     * @return non-null, immutable list of arguments for {@code WHERE} clause.
+     * @return not-null, immutable list of arguments for {@code WHERE} clause.
      */
     @NonNull
     public List<String> whereArgs() {
@@ -129,7 +129,7 @@ public final class Query {
      * <p>
      * Passing {@code null} or empty string will cause the rows to not be grouped.
      *
-     * @return non-null {@code GROUP BY} clause.
+     * @return not-null {@code GROUP BY} clause.
      */
     @NonNull
     public String groupBy() {
@@ -147,7 +147,7 @@ public final class Query {
      * Passing {@code null} or empty string will cause all row groups to be included,
      * and is required when row grouping is not being used.
      *
-     * @return non-null {@code HAVING} clause.
+     * @return not-null {@code HAVING} clause.
      */
     @NonNull
     public String having() {
@@ -163,7 +163,7 @@ public final class Query {
      * <p>
      * Passing {@code null} or empty string will use the default sort order, which may be unordered.
      *
-     * @return non-null {@code ORDER BY} clause.
+     * @return not-null {@code ORDER BY} clause.
      */
     @NonNull
     public String orderBy() {
@@ -179,7 +179,7 @@ public final class Query {
      * <p>
      * Passing {@code null} or empty String denotes no {@code LIMIT} clause.
      *
-     * @return non-null {@code LIMIT} clause.
+     * @return not-null {@code LIMIT} clause.
      */
     @NonNull
     public String limit() {
@@ -190,7 +190,7 @@ public final class Query {
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
-     * @return non-null new instance of {@link CompleteBuilder} with content of this query.
+     * @return not-null new instance of {@link CompleteBuilder} with content of this query.
      */
     @NonNull
     public CompleteBuilder toBuilder() {
@@ -247,7 +247,7 @@ public final class Query {
     /**
      * Creates new builder for {@link Query}.
      *
-     * @return non-null instance of {@link Query.Builder}.
+     * @return not-null instance of {@link Query.Builder}.
      */
     @NonNull
     public static Builder builder() {
@@ -268,7 +268,7 @@ public final class Query {
         /**
          * Required: Specifies table name.
          *
-         * @param table non-null and not empty table name.
+         * @param table not-null and not empty table name.
          * @return builder.
          * @see Query#table()
          */
@@ -322,7 +322,7 @@ public final class Query {
         /**
          * Specifies table name.
          *
-         * @param table non-null and not empty table name.
+         * @param table not-null and not empty table name.
          * @return builder.
          * @see Query#table()
          */

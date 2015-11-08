@@ -129,7 +129,7 @@ public final class PutResult {
     /**
      * Gets Uri that was affected by this Put.
      *
-     * @return non-null affected Uri.
+     * @return not-null affected Uri.
      */
     @NonNull
     public Uri affectedUri() {
