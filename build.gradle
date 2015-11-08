@@ -70,12 +70,14 @@ ext.libraries = [
         rxJava                         : 'io.reactivex:rxjava:1.0.15',
 
         // Parts of StorIO
-        storIOCommon                   : project(':storio-common'),
-        storIOSQLite                   : project(':storio-sqlite'),
-        storIOContentResolver          : project(':storio-content-resolver'),
-        storIOSQLiteAnnotation         : project(':storio-sqlite-annotations'),
-        storIOSQLiteAnnotationProcessor: project(':storio-sqlite-annotations-processor'),
-        storIOTestCommon               : project(':storio-test-common'),
+        storIOCommon                              : project(':storio-common'),
+        storIOSQLite                              : project(':storio-sqlite'),
+        storIOContentResolver                     : project(':storio-content-resolver'),
+        storIOSQLiteAnnotations                   : project(':storio-sqlite-annotations'),
+        storIOSQLiteAnnotationsProcessor          : project(':storio-sqlite-annotations-processor'),
+        storIOContentResolverAnnotations          : project(':storio-content-resolver-annotations'),
+        storIOContentResolverAnnotationsProcessor : project(':storio-content-resolver-annotations-processor'),
+        storIOTestCommon                          : project(':storio-test-common'),
 
         // Libraries for tests and sample app
         junit                          : 'junit:junit:4.12',

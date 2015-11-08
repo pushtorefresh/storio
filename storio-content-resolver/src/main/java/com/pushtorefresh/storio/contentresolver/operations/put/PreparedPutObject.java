@@ -62,7 +62,7 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
 
                 if (typeMapping == null) {
                     throw new IllegalStateException("Object does not have type mapping: " +
-                            "object = " + object + ", object.class = " + object.getClass() + "," +
+                            "object = " + object + ", object.class = " + object.getClass() + ", " +
                             "ContentProvider was not affected by this operation, please add type mapping for this type");
                 }
 

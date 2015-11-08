@@ -6,6 +6,9 @@ include ':storio-content-resolver'
 include ':storio-sqlite-annotations'
 include ':storio-sqlite-annotations-processor'
 
+include ':storio-content-resolver-annotations'
+include ':storio-content-resolver-annotations-processor'
+
 include ':storio-test-without-rxjava'
 
 include ':storio-sample-app'

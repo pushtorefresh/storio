@@ -40,7 +40,7 @@ public class PutResolverGenerator {
     }
 
     @NotNull
-    MethodSpec createMapToInsertQueryMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
+    private MethodSpec createMapToInsertQueryMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
         return MethodSpec.methodBuilder("mapToInsertQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
@@ -58,7 +58,7 @@ public class PutResolverGenerator {
     }
 
     @NotNull
-    MethodSpec createMapToUpdateQueryMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
+    private MethodSpec createMapToUpdateQueryMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
         final Map<String, String> where = QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object");
 
         return MethodSpec.methodBuilder("mapToUpdateQuery")
@@ -82,7 +82,7 @@ public class PutResolverGenerator {
     }
 
     @NotNull
-    MethodSpec createMapToContentValuesMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
+    private MethodSpec createMapToContentValuesMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
         final MethodSpec.Builder builder = MethodSpec.methodBuilder("mapToContentValues")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)

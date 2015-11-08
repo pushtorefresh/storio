@@ -37,7 +37,7 @@ public class DeleteResolverGenerator {
     }
 
     @NotNull
-    MethodSpec createMapToDeleteQueryMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
+    private MethodSpec createMapToDeleteQueryMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
         final Map<String, String> where = QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object");
 
         return MethodSpec.methodBuilder("mapToDeleteQuery")

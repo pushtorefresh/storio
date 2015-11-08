@@ -1,0 +1,6 @@
+apply plugin: 'java'
+
+targetCompatibility = '1.6'
+sourceCompatibility = '1.6'
+
+apply from: '../gradle/publish-java-lib.gradle'
