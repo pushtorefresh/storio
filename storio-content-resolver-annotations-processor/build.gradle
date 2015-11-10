@@ -5,6 +5,7 @@ sourceCompatibility = '1.6'
 
 dependencies {
     compile libraries.storIOContentResolverAnnotations
+    compile libraries.storIOCommonAnnotationsProcessor
     compile libraries.intellijAnnotations
     compile libraries.autoService
     compile libraries.javaPoet

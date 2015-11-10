@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.sqlite.annotations.processor;
+package com.pushtorefresh.storio.common.annotations.processor;
 
 import org.jetbrains.annotations.NotNull;
 

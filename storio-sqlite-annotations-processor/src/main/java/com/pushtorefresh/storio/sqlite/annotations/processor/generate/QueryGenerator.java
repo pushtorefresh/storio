@@ -22,10 +22,10 @@ public class QueryGenerator {
         int i = 0;
 
         for (final StorIOSQLiteColumnMeta columnMeta : storIOSQLiteTypeMeta.columns.values()) {
-            if (columnMeta.storIOSQLiteColumn.key()) {
+            if (columnMeta.storIOColumn.key()) {
                 if (i == 0) {
                     whereClause
-                            .append(columnMeta.storIOSQLiteColumn.name())
+                            .append(columnMeta.storIOColumn.name())
                             .append(" = ?");
 
                     whereArgs
@@ -35,7 +35,7 @@ public class QueryGenerator {
                 } else {
                     whereClause
                             .append(" AND ")
-                            .append(columnMeta.storIOSQLiteColumn.name())
+                            .append(columnMeta.storIOColumn.name())
                             .append(" = ?");
 
                     whereArgs

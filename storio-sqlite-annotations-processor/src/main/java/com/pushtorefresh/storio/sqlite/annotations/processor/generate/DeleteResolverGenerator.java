@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.sqlite.annotations.processor.generate;
 
+import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -12,12 +13,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-import static com.pushtorefresh.storio.sqlite.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
-import static com.pushtorefresh.storio.sqlite.annotations.processor.generate.Common.INDENT;
+import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
+import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT;
 import static javax.lang.model.element.Modifier.PROTECTED;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-public class DeleteResolverGenerator {
+public class DeleteResolverGenerator implements ResolverGenerator<StorIOSQLiteTypeMeta> {
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
@@ -54,7 +55,7 @@ public class DeleteResolverGenerator {
                                 INDENT + ".where($S)\n" +
                                 INDENT + ".whereArgs($L)\n" +
                                 INDENT + ".build();\n",
-                        storIOSQLiteTypeMeta.storIOSQLiteType.table(),
+                        storIOSQLiteTypeMeta.storIOType.table(),
                         where.get(QueryGenerator.WHERE_CLAUSE),
                         where.get(QueryGenerator.WHERE_ARGS))
                 .build();

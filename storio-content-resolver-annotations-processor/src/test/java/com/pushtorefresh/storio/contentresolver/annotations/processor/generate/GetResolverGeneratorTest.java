@@ -1,8 +1,8 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor.generate;
 
+import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverColumn;
 import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverType;
-import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverColumnMeta;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
 import com.squareup.javapoet.JavaFile;

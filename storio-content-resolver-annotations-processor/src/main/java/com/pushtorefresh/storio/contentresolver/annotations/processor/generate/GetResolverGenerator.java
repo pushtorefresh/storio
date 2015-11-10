@@ -1,7 +1,8 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor.generate;
 
-import com.pushtorefresh.storio.contentresolver.annotations.processor.ProcessingException;
-import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType;
+import com.pushtorefresh.storio.common.annotations.processor.ProcessingException;
+import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
+import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverColumnMeta;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
 import com.squareup.javapoet.ClassName;
@@ -13,25 +14,25 @@ import com.squareup.javapoet.TypeSpec;
 
 import org.jetbrains.annotations.NotNull;
 
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.generate.Common.INDENT;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.BOOLEAN;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.BOOLEAN_OBJECT;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.BYTE_ARRAY;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.DOUBLE;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.DOUBLE_OBJECT;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.FLOAT;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.FLOAT_OBJECT;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.INTEGER;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.INTEGER_OBJECT;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.LONG;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.LONG_OBJECT;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.SHORT;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.SHORT_OBJECT;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType.STRING;
+import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
+import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.BOOLEAN;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.BOOLEAN_OBJECT;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.BYTE_ARRAY;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.DOUBLE;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.DOUBLE_OBJECT;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.FLOAT;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.FLOAT_OBJECT;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.INTEGER;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.INTEGER_OBJECT;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.LONG;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.LONG_OBJECT;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.SHORT;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.SHORT_OBJECT;
+import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.STRING;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-public class GetResolverGenerator {
+public class GetResolverGenerator implements ResolverGenerator<StorIOContentResolverTypeMeta> {
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta) {
@@ -65,7 +66,7 @@ public class GetResolverGenerator {
                 .addCode("\n");
 
         for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta.columns.values()) {
-            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.storIOContentResolverColumn.name() + "\")";
+            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.storIOColumn.name() + "\")";
 
             final String getFromCursor;
 

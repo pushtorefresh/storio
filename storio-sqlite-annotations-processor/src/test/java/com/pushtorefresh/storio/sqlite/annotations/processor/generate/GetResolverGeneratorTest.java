@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.sqlite.annotations.processor.generate;
 
 import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteColumn;
 import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteType;
-import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.JavaType;
+import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteColumnMeta;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta;
 import com.squareup.javapoet.JavaFile;

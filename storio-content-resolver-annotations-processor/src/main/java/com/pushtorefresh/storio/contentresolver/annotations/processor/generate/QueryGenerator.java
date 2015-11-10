@@ -24,10 +24,10 @@ public class QueryGenerator {
         int i = 0;
 
         for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta.columns.values()) {
-            if (columnMeta.storIOContentResolverColumn.key()) {
+            if (columnMeta.storIOColumn.key()) {
                 if (i == 0) {
                     whereClause
-                            .append(columnMeta.storIOContentResolverColumn.name())
+                            .append(columnMeta.storIOColumn.name())
                             .append(" = ?");
 
                     whereArgs
@@ -37,7 +37,7 @@ public class QueryGenerator {
                 } else {
                     whereClause
                             .append(" AND ")
-                            .append(columnMeta.storIOContentResolverColumn.name())
+                            .append(columnMeta.storIOColumn.name())
                             .append(" = ?");
 
                     whereArgs
