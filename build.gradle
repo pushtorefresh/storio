@@ -74,8 +74,9 @@ ext.libraries = [
         storIOSQLite                              : project(':storio-sqlite'),
         storIOContentResolver                     : project(':storio-content-resolver'),
         storIOSQLiteAnnotations                   : project(':storio-sqlite-annotations'),
-        storIOSQLiteAnnotationsProcessor          : project(':storio-sqlite-annotations-processor'),
         storIOContentResolverAnnotations          : project(':storio-content-resolver-annotations'),
+        storIOCommonAnnotationsProcessor          : project(':storio-common-annotations-processor'),
+        storIOSQLiteAnnotationsProcessor          : project(':storio-sqlite-annotations-processor'),
         storIOContentResolverAnnotationsProcessor : project(':storio-content-resolver-annotations-processor'),
         storIOTestCommon                          : project(':storio-test-common'),
 

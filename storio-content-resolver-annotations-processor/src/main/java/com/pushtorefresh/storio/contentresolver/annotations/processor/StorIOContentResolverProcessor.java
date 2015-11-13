@@ -1,29 +1,27 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor;
 
 import com.google.auto.service.AutoService;
+import com.pushtorefresh.storio.common.annotations.processor.ProcessingException;
+import com.pushtorefresh.storio.common.annotations.processor.StorIOAnnotationsProcessor;
+import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
+import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverColumn;
 import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverType;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.DeleteResolverGenerator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.GetResolverGenerator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.PutResolverGenerator;
-import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverColumnMeta;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -31,7 +29,6 @@ import javax.lang.model.util.Elements;
 import static javax.lang.model.element.ElementKind.CLASS;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
-import static javax.tools.Diagnostic.Kind.ERROR;
 
 /**
  * Annotation processor for StorIOContentResolver
@@ -43,53 +40,17 @@ import static javax.tools.Diagnostic.Kind.ERROR;
  */
 // Generate file with annotation processor declaration via another Annotation Processor!
 @AutoService(Processor.class)
-public class StorIOContentResolverProcessor extends AbstractProcessor {
+public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<StorIOContentResolverTypeMeta, StorIOContentResolverColumnMeta> {
 
-    private Filer filer;
-    private Elements elementUtils;
-    private Messager messager;
-
-    /**
-     * Processes class annotations
-     *
-     * @param roundEnvironment environment
-     * @return non-null unmodifiable map(element, typeMeta)
-     */
-    private static Map<TypeElement, StorIOContentResolverTypeMeta> processAnnotatedClasses(@NotNull final RoundEnvironment roundEnvironment, @NotNull final Elements elementUtils) {
-        final Set<? extends Element> elementsAnnotatedWithStorIOContentResolverType
-                = roundEnvironment.getElementsAnnotatedWith(StorIOContentResolverType.class);
-
-        final Map<TypeElement, StorIOContentResolverTypeMeta> results
-                = new HashMap<TypeElement, StorIOContentResolverTypeMeta>(elementsAnnotatedWithStorIOContentResolverType.size());
-
-        for (final Element annotatedElement : elementsAnnotatedWithStorIOContentResolverType) {
-            final TypeElement classElement = validateAnnotatedClass(annotatedElement);
-            final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = processAnnotatedClass(classElement, elementUtils);
-            results.put(classElement, storIOContentResolverTypeMeta);
-        }
-
-        return results;
-    }
-
-    /**
-     * Checks that element annotated with {@link StorIOContentResolverType} satisfies all required conditions
-     *
-     * @param annotatedElement element annotated with {@link StorIOContentResolverType}
-     * @return {@link TypeElement} object
-     */
     @NotNull
-    private static TypeElement validateAnnotatedClass(@NotNull final Element annotatedElement) {
-        // we expect here that annotatedElement is Class, annotation requires that via @Target
-        TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        final Set<String> supportedAnnotations = new HashSet<String>(2);
 
-        if (annotatedTypeElement.getModifiers().contains(PRIVATE)) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    StorIOContentResolverType.class.getSimpleName() + " can not be applied to private class: " + annotatedTypeElement.getQualifiedName()
-            );
-        }
+        supportedAnnotations.add(StorIOContentResolverType.class.getCanonicalName());
+        supportedAnnotations.add(StorIOContentResolverColumn.class.getCanonicalName());
 
-        return annotatedTypeElement;
+        return supportedAnnotations;
     }
 
     /**
@@ -100,7 +61,8 @@ public class StorIOContentResolverProcessor extends AbstractProcessor {
      * @return result of processing as {@link StorIOContentResolverTypeMeta}
      */
     @NotNull
-    private static StorIOContentResolverTypeMeta processAnnotatedClass(@NotNull TypeElement classElement, @NotNull Elements elementUtils) {
+    @Override
+    protected StorIOContentResolverTypeMeta processAnnotatedClass(@NotNull TypeElement classElement, @NotNull Elements elementUtils) {
         final StorIOContentResolverType storIOContentResolverType = classElement.getAnnotation(StorIOContentResolverType.class);
 
         final String uri = storIOContentResolverType.uri();
@@ -124,7 +86,8 @@ public class StorIOContentResolverProcessor extends AbstractProcessor {
      * @param roundEnvironment current processing environment
      * @param annotatedClasses map of classes annotated with {@link StorIOContentResolverType}
      */
-    private void processAnnotatedFields(@NotNull final RoundEnvironment roundEnvironment, @NotNull final Map<TypeElement, StorIOContentResolverTypeMeta> annotatedClasses) {
+    @Override
+    protected void processAnnotatedFields(@NotNull final RoundEnvironment roundEnvironment, @NotNull final Map<TypeElement, StorIOContentResolverTypeMeta> annotatedClasses) {
         final Set<? extends Element> elementsAnnotatedWithStorIOContentResolverColumn
                 = roundEnvironment.getElementsAnnotatedWith(StorIOContentResolverColumn.class);
 
@@ -152,14 +115,13 @@ public class StorIOContentResolverProcessor extends AbstractProcessor {
         }
     }
 
-    //region Processing of annotated classes
-
     /**
      * Checks that element annotated with {@link StorIOContentResolverColumn} satisfies all required conditions
      *
      * @param annotatedField element annotated with {@link StorIOContentResolverColumn}
      */
-    private static void validateAnnotatedField(@NotNull final Element annotatedField) {
+    @Override
+    protected void validateAnnotatedField(@NotNull final Element annotatedField) {
         // we expect here that annotatedElement is Field, annotation requires that via @Target
 
         final Element enclosingElement = annotatedField.getEnclosingElement();
@@ -200,7 +162,8 @@ public class StorIOContentResolverProcessor extends AbstractProcessor {
      * @return non-null {@link StorIOContentResolverColumnMeta} with meta information about field
      */
     @NotNull
-    private static StorIOContentResolverColumnMeta processAnnotatedField(@NotNull final Element annotatedField) {
+    @Override
+    protected StorIOContentResolverColumnMeta processAnnotatedField(@NotNull final Element annotatedField) {
         final JavaType javaType;
 
         try {
@@ -232,7 +195,8 @@ public class StorIOContentResolverProcessor extends AbstractProcessor {
         );
     }
 
-    private static void validateAnnotatedClassesAndColumns(@NotNull final Map<TypeElement, StorIOContentResolverTypeMeta> annotatedClasses) {
+    @Override
+    protected void validateAnnotatedClassesAndColumns(@NotNull final Map<TypeElement, StorIOContentResolverTypeMeta> annotatedClasses) {
         // check that each annotated class has columns with at least one key column
         for (Map.Entry<TypeElement, StorIOContentResolverTypeMeta> annotatedClass : annotatedClasses.entrySet()) {
             if (annotatedClass.getValue().columns.isEmpty()) {
@@ -247,7 +211,7 @@ public class StorIOContentResolverProcessor extends AbstractProcessor {
             boolean hasAtLeastOneKeyColumn = false;
 
             for (final StorIOContentResolverColumnMeta columnMeta : annotatedClass.getValue().columns.values()) {
-                if (columnMeta.storIOContentResolverColumn.key()) {
+                if (columnMeta.storIOColumn.key()) {
                     hasAtLeastOneKeyColumn = true;
                     break;
                 }
@@ -262,70 +226,34 @@ public class StorIOContentResolverProcessor extends AbstractProcessor {
             }
         }
     }
-    //endregion
 
-    //region Processing of annotated fields
-
+    @NotNull
     @Override
-    public synchronized void init(ProcessingEnvironment processingEnv) {
-        super.init(processingEnv);
-        filer = processingEnv.getFiler();
-        elementUtils = processingEnv.getElementUtils(); // why class name is "Elements" but method "getElementUtils()", OKAY..
-        messager = processingEnv.getMessager();
+    protected Class<? extends Annotation> getTypeAnnotationClass() {
+        return StorIOContentResolverType.class;
     }
 
+    @NotNull
     @Override
-    public Set<String> getSupportedAnnotationTypes() {
-        final Set<String> supportedAnnotations = new HashSet<String>(2);
-
-        supportedAnnotations.add(StorIOContentResolverType.class.getCanonicalName());
-        supportedAnnotations.add(StorIOContentResolverColumn.class.getCanonicalName());
-
-        return supportedAnnotations;
+    protected Class<? extends Annotation> getColumnAnnotationClass() {
+        return StorIOContentResolverColumn.class;
     }
 
+    @NotNull
     @Override
-    public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.latestSupported();
+    protected ResolverGenerator<StorIOContentResolverTypeMeta> createPutResolver() {
+        return new PutResolverGenerator();
     }
 
-    //endregion
-
-    /**
-     * For those who don't familiar with Annotation Processing API — this is the main method of Annotation Processor lifecycle
-     * <p>
-     * It will be called after Java Compiler will find lang elements annotated with annotations from {@link #getSupportedAnnotationTypes()}
-     *
-     * @param annotations set of annotations
-     * @param roundEnv    environment of current processing round
-     * @return true if annotation processor should not be invoked in next rounds of annotation processing, false otherwise
-     */
+    @NotNull
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        try {
-            final Map<TypeElement, StorIOContentResolverTypeMeta> annotatedClasses
-                    = processAnnotatedClasses(roundEnv, elementUtils);
+    protected ResolverGenerator<StorIOContentResolverTypeMeta> createGetResolver() {
+        return new GetResolverGenerator();
+    }
 
-            processAnnotatedFields(roundEnv, annotatedClasses);
-
-            validateAnnotatedClassesAndColumns(annotatedClasses);
-
-            final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
-            final GetResolverGenerator getResolverGenerator = new GetResolverGenerator();
-            final DeleteResolverGenerator deleteResolverGenerator = new DeleteResolverGenerator();
-
-            for (final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta : annotatedClasses.values()) {
-                putResolverGenerator.generateJavaFile(storIOContentResolverTypeMeta).writeTo(filer);
-                getResolverGenerator.generateJavaFile(storIOContentResolverTypeMeta).writeTo(filer);
-                deleteResolverGenerator.generateJavaFile(storIOContentResolverTypeMeta).writeTo(filer);
-            }
-
-        } catch (ProcessingException e) {
-            messager.printMessage(ERROR, e.getMessage(), e.element());
-        } catch (Exception e) {
-            messager.printMessage(ERROR, "Problem occurred with StorIOContentResolverProcessor: " + e.getMessage());
-        }
-
-        return true;
+    @NotNull
+    @Override
+    protected ResolverGenerator<StorIOContentResolverTypeMeta> createDeleteResolver() {
+        return new DeleteResolverGenerator();
     }
 }

@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.contentresolver.annotations.processor.introspection;
+package com.pushtorefresh.storio.common.annotations.processor.introspection;
 
 import org.jetbrains.annotations.NotNull;
 

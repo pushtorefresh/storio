@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor.generate;
 
+import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverColumnMeta;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
 import com.squareup.javapoet.ClassName;
@@ -13,12 +14,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
-import static com.pushtorefresh.storio.contentresolver.annotations.processor.generate.Common.INDENT;
+import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
+import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT;
 import static javax.lang.model.element.Modifier.PROTECTED;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-public class PutResolverGenerator {
+public class PutResolverGenerator  implements ResolverGenerator<StorIOContentResolverTypeMeta> {
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta) {
@@ -54,7 +55,7 @@ public class PutResolverGenerator {
                 .addCode("return InsertQuery.builder()\n" +
                                 INDENT + ".uri($S)\n" +
                                 INDENT + ".build();\n",
-                        storIOContentResolverTypeMeta.storIOContentResolverType.uri())
+                        storIOContentResolverTypeMeta.storIOType.uri())
                 .build();
     }
 
@@ -76,7 +77,7 @@ public class PutResolverGenerator {
                                 INDENT + ".where($S)\n" +
                                 INDENT + ".whereArgs($L)\n" +
                                 INDENT + ".build();\n",
-                        storIOContentResolverTypeMeta.storIOContentResolverType.uri(),
+                        storIOContentResolverTypeMeta.storIOType.uri(),
                         where.get(QueryGenerator.WHERE_CLAUSE),
                         where.get(QueryGenerator.WHERE_ARGS))
                 .build();
@@ -99,7 +100,7 @@ public class PutResolverGenerator {
         for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta.columns.values()) {
             builder.addStatement(
                     "contentValues.put($S, $L)",
-                    columnMeta.storIOContentResolverColumn.name(),
+                    columnMeta.storIOColumn.name(),
                     "object." + columnMeta.fieldName
             );
         }
