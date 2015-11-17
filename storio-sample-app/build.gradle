@@ -39,6 +39,7 @@ android {
 
     lintOptions {
         disable 'InvalidPackage' // Dagger
+        disable 'GoogleAppIndexingWarning'
     }
 
     packagingOptions {
