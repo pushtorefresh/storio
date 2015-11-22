@@ -59,6 +59,21 @@ public class DefaultStorIOContentResolverTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void instantiateGetObject() {
+        DefaultStorIOContentResolver.builder()
+                .contentResolver(mock(ContentResolver.class))
+                .build()
+                .get()
+                .object(Object.class)
+                .withQuery(Query.builder()
+                        .uri(mock(Uri.class))
+                        .build())
+                .withGetResolver(mock(GetResolver.class))
+                .prepare();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void instantiatePutObject() {
         DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))

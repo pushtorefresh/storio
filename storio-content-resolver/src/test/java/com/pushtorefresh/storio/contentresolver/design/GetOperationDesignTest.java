@@ -40,4 +40,17 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .prepare()
                 .executeAsBlocking();
     }
+
+    @Test
+    public void getObjectBlocking() {
+        Article article = storIOContentResolver()
+                .get()
+                .object(Article.class)
+                .withQuery(Query.builder()
+                        .uri(mock(Uri.class))
+                        .build())
+                .withGetResolver(ArticleMeta.GET_RESOLVER)
+                .prepare()
+                .executeAsBlocking();
+    }
 }
