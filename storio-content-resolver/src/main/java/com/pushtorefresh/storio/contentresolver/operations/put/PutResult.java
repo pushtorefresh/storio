@@ -84,15 +84,15 @@ public final class PutResult {
      *
      * @return {@code true} if something was updated in
      * {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver},
-     * {@code false} otherwise.
-     * Notice, that {@code 0} updated rows is okay case, for example: your custom {@link PutResolver}
+     * {@code false} if it was "insert" or {@code 0} rows were updated
+     * (for example: your custom {@link PutResolver}
      * may check that there is already stored row with same columns, so no insert will be done,
-     * and no actual update should be performed.
+     * and no actual update should be performed).
      * But also, keep in mind, that {@link DefaultPutResolver} will return same value
      * that will return {@link android.content.ContentResolver}.
      */
     public boolean wasUpdated() {
-        return numberOfRowsUpdated != null;
+        return numberOfRowsUpdated != null && numberOfRowsUpdated > 0;
     }
 
     /**

@@ -72,7 +72,7 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
                     final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
                     putResults.put(contentValues, putResult);
 
-                    if (!useTransaction) {
+                    if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
                         internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                     }
                 }
@@ -89,12 +89,17 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
                         final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
 
                         for (final ContentValues contentValues : putResults.keySet()) {
-                            affectedTables.addAll(putResults.get(contentValues).affectedTables());
+                            final PutResult putResult = putResults.get(contentValues);
+                            if (putResult.wasInserted() || putResult.wasUpdated()) {
+                                affectedTables.addAll(putResult.affectedTables());
+                            }
                         }
 
                         // IMPORTANT: Notifying about change should be done after end of transaction
                         // It'll reduce number of possible deadlock situations
-                        internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                        if (!affectedTables.isEmpty()) {
+                            internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                        }
                     }
                 }
             }

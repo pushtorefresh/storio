@@ -149,7 +149,7 @@ public class UpdateQueryTest {
         //noinspection NullArgumentToVariableArgMethod
         UpdateQuery.builder()
                 .table("test_table")
-                .whereArgs(null)
+                .whereArgs((Object[]) null)
                 .build();
 
         // We don't expect any exceptions here

@@ -118,16 +118,16 @@ public final class PutResult {
      * Checks whether result of Put Operation was "update".
      *
      * @return {@code true} if something was updated in
-     * {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}, {@code false} otherwise.
-     * Notice, that {@code 0} updated rows is okay case, for example: your custom {@link PutResolver}
-     * may check that there is already stored row with same columns, so no insert will be done,
-     * and no actual update should be performed.
+     * {@link com.pushtorefresh.storio.sqlite.StorIOSQLite},
+     * {@code false} if it was "insert" or {@code 0} rows in database were updated
+     * (for example: your custom {@link PutResolver} may check that there is already stored row
+     * with same columns, so no insert will be done, and no actual update should be performed).
      * But also, keep in mind, that {@link DefaultPutResolver} will return same value
      * that will return {@link android.database.sqlite.SQLiteDatabase}, which will return {@code 1}
      * even if all columns were same.
      */
     public boolean wasUpdated() {
-        return numberOfRowsUpdated != null;
+        return numberOfRowsUpdated != null && numberOfRowsUpdated > 0;
     }
 
     /**

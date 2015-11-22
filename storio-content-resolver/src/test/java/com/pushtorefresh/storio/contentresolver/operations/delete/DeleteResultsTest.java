@@ -66,6 +66,16 @@ public class DeleteResultsTest {
     }
 
     @Test
+    public void checkWasNotDeletedIfZeroNumberOfRows() {
+        final Map<String, DeleteResult> results = new HashMap<String, DeleteResult>();
+        results.put("testString", DeleteResult.newInstance(0, Uri.parse("content://testUri")));
+
+        final DeleteResults<String> deleteResults = DeleteResults.newInstance(results);
+
+        assertThat(deleteResults.wasDeleted("testString")).isFalse();
+    }
+
+    @Test
     public void verifyEqualsAndHashCodeImplementation() {
         EqualsVerifier
                 .forClass(DeleteResults.class)

@@ -139,7 +139,7 @@ public class PutResultTest {
     @Test
     public void shouldAllowCreatingUpdateResultWith0RowsUpdated() {
         PutResult putResult = PutResult.newUpdateResult(0, "table");
-        assertThat(putResult.wasUpdated()).isTrue();
+        assertThat(putResult.wasUpdated()).isFalse();
         assertThat(putResult.wasInserted()).isFalse();
         assertThat(putResult.numberOfRowsUpdated()).isEqualTo(Integer.valueOf(0));
     }
