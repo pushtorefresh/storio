@@ -133,7 +133,7 @@ public class DeleteQueryTest {
         //noinspection NullArgumentToVariableArgMethod
         DeleteQuery.builder()
                 .table("test_table")
-                .whereArgs(null)
+                .whereArgs((Object[]) null)
                 .build();
 
         // We don't expect any exceptions here

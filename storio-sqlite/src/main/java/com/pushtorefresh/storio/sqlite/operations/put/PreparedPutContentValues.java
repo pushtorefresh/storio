@@ -48,7 +48,9 @@ public final class PreparedPutContentValues extends PreparedPut<PutResult> {
     public PutResult executeAsBlocking() {
         try {
             final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
-            storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+            if (putResult.wasInserted() || putResult.wasUpdated()) {
+                storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+            }
             return putResult;
         } catch (Exception exception) {
             throw new StorIOException(exception);

@@ -48,7 +48,9 @@ public final class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     public DeleteResult executeAsBlocking() {
         try {
             final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
-            storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+            if (deleteResult.numberOfRowsDeleted() > 0) {
+                storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+            }
             return deleteResult;
         } catch (Exception exception) {
             throw new StorIOException(exception);

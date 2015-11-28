@@ -100,7 +100,7 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
                         final PutResult putResult = explicitPutResolver.performPut(storIOSQLite, object);
                         results.put(object, putResult);
 
-                        if (!useTransaction) {
+                        if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
                             internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                         }
                     }
@@ -113,7 +113,7 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
 
                         results.put(object, putResult);
 
-                        if (!useTransaction) {
+                        if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
                             internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                         }
                     }
@@ -132,12 +132,17 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
                         final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
 
                         for (final T object : results.keySet()) {
-                            affectedTables.addAll(results.get(object).affectedTables());
+                            final PutResult putResult = results.get(object);
+                            if (putResult.wasInserted() || putResult.wasUpdated()) {
+                                affectedTables.addAll(putResult.affectedTables());
+                            }
                         }
 
                         // IMPORTANT: Notifying about change should be done after end of transaction
                         // It'll reduce number of possible deadlock situations
-                        internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                        if (!affectedTables.isEmpty()) {
+                            internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                        }
                     }
                 }
             }

@@ -15,6 +15,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -48,7 +49,6 @@ public class PreparedDeleteByQueryTest {
                 .executeAsBlocking();
 
         assertThat(actualDeleteResult).isEqualTo(expectedDeleteResult);
-
 
         verify(storIOSQLite).internal();
         verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
@@ -156,6 +156,39 @@ public class PreparedDeleteByQueryTest {
         assertThat(cause).hasMessage("test exception");
 
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
+        verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+    }
+
+    @Test
+    public void shouldNotNotifyIfWasNotDeleted() {
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+        when(storIOSQLite.internal()).thenReturn(internal);
+
+        final DeleteQuery deleteQuery = DeleteQuery.builder()
+                .table("test_table")
+                .where("column1 = ?")
+                .whereArgs(1)
+                .build();
+
+        //noinspection unchecked
+        final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
+
+        final DeleteResult expectedDeleteResult = DeleteResult.newInstance(0, deleteQuery.table()); // No items were deleted
+
+        when(deleteResolver.performDelete(same(storIOSQLite), same(deleteQuery)))
+                .thenReturn(expectedDeleteResult);
+
+        final DeleteResult actualDeleteResult = new PreparedDeleteByQuery.Builder(storIOSQLite, deleteQuery)
+                .withDeleteResolver(deleteResolver)
+                .prepare()
+                .executeAsBlocking();
+
+        assertThat(actualDeleteResult).isEqualTo(expectedDeleteResult);
+
+        verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
+        verify(internal, never()).notifyAboutChanges(any(Changes.class));
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 }

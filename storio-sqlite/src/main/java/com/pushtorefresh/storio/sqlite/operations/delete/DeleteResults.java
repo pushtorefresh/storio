@@ -53,7 +53,8 @@ public final class DeleteResults<T> {
      * @return true if object was deleted, false otherwise
      */
     public boolean wasDeleted(@NonNull T object) {
-        return results.containsKey(object);
+        final DeleteResult result = results.get(object);
+        return result != null && result.numberOfRowsDeleted() > 0;
     }
 
     /**
@@ -63,7 +64,7 @@ public final class DeleteResults<T> {
      * @return true if object was NOT deleter, false if it was deleted
      */
     public boolean wasNotDeleted(@NonNull T object) {
-        return !results.containsKey(object);
+        return !wasDeleted(object);
     }
 
     @Override

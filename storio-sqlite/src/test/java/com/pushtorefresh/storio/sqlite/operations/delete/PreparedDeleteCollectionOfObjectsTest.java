@@ -38,7 +38,23 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final DeleteResults<TestItem> deleteResults = deleteStub.storIOSQLite
                     .delete()
-                    .objects(deleteStub.items)
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .useTransaction(false)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            deleteStub.verifyBehaviorForMultipleObjects(deleteResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotDeletedObjectsWithoutTypeMappingWithoutTransaction() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithoutTypeMappingWithoutTransactionNothingDeleted();
+
+            final DeleteResults<TestItem> deleteResults = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(false)
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
@@ -54,7 +70,23 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final DeleteResults<TestItem> deleteResults = deleteStub.storIOSQLite
                     .delete()
-                    .objects(deleteStub.items)
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .useTransaction(true)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            deleteStub.verifyBehaviorForMultipleObjects(deleteResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotDeletedObjectsWithoutTypeMappingWithTransaction() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithoutTypeMappingWithTransactionNothingDeleted();
+
+            final DeleteResults<TestItem> deleteResults = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(true)
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
@@ -70,7 +102,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final Observable<DeleteResults<TestItem>> observable = deleteStub.storIOSQLite
                     .delete()
-                    .objects(deleteStub.items)
+                    .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(false)
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
@@ -86,7 +118,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final Observable<DeleteResults<TestItem>> observable = deleteStub.storIOSQLite
                     .delete()
-                    .objects(deleteStub.items)
+                    .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(true)
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
@@ -105,7 +137,22 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final DeleteResults<TestItem> deleteResults = deleteStub.storIOSQLite
                     .delete()
-                    .objects(deleteStub.items)
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .useTransaction(false)
+                    .prepare()
+                    .executeAsBlocking();
+
+            deleteStub.verifyBehaviorForMultipleObjects(deleteResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotDeletedObjectsWithTypeMappingWithoutTransaction() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithTypeMappingWithoutTransactionNothingDeleted();
+
+            final DeleteResults<TestItem> deleteResults = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(false)
                     .prepare()
                     .executeAsBlocking();
@@ -120,7 +167,22 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final DeleteResults<TestItem> deleteResults = deleteStub.storIOSQLite
                     .delete()
-                    .objects(deleteStub.items)
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .useTransaction(true)
+                    .prepare()
+                    .executeAsBlocking();
+
+            deleteStub.verifyBehaviorForMultipleObjects(deleteResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotDeletedObjectsWithTypeMappingWithTransaction() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithTypeMappingWithTransactionNothingDeleted();
+
+            final DeleteResults<TestItem> deleteResults = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(true)
                     .prepare()
                     .executeAsBlocking();
@@ -135,7 +197,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final Observable<DeleteResults<TestItem>> observable = deleteStub.storIOSQLite
                     .delete()
-                    .objects(deleteStub.items)
+                    .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(false)
                     .prepare()
                     .createObservable();
@@ -150,7 +212,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final Observable<DeleteResults<TestItem>> observable = deleteStub.storIOSQLite
                     .delete()
-                    .objects(deleteStub.items)
+                    .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(true)
                     .prepare()
                     .createObservable();

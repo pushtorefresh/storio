@@ -107,7 +107,7 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
 
                         results.put(object, deleteResult);
 
-                        if (!useTransaction) {
+                        if (!useTransaction && deleteResult.numberOfRowsDeleted() > 0) {
                             internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
                         }
                     }
@@ -120,7 +120,7 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
 
                         results.put(object, deleteResult);
 
-                        if (!useTransaction) {
+                        if (!useTransaction && deleteResult.numberOfRowsDeleted() > 0) {
                             internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
                         }
                     }
@@ -139,12 +139,17 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
                         final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be one table
 
                         for (final T object : results.keySet()) {
-                            affectedTables.addAll(results.get(object).affectedTables());
+                            final DeleteResult deleteResult = results.get(object);
+                            if (deleteResult.numberOfRowsDeleted() > 0) {
+                                affectedTables.addAll(results.get(object).affectedTables());
+                            }
                         }
 
                         // IMPORTANT: Notifying about change should be done after end of transaction
                         // It'll reduce number of possible deadlock situations
-                        internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                        if (!affectedTables.isEmpty()) {
+                            internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                        }
                     }
                 }
             }

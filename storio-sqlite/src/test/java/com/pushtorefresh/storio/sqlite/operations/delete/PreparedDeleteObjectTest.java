@@ -31,7 +31,7 @@ public class PreparedDeleteObjectTest {
 
             final DeleteResult deleteResult = deleteStub.storIOSQLite
                     .delete()
-                    .object(deleteStub.items.get(0))
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
                     .executeAsBlocking();
@@ -45,12 +45,26 @@ public class PreparedDeleteObjectTest {
 
             final Observable<DeleteResult> observable = deleteStub.storIOSQLite
                     .delete()
-                    .object(deleteStub.items.get(0))
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
                     .createObservable();
 
             deleteStub.verifyBehaviorForOneObject(observable);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotDeleted() {
+            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMappingNothingDeleted();
+
+            final DeleteResult deleteResult = deleteStub.storIOSQLite
+                    .delete()
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            deleteStub.verifyBehaviorForOneObject(deleteResult);
         }
     }
 
@@ -62,7 +76,7 @@ public class PreparedDeleteObjectTest {
 
             final DeleteResult deleteResult = deleteStub.storIOSQLite
                     .delete()
-                    .object(deleteStub.items.get(0))
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
                     .prepare()
                     .executeAsBlocking();
 
@@ -75,7 +89,7 @@ public class PreparedDeleteObjectTest {
 
             final Observable<DeleteResult> observable = deleteStub.storIOSQLite
                     .delete()
-                    .object(deleteStub.items.get(0))
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
                     .prepare()
                     .createObservable();
 
