@@ -9,11 +9,13 @@ import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
+import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable;
+import rx.functions.Action1;
 
 import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -164,11 +166,45 @@ class GetObjectStub {
         verifyNoMoreInteractions(storIOSQLite, internal, cursor);
     }
 
+    void verifyQueryBehavior(@NonNull Observable<TestItem> observable) {
+        new ObservableBehaviorChecker<TestItem>()
+                .observable(observable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<TestItem>() {
+                    @Override
+                    public void call(TestItem testItem) {
+                        // Get Operation should be subscribed to changes of tables from query
+                        verify(storIOSQLite).observeChangesInTables(eq(singleton(query.table())));
+
+                        verifyQueryBehavior(testItem);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
     void verifyRawQueryBehavior(@Nullable TestItem actualItem) {
         verify(storIOSQLite).get();
         verify(getResolver).performGet(storIOSQLite, rawQuery);
         verify(getResolver).mapFromCursor(cursor);
         verify(cursor).close();
         assertThat(actualItem).isEqualTo(item);
+    }
+
+    void verifyRawQueryBehavior(@NonNull Observable<TestItem> observable) {
+        new ObservableBehaviorChecker<TestItem>()
+                .observable(observable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<TestItem>() {
+                    @Override
+                    public void call(TestItem testItem) {
+                        // Get Operation should be subscribed to changes of tables from query
+                        verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
+
+                        verifyRawQueryBehavior(testItem);
+                    }
+                })
+                .checkBehaviorOfObservable();
+
+        assertThat(rawQuery.observesTables()).isNotNull();
     }
 }

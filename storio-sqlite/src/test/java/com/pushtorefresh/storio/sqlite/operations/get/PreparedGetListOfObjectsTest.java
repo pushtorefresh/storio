@@ -336,6 +336,7 @@ public class PreparedGetListOfObjectsTest {
             );
 
             try {
+                //noinspection ResourceType
                 preparedGetListOfObjects.createObservable();
                 failBecauseExceptionWasNotThrown(IllegalStateException.class);
             } catch (IllegalStateException expected) {
