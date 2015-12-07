@@ -50,7 +50,7 @@ public class PreparedGetObjectTest {
         }
 
         @Test
-        public void shouldGetByQueryWithoutTypeMappingAsObservable() {
+        public void shouldGetObjectByQueryWithoutTypeMappingAsObservable() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
             final Observable<TestItem> testItemObservable = getStub.storIOSQLite
@@ -217,7 +217,10 @@ public class PreparedGetObjectTest {
             testSubscriber.assertNoValues();
             assertThat(testSubscriber.getOnErrorEvents().get(0))
                     .isInstanceOf(StorIOException.class)
-                    .hasCauseInstanceOf(IllegalStateException.class);
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessageEndingWith("This type does not have type mapping: "
+                            + "type = " + TestItem.class + "," +
+                            "db was not touched by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).internal();
@@ -281,7 +284,10 @@ public class PreparedGetObjectTest {
             testSubscriber.assertNoValues();
             assertThat(testSubscriber.getOnErrorEvents().get(0))
                     .isInstanceOf(StorIOException.class)
-                    .hasCauseInstanceOf(IllegalStateException.class);
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessageEndingWith("This type does not have type mapping: "
+                            + "type = " + TestItem.class + "," +
+                            "db was not touched by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).internal();
@@ -346,7 +352,9 @@ public class PreparedGetObjectTest {
                 preparedGetOfObject.createObservable();
                 failBecauseExceptionWasNotThrown(IllegalStateException.class);
             } catch (IllegalStateException expected) {
-                assertThat(expected).hasMessage("Please specify query");
+                assertThat(expected)
+                        .hasNoCause()
+                        .hasMessage("Please specify query");
             }
         }
 

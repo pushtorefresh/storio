@@ -17,7 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscription;
@@ -25,6 +24,7 @@ import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -222,7 +222,7 @@ public class RxQueryTest extends BaseTest {
         TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
         userObservable.subscribe(testSubscriber);
 
-        testSubscriber.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
         testSubscriber.assertValueCount(1);
         testSubscriber.assertValue(expectedUser);
         testSubscriber.assertNoErrors();
@@ -247,10 +247,71 @@ public class RxQueryTest extends BaseTest {
         TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
         userObservable.subscribe(testSubscriber);
 
-        testSubscriber.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
         testSubscriber.assertValueCount(1);
         testSubscriber.assertValue(null);
         testSubscriber.assertNoErrors();
         testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void queryOneExistedObjectTableUpdate() {
+        User expectedUser = new User(null, "such@email.com");
+        putUsersBlocking(3);
+
+        final Observable<User> userObservable = storIOSQLite
+                .get()
+                .object(User.class)
+                .withQuery(Query.builder()
+                        .table(UserTableMeta.TABLE)
+                        .where(UserTableMeta.COLUMN_EMAIL + "=?")
+                        .whereArgs(expectedUser.email())
+                        .build())
+                .prepare()
+                .createObservable();
+
+        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        userObservable.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
+        testSubscriber.assertValueCount(1);
+        testSubscriber.assertValue(null);
+        testSubscriber.assertNoErrors();
+
+        putUserBlocking(expectedUser);
+
+        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
+        testSubscriber.assertValueCount(2);
+        testSubscriber.assertValues(null, expectedUser);
+        testSubscriber.assertNoErrors();
+    }
+
+    @Test
+    public void queryOneNonexistedObjectTableUpdate() {
+        final Observable<User> userObservable = storIOSQLite
+                .get()
+                .object(User.class)
+                .withQuery(Query.builder()
+                        .table(UserTableMeta.TABLE)
+                        .where(UserTableMeta.COLUMN_EMAIL + "=?")
+                        .whereArgs("some arg")
+                        .build())
+                .prepare()
+                .createObservable();
+
+        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        userObservable.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
+        testSubscriber.assertValueCount(1);
+        testSubscriber.assertValue(null);
+        testSubscriber.assertNoErrors();
+
+        putUserBlocking();
+
+        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
+        testSubscriber.assertValueCount(2);
+        testSubscriber.assertValues(null, null);
+        testSubscriber.assertNoErrors();
     }
 }

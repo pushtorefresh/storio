@@ -10,7 +10,7 @@ public class User implements Comparable<User> {
     @Nullable
     private Long id;
 
-    private User(@Nullable Long id, @NonNull String email) {
+    User(@Nullable Long id, @NonNull String email) {
         this.id = id;
         this.email = email;
     }
