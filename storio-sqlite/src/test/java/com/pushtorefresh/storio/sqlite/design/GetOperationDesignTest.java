@@ -170,7 +170,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void getObjectBlockingWithRawQueryObservable() {
+    public void getObjectWithRawQueryObservable() {
         Observable<User> userObservable = storIOSQLite()
                 .get()
                 .object(User.class)

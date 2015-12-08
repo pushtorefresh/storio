@@ -24,7 +24,7 @@ import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -217,13 +217,13 @@ public class RxQueryTest extends BaseTest {
                         .whereArgs(expectedUser.email())
                         .build())
                 .prepare()
-                .createObservable();
+                .createObservable()
+                .take(1);
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
         userObservable.subscribe(testSubscriber);
 
-        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
-        testSubscriber.assertValueCount(1);
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertValue(expectedUser);
         testSubscriber.assertNoErrors();
         testSubscriber.unsubscribe();
@@ -242,13 +242,13 @@ public class RxQueryTest extends BaseTest {
                         .whereArgs("some arg")
                         .build())
                 .prepare()
-                .createObservable();
+                .createObservable()
+                .take(1);
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
         userObservable.subscribe(testSubscriber);
 
-        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
-        testSubscriber.assertValueCount(1);
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertValue(null);
         testSubscriber.assertNoErrors();
         testSubscriber.unsubscribe();
@@ -268,22 +268,22 @@ public class RxQueryTest extends BaseTest {
                         .whereArgs(expectedUser.email())
                         .build())
                 .prepare()
-                .createObservable();
+                .createObservable()
+                .take(2);
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
         userObservable.subscribe(testSubscriber);
 
-        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
-        testSubscriber.assertValueCount(1);
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertValue(null);
         testSubscriber.assertNoErrors();
 
         putUserBlocking(expectedUser);
 
-        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
-        testSubscriber.assertValueCount(2);
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertValues(null, expectedUser);
         testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
     }
 
     @Test
@@ -297,21 +297,21 @@ public class RxQueryTest extends BaseTest {
                         .whereArgs("some arg")
                         .build())
                 .prepare()
-                .createObservable();
+                .createObservable()
+                .take(2);
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
         userObservable.subscribe(testSubscriber);
 
-        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
-        testSubscriber.assertValueCount(1);
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertValue(null);
         testSubscriber.assertNoErrors();
 
         putUserBlocking();
 
-        testSubscriber.awaitTerminalEvent(500, MILLISECONDS);
-        testSubscriber.assertValueCount(2);
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertValues(null, null);
         testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
     }
 }
