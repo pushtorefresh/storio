@@ -153,4 +153,33 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .prepare()
                 .executeAsBlocking();
     }
+
+    @Test
+    public void getObjectObservable() {
+        Observable<User> userObservable = storIOSQLite()
+                .get()
+                .object(User.class)
+                .withQuery(Query.builder()
+                        .table("users")
+                        .where("email = ?")
+                        .whereArgs("artem.zinnatullin@gmail.com")
+                        .build())
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
+                .prepare()
+                .createObservable();
+    }
+
+    @Test
+    public void getObjectWithRawQueryObservable() {
+        Observable<User> userObservable = storIOSQLite()
+                .get()
+                .object(User.class)
+                .withQuery(RawQuery.builder()
+                        .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
+                        .args("arg1", "arg2")
+                        .build())
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
+                .prepare()
+                .createObservable();
+    }
 }

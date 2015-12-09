@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sqlite.BuildConfig;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.test.AbstractEmissionChecker;
 
 import org.junit.Test;
@@ -17,11 +18,13 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -198,5 +201,117 @@ public class RxQueryTest extends BaseTest {
 
         storIOSQLite.internal().setTransactionSuccessful();
         storIOSQLite.internal().endTransaction();
+    }
+
+    @Test
+    public void queryOneExistedObjectObservable() {
+        final List<User> users = putUsersBlocking(3);
+        final User expectedUser = users.get(0);
+
+        final Observable<User> userObservable = storIOSQLite
+                .get()
+                .object(User.class)
+                .withQuery(Query.builder()
+                        .table(UserTableMeta.TABLE)
+                        .where(UserTableMeta.COLUMN_EMAIL + "=?")
+                        .whereArgs(expectedUser.email())
+                        .build())
+                .prepare()
+                .createObservable()
+                .take(1);
+
+        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        userObservable.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValue(expectedUser);
+        testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void queryOneNonExistedObjectObservable() {
+        putUsersBlocking(3);
+
+        final Observable<User> userObservable = storIOSQLite
+                .get()
+                .object(User.class)
+                .withQuery(Query.builder()
+                        .table(UserTableMeta.TABLE)
+                        .where(UserTableMeta.COLUMN_EMAIL + "=?")
+                        .whereArgs("some arg")
+                        .build())
+                .prepare()
+                .createObservable()
+                .take(1);
+
+        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        userObservable.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValue(null);
+        testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void queryOneExistedObjectTableUpdate() {
+        User expectedUser = new User(null, "such@email.com");
+        putUsersBlocking(3);
+
+        final Observable<User> userObservable = storIOSQLite
+                .get()
+                .object(User.class)
+                .withQuery(Query.builder()
+                        .table(UserTableMeta.TABLE)
+                        .where(UserTableMeta.COLUMN_EMAIL + "=?")
+                        .whereArgs(expectedUser.email())
+                        .build())
+                .prepare()
+                .createObservable()
+                .take(2);
+
+        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        userObservable.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValue(null);
+        testSubscriber.assertNoErrors();
+
+        putUserBlocking(expectedUser);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValues(null, expectedUser);
+        testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void queryOneNonexistedObjectTableUpdate() {
+        final Observable<User> userObservable = storIOSQLite
+                .get()
+                .object(User.class)
+                .withQuery(Query.builder()
+                        .table(UserTableMeta.TABLE)
+                        .where(UserTableMeta.COLUMN_EMAIL + "=?")
+                        .whereArgs("some arg")
+                        .build())
+                .prepare()
+                .createObservable()
+                .take(2);
+
+        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        userObservable.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValue(null);
+        testSubscriber.assertNoErrors();
+
+        putUserBlocking();
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValues(null, null);
+        testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
     }
 }

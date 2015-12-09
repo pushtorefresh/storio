@@ -1,19 +1,27 @@
 package com.pushtorefresh.storio.sqlite.operations.get;
 
 import android.database.Cursor;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
+import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
+import java.util.Collections;
+import java.util.Set;
+
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 public class PreparedGetObject<T> extends PreparedGet<T> {
 
@@ -99,10 +107,52 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
         }
     }
 
+    /**
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
+     * and will emit result each time change occurs.
+     * <p>
+     * First result will be emitted immediately after subscription,
+     * other emissions will occur only if changes of tables from query will occur during lifetime of
+     * the {@link Observable}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because
+     * it's "Hot" and endless.
+     *
+     * @return non-null {@link Observable} which will emit single object
+     * (can be {@code null}, if no items are found)
+     * with mapped results and will be subscribed to changes of tables from query
+     */
     @NonNull
+    @CheckResult
     @Override
     public Observable<T> createObservable() {
-        throw new RuntimeException("not implemented yet");
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
+        final Set<String> tables;
+
+        if (query != null) {
+            tables = Collections.singleton(query.table());
+        } else if (rawQuery != null) {
+            tables = rawQuery.observesTables();
+        } else {
+            throw new IllegalStateException("Please specify query");
+        }
+
+        if (!tables.isEmpty()) {
+            return storIOSQLite
+                    .observeChangesInTables(tables) // each change triggers executeAsBlocking
+                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))
+                    .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
+                    .subscribeOn(Schedulers.io());
+        } else {
+            return Observable
+                    .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                    .subscribeOn(Schedulers.io());
+        }
     }
 
     /**
