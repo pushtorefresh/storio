@@ -226,7 +226,6 @@ public class RxQueryTest extends BaseTest {
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertValue(expectedUser);
         testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
     }
 
     @Test
@@ -251,7 +250,6 @@ public class RxQueryTest extends BaseTest {
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertValue(null);
         testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
     }
 
     @Test
@@ -282,8 +280,6 @@ public class RxQueryTest extends BaseTest {
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertValues(null, expectedUser);
-        testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
     }
 
     @Test
@@ -309,9 +305,8 @@ public class RxQueryTest extends BaseTest {
 
         putUserBlocking();
 
-        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.awaitTerminalEvent(60, SECONDS);
         testSubscriber.assertValues(null, null);
         testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
     }
 }
