@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.operations.get;
 
 import android.database.Cursor;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -9,10 +10,14 @@ import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
+import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
+import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Represents Get Operation for {@link StorIOContentResolver}
@@ -89,10 +94,36 @@ public final class PreparedGetObject<T> extends PreparedGet<T> {
         }
     }
 
+    /**
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
+     * and will emit result each time change occurs.
+     * <p>
+     * First result will be emitted immediately after subscription,
+     * other emissions will occur only if changes of {@link #query} Uri will occur.
+     * <p>
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable}
+     * because it's "Hot" and endless.
+     *
+     * @return non-null {@link Observable} which will emit single object
+     * (can be {@code null}, if no items are found)
+     * with mapped results and will be subscribed to changes of tables from query
+     */
     @NonNull
+    @CheckResult
     @Override
     public Observable<T> createObservable() {
-        throw new RuntimeException("not implemented yet");
+        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+
+        return storIOContentResolver
+                .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
+                .map(MapSomethingToExecuteAsBlocking.newInstance(this))
+                .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
+                .subscribeOn(Schedulers.io());
     }
 
     /**

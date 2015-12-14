@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import rx.Observable;
+
 import static org.mockito.Mockito.mock;
 
 public class GetOperationDesignTest extends OperationDesignTest {
@@ -52,5 +54,18 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .withGetResolver(ArticleMeta.GET_RESOLVER)
                 .prepare()
                 .executeAsBlocking();
+    }
+
+    @Test
+    public void getObjectAsObservable() {
+        Observable<Article> observable = storIOContentResolver()
+                .get()
+                .object(Article.class)
+                .withQuery(Query.builder()
+                        .uri(mock(Uri.class))
+                        .build())
+                .withGetResolver(ArticleMeta.GET_RESOLVER)
+                .prepare()
+                .createObservable();
     }
 }

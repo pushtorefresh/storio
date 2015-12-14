@@ -8,8 +8,10 @@ import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
+import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import rx.Observable;
+import rx.functions.Action1;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -130,5 +132,25 @@ class GetObjectStub {
         }
 
         verifyNoMoreInteractions(storIOContentResolver, internal, getResolver, cursor);
+    }
+
+    void verifyBehavior(@NonNull Observable<TestItem> observable) {
+        when(storIOContentResolver.observeChangesOfUri(query.uri()))
+                .thenReturn(Observable.<Changes>empty());
+
+        new ObservableBehaviorChecker<TestItem>()
+                .observable(observable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<TestItem>() {
+                    @Override
+                    public void call(TestItem testItem) {
+                        // Get Operation should be subscribed to changes of Uri!
+                        verify(storIOContentResolver).observeChangesOfUri(query.uri());
+
+                        verifyBehavior(testItem);
+                    }
+                })
+                .checkBehaviorOfObservable();
+
     }
 }

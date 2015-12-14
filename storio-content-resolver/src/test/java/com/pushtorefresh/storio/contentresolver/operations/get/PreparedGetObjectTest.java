@@ -4,12 +4,16 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
+
+import rx.Observable;
+import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -39,6 +43,22 @@ public class PreparedGetObjectTest {
 
             getStub.verifyBehavior(testItem);
         }
+
+        @Test
+        public void shouldGetObjectWithoutTypeMappingAsObservable() {
+            final GetObjectStub getStub = GetObjectStub.newStubWithoutTypeMapping();
+
+            final Observable<TestItem> testItemObservable = getStub.storIOContentResolver
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .createObservable()
+                    .take(1);
+
+            getStub.verifyBehavior(testItemObservable);
+        }
     }
 
     public static class WithTypeMapping {
@@ -55,6 +75,21 @@ public class PreparedGetObjectTest {
                     .executeAsBlocking();
 
             getStub.verifyBehavior(testItem);
+        }
+
+        @Test
+        public void shouldGetObjectWithTypeMappingAsObservable() {
+            final GetObjectStub getStub = GetObjectStub.newStubWithTypeMapping();
+
+            final Observable<TestItem> testItemObservable = getStub.storIOContentResolver
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare()
+                    .createObservable()
+                    .take(1);
+
+            getStub.verifyBehavior(testItemObservable);
         }
     }
 
@@ -90,6 +125,43 @@ public class PreparedGetObjectTest {
             verify(storIOContentResolver).internal();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
+            verifyNoMoreInteractions(storIOContentResolver, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingContentProviderAsObservable() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+
+            when(storIOContentResolver.internal()).thenReturn(internal);
+
+            when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
+
+            when(storIOContentResolver.observeChangesOfUri(any(Uri.class)))
+                    .thenReturn(Observable.<Changes>empty());
+
+            final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+
+            storIOContentResolver
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(Query.builder().uri(mock(Uri.class)).build())
+                    .prepare()
+                    .createObservable()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOContentResolver).get();
+            verify(storIOContentResolver).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).query(any(Query.class));
+            verify(storIOContentResolver).observeChangesOfUri(any(Uri.class));
+
             verifyNoMoreInteractions(storIOContentResolver, internal);
         }
     }

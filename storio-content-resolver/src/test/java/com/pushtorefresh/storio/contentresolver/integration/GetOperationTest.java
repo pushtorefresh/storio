@@ -15,6 +15,7 @@ import org.robolectric.annotation.Config;
 
 import java.util.List;
 
+import rx.Observable;
 import rx.observers.TestSubscriber;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -263,5 +264,129 @@ public class GetOperationTest extends IntegrationTest {
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
         changesTestSubscriber.assertNoErrors();
         changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void getExistedObjectExecuteAsObservable() {
+        TestItem expectedItem = TestItem.create(null, "value");
+        contentResolver.insert(TestItem.CONTENT_URI, expectedItem.toContentValues());
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
+
+        Observable<TestItem> testItemObservable = storIOContentResolver
+                .get()
+                .object(TestItem.class)
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .where(TestItem.COLUMN_VALUE + "=?")
+                        .whereArgs("value")
+                        .build())
+                .prepare()
+                .createObservable()
+                .take(1);
+
+        TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+        testItemObservable.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertNoErrors();
+
+        List<TestItem> emmitedItems = testSubscriber.getOnNextEvents();
+        assertThat(emmitedItems.size()).isEqualTo(1);
+        assertThat(expectedItem.equalsWithoutId(emmitedItems.get(0))).isTrue();
+    }
+
+    @Test
+    public void getNonExistedObjectExecuteAsObservable() {
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value").toContentValues());
+
+        Observable<TestItem> testItemObservable = storIOContentResolver
+                .get()
+                .object(TestItem.class)
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .where(TestItem.COLUMN_VALUE + "=?")
+                        .whereArgs("some value")
+                        .build())
+                .prepare()
+                .createObservable()
+                .take(1);
+
+        TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+        testItemObservable.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValue(null);
+        testSubscriber.assertNoErrors();
+    }
+
+    @Test
+    public void getOneExistedObjectTableUpdate() {
+        TestItem expectedItem = TestItem.create(null, "value");
+
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value3").toContentValues());
+
+        Observable<TestItem> testItemObservable = storIOContentResolver
+                .get()
+                .object(TestItem.class)
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .where(TestItem.COLUMN_VALUE + "=?")
+                        .whereArgs("value")
+                        .build())
+                .prepare()
+                .createObservable()
+                .take(2);
+
+        TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+        testItemObservable.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValue(null);
+        testSubscriber.assertNoErrors();
+
+        contentResolver.insert(TestItem.CONTENT_URI, expectedItem.toContentValues());
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertNoErrors();
+
+        List<TestItem> emmitedItems = testSubscriber.getOnNextEvents();
+        assertThat(emmitedItems.size()).isEqualTo(2);
+        assertThat(emmitedItems.get(0)).isNull();
+        assertThat(expectedItem.equalsWithoutId(emmitedItems.get(1))).isTrue();
+    }
+
+    @Test
+    public void getOneNonexistedObjectTableUpdate() {
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value3").toContentValues());
+
+        Observable<TestItem> testItemObservable = storIOContentResolver
+                .get()
+                .object(TestItem.class)
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .where(TestItem.COLUMN_VALUE + "=?")
+                        .whereArgs("value")
+                        .build())
+                .prepare()
+                .createObservable()
+                .take(2);
+
+        TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+        testItemObservable.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValue(null);
+        testSubscriber.assertNoErrors();
+
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value4").toContentValues());
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValues(null, null);
+        testSubscriber.assertNoErrors();
     }
 }
