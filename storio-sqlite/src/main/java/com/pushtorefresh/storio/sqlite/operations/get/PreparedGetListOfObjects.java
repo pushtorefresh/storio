@@ -162,6 +162,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
                     .observeChangesInTables(tables) // each change triggers executeAsBlocking
                     .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                     .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
+                    .onBackpressureLatest()
                     .subscribeOn(Schedulers.io());
         } else {
             return Observable

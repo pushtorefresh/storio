@@ -82,6 +82,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
                 .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
                 .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                 .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
+                .onBackpressureLatest()
                 .subscribeOn(Schedulers.io());
     }
 
