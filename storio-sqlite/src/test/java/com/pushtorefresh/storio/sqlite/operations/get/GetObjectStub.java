@@ -15,6 +15,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static java.util.Collections.singleton;
@@ -182,6 +183,19 @@ class GetObjectStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyQueryBehavior(@NonNull Single<TestItem> single) {
+        new ObservableBehaviorChecker<TestItem>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<TestItem>() {
+                    @Override
+                    public void call(TestItem testItem) {
+                        verifyQueryBehavior(testItem);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
     void verifyRawQueryBehavior(@Nullable TestItem actualItem) {
         verify(storIOSQLite).get();
         verify(getResolver).performGet(storIOSQLite, rawQuery);
@@ -201,6 +215,21 @@ class GetObjectStub {
                         verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
 
                         verifyRawQueryBehavior(testItem);
+                    }
+                })
+                .checkBehaviorOfObservable();
+
+        assertThat(rawQuery.observesTables()).isNotNull();
+    }
+
+    void verifyRawQueryBehavior(@NonNull Single<TestItem> single) {
+        new ObservableBehaviorChecker<TestItem>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<TestItem>() {
+                    @Override
+                    public void call(TestItem testItem) {
+                       verifyRawQueryBehavior(testItem);
                     }
                 })
                 .checkBehaviorOfObservable();

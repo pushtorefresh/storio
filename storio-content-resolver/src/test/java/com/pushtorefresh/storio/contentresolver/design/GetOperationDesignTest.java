@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 
 import static org.mockito.Mockito.mock;
 
@@ -57,6 +58,32 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
+    public void getCursorAsObservable() {
+        Observable<Cursor> observable = storIOContentResolver()
+                .get()
+                .cursor()
+                .withQuery(Query.builder()
+                        .uri(mock(Uri.class))
+                        .build())
+                .withGetResolver(mock(GetResolver.class))
+                .prepare()
+                .createObservable();
+    }
+
+    @Test
+    public void getListOfObjectsAsObservable() {
+        Observable<List<Article>> observable = storIOContentResolver()
+                .get()
+                .listOfObjects(Article.class)
+                .withQuery(Query.builder()
+                        .uri(mock(Uri.class))
+                        .build())
+                .withGetResolver(ArticleMeta.GET_RESOLVER)
+                .prepare()
+                .createObservable();
+    }
+
+    @Test
     public void getObjectAsObservable() {
         Observable<Article> observable = storIOContentResolver()
                 .get()
@@ -67,5 +94,44 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .withGetResolver(ArticleMeta.GET_RESOLVER)
                 .prepare()
                 .createObservable();
+    }
+
+    @Test
+    public void getCursorAsSingle() {
+        Single<Cursor> single = storIOContentResolver()
+                .get()
+                .cursor()
+                .withQuery(Query.builder()
+                        .uri(mock(Uri.class))
+                        .build())
+                .withGetResolver(mock(GetResolver.class))
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
+    public void getListOfObjectsAsSingle() {
+        Single<List<Article>> single = storIOContentResolver()
+                .get()
+                .listOfObjects(Article.class)
+                .withQuery(Query.builder()
+                        .uri(mock(Uri.class))
+                        .build())
+                .withGetResolver(ArticleMeta.GET_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
+    public void getObjectAsSingle() {
+        Single<Article> single = storIOContentResolver()
+                .get()
+                .object(Article.class)
+                .withQuery(Query.builder()
+                        .uri(mock(Uri.class))
+                        .build())
+                .withGetResolver(ArticleMeta.GET_RESOLVER)
+                .prepare()
+                .asRxSingle();
     }
 }

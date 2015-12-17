@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
@@ -58,6 +59,20 @@ public class PreparedPutCollectionOfObjectsTest {
 
             putStub.verifyBehaviorForMultipleObjects(observable);
         }
+
+        @Test
+        public void shouldPutObjectsWithoutTypeMappingAsSingle() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithoutTypeMapping();
+
+            final Single<PutResults<TestItem>> single = putStub.storIOContentResolver
+                    .put()
+                    .objects(putStub.items)
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            putStub.verifyBehaviorForMultipleObjects(single);
+        }
     }
 
     public static class WithTypeMapping {
@@ -86,6 +101,19 @@ public class PreparedPutCollectionOfObjectsTest {
                     .createObservable();
 
             putStub.verifyBehaviorForMultipleObjects(observable);
+        }
+
+        @Test
+        public void shouldPutObjectsWithTypeMappingAsSingle() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithTypeMapping();
+
+            final Single<PutResults<TestItem>> single = putStub.storIOContentResolver
+                    .put()
+                    .objects(putStub.items)
+                    .prepare()
+                    .asRxSingle();
+
+            putStub.verifyBehaviorForMultipleObjects(single);
         }
     }
 
@@ -141,6 +169,40 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(items)
                     .prepare()
                     .createObservable()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOContentResolver).put();
+            verify(storIOContentResolver).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOContentResolver, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsSingle() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+
+            when(storIOContentResolver.internal()).thenReturn(internal);
+
+            when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
+
+            final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
+
+            final TestSubscriber<PutResults<TestItem>> testSubscriber = new TestSubscriber<PutResults<TestItem>>();
+
+            storIOContentResolver
+                    .put()
+                    .objects(items)
+                    .prepare()
+                    .asRxSingle()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

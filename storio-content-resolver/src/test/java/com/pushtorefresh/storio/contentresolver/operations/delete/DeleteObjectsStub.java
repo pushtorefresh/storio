@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -150,6 +151,19 @@ class DeleteObjectsStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyBehaviorForDeleteMultipleObjects(@NonNull Single<DeleteResults<TestItem>> deleteResultsSingle) {
+        new ObservableBehaviorChecker<DeleteResults<TestItem>>()
+                .observable(deleteResultsSingle.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<DeleteResults<TestItem>>() {
+                    @Override
+                    public void call(DeleteResults<TestItem> deleteResults) {
+                        verifyBehaviorForDeleteMultipleObjects(deleteResults);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
     void verifyBehaviorForDeleteOneObject(@NonNull DeleteResult deleteResult) {
         Map<TestItem, DeleteResult> deleteResultsMap = new HashMap<TestItem, DeleteResult>(1);
         deleteResultsMap.put(items.get(0), deleteResult);
@@ -159,6 +173,19 @@ class DeleteObjectsStub {
     void verifyBehaviorForDeleteOneObject(@NonNull Observable<DeleteResult> deleteResultObservable) {
         new ObservableBehaviorChecker<DeleteResult>()
                 .observable(deleteResultObservable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<DeleteResult>() {
+                    @Override
+                    public void call(DeleteResult deleteResult) {
+                        verifyBehaviorForDeleteOneObject(deleteResult);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForDeleteOneObject(@NonNull Single<DeleteResult> deleteResultSingle) {
+        new ObservableBehaviorChecker<DeleteResult>()
+                .observable(deleteResultSingle.toObservable())
                 .expectedNumberOfEmissions(1)
                 .testAction(new Action1<DeleteResult>() {
                     @Override

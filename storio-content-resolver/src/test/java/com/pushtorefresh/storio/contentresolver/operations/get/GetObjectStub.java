@@ -11,6 +11,7 @@ import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -147,6 +148,20 @@ class GetObjectStub {
                         // Get Operation should be subscribed to changes of Uri!
                         verify(storIOContentResolver).observeChangesOfUri(query.uri());
 
+                        verifyBehavior(testItem);
+                    }
+                })
+                .checkBehaviorOfObservable();
+
+    }
+
+    void verifyBehavior(@NonNull Single<TestItem> single) {
+        new ObservableBehaviorChecker<TestItem>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<TestItem>() {
+                    @Override
+                    public void call(TestItem testItem) {
                         verifyBehavior(testItem);
                     }
                 })

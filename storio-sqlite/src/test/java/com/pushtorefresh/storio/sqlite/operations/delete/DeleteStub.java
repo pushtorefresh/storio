@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static java.util.Collections.singletonMap;
@@ -186,6 +187,19 @@ class DeleteStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyBehaviorForMultipleObjects(@NonNull Single<DeleteResults<TestItem>> single) {
+        new ObservableBehaviorChecker<DeleteResults<TestItem>>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<DeleteResults<TestItem>>() {
+                    @Override
+                    public void call(DeleteResults<TestItem> deleteResults) {
+                        verifyBehaviorForMultipleObjects(deleteResults);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
     void verifyBehaviorForOneObject(@NonNull DeleteResult deleteResult) {
         verifyBehaviorForMultipleObjects(DeleteResults.newInstance(singletonMap(itemsRequestedForDelete.get(0), deleteResult)));
     }
@@ -193,6 +207,19 @@ class DeleteStub {
     void verifyBehaviorForOneObject(@NonNull Observable<DeleteResult> observable) {
         new ObservableBehaviorChecker<DeleteResult>()
                 .observable(observable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<DeleteResult>() {
+                    @Override
+                    public void call(DeleteResult deleteResult) {
+                        verifyBehaviorForOneObject(deleteResult);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForOneObject(@NonNull Single<DeleteResult> single) {
+        new ObservableBehaviorChecker<DeleteResult>()
+                .observable(single.toObservable())
                 .expectedNumberOfEmissions(1)
                 .testAction(new Action1<DeleteResult>() {
                     @Override

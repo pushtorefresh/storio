@@ -10,6 +10,7 @@ import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static java.util.Collections.singleton;
@@ -117,6 +118,19 @@ class GetNumberOfResultsStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyQueryBehaviorForInteger(@NonNull Single<Integer> single) {
+        new ObservableBehaviorChecker<Integer>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer numberOfResults) {
+                        verifyQueryBehaviorForInteger(numberOfResults);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
     void verifyRawQueryBehaviorForInteger(@NonNull Integer actualNumberOfResults) {
         assertThat(actualNumberOfResults).isNotNull();
         verify(storIOSQLite).get();
@@ -135,6 +149,21 @@ class GetNumberOfResultsStub {
                     public void call(Integer numberOfResults) {
                         // Get Operation should be subscribed to changes of tables from Query
                         verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
+                        verifyRawQueryBehaviorForInteger(numberOfResults);
+                    }
+                })
+                .checkBehaviorOfObservable();
+
+        assertThat(rawQuery.observesTables()).isNotNull();
+    }
+
+    void verifyRawQueryBehaviorForInteger(@NonNull Single<Integer> single) {
+        new ObservableBehaviorChecker<Integer>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer numberOfResults) {
                         verifyRawQueryBehaviorForInteger(numberOfResults);
                     }
                 })

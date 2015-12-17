@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singleton;
@@ -67,6 +68,21 @@ public class PreparedGetListOfObjectsTest {
         }
 
         @Test
+        public void shouldGetListOfObjectsByQueryWithoutTypeMappingAsSingle() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithoutTypeMapping();
+
+            final Single<List<TestItem>> testItemsSingle = getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyQueryBehavior(testItemsSingle);
+        }
+
+        @Test
         public void shouldGetListOfObjectsByRawQueryWithoutTypeMappingBlocking() {
             final GetObjectsStub getStub = GetObjectsStub.newInstanceWithoutTypeMapping();
 
@@ -95,6 +111,21 @@ public class PreparedGetListOfObjectsTest {
                     .take(1);
 
             getStub.verifyRawQueryBehavior(testItemsObservable);
+        }
+
+        @Test
+        public void shouldGetListOfObjectsByRawQueryWithoutTypeMappingAsSingle() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithoutTypeMapping();
+
+            final Single<List<TestItem>> testItemsSingle = getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyRawQueryBehavior(testItemsSingle);
         }
     }
 
@@ -130,6 +161,20 @@ public class PreparedGetListOfObjectsTest {
         }
 
         @Test
+        public void shouldGetListOfObjectsByQueryWithTypeMappingAsSingle() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithTypeMapping();
+
+            final Single<List<TestItem>> testItemsSingle = getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyQueryBehavior(testItemsSingle);
+        }
+
+        @Test
         public void shouldGetListOfObjectsByRawQueryWithTypeMappingBlocking() {
             final GetObjectsStub getStub = GetObjectsStub.newInstanceWithTypeMapping();
 
@@ -156,6 +201,20 @@ public class PreparedGetListOfObjectsTest {
                     .take(1);
 
             getStub.verifyRawQueryBehavior(testItemsObservable);
+        }
+
+        @Test
+        public void shouldGetListOfObjectsByRawQueryWithTypeMappingAsSingle() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithTypeMapping();
+
+            final Single<List<TestItem>> testItemsSingle = getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyRawQueryBehavior(testItemsSingle);
         }
     }
 
@@ -270,6 +329,69 @@ public class PreparedGetListOfObjectsTest {
                     .withQuery(RawQuery.builder().query("test query").build())
                     .prepare()
                     .createObservable()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOSQLite).get();
+            verify(storIOSQLite).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).rawQuery(any(RawQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, internal);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsSingle() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
+            when(storIOSQLite.internal()).thenReturn(internal);
+
+            final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
+
+            storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(Query.builder().table("test_table").build())
+                    .prepare()
+                    .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOSQLite).get();
+            verify(storIOSQLite).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).query(any(Query.class));
+            verifyNoMoreInteractions(storIOSQLite, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithRawQueryAsSingle() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
+            when(storIOSQLite.internal()).thenReturn(internal);
+
+            final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
+
+            storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(RawQuery.builder().query("test query").build())
+                    .prepare()
+                    .asRxSingle()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -441,6 +563,61 @@ public class PreparedGetListOfObjectsTest {
 
             //noinspection unchecked
             verify(storIOSQLite).observeChangesInTables(anySet());
+            verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
+            verify(getResolver).mapFromCursor(cursor);
+            verify(cursor).getCount();
+            verify(cursor).moveToNext();
+
+            verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
+        }
+
+        @Test
+        public void cursorMustBeClosedInCaseOfExceptionForSingle() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final Cursor cursor = mock(Cursor.class);
+
+            when(cursor.getCount()).thenReturn(10);
+
+            when(cursor.moveToNext()).thenReturn(true);
+
+            when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
+                    .thenReturn(cursor);
+
+            when(getResolver.mapFromCursor(cursor))
+                    .thenThrow(new IllegalStateException("test exception"));
+
+            PreparedGetListOfObjects<Object> preparedGetListOfObjects =
+                    new PreparedGetListOfObjects<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            Query.builder().table("test_table").build(),
+                            getResolver
+                    );
+
+            final TestSubscriber<List<Object>> testSubscriber = new TestSubscriber<List<Object>>();
+
+            preparedGetListOfObjects
+                    .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+
+            testSubscriber.assertNoValues();
+            testSubscriber.assertError(StorIOException.class);
+
+            StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+
+            IllegalStateException cause = (IllegalStateException) storIOException.getCause();
+            assertThat(cause).hasMessage("test exception");
+
+            // Cursor must be closed in case of exception
+            verify(cursor).close();
+
+            //noinspection unchecked
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
             verify(getResolver).mapFromCursor(cursor);
             verify(cursor).getCount();
