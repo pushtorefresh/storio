@@ -14,9 +14,13 @@ import com.pushtorefresh.storio.contentresolver.annotations.processor.introspect
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,19 +69,62 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
     protected StorIOContentResolverTypeMeta processAnnotatedClass(@NotNull TypeElement classElement, @NotNull Elements elementUtils) {
         final StorIOContentResolverType storIOContentResolverType = classElement.getAnnotation(StorIOContentResolverType.class);
 
-        final String uri = storIOContentResolverType.uri();
+        final String commonUri = storIOContentResolverType.uri();
 
-        if (uri == null || uri.length() == 0) {
-            throw new ProcessingException(
-                    classElement,
-                    "Uri of " + classElement.getQualifiedName() + " annotated with " + StorIOContentResolverType.class.getSimpleName() + " is null or empty"
-            );
-        }
+        final Map<String, String> urisForOperations = new HashMap<String, String>(3);
+        urisForOperations.put("insert", storIOContentResolverType.insertUri());
+        urisForOperations.put("update", storIOContentResolverType.updateUri());
+        urisForOperations.put("delete", storIOContentResolverType.deleteUri());
+
+        validateUris(classElement, commonUri, urisForOperations);
 
         final String simpleName = classElement.getSimpleName().toString();
         final String packageName = elementUtils.getPackageOf(classElement).getQualifiedName().toString();
 
         return new StorIOContentResolverTypeMeta(simpleName, packageName, storIOContentResolverType);
+    }
+
+
+    /**
+     * Verifies that uris are valid.
+     *
+     * @param classElement type element
+     * @param commonUri nullable default uri for all operations
+     * @param operationUriMap non-null map where
+     *                              key - operation name,
+     *                              value - specific uri for this operation
+     */
+    protected void validateUris(
+            @NotNull TypeElement classElement,
+            @Nullable String commonUri,
+            @NotNull Map<String, String> operationUriMap) {
+
+        if(!validateUri(commonUri)) {
+            final List<String> operationsWithInvalidUris = new ArrayList<String>(operationUriMap.size());
+            for (Map.Entry<String, String> entry : operationUriMap.entrySet()) {
+                if (!validateUri(entry.getValue())) {
+                    operationsWithInvalidUris.add(entry.getKey());
+                }
+            }
+            if (!operationsWithInvalidUris.isEmpty()) {
+                String message = "Uri of " + classElement.getQualifiedName()
+                        + " annotated with " + getTypeAnnotationClass().getSimpleName() + " is null or empty";
+
+                if (operationsWithInvalidUris.size() < operationUriMap.size()) {
+                    message += " for operation " + operationsWithInvalidUris.get(0);
+                }
+                // Else (there is no any uris) - do not specify operation,
+                // because commonUri is default and straightforward way.
+
+                throw new ProcessingException(classElement, message);
+            }
+
+            // It will be okay if uris for all operations were specified separately.
+        }
+    }
+
+    private boolean validateUri(@Nullable String uri) {
+        return uri != null && uri.length() > 0;
     }
 
     /**

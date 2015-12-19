@@ -14,9 +14,34 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface StorIOContentResolverType {
 
     /**
-     * Required: Specifies uri
+     * Optional: Specifies uri for all operations
+     * Should be set as default if there is no uri for some particular operation
+     *
+     * @return uri
+     * @see #insertUri()
+     * @see #updateUri()
+     * @see #deleteUri()
+     */
+    String uri() default "";
+
+    /**
+     * Optional: Specifies uri for insert operation
      *
      * @return uri
      */
-    String uri();
+    String insertUri() default "";
+
+    /**
+     * Optional: Specifies uri for update operation
+     *
+     * @return uri
+     */
+    String updateUri() default "";
+
+    /**
+     * Optional: Specifies uri for delete operation
+     *
+     * @return uri
+     */
+    String deleteUri() default "";
 }

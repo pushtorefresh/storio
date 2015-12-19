@@ -43,6 +43,11 @@ public class PutResolverGenerator  implements ResolverGenerator<StorIOContentRes
 
     @NotNull
     private MethodSpec createMapToInsertQueryMethodSpec(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta, @NotNull final ClassName storIOContentResolverClassName) {
+        String insertUri = storIOContentResolverTypeMeta.storIOType.insertUri();
+        if (insertUri == null || insertUri.length() == 0) {
+            insertUri = storIOContentResolverTypeMeta.storIOType.uri();
+        }
+
         return MethodSpec.methodBuilder("mapToInsertQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
@@ -55,13 +60,18 @@ public class PutResolverGenerator  implements ResolverGenerator<StorIOContentRes
                 .addCode("return InsertQuery.builder()\n" +
                                 INDENT + ".uri($S)\n" +
                                 INDENT + ".build();\n",
-                        storIOContentResolverTypeMeta.storIOType.uri())
+                        insertUri)
                 .build();
     }
 
     @NotNull
     private MethodSpec createMapToUpdateQueryMethodSpec(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta, @NotNull final ClassName storIOContentResolverClassName) {
         final Map<String, String> where = QueryGenerator.createWhere(storIOContentResolverTypeMeta, "object");
+
+        String updateUri = storIOContentResolverTypeMeta.storIOType.updateUri();
+        if (updateUri == null || updateUri.length() == 0) {
+            updateUri = storIOContentResolverTypeMeta.storIOType.uri();
+        }
 
         return MethodSpec.methodBuilder("mapToUpdateQuery")
                 .addJavadoc("{@inheritDoc}\n")
@@ -77,7 +87,7 @@ public class PutResolverGenerator  implements ResolverGenerator<StorIOContentRes
                                 INDENT + ".where($S)\n" +
                                 INDENT + ".whereArgs($L)\n" +
                                 INDENT + ".build();\n",
-                        storIOContentResolverTypeMeta.storIOType.uri(),
+                        updateUri,
                         where.get(QueryGenerator.WHERE_CLAUSE),
                         where.get(QueryGenerator.WHERE_ARGS))
                 .build();
