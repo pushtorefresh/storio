@@ -6,6 +6,7 @@ import com.pushtorefresh.storio.contentresolver.annotations.processor.introspect
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
 import com.squareup.javapoet.JavaFile;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -16,11 +17,9 @@ import static org.mockito.Mockito.when;
 
 public class DeleteResolverGeneratorTest {
 
-    @Test
-    public void generateJavaFile() throws IOException {
-        final StorIOContentResolverType storIOContentResolverType = mock(StorIOContentResolverType.class);
-
-        when(storIOContentResolverType.uri()).thenReturn("content://test");
+    @NotNull
+    private String generateJavaFile(
+            @NotNull StorIOContentResolverType storIOContentResolverType) throws IOException {
 
         final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = new StorIOContentResolverTypeMeta(
                 "TestItem",
@@ -58,7 +57,17 @@ public class DeleteResolverGeneratorTest {
         final StringBuilder out = new StringBuilder();
         javaFile.writeTo(out);
 
-        assertThat(out.toString()).isEqualTo("package com.test;\n" +
+        return out.toString();
+    }
+
+    @Test
+    public void generateJavaFileWithCommonUri() throws IOException {
+        final StorIOContentResolverType storIOContentResolverType = mock(StorIOContentResolverType.class);
+
+        when(storIOContentResolverType.uri()).thenReturn("content://test");
+
+        String javaFileAsString = generateJavaFile(storIOContentResolverType);
+        assertThat(javaFileAsString).isEqualTo("package com.test;\n" +
                 "\n" +
                 "import android.support.annotation.NonNull;\n" +
                 "import com.pushtorefresh.storio.contentresolver.operations.delete.DefaultDeleteResolver;\n" +
@@ -77,6 +86,109 @@ public class DeleteResolverGeneratorTest {
                 "    protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
                 "        return DeleteQuery.builder()\n" +
                 "            .uri(\"content://test\")\n" +
+                "            .where(null)\n" +
+                "            .whereArgs(null)\n" +
+                "            .build();\n" +
+                "    }\n" +
+                "}\n");
+    }
+
+    @Test
+    public void generateJavaFileWithOperationSpecificUri() throws IOException {
+        final StorIOContentResolverType storIOContentResolverType = mock(StorIOContentResolverType.class);
+
+        when(storIOContentResolverType.deleteUri()).thenReturn("content://delete_test");
+
+        String javaFileAsString = generateJavaFile(storIOContentResolverType);
+        assertThat(javaFileAsString).isEqualTo("package com.test;\n" +
+                "\n" +
+                "import android.support.annotation.NonNull;\n" +
+                "import com.pushtorefresh.storio.contentresolver.operations.delete.DefaultDeleteResolver;\n" +
+                "import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;\n" +
+                "import java.lang.Override;\n" +
+                "\n" +
+                "/**\n" +
+                " * Generated resolver for Delete Operation\n" +
+                " */\n" +
+                "public class TestItemStorIOContentResolverDeleteResolver extends DefaultDeleteResolver<TestItem> {\n" +
+                "    /**\n" +
+                "     * {@inheritDoc}\n" +
+                "     */\n" +
+                "    @Override\n" +
+                "    @NonNull\n" +
+                "    protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
+                "        return DeleteQuery.builder()\n" +
+                "            .uri(\"content://delete_test\")\n" +   // Operation specific
+                "            .where(null)\n" +
+                "            .whereArgs(null)\n" +
+                "            .build();\n" +
+                "    }\n" +
+                "}\n");
+    }
+
+    @Test
+    public void operationSpecificUriShouldHaveHigherPriority() throws IOException {
+        final StorIOContentResolverType storIOContentResolverType = mock(StorIOContentResolverType.class);
+
+        when(storIOContentResolverType.uri()).thenReturn("content://test");
+        when(storIOContentResolverType.deleteUri()).thenReturn("content://delete_test");
+
+        String javaFileAsString = generateJavaFile(storIOContentResolverType);
+        assertThat(javaFileAsString).isEqualTo("package com.test;\n" +
+                "\n" +
+                "import android.support.annotation.NonNull;\n" +
+                "import com.pushtorefresh.storio.contentresolver.operations.delete.DefaultDeleteResolver;\n" +
+                "import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;\n" +
+                "import java.lang.Override;\n" +
+                "\n" +
+                "/**\n" +
+                " * Generated resolver for Delete Operation\n" +
+                " */\n" +
+                "public class TestItemStorIOContentResolverDeleteResolver extends DefaultDeleteResolver<TestItem> {\n" +
+                "    /**\n" +
+                "     * {@inheritDoc}\n" +
+                "     */\n" +
+                "    @Override\n" +
+                "    @NonNull\n" +
+                "    protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
+                "        return DeleteQuery.builder()\n" +
+                "            .uri(\"content://delete_test\")\n" +   // Operation specific
+                "            .where(null)\n" +
+                "            .whereArgs(null)\n" +
+                "            .build();\n" +
+                "    }\n" +
+                "}\n");
+    }
+
+    @Test
+    public void shouldUseCommonUriIfSpecifiedOnlyForAnotherOperations() throws IOException {
+        final StorIOContentResolverType storIOContentResolverType = mock(StorIOContentResolverType.class);
+
+        when(storIOContentResolverType.uri()).thenReturn("content://test");
+        when(storIOContentResolverType.insertUri()).thenReturn("content://insert_test");
+        when(storIOContentResolverType.updateUri()).thenReturn("content://update_test");
+        // There is no explicit uri for delete operation
+
+        String javaFileAsString = generateJavaFile(storIOContentResolverType);
+        assertThat(javaFileAsString).isEqualTo("package com.test;\n" +
+                "\n" +
+                "import android.support.annotation.NonNull;\n" +
+                "import com.pushtorefresh.storio.contentresolver.operations.delete.DefaultDeleteResolver;\n" +
+                "import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;\n" +
+                "import java.lang.Override;\n" +
+                "\n" +
+                "/**\n" +
+                " * Generated resolver for Delete Operation\n" +
+                " */\n" +
+                "public class TestItemStorIOContentResolverDeleteResolver extends DefaultDeleteResolver<TestItem> {\n" +
+                "    /**\n" +
+                "     * {@inheritDoc}\n" +
+                "     */\n" +
+                "    @Override\n" +
+                "    @NonNull\n" +
+                "    protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
+                "        return DeleteQuery.builder()\n" +
+                "            .uri(\"content://test\")\n" +   // Common uri
                 "            .where(null)\n" +
                 "            .whereArgs(null)\n" +
                 "            .build();\n" +

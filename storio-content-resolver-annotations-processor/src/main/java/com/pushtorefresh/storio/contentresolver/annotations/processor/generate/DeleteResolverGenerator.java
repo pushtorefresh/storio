@@ -41,6 +41,11 @@ public class DeleteResolverGenerator implements ResolverGenerator<StorIOContentR
     private MethodSpec createMapToDeleteQueryMethodSpec(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta, @NotNull final ClassName storIOContentResolverTypeClassName) {
         final Map<String, String> where = QueryGenerator.createWhere(storIOContentResolverTypeMeta, "object");
 
+        String deleteUri = storIOContentResolverTypeMeta.storIOType.deleteUri();
+        if (deleteUri == null || deleteUri.length() == 0) {
+            deleteUri = storIOContentResolverTypeMeta.storIOType.uri();
+        }
+
         return MethodSpec.methodBuilder("mapToDeleteQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
@@ -55,7 +60,7 @@ public class DeleteResolverGenerator implements ResolverGenerator<StorIOContentR
                                 INDENT + ".where($S)\n" +
                                 INDENT + ".whereArgs($L)\n" +
                                 INDENT + ".build();\n",
-                        storIOContentResolverTypeMeta.storIOType.uri(),
+                        deleteUri,
                         where.get(QueryGenerator.WHERE_CLAUSE),
                         where.get(QueryGenerator.WHERE_ARGS))
                 .build();
