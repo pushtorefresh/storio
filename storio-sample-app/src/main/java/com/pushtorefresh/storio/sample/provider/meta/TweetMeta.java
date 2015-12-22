@@ -21,7 +21,10 @@ import com.pushtorefresh.storio.sample.provider.SampleContentProvider;
 public class TweetMeta {
 
     @NonNull
-    public static final Uri CONTENT_URI = Uri.parse("content://" + SampleContentProvider.AUTHORITY + "/tweets");
+    public static final String URI_STRING = "content://" + SampleContentProvider.AUTHORITY + "/tweets";
+
+    @NonNull
+    public static final Uri CONTENT_URI = Uri.parse(URI_STRING);
 
     @NonNull
     public static final PutResolver<Tweet> PUT_RESOLVER = new DefaultPutResolver<Tweet>() {

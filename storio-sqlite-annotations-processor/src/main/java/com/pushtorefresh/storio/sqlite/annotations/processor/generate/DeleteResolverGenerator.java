@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.sqlite.annotations.processor.generate;
 
-import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
+import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -18,13 +18,20 @@ import static com.pushtorefresh.storio.common.annotations.processor.generate.Com
 import static javax.lang.model.element.Modifier.PROTECTED;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-public class DeleteResolverGenerator implements ResolverGenerator<StorIOSQLiteTypeMeta> {
+public class DeleteResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
+
+    public static final String SUFFIX = "StorIOSQLiteDeleteResolver";
+
+    @NotNull
+    public static String generateName(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
+        return storIOSQLiteTypeMeta.simpleName + SUFFIX;
+    }
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
         final ClassName storIOSQLiteTypeClassName = ClassName.get(storIOSQLiteTypeMeta.packageName, storIOSQLiteTypeMeta.simpleName);
 
-        final TypeSpec deleteResolver = TypeSpec.classBuilder(storIOSQLiteTypeMeta.simpleName + "StorIOSQLiteDeleteResolver")
+        final TypeSpec deleteResolver = TypeSpec.classBuilder(generateName(storIOSQLiteTypeMeta))
                 .addJavadoc("Generated resolver for Delete Operation\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operations.delete", "DefaultDeleteResolver"), storIOSQLiteTypeClassName))

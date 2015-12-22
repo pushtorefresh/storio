@@ -5,14 +5,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.db.entities.Tweet;
-import com.pushtorefresh.storio.sample.db.entities.TweetStorIOSQLiteDeleteResolver;
-import com.pushtorefresh.storio.sample.db.entities.TweetStorIOSQLiteGetResolver;
-import com.pushtorefresh.storio.sample.db.entities.TweetStorIOSQLitePutResolver;
+import com.pushtorefresh.storio.sample.db.entities.TweetSQLiteTypeMapping;
 import com.pushtorefresh.storio.sample.db.entities.TweetWithUser;
 import com.pushtorefresh.storio.sample.db.entities.User;
-import com.pushtorefresh.storio.sample.db.entities.UserStorIOSQLiteDeleteResolver;
-import com.pushtorefresh.storio.sample.db.entities.UserStorIOSQLiteGetResolver;
-import com.pushtorefresh.storio.sample.db.entities.UserStorIOSQLitePutResolver;
+import com.pushtorefresh.storio.sample.db.entities.UserSQLiteTypeMapping;
 import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserDeleteResolver;
 import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserGetResolver;
 import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserPutResolver;
@@ -39,16 +35,8 @@ public class DbModule {
     public StorIOSQLite provideStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
         return DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(sqLiteOpenHelper)
-                .addTypeMapping(Tweet.class, SQLiteTypeMapping.<Tweet>builder()
-                        .putResolver(new TweetStorIOSQLitePutResolver())
-                        .getResolver(new TweetStorIOSQLiteGetResolver())
-                        .deleteResolver(new TweetStorIOSQLiteDeleteResolver())
-                        .build())
-                .addTypeMapping(User.class, SQLiteTypeMapping.<User>builder()
-                        .putResolver(new UserStorIOSQLitePutResolver())
-                        .getResolver(new UserStorIOSQLiteGetResolver())
-                        .deleteResolver(new UserStorIOSQLiteDeleteResolver())
-                        .build())
+.addTypeMapping(Tweet.class, new TweetSQLiteTypeMapping())
+.addTypeMapping(User.class, new UserSQLiteTypeMapping())
                 .addTypeMapping(TweetWithUser.class, SQLiteTypeMapping.<TweetWithUser>builder()
                         .putResolver(new TweetWithUserPutResolver())
                         .getResolver(new TweetWithUserGetResolver())

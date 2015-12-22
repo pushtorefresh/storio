@@ -3,12 +3,13 @@ package com.pushtorefresh.storio.contentresolver.annotations.processor;
 import com.google.auto.service.AutoService;
 import com.pushtorefresh.storio.common.annotations.processor.ProcessingException;
 import com.pushtorefresh.storio.common.annotations.processor.StorIOAnnotationsProcessor;
-import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
+import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverColumn;
 import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverType;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.DeleteResolverGenerator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.GetResolverGenerator;
+import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.MappingGenerator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.PutResolverGenerator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverColumnMeta;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
@@ -288,19 +289,25 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
 
     @NotNull
     @Override
-    protected ResolverGenerator<StorIOContentResolverTypeMeta> createPutResolver() {
+    protected Generator<StorIOContentResolverTypeMeta> createPutResolver() {
         return new PutResolverGenerator();
     }
 
     @NotNull
     @Override
-    protected ResolverGenerator<StorIOContentResolverTypeMeta> createGetResolver() {
+    protected Generator<StorIOContentResolverTypeMeta> createGetResolver() {
         return new GetResolverGenerator();
     }
 
     @NotNull
     @Override
-    protected ResolverGenerator<StorIOContentResolverTypeMeta> createDeleteResolver() {
+    protected Generator<StorIOContentResolverTypeMeta> createDeleteResolver() {
         return new DeleteResolverGenerator();
+    }
+
+    @NotNull
+    @Override
+    protected Generator<StorIOContentResolverTypeMeta> createMapping() {
+        return new MappingGenerator();
     }
 }

@@ -5,7 +5,7 @@ import com.squareup.javapoet.JavaFile;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface ResolverGenerator <TypeMeta extends StorIOTypeMeta> {
+public interface Generator<TypeMeta extends StorIOTypeMeta> {
 
     @NotNull
     JavaFile generateJavaFile(@NotNull TypeMeta typeMeta);

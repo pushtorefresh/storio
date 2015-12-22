@@ -24,9 +24,9 @@ public class ContentResolverTypeMapping<T> {
     @NonNull
     private final DeleteResolver<T> deleteResolver;
 
-    private ContentResolverTypeMapping(@NonNull PutResolver<T> putResolver,
-                                       @NonNull GetResolver<T> getResolver,
-                                       @NonNull DeleteResolver<T> deleteResolver) {
+    protected ContentResolverTypeMapping(@NonNull PutResolver<T> putResolver,
+                                         @NonNull GetResolver<T> getResolver,
+                                         @NonNull DeleteResolver<T> deleteResolver) {
         this.putResolver = putResolver;
         this.getResolver = getResolver;
         this.deleteResolver = deleteResolver;

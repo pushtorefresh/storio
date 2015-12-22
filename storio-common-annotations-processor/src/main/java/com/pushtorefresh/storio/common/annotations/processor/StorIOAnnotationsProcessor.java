@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.common.annotations.processor;
 
-import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
+import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOColumnMeta;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOTypeMeta;
 
@@ -161,14 +161,16 @@ public abstract class StorIOAnnotationsProcessor
 
             validateAnnotatedClassesAndColumns(annotatedClasses);
 
-            final ResolverGenerator<TypeMeta> putResolverGenerator = createPutResolver();
-            final ResolverGenerator<TypeMeta> getResolverGenerator = createGetResolver();
-            final ResolverGenerator<TypeMeta> deleteResolverGenerator = createDeleteResolver();
+            final Generator<TypeMeta> putResolverGenerator = createPutResolver();
+            final Generator<TypeMeta> getResolverGenerator = createGetResolver();
+            final Generator<TypeMeta> deleteResolverGenerator = createDeleteResolver();
+            final Generator<TypeMeta> mappingGenerator = createMapping();
 
             for (TypeMeta typeMeta : annotatedClasses.values()) {
                 putResolverGenerator.generateJavaFile(typeMeta).writeTo(filer);
                 getResolverGenerator.generateJavaFile(typeMeta).writeTo(filer);
                 deleteResolverGenerator.generateJavaFile(typeMeta).writeTo(filer);
+                mappingGenerator.generateJavaFile(typeMeta).writeTo(filer);
             }
         } catch (ProcessingException e) {
             messager.printMessage(ERROR, e.getMessage(), e.element());
@@ -215,11 +217,14 @@ public abstract class StorIOAnnotationsProcessor
     protected abstract Class<? extends Annotation> getColumnAnnotationClass();
 
     @NotNull
-    protected abstract ResolverGenerator<TypeMeta> createPutResolver();
+    protected abstract Generator<TypeMeta> createPutResolver();
 
     @NotNull
-    protected abstract ResolverGenerator<TypeMeta> createGetResolver();
+    protected abstract Generator<TypeMeta> createGetResolver();
 
     @NotNull
-    protected abstract ResolverGenerator<TypeMeta> createDeleteResolver();
+    protected abstract Generator<TypeMeta> createDeleteResolver();
+
+    @NotNull
+    protected abstract Generator<TypeMeta> createMapping();
 }

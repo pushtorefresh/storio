@@ -3,12 +3,13 @@ package com.pushtorefresh.storio.sqlite.annotations.processor;
 import com.google.auto.service.AutoService;
 import com.pushtorefresh.storio.common.annotations.processor.ProcessingException;
 import com.pushtorefresh.storio.common.annotations.processor.StorIOAnnotationsProcessor;
-import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
+import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteColumn;
 import com.pushtorefresh.storio.sqlite.annotations.StorIOSQLiteType;
 import com.pushtorefresh.storio.sqlite.annotations.processor.generate.DeleteResolverGenerator;
 import com.pushtorefresh.storio.sqlite.annotations.processor.generate.GetResolverGenerator;
+import com.pushtorefresh.storio.sqlite.annotations.processor.generate.MappingGenerator;
 import com.pushtorefresh.storio.sqlite.annotations.processor.generate.PutResolverGenerator;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteColumnMeta;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta;
@@ -195,19 +196,25 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
 
     @NotNull
     @Override
-    protected ResolverGenerator<StorIOSQLiteTypeMeta> createPutResolver() {
+    protected Generator<StorIOSQLiteTypeMeta> createPutResolver() {
         return new PutResolverGenerator();
     }
 
     @NotNull
     @Override
-    protected ResolverGenerator<StorIOSQLiteTypeMeta> createGetResolver() {
+    protected Generator<StorIOSQLiteTypeMeta> createGetResolver() {
         return new GetResolverGenerator();
     }
 
     @NotNull
     @Override
-    protected ResolverGenerator<StorIOSQLiteTypeMeta> createDeleteResolver() {
+    protected Generator<StorIOSQLiteTypeMeta> createDeleteResolver() {
         return new DeleteResolverGenerator();
+    }
+
+    @NotNull
+    @Override
+    protected Generator<StorIOSQLiteTypeMeta> createMapping() {
+        return new MappingGenerator();
     }
 }

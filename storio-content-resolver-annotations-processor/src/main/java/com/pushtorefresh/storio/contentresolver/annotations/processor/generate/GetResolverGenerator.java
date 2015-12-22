@@ -1,7 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor.generate;
 
 import com.pushtorefresh.storio.common.annotations.processor.ProcessingException;
-import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
+import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverColumnMeta;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
@@ -32,13 +32,20 @@ import static com.pushtorefresh.storio.common.annotations.processor.introspectio
 import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.STRING;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-public class GetResolverGenerator implements ResolverGenerator<StorIOContentResolverTypeMeta> {
+public class GetResolverGenerator implements Generator<StorIOContentResolverTypeMeta> {
+
+    private static final String SUFFIX = "StorIOContentResolverGetResolver";
+
+    @NotNull
+    public static String generateName(@NotNull StorIOContentResolverTypeMeta storIOSQLiteTypeMeta) {
+        return storIOSQLiteTypeMeta.simpleName + SUFFIX;
+    }
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta) {
         final ClassName storIOContentResolverTypeClassName = ClassName.get(storIOContentResolverTypeMeta.packageName, storIOContentResolverTypeMeta.simpleName);
 
-        final TypeSpec getResolver = TypeSpec.classBuilder(storIOContentResolverTypeMeta.simpleName + "StorIOContentResolverGetResolver")
+        final TypeSpec getResolver = TypeSpec.classBuilder(generateName(storIOContentResolverTypeMeta))
                 .addJavadoc("Generated resolver for Get Operation\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.contentresolver.operations.get", "DefaultGetResolver"), storIOContentResolverTypeClassName))

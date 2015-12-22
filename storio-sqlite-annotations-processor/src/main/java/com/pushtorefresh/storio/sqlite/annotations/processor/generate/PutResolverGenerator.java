@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.sqlite.annotations.processor.generate;
 
-import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
+import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteColumnMeta;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta;
 import com.squareup.javapoet.ClassName;
@@ -19,13 +19,20 @@ import static com.pushtorefresh.storio.common.annotations.processor.generate.Com
 import static javax.lang.model.element.Modifier.PROTECTED;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-public class PutResolverGenerator implements ResolverGenerator<StorIOSQLiteTypeMeta> {
+public class PutResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
+
+    public static final String SUFFIX = "StorIOSQLitePutResolver";
+
+    @NotNull
+    public static String generateName(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
+        return storIOSQLiteTypeMeta.simpleName + SUFFIX;
+    }
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
         final ClassName storIOSQLiteTypeClassName = ClassName.get(storIOSQLiteTypeMeta.packageName, storIOSQLiteTypeMeta.simpleName);
 
-        final TypeSpec putResolver = TypeSpec.classBuilder(storIOSQLiteTypeMeta.simpleName + "StorIOSQLitePutResolver")
+        final TypeSpec putResolver = TypeSpec.classBuilder(generateName(storIOSQLiteTypeMeta))
                 .addJavadoc("Generated resolver for Put Operation\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operations.put", "DefaultPutResolver"), storIOSQLiteTypeClassName))
