@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor.generate;
 
-import com.pushtorefresh.storio.common.annotations.processor.generate.ResolverGenerator;
+import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverColumnMeta;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
 import com.squareup.javapoet.ClassName;
@@ -19,13 +19,20 @@ import static com.pushtorefresh.storio.common.annotations.processor.generate.Com
 import static javax.lang.model.element.Modifier.PROTECTED;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-public class PutResolverGenerator  implements ResolverGenerator<StorIOContentResolverTypeMeta> {
+public class PutResolverGenerator  implements Generator<StorIOContentResolverTypeMeta> {
+
+    private static final String SUFFIX = "StorIOContentResolverPutResolver";
+
+    @NotNull
+    public static String generateName(@NotNull StorIOContentResolverTypeMeta storIOSQLiteTypeMeta) {
+        return storIOSQLiteTypeMeta.simpleName + SUFFIX;
+    }
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta) {
         final ClassName storIOContentResolverTypeClassName = ClassName.get(storIOContentResolverTypeMeta.packageName, storIOContentResolverTypeMeta.simpleName);
 
-        final TypeSpec putResolver = TypeSpec.classBuilder(storIOContentResolverTypeMeta.simpleName + "StorIOContentResolverPutResolver")
+        final TypeSpec putResolver = TypeSpec.classBuilder(generateName(storIOContentResolverTypeMeta))
                 .addJavadoc("Generated resolver for Put Operation\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.contentresolver.operations.put", "DefaultPutResolver"), storIOContentResolverTypeClassName))

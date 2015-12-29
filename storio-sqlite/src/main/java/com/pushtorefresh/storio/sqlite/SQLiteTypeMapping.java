@@ -24,9 +24,9 @@ public class SQLiteTypeMapping<T> {
     @NonNull
     private final DeleteResolver<T> deleteResolver;
 
-    SQLiteTypeMapping(@NonNull PutResolver<T> putResolver,
-                      @NonNull GetResolver<T> getResolver,
-                      @NonNull DeleteResolver<T> deleteResolver) {
+    protected SQLiteTypeMapping(@NonNull PutResolver<T> putResolver,
+                                @NonNull GetResolver<T> getResolver,
+                                @NonNull DeleteResolver<T> deleteResolver) {
         this.putResolver = putResolver;
         this.getResolver = getResolver;
         this.deleteResolver = deleteResolver;
