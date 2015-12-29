@@ -1,6 +1,40 @@
 StorIO Change Log
 ==========
 
+## Version 1.7.0
+
+_2015_12_30_
+
+* Option to get one object for `StorIOSQLite` and `StorIOContentResolver`
+* Handle backpressure for `Get` operation via RxJava
+* `SQLiteTypeMapping` and `ContentResolverTypeMapping` generation
+* Annotation processor for `StorIOContentResolver` 
+* Option to set different uri's for `insert`, `update` and `delete` (`StorIOContentResolver`)
+* `PutResult` and `DeleteResult` now allow `0` updated tables
+* Jacoco is alive!
+* Android Gradle Plugin 1.5.0
+* Gradle wrapper 2.9
+* RxJava 1.1.0
+* SupportLibs 23.1.0
+* **Thanks to [@geralt-encore](https://github.com/geralt-encore) and [@zayass](https://github.com/zayass)!**
+
+**Changes:**
+
+* [PR 574](https://github.com/pushtorefresh/storio/pull/574) `SQLiteTypeMapping` and `ContentResolverTypeMapping` generation
+* [PR 575](https://github.com/pushtorefresh/storio/pull/575) Use force to reanimate Jacoco!
+* [PR 569](https://github.com/pushtorefresh/storio/pull/569) Option to set different uri's for insert, update and delete
+* [PR 572](https://github.com/pushtorefresh/storio/pull/572) Handle backpressure for `Get` operation via RxJava, RxJava 1.1.0
+* [PR 561](https://github.com/pushtorefresh/storio/pull/561) Switch to Android Gradle Plugin 1.5.0
+* [PR 563](https://github.com/pushtorefresh/storio/pull/563) `PreparedGetObject` blocking for `StorIOSQLite`
+* [PR 568](https://github.com/pushtorefresh/storio/pull/568) `PreparedGetObject` as observable for `StorIOSQLite`
+* [PR 565](https://github.com/pushtorefresh/storio/pull/565) `PreparedGetObject` blocking for `StorIOContentResolver`
+* [PR 570](https://github.com/pushtorefresh/storio/pull/570) `PreparedGetObject` as observable for `StorIOContentResolver`
+* [PR 560](https://github.com/pushtorefresh/storio/pull/560) `PutResult` and `DeleteResult` allow `0` updated tables
+* [PR 562](https://github.com/pushtorefresh/storio/pull/562) Switch to Gradle wrapper 2.9
+* [PR 558](https://github.com/pushtorefresh/storio/pull/558) Add module with common annotations processing logic
+* [PR 548](https://github.com/pushtorefresh/storio/pull/548) Add annotation processor for `StorIOContentResolver`
+* [PR 553](https://github.com/pushtorefresh/storio/pull/553) Switch to supportLibs 23.1.0
+
 ## Version 1.6.1
 
 _2015_11_7_
