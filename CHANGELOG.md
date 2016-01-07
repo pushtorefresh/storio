@@ -6,7 +6,7 @@ StorIO Change Log
 _2015_12_30_
 
 * Option to get one object for `StorIOSQLite` and `StorIOContentResolver`
-* Handle backpressure for `Get` operation via RxJava
+* Handle backpressure for `Get` operation via RxJava (**requires RxJava 1.1.0**)
 * `SQLiteTypeMapping` and `ContentResolverTypeMapping` generation
 * Annotation processor for `StorIOContentResolver` 
 * Option to set different uri's for `insert`, `update` and `delete` (`StorIOContentResolver`)
