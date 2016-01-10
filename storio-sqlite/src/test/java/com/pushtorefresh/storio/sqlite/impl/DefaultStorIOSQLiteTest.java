@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import rx.observers.TestSubscriber;
@@ -240,6 +241,65 @@ public class DefaultStorIOSQLiteTest {
 
         // Indirect type mapping for AutoValue_ConcreteEntity should get type mapping for ConcreteEntity, not for Entity!
         assertThat(storIOSQLite.internal().typeMapping(AutoValue_ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
+    }
+
+    interface InterfaceEntity {
+    }
+
+    @Test
+    public void typeMappingShouldFindInterface() {
+        //noinspection unchecked
+        SQLiteTypeMapping<InterfaceEntity> typeMapping = mock(SQLiteTypeMapping.class);
+
+        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .addTypeMapping(InterfaceEntity.class, typeMapping)
+                .build();
+
+        assertThat(storIOSQLite.internal().typeMapping(InterfaceEntity.class)).isSameAs(typeMapping);
+    }
+
+    @Test
+    public void typeMappingShouldFindIndirectTypeMappingForClassThatImplementsKnownInterface() {
+        //noinspection unchecked
+        SQLiteTypeMapping<InterfaceEntity> typeMapping = mock(SQLiteTypeMapping.class);
+
+        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .addTypeMapping(InterfaceEntity.class, typeMapping)
+                .build();
+
+        class ConcreteEntity implements InterfaceEntity {
+        }
+
+        assertThat(storIOSQLite.internal().typeMapping(ConcreteEntity.class)).isSameAs(typeMapping);
+
+        // Just to make sure that we don't return this type mapping for all classes.
+        assertThat(storIOSQLite.internal().typeMapping(Random.class)).isNull();
+    }
+
+    @Test
+    public void typeMappingShouldFindIndirectTypeMappingForClassThatHasParentThatImplementsKnownInterface() {
+        //noinspection unchecked
+        SQLiteTypeMapping<InterfaceEntity> typeMapping = mock(SQLiteTypeMapping.class);
+
+        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .addTypeMapping(InterfaceEntity.class, typeMapping)
+                .build();
+
+        class ConcreteEntity implements InterfaceEntity {
+        }
+
+        class Parent_ConcreteEntity extends ConcreteEntity {
+        }
+
+
+        assertThat(storIOSQLite.internal().typeMapping(Parent_ConcreteEntity.class)).isSameAs(typeMapping);
+
+        // Just to make sure that we don't return this type mapping for all classes.
+        assertThat(storIOSQLite.internal().typeMapping(Random.class)).isNull();
+
     }
 
     @Test
