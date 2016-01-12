@@ -88,12 +88,38 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      *
      * @return non-null {@link Observable} which will emit non-null
      * list with mapped results and will be subscribed to changes of tables from query.
+     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
      */
     @NonNull
     @CheckResult
     @Override
     public Observable<Cursor> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return asRxObservable();
+    }
+
+    /**
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
+     * and will emit result each time change occurs.
+     * <p>
+     * First result will be emitted immediately after subscription,
+     * other emissions will occur only if changes of tables from query will occur during lifetime of
+     * the {@link Observable}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because
+     * it's "Hot" and endless.
+     *
+     * @return non-null {@link Observable} which will emit non-null
+     * list with mapped results and will be subscribed to changes of tables from query.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Observable<Cursor> asRxObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         final Set<String> tables;
 

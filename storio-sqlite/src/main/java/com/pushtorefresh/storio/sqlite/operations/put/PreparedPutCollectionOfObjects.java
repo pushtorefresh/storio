@@ -169,12 +169,33 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
      *
      * @return non-null {@link Observable} which will perform Put Operation.
      * and send result to observer.
+     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
      */
     @NonNull
     @CheckResult
     @Override
     public Observable<PutResults<T>> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return asRxObservable();
+    }
+
+    /**
+     * Creates {@link Observable} which will perform Put Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * put only after subscribing to it. Also, it emits the result once.
+     * <p>
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Put Operation.
+     * and send result to observer.
+     */
+    @NonNull
+    @Override
+    public Observable<PutResults<T>> asRxObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         return Observable
                 .create(OnSubscribeExecuteAsBlocking.newInstance(this))

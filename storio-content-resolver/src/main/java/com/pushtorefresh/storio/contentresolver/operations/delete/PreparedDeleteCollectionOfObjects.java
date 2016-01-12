@@ -124,12 +124,34 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
      *
      * @return non-null {@link Observable} which will perform Delete Operation.
      * and send result to observer.
+     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
      */
     @NonNull
     @CheckResult
     @Override
     public Observable<DeleteResults<T>> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return asRxObservable();
+    }
+
+    /**
+     * Creates {@link Observable} which will perform Delete Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * delete only after subscribing to it. Also, it emits the result once.
+     * <p>
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Delete Operation.
+     * and send result to observer.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Observable<DeleteResults<T>> asRxObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         return Observable
                 .create(OnSubscribeExecuteAsBlocking.newInstance(this))

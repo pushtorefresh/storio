@@ -127,12 +127,39 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
      * @return non-null {@link Observable} which will emit single object
      * (can be {@code null}, if no items are found)
      * with mapped results and will be subscribed to changes of tables from query
+     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
      */
     @NonNull
     @CheckResult
     @Override
     public Observable<T> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return asRxObservable();
+    }
+
+    /**
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
+     * and will emit result each time change occurs.
+     * <p>
+     * First result will be emitted immediately after subscription,
+     * other emissions will occur only if changes of tables from query will occur during lifetime of
+     * the {@link Observable}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because
+     * it's "Hot" and endless.
+     *
+     * @return non-null {@link Observable} which will emit single object
+     * (can be {@code null}, if no items are found)
+     * with mapped results and will be subscribed to changes of tables from query
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Observable<T> asRxObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         final Set<String> tables;
 
