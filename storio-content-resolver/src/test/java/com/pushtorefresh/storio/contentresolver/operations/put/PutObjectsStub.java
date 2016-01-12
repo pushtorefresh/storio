@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -152,6 +153,19 @@ class PutObjectsStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyBehaviorForMultipleObjects(@NonNull Single<PutResults<TestItem>> putResultsSingle) {
+        new ObservableBehaviorChecker<PutResults<TestItem>>()
+                .observable(putResultsSingle.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<PutResults<TestItem>>() {
+                    @Override
+                    public void call(PutResults<TestItem> putResults) {
+                        verifyBehaviorForMultipleObjects(putResults);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
     void verifyBehaviorForOneObject(@NonNull PutResult putResult) {
         Map<TestItem, PutResult> putResultsMap = new HashMap<TestItem, PutResult>(1);
         putResultsMap.put(items.get(0), putResult);
@@ -161,6 +175,19 @@ class PutObjectsStub {
     void verifyBehaviorForOneObject(@NonNull Observable<PutResult> putResultObservable) {
         new ObservableBehaviorChecker<PutResult>()
                 .observable(putResultObservable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<PutResult>() {
+                    @Override
+                    public void call(PutResult putResult) {
+                        verifyBehaviorForOneObject(putResult);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForOneObject(@NonNull Single<PutResult> putResultSingle) {
+        new ObservableBehaviorChecker<PutResult>()
+                .observable(putResultSingle.toObservable())
                 .expectedNumberOfEmissions(1)
                 .testAction(new Action1<PutResult>() {
                     @Override

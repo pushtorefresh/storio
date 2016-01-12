@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import rx.Observable;
+import rx.Single;
 
 /**
  * Common API of all prepared operations
@@ -37,4 +38,14 @@ public interface PreparedOperation<Result> {
     @NonNull
     @CheckResult
     Observable<Result> createObservable();
+
+    /**
+     * Creates {@link rx.Single} that emits result of Operation lazily when somebody subscribes to it.
+     * <p>
+     *
+     * @return single result of operation.
+     */
+    @NonNull
+    @CheckResult
+    Single<Result> asRxSingle();
 }

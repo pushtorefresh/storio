@@ -16,6 +16,7 @@ import org.robolectric.annotation.Config;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -27,7 +28,7 @@ public class GetOperationTest extends IntegrationTest {
 
     @Test
     public void getCursorExecuteAsBlocking() {
-        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
                 .observeChangesOfUri(TestItem.CONTENT_URI)
@@ -59,7 +60,7 @@ public class GetOperationTest extends IntegrationTest {
 
     @Test
     public void getListOfObjectsExecuteAsBlocking() {
-        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
                 .observeChangesOfUri(TestItem.CONTENT_URI)
@@ -169,8 +170,91 @@ public class GetOperationTest extends IntegrationTest {
     }
 
     @Test
+    public void getCursorAsSingleOnlyInitialValue() {
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItemToInsert = TestItem.create(null, "value");
+
+        contentResolver.insert(TestItem.CONTENT_URI, testItemToInsert.toContentValues());
+
+        final TestSubscriber<Cursor> cursorTestSubscriber = new TestSubscriber<Cursor>();
+
+        storIOContentResolver
+                .get()
+                .cursor()
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .build())
+                .prepare()
+                .asRxSingle()
+                .subscribe(cursorTestSubscriber);
+
+        cursorTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        cursorTestSubscriber.assertNoErrors();
+
+        List<Cursor> listOfCursors = cursorTestSubscriber.getOnNextEvents();
+
+        assertThat(listOfCursors).hasSize(1);
+
+        Assertions.assertThat(listOfCursors.get(0)).hasCount(1);
+        listOfCursors.get(0).moveToFirst();
+        assertThat(testItemToInsert.equalsWithoutId(TestItem.fromCursor(listOfCursors.get(0))))
+                .isTrue();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void getListOfObjectsAsSingleOnlyInitialValue() {
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItemToInsert = TestItem.create(null, "value");
+
+        contentResolver.insert(TestItem.CONTENT_URI, testItemToInsert.toContentValues());
+
+        final TestSubscriber<List<TestItem>> listTestSubscriber = new TestSubscriber<List<TestItem>>();
+
+        storIOContentResolver
+                .get()
+                .listOfObjects(TestItem.class)
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .build())
+                .prepare()
+                .asRxSingle()
+                .subscribe(listTestSubscriber);
+
+        listTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        listTestSubscriber.assertNoErrors();
+
+        List<List<TestItem>> listOfObjects = listTestSubscriber.getOnNextEvents();
+
+        assertThat(listOfObjects).hasSize(1);
+
+        assertThat(listTestSubscriber.getOnNextEvents()).hasSize(1);
+        assertThat(testItemToInsert.equalsWithoutId(listTestSubscriber.getOnNextEvents().get(0).get(0)))
+                .isTrue();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
     public void getNumberOfResults() {
-        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
                 .observeChangesOfUri(TestItem.CONTENT_URI)
@@ -204,7 +288,7 @@ public class GetOperationTest extends IntegrationTest {
 
     @Test
     public void getExistedObjectExecuteAsBlocking() {
-        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
                 .observeChangesOfUri(TestItem.CONTENT_URI)
@@ -238,7 +322,7 @@ public class GetOperationTest extends IntegrationTest {
 
     @Test
     public void getNonExistedObjectExecuteAsBlocking() {
-        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
                 .observeChangesOfUri(TestItem.CONTENT_URI)
@@ -268,6 +352,13 @@ public class GetOperationTest extends IntegrationTest {
 
     @Test
     public void getExistedObjectExecuteAsObservable() {
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
         TestItem expectedItem = TestItem.create(null, "value");
         contentResolver.insert(TestItem.CONTENT_URI, expectedItem.toContentValues());
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
@@ -294,10 +385,21 @@ public class GetOperationTest extends IntegrationTest {
         List<TestItem> emmitedItems = testSubscriber.getOnNextEvents();
         assertThat(emmitedItems.size()).isEqualTo(1);
         assertThat(expectedItem.equalsWithoutId(emmitedItems.get(0))).isTrue();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
     }
 
     @Test
     public void getNonExistedObjectExecuteAsObservable() {
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value").toContentValues());
 
         Observable<TestItem> testItemObservable = storIOContentResolver
@@ -318,6 +420,84 @@ public class GetOperationTest extends IntegrationTest {
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertValue(null);
         testSubscriber.assertNoErrors();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void getExistedObjectExecuteAsSingle() {
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
+        TestItem expectedItem = TestItem.create(null, "value");
+        contentResolver.insert(TestItem.CONTENT_URI, expectedItem.toContentValues());
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
+
+        Single<TestItem> testItemSingle = storIOContentResolver
+                .get()
+                .object(TestItem.class)
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .where(TestItem.COLUMN_VALUE + "=?")
+                        .whereArgs("value")
+                        .build())
+                .prepare()
+                .asRxSingle();
+
+        TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+        testItemSingle.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertNoErrors();
+
+        List<TestItem> emmitedItems = testSubscriber.getOnNextEvents();
+        assertThat(emmitedItems.size()).isEqualTo(1);
+        assertThat(expectedItem.equalsWithoutId(emmitedItems.get(0))).isTrue();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void getNonExistedObjectExecuteAsSingle() {
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value").toContentValues());
+
+        Single<TestItem> testItemSingle = storIOContentResolver
+                .get()
+                .object(TestItem.class)
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .where(TestItem.COLUMN_VALUE + "=?")
+                        .whereArgs("some value")
+                        .build())
+                .prepare()
+                .asRxSingle();
+
+        TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+        testItemSingle.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertValue(null);
+        testSubscriber.assertNoErrors();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
     }
 
     @Test

@@ -9,6 +9,7 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,6 +53,20 @@ public class PreparedDeleteObjectTest {
 
             deleteStub.verifyBehaviorForDeleteOneObject(observable);
         }
+
+        @Test
+        public void shouldDeleteObjectWithoutTypeMappingAsSingle() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObjectWithoutTypeMapping();
+
+            final Single<DeleteResult> single = deleteStub.storIOContentResolver
+                    .delete()
+                    .object(deleteStub.items.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            deleteStub.verifyBehaviorForDeleteOneObject(single);
+        }
     }
 
     public static class WithTypeMapping {
@@ -80,6 +95,19 @@ public class PreparedDeleteObjectTest {
                     .createObservable();
 
             deleteStub.verifyBehaviorForDeleteOneObject(observable);
+        }
+
+        @Test
+        public void shouldDeleteObjectWithTypeMappingAsSingle() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObjectWithTypeMapping();
+
+            final Single<DeleteResult> single = deleteStub.storIOContentResolver
+                    .delete()
+                    .object(deleteStub.items.get(0))
+                    .prepare()
+                    .asRxSingle();
+
+            deleteStub.verifyBehaviorForDeleteOneObject(single);
         }
     }
 
@@ -130,6 +158,37 @@ public class PreparedDeleteObjectTest {
                     .object(TestItem.newInstance())
                     .prepare()
                     .createObservable()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOContentResolver).delete();
+            verify(storIOContentResolver).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOContentResolver, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsSingle() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+
+            when(storIOContentResolver.internal()).thenReturn(internal);
+
+            when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
+
+            final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
+
+            storIOContentResolver
+                    .delete()
+                    .object(TestItem.newInstance())
+                    .prepare()
+                    .asRxSingle()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

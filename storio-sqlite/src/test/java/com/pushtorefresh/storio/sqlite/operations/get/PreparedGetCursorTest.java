@@ -10,6 +10,7 @@ import com.pushtorefresh.storio.sqlite.queries.Query;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singleton;
@@ -55,6 +56,21 @@ public class PreparedGetCursorTest {
     }
 
     @Test
+    public void shouldGetCursorWithQueryAsSingle() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+
+        final Single<Cursor> cursorSingle = getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare()
+                .asRxSingle();
+
+        getStub.verifyQueryBehaviorForCursor(cursorSingle);
+    }
+
+    @Test
     public void shouldGetCursorWithRawQueryBlocking() {
         final GetCursorStub getStub = GetCursorStub.newInstance();
 
@@ -83,6 +99,21 @@ public class PreparedGetCursorTest {
                 .take(1);
 
         getStub.verifyRawQueryBehaviorForCursor(cursorObservable);
+    }
+
+    @Test
+    public void shouldGetCursorWithRawQueryAsSingle() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+
+        final Single<Cursor> cursorSingle = getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare()
+                .asRxSingle();
+
+        getStub.verifyRawQueryBehaviorForCursor(cursorSingle);
     }
 
     @Test
@@ -142,6 +173,33 @@ public class PreparedGetCursorTest {
     }
 
     @Test
+    public void shouldWrapExceptionIntoStorIOExceptionForSingle() {
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+        //noinspection unchecked
+        final GetResolver<Cursor> getResolver = mock(GetResolver.class);
+
+        when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
+                .thenThrow(new IllegalStateException("test exception"));
+
+        final TestSubscriber<Cursor> testSubscriber = new TestSubscriber<Cursor>();
+
+        new PreparedGetCursor.Builder(storIOSQLite)
+                .withQuery(Query.builder().table("test_table").build())
+                .withGetResolver(getResolver)
+                .prepare()
+                .asRxSingle()
+                .subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(60, SECONDS);
+        testSubscriber.assertError(StorIOException.class);
+
+        StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        IllegalStateException cause = (IllegalStateException) storIOException.getCause();
+        assertThat(cause).hasMessage("test exception");
+    }
+
+    @Test
     public void completeBuilderShouldThrowExceptionIfNoQueryWasSet() {
         PreparedGetCursor.CompleteBuilder completeBuilder = new PreparedGetCursor.Builder(mock(StorIOSQLite.class))
                 .withQuery(Query.builder().table("test_table").build()); // We will null it later
@@ -178,6 +236,7 @@ public class PreparedGetCursorTest {
                 = new PreparedGetCursor(mock(StorIOSQLite.class), (Query) null, (GetResolver<Cursor>) mock(GetResolver.class));
 
         try {
+            //noinspection ResourceType
             preparedGetCursor.createObservable();
             failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {

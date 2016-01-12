@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.util.HashSet;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static java.util.Arrays.asList;
@@ -61,6 +62,32 @@ public class PreparedExecuteSQLTest {
                 .createObservable();
 
         stub.verifyBehavior(observable);
+    }
+
+    @Test
+    public void executeSQLSingleWithNotification() {
+        final Stub stub = Stub.newInstanceWithNotification();
+
+        final Single<Object> single = stub.storIOSQLite
+                .executeSQL()
+                .withQuery(stub.rawQuery)
+                .prepare()
+                .asRxSingle();
+
+        stub.verifyBehavior(single);
+    }
+
+    @Test
+    public void executeSQLSingleWithoutNotifications() {
+        final Stub stub = Stub.newInstanceWithoutNotification();
+
+        final Single<Object> single = stub.storIOSQLite
+                .executeSQL()
+                .withQuery(stub.rawQuery)
+                .prepare()
+                .asRxSingle();
+
+        stub.verifyBehavior(single);
     }
 
     @Test
@@ -140,6 +167,19 @@ public class PreparedExecuteSQLTest {
         void verifyBehavior(@NonNull Observable<Object> observable) {
             new ObservableBehaviorChecker<Object>()
                     .observable(observable)
+                    .expectedNumberOfEmissions(1)
+                    .testAction(new Action1<Object>() {
+                        @Override
+                        public void call(Object anObject) {
+                            verifyBehavior();
+                        }
+                    })
+                    .checkBehaviorOfObservable();
+        }
+
+        void verifyBehavior(@NonNull Single<Object> single) {
+            new ObservableBehaviorChecker<Object>()
+                    .observable(single.toObservable())
                     .expectedNumberOfEmissions(1)
                     .testAction(new Action1<Object>() {
                         @Override

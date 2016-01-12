@@ -10,6 +10,7 @@ import com.pushtorefresh.storio.sqlite.queries.Query;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singleton;
@@ -55,6 +56,21 @@ public class PreparedGetNumberOfResultsTest {
     }
 
     @Test
+    public void shouldGetNumberOfResultsWithQueryAsSingle() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+
+        final Single<Integer> numberOfResultsSingle = getStub.storIOSQLite
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare()
+                .asRxSingle();
+
+        getStub.verifyQueryBehaviorForInteger(numberOfResultsSingle);
+    }
+
+    @Test
     public void shouldGetNumberOfResultsWithRawQueryBlocking() {
         final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
 
@@ -83,6 +99,21 @@ public class PreparedGetNumberOfResultsTest {
                 .take(1);
 
         getStub.verifyRawQueryBehaviorForInteger(numberOfResultsObservable);
+    }
+
+    @Test
+    public void shouldGetNumberOfResultsWithRawQueryAsSingle() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+
+        final Single<Integer> numberOfResultsSingle = getStub.storIOSQLite
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare()
+                .asRxSingle();
+
+        getStub.verifyRawQueryBehaviorForInteger(numberOfResultsSingle);
     }
 
     @Test
@@ -140,6 +171,34 @@ public class PreparedGetNumberOfResultsTest {
         assertThat(cause).hasMessage("test exception");
 
         testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void shouldWrapExceptionIntoStorIOExceptionForSingle() {
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+        //noinspection unchecked
+        final GetResolver<Integer> getResolver = mock(GetResolver.class);
+
+        when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
+                .thenThrow(new IllegalStateException("test exception"));
+
+        final TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
+
+        new PreparedGetNumberOfResults.Builder(storIOSQLite)
+                .withQuery(Query.builder().table("test_table").build())
+                .withGetResolver(getResolver)
+                .prepare()
+                .asRxSingle()
+                .subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(60, SECONDS);
+        testSubscriber.assertError(StorIOException.class);
+
+        assertThat(testSubscriber.getOnErrorEvents()).hasSize(1);
+        StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        IllegalStateException cause = (IllegalStateException) storIOException.getCause();
+        assertThat(cause).hasMessage("test exception");
     }
 
     @Test

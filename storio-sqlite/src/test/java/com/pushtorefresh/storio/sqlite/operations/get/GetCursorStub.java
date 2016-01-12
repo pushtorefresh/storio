@@ -10,6 +10,7 @@ import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static java.util.Collections.singleton;
@@ -109,6 +110,19 @@ class GetCursorStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyQueryBehaviorForCursor(@NonNull Single<Cursor> single) {
+        new ObservableBehaviorChecker<Cursor>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<Cursor>() {
+                    @Override
+                    public void call(Cursor cursor) {
+                        verifyQueryBehaviorForCursor(cursor);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
     void verifyRawQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
         assertThat(actualCursor).isNotNull();
         verify(storIOSQLite, times(1)).get();
@@ -126,6 +140,21 @@ class GetCursorStub {
                     public void call(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
                         verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
+                        verifyRawQueryBehaviorForCursor(cursor);
+                    }
+                })
+                .checkBehaviorOfObservable();
+
+        assertThat(rawQuery.observesTables()).isNotNull();
+    }
+
+    void verifyRawQueryBehaviorForCursor(@NonNull Single<Cursor> single) {
+        new ObservableBehaviorChecker<Cursor>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<Cursor>() {
+                    @Override
+                    public void call(Cursor cursor) {
                         verifyRawQueryBehaviorForCursor(cursor);
                     }
                 })

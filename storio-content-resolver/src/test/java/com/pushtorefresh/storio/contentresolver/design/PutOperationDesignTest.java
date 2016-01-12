@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 
 import static org.mockito.Mockito.mock;
 
@@ -72,6 +73,19 @@ public class PutOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
+    public void putObjectSingle() {
+        Article article = Article.newInstance(null, "test");
+
+        Single<PutResult> putResultSingle = storIOContentResolver()
+                .put()
+                .object(article)
+                .withPutResolver(ArticleMeta.PUT_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+
+    @Test
     public void putCollectionOfObjectsBlocking() {
         Collection<Article> articles = new ArrayList<Article>();
 
@@ -93,6 +107,18 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .withPutResolver(ArticleMeta.PUT_RESOLVER)
                 .prepare()
                 .createObservable();
+    }
+
+    @Test
+    public void putCollectionOfObjectsSingle() {
+        Collection<Article> articles = new ArrayList<Article>();
+
+        Single<PutResults<Article>> putResultsSingle = storIOContentResolver()
+                .put()
+                .objects(articles)
+                .withPutResolver(ArticleMeta.PUT_RESOLVER)
+                .prepare()
+                .asRxSingle();
     }
 
     @Test
@@ -120,6 +146,19 @@ public class PutOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
+    public void putContentValuesSingle() {
+        ContentValues contentValues = mock(ContentValues.class);
+
+        Single<PutResult> putResultSingle = storIOContentResolver()
+                .put()
+                .contentValues(contentValues)
+                .withPutResolver(putResolverForContentValues)
+                .prepare()
+                .asRxSingle();
+    }
+
+
+    @Test
     public void putContentValuesIterableBlocking() {
         List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
 
@@ -141,5 +180,17 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .withPutResolver(putResolverForContentValues)
                 .prepare()
                 .createObservable();
+    }
+
+    @Test
+    public void putContentValuesIterableSingle() {
+        List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
+
+        Single<PutResults<ContentValues>> putResultsSingle = storIOContentResolver()
+                .put()
+                .contentValues(contentValuesList)
+                .withPutResolver(putResolverForContentValues)
+                .prepare()
+                .asRxSingle();
     }
 }
