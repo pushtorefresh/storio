@@ -138,7 +138,7 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
     /**
      * Builder for {@link PreparedGetNumberOfResults}.
      */
-     public static final class Builder {
+     public static class Builder {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;
@@ -165,7 +165,7 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
     /**
      * Compile-time safe part of builder for {@link PreparedGetNumberOfResults}.
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         @NonNull
         static final GetResolver<Integer> STANDARD_GET_RESOLVER = new DefaultGetResolver<Integer>() {

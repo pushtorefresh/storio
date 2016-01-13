@@ -23,7 +23,7 @@ import rx.schedulers.Schedulers;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
-public final class PreparedPutContentValuesIterable extends PreparedPut<PutResults<ContentValues>> {
+public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValuesIterable;
@@ -183,7 +183,7 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
     /**
      * Builder for {@link PreparedPutContentValuesIterable}
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -219,7 +219,7 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
     /**
      * Compile-time safe part of {@link Builder}
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;

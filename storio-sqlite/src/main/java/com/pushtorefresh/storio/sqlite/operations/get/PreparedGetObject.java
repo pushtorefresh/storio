@@ -210,7 +210,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
      *
      * @param <T> type of objects.
      */
-    public static final class Builder<T> {
+    public static class Builder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -257,7 +257,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
      *
      * @param <T> type of objects.
      */
-    public static final class CompleteBuilder<T> {
+    public static class CompleteBuilder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;

@@ -24,7 +24,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
 /**
  * Prepared Execute SQL Operation for {@link StorIOSQLite}.
  */
-public final class PreparedExecuteSQL implements PreparedOperation<Object> {
+public class PreparedExecuteSQL implements PreparedOperation<Object> {
 
     @NonNull
     private final StorIOSQLite storIOSQLite;
@@ -145,7 +145,7 @@ public final class PreparedExecuteSQL implements PreparedOperation<Object> {
     /**
      * Builder for {@link PreparedExecuteSQL}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -172,7 +172,7 @@ public final class PreparedExecuteSQL implements PreparedOperation<Object> {
     /**
      * Compile-time safe part of {@link Builder}.
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;

@@ -32,7 +32,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  *
  * @param <T> type of objects to delete.
  */
-public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteResults<T>> {
+public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteResults<T>> {
 
     @NonNull
     private final Collection<T> objects;
@@ -235,7 +235,7 @@ public final class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<D
      *
      * @param <T> type of objects to delete.
      */
-    public static final class Builder<T> {
+    public static class Builder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
