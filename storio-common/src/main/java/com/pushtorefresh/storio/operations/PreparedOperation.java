@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.operations;
 
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import rx.Observable;
@@ -22,9 +23,9 @@ public interface PreparedOperation<Result> {
      * So please, execute blocking I/O operation only from background thread.
      * See {@link WorkerThread}.
      *
-     * @return non-null result of operation.
+     * @return nullable result of operation.
      */
-    @NonNull
+    @Nullable
     @WorkerThread
     Result executeAsBlocking();
 
