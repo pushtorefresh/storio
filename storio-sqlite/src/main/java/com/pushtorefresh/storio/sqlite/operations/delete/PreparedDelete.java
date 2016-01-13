@@ -25,7 +25,7 @@ public abstract class PreparedDelete<T> implements PreparedOperation<T> {
     /**
      * Builder for {@link PreparedDelete}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;

@@ -21,7 +21,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
 /**
  * Prepared Put Operation for {@link StorIOSQLite}.
  */
-public final class PreparedPutContentValues extends PreparedPut<PutResult> {
+public class PreparedPutContentValues extends PreparedPut<PutResult> {
 
     @NonNull
     private final ContentValues contentValues;
@@ -129,7 +129,7 @@ public final class PreparedPutContentValues extends PreparedPut<PutResult> {
     /**
      * Builder for {@link PreparedPutContentValues}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -165,7 +165,7 @@ public final class PreparedPutContentValues extends PreparedPut<PutResult> {
     /**
      * Compile-time safe part of {@link Builder}.
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;

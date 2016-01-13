@@ -20,7 +20,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
 /**
  * Prepared Put Operation for {@link ContentValues}.
  */
-public final class PreparedPutContentValues extends PreparedPut<PutResult> {
+public class PreparedPutContentValues extends PreparedPut<PutResult> {
 
     @NonNull
     private final ContentValues contentValues;
@@ -128,7 +128,7 @@ public final class PreparedPutContentValues extends PreparedPut<PutResult> {
      * <p>
      * Required: You should specify put resolver see {@link #withPutResolver(PutResolver)}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;
@@ -168,7 +168,7 @@ public final class PreparedPutContentValues extends PreparedPut<PutResult> {
     /**
      * Compile-time safe part of builder for {@link PreparedPutContentValues}.
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;

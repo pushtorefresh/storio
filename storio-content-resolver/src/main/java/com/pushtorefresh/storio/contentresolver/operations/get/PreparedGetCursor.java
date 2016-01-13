@@ -25,7 +25,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  * which performs query that retrieves data as {@link Cursor}.
  * from {@link android.content.ContentProvider}.
  */
-public final class PreparedGetCursor extends PreparedGet<Cursor> {
+public class PreparedGetCursor extends PreparedGet<Cursor> {
 
     @NonNull
     private final GetResolver<Cursor> getResolver;
@@ -138,7 +138,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      * <p>
      * Required: You should specify query see {@link #withQuery(Query)}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         final StorIOContentResolver storIOContentResolver;
@@ -163,7 +163,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     /**
      * Compile-time safe part of builder for {@link PreparedGetCursor}.
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
             @NonNull

@@ -27,7 +27,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
 /**
  * Prepared Get Operation for {@link StorIOSQLite}.
  */
-public final class PreparedGetCursor extends PreparedGet<Cursor> {
+public class PreparedGetCursor extends PreparedGet<Cursor> {
 
     @NonNull
     private final GetResolver<Cursor> getResolver;
@@ -172,7 +172,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      * Required: You should specify query by call
      * {@link #withQuery(Query)} or {@link #withQuery(RawQuery)}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -212,7 +212,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     /**
      * Compile-time safe part of builder for {@link PreparedGetCursor}.
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         @NonNull
         static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {

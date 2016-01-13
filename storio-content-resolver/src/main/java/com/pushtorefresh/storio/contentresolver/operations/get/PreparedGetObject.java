@@ -28,7 +28,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  *
  * @param <T> type of result.
  */
-public final class PreparedGetObject<T> extends PreparedGet<T> {
+public class PreparedGetObject<T> extends PreparedGet<T> {
 
     @NonNull
     private final Class<T> type;
@@ -181,7 +181,7 @@ public final class PreparedGetObject<T> extends PreparedGet<T> {
      *
      * @param <T> type of objects for query.
      */
-    public static final class Builder<T> {
+    public static class Builder<T> {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;
@@ -212,7 +212,7 @@ public final class PreparedGetObject<T> extends PreparedGet<T> {
      *
      * @param <T> type of objects for query.
      */
-    public static final class CompleteBuilder<T> {
+    public static class CompleteBuilder<T> {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;

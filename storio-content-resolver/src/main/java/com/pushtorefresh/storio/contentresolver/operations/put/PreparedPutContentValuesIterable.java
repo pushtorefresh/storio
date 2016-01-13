@@ -24,7 +24,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  * Prepared Put Operation to perform put multiple {@link ContentValues}
  * into {@link StorIOContentResolver}.
  */
-public final class PreparedPutContentValuesIterable extends PreparedPut<PutResults<ContentValues>> {
+public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValues;
@@ -139,7 +139,7 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
      * <p>
      * Required: You should specify query see {@link #withPutResolver(PutResolver)}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;
@@ -171,7 +171,7 @@ public final class PreparedPutContentValuesIterable extends PreparedPut<PutResul
     /**
      * Compile-time safe part of builder for {@link PreparedPutContentValuesIterable}.
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;

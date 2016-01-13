@@ -24,7 +24,7 @@ import rx.schedulers.Schedulers;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
-public final class PreparedGetNumberOfResults extends PreparedGet<Integer> {
+public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
 
     @NonNull
     private final GetResolver<Integer> getResolver;
@@ -170,7 +170,7 @@ public final class PreparedGetNumberOfResults extends PreparedGet<Integer> {
     /**
      * Builder for {@link PreparedGetNumberOfResults}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -211,7 +211,7 @@ public final class PreparedGetNumberOfResults extends PreparedGet<Integer> {
     /**
      * Compile-time safe part of builder for {@link PreparedGetNumberOfResults}.
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         @NonNull
         static final GetResolver<Integer> STANDARD_GET_RESOLVER = new DefaultGetResolver<Integer>() {

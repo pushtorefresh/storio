@@ -22,7 +22,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  * Prepared Delete Operation for
  * {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
  */
-public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
+public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
     @NonNull
     private final T object;
@@ -149,7 +149,7 @@ public final class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> 
      *
      * @param <T> type of object to delete.
      */
-    public static final class Builder<T> {
+    public static class Builder<T> {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;

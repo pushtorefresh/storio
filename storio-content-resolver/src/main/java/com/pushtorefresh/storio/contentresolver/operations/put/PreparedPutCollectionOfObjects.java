@@ -29,7 +29,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  *
  * @param <T> type of objects.
  */
-public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>> {
+public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>> {
 
     @NonNull
     private final Collection<T> objects;
@@ -183,7 +183,7 @@ public final class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResu
      *
      * @param <T> type of objects to put.
      */
-    public static final class Builder<T> {
+    public static class Builder<T> {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;

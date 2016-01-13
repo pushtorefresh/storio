@@ -25,7 +25,7 @@ public abstract class PreparedPut<Result> implements PreparedOperation<Result> {
     /**
      * Builder for {@link PreparedPut}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOContentResolver storIOContentResolver;

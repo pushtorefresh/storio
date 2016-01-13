@@ -39,7 +39,7 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
     /**
      * Builder for {@link PreparedGet}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
