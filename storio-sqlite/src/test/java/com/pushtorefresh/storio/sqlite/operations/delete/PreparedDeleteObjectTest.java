@@ -9,6 +9,7 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,6 +55,20 @@ public class PreparedDeleteObjectTest {
         }
 
         @Test
+        public void shouldDeleteObjectWithoutTypeMappingAsSingle() {
+            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
+
+            final Single<DeleteResult> single = deleteStub.storIOSQLite
+                    .delete()
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            deleteStub.verifyBehaviorForOneObject(single);
+        }
+
+        @Test
         public void shouldNotNotifyIfWasNotDeleted() {
             final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMappingNothingDeleted();
 
@@ -94,6 +109,19 @@ public class PreparedDeleteObjectTest {
                     .createObservable();
 
             deleteStub.verifyBehaviorForOneObject(observable);
+        }
+
+        @Test
+        public void shouldDeleteObjectWithTypeMappingAsSingle() {
+            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithTypeMapping();
+
+            final Single<DeleteResult> single = deleteStub.storIOSQLite
+                    .delete()
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
+                    .prepare()
+                    .asRxSingle();
+
+            deleteStub.verifyBehaviorForOneObject(single);
         }
     }
 
@@ -149,7 +177,37 @@ public class PreparedDeleteObjectTest {
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
             assertThat(testSubscriber.getOnErrorEvents().get(0)).
-                hasCauseInstanceOf(IllegalStateException.class);
+                    hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOSQLite).delete();
+            verify(storIOSQLite).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbAsSingle() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.internal()).thenReturn(internal);
+
+            when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
+
+            final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
+
+            storIOSQLite
+                    .delete()
+                    .object(TestItem.newInstance())
+                    .prepare()
+                    .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0)).
+                    hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).delete();
             verify(storIOSQLite).internal();

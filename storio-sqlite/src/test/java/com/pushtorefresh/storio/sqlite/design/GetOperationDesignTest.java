@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 
 public class GetOperationDesignTest extends OperationDesignTest {
 
@@ -181,5 +182,77 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
                 .createObservable();
+    }
+
+    @Test
+    public void getListOfObjectsSingle() {
+        Single<List<User>> singleUsers = storIOSQLite()
+                .get()
+                .listOfObjects(User.class)
+                .withQuery(Query.builder()
+                        .table("users")
+                        .where("email = ?")
+                        .whereArgs("artem.zinnatullin@gmail.com")
+                        .build())
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
+    public void getListOfObjectsWithRawQuerySingle() {
+        Single<List<User>> singleUsers = storIOSQLite()
+                .get()
+                .listOfObjects(User.class)
+                .withQuery(RawQuery.builder()
+                        .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
+                        .args("arg1", "arg2")
+                        .build())
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
+    public void getObjectSingle() {
+        Single<User> singleUser = storIOSQLite()
+                .get()
+                .object(User.class)
+                .withQuery(Query.builder()
+                        .table("users")
+                        .where("email = ?")
+                        .whereArgs("artem.zinnatullin@gmail.com")
+                        .build())
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
+    public void getObjectWithRawQuerySingle() {
+        Single<User> singleUsers = storIOSQLite()
+                .get()
+                .object(User.class)
+                .withQuery(RawQuery.builder()
+                        .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
+                        .args("arg1", "arg2")
+                        .build())
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
+    public void getCursorSingle() {
+        Single<Cursor> singleCursor = storIOSQLite()
+                .get()
+                .cursor()
+                .withQuery(Query.builder()
+                        .table("users")
+                        .where("email = ?")
+                        .whereArgs("artem.zinnatullin@gmail.com")
+                        .build())
+                .prepare()
+                .asRxSingle();
     }
 }

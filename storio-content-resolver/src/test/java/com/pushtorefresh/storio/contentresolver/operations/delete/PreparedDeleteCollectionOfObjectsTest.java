@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
@@ -55,6 +56,20 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             deleteStub.verifyBehaviorForDeleteMultipleObjects(observable);
         }
+
+        @Test
+        public void shouldDeleteObjectsWithoutTypeMappingAsSingle() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithoutTypeMapping();
+
+            final Single<DeleteResults<TestItem>> single = deleteStub.storIOContentResolver
+                    .delete()
+                    .objects(deleteStub.items)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            deleteStub.verifyBehaviorForDeleteMultipleObjects(single);
+        }
     }
 
     public static class WithTypeMapping {
@@ -83,6 +98,19 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .createObservable();
 
             deleteStub.verifyBehaviorForDeleteMultipleObjects(observable);
+        }
+
+        @Test
+        public void shouldDeleteObjectsWithTypeMappingAsSingle() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithTypeMapping();
+
+            final Single<DeleteResults<TestItem>> single = deleteStub.storIOContentResolver
+                    .delete()
+                    .objects(deleteStub.items)
+                    .prepare()
+                    .asRxSingle();
+
+            deleteStub.verifyBehaviorForDeleteMultipleObjects(single);
         }
     }
 
@@ -144,6 +172,42 @@ public class PreparedDeleteCollectionOfObjectsTest {
             assertThat(testSubscriber.getOnErrorEvents().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOContentResolver).delete();
+            verify(storIOContentResolver).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOContentResolver, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsSingle() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+
+            when(storIOContentResolver.internal()).thenReturn(internal);
+
+            when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
+
+            final TestItem testItem = TestItem.newInstance();
+            final List<TestItem> items = asList(testItem, TestItem.newInstance());
+
+            final TestSubscriber<DeleteResults<TestItem>> testSubscriber = new TestSubscriber<DeleteResults<TestItem>>();
+
+            storIOContentResolver
+                    .delete()
+                    .objects(items)
+                    .prepare()
+                    .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessage(IllegalStateException.class.getName() + ": One of the objects from the collection does not have type mapping: object = " + testItem.toString()
+                            + ", object.class = " + TestItem.class + ",ContentProvider was not affected by this operation, please add type mapping for this type");
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).internal();

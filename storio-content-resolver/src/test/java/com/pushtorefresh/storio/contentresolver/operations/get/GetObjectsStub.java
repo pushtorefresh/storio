@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
@@ -178,6 +179,20 @@ class GetObjectsStub {
                         // Get Operation should be subscribed to changes of Uri!
                         verify(storIOContentResolver).observeChangesOfUri(query.uri());
 
+                        verifyBehavior(testItems);
+                    }
+                })
+                .checkBehaviorOfObservable();
+
+    }
+
+    void verifyBehavior(@NonNull Single<List<TestItem>> single) {
+        new ObservableBehaviorChecker<List<TestItem>>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<List<TestItem>>() {
+                    @Override
+                    public void call(List<TestItem> testItems) {
                         verifyBehavior(testItems);
                     }
                 })

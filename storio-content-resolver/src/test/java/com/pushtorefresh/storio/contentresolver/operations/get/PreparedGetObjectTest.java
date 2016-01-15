@@ -13,6 +13,7 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +60,21 @@ public class PreparedGetObjectTest {
 
             getStub.verifyBehavior(testItemObservable);
         }
+
+        @Test
+        public void shouldGetObjectWithoutTypeMappingAsSingle() {
+            final GetObjectStub getStub = GetObjectStub.newStubWithoutTypeMapping();
+
+            final Single<TestItem> testItemSingle = getStub.storIOContentResolver
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyBehavior(testItemSingle);
+        }
     }
 
     public static class WithTypeMapping {
@@ -90,6 +106,20 @@ public class PreparedGetObjectTest {
                     .take(1);
 
             getStub.verifyBehavior(testItemObservable);
+        }
+
+        @Test
+        public void shouldGetObjectWithTypeMappingAsSingle() {
+            final GetObjectStub getStub = GetObjectStub.newStubWithTypeMapping();
+
+            final Single<TestItem> testItemSingle = getStub.storIOContentResolver
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyBehavior(testItemSingle);
         }
     }
 
@@ -161,6 +191,39 @@ public class PreparedGetObjectTest {
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verify(storIOContentResolver).observeChangesOfUri(any(Uri.class));
+
+            verifyNoMoreInteractions(storIOContentResolver, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingContentProviderAsSingle() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+
+            when(storIOContentResolver.internal()).thenReturn(internal);
+
+            when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
+
+            final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+
+            storIOContentResolver
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(Query.builder().uri(mock(Uri.class)).build())
+                    .prepare()
+                    .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOContentResolver).get();
+            verify(storIOContentResolver).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).query(any(Query.class));
 
             verifyNoMoreInteractions(storIOContentResolver, internal);
         }

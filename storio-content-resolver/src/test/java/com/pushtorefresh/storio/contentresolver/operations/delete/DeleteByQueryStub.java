@@ -8,6 +8,7 @@ import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,6 +78,19 @@ class DeleteByQueryStub {
     void verifyBehavior(@NonNull Observable<DeleteResult> deleteResultObservable) {
         new ObservableBehaviorChecker<DeleteResult>()
                 .observable(deleteResultObservable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<DeleteResult>() {
+                    @Override
+                    public void call(DeleteResult deleteResult) {
+                        verifyBehavior(deleteResult);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
+    void verifyBehavior(@NonNull Single<DeleteResult> deleteResultSingle) {
+        new ObservableBehaviorChecker<DeleteResult>()
+                .observable(deleteResultSingle.toObservable())
                 .expectedNumberOfEmissions(1)
                 .testAction(new Action1<DeleteResult>() {
                     @Override

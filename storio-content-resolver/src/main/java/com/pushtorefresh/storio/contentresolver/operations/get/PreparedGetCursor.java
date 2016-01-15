@@ -11,8 +11,10 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingSingle;
 
 import rx.Observable;
+import rx.Single;
 import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
@@ -23,7 +25,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  * which performs query that retrieves data as {@link Cursor}.
  * from {@link android.content.ContentProvider}.
  */
-public final class PreparedGetCursor extends PreparedGet<Cursor> {
+public class PreparedGetCursor extends PreparedGet<Cursor> {
 
     @NonNull
     private final GetResolver<Cursor> getResolver;
@@ -71,12 +73,37 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
      *
      * @return non-null {@link Observable} which will emit non-null
      * list with mapped results and will be subscribed to changes of {@link #query} Uri.
+     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
      */
     @NonNull
     @CheckResult
     @Override
     public Observable<Cursor> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return asRxObservable();
+    }
+
+    /**
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
+     * and will emit result each time change occurs.
+     * <p>
+     * First result will be emitted immediately after subscription,
+     * other emissions will occur only if changes of {@link #query} Uri will occur.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because
+     * it's "Hot" and endless.
+     *
+     * @return non-null {@link Observable} which will emit non-null
+     * list with mapped results and will be subscribed to changes of {@link #query} Uri.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Observable<Cursor> asRxObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         return storIOContentResolver
                 .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
@@ -87,11 +114,31 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
+     * Creates {@link Single} which will perform Get Operation lazily when somebody subscribes to it and send result to observer.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Single} which will perform Get Operation.
+     * And send result to observer.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Single<Cursor> asRxSingle() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
+
+        return Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(this))
+                .subscribeOn(Schedulers.io());
+    }
+
+    /**
      * Builder for {@link PreparedGetCursor}.
      * <p>
      * Required: You should specify query see {@link #withQuery(Query)}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         final StorIOContentResolver storIOContentResolver;
@@ -116,7 +163,7 @@ public final class PreparedGetCursor extends PreparedGet<Cursor> {
     /**
      * Compile-time safe part of builder for {@link PreparedGetCursor}.
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
             @NonNull

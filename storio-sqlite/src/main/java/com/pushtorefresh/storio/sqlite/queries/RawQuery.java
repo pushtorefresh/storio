@@ -143,7 +143,7 @@ public final class RawQuery {
     /**
      * Builder for {@link RawQuery}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         /**
          * Please use {@link RawQuery#builder()} instead of this.
@@ -168,7 +168,7 @@ public final class RawQuery {
     /**
      * Compile-time safe part of builder for {@link DeleteQuery}
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         @NonNull
         private String query;

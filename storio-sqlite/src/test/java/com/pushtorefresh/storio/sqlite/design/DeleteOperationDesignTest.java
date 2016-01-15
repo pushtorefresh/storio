@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 
 public class DeleteOperationDesignTest extends OperationDesignTest {
 
@@ -85,5 +86,42 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                         .build())
                 .prepare()
                 .createObservable();
+    }
+
+    @Test
+    public void deleteObjectSingle() {
+        User user = newUser();
+
+        Single<DeleteResult> deleteResultSingle = storIOSQLite()
+                .delete()
+                .object(user)
+                .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
+    public void deleteCollectionOfObjectsSingle() {
+        List<User> users = new ArrayList<User>();
+
+        Single<DeleteResults<User>> deleteResultsSingle = storIOSQLite()
+                .delete()
+                .objects(users)
+                .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
+    public void deleteByQuerySingle() {
+        Single<DeleteResult> deleteResultSingle = storIOSQLite()
+                .delete()
+                .byQuery(DeleteQuery.builder()
+                        .table("users")
+                        .where("email = ?")
+                        .whereArgs("artem.zinnatullin@gmail.com")
+                        .build())
+                .prepare()
+                .asRxSingle();
     }
 }

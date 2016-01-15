@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 
 import static org.mockito.Mockito.mock;
 
@@ -48,6 +49,21 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
+    public void deleteByQuerySingle() {
+        final DeleteQuery deleteQuery = DeleteQuery.builder()
+                .uri(mock(Uri.class))
+                .where("some_field = ?")
+                .whereArgs("someValue")
+                .build();
+
+        Single<DeleteResult> deleteResultSingle = storIOContentResolver()
+                .delete()
+                .byQuery(deleteQuery)
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
     public void deleteObjectsBlocking() {
         final List<Article> articles = new ArrayList<Article>();
 
@@ -72,6 +88,19 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
+    public void deleteObjectsSingle() {
+        final List<Article> articles = new ArrayList<Article>();
+
+        Single<DeleteResults<Article>> deleteResultsSingle = storIOContentResolver()
+                .delete()
+                .objects(articles)
+                .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+
+    @Test
     public void deleteObjectBlocking() {
         Article article = mock(Article.class);
 
@@ -93,5 +122,17 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                 .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
                 .createObservable();
+    }
+
+    @Test
+    public void deleteObjectSingle() {
+        Article article = mock(Article.class);
+
+        Single<DeleteResult> deleteResultSingle = storIOContentResolver()
+                .delete()
+                .object(article)
+                .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
+                .prepare()
+                .asRxSingle();
     }
 }

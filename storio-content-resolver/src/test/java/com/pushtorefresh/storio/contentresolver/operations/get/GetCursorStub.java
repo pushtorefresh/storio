@@ -10,6 +10,7 @@ import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,6 +88,19 @@ class GetCursorStub {
                         // Get Operation should be subscribed to changes of Uri
                         verify(storIOContentResolver).observeChangesOfUri(query.uri());
 
+                        verifyQueryBehaviorForCursor(cursor);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
+    void verifyQueryBehaviorForCursor(@NonNull Single<Cursor> single) {
+        new ObservableBehaviorChecker<Cursor>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<Cursor>() {
+                    @Override
+                    public void call(Cursor cursor) {
                         verifyQueryBehaviorForCursor(cursor);
                     }
                 })

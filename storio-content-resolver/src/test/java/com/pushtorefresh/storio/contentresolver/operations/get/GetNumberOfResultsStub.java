@@ -10,6 +10,7 @@ import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -92,6 +93,19 @@ public class GetNumberOfResultsStub {
                     public void call(Integer numberOfResults) {
                         // Get Operation should be subscribed to changes of tables from Query
                         verify(storIOContentResolver).observeChangesOfUri(eq(query.uri()));
+                        verifyQueryBehaviorForInteger(numberOfResults);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
+    void verifyQueryBehaviorForInteger(@NonNull Single<Integer> single) {
+        new ObservableBehaviorChecker<Integer>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer numberOfResults) {
                         verifyQueryBehaviorForInteger(numberOfResults);
                     }
                 })

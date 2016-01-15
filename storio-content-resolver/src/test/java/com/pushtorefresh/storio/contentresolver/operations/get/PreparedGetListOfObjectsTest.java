@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,6 +62,21 @@ public class PreparedGetListOfObjectsTest {
 
             getStub.verifyBehavior(testItemsObservable);
         }
+
+        @Test
+        public void shouldGetListOfObjectsWithoutTypeMappingAsSingle() {
+            final GetObjectsStub getStub = GetObjectsStub.newStubWithoutTypeMapping();
+
+            final Single<List<TestItem>> testItemsSingle = getStub.storIOContentResolver
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyBehavior(testItemsSingle);
+        }
     }
 
     public static class WithTypeMapping {
@@ -92,6 +108,20 @@ public class PreparedGetListOfObjectsTest {
                     .take(1);
 
             getStub.verifyBehavior(testItemsObservable);
+        }
+
+        @Test
+        public void shouldGetListOfObjectsWithTypeMappingAsSingle() {
+            final GetObjectsStub getStub = GetObjectsStub.newStubWithTypeMapping();
+
+            final Single<List<TestItem>> testItemsSingle = getStub.storIOContentResolver
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyBehavior(testItemsSingle);
         }
     }
 
@@ -160,6 +190,40 @@ public class PreparedGetListOfObjectsTest {
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verify(storIOContentResolver).observeChangesOfUri(any(Uri.class));
+
+            verifyNoMoreInteractions(storIOContentResolver, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingContentProviderAsSingle() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+
+            when(storIOContentResolver.internal()).thenReturn(internal);
+
+            when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
+
+            final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
+
+            storIOContentResolver
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(Query.builder().uri(mock(Uri.class)).build())
+                    .prepare()
+                    .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessage(IllegalStateException.class.getName() + ": This type does not have type mapping: type = " + TestItem.class + ",ContentProvider was not touched by this operation, please add type mapping for this type");
+
+            verify(storIOContentResolver).get();
+            verify(storIOContentResolver).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).query(any(Query.class));
 
             verifyNoMoreInteractions(storIOContentResolver, internal);
         }

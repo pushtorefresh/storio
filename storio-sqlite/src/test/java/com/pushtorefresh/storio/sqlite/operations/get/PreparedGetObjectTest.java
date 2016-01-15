@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import java.util.Set;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singleton;
@@ -66,6 +67,21 @@ public class PreparedGetObjectTest {
         }
 
         @Test
+        public void shouldGetObjectByQueryWithoutTypeMappingAsSingle() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
+
+            final Single<TestItem> testItemSingle = getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyQueryBehavior(testItemSingle);
+        }
+
+        @Test
         public void shouldGetObjectByRawQueryWithoutTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
@@ -94,6 +110,21 @@ public class PreparedGetObjectTest {
                     .take(1);
 
             getStub.verifyRawQueryBehavior(testItemObservable);
+        }
+
+        @Test
+        public void shouldGetObjectByRawQueryWithoutTypeMappingAsSingle() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
+
+            final Single<TestItem> testItemSingle = getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyRawQueryBehavior(testItemSingle);
         }
     }
 
@@ -129,6 +160,20 @@ public class PreparedGetObjectTest {
         }
 
         @Test
+        public void shouldGetObjectByQueryWithTypeMappingAsSingle() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
+
+            final Single<TestItem> testItemSingle = getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyQueryBehavior(testItemSingle);
+        }
+
+        @Test
         public void shouldGetObjectByRawQueryWithTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
 
@@ -155,6 +200,20 @@ public class PreparedGetObjectTest {
                     .take(1);
 
             getStub.verifyRawQueryBehavior(testItemObservable);
+        }
+
+        @Test
+        public void shouldGetObjectByRawQueryWithTypeMappingAsSingle() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
+
+            final Single<TestItem> testItemSingle = getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .prepare()
+                    .asRxSingle();
+
+            getStub.verifyRawQueryBehavior(testItemSingle);
         }
     }
 
@@ -230,6 +289,41 @@ public class PreparedGetObjectTest {
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
 
+        @SuppressWarnings("unchecked")
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsSingle() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
+            when(storIOSQLite.internal()).thenReturn(internal);
+
+            final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+
+            storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(Query.builder().table("test_table").build())
+                    .prepare()
+                    .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessageEndingWith("This type does not have type mapping: "
+                            + "type = " + TestItem.class + "," +
+                            "db was not touched by this operation, please add type mapping for this type");
+
+            verify(storIOSQLite).get();
+            verify(storIOSQLite).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).query(any(Query.class));
+            verifyNoMoreInteractions(storIOSQLite, internal);
+        }
+
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithRawQueryBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
@@ -278,6 +372,40 @@ public class PreparedGetObjectTest {
                     .withQuery(RawQuery.builder().query("test query").build())
                     .prepare()
                     .createObservable()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessageEndingWith("This type does not have type mapping: "
+                            + "type = " + TestItem.class + "," +
+                            "db was not touched by this operation, please add type mapping for this type");
+
+            verify(storIOSQLite).get();
+            verify(storIOSQLite).internal();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).rawQuery(any(RawQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithRawQueryAsSingle() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
+            when(storIOSQLite.internal()).thenReturn(internal);
+
+            final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+
+            storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(RawQuery.builder().query("test query").build())
+                    .prepare()
+                    .asRxSingle()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -455,6 +583,61 @@ public class PreparedGetObjectTest {
 
             //noinspection unchecked
             verify(storIOSQLite).observeChangesInTables(anySet());
+            verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
+            verify(getResolver).mapFromCursor(cursor);
+            verify(cursor).getCount();
+            verify(cursor).moveToNext();
+
+            verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
+        }
+
+        @Test
+        public void cursorMustBeClosedInCaseOfExceptionForSingle() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final Cursor cursor = mock(Cursor.class);
+
+            when(cursor.getCount()).thenReturn(10);
+
+            when(cursor.moveToNext()).thenReturn(true);
+
+            when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
+                    .thenReturn(cursor);
+
+            when(getResolver.mapFromCursor(cursor))
+                    .thenThrow(new IllegalStateException("test exception"));
+
+            PreparedGetObject<Object> preparedGetObject =
+                    new PreparedGetObject<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            Query.builder().table("test_table").build(),
+                            getResolver
+                    );
+
+            final TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+            preparedGetObject
+                    .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+
+            testSubscriber.assertNoValues();
+            testSubscriber.assertError(StorIOException.class);
+
+            StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+
+            IllegalStateException cause = (IllegalStateException) storIOException.getCause();
+            assertThat(cause).hasMessage("test exception");
+
+            // Cursor must be closed in case of exception
+            verify(cursor).close();
+
+            //noinspection unchecked
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
             verify(getResolver).mapFromCursor(cursor);
             verify(cursor).getCount();

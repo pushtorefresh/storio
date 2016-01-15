@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static org.mockito.Matchers.any;
@@ -111,6 +112,19 @@ class PutContentValuesStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyBehaviorForMultipleContentValues(@NonNull Single<PutResults<ContentValues>> putResultsSingle) {
+        new ObservableBehaviorChecker<PutResults<ContentValues>>()
+                .observable(putResultsSingle.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<PutResults<ContentValues>>() {
+                    @Override
+                    public void call(PutResults<ContentValues> putResults) {
+                        verifyBehaviorForMultipleContentValues(putResults);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
     void verifyBehaviorForOneContentValues(@NonNull PutResult putResult) {
         Map<ContentValues, PutResult> putResultsMap = new HashMap<ContentValues, PutResult>(1);
         putResultsMap.put(contentValues.get(0), putResult);
@@ -120,6 +134,19 @@ class PutContentValuesStub {
     void verifyBehaviorForOneContentValues(@NonNull Observable<PutResult> putResultObservable) {
         new ObservableBehaviorChecker<PutResult>()
                 .observable(putResultObservable)
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<PutResult>() {
+                    @Override
+                    public void call(PutResult putResult) {
+                        verifyBehaviorForOneContentValues(putResult);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForOneContentValues(@NonNull Single<PutResult> putResultSingle) {
+        new ObservableBehaviorChecker<PutResult>()
+                .observable(putResultSingle.toObservable())
                 .expectedNumberOfEmissions(1)
                 .testAction(new Action1<PutResult>() {
                     @Override

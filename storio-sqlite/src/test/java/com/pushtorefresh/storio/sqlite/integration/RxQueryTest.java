@@ -19,12 +19,13 @@ import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 
 import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -224,8 +225,8 @@ public class RxQueryTest extends BaseTest {
         userObservable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
-        testSubscriber.assertValue(expectedUser);
         testSubscriber.assertNoErrors();
+        testSubscriber.assertValue(expectedUser);
     }
 
     @Test
@@ -248,8 +249,8 @@ public class RxQueryTest extends BaseTest {
         userObservable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
-        testSubscriber.assertValue(null);
         testSubscriber.assertNoErrors();
+        testSubscriber.assertValue(null);
     }
 
     @Test
@@ -273,14 +274,14 @@ public class RxQueryTest extends BaseTest {
         userObservable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
-        testSubscriber.assertValue(null);
         testSubscriber.assertNoErrors();
+        testSubscriber.assertValue(null);
 
         putUserBlocking(expectedUser);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
-        testSubscriber.assertValues(null, expectedUser);
         testSubscriber.assertNoErrors();
+        testSubscriber.assertValues(null, expectedUser);
     }
 
     @Test
@@ -301,13 +302,73 @@ public class RxQueryTest extends BaseTest {
         userObservable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
-        testSubscriber.assertValue(null);
         testSubscriber.assertNoErrors();
+        testSubscriber.assertValue(null);
 
         putUserBlocking();
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
-        testSubscriber.assertValues(null, null);
         testSubscriber.assertNoErrors();
+        testSubscriber.assertValues(null, null);
+    }
+
+    @Test
+    public void queryListOfObjectsAsSingle() {
+        final List<User> users = putUsersBlocking(10);
+
+        final Single<List<User>> usersSingle = storIOSQLite
+                .get()
+                .listOfObjects(User.class)
+                .withQuery(UserTableMeta.QUERY_ALL)
+                .prepare()
+                .asRxSingle();
+
+        TestSubscriber<List<User>> testSubscriber = new TestSubscriber<List<User>>();
+        usersSingle.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertValue(users);
+        testSubscriber.assertCompleted();
+    }
+
+    @Test
+    public void queryObjectAsSingle() {
+        final List<User> users = putUsersBlocking(3);
+
+        final Single<User> usersSingle = storIOSQLite
+                .get()
+                .object(User.class)
+                .withQuery(UserTableMeta.QUERY_ALL)
+                .prepare()
+                .asRxSingle();
+
+        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        usersSingle.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertValues(users.get(0));
+        testSubscriber.assertCompleted();
+    }
+
+    @Test
+    public void queryNumberOfResultsAsSingle() {
+        final List<User> users = putUsersBlocking(3);
+
+        final Single<Integer> usersSingle = storIOSQLite
+                .get()
+                .numberOfResults()
+                .withQuery(UserTableMeta.QUERY_ALL)
+                .prepare()
+                .asRxSingle();
+
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
+        usersSingle.subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent(5, SECONDS);
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertValue(users.size());
+        testSubscriber.assertCompleted();
     }
 }

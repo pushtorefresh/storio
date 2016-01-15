@@ -9,6 +9,7 @@ import android.support.annotation.WorkerThread;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingSingle;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.queries.Query;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import rx.Observable;
+import rx.Single;
 import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
@@ -32,7 +34,7 @@ import static java.util.Collections.unmodifiableList;
  *
  * @param <T> type of results.
  */
-public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
+public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     @NonNull
     private final Class<T> type;
@@ -140,12 +142,39 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      * @return non-null {@link Observable} which will emit non-null, immutable
      * {@link List} with mapped results and will be subscribed to changes of tables from query,
      * list can be empty.
+     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
      */
     @NonNull
     @CheckResult
     @Override
     public Observable<List<T>> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return asRxObservable();
+    }
+
+    /**
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
+     * and will emit result each time change occurs.
+     * <p>
+     * First result will be emitted immediately after subscription,
+     * other emissions will occur only if changes of tables from query will occur during lifetime of
+     * the {@link Observable}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because
+     * it's "Hot" and endless.
+     *
+     * @return non-null {@link Observable} which will emit non-null, immutable
+     * {@link List} with mapped results and will be subscribed to changes of tables from query,
+     * list can be empty.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Observable<List<T>> asRxObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         final Set<String> tables;
 
@@ -169,6 +198,27 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
                     .create(OnSubscribeExecuteAsBlocking.newInstance(this))
                     .subscribeOn(Schedulers.io());
         }
+
+    }
+
+    /**
+     * Creates {@link Single} which will perform Get Operation lazily when somebody subscribes to it and send result to observer.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Single} which will perform Get Operation.
+     * And send result to observer.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Single<List<T>> asRxSingle() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
+
+        return Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(this))
+                .subscribeOn(Schedulers.io());
     }
 
     /**
@@ -176,7 +226,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      *
      * @param <T> type of objects.
      */
-    public static final class Builder<T> {
+    public static class Builder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -223,7 +273,7 @@ public final class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      *
      * @param <T> type of objects.
      */
-    public static final class CompleteBuilder<T> {
+    public static class CompleteBuilder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;

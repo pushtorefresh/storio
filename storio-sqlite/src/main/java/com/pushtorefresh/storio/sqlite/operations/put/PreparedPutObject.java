@@ -7,11 +7,13 @@ import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingSingle;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
 import rx.Observable;
+import rx.Single;
 import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -21,7 +23,7 @@ import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJa
  *
  * @param <T> type of object to put.
  */
-public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
+public class PreparedPutObject<T> extends PreparedPut<PutResult> {
 
     @NonNull
     private final T object;
@@ -95,15 +97,57 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
      *
      * @return non-null {@link Observable} which will perform Put Operation.
      * and send result to observer.
+     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
      */
     @NonNull
     @CheckResult
     @Override
     public Observable<PutResult> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return asRxObservable();
+    }
+
+    /**
+     * Creates {@link Observable} which will perform Put Operation and send result to observer.
+     * <p>
+     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * put only after subscribing to it. Also, it emits the result once.
+     * <p>
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Observable} which will perform Put Operation.
+     * and send result to observer.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Observable<PutResult> asRxObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         return Observable
                 .create(OnSubscribeExecuteAsBlocking.newInstance(this))
+                .subscribeOn(Schedulers.io());
+    }
+
+    /**
+     * Creates {@link Single} which will perform Put Operation lazily when somebody subscribes to it and send result to observer.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Single} which will perform Put Operation.
+     * And send result to observer.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Single<PutResult> asRxSingle() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
+
+        return Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(this))
                 .subscribeOn(Schedulers.io());
     }
 
@@ -112,7 +156,7 @@ public final class PreparedPutObject<T> extends PreparedPut<PutResult> {
      *
      * @param <T> type of object to put.
      */
-    public static final class Builder<T> {
+    public static class Builder<T> {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;

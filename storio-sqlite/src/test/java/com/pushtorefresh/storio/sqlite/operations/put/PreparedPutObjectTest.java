@@ -8,6 +8,7 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,6 +50,20 @@ public class PreparedPutObjectTest {
 
             putStub.verifyBehaviorForOneObject(putResultObservable);
         }
+
+        @Test
+        public void shouldPutObjectWithoutTypeMappingAsSingle() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
+
+            final Single<PutResult> putResultSingle = putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .asRxSingle();
+
+            putStub.verifyBehaviorForOneObject(putResultSingle);
+        }
     }
 
     public static class WithTypeMapping {
@@ -77,6 +92,19 @@ public class PreparedPutObjectTest {
                     .createObservable();
 
             putStub.verifyBehaviorForOneObject(putResultObservable);
+        }
+
+        @Test
+        public void shouldPutObjectWithTypeMappingAsSingle() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
+
+            final Single<PutResult> putResultSingle = putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .prepare()
+                    .asRxSingle();
+
+            putStub.verifyBehaviorForOneObject(putResultSingle);
         }
     }
 
@@ -137,6 +165,40 @@ public class PreparedPutObjectTest {
             assertThat(cause).hasMessage("Object does not have type mapping: " +
                             "object = " + object + ", object.class = " + object.getClass() + ", " +
                             "db was not affected by this operation, please add type mapping for this type");
+
+            verify(storIOSQLite).internal();
+            verify(internal).typeMapping(Object.class);
+            verifyNoMoreInteractions(storIOSQLite, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbSingle() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.internal()).thenReturn(internal);
+
+            final Object object = new Object();
+
+            final TestSubscriber<PutResult> testSubscriber = new TestSubscriber<PutResult>();
+
+            new PreparedPutObject.Builder<Object>(storIOSQLite, object)
+                    .prepare()
+                    .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            testSubscriber.assertError(StorIOException.class);
+
+            //noinspection ThrowableResultOfMethodCallIgnored
+            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+
+            IllegalStateException cause = (IllegalStateException) expected.getCause();
+
+            assertThat(cause).hasMessage("Object does not have type mapping: " +
+                    "object = " + object + ", object.class = " + object.getClass() + ", " +
+                    "db was not affected by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).internal();
             verify(internal).typeMapping(Object.class);

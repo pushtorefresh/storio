@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operations.get;
 
 import android.database.Cursor;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -8,6 +9,7 @@ import android.support.annotation.WorkerThread;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingSingle;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
@@ -16,12 +18,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import rx.Observable;
+import rx.Single;
 import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
-public final class PreparedGetNumberOfResults extends PreparedGet<Integer> {
+public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
 
     @NonNull
     private final GetResolver<Integer> getResolver;
@@ -87,11 +90,37 @@ public final class PreparedGetNumberOfResults extends PreparedGet<Integer> {
      *
      * @return non-null {@link Observable} which will emit non-null
      * number of results of the executed query and will be subscribed to changes of tables from query.
+     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
      */
     @NonNull
     @Override
     public Observable<Integer> createObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("createObservable()");
+        return asRxObservable();
+    }
+
+    /**
+     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
+     * and will emit result each time change occurs.
+     * <p>
+     * First result will be emitted immediately after subscription,
+     * other emissions will occur only if changes of tables from query will occur during lifetime of
+     * the {@link Observable}.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     * <p>
+     * Please don't forget to unsubscribe from this {@link Observable} because
+     * it's "Hot" and endless.
+     *
+     * @return non-null {@link Observable} which will emit non-null
+     * number of results of the executed query and will be subscribed to changes of tables from query.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Observable<Integer> asRxObservable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         final Set<String> tables;
 
@@ -119,9 +148,29 @@ public final class PreparedGetNumberOfResults extends PreparedGet<Integer> {
     }
 
     /**
+     * Creates {@link Single} which will get number of results lazily when somebody subscribes to it and send result to observer.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Single} which will get number of results.
+     * And send result to observer.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Single<Integer> asRxSingle() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
+
+        return Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(this))
+                .subscribeOn(Schedulers.io());
+    }
+
+    /**
      * Builder for {@link PreparedGetNumberOfResults}.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @NonNull
         private final StorIOSQLite storIOSQLite;
@@ -162,7 +211,7 @@ public final class PreparedGetNumberOfResults extends PreparedGet<Integer> {
     /**
      * Compile-time safe part of builder for {@link PreparedGetNumberOfResults}.
      */
-    public static final class CompleteBuilder {
+    public static class CompleteBuilder {
 
         @NonNull
         static final GetResolver<Integer> STANDARD_GET_RESOLVER = new DefaultGetResolver<Integer>() {

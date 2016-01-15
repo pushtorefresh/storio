@@ -15,6 +15,7 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import rx.Observable;
+import rx.Single;
 
 import static org.mockito.Mockito.mock;
 
@@ -137,4 +138,40 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .prepare()
                 .createObservable();
     }
+
+    @Test
+    public void putObjectSingle() {
+        User user = newUser();
+
+        Single<PutResult> singlePutResult = storIOSQLite()
+                .put()
+                .object(user)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
+    public void putContentValuesSingle() {
+        Single<PutResult> putResult = storIOSQLite()
+                .put()
+                .contentValues(mock(ContentValues.class))
+                .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
+    @Test
+    public void putContentValuesIterableSingle() {
+        Iterable<ContentValues> contentValuesIterable
+                = Arrays.asList(mock(ContentValues.class));
+
+        Single<PutResults<ContentValues>> putResults = storIOSQLite()
+                .put()
+                .contentValues(contentValuesIterable)
+                .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
+                .prepare()
+                .asRxSingle();
+    }
+
 }

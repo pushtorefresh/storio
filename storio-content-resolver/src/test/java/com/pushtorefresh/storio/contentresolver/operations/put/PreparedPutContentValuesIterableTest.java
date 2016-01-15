@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Single;
 
 public class PreparedPutContentValuesIterableTest {
 
@@ -34,5 +35,19 @@ public class PreparedPutContentValuesIterableTest {
                 .createObservable();
 
         putStub.verifyBehaviorForMultipleContentValues(putResultsObservable);
+    }
+
+    @Test
+    public void putContentValuesIterableSingle() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues();
+
+        final Single<PutResults<ContentValues>> putResultsSingle = putStub.storIOContentResolver
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare()
+                .asRxSingle();
+
+        putStub.verifyBehaviorForMultipleContentValues(putResultsSingle);
     }
 }

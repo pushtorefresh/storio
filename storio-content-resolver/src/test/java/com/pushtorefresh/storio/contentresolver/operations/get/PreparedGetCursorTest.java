@@ -9,6 +9,7 @@ import com.pushtorefresh.storio.contentresolver.queries.Query;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Single;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -46,6 +47,21 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .createObservable()
                 .take(1);
+
+        getStub.verifyQueryBehaviorForCursor(cursorObservable);
+    }
+
+    @Test
+    public void getCursorSingle() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+
+        final Single<Cursor> cursorObservable = getStub.storIOContentResolver
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolver)
+                .prepare()
+                .asRxSingle();
 
         getStub.verifyQueryBehaviorForCursor(cursorObservable);
     }

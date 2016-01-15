@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 import rx.functions.Action1;
 
 import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
@@ -201,6 +202,19 @@ class GetObjectsStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyQueryBehavior(@NonNull Single<List<TestItem>> single) {
+        new ObservableBehaviorChecker<List<TestItem>>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<List<TestItem>>() {
+                    @Override
+                    public void call(List<TestItem> testItems) {
+                        verifyQueryBehavior(testItems);
+                    }
+                })
+                .checkBehaviorOfObservable();
+    }
+
     void verifyRawQueryBehavior(@NonNull List<TestItem> actualList) {
         assertThat(actualList).isNotNull();
         verify(storIOSQLite, times(1)).get();
@@ -221,6 +235,21 @@ class GetObjectsStub {
                         // Get Operation should be subscribed to changes of tables from query
                         verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
 
+                        verifyRawQueryBehavior(testItems);
+                    }
+                })
+                .checkBehaviorOfObservable();
+
+        assertThat(rawQuery.observesTables()).isNotNull();
+    }
+
+    void verifyRawQueryBehavior(@NonNull Single<List<TestItem>> single) {
+        new ObservableBehaviorChecker<List<TestItem>>()
+                .observable(single.toObservable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Action1<List<TestItem>>() {
+                    @Override
+                    public void call(List<TestItem> testItems) {
                         verifyRawQueryBehavior(testItems);
                     }
                 })
