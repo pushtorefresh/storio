@@ -301,7 +301,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
 
         @Nullable
         @SuppressWarnings("unchecked")
-        private <T> SQLiteTypeMapping<T> findMappingClassByInterface(final Class<T> type) {
+        private <T> SQLiteTypeMapping<T> findMappingClassByInterface(@Nullable final Class<T> type) {
             if (type == null || directTypesMapping == null) {
                 return null;
             }
