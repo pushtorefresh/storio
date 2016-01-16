@@ -242,6 +242,39 @@ public class DefaultStorIOSQLiteTest {
         assertThat(storIOSQLite.internal().typeMapping(AutoValue_ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
     }
 
+    interface InterfaceEntity {
+    }
+
+    @Test
+    public void typeMappingShouldFindIndirectTypeMappingForInterfaces() {
+        class ConcreteEntity implements InterfaceEntity {
+        }
+
+        class Parent_ConcreteEntity extends ConcreteEntity {
+        }
+
+        //noinspection unchecked
+        final SQLiteTypeMapping<InterfaceEntity> interfaceSQLiteTypeMapping = SQLiteTypeMapping.<InterfaceEntity>builder()
+                .putResolver(mock(PutResolver.class))
+                .getResolver(mock(GetResolver.class))
+                .deleteResolver(mock(DeleteResolver.class))
+                .build();
+
+        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .addTypeMapping(InterfaceEntity.class, interfaceSQLiteTypeMapping)
+                .build();
+
+        // Direct type mapping for InterfaceEntity should work
+        assertThat(storIOSQLite.internal().typeMapping(InterfaceEntity.class)).isSameAs(interfaceSQLiteTypeMapping);
+
+        // Indirect type mapping for InterfaceEntity should work
+        assertThat(storIOSQLite.internal().typeMapping(ConcreteEntity.class)).isSameAs(interfaceSQLiteTypeMapping);
+
+        // Indirect type mapping for InterfaceEntity should work with parent interface
+        assertThat(storIOSQLite.internal().typeMapping(Parent_ConcreteEntity.class)).isSameAs(interfaceSQLiteTypeMapping);
+    }
+
     @Test
     public void shouldCloseSQLiteOpenHelper() throws IOException {
         SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);

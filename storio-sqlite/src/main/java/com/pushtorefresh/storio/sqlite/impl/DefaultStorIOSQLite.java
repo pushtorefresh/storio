@@ -257,7 +257,13 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                 // Okay, we don't have direct type mapping.
                 // And we don't have cache for indirect type mapping.
                 // Let's find indirect type mapping and cache it!
-                Class<?> parentType = type.getSuperclass();
+
+                // Let's try to find indirect type mapping in own interfaces
+                indirectTypeMapping = findMappingClassByInterface(type);
+                if (indirectTypeMapping != null) {
+                    indirectTypesMappingCache.put(type, indirectTypeMapping);
+                    return indirectTypeMapping;
+                }
 
                 // Search algorithm:
                 // Walk through all parent types of passed type.
@@ -267,11 +273,20 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                 // O(n) where n is number of parent types of passed type (pretty fast).
 
                 // Stop search if root parent is Object.class
+
+                Class<?> parentType = type.getSuperclass();
                 while (parentType != Object.class) {
                     indirectTypeMapping = (SQLiteTypeMapping<T>) directTypesMapping.get(parentType);
 
                     if (indirectTypeMapping != null) {
                         // Store this typeMapping as known to make resolving O(1) for the next time
+                        indirectTypesMappingCache.put(type, indirectTypeMapping);
+                        return indirectTypeMapping;
+                    }
+
+                    // Try to find indirect type interfaces for parent class
+                    indirectTypeMapping = (SQLiteTypeMapping<T>) findMappingClassByInterface(parentType);
+                    if (indirectTypeMapping != null) {
                         indirectTypesMappingCache.put(type, indirectTypeMapping);
                         return indirectTypeMapping;
                     }
@@ -282,6 +297,25 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                 // No indirect type mapping found.
                 return null;
             }
+        }
+
+        @Nullable
+        @SuppressWarnings("unchecked")
+        private <T> SQLiteTypeMapping<T> findMappingClassByInterface(final Class<T> type) {
+            if (type == null || directTypesMapping == null) {
+                return null;
+            }
+
+            for (Class<?> ownInterface : type.getInterfaces()) {
+                SQLiteTypeMapping<T> mapping =
+                        (SQLiteTypeMapping<T>) directTypesMapping.get(ownInterface);
+
+                if (mapping != null) {
+                    return mapping;
+                }
+            }
+
+            return null;
         }
 
         /**
