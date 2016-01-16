@@ -1,12 +1,5 @@
 package com.pushtorefresh.storio.common.annotations.processor.introspection;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.junit.Test;
-
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-
 import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.BOOLEAN;
 import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.BOOLEAN_OBJECT;
 import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.BYTE_ARRAY;
@@ -22,11 +15,24 @@ import static com.pushtorefresh.storio.common.annotations.processor.introspectio
 import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.SHORT_OBJECT;
 import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.STRING;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 public class JavaTypeTest {
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+    
     @NotNull
     private static TypeMirror mockTypeMirror(@Nullable TypeKind typeKind, @Nullable String typeName) {
         final TypeMirror typeMirror = mock(TypeMirror.class);
@@ -38,6 +44,31 @@ public class JavaTypeTest {
                 .thenReturn(typeName);
 
         return typeMirror;
+    }
+    
+    @Test
+    public void fromIllegalArgumentException() {
+    	// given
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Unsupported type: null");
+        final TypeMirror typeMirror = mock(TypeMirror.class);
+        when(typeMirror.getKind()).thenReturn(null);
+        when(typeMirror.toString()).thenReturn(null);
+
+        // when
+        JavaType.from(typeMirror);
+        
+        // then
+        fail("IllegalArgumentException expected.");
+    }
+    
+    @Test
+    public void valueOf() {
+        // when
+        JavaType javaType = JavaType.valueOf("BOOLEAN");
+        
+        // then
+        assertThat(javaType.toString()).isEqualTo("BOOLEAN");
     }
 
     @Test

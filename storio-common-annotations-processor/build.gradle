@@ -11,6 +11,10 @@ dependencies {
     testCompile libraries.junit
     testCompile libraries.assertJ
     testCompile libraries.mockitoCore
+    testCompile libraries.powerMockJUnit
+    testCompile libraries.powerMockMockito
+    testCompile libraries.equalsVerifier
 }
 
 apply from: '../gradle/publish-java-lib.gradle'
+apply from: '../gradle/jacoco-non-android.gradle'
