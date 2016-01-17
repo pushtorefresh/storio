@@ -15,7 +15,12 @@ script:
   - sh ci.sh
 
 notifications:
-  email: false
+  email:
+    recipients:
+      - artem.zinnatullin@gmail.com
+      - nikitin.da.90@gmail.com
+    on_success: never
+    on_failure: always
 
 cache:
   directories:
