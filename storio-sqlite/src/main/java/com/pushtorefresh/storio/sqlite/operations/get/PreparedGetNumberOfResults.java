@@ -69,7 +69,7 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
                 cursor.close();
             }
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Get operation. query = " + (query != null ? query : rawQuery), exception);
         }
     }
 

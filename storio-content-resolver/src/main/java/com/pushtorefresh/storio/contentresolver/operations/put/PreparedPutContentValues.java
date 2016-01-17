@@ -52,7 +52,7 @@ public class PreparedPutContentValues extends PreparedPut<PutResult> {
         try {
             return putResolver.performPut(storIOContentResolver, contentValues);
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValues, exception);
         }
     }
 

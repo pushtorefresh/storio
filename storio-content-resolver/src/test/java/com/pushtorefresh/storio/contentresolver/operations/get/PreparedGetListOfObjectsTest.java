@@ -215,10 +215,16 @@ public class PreparedGetListOfObjectsTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+
+            assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessage(IllegalStateException.class.getName() + ": This type does not have type mapping: type = " + TestItem.class + ",ContentProvider was not touched by this operation, please add type mapping for this type");
+                    .hasMessageStartingWith("Error has occurred during Get operation. query = Query{uri=Mock for Uri, hashCode: ")
+                    .hasMessageEndingWith(", columns=[], where='', whereArgs=[], sortOrder=''}");
+
+            assertThat(error.getCause())
+                    .hasMessage("This type does not have type mapping: type = class com.pushtorefresh.storio.contentresolver.operations.get.TestItem,ContentProvider was not touched by this operation, please add type mapping for this type");
 
             verify(storIOContentResolver).get();
             verify(storIOContentResolver).internal();

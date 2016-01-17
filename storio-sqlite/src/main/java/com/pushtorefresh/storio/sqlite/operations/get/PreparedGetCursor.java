@@ -67,7 +67,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
                 throw new IllegalStateException("Please specify query");
             }
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Get operation. query = " + (query != null ? query : rawQuery), exception);
         }
     }
 

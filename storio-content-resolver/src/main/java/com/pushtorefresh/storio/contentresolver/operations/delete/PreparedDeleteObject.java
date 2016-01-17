@@ -73,7 +73,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
             return deleteResolver.performDelete(storIOContentResolver, object);
 
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Delete operation. object = " + object, exception);
         }
     }
 

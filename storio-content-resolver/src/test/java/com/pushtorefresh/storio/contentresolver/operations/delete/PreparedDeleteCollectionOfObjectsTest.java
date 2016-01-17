@@ -189,8 +189,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
 
-            final TestItem testItem = TestItem.newInstance();
-            final List<TestItem> items = asList(testItem, TestItem.newInstance());
+            final List<TestItem> items = asList(TestItem.newInstance("test item 1"), TestItem.newInstance("test item 2"));
 
             final TestSubscriber<DeleteResults<TestItem>> testSubscriber = new TestSubscriber<DeleteResults<TestItem>>();
 
@@ -202,12 +201,16 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
+
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+
+            assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessage(IllegalStateException.class.getName() + ": One of the objects from the collection does not have type mapping: object = " + testItem.toString()
-                            + ", object.class = " + TestItem.class + ",ContentProvider was not affected by this operation, please add type mapping for this type");
+                    .hasMessage("Error has occurred during Delete operation. objects = [TestItem{data='test item 1'}, TestItem{data='test item 2'}]");
+
+            assertThat(error.getCause()).hasMessage("One of the objects from the collection does not have type mapping: object = TestItem{data='test item 1'}, object.class = class com.pushtorefresh.storio.contentresolver.operations.delete.TestItem,ContentProvider was not affected by this operation, please add type mapping for this type");
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).internal();

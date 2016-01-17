@@ -80,7 +80,7 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
 
             return putResult;
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Put operation. object = " + object, exception);
         }
     }
 

@@ -54,7 +54,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         try {
             return deleteResolver.performDelete(storIOContentResolver, deleteQuery);
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Delete operation. query = " + deleteQuery, exception);
         }
     }
 
