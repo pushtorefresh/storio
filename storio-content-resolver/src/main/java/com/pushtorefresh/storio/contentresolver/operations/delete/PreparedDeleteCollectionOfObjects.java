@@ -107,7 +107,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
             return DeleteResults.newInstance(results);
 
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Delete operation. objects = " + objects, exception);
         }
     }
 

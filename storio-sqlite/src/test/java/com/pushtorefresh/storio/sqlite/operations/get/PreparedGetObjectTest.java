@@ -274,10 +274,15 @@ public class PreparedGetObjectTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+
+            assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessageEndingWith("This type does not have type mapping: "
+                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit=''}");
+
+            assertThat(error.getCause())
+                    .hasMessage("This type does not have type mapping: "
                             + "type = " + TestItem.class + "," +
                             "db was not touched by this operation, please add type mapping for this type");
 
@@ -310,10 +315,15 @@ public class PreparedGetObjectTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+
+            assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessageEndingWith("This type does not have type mapping: "
+                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit=''}");
+
+            assertThat(error.getCause())
+                    .hasMessage("This type does not have type mapping: "
                             + "type = " + TestItem.class + "," +
                             "db was not touched by this operation, please add type mapping for this type");
 
@@ -376,10 +386,15 @@ public class PreparedGetObjectTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+
+            assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessageEndingWith("This type does not have type mapping: "
+                    .hasMessage("Error has occurred during Get operation. query = RawQuery{query='test query', args=[], affectsTables=[], observesTables=[]}");
+
+            assertThat(error.getCause())
+                    .hasMessage("This type does not have type mapping: "
                             + "type = " + TestItem.class + "," +
                             "db was not touched by this operation, please add type mapping for this type");
 
@@ -410,10 +425,15 @@ public class PreparedGetObjectTest {
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+
+            assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessageEndingWith("This type does not have type mapping: "
+                    .hasMessage("Error has occurred during Get operation. query = RawQuery{query='test query', args=[], affectsTables=[], observesTables=[]}");
+
+            assertThat(error.getCause())
+                    .hasMessage("This type does not have type mapping: "
                             + "type = " + TestItem.class + "," +
                             "db was not touched by this operation, please add type mapping for this type");
 

@@ -55,7 +55,7 @@ public class PreparedPutContentValues extends PreparedPut<PutResult> {
             }
             return putResult;
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Delete operation. contentValues = " + contentValues, exception);
         }
     }
 

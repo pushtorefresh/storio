@@ -109,7 +109,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
             return PutResults.newInstance(putResults);
 
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValuesIterable, exception);
         }
     }
 

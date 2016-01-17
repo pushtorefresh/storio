@@ -107,7 +107,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
             return PutResults.newInstance(results);
 
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Put operation. objects = " + objects, exception);
         }
     }
 

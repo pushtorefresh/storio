@@ -53,7 +53,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         try {
             return getResolver.performGet(storIOContentResolver, query);
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during Get operation. query = " + query, exception);
         }
     }
 

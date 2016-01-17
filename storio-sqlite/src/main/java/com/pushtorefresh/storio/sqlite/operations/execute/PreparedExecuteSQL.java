@@ -63,7 +63,7 @@ public class PreparedExecuteSQL implements PreparedOperation<Object> {
 
             return new Object();
         } catch (Exception exception) {
-            throw new StorIOException(exception);
+            throw new StorIOException("Error has occurred during ExecuteSQL operation. query = " + rawQuery, exception);
         }
     }
 
