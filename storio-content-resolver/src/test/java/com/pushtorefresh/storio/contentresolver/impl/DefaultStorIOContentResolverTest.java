@@ -16,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.Random;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -261,6 +263,64 @@ public class DefaultStorIOContentResolverTest {
 
         // Indirect type mapping for AutoValue_ConcreteEntity should get type mapping for ConcreteEntity, not for Entity!
         assertThat(storIOContentResolver.internal().typeMapping(AutoValue_ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
+    }
+
+    interface InterfaceEntity {
+    }
+
+    @Test
+    public void typeMappingShouldFindInterface() {
+        //noinspection unchecked
+        ContentResolverTypeMapping<InterfaceEntity> typeMapping = mock(ContentResolverTypeMapping.class);
+
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+                .contentResolver(mock(ContentResolver.class))
+                .addTypeMapping(InterfaceEntity.class, typeMapping)
+                .build();
+
+        assertThat(storIOContentResolver.internal().typeMapping(InterfaceEntity.class)).isSameAs(typeMapping);
+    }
+
+    @Test
+    public void typeMappingShouldFindIndirectTypeMappingForClassThatImplementsKnownInterface() {
+        //noinspection unchecked
+        ContentResolverTypeMapping<InterfaceEntity> typeMapping = mock(ContentResolverTypeMapping.class);
+
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+                .contentResolver(mock(ContentResolver.class))
+                .addTypeMapping(InterfaceEntity.class, typeMapping)
+                .build();
+
+        class ConcreteEntity implements InterfaceEntity {
+        }
+
+        assertThat(storIOContentResolver.internal().typeMapping(ConcreteEntity.class)).isSameAs(typeMapping);
+
+        // Just to make sure that we don't return this type mapping for all classes.
+        assertThat(storIOContentResolver.internal().typeMapping(Random.class)).isNull();
+    }
+
+    @Test
+    public void typeMappingShouldFindIndirectTypeMappingForClassThatHasParentThatImplementsKnownInterface() {
+        //noinspection unchecked
+        ContentResolverTypeMapping<InterfaceEntity> typeMapping = mock(ContentResolverTypeMapping.class);
+
+        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+                .contentResolver(mock(ContentResolver.class))
+                .addTypeMapping(InterfaceEntity.class, typeMapping)
+                .build();
+
+        class ConcreteEntity implements InterfaceEntity {
+        }
+
+        class ParentConcreteEntity extends ConcreteEntity {
+        }
+
+
+        assertThat(storIOContentResolver.internal().typeMapping(ParentConcreteEntity.class)).isSameAs(typeMapping);
+
+        // Just to make sure that we don't return this type mapping for all classes.
+        assertThat(storIOContentResolver.internal().typeMapping(Random.class)).isNull();
     }
 
     @Test

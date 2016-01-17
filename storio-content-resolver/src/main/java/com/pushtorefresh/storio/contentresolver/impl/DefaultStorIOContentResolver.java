@@ -238,7 +238,13 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
                 // Okay, we don't have direct type mapping.
                 // And we don't have cache for indirect type mapping.
                 // Let's find indirect type mapping and cache it!
-                Class<?> parentType = type.getSuperclass();
+
+                // Let's try to find indirect type mapping in own interfaces
+                indirectTypeMapping = findMappingClassByInterface(type);
+                if (indirectTypeMapping != null) {
+                    indirectTypesMappingCache.put(type, indirectTypeMapping);
+                    return indirectTypeMapping;
+                }
 
                 // Search algorithm:
                 // Walk through all parent types of passed type.
@@ -248,9 +254,18 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
                 // O(n) where n is number of parent types of passed type (pretty fast).
 
                 // Stop search if root parent is Object.class
+
+                Class<?> parentType = type.getSuperclass();
                 while (parentType != Object.class) {
                     indirectTypeMapping = (ContentResolverTypeMapping<T>) directTypesMapping.get(parentType);
 
+                    if (indirectTypeMapping != null) {
+                        indirectTypesMappingCache.put(type, indirectTypeMapping);
+                        return indirectTypeMapping;
+                    }
+
+                    // Try to find indirect type interfaces for parent class
+                    indirectTypeMapping = (ContentResolverTypeMapping<T>) findMappingClassByInterface(parentType);
                     if (indirectTypeMapping != null) {
                         indirectTypesMappingCache.put(type, indirectTypeMapping);
                         return indirectTypeMapping;
@@ -262,6 +277,25 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
                 // No indirect type mapping found.
                 return null;
             }
+        }
+
+        @Nullable
+        @SuppressWarnings("unchecked")
+        private <T> ContentResolverTypeMapping<T> findMappingClassByInterface(@Nullable final Class<T> type) {
+            if (type == null || directTypesMapping == null) {
+                return null;
+            }
+
+            for (Class<?> ownInterface : type.getInterfaces()) {
+                ContentResolverTypeMapping<T> mapping =
+                        (ContentResolverTypeMapping<T>) directTypesMapping.get(ownInterface);
+
+                if (mapping != null) {
+                    return mapping;
+                }
+            }
+
+            return null;
         }
 
         /**
