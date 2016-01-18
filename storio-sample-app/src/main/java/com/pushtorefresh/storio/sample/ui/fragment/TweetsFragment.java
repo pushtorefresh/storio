@@ -96,7 +96,7 @@ public class TweetsFragment extends BaseFragment {
                 .listOfObjects(Tweet.class)
                 .withQuery(TweetsTable.QUERY_ALL)
                 .prepare()
-                .createObservable() // it will be subscribed to changes in tweets table!
+                .asRxObservable() // it will be subscribed to changes in tweets table!
                 .delay(1, SECONDS) // for better User Experience :) Actually, StorIO is so fast that we need to delay emissions (it's a joke, or not)
                 .observeOn(mainThread())
                 .subscribe(new Action1<List<Tweet>>() {
@@ -155,7 +155,7 @@ public class TweetsFragment extends BaseFragment {
                 .put()
                 .objects(tweets)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .observeOn(mainThread()) // Remember, all Observables in StorIO already subscribed on Schedulers.io(), you just need to set observeOn()
                 .subscribe(new Observer<PutResults<Tweet>>() {
                     @Override

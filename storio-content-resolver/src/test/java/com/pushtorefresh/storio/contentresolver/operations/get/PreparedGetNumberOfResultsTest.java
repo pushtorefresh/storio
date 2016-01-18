@@ -48,7 +48,7 @@ public class PreparedGetNumberOfResultsTest {
                 .withQuery(getStub.query)
                 .withGetResolver(getStub.getResolverForNumberOfResults)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1);
 
         getStub.verifyQueryBehaviorForInteger(numberOfResultsObservable);
@@ -113,7 +113,7 @@ public class PreparedGetNumberOfResultsTest {
                 .withQuery(Query.builder().uri(testUri).build())
                 .withGetResolver(getResolver)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(60, SECONDS);

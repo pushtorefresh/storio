@@ -57,7 +57,7 @@ public class PreparedGetListOfObjectsTest {
                     .withQuery(getStub.query)
                     .withGetResolver(getStub.getResolver)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .take(1);
 
             getStub.verifyBehavior(testItemsObservable);
@@ -104,7 +104,7 @@ public class PreparedGetListOfObjectsTest {
                     .listOfObjects(TestItem.class)
                     .withQuery(getStub.query)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .take(1);
 
             getStub.verifyBehavior(testItemsObservable);
@@ -176,7 +176,7 @@ public class PreparedGetListOfObjectsTest {
                     .listOfObjects(TestItem.class)
                     .withQuery(Query.builder().uri(mock(Uri.class)).build())
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

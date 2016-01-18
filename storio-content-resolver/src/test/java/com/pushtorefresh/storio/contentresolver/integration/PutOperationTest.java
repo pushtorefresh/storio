@@ -108,7 +108,7 @@ public class PutOperationTest extends IntegrationTest {
                 .contentValues(cv)
                 .withPutResolver(testItemContentValuesPutResolver)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .toBlocking()
                 .first();
 
@@ -215,7 +215,7 @@ public class PutOperationTest extends IntegrationTest {
                 .contentValues(testItem.toContentValues())
                 .withPutResolver(testItemContentValuesPutResolver)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .toBlocking()
                 .first();
 
@@ -319,7 +319,7 @@ public class PutOperationTest extends IntegrationTest {
                 .put()
                 .object(testItem)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .toBlocking()
                 .first();
 
@@ -426,7 +426,7 @@ public class PutOperationTest extends IntegrationTest {
                 .put()
                 .object(testItem)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .toBlocking()
                 .first();
 

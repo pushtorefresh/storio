@@ -49,7 +49,7 @@ public class PreparedGetCursorTest {
                 .withQuery(getStub.query)
                 .withGetResolver(getStub.getResolverForCursor)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1);
 
         getStub.verifyQueryBehaviorForCursor(cursorObservable);
@@ -95,7 +95,7 @@ public class PreparedGetCursorTest {
                 .withQuery(getStub.rawQuery)
                 .withGetResolver(getStub.getResolverForCursor)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1);
 
         getStub.verifyRawQueryBehaviorForCursor(cursorObservable);
@@ -159,7 +159,7 @@ public class PreparedGetCursorTest {
                 .withQuery(Query.builder().table("test_table").build())
                 .withGetResolver(getResolver)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(60, SECONDS);
@@ -230,14 +230,14 @@ public class PreparedGetCursorTest {
     }
 
     @Test
-    public void createObservableShouldThrowExceptionIfNoQueryWasSet() {
+    public void asRxObservableShouldThrowExceptionIfNoQueryWasSet() {
         //noinspection unchecked,ConstantConditions
         PreparedGetCursor preparedGetCursor
                 = new PreparedGetCursor(mock(StorIOSQLite.class), (Query) null, (GetResolver<Cursor>) mock(GetResolver.class));
 
         try {
             //noinspection ResourceType
-            preparedGetCursor.createObservable();
+            preparedGetCursor.asRxObservable();
             failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
             assertThat(expected).hasMessage("Please specify query");

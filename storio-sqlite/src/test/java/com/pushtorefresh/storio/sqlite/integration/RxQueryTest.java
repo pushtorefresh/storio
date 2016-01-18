@@ -45,7 +45,7 @@ public class RxQueryTest extends BaseTest {
                     .listOfObjects(User.class)
                     .withQuery(UserTableMeta.QUERY_ALL)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(new Action1<List<User>>() {
                         @Override
                         public void call(List<User> users) {
@@ -218,7 +218,7 @@ public class RxQueryTest extends BaseTest {
                         .whereArgs(expectedUser.email())
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1);
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
@@ -242,7 +242,7 @@ public class RxQueryTest extends BaseTest {
                         .whereArgs("some arg")
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1);
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
@@ -267,7 +267,7 @@ public class RxQueryTest extends BaseTest {
                         .whereArgs(expectedUser.email())
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(2);
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
@@ -295,7 +295,7 @@ public class RxQueryTest extends BaseTest {
                         .whereArgs("some arg")
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(2);
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<User>();

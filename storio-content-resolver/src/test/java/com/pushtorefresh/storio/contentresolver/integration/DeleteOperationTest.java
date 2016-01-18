@@ -79,7 +79,7 @@ public class DeleteOperationTest extends IntegrationTest {
                         .uri(TestItem.CONTENT_URI)
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .toBlocking()
                 .first();
 
@@ -164,7 +164,7 @@ public class DeleteOperationTest extends IntegrationTest {
     }
 
     @Test
-    public void deleteObjectCreateObservable() {
+    public void deleteObjectasRxObservable() {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
@@ -187,7 +187,7 @@ public class DeleteOperationTest extends IntegrationTest {
                 .delete()
                 .object(testItem)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .toBlocking()
                 .first();
 
@@ -298,7 +298,7 @@ public class DeleteOperationTest extends IntegrationTest {
                 .delete()
                 .objects(singletonList(testItem))
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .toBlocking()
                 .first();
 

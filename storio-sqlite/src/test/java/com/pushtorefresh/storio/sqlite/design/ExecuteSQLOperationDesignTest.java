@@ -27,6 +27,6 @@ public class ExecuteSQLOperationDesignTest extends OperationDesignTest {
                         .query("DROP TABLE users")
                         .build())
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 }

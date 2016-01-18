@@ -30,7 +30,7 @@ public class PreparedDeleteByQueryTest {
                 .byQuery(deleteStub.deleteQuery)
                 .withDeleteResolver(deleteStub.deleteResolver)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
 
         deleteStub.verifyBehavior(deleteResultObservable);
     }

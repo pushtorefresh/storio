@@ -54,7 +54,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -69,7 +69,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -95,7 +95,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .args("arg1", "arg2")
                         .build())
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -123,7 +123,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -167,7 +167,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -181,7 +181,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test

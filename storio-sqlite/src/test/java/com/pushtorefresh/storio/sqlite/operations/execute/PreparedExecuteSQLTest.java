@@ -59,7 +59,7 @@ public class PreparedExecuteSQLTest {
                 .executeSQL()
                 .withQuery(stub.rawQuery)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
 
         stub.verifyBehavior(observable);
     }
@@ -98,7 +98,7 @@ public class PreparedExecuteSQLTest {
                 .executeSQL()
                 .withQuery(stub.rawQuery)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
 
         stub.verifyBehavior(observable);
     }

@@ -46,7 +46,7 @@ public class PreparedPutObjectTest {
                     .object(putStub.items.get(0))
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             putStub.verifyBehaviorForOneObject(putResultObservable);
         }
@@ -89,7 +89,7 @@ public class PreparedPutObjectTest {
                     .put()
                     .object(putStub.items.get(0))
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             putStub.verifyBehaviorForOneObject(putResultObservable);
         }
@@ -150,7 +150,7 @@ public class PreparedPutObjectTest {
 
             new PreparedPutObject.Builder<Object>(storIOSQLite, object)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

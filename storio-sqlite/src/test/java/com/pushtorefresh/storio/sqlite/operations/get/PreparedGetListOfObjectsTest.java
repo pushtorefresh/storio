@@ -61,7 +61,7 @@ public class PreparedGetListOfObjectsTest {
                     .withQuery(getStub.query)
                     .withGetResolver(getStub.getResolver)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .take(1);
 
             getStub.verifyQueryBehavior(testItemsObservable);
@@ -107,7 +107,7 @@ public class PreparedGetListOfObjectsTest {
                     .withQuery(getStub.rawQuery)
                     .withGetResolver(getStub.getResolver)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .take(1);
 
             getStub.verifyRawQueryBehavior(testItemsObservable);
@@ -154,7 +154,7 @@ public class PreparedGetListOfObjectsTest {
                     .listOfObjects(TestItem.class)
                     .withQuery(getStub.query)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .take(1);
 
             getStub.verifyQueryBehavior(testItemsObservable);
@@ -197,7 +197,7 @@ public class PreparedGetListOfObjectsTest {
                     .listOfObjects(TestItem.class)
                     .withQuery(getStub.rawQuery)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .take(1);
 
             getStub.verifyRawQueryBehavior(testItemsObservable);
@@ -296,7 +296,7 @@ public class PreparedGetListOfObjectsTest {
                     .listOfObjects(TestItem.class)
                     .withQuery(Query.builder().table("test_table").build())
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -328,7 +328,7 @@ public class PreparedGetListOfObjectsTest {
                     .listOfObjects(TestItem.class)
                     .withQuery(RawQuery.builder().query("test query").build())
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -447,7 +447,7 @@ public class PreparedGetListOfObjectsTest {
         }
 
         @Test
-        public void createObservableShouldThrowExceptionIfNoQueryWasSet() {
+        public void asRxObservableShouldThrowExceptionIfNoQueryWasSet() {
             //noinspection unchecked,ConstantConditions
             PreparedGetListOfObjects<Object> preparedGetListOfObjects
                     = new PreparedGetListOfObjects<Object>(
@@ -459,7 +459,7 @@ public class PreparedGetListOfObjectsTest {
 
             try {
                 //noinspection ResourceType
-                preparedGetListOfObjects.createObservable();
+                preparedGetListOfObjects.asRxObservable();
                 failBecauseExceptionWasNotThrown(IllegalStateException.class);
             } catch (IllegalStateException expected) {
                 assertThat(expected).hasMessage("Please specify query");
@@ -545,7 +545,7 @@ public class PreparedGetListOfObjectsTest {
             final TestSubscriber<List<Object>> testSubscriber = new TestSubscriber<List<Object>>();
 
             preparedGetListOfObjects
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

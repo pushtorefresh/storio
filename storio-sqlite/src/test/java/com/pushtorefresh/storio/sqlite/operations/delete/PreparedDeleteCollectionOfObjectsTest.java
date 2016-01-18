@@ -107,7 +107,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .useTransaction(false)
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             deleteStub.verifyBehaviorForMultipleObjects(observable);
         }
@@ -123,7 +123,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .useTransaction(true)
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             deleteStub.verifyBehaviorForMultipleObjects(observable);
         }
@@ -233,7 +233,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(false)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             deleteStub.verifyBehaviorForMultipleObjects(observable);
         }
@@ -248,7 +248,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(true)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             deleteStub.verifyBehaviorForMultipleObjects(observable);
         }
@@ -336,7 +336,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .objects(items)
                     .useTransaction(false)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -436,7 +436,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .objects(items)
                     .useTransaction(true)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -543,7 +543,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .useTransaction(true)
                     .withDeleteResolver(deleteResolver)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

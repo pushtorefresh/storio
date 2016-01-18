@@ -30,7 +30,7 @@ public class PreparedPutContentValuesTest {
                 .contentValues(putStub.contentValues.get(0))
                 .withPutResolver(putStub.putResolver)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
 
         putStub.verifyBehaviorForOneContentValues(putResultObservable);
     }

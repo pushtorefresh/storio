@@ -32,7 +32,7 @@ public class PreparedPutContentValuesIterableTest {
                 .contentValues(putStub.contentValues)
                 .withPutResolver(putStub.putResolver)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
 
         putStub.verifyBehaviorForMultipleContentValues(putResultsObservable);
     }

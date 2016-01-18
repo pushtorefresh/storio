@@ -66,7 +66,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .object(user)
                 .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -86,7 +86,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .contentValues(mock(ContentValues.class))
                 .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -112,7 +112,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .contentValues(contentValuesIterable)
                 .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -136,7 +136,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .contentValues(contentValuesArray)
                 .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test

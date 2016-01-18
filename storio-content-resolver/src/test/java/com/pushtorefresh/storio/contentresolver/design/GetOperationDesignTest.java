@@ -67,7 +67,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(mock(GetResolver.class))
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -80,7 +80,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(ArticleMeta.GET_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -93,7 +93,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(ArticleMeta.GET_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test

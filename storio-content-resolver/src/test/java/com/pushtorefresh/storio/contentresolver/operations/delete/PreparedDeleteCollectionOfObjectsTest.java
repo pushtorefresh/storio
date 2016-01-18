@@ -52,7 +52,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .objects(deleteStub.items)
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             deleteStub.verifyBehaviorForDeleteMultipleObjects(observable);
         }
@@ -95,7 +95,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .delete()
                     .objects(deleteStub.items)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             deleteStub.verifyBehaviorForDeleteMultipleObjects(observable);
         }
@@ -164,7 +164,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .delete()
                     .objects(items)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
