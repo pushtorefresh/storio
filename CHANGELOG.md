@@ -1,6 +1,25 @@
 StorIO Change Log
 ==========
 
+## Version 1.8.0
+
+_2015_01_19_
+
+* `asRxSingle()`, yep, `rx.Single` support! Many thanks to [@geralt-encore](https://github.com/geralt-encore)
+* `asRxObservable()` instead of `createObservable()` (deprecated)
+
+**Changes:**
+
+* [PR 596](https://github.com/pushtorefresh/storio/pull/596) Test asRxObservable() instead of createObservable() which is now deprecated
+* [PR 594](https://github.com/pushtorefresh/storio/pull/594) Gradle Wrapper 2.10
+* [PR 593](https://github.com/pushtorefresh/storio/pull/593) Enable emails from Travis to react on problems with master branch
+* [PR 592](https://github.com/pushtorefresh/storio/pull/592) Add query to exceptions (significantly helps inspect crashes)
+* [PR 588](https://github.com/pushtorefresh/storio/pull/588) Try to find interface of class when apply mapper
+* [PR 586](https://github.com/pushtorefresh/storio/pull/586) Remove "final" from most of the classes (will help with mocking)
+* [PR 585](https://github.com/pushtorefresh/storio/pull/585) Base `executeAsBlocking()` result is nullable
+* [PR 584](https://github.com/pushtorefresh/storio/pull/584) **Add `asRxObservable()`, deprecate createObservable()**
+* [PR 573](https://github.com/pushtorefresh/storio/pull/573) Support for rx.Single
+
 ## Version 1.7.0
 
 _2015_12_30_
