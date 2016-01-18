@@ -49,7 +49,7 @@ public class PreparedGetNumberOfResultsTest {
                 .withQuery(getStub.query)
                 .withGetResolver(getStub.getResolverForNumberOfResults)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1);
 
         getStub.verifyQueryBehaviorForInteger(numberOfResultsObservable);
@@ -95,7 +95,7 @@ public class PreparedGetNumberOfResultsTest {
                 .withQuery(getStub.rawQuery)
                 .withGetResolver(getStub.getResolverForNumberOfResults)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1);
 
         getStub.verifyRawQueryBehaviorForInteger(numberOfResultsObservable);
@@ -159,7 +159,7 @@ public class PreparedGetNumberOfResultsTest {
                 .withQuery(Query.builder().table("test_table").build())
                 .withGetResolver(getResolver)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(60, SECONDS);
@@ -232,13 +232,13 @@ public class PreparedGetNumberOfResultsTest {
     }
 
     @Test
-    public void createObservableShouldThrowExceptionIfNoQueryWasSet() {
+    public void asRxObservableShouldThrowExceptionIfNoQueryWasSet() {
         //noinspection unchecked,ConstantConditions
         PreparedGetNumberOfResults preparedGetNumberOfResults
                 = new PreparedGetNumberOfResults(mock(StorIOSQLite.class), (Query) null, (GetResolver<Integer>) mock(GetResolver.class));
 
         try {
-            preparedGetNumberOfResults.createObservable();
+            preparedGetNumberOfResults.asRxObservable();
             failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
             assertThat(expected).hasMessage("Please specify query");

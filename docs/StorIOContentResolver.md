@@ -60,7 +60,7 @@ storIOContentResolver
     .whereArgs("@artem_zin")
     .build())
   .prepare()
-  .createObservable() // Get Result as rx.Observable and subscribe to further updates of Uri from Query!
+  .asRxObservable() // Get Result as rx.Observable and subscribe to further updates of Uri from Query!
   .observeOn(mainThread()) // All Rx operations work on Schedulers.io()
   .subscribe(tweets -> { // Please don't forget to unsubscribe
       // will be called with first result and then after each change of Uri from Query
@@ -90,7 +90,7 @@ storIOContentResolver
           .uri(tweetsUri)
           .build())
   .prepare()
-  .createObservable() 
+  .asRxObservable()
   .take(1) // To get result only once and ignore further changes of this Uri
   .observeOn(mainThread())
   .subscribe(tweets -> {
@@ -132,7 +132,7 @@ storIOContentResolver
   .put()
   .object(tweet)
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ```
 
 ######Put multiple objects of some type
@@ -143,7 +143,7 @@ storIOContentResolver
   .put()
   .objects(tweets)
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ```
 
 ######Put `ContentValues`
@@ -155,7 +155,7 @@ storIOContentResolver
   .contentValues(contentValues)
   .withPutResolver(putResolver) // requires PutResolver<ContentValues>
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ```
 
 `Put` Operation requires `PutResolver` which defines the behavior of `Put` Operation (insert or update).
@@ -198,7 +198,7 @@ storIOContentResolver
   .delete()
   .object(tweet)
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ``` 
 
 ######Delete multiple objects
@@ -209,7 +209,7 @@ storIOContentResolver
   .delete()
   .objects(tweets)
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ```
 
 Delete Resolver

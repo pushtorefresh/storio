@@ -45,7 +45,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                 .delete()
                 .byQuery(deleteQuery)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -84,7 +84,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                 .objects(articles)
                 .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -121,7 +121,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                 .object(article)
                 .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test

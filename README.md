@@ -104,7 +104,7 @@ storIOSQLite
     .table("tweets")
     .build())
   .prepare()
-  .createObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
+  .asRxObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
   .observeOn(mainThread()) // All Rx operations work on Schedulers.io()
   .subscribe(tweets -> { // Please don't forget to unsubscribe
   	  // Will be called with first result and then after each change of tables from Query
@@ -245,7 +245,7 @@ One of the main goals of `StorIO` — clean API for Humans which will be easy to
 All `Query` objects are immutable, you can share them safely.
 
 ####Concept of Prepared Operations
-You may notice that each Operation (Get, Put, Delete) should be prepared with `prepare()`. `StorIO` has an entity called `PreparedOperation<T>`, and you can use them to perform group execution of several Prepared Operations or provide `PreparedOperation<T>` as a return type of your API (for example in Model layer) and client will decide how to execute it: `executeAsBlocking()` or `createObservable()`. Also, Prepared Operations might be useful for ORMs based on `StorIO`.
+You may notice that each Operation (Get, Put, Delete) should be prepared with `prepare()`. `StorIO` has an entity called `PreparedOperation<T>`, and you can use them to perform group execution of several Prepared Operations or provide `PreparedOperation<T>` as a return type of your API (for example in Model layer) and client will decide how to execute it: `executeAsBlocking()` or `asRxObservable()`. Also, Prepared Operations might be useful for ORMs based on `StorIO`.
 
 You can customize behavior of every Operation via `Resolvers`: `GetResolver`, `PutResolver`, `DeleteResolver`.
 

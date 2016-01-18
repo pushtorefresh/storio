@@ -55,7 +55,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(putStub.items)
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             putStub.verifyBehaviorForMultipleObjects(observable);
         }
@@ -98,7 +98,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .put()
                     .objects(putStub.items)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             putStub.verifyBehaviorForMultipleObjects(observable);
         }
@@ -168,7 +168,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .put()
                     .objects(items)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

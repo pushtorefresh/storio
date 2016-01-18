@@ -45,7 +45,7 @@ public class PreparedGetCursorTest {
                 .withQuery(getStub.query)
                 .withGetResolver(getStub.getResolver)
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1);
 
         getStub.verifyQueryBehaviorForCursor(cursorObservable);

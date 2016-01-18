@@ -78,7 +78,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(false)
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             putStub.verifyBehaviorForMultipleObjects(observable);
         }
@@ -94,7 +94,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(true)
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             putStub.verifyBehaviorForMultipleObjects(observable);
         }
@@ -174,7 +174,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(putStub.items)
                     .useTransaction(false)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             putStub.verifyBehaviorForMultipleObjects(observable);
         }
@@ -189,7 +189,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(putStub.items)
                     .useTransaction(true)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             putStub.verifyBehaviorForMultipleObjects(observable);
         }
@@ -278,7 +278,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(items)
                     .useTransaction(false)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -381,7 +381,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(items)
                     .useTransaction(true)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -494,7 +494,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(true)
                     .withPutResolver(putResolver)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -616,7 +616,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(false)
                     .withPutResolver(putResolver)
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

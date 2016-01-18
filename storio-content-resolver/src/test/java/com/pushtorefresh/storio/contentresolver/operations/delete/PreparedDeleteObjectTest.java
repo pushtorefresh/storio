@@ -49,7 +49,7 @@ public class PreparedDeleteObjectTest {
                     .object(deleteStub.items.get(0))
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             deleteStub.verifyBehaviorForDeleteOneObject(observable);
         }
@@ -92,7 +92,7 @@ public class PreparedDeleteObjectTest {
                     .delete()
                     .object(deleteStub.items.get(0))
                     .prepare()
-                    .createObservable();
+                    .asRxObservable();
 
             deleteStub.verifyBehaviorForDeleteOneObject(observable);
         }
@@ -157,7 +157,7 @@ public class PreparedDeleteObjectTest {
                     .delete()
                     .object(TestItem.newInstance())
                     .prepare()
-                    .createObservable()
+                    .asRxObservable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

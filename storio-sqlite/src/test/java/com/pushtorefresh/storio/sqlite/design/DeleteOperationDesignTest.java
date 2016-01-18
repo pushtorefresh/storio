@@ -35,7 +35,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                 .object(user)
                 .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -59,7 +59,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                 .objects(users)
                 .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test
@@ -85,7 +85,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
                 .prepare()
-                .createObservable();
+                .asRxObservable();
     }
 
     @Test

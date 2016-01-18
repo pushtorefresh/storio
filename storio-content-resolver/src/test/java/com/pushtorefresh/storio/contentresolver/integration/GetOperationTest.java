@@ -110,7 +110,7 @@ public class GetOperationTest extends IntegrationTest {
                         .uri(TestItem.CONTENT_URI)
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1)
                 .subscribe(cursorTestSubscriber);
 
@@ -153,7 +153,7 @@ public class GetOperationTest extends IntegrationTest {
                         .uri(TestItem.CONTENT_URI)
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1)
                 .subscribe(listTestSubscriber);
 
@@ -373,7 +373,7 @@ public class GetOperationTest extends IntegrationTest {
                         .whereArgs("value")
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1);
 
         TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
@@ -411,7 +411,7 @@ public class GetOperationTest extends IntegrationTest {
                         .whereArgs("some value")
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(1);
 
         TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
@@ -517,7 +517,7 @@ public class GetOperationTest extends IntegrationTest {
                         .whereArgs("value")
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(2);
 
         TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
@@ -553,7 +553,7 @@ public class GetOperationTest extends IntegrationTest {
                         .whereArgs("value")
                         .build())
                 .prepare()
-                .createObservable()
+                .asRxObservable()
                 .take(2);
 
         TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();

@@ -30,7 +30,7 @@ public class MapSomethingToExecuteAsBlockingTest {
                 .first();
 
         verify(preparedOperation, times(1)).executeAsBlocking();
-        verify(preparedOperation, times(0)).createObservable();
+        verify(preparedOperation, times(0)).asRxObservable();
 
         assertThat(actualMapResult).isEqualTo(expectedMapResult);
     }

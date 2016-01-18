@@ -52,7 +52,7 @@ storIOSQLite
     .table("tweets")
     .build())
   .prepare()
-  .createObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
+  .asRxObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
   .observeOn(mainThread()) // All Rx operations work on Schedulers.io()
   .subscribe(tweets -> { // Please don't forget to unsubscribe
       // will be called with first result and then after each change of tables from Query
@@ -83,7 +83,7 @@ storIOSQLite
           .table("tweets")
           .build())
   .prepare()
-  .createObservable() 
+  .asRxObservable()
   .take(1)  // To get result only once and ignore further changes of this table
   .observeOn(mainThread())
   .subscribe(tweets -> {
@@ -103,7 +103,7 @@ storIOSQLite
     .args("artem_zin")
     .build())
   .prepare()
-  .createObservable();
+  .asRxObservable();
 ```
 
 ######Customize behavior of `Get` Operation with `GetResolver`
@@ -140,7 +140,7 @@ storIOSQLite
   .put()
   .object(tweet)
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ```
 
 ######Put multiple objects of some type
@@ -151,7 +151,7 @@ storIOSQLite
   .put()
   .objects(tweets)
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ```
 
 ######Put `ContentValues`
@@ -163,7 +163,7 @@ storIOSQLite
   .contentValues(contentValues)
   .withPutResolver(putResolver) // requires PutResolver<ContentValues>
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ```
 
 `Put` Operation requires `PutResolver` which defines the behavior of `Put` Operation (insert or update).
@@ -208,7 +208,7 @@ storIOSQLite
   .delete()
   .object(tweet)
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ``` 
 
 ######Delete multiple objects
@@ -219,7 +219,7 @@ storIOSQLite
   .delete()
   .objects(tweets)
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ```
 
 Delete Resolver
@@ -252,7 +252,7 @@ storIOSQLite
     .affectsTables("tweets") // optional: you can specify affected tables to notify Observers
     .build())
   .prepare()
-  .executeAsBlocking(); // or createObservable()
+  .executeAsBlocking(); // or asRxObservable()
 ```
 
 Several things about `ExecSql`:
