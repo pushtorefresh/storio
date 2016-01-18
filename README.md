@@ -16,13 +16,14 @@
 ----
 
 #####Why StorIO?
-* Open Source -> less bugs
-* Documentation, Sample app and Design tests -> less bugs
-* `StorIO` has unit and integration tests -> less bugs
 * Simple concept of just three main Operations: `Put`, `Get`, `Delete` -> less bugs
 * Almost everything is immutable and thread-safe -> less bugs
 * Builders for everything make code much, much more readable and obvious -> less bugs
+* Our builders give compile time guarantees for required parameters -> less bugs
 * `StorIO` annotated with `@NonNull` and `@Nullable` annotations -> less bugs
+* Open Source -> less bugs
+* Documentation, Sample app and Design tests -> less bugs
+* `StorIO` has unit and integration tests -> less bugs
 * Less bugs -> less bugs
 
 ####Documentation:
@@ -146,7 +147,11 @@ StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
 
 You can override Operation Resolver per each individual Operation, it can be useful for working with `SQL JOIN`.
 
+---
+
 To **save you from coding boilerplate classes** we created **Annotation Processor** which will generate `PutResolver`, `GetResolver` and `DeleteResolver` at compile time, you just need to use generated classes
+
+*Notice that annotation processors are not part of the library core, you can work with StorIO without them, we just made them to save you from boilerplate*.
 
 ```groovy
 dependencies {
@@ -250,8 +255,8 @@ You may notice that each Operation (Get, Put, Delete) should be prepared with `p
 You can customize behavior of every Operation via `Resolvers`: `GetResolver`, `PutResolver`, `DeleteResolver`.
 
 ####Rx Support Design
-Every Operation can be executed as rx.Observable. Get Operations will be automatically subscribed to the updates of the data.
-Every Observable runs on `Schedulers.io()` by default, currently we don't offer overloads to pass your `Scheduler`, feel free to send PRs!
+Every Operation can be executed as `rx.Observable` or `rx.Single`. Get Operations will be automatically subscribed to the updates of the data.
+Every Observable runs on `Schedulers.io()`, in v2.0 we will remove default scheduling!
 
 ----
 Master branch build status: [![Master branch build status](https://travis-ci.org/pushtorefresh/storio.svg?branch=master)](https://travis-ci.org/pushtorefresh/storio)
