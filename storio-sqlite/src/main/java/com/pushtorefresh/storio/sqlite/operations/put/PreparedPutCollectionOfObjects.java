@@ -62,7 +62,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
     @Override
     public PutResults<T> executeAsBlocking() {
         try {
-            final StorIOSQLite.Internal internal = storIOSQLite.internal();
+            final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 
             // Nullable
             final List<SimpleImmutableEntry<T, PutResolver<T>>> objectsAndPutResolvers;
@@ -74,7 +74,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
 
                 for (final T object : objects) {
                     final SQLiteTypeMapping<T> typeMapping
-                            = (SQLiteTypeMapping<T>) internal.typeMapping(object.getClass());
+                            = (SQLiteTypeMapping<T>) lowLevel.typeMapping(object.getClass());
 
                     if (typeMapping == null) {
                         throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
@@ -90,7 +90,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
             }
 
             if (useTransaction) {
-                internal.beginTransaction();
+                lowLevel.beginTransaction();
             }
 
             final Map<T, PutResult> results = new HashMap<T, PutResult>(objects.size());
@@ -103,7 +103,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
                         results.put(object, putResult);
 
                         if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
-                            internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                            lowLevel.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                         }
                     }
                 } else {
@@ -116,18 +116,18 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
                         results.put(object, putResult);
 
                         if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
-                            internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                            lowLevel.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                         }
                     }
                 }
 
                 if (useTransaction) {
-                    internal.setTransactionSuccessful();
+                    lowLevel.setTransactionSuccessful();
                     transactionSuccessful = true;
                 }
             } finally {
                 if (useTransaction) {
-                    internal.endTransaction();
+                    lowLevel.endTransaction();
 
                     // if delete was in transaction and it was successful -> notify about changes
                     if (transactionSuccessful) {
@@ -143,7 +143,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
                         // IMPORTANT: Notifying about change should be done after end of transaction
                         // It'll reduce number of possible deadlock situations
                         if (!affectedTables.isEmpty()) {
-                            internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                            lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables));
                         }
                     }
                 }

@@ -64,7 +64,7 @@ class GetObjectsStub {
         storIOSQLite = mock(StorIOSQLite.class);
         internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal())
+        when(storIOSQLite.lowLevel())
                 .thenReturn(internal);
 
         query = Query
@@ -174,7 +174,7 @@ class GetObjectsStub {
 
         if (withTypeMapping) {
             // should be called only once because of Performance!
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
 
             // should be called only once because of Performance!
             verify(internal).typeMapping(TestItem.class);

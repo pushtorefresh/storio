@@ -139,7 +139,7 @@ public class PreparedExecuteSQLTest {
                         .build();
             }
 
-            when(storIOSQLite.internal())
+            when(storIOSQLite.lowLevel())
                     .thenReturn(internal);
 
             when(storIOSQLite.executeSQL())

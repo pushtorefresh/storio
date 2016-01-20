@@ -115,7 +115,7 @@ public class PreparedPutObjectTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final Object object = new Object();
 
@@ -131,7 +131,7 @@ public class PreparedPutObjectTest {
                                 "object = " + object + ", object.class = " + object.getClass() + ", " +
                                 "db was not affected by this operation, please add type mapping for this type");
 
-                verify(storIOSQLite).internal();
+                verify(storIOSQLite).lowLevel();
                 verify(internal).typeMapping(Object.class);
                 verifyNoMoreInteractions(storIOSQLite, internal);
             }
@@ -142,7 +142,7 @@ public class PreparedPutObjectTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final Object object = new Object();
 
@@ -166,7 +166,7 @@ public class PreparedPutObjectTest {
                             "object = " + object + ", object.class = " + object.getClass() + ", " +
                             "db was not affected by this operation, please add type mapping for this type");
 
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
@@ -176,7 +176,7 @@ public class PreparedPutObjectTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final Object object = new Object();
 
@@ -200,7 +200,7 @@ public class PreparedPutObjectTest {
                     "object = " + object + ", object.class = " + object.getClass() + ", " +
                     "db was not affected by this operation, please add type mapping for this type");
 
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
         }

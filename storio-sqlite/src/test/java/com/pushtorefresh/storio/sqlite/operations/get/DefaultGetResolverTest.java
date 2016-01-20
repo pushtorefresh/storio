@@ -29,7 +29,7 @@ public class DefaultGetResolverTest {
 
         final Cursor expectedCursor = mock(Cursor.class);
 
-        when(storIOSQLite.internal())
+        when(storIOSQLite.lowLevel())
                 .thenReturn(internal);
 
         when(internal.rawQuery(rawQuery))
@@ -65,7 +65,7 @@ public class DefaultGetResolverTest {
 
         final Cursor expectedCursor = mock(Cursor.class);
 
-        when(storIOSQLite.internal())
+        when(storIOSQLite.lowLevel())
                 .thenReturn(internal);
 
         when(internal.query(query))

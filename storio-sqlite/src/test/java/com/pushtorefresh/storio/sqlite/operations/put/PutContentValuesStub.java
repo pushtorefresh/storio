@@ -46,7 +46,7 @@ class PutContentValuesStub {
         storIOSQLite = mock(StorIOSQLite.class);
         internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal())
+        when(storIOSQLite.lowLevel())
                 .thenReturn(internal);
 
         when(storIOSQLite.put())

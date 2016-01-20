@@ -59,12 +59,12 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
     @Override
     public PutResults<ContentValues> executeAsBlocking() {
         try {
-            final StorIOSQLite.Internal internal = storIOSQLite.internal();
+            final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 
             final Map<ContentValues, PutResult> putResults = new HashMap<ContentValues, PutResult>();
 
             if (useTransaction) {
-                internal.beginTransaction();
+                lowLevel.beginTransaction();
             }
 
             boolean transactionSuccessful = false;
@@ -75,17 +75,17 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
                     putResults.put(contentValues, putResult);
 
                     if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
-                        internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                        lowLevel.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                     }
                 }
 
                 if (useTransaction) {
-                    internal.setTransactionSuccessful();
+                    lowLevel.setTransactionSuccessful();
                     transactionSuccessful = true;
                 }
             } finally {
                 if (useTransaction) {
-                    internal.endTransaction();
+                    lowLevel.endTransaction();
 
                     if (transactionSuccessful) {
                         final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
@@ -100,7 +100,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
                         // IMPORTANT: Notifying about change should be done after end of transaction
                         // It'll reduce number of possible deadlock situations
                         if (!affectedTables.isEmpty()) {
-                            internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                            lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables));
                         }
                     }
                 }

@@ -27,7 +27,7 @@ public class PreparedDeleteByQueryTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
 
         final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table("test_table")
@@ -50,7 +50,7 @@ public class PreparedDeleteByQueryTest {
 
         assertThat(actualDeleteResult).isEqualTo(expectedDeleteResult);
 
-        verify(storIOSQLite).internal();
+        verify(storIOSQLite).lowLevel();
         verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
         verify(internal).notifyAboutChanges(eq(Changes.newInstance(deleteQuery.table())));
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
@@ -61,7 +61,7 @@ public class PreparedDeleteByQueryTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
 
         final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table("test_table")
@@ -89,7 +89,7 @@ public class PreparedDeleteByQueryTest {
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(expectedDeleteResult);
 
-        verify(storIOSQLite).internal();
+        verify(storIOSQLite).lowLevel();
         verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
         verify(internal).notifyAboutChanges(eq(Changes.newInstance(deleteQuery.table())));
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
@@ -100,7 +100,7 @@ public class PreparedDeleteByQueryTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
 
         final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table("test_table")
@@ -128,7 +128,7 @@ public class PreparedDeleteByQueryTest {
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(expectedDeleteResult);
 
-        verify(storIOSQLite).internal();
+        verify(storIOSQLite).lowLevel();
         verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
         verify(internal).notifyAboutChanges(eq(Changes.newInstance(deleteQuery.table())));
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
@@ -139,7 +139,7 @@ public class PreparedDeleteByQueryTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
 
         //noinspection unchecked
         final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
@@ -168,7 +168,7 @@ public class PreparedDeleteByQueryTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
 
         //noinspection unchecked
         final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
@@ -203,7 +203,7 @@ public class PreparedDeleteByQueryTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
 
         //noinspection unchecked
         final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
@@ -238,7 +238,7 @@ public class PreparedDeleteByQueryTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
 
         final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table("test_table")

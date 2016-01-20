@@ -81,7 +81,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             if (explicitGetResolver != null) {
                 getResolver = explicitGetResolver;
             } else {
-                final SQLiteTypeMapping<T> typeMapping = storIOSQLite.internal().typeMapping(type);
+                final SQLiteTypeMapping<T> typeMapping = storIOSQLite.lowLevel().typeMapping(type);
 
                 if (typeMapping == null) {
                     throw new IllegalStateException("This type does not have type mapping: " +

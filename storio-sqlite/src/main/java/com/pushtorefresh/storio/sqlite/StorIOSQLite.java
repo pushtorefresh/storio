@@ -142,19 +142,31 @@ public abstract class StorIOSQLite implements Closeable {
     }
 
     /**
-     * Hides some internal operations of {@link StorIOSQLite}
-     * to make API of {@link StorIOSQLite} clean and easy to understand.
+     * An API for low level interaction with DB, it's part of public API, so feel free to use it,
+     * but please read documentation carefully!
      *
-     * @return implementation of Internal operations for {@link StorIOSQLite}.
+     * @return implementation of low level APIs for {@link StorIOSQLite}.
+     * @deprecated please use {@link #lowLevel()}, this one will be removed in v2.0,
+     * basically, we just renamed it to LowLevel.
      */
+    @Deprecated
     @NonNull
     public abstract Internal internal();
 
     /**
-     * Hides some internal operations of {@link StorIOSQLite}
+     * An API for low level interaction with DB, it's part of public API, so feel free to use it,
+     * but please read documentation carefully!
+     *
+     * @return implementation of low level APIs for {@link StorIOSQLite}.
+     */
+    @NonNull
+    public abstract LowLevel lowLevel();
+
+    /**
+     * API for low level operations with {@link StorIOSQLite}, we made it separate
      * to make {@link StorIOSQLite} API clean and easy to understand.
      */
-    public static abstract class Internal {
+    public static abstract class LowLevel {
 
         /**
          * Gets {@link SQLiteTypeMapping} for required type.
@@ -303,5 +315,14 @@ public abstract class StorIOSQLite implements Closeable {
          * how to use this and when transactions are committed and rolled back.
          */
         public abstract void endTransaction();
+    }
+
+    /**
+     * @deprecated please use {@link LowLevel} instead, this type will be removed in v2.0,
+     * basically we're just giving this API a better name.
+     */
+    @Deprecated
+    public abstract class Internal extends LowLevel {
+
     }
 }

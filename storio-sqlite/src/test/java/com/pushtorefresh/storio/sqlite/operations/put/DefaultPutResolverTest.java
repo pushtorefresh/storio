@@ -37,7 +37,7 @@ public class DefaultPutResolverTest {
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
         final TestItem testItem = new TestItem(null); // item without id, should be inserted
 
-        when(storIOSQLite.internal())
+        when(storIOSQLite.lowLevel())
                 .thenReturn(internal);
 
         final Long expectedInsertedId = 24L;
@@ -132,7 +132,7 @@ public class DefaultPutResolverTest {
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
         final TestItem testItem = new TestItem(null); // item with some id, should be updated
 
-        when(storIOSQLite.internal())
+        when(storIOSQLite.lowLevel())
                 .thenReturn(internal);
 
         final Query expectedQuery = Query.builder()

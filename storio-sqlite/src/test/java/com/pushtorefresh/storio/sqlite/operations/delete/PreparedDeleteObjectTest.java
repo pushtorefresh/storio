@@ -132,7 +132,7 @@ public class PreparedDeleteObjectTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
@@ -150,7 +150,7 @@ public class PreparedDeleteObjectTest {
             }
 
             verify(storIOSQLite).delete();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -161,7 +161,7 @@ public class PreparedDeleteObjectTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
@@ -180,7 +180,7 @@ public class PreparedDeleteObjectTest {
                     hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).delete();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -191,7 +191,7 @@ public class PreparedDeleteObjectTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
@@ -210,7 +210,7 @@ public class PreparedDeleteObjectTest {
                     hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).delete();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);

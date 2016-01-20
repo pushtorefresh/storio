@@ -55,12 +55,13 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
     @Override
     public PutResult performPut(@NonNull StorIOSQLite storIOSQLite, @NonNull T object) {
         final UpdateQuery updateQuery = mapToUpdateQuery(object);
+        final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 
         // for data consistency in concurrent environment, encapsulate Put Operation into transaction
-        storIOSQLite.internal().beginTransaction();
+        lowLevel.beginTransaction();
 
         try {
-            final Cursor cursor = storIOSQLite.internal().query(Query.builder()
+            final Cursor cursor = lowLevel.query(Query.builder()
                     .table(updateQuery.table())
                     .where(nullableString(updateQuery.where()))
                     .whereArgs((Object[]) nullableArrayOfStrings(updateQuery.whereArgs()))
@@ -73,10 +74,10 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
 
                 if (cursor.getCount() == 0) {
                     final InsertQuery insertQuery = mapToInsertQuery(object);
-                    final long insertedId = storIOSQLite.internal().insert(insertQuery, contentValues);
+                    final long insertedId = lowLevel.insert(insertQuery, contentValues);
                     putResult = PutResult.newInsertResult(insertedId, insertQuery.table());
                 } else {
-                    final int numberOfRowsUpdated = storIOSQLite.internal().update(updateQuery, contentValues);
+                    final int numberOfRowsUpdated = lowLevel.update(updateQuery, contentValues);
                     putResult = PutResult.newUpdateResult(numberOfRowsUpdated, updateQuery.table());
                 }
             } finally {
@@ -84,12 +85,12 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
             }
 
             // everything okay
-            storIOSQLite.internal().setTransactionSuccessful();
+            lowLevel.setTransactionSuccessful();
 
             return putResult;
         } finally {
             // in case of bad situations, db won't be affected
-            storIOSQLite.internal().endTransaction();
+            lowLevel.endTransaction();
         }
     }
 }

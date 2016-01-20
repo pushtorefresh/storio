@@ -37,7 +37,7 @@ public class NotifyAboutChangesTest extends BaseTest {
                 .subscribe(testObserver);
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .notifyAboutChanges(Changes.newInstance("test_table"));
 
         final long startTime = SystemClock.elapsedRealtime();
@@ -84,7 +84,7 @@ public class NotifyAboutChangesTest extends BaseTest {
                     }
 
                     storIOSQLite
-                            .internal()
+                            .lowLevel()
                             .notifyAboutChanges(Changes.newInstance("test_table" + finalI));
                 }
             }).start();
@@ -121,12 +121,12 @@ public class NotifyAboutChangesTest extends BaseTest {
                 .subscribe(testSubscriber);
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .beginTransaction();
 
         for (int i = 0; i < numberOfChanges; i++) {
             storIOSQLite
-                    .internal()
+                    .lowLevel()
                     .notifyAboutChanges(Changes.newInstance(table));
         }
 
@@ -134,7 +134,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .endTransaction();
 
         testSubscriber.assertNoErrors();
@@ -153,7 +153,7 @@ public class NotifyAboutChangesTest extends BaseTest {
                 .subscribe(testSubscriber);
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .beginTransaction();
 
         final CountDownLatch startAllThreadsLock = new CountDownLatch(1);
@@ -171,7 +171,7 @@ public class NotifyAboutChangesTest extends BaseTest {
                     }
 
                     storIOSQLite
-                            .internal()
+                            .lowLevel()
                             .notifyAboutChanges(Changes.newInstance(table));
 
                     allThreadsFinishedLock.countDown();
@@ -189,7 +189,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .endTransaction();
 
         testSubscriber.assertNoErrors();
