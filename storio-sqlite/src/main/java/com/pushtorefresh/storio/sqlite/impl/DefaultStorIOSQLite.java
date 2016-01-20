@@ -47,14 +47,14 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>(RX_JAVA_IS_IN_THE_CLASS_PATH);
 
     /**
-     * Implementation of {@link StorIOSQLite.Internal}.
+     * Implementation of {@link com.pushtorefresh.storio.sqlite.StorIOSQLite.LowLevel}.
      */
     @NonNull
-    private final Internal internal;
+    private final Internal lowLevel;
 
     protected DefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
         this.sqLiteOpenHelper = sqLiteOpenHelper;
-        internal = new InternalImpl(typesMapping);
+        lowLevel = new LowLevelImpl(typesMapping);
     }
 
     /**
@@ -87,8 +87,18 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      */
     @NonNull
     @Override
+    @Deprecated
     public Internal internal() {
-        return internal;
+        return lowLevel;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public LowLevel lowLevel() {
+        return lowLevel;
     }
 
     /**
@@ -188,7 +198,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     /**
      * {@inheritDoc}
      */
-    protected class InternalImpl extends Internal {
+    protected class LowLevelImpl extends Internal {
 
         @NonNull
         private final Object lock = new Object();
@@ -210,7 +220,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @NonNull
         private Set<Changes> pendingChanges = new HashSet<Changes>(5);
 
-        protected InternalImpl(@Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
+        protected LowLevelImpl(@Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
             this.directTypesMapping = typesMapping != null
                     ? unmodifiableMap(typesMapping)
                     : null;
@@ -507,6 +517,17 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
 
             numberOfRunningTransactions.decrementAndGet();
             notifyAboutPendingChangesIfNotInTransaction();
+        }
+    }
+
+    /**
+     * Please use {@link LowLevelImpl} instead, this type will be remove in v2.0.
+     */
+    @Deprecated
+    protected class InternalImpl extends LowLevelImpl {
+
+        protected InternalImpl(@Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
+            super(typesMapping);
         }
     }
 }

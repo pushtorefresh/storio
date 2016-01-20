@@ -53,12 +53,13 @@ public class PreparedExecuteSQL implements PreparedOperation<Object> {
     @Override
     public Object executeAsBlocking() {
         try {
-            storIOSQLite.internal().executeSQL(rawQuery);
+            final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
+            lowLevel.executeSQL(rawQuery);
 
             final Set<String> affectedTables = rawQuery.affectsTables();
 
             if (affectedTables.size() > 0) {
-                storIOSQLite.internal().notifyAboutChanges(Changes.newInstance(affectedTables));
+                lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables));
             }
 
             return new Object();

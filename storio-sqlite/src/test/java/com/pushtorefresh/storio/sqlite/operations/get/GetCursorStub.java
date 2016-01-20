@@ -28,7 +28,7 @@ class GetCursorStub {
     final StorIOSQLite storIOSQLite;
 
     @NonNull
-    private final StorIOSQLite.Internal internal;
+    private final StorIOSQLite.LowLevel lowLevel;
 
     @NonNull
     final Query query;
@@ -45,10 +45,10 @@ class GetCursorStub {
     @SuppressWarnings("unchecked")
     private GetCursorStub() {
         storIOSQLite = mock(StorIOSQLite.class);
-        internal = mock(StorIOSQLite.Internal.class);
+        lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.internal())
-                .thenReturn(internal);
+        when(storIOSQLite.lowLevel())
+                .thenReturn(lowLevel);
 
         query = Query
                 .builder()
@@ -92,7 +92,7 @@ class GetCursorStub {
         verify(storIOSQLite).get();
         verify(getResolverForCursor).performGet(storIOSQLite, query);
         assertThat(actualCursor).isSameAs(cursor);
-        verifyNoMoreInteractions(storIOSQLite, internal, cursor);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
     void verifyQueryBehaviorForCursor(@NonNull Observable<Cursor> observable) {
@@ -128,7 +128,7 @@ class GetCursorStub {
         verify(storIOSQLite, times(1)).get();
         verify(getResolverForCursor, times(1)).performGet(storIOSQLite, rawQuery);
         assertThat(actualCursor).isSameAs(cursor);
-        verifyNoMoreInteractions(storIOSQLite, internal, cursor);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
     void verifyRawQueryBehaviorForCursor(@NonNull Observable<Cursor> observable) {

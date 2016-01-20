@@ -28,7 +28,7 @@ public class DefaultDeleteResolverTest {
                 .table(testTable)
                 .build();
 
-        when(storIOSQLite.internal())
+        when(storIOSQLite.lowLevel())
                 .thenReturn(internal);
 
         when(internal.delete(deleteQuery))

@@ -225,7 +225,7 @@ public class PreparedGetObjectTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final PreparedGet<TestItem> preparedGet = storIOSQLite
                     .get()
@@ -245,7 +245,7 @@ public class PreparedGetObjectTest {
             }
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -258,7 +258,7 @@ public class PreparedGetObjectTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
             when(storIOSQLite.observeChangesInTables(any(Set.class)))
                     .thenReturn(Observable.empty());
 
@@ -287,7 +287,7 @@ public class PreparedGetObjectTest {
                             "db was not touched by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verify(storIOSQLite).observeChangesInTables(anySet());
@@ -301,7 +301,7 @@ public class PreparedGetObjectTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
 
@@ -328,7 +328,7 @@ public class PreparedGetObjectTest {
                             "db was not touched by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -340,7 +340,7 @@ public class PreparedGetObjectTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final PreparedGet<TestItem> preparedGet = storIOSQLite
                     .get()
@@ -360,7 +360,7 @@ public class PreparedGetObjectTest {
             }
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -372,7 +372,7 @@ public class PreparedGetObjectTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
 
@@ -399,7 +399,7 @@ public class PreparedGetObjectTest {
                             "db was not touched by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -411,7 +411,7 @@ public class PreparedGetObjectTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
 
@@ -438,7 +438,7 @@ public class PreparedGetObjectTest {
                             "db was not touched by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);

@@ -54,14 +54,14 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
     @Override
     public PutResult executeAsBlocking() {
         try {
-            final StorIOSQLite.Internal internal = storIOSQLite.internal();
+            final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 
             final PutResolver<T> putResolver;
 
             if (explicitPutResolver != null) {
                 putResolver = explicitPutResolver;
             } else {
-                final SQLiteTypeMapping<T> typeMapping = internal.typeMapping((Class<T>) object.getClass());
+                final SQLiteTypeMapping<T> typeMapping = lowLevel.typeMapping((Class<T>) object.getClass());
 
                 if (typeMapping == null) {
                     throw new IllegalStateException("Object does not have type mapping: " +
@@ -75,7 +75,7 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
             final PutResult putResult = putResolver.performPut(storIOSQLite, object);
 
             if (putResult.wasInserted() || putResult.wasUpdated()) {
-                internal.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                lowLevel.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
             }
 
             return putResult;

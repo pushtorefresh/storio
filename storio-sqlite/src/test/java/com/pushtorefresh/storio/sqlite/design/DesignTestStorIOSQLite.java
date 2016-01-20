@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
 class DesignTestStorIOSQLite extends StorIOSQLite {
 
     @NonNull
-    private final Internal internal = new Internal() {
+    private final Internal lowLevel = new Internal() {
 
         @Nullable
         @Override
@@ -134,7 +134,13 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
     @NonNull
     @Override
     public Internal internal() {
-        return internal;
+        return lowLevel;
+    }
+
+    @NonNull
+    @Override
+    public LowLevel lowLevel() {
+        return lowLevel;
     }
 
     @Override

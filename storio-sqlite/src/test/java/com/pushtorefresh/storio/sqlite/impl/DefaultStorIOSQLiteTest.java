@@ -71,7 +71,7 @@ public class DefaultStorIOSQLiteTest {
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build();
 
-        assertThat(storIOSQLite.internal().typeMapping(TestItem.class)).isNull();
+        assertThat(storIOSQLite.lowLevel().typeMapping(TestItem.class)).isNull();
     }
 
     @Test
@@ -96,9 +96,9 @@ public class DefaultStorIOSQLiteTest {
                 .addTypeMapping(Entity.class, entityContentResolverTypeMapping)
                 .build();
 
-        assertThat(storIOSQLite.internal().typeMapping(Entity.class)).isSameAs(entityContentResolverTypeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(Entity.class)).isSameAs(entityContentResolverTypeMapping);
 
-        assertThat(storIOSQLite.internal().typeMapping(TestItem.class)).isNull();
+        assertThat(storIOSQLite.lowLevel().typeMapping(TestItem.class)).isNull();
     }
 
     @Test
@@ -119,7 +119,7 @@ public class DefaultStorIOSQLiteTest {
                 .addTypeMapping(TestItem.class, typeMapping)
                 .build();
 
-        assertThat(storIOSQLite.internal().typeMapping(TestItem.class)).isSameAs(typeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
     }
 
     @Test
@@ -145,10 +145,10 @@ public class DefaultStorIOSQLiteTest {
         }
 
         // Direct type mapping should still work
-        assertThat(storIOSQLite.internal().typeMapping(TestItem.class)).isSameAs(typeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
 
         // Indirect type mapping should give same type mapping as for parent class
-        assertThat(storIOSQLite.internal().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
     }
 
     @Test
@@ -184,10 +184,10 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         // Parent class should have its own type mapping
-        assertThat(storIOSQLite.internal().typeMapping(TestItem.class)).isSameAs(typeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
 
         // Child class should have its own type mapping
-        assertThat(storIOSQLite.internal().typeMapping(TestItemSubclass.class)).isSameAs(subclassTypeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(subclassTypeMapping);
     }
 
     @Test
@@ -231,16 +231,16 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         // Direct type mapping for Entity should work
-        assertThat(storIOSQLite.internal().typeMapping(Entity.class)).isSameAs(entitySQLiteTypeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(Entity.class)).isSameAs(entitySQLiteTypeMapping);
 
         // Direct type mapping for ConcreteEntity should work
-        assertThat(storIOSQLite.internal().typeMapping(ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
 
         // Indirect type mapping for AutoValue_Entity should get type mapping for Entity
-        assertThat(storIOSQLite.internal().typeMapping(AutoValue_Entity.class)).isSameAs(entitySQLiteTypeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(AutoValue_Entity.class)).isSameAs(entitySQLiteTypeMapping);
 
         // Indirect type mapping for AutoValue_ConcreteEntity should get type mapping for ConcreteEntity, not for Entity!
-        assertThat(storIOSQLite.internal().typeMapping(AutoValue_ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(AutoValue_ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
     }
 
     interface InterfaceEntity {
@@ -256,7 +256,7 @@ public class DefaultStorIOSQLiteTest {
                 .addTypeMapping(InterfaceEntity.class, typeMapping)
                 .build();
 
-        assertThat(storIOSQLite.internal().typeMapping(InterfaceEntity.class)).isSameAs(typeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(InterfaceEntity.class)).isSameAs(typeMapping);
     }
 
     @Test
@@ -272,10 +272,10 @@ public class DefaultStorIOSQLiteTest {
         class ConcreteEntity implements InterfaceEntity {
         }
 
-        assertThat(storIOSQLite.internal().typeMapping(ConcreteEntity.class)).isSameAs(typeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(ConcreteEntity.class)).isSameAs(typeMapping);
 
         // Just to make sure that we don't return this type mapping for all classes.
-        assertThat(storIOSQLite.internal().typeMapping(Random.class)).isNull();
+        assertThat(storIOSQLite.lowLevel().typeMapping(Random.class)).isNull();
     }
 
     @Test
@@ -295,10 +295,10 @@ public class DefaultStorIOSQLiteTest {
         }
 
 
-        assertThat(storIOSQLite.internal().typeMapping(Parent_ConcreteEntity.class)).isSameAs(typeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(Parent_ConcreteEntity.class)).isSameAs(typeMapping);
 
         // Just to make sure that we don't return this type mapping for all classes.
-        assertThat(storIOSQLite.internal().typeMapping(Random.class)).isNull();
+        assertThat(storIOSQLite.lowLevel().typeMapping(Random.class)).isNull();
 
     }
 
@@ -336,7 +336,7 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .executeSQL(rawQuery);
 
         verify(sqLiteOpenHelper).getWritableDatabase();
@@ -360,7 +360,7 @@ public class DefaultStorIOSQLiteTest {
                 .build(); // No args!
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .executeSQL(rawQuery);
 
         verify(sqLiteOpenHelper).getWritableDatabase();
@@ -381,32 +381,32 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         // External transaction
-        storIOSQLite.internal().beginTransaction();
+        storIOSQLite.lowLevel().beginTransaction();
 
         try {
             try {
                 // Nested transaction
-                storIOSQLite.internal().beginTransaction();
+                storIOSQLite.lowLevel().beginTransaction();
 
                 storIOSQLite
-                        .internal()
+                        .lowLevel()
                         .notifyAboutChanges(Changes.newInstance("table1"));
 
                 storIOSQLite
-                        .internal()
+                        .lowLevel()
                         .notifyAboutChanges(Changes.newInstance("table2"));
 
                 // Finishing nested transaction
-                storIOSQLite.internal().setTransactionSuccessful();
+                storIOSQLite.lowLevel().setTransactionSuccessful();
             } finally {
-                storIOSQLite.internal().endTransaction();
+                storIOSQLite.lowLevel().endTransaction();
             }
 
             // Marking external transaction as successful
-            storIOSQLite.internal().setTransactionSuccessful();
+            storIOSQLite.lowLevel().setTransactionSuccessful();
         } finally {
             // Finishing external transaction
-            storIOSQLite.internal().endTransaction();
+            storIOSQLite.lowLevel().endTransaction();
         }
     }
 
@@ -430,7 +430,7 @@ public class DefaultStorIOSQLiteTest {
 
         int conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK;
 
-        storIOSQLite.internal().insertWithOnConflict(insertQuery, contentValues, conflictAlgorithm);
+        storIOSQLite.lowLevel().insertWithOnConflict(insertQuery, contentValues, conflictAlgorithm);
 
         verify(sqLiteDatabase).insertWithOnConflict(
                 eq("test_table"),
@@ -448,11 +448,11 @@ public class DefaultStorIOSQLiteTest {
                 .sqliteOpenHelper(sqLiteOpenHelper)
                 .build();
 
-        StorIOSQLite.Internal internal = storIOSQLite.internal();
-        assertThat(internal).isNotNull();
+        StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
+        assertThat(lowLevel).isNotNull();
 
         try {
-            internal.notifyAboutChanges(null);
+            lowLevel.notifyAboutChanges(null);
             failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
             assertThat(expected).hasMessage("Changes can not be null");
@@ -478,7 +478,7 @@ public class DefaultStorIOSQLiteTest {
         Changes changes = Changes.newInstance("test_table");
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .notifyAboutChanges(changes);
 
         testSubscriber.assertValue(changes);
@@ -522,7 +522,7 @@ public class DefaultStorIOSQLiteTest {
         Changes changes1 = Changes.newInstance("table1");
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .notifyAboutChanges(changes1);
 
         testSubscriber.assertValue(changes1);
@@ -530,7 +530,7 @@ public class DefaultStorIOSQLiteTest {
         Changes changes2 = Changes.newInstance("table2");
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .notifyAboutChanges(changes2);
 
         testSubscriber.assertValues(changes1, changes2);
@@ -538,7 +538,7 @@ public class DefaultStorIOSQLiteTest {
         Changes changes3 = Changes.newInstance("table3");
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .notifyAboutChanges(changes3);
 
         // changes3 or any other changes are not expected here
@@ -578,7 +578,7 @@ public class DefaultStorIOSQLiteTest {
         Changes changes1 = Changes.newInstance("table2");
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .notifyAboutChanges(changes1);
 
         testSubscriber.assertNoValues();
@@ -586,7 +586,7 @@ public class DefaultStorIOSQLiteTest {
         Changes changes2 = Changes.newInstance("table1");
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .notifyAboutChanges(changes2);
 
         testSubscriber.assertValue(changes2);
@@ -594,7 +594,7 @@ public class DefaultStorIOSQLiteTest {
         Changes changes3 = Changes.newInstance("table3");
 
         storIOSQLite
-                .internal()
+                .lowLevel()
                 .notifyAboutChanges(changes3);
 
         // Subscriber should not see changes of table2 and table3

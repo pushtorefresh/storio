@@ -232,7 +232,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -253,7 +253,7 @@ public class PreparedPutCollectionOfObjectsTest {
             }
 
             verify(storIOSQLite).put();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -265,7 +265,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -288,7 +288,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).put();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -300,7 +300,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -323,7 +323,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).put();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -335,7 +335,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -356,7 +356,7 @@ public class PreparedPutCollectionOfObjectsTest {
             }
 
             verify(storIOSQLite).put();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -368,7 +368,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -391,7 +391,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).put();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -403,7 +403,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -426,7 +426,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).put();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -441,7 +441,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
@@ -467,7 +467,7 @@ public class PreparedPutCollectionOfObjectsTest {
                 verify(internal, never()).setTransactionSuccessful();
                 verify(internal).endTransaction();
 
-                verify(storIOSQLite).internal();
+                verify(storIOSQLite).lowLevel();
                 verify(putResolver).performPut(same(storIOSQLite), anyObject());
                 verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
             }
@@ -478,7 +478,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
@@ -510,7 +510,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(internal, never()).setTransactionSuccessful();
             verify(internal).endTransaction();
 
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(putResolver).performPut(same(storIOSQLite), anyObject());
             verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
         }
@@ -520,7 +520,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
@@ -552,7 +552,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(internal, never()).setTransactionSuccessful();
             verify(internal).endTransaction();
 
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(putResolver).performPut(same(storIOSQLite), anyObject());
             verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
         }
@@ -562,7 +562,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
@@ -589,7 +589,7 @@ public class PreparedPutCollectionOfObjectsTest {
                 verify(internal, never()).setTransactionSuccessful();
                 verify(internal, never()).endTransaction();
 
-                verify(storIOSQLite).internal();
+                verify(storIOSQLite).lowLevel();
                 verify(putResolver).performPut(same(storIOSQLite), anyObject());
                 verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
             }
@@ -600,7 +600,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
@@ -634,7 +634,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(internal, never()).setTransactionSuccessful();
             verify(internal, never()).endTransaction();
 
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(putResolver).performPut(same(storIOSQLite), anyObject());
             verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
         }
@@ -644,7 +644,7 @@ public class PreparedPutCollectionOfObjectsTest {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
@@ -678,7 +678,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(internal, never()).setTransactionSuccessful();
             verify(internal, never()).endTransaction();
 
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(putResolver).performPut(same(storIOSQLite), anyObject());
             verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
         }

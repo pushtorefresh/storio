@@ -76,7 +76,7 @@ class DeleteStub {
 
         typeMapping = mock(SQLiteTypeMapping.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
         when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
         when(deleteResolver.performDelete(eq(storIOSQLite), any(TestItem.class)))
                 .thenAnswer(new Answer<DeleteResult>() {
@@ -153,7 +153,7 @@ class DeleteStub {
     void verifyBehaviorForMultipleObjects(@NonNull DeleteResults<TestItem> deleteResults) {
         verify(storIOSQLite).delete(); // Only one call to delete should occur
 
-        verify(storIOSQLite).internal(); // Only one call to internal should occur
+        verify(storIOSQLite).lowLevel(); // Only one call to internal should occur
 
         // Number of calls to perform deletion of objects should be equals to number of items
         verify(deleteResolver, times(itemsRequestedForDelete.size()))

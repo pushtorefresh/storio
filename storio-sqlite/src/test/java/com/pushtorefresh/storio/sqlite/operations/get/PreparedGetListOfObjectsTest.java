@@ -226,7 +226,7 @@ public class PreparedGetListOfObjectsTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final PreparedGet<List<TestItem>> preparedGet = storIOSQLite
                     .get()
@@ -243,7 +243,7 @@ public class PreparedGetListOfObjectsTest {
             }
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -255,7 +255,7 @@ public class PreparedGetListOfObjectsTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final PreparedGet<List<TestItem>> preparedGet = storIOSQLite
                     .get()
@@ -272,7 +272,7 @@ public class PreparedGetListOfObjectsTest {
             }
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -285,7 +285,7 @@ public class PreparedGetListOfObjectsTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
             when(storIOSQLite.observeChangesInTables(any(Set.class)))
                     .thenReturn(Observable.empty());
 
@@ -306,7 +306,7 @@ public class PreparedGetListOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verify(storIOSQLite).observeChangesInTables(anySet());
@@ -319,7 +319,7 @@ public class PreparedGetListOfObjectsTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
 
@@ -338,7 +338,7 @@ public class PreparedGetListOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -351,7 +351,7 @@ public class PreparedGetListOfObjectsTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
 
@@ -370,7 +370,7 @@ public class PreparedGetListOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -382,7 +382,7 @@ public class PreparedGetListOfObjectsTest {
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.internal()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
 
             final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
 
@@ -401,7 +401,7 @@ public class PreparedGetListOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).get();
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);

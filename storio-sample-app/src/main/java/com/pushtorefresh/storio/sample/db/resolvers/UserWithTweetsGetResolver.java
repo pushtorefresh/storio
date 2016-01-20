@@ -63,13 +63,13 @@ public final class UserWithTweetsGetResolver extends GetResolver<UserWithTweets>
     @Override
     public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
         storIOSQLiteFromPerformGet.set(storIOSQLite);
-        return storIOSQLite.internal().rawQuery(rawQuery);
+        return storIOSQLite.lowLevel().rawQuery(rawQuery);
     }
 
     @NonNull
     @Override
     public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
         storIOSQLiteFromPerformGet.set(storIOSQLite);
-        return storIOSQLite.internal().query(query);
+        return storIOSQLite.lowLevel().query(query);
     }
 }

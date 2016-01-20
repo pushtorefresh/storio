@@ -22,7 +22,7 @@ public abstract class DefaultGetResolver<T> extends GetResolver<T> {
     @NonNull
     @Override
     public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
-        return storIOSQLite.internal().rawQuery(rawQuery);
+        return storIOSQLite.lowLevel().rawQuery(rawQuery);
     }
 
     /**
@@ -31,6 +31,6 @@ public abstract class DefaultGetResolver<T> extends GetResolver<T> {
     @NonNull
     @Override
     public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
-        return storIOSQLite.internal().query(query);
+        return storIOSQLite.lowLevel().query(query);
     }
 }

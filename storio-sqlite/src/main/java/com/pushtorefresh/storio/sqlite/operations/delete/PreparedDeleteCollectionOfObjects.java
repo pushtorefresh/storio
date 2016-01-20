@@ -67,7 +67,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
     @Override
     public DeleteResults<T> executeAsBlocking() {
         try {
-            final StorIOSQLite.Internal internal = storIOSQLite.internal();
+            final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 
             // Nullable
             final List<SimpleImmutableEntry<T, DeleteResolver<T>>> objectsAndDeleteResolvers;
@@ -80,7 +80,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
 
                 for (final T object : objects) {
                     final SQLiteTypeMapping<T> typeMapping
-                            = (SQLiteTypeMapping<T>) internal.typeMapping(object.getClass());
+                            = (SQLiteTypeMapping<T>) lowLevel.typeMapping(object.getClass());
 
                     if (typeMapping == null) {
                         throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
@@ -96,7 +96,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
             }
 
             if (useTransaction) {
-                internal.beginTransaction();
+                lowLevel.beginTransaction();
             }
 
             final Map<T, DeleteResult> results = new HashMap<T, DeleteResult>(objects.size());
@@ -110,7 +110,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
                         results.put(object, deleteResult);
 
                         if (!useTransaction && deleteResult.numberOfRowsDeleted() > 0) {
-                            internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                            lowLevel.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
                         }
                     }
                 } else {
@@ -123,18 +123,18 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
                         results.put(object, deleteResult);
 
                         if (!useTransaction && deleteResult.numberOfRowsDeleted() > 0) {
-                            internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                            lowLevel.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
                         }
                     }
                 }
 
                 if (useTransaction) {
-                    internal.setTransactionSuccessful();
+                    lowLevel.setTransactionSuccessful();
                     transactionSuccessful = true;
                 }
             } finally {
                 if (useTransaction) {
-                    internal.endTransaction();
+                    lowLevel.endTransaction();
 
                     // if delete was in transaction and it was successful -> notify about changes
                     if (transactionSuccessful) {
@@ -150,7 +150,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
                         // IMPORTANT: Notifying about change should be done after end of transaction
                         // It'll reduce number of possible deadlock situations
                         if (!affectedTables.isEmpty()) {
-                            internal.notifyAboutChanges(Changes.newInstance(affectedTables));
+                            lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables));
                         }
                     }
                 }

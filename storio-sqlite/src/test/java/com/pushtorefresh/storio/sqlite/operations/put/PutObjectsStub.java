@@ -60,7 +60,7 @@ class PutObjectsStub {
         storIOSQLite = mock(StorIOSQLite.class);
         internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal())
+        when(storIOSQLite.lowLevel())
                 .thenReturn(internal);
 
         when(storIOSQLite.put())
@@ -129,7 +129,7 @@ class PutObjectsStub {
 
     void verifyBehaviorForMultipleObjects(@NonNull PutResults<TestItem> putResults) {
         // should be called once because of Performance!
-        verify(storIOSQLite).internal();
+        verify(storIOSQLite).lowLevel();
 
         // only one call to storIOSQLite.put() should occur
         verify(storIOSQLite, times(1)).put();

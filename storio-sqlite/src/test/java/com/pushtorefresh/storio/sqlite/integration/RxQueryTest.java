@@ -193,15 +193,15 @@ public class RxQueryTest extends BaseTest {
 
     @Test
     public void nestedTransaction() {
-        storIOSQLite.internal().beginTransaction();
+        storIOSQLite.lowLevel().beginTransaction();
 
-        storIOSQLite.internal().beginTransaction();
+        storIOSQLite.lowLevel().beginTransaction();
 
-        storIOSQLite.internal().setTransactionSuccessful();
-        storIOSQLite.internal().endTransaction();
+        storIOSQLite.lowLevel().setTransactionSuccessful();
+        storIOSQLite.lowLevel().endTransaction();
 
-        storIOSQLite.internal().setTransactionSuccessful();
-        storIOSQLite.internal().endTransaction();
+        storIOSQLite.lowLevel().setTransactionSuccessful();
+        storIOSQLite.lowLevel().endTransaction();
     }
 
     @Test

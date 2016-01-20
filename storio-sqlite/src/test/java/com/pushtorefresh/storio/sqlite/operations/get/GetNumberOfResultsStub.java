@@ -27,7 +27,7 @@ class GetNumberOfResultsStub {
     final StorIOSQLite storIOSQLite;
 
     @NonNull
-    private final StorIOSQLite.Internal internal;
+    private final StorIOSQLite.LowLevel lowLevel;
 
     @NonNull
     final Query query;
@@ -46,10 +46,10 @@ class GetNumberOfResultsStub {
 
     private GetNumberOfResultsStub() {
         storIOSQLite = mock(StorIOSQLite.class);
-        internal = mock(StorIOSQLite.Internal.class);
+        lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.internal())
-                .thenReturn(internal);
+        when(storIOSQLite.lowLevel())
+                .thenReturn(lowLevel);
 
         query = Query
                 .builder()
@@ -100,7 +100,7 @@ class GetNumberOfResultsStub {
         verify(getResolverForNumberOfResults).performGet(storIOSQLite, query);
         assertThat(actualNumberOfResults).isSameAs(numberOfResults);
         verify(cursor).close();
-        verifyNoMoreInteractions(storIOSQLite, internal, cursor);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
     void verifyQueryBehaviorForInteger(@NonNull Observable<Integer> observable) {
@@ -137,7 +137,7 @@ class GetNumberOfResultsStub {
         verify(getResolverForNumberOfResults).performGet(storIOSQLite, rawQuery);
         assertThat(actualNumberOfResults).isSameAs(numberOfResults);
         verify(cursor).close();
-        verifyNoMoreInteractions(storIOSQLite, internal, cursor);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
     void verifyRawQueryBehaviorForInteger(@NonNull Observable<Integer> observable) {

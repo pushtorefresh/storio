@@ -54,7 +54,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     @Override
     public DeleteResult executeAsBlocking() {
         try {
-            final StorIOSQLite.Internal internal = storIOSQLite.internal();
+            final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 
             final DeleteResolver<T> deleteResolver;
 
@@ -62,7 +62,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
                 deleteResolver = explicitDeleteResolver;
             } else {
                 final SQLiteTypeMapping<T> typeMapping
-                        = internal.typeMapping((Class<T>) object.getClass());
+                        = lowLevel.typeMapping((Class<T>) object.getClass());
 
                 if (typeMapping == null) {
                     throw new IllegalStateException("Object does not have type mapping: " +
@@ -75,7 +75,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
             final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, object);
             if (deleteResult.numberOfRowsDeleted() > 0) {
-                internal.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                lowLevel.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
             }
             return deleteResult;
 

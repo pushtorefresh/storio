@@ -121,7 +121,7 @@ public class PreparedPutContentValuesIterableTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -148,7 +148,7 @@ public class PreparedPutContentValuesIterableTest {
             verify(internal).endTransaction();
 
 
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
             verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
         }
@@ -159,7 +159,7 @@ public class PreparedPutContentValuesIterableTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -192,7 +192,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(internal, never()).setTransactionSuccessful();
         verify(internal).endTransaction();
 
-        verify(storIOSQLite).internal();
+        verify(storIOSQLite).lowLevel();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -202,7 +202,7 @@ public class PreparedPutContentValuesIterableTest {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
-        when(storIOSQLite.internal()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -235,7 +235,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(internal, never()).setTransactionSuccessful();
         verify(internal).endTransaction();
 
-        verify(storIOSQLite).internal();
+        verify(storIOSQLite).lowLevel();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -268,7 +268,7 @@ public class PreparedPutContentValuesIterableTest {
             // Main check of this test
             verify(internal, never()).endTransaction();
 
-            verify(storIOSQLite).internal();
+            verify(storIOSQLite).lowLevel();
             verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
             verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
         }
@@ -309,7 +309,7 @@ public class PreparedPutContentValuesIterableTest {
         // Main check of this test
         verify(internal, never()).endTransaction();
 
-        verify(storIOSQLite).internal();
+        verify(storIOSQLite).lowLevel();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -349,7 +349,7 @@ public class PreparedPutContentValuesIterableTest {
         // Main check of this test
         verify(internal, never()).endTransaction();
 
-        verify(storIOSQLite).internal();
+        verify(storIOSQLite).lowLevel();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
