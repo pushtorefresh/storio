@@ -24,7 +24,7 @@ import static org.mockito.Mockito.mock;
 class DesignTestStorIOContentResolver extends StorIOContentResolver {
 
     @NonNull
-    private final Internal internal = new InternalImpl();
+    private final Internal lowLevel = new InternalImpl();
 
     @NonNull
     @Override
@@ -35,7 +35,13 @@ class DesignTestStorIOContentResolver extends StorIOContentResolver {
     @NonNull
     @Override
     public Internal internal() {
-        return internal;
+        return lowLevel;
+    }
+
+    @NonNull
+    @Override
+    public LowLevel lowLevel() {
+        return lowLevel;
     }
 
     private class InternalImpl extends Internal {

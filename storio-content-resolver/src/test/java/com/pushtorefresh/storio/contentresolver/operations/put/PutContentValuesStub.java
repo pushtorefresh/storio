@@ -30,7 +30,7 @@ class PutContentValuesStub {
     final StorIOContentResolver storIOContentResolver;
 
     @NonNull
-    private final StorIOContentResolver.Internal internal;
+    private final StorIOContentResolver.LowLevel lowLevel;
 
     @NonNull
     final List<ContentValues> contentValues;
@@ -44,10 +44,10 @@ class PutContentValuesStub {
     @SuppressWarnings("unchecked")
     private PutContentValuesStub(int numberOfTestItems) {
         storIOContentResolver = mock(StorIOContentResolver.class);
-        internal = mock(StorIOContentResolver.Internal.class);
+        lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         when(storIOContentResolver.put())
                 .thenReturn(new PreparedPut.Builder(storIOContentResolver));

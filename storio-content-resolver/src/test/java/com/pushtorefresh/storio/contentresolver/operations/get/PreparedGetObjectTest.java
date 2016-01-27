@@ -128,9 +128,9 @@ public class PreparedGetObjectTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingContentProviderBlocking() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-            when(storIOContentResolver.internal()).thenReturn(internal);
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
 
             when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
 
@@ -152,18 +152,18 @@ public class PreparedGetObjectTest {
             }
 
             verify(storIOContentResolver).get();
-            verify(storIOContentResolver).internal();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).query(any(Query.class));
-            verifyNoMoreInteractions(storIOContentResolver, internal);
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingContentProviderAsObservable() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-            when(storIOContentResolver.internal()).thenReturn(internal);
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
 
             when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
 
@@ -187,20 +187,20 @@ public class PreparedGetObjectTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).get();
-            verify(storIOContentResolver).internal();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).query(any(Query.class));
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
             verify(storIOContentResolver).observeChangesOfUri(any(Uri.class));
 
-            verifyNoMoreInteractions(storIOContentResolver, internal);
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingContentProviderAsSingle() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-            when(storIOContentResolver.internal()).thenReturn(internal);
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
 
             when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
 
@@ -221,11 +221,11 @@ public class PreparedGetObjectTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).get();
-            verify(storIOContentResolver).internal();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).query(any(Query.class));
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
 
-            verifyNoMoreInteractions(storIOContentResolver, internal);
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
         }
     }
 

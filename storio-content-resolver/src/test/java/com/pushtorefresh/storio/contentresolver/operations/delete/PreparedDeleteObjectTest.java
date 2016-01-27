@@ -116,9 +116,9 @@ public class PreparedDeleteObjectTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderBlocking() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-            when(storIOContentResolver.internal()).thenReturn(internal);
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
 
             when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
 
@@ -136,18 +136,18 @@ public class PreparedDeleteObjectTest {
             }
 
             verify(storIOContentResolver).delete();
-            verify(storIOContentResolver).internal();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).delete(any(DeleteQuery.class));
-            verifyNoMoreInteractions(storIOContentResolver, internal);
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsObservable() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-            when(storIOContentResolver.internal()).thenReturn(internal);
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
 
             when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
 
@@ -167,18 +167,18 @@ public class PreparedDeleteObjectTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).delete();
-            verify(storIOContentResolver).internal();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).delete(any(DeleteQuery.class));
-            verifyNoMoreInteractions(storIOContentResolver, internal);
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsSingle() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-            when(storIOContentResolver.internal()).thenReturn(internal);
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
 
             when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
 
@@ -198,10 +198,10 @@ public class PreparedDeleteObjectTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).delete();
-            verify(storIOContentResolver).internal();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).delete(any(DeleteQuery.class));
-            verifyNoMoreInteractions(storIOContentResolver, internal);
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
         }
     }
 }

@@ -65,7 +65,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
             if (explicitGetResolver != null) {
                 getResolver = explicitGetResolver;
             } else {
-                final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.internal().typeMapping(type);
+                final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.lowLevel().typeMapping(type);
 
                 if (typeMapping == null) {
                     throw new IllegalStateException("This type does not have type mapping: " +

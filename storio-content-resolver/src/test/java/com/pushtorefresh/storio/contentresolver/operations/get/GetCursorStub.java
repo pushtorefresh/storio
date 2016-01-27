@@ -26,7 +26,7 @@ class GetCursorStub {
     final StorIOContentResolver storIOContentResolver;
 
     @NonNull
-    private final StorIOContentResolver.Internal internal;
+    private final StorIOContentResolver.LowLevel lowLevel;
 
     @NonNull
     final Query query;
@@ -40,7 +40,7 @@ class GetCursorStub {
     @SuppressWarnings("unchecked")
     private GetCursorStub() {
         storIOContentResolver = mock(StorIOContentResolver.class);
-        internal = mock(StorIOContentResolver.Internal.class);
+        lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
         query = Query.builder()
                 .uri(mock(Uri.class))
@@ -49,8 +49,8 @@ class GetCursorStub {
         getResolver = mock(GetResolver.class);
         cursor = mock(Cursor.class);
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         when(storIOContentResolver.get())
                 .thenReturn(new PreparedGet.Builder(storIOContentResolver));
@@ -75,7 +75,7 @@ class GetCursorStub {
         verify(getResolver, times(1)).performGet(storIOContentResolver, query);
         assertThat(actualCursor).isSameAs(cursor);
         verify(cursor, times(0)).close();
-        verifyNoMoreInteractions(storIOContentResolver, internal, getResolver, cursor);
+        verifyNoMoreInteractions(storIOContentResolver, lowLevel, getResolver, cursor);
     }
 
     void verifyQueryBehaviorForCursor(@NonNull Observable<Cursor> observable) {

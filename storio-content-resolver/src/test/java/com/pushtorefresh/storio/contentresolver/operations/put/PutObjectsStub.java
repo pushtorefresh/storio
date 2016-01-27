@@ -33,7 +33,7 @@ class PutObjectsStub {
     final StorIOContentResolver storIOContentResolver;
 
     @NonNull
-    private final StorIOContentResolver.Internal internal;
+    private final StorIOContentResolver.LowLevel lowLevel;
 
     @NonNull
     final List<TestItem> items;
@@ -54,10 +54,10 @@ class PutObjectsStub {
         this.withTypeMapping = withTypeMapping;
 
         storIOContentResolver = mock(StorIOContentResolver.class);
-        internal = mock(StorIOContentResolver.Internal.class);
+        lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         when(storIOContentResolver.put())
                 .thenReturn(new PreparedPut.Builder(storIOContentResolver));
@@ -83,7 +83,7 @@ class PutObjectsStub {
         typeMapping = mock(ContentResolverTypeMapping.class);
 
         if (withTypeMapping) {
-            when(internal.typeMapping(TestItem.class)).thenReturn(typeMapping);
+            when(lowLevel.typeMapping(TestItem.class)).thenReturn(typeMapping);
             when(typeMapping.putResolver()).thenReturn(putResolver);
         }
     }
@@ -111,9 +111,9 @@ class PutObjectsStub {
     void verifyBehaviorForMultipleObjects(@NonNull PutResults<TestItem> putResults) {
         if (items.size() > 1 || withTypeMapping) {
             // should be called only once because of Performance!
-            verify(storIOContentResolver).internal();
+            verify(storIOContentResolver).lowLevel();
         } else {
-            verify(storIOContentResolver, never()).internal();
+            verify(storIOContentResolver, never()).lowLevel();
         }
 
         // should be called only once
@@ -133,11 +133,11 @@ class PutObjectsStub {
         assertThat(putResults.results()).hasSize(itemsToPutResultsMap.size());
 
         if (withTypeMapping) {
-            verify(internal, times(items.size())).typeMapping(TestItem.class);
+            verify(lowLevel, times(items.size())).typeMapping(TestItem.class);
             verify(typeMapping, times(items.size())).putResolver();
         }
 
-        verifyNoMoreInteractions(storIOContentResolver, internal, typeMapping, putResolver);
+        verifyNoMoreInteractions(storIOContentResolver, lowLevel, typeMapping, putResolver);
     }
 
     void verifyBehaviorForMultipleObjects(@NonNull Observable<PutResults<TestItem>> putResultsObservable) {

@@ -119,9 +119,9 @@ public class PreparedPutObjectTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderBlocking() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-            when(storIOContentResolver.internal()).thenReturn(internal);
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
 
             when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
 
@@ -139,19 +139,19 @@ public class PreparedPutObjectTest {
             }
 
             verify(storIOContentResolver).put();
-            verify(storIOContentResolver).internal();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOContentResolver, internal);
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsObservable() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-            when(storIOContentResolver.internal()).thenReturn(internal);
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
 
             when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
 
@@ -171,19 +171,19 @@ public class PreparedPutObjectTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).put();
-            verify(storIOContentResolver).internal();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOContentResolver, internal);
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsSingle() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-            final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-            when(storIOContentResolver.internal()).thenReturn(internal);
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
 
             when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
 
@@ -203,11 +203,11 @@ public class PreparedPutObjectTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).put();
-            verify(storIOContentResolver).internal();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOContentResolver, internal);
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
         }
     }
 }

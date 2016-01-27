@@ -21,7 +21,7 @@ public class DefaultGetResolverTest {
     @Test
     public void query() {
         final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-        final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+        final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
         final Query query = Query.builder()
                 .uri(mock(Uri.class))
@@ -29,10 +29,10 @@ public class DefaultGetResolverTest {
 
         final Cursor expectedCursor = mock(Cursor.class);
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
-        when(internal.query(query))
+        when(lowLevel.query(query))
                 .thenReturn(expectedCursor);
 
         final GetResolver<TestItem> defaultGetResolver = new DefaultGetResolver<TestItem>() {
@@ -47,10 +47,10 @@ public class DefaultGetResolverTest {
         final Cursor actualCursor = defaultGetResolver.performGet(storIOContentResolver, query);
 
         // only one request should occur
-        verify(internal, times(1)).query(any(Query.class));
+        verify(lowLevel, times(1)).query(any(Query.class));
 
         // and this request should be equals to original
-        verify(internal, times(1)).query(query);
+        verify(lowLevel, times(1)).query(query);
 
         assertThat(actualCursor).isSameAs(expectedCursor);
     }

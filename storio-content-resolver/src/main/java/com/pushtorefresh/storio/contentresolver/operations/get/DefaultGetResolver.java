@@ -17,6 +17,6 @@ public abstract class DefaultGetResolver<T> extends GetResolver<T> {
     @NonNull
     @Override
     public Cursor performGet(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Query query) {
-        return storIOContentResolver.internal().query(query);
+        return storIOContentResolver.lowLevel().query(query);
     }
 }

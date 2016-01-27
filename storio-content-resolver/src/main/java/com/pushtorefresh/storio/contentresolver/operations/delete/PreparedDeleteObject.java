@@ -59,7 +59,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
                 deleteResolver = explicitDeleteResolver;
             } else {
                 final ContentResolverTypeMapping<T> typeMapping
-                        = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
+                        = storIOContentResolver.lowLevel().typeMapping((Class<T>) object.getClass());
 
                 if (typeMapping == null) {
                     throw new IllegalStateException("Object does not have type mapping: " +

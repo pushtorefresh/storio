@@ -322,7 +322,7 @@ public abstract class StorIOSQLite implements Closeable {
      * basically we're just giving this API a better name.
      */
     @Deprecated
-    public abstract class Internal extends LowLevel {
+    public static abstract class Internal extends LowLevel {
 
     }
 }

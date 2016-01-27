@@ -26,7 +26,7 @@ class GetObjectStub {
     final StorIOContentResolver storIOContentResolver;
 
     @NonNull
-    private final StorIOContentResolver.Internal internal;
+    private final StorIOContentResolver.LowLevel lowLevel;
 
     @NonNull
     final Query query;
@@ -50,7 +50,7 @@ class GetObjectStub {
         this.withTypeMapping = withTypeMapping;
 
         storIOContentResolver = mock(StorIOContentResolver.class);
-        internal = mock(StorIOContentResolver.Internal.class);
+        lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
         query = Query.builder()
                 .uri(mock(Uri.class))
@@ -61,8 +61,8 @@ class GetObjectStub {
 
         item = new TestItem();
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         when(cursor.getCount())
                 .thenReturn(1);
@@ -84,7 +84,7 @@ class GetObjectStub {
         typeMapping = mock(ContentResolverTypeMapping.class);
 
         if (withTypeMapping) {
-            when(internal.typeMapping(TestItem.class)).thenReturn(typeMapping);
+            when(lowLevel.typeMapping(TestItem.class)).thenReturn(typeMapping);
             when(typeMapping.getResolver()).thenReturn(getResolver);
         }
     }
@@ -123,16 +123,16 @@ class GetObjectStub {
 
         if (withTypeMapping) {
             // should be called only once because of Performance!
-            verify(storIOContentResolver).internal();
+            verify(storIOContentResolver).lowLevel();
 
             // should be called only once because of Performance!
-            verify(internal).typeMapping(TestItem.class);
+            verify(lowLevel).typeMapping(TestItem.class);
 
             // should be called only once
             verify(typeMapping).getResolver();
         }
 
-        verifyNoMoreInteractions(storIOContentResolver, internal, getResolver, cursor);
+        verifyNoMoreInteractions(storIOContentResolver, lowLevel, getResolver, cursor);
     }
 
     void verifyBehavior(@NonNull Observable<TestItem> observable) {
