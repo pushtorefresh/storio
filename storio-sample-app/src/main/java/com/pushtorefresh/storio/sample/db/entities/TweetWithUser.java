@@ -30,4 +30,30 @@ public class TweetWithUser {
     public User user() {
         return user;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TweetWithUser that = (TweetWithUser) o;
+
+        if (!tweet.equals(that.tweet)) return false;
+        return user.equals(that.user);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = tweet.hashCode();
+        result = 31 * result + user.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "TweetWithUser{" +
+                "tweet=" + tweet +
+                ", user=" + user +
+                '}';
+    }
 }

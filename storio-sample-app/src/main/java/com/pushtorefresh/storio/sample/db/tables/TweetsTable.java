@@ -26,6 +26,10 @@ public class TweetsTable {
     @NonNull
     public static final String COLUMN_CONTENT = "content";
 
+    public static final String COLUMN_ID_WITH_TABLE_PREFIX = TABLE + "." + COLUMN_ID;
+    public static final String COLUMN_AUTHOR_WITH_TABLE_PREFIX = TABLE + "." + COLUMN_AUTHOR;
+    public static final String COLUMN_CONTENT_WITH_TABLE_PREFIX = TABLE + "." + COLUMN_CONTENT;
+
     // Yep, with StorIO you can safely store queries as objects and reuse them, they are immutable
     @NonNull
     public static final Query QUERY_ALL = Query.builder()
@@ -37,8 +41,6 @@ public class TweetsTable {
         throw new IllegalStateException("No instances please");
     }
 
-    // Better than static final field -> allows VM to unload useless String
-    // Because you need this string only once per application life on the device
     @NonNull
     public static String getCreateTableQuery() {
         return "CREATE TABLE " + TABLE + "("

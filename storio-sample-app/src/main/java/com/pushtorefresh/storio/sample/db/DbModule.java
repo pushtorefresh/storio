@@ -35,8 +35,8 @@ public class DbModule {
     public StorIOSQLite provideStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
         return DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(sqLiteOpenHelper)
-.addTypeMapping(Tweet.class, new TweetSQLiteTypeMapping())
-.addTypeMapping(User.class, new UserSQLiteTypeMapping())
+                .addTypeMapping(Tweet.class, new TweetSQLiteTypeMapping())
+                .addTypeMapping(User.class, new UserSQLiteTypeMapping())
                 .addTypeMapping(TweetWithUser.class, SQLiteTypeMapping.<TweetWithUser>builder()
                         .putResolver(new TweetWithUserPutResolver())
                         .getResolver(new TweetWithUserGetResolver())

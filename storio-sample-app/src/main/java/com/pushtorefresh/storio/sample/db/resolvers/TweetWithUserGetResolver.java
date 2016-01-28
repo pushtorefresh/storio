@@ -7,8 +7,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.sample.db.entities.Tweet;
 import com.pushtorefresh.storio.sample.db.entities.TweetWithUser;
 import com.pushtorefresh.storio.sample.db.entities.User;
-import com.pushtorefresh.storio.sample.db.tables.TweetsTable;
-import com.pushtorefresh.storio.sample.db.tables.UsersTable;
+import com.pushtorefresh.storio.sample.sample_code.Relations;
 import com.pushtorefresh.storio.sqlite.operations.get.DefaultGetResolver;
 
 public class TweetWithUserGetResolver extends DefaultGetResolver<TweetWithUser> {
@@ -18,14 +17,14 @@ public class TweetWithUserGetResolver extends DefaultGetResolver<TweetWithUser> 
     @Override
     public TweetWithUser mapFromCursor(@NonNull Cursor cursor) {
         final Tweet tweet = Tweet.newTweet(
-                cursor.getLong(cursor.getColumnIndexOrThrow(TweetsTable.COLUMN_ID)),
-                cursor.getString(cursor.getColumnIndexOrThrow(TweetsTable.COLUMN_AUTHOR)),
-                cursor.getString(cursor.getColumnIndexOrThrow(TweetsTable.COLUMN_CONTENT))
+                cursor.getLong(cursor.getColumnIndexOrThrow(Relations.QUERY_COLUMN_TWEET_ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(Relations.QUERY_COLUMN_TWEET_AUTHOR)),
+                cursor.getString(cursor.getColumnIndexOrThrow(Relations.QUERY_COLUMN_TWEET_CONTENT))
         );
 
         final User user = User.newUser(
-                cursor.getLong(cursor.getColumnIndexOrThrow(UsersTable.COLUMN_ID)),
-                cursor.getString(cursor.getColumnIndexOrThrow(UsersTable.COLUMN_NICK))
+                cursor.getLong(cursor.getColumnIndexOrThrow(Relations.QUERY_COLUMN_USER_ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(Relations.QUERY_COLUMN_USER_NICK))
         );
 
         return new TweetWithUser(tweet, user);
