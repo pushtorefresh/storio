@@ -39,7 +39,7 @@ import static java.util.Collections.unmodifiableMap;
 public class DefaultStorIOContentResolver extends StorIOContentResolver {
 
     @NonNull
-    private final Internal internal;
+    private final Internal lowLevel;
 
     @NonNull
     private final ContentResolver contentResolver;
@@ -52,7 +52,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
                                            @Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
         this.contentResolver = contentResolver;
         this.contentObserverHandler = contentObserverHandler;
-        internal = new InternalImpl(typesMapping);
+        lowLevel = new LowLevelImpl(typesMapping);
     }
 
     /**
@@ -75,7 +75,16 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     @NonNull
     @Override
     public Internal internal() {
-        return internal;
+        return lowLevel;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public LowLevel lowLevel() {
+        return lowLevel;
     }
 
     /**
@@ -182,7 +191,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         }
     }
 
-    protected class InternalImpl extends Internal {
+    protected class LowLevelImpl extends Internal {
 
         @Nullable
         private final Map<Class<?>, ContentResolverTypeMapping<?>> directTypesMapping;
@@ -191,7 +200,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         private final Map<Class<?>, ContentResolverTypeMapping<?>> indirectTypesMappingCache
                 = new ConcurrentHashMap<Class<?>, ContentResolverTypeMapping<?>>();
 
-        protected InternalImpl(@Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
+        protected LowLevelImpl(@Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
             this.directTypesMapping = typesMapping != null
                     ? unmodifiableMap(typesMapping)
                     : null;
@@ -368,6 +377,17 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         @Override
         public ContentResolver contentResolver() {
             return contentResolver;
+        }
+    }
+
+    /**
+     * Please use {@link LowLevelImpl} instead, this type will be remove in v2.0.
+     */
+    @Deprecated
+    protected class InternalImpl extends LowLevelImpl {
+
+        protected InternalImpl(@Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
+            super(typesMapping);
         }
     }
 }

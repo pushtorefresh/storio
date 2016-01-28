@@ -30,7 +30,7 @@ public abstract class DefaultDeleteResolver<T> extends DeleteResolver<T> {
     @Override
     public DeleteResult performDelete(@NonNull StorIOContentResolver storIOContentResolver, @NonNull T object) {
         final DeleteQuery deleteQuery = mapToDeleteQuery(object);
-        final int numberOfRowsDeleted = storIOContentResolver.internal().delete(deleteQuery);
+        final int numberOfRowsDeleted = storIOContentResolver.lowLevel().delete(deleteQuery);
         return DeleteResult.newInstance(numberOfRowsDeleted, deleteQuery.uri());
     }
 }

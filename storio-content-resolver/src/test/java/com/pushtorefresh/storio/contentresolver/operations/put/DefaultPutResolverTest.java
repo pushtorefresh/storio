@@ -38,11 +38,11 @@ public class DefaultPutResolverTest {
     @Test
     public void insert() {
         final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-        final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+        final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
         final TestItem testItem = new TestItem(null); // item without id, should be inserted
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         final Uri expectedInsertedUri = mock(Uri.class);
 
@@ -54,13 +54,13 @@ public class DefaultPutResolverTest {
 
         final Cursor cursor = mock(Cursor.class);
 
-        when(internal.query(eq(expectedQuery)))
+        when(lowLevel.query(eq(expectedQuery)))
                 .thenReturn(cursor);
 
         when(cursor.getCount())
                 .thenReturn(0); // No results -> insert should be performed
 
-        when(internal.insert(any(InsertQuery.class), any(ContentValues.class)))
+        when(lowLevel.insert(any(InsertQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedInsertedUri);
 
         final InsertQuery expectedInsertQuery = InsertQuery.builder()
@@ -97,22 +97,22 @@ public class DefaultPutResolverTest {
         final PutResult putResult = putResolver.performPut(storIOContentResolver, testItem);
 
         // checks that it asks db for results
-        verify(internal).query(eq(expectedQuery));
+        verify(lowLevel).query(eq(expectedQuery));
 
         // checks that cursor was closed
         verify(cursor).close();
 
         // only one query should occur
-        verify(internal).query(any(Query.class));
+        verify(lowLevel).query(any(Query.class));
 
         // checks that required insert was performed
-        verify(internal).insert(eq(expectedInsertQuery), eq(expectedContentValues));
+        verify(lowLevel).insert(eq(expectedInsertQuery), eq(expectedContentValues));
 
         // only one insert should occur
-        verify(internal).insert(any(InsertQuery.class), any(ContentValues.class));
+        verify(lowLevel).insert(any(InsertQuery.class), any(ContentValues.class));
 
         // no updates should occur
-        verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+        verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
 
         // put result checks
         assertThat(putResult.wasInserted()).isTrue();
@@ -128,11 +128,11 @@ public class DefaultPutResolverTest {
     @Test
     public void update() {
         final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-        final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+        final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
         final TestItem testItem = new TestItem(1L); // item with some id, should be updated
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         final Query expectedQuery = Query.builder()
                 .uri(TestItem.CONTENT_URI)
@@ -142,7 +142,7 @@ public class DefaultPutResolverTest {
 
         final Cursor cursor = mock(Cursor.class);
 
-        when(internal.query(eq(expectedQuery)))
+        when(lowLevel.query(eq(expectedQuery)))
                 .thenReturn(cursor);
 
         when(cursor.getCount())
@@ -150,7 +150,7 @@ public class DefaultPutResolverTest {
 
         final Integer expectedNumberOfRowsUpdated = 1;
 
-        when(internal.update(any(UpdateQuery.class), any(ContentValues.class)))
+        when(lowLevel.update(any(UpdateQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedNumberOfRowsUpdated);
 
         final UpdateQuery expectedUpdateQuery = UpdateQuery.builder()
@@ -190,22 +190,22 @@ public class DefaultPutResolverTest {
         final PutResult putResult = putResolver.performPut(storIOContentResolver, testItem);
 
         // checks that it asks db for results
-        verify(internal, times(1)).query(eq(expectedQuery));
+        verify(lowLevel, times(1)).query(eq(expectedQuery));
 
         // checks that cursor was closed
         verify(cursor, times(1)).close();
 
         // only one query should occur
-        verify(internal, times(1)).query(any(Query.class));
+        verify(lowLevel, times(1)).query(any(Query.class));
 
         // checks that required update was performed
-        verify(internal, times(1)).update(eq(expectedUpdateQuery), eq(expectedContentValues));
+        verify(lowLevel, times(1)).update(eq(expectedUpdateQuery), eq(expectedContentValues));
 
         // only one update should occur
-        verify(internal, times(1)).update(any(UpdateQuery.class), any(ContentValues.class));
+        verify(lowLevel, times(1)).update(any(UpdateQuery.class), any(ContentValues.class));
 
         // no inserts should occur
-        verify(internal, times(0)).insert(any(InsertQuery.class), any(ContentValues.class));
+        verify(lowLevel, times(0)).insert(any(InsertQuery.class), any(ContentValues.class));
 
         // put result checks
         assertThat(putResult.wasInserted()).isFalse();
@@ -218,10 +218,10 @@ public class DefaultPutResolverTest {
     @Test
     public void shouldCloseCursorIfUpdateThrowsException() {
         final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-        final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+        final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         final TestItem testItem = new TestItem(1L); // item with some id, should be updated
 
@@ -233,7 +233,7 @@ public class DefaultPutResolverTest {
 
         final Cursor cursor = mock(Cursor.class);
 
-        when(internal.query(eq(expectedQuery)))
+        when(lowLevel.query(eq(expectedQuery)))
                 .thenReturn(cursor);
 
         when(cursor.getCount())
@@ -245,7 +245,7 @@ public class DefaultPutResolverTest {
                 .whereArgs(testItem.getId())
                 .build();
 
-        when(internal.update(eq(expectedUpdateQuery), any(ContentValues.class)))
+        when(lowLevel.update(eq(expectedUpdateQuery), any(ContentValues.class)))
                 .thenThrow(new IllegalStateException("Fake exception from ContentResolver"));
 
         final PutResolver<TestItem> putResolver = new DefaultPutResolver<TestItem>() {
@@ -281,29 +281,29 @@ public class DefaultPutResolverTest {
         } catch (IllegalStateException expected) {
             assertThat(expected).hasMessage("Fake exception from ContentResolver");
 
-            verify(storIOContentResolver).internal();
+            verify(storIOContentResolver).lowLevel();
 
             // Checks that it asks actual ContentResolver for results
-            verify(internal).query(eq(expectedQuery));
+            verify(lowLevel).query(eq(expectedQuery));
 
             verify(cursor).getCount();
 
             // Cursor must be closed in case of exception!
             verify(cursor).close();
 
-            verify(internal).update(eq(expectedUpdateQuery), any(ContentValues.class));
+            verify(lowLevel).update(eq(expectedUpdateQuery), any(ContentValues.class));
 
-            verifyNoMoreInteractions(storIOContentResolver, internal, cursor);
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel, cursor);
         }
     }
 
     @Test
     public void shouldCloseCursorIfInsertThrowsException() {
         final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-        final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+        final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         final TestItem testItem = new TestItem(null); // item without id, should be inserted
 
@@ -315,7 +315,7 @@ public class DefaultPutResolverTest {
 
         final Cursor cursor = mock(Cursor.class);
 
-        when(internal.query(eq(expectedQuery)))
+        when(lowLevel.query(eq(expectedQuery)))
                 .thenReturn(cursor);
 
         when(cursor.getCount())
@@ -325,7 +325,7 @@ public class DefaultPutResolverTest {
                 .uri(TestItem.CONTENT_URI)
                 .build();
 
-        when(internal.insert(eq(expectedInsertQuery), any(ContentValues.class)))
+        when(lowLevel.insert(eq(expectedInsertQuery), any(ContentValues.class)))
                 .thenThrow(new IllegalStateException("Fake exception from ContentResolver"));
 
         final PutResolver<TestItem> putResolver = new DefaultPutResolver<TestItem>() {
@@ -361,19 +361,19 @@ public class DefaultPutResolverTest {
         } catch (IllegalStateException expected) {
             assertThat(expected).hasMessage("Fake exception from ContentResolver");
 
-            verify(storIOContentResolver).internal();
+            verify(storIOContentResolver).lowLevel();
 
             // Checks that it asks actual ContentResolver for results
-            verify(internal).query(eq(expectedQuery));
+            verify(lowLevel).query(eq(expectedQuery));
 
             verify(cursor).getCount();
 
             // Cursor must be closed in case of exception!
             verify(cursor).close();
 
-            verify(internal).insert(eq(expectedInsertQuery), any(ContentValues.class));
+            verify(lowLevel).insert(eq(expectedInsertQuery), any(ContentValues.class));
 
-            verifyNoMoreInteractions(storIOContentResolver, internal, cursor);
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel, cursor);
         }
     }
 

@@ -70,9 +70,9 @@ public class PreparedGetCursorTest {
     public void shouldUseStandardGetResolverWithoutExplicitlyPassed() {
         StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
 
-        StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+        StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-        when(storIOContentResolver.internal()).thenReturn(internal);
+        when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
 
         Query query = Query.builder()
                 .uri(mock(Uri.class))
@@ -83,10 +83,10 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(storIOContentResolver).internal();
-        verify(internal).query(query);
+        verify(storIOContentResolver).lowLevel();
+        verify(lowLevel).query(query);
 
-        verifyNoMoreInteractions(storIOContentResolver, internal);
+        verifyNoMoreInteractions(storIOContentResolver, lowLevel);
     }
 
     @Test

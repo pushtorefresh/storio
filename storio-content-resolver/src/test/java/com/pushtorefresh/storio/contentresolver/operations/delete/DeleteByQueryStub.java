@@ -25,7 +25,7 @@ class DeleteByQueryStub {
     final StorIOContentResolver storIOContentResolver;
 
     @NonNull
-    private final StorIOContentResolver.Internal internal;
+    private final StorIOContentResolver.LowLevel lowLevel;
 
     @NonNull
     final DeleteQuery deleteQuery;
@@ -39,10 +39,10 @@ class DeleteByQueryStub {
     @SuppressWarnings("unchecked")
     private DeleteByQueryStub() {
         storIOContentResolver = mock(StorIOContentResolver.class);
-        internal = mock(StorIOContentResolver.Internal.class);
+        lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         when(storIOContentResolver.delete())
                 .thenReturn(new PreparedDelete.Builder(storIOContentResolver));

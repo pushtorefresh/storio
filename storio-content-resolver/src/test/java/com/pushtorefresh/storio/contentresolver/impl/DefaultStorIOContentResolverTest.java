@@ -65,7 +65,7 @@ public class DefaultStorIOContentResolverTest {
                 .contentResolver(mock(ContentResolver.class))
                 .build();
 
-        assertThat(storIOContentResolver.internal().typeMapping(TestItem.class)).isNull();
+        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItem.class)).isNull();
     }
 
     @SuppressWarnings("unchecked")
@@ -90,9 +90,9 @@ public class DefaultStorIOContentResolverTest {
                 .addTypeMapping(Entity.class, entityContentResolverTypeMapping)
                 .build();
 
-        assertThat(storIOContentResolver.internal().typeMapping(Entity.class)).isSameAs(entityContentResolverTypeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(Entity.class)).isSameAs(entityContentResolverTypeMapping);
 
-        assertThat(storIOContentResolver.internal().typeMapping(TestItem.class)).isNull();
+        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItem.class)).isNull();
     }
 
     @Test
@@ -113,7 +113,7 @@ public class DefaultStorIOContentResolverTest {
                 .addTypeMapping(TestItem.class, typeMapping)
                 .build();
 
-        assertThat(storIOContentResolver.internal().typeMapping(TestItem.class)).isSameAs(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
     }
 
     @Test
@@ -139,10 +139,10 @@ public class DefaultStorIOContentResolverTest {
         }
 
         // Direct type mapping should still work
-        assertThat(storIOContentResolver.internal().typeMapping(TestItem.class)).isSameAs(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
 
         // Indirect type mapping should give same type mapping as for parent class
-        assertThat(storIOContentResolver.internal().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
     }
 
     @Test
@@ -168,11 +168,11 @@ public class DefaultStorIOContentResolverTest {
         }
 
         // Indirect type mapping should give same type mapping as for parent class
-        assertThat(storIOContentResolver.internal().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
 
         // Next call should be faster (we can not check this exactly)
         // But test coverage tool will check that we executed cache branch
-        assertThat(storIOContentResolver.internal().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
     }
 
     @Test
@@ -206,10 +206,10 @@ public class DefaultStorIOContentResolverTest {
                 .build();
 
         // Parent class should have its own type mapping
-        assertThat(storIOContentResolver.internal().typeMapping(TestItem.class)).isSameAs(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
 
         // Child class should have its own type mapping
-        assertThat(storIOContentResolver.internal().typeMapping(TestItemSubclass.class)).isSameAs(subclassTypeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(subclassTypeMapping);
     }
 
     @Test
@@ -253,16 +253,16 @@ public class DefaultStorIOContentResolverTest {
                 .build();
 
         // Direct type mapping for Entity should work
-        assertThat(storIOContentResolver.internal().typeMapping(Entity.class)).isSameAs(entitySQLiteTypeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(Entity.class)).isSameAs(entitySQLiteTypeMapping);
 
         // Direct type mapping for ConcreteEntity should work
-        assertThat(storIOContentResolver.internal().typeMapping(ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
 
         // Indirect type mapping for AutoValue_Entity should get type mapping for Entity
-        assertThat(storIOContentResolver.internal().typeMapping(AutoValue_Entity.class)).isSameAs(entitySQLiteTypeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(AutoValue_Entity.class)).isSameAs(entitySQLiteTypeMapping);
 
         // Indirect type mapping for AutoValue_ConcreteEntity should get type mapping for ConcreteEntity, not for Entity!
-        assertThat(storIOContentResolver.internal().typeMapping(AutoValue_ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(AutoValue_ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
     }
 
     interface InterfaceEntity {
@@ -278,7 +278,7 @@ public class DefaultStorIOContentResolverTest {
                 .addTypeMapping(InterfaceEntity.class, typeMapping)
                 .build();
 
-        assertThat(storIOContentResolver.internal().typeMapping(InterfaceEntity.class)).isSameAs(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(InterfaceEntity.class)).isSameAs(typeMapping);
     }
 
     @Test
@@ -294,10 +294,10 @@ public class DefaultStorIOContentResolverTest {
         class ConcreteEntity implements InterfaceEntity {
         }
 
-        assertThat(storIOContentResolver.internal().typeMapping(ConcreteEntity.class)).isSameAs(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(ConcreteEntity.class)).isSameAs(typeMapping);
 
         // Just to make sure that we don't return this type mapping for all classes.
-        assertThat(storIOContentResolver.internal().typeMapping(Random.class)).isNull();
+        assertThat(storIOContentResolver.lowLevel().typeMapping(Random.class)).isNull();
     }
 
     @Test
@@ -317,10 +317,10 @@ public class DefaultStorIOContentResolverTest {
         }
 
 
-        assertThat(storIOContentResolver.internal().typeMapping(ParentConcreteEntity.class)).isSameAs(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(ParentConcreteEntity.class)).isSameAs(typeMapping);
 
         // Just to make sure that we don't return this type mapping for all classes.
-        assertThat(storIOContentResolver.internal().typeMapping(Random.class)).isNull();
+        assertThat(storIOContentResolver.lowLevel().typeMapping(Random.class)).isNull();
     }
 
     @Test
@@ -341,7 +341,7 @@ public class DefaultStorIOContentResolverTest {
 
         try {
             storIOContentResolver
-                    .internal()
+                    .lowLevel()
                     .query(query);
         } catch (IllegalStateException expected) {
             assertThat(expected).hasMessage("Cursor returned by content provider is null");
@@ -356,6 +356,6 @@ public class DefaultStorIOContentResolverTest {
                 .contentResolver(contentResolver)
                 .build();
 
-        assertThat(storIOContentResolver.internal().contentResolver()).isSameAs(contentResolver);
+        assertThat(storIOContentResolver.lowLevel().contentResolver()).isSameAs(contentResolver);
     }
 }

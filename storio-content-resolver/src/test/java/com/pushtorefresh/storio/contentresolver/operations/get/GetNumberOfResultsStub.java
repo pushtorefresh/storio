@@ -25,7 +25,7 @@ public class GetNumberOfResultsStub {
     final StorIOContentResolver storIOContentResolver;
 
     @NonNull
-    private final StorIOContentResolver.Internal internal;
+    private final StorIOContentResolver.LowLevel lowLevel;
 
     @NonNull
     final Query query;
@@ -41,10 +41,10 @@ public class GetNumberOfResultsStub {
 
     private GetNumberOfResultsStub() {
         storIOContentResolver = mock(StorIOContentResolver.class);
-        internal = mock(StorIOContentResolver.Internal.class);
+        lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         query = Query
                 .builder()
@@ -81,7 +81,7 @@ public class GetNumberOfResultsStub {
         verify(getResolverForNumberOfResults).performGet(storIOContentResolver, query);
         assertThat(actualNumberOfResults).isSameAs(numberOfResults);
         verify(cursor).close();
-        verifyNoMoreInteractions(storIOContentResolver, internal, cursor);
+        verifyNoMoreInteractions(storIOContentResolver, lowLevel, cursor);
     }
 
     void verifyQueryBehaviorForInteger(@NonNull Observable<Integer> observable) {

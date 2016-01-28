@@ -32,7 +32,7 @@ class DeleteObjectsStub {
     final StorIOContentResolver storIOContentResolver;
 
     @NonNull
-    private final StorIOContentResolver.Internal internal;
+    private final StorIOContentResolver.LowLevel lowLevel;
 
     @NonNull
     final List<TestItem> items;
@@ -53,10 +53,10 @@ class DeleteObjectsStub {
         this.withTypeMapping = withTypeMapping;
 
         storIOContentResolver = mock(StorIOContentResolver.class);
-        internal = mock(StorIOContentResolver.Internal.class);
+        lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         when(storIOContentResolver.delete())
                 .thenReturn(new PreparedDelete.Builder(storIOContentResolver));
@@ -70,7 +70,7 @@ class DeleteObjectsStub {
 
         if (withTypeMapping) {
             when(typeMapping.deleteResolver()).thenReturn(deleteResolver);
-            when(internal.typeMapping(TestItem.class)).thenReturn(typeMapping);
+            when(lowLevel.typeMapping(TestItem.class)).thenReturn(typeMapping);
         }
 
         for (int i = 0; i < numberOfTestItems; i++) {
@@ -112,7 +112,7 @@ class DeleteObjectsStub {
 
         if (withTypeMapping || items.size() > 1) {
             // should be called only once because of Performance!
-            verify(storIOContentResolver).internal();
+            verify(storIOContentResolver).lowLevel();
         }
 
         // checks that delete was performed same amount of times as count of items
@@ -131,11 +131,11 @@ class DeleteObjectsStub {
         assertThat(deleteResults.results()).hasSize(items.size());
 
         if (withTypeMapping) {
-            verify(internal, times(items.size())).typeMapping(TestItem.class);
+            verify(lowLevel, times(items.size())).typeMapping(TestItem.class);
             verify(typeMapping, times(items.size())).deleteResolver();
         }
 
-        verifyNoMoreInteractions(storIOContentResolver, internal, typeMapping, deleteResolver);
+        verifyNoMoreInteractions(storIOContentResolver, lowLevel, typeMapping, deleteResolver);
     }
 
     void verifyBehaviorForDeleteMultipleObjects(@NonNull Observable<DeleteResults<TestItem>> deleteResultsObservable) {

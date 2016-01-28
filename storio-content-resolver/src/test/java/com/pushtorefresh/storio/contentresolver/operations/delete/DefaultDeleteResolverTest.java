@@ -20,14 +20,14 @@ public class DefaultDeleteResolverTest {
     @Test
     public void performDelete() {
         final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
-        final StorIOContentResolver.Internal internal = mock(StorIOContentResolver.Internal.class);
+        final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
-        when(storIOContentResolver.internal())
-                .thenReturn(internal);
+        when(storIOContentResolver.lowLevel())
+                .thenReturn(lowLevel);
 
         final int expectedNumberOfRowsDeleted = 1;
 
-        when(internal.delete(any(DeleteQuery.class)))
+        when(lowLevel.delete(any(DeleteQuery.class)))
                 .thenReturn(expectedNumberOfRowsDeleted);
 
         final Uri expectedUri = mock(Uri.class);
@@ -53,10 +53,10 @@ public class DefaultDeleteResolverTest {
         final DeleteResult deleteResult = defaultDeleteResolver.performDelete(storIOContentResolver, testItem);
 
         // checks that required delete was performed
-        verify(internal, times(1)).delete(expectedDeleteQuery);
+        verify(lowLevel, times(1)).delete(expectedDeleteQuery);
 
         // only one delete should be performed
-        verify(internal, times(1)).delete(any(DeleteQuery.class));
+        verify(lowLevel, times(1)).delete(any(DeleteQuery.class));
 
         // delete result checks
         assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(expectedNumberOfRowsDeleted);

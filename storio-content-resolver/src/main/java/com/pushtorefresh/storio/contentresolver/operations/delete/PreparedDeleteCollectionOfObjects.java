@@ -60,7 +60,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
     @Override
     public DeleteResults<T> executeAsBlocking() {
         try {
-            final StorIOContentResolver.Internal internal = storIOContentResolver.internal();
+            final StorIOContentResolver.LowLevel lowLevel = storIOContentResolver.lowLevel();
 
             // Nullable
             final List<SimpleImmutableEntry> objectsAndDeleteResolvers;
@@ -72,7 +72,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
 
                 for (final T object : objects) {
                     final ContentResolverTypeMapping<T> typeMapping
-                            = (ContentResolverTypeMapping<T>) internal.typeMapping(object.getClass());
+                            = (ContentResolverTypeMapping<T>) lowLevel.typeMapping(object.getClass());
 
                     if (typeMapping == null) {
                         throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +

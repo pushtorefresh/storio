@@ -60,7 +60,7 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
                 putResolver = explicitPutResolver;
             } else {
                 final ContentResolverTypeMapping<T> typeMapping
-                        = storIOContentResolver.internal().typeMapping((Class<T>) object.getClass());
+                        = storIOContentResolver.lowLevel().typeMapping((Class<T>) object.getClass());
 
                 if (typeMapping == null) {
                     throw new IllegalStateException("Object does not have type mapping: " +

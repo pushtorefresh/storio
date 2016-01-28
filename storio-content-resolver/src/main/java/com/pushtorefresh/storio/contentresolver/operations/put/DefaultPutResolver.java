@@ -61,19 +61,19 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
                 .whereArgs((Object[]) nullableArrayOfStrings(updateQuery.whereArgs()))
                 .build();
 
-        final StorIOContentResolver.Internal internal = storIOContentResolver.internal();
+        final StorIOContentResolver.LowLevel lowLevel = storIOContentResolver.lowLevel();
 
-        final Cursor cursor = internal.query(query);
+        final Cursor cursor = lowLevel.query(query);
 
         try {
             final ContentValues contentValues = mapToContentValues(object);
 
             if (cursor.getCount() == 0) {
                 final InsertQuery insertQuery = mapToInsertQuery(object);
-                final Uri insertedUri = internal.insert(insertQuery, contentValues);
+                final Uri insertedUri = lowLevel.insert(insertQuery, contentValues);
                 return PutResult.newInsertResult(insertedUri, insertQuery.uri());
             } else {
-                final int numberOfRowsUpdated = internal.update(updateQuery, contentValues);
+                final int numberOfRowsUpdated = lowLevel.update(updateQuery, contentValues);
                 return PutResult.newUpdateResult(numberOfRowsUpdated, updateQuery.uri());
             }
         } finally {
