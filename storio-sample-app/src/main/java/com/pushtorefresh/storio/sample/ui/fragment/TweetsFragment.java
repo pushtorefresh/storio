@@ -14,6 +14,7 @@ import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.SampleApp;
 import com.pushtorefresh.storio.sample.db.entities.Tweet;
 import com.pushtorefresh.storio.sample.db.tables.TweetsTable;
+import com.pushtorefresh.storio.sample.sample_code.Relations;
 import com.pushtorefresh.storio.sample.ui.DividerItemDecoration;
 import com.pushtorefresh.storio.sample.ui.UiStateController;
 import com.pushtorefresh.storio.sample.ui.adapter.TweetsAdapter;
@@ -56,6 +57,7 @@ public class TweetsFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         SampleApp.get(getActivity()).appComponent().inject(this);
         tweetsAdapter = new TweetsAdapter();
+        new Relations(storIOSQLite).getTweetWithUser();
     }
 
     @Override

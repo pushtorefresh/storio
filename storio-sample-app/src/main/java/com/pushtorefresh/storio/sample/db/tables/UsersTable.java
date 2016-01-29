@@ -15,6 +15,12 @@ public class UsersTable {
     @NonNull
     public static final String COLUMN_NICK = "nick";
 
+    @NonNull
+    public static final String COLUMN_ID_WITH_TABLE_PREFIX = TABLE + "." + COLUMN_ID;
+
+    @NonNull
+    public static final String COLUMN_NICK_WITH_TABLE_PREFIX = TABLE + "." + COLUMN_NICK;
+
     // This is just class with Meta Data, we don't need instances
     private UsersTable() {
         throw new IllegalStateException("No instances please");
