@@ -3,7 +3,7 @@ StorIO Change Log
 
 ## Version 1.8.0
 
-_2015_01_19_
+_2016_01_19_
 
 * `asRxSingle()`, yep, `rx.Single` support! Many thanks to [@geralt-encore](https://github.com/geralt-encore)
 * `asRxObservable()` instead of `createObservable()` (deprecated)
