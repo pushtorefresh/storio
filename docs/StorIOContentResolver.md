@@ -235,7 +235,7 @@ Several things about `Delete` Operation:
 ```java
 StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
   .contentResolver(yourContentResolver)
-  .addTypeMapping(Tweet.class, ContentResolverTypeMapping.builder<Tweet>()
+  .addTypeMapping(Tweet.class, ContentResolverTypeMapping.<Tweet>builder()
     .putResolver(new TweetPutResolver()) // object that knows how to perform Put Operation (insert or update)
     .getResolver(new TweetGetResolver()) // object that knows how to perform Get Operation
     .deleteResolver(new TweetDeleteResolver())  // object that knows how to perform Delete Operation
