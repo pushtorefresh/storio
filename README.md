@@ -6,7 +6,7 @@
 * Convenient builders with compile-time guarantees for required params. Forget about 6-7 `null` in queries
 * Optional Type-Safe Object Mapping, if you don't want to work with `Cursor` and `ContentValues` you don't have to
 * No reflection in Operations and no annotations in the core, also `StorIO` is not ORM
-* Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`
+* Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`/`rx.Single`
 * `RxJava` as first class citizen, but it's not required dependency!
 * **Reactive**: `rx.Observable` from `Get` Operation **will observe changes** in `StorIO` (`SQLite` or `ContentProvider`) and receive updates automatically
 * `StorIO` is replacements for `SQLiteDatabase` and `ContentResolver` APIs
