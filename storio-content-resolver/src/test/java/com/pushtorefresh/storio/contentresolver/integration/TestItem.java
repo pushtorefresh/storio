@@ -30,15 +30,22 @@ class TestItem {
     @NonNull
     static final String COLUMN_VALUE = "value";
 
+    @NonNull
+    static final String COLUMN_OPTIONAL_VALUE = "optional_value";
+
     @Nullable
     private final Long id;
 
     @NonNull
     private final String value;
 
-    private TestItem(@Nullable Long id, @NonNull String value) {
+    @Nullable
+    private final String optionalValue;
+
+    private TestItem(@Nullable Long id, @NonNull String value, @Nullable String optionalValue) {
         this.id = id;
         this.value = value;
+        this.optionalValue = optionalValue;
     }
 
     @Nullable
@@ -51,6 +58,11 @@ class TestItem {
         return value;
     }
 
+    @Nullable
+    public String optionalValue() {
+        return optionalValue;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,17 +71,16 @@ class TestItem {
         TestItem testItem = (TestItem) o;
 
         if (id != null ? !id.equals(testItem.id) : testItem.id != null) return false;
-        return value.equals(testItem.value);
-    }
+        if (!value.equals(testItem.value)) return false;
+        return !(optionalValue != null ? !optionalValue.equals(testItem.optionalValue) : testItem.optionalValue != null);
 
-    public boolean equalsWithoutId(@NonNull TestItem object) {
-        return value.equals(object.value);
     }
 
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + value.hashCode();
+        result = 31 * result + (optionalValue != null ? optionalValue.hashCode() : 0);
         return result;
     }
 
@@ -78,7 +89,13 @@ class TestItem {
         return "TestItem{" +
                 "id=" + id +
                 ", value='" + value + '\'' +
+                ", optionalValue='" + optionalValue + '\'' +
                 '}';
+    }
+
+    public boolean equalsWithoutId(@NonNull TestItem another) {
+        if (!value.equals(another.value)) return false;
+        return !(optionalValue != null ? !optionalValue.equals(another.optionalValue) : another.optionalValue != null);
     }
 
     @NonNull
@@ -87,20 +104,27 @@ class TestItem {
 
         cv.put(COLUMN_ID, id);
         cv.put(COLUMN_VALUE, value);
+        cv.put(COLUMN_OPTIONAL_VALUE, optionalValue);
 
         return cv;
     }
 
     @NonNull
     static TestItem create(@Nullable Long id, @NonNull String value) {
-        return new TestItem(id, value);
+        return create(id, value, null);
+    }
+
+    @NonNull
+    static TestItem create(@Nullable Long id, @NonNull String value, @Nullable String optionalValue) {
+        return new TestItem(id, value, optionalValue);
     }
 
     @NonNull
     static TestItem fromCursor(@NonNull Cursor cursor) {
         return create(
                 cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-                cursor.getString(cursor.getColumnIndex(COLUMN_VALUE))
+                cursor.getString(cursor.getColumnIndex(COLUMN_VALUE)),
+                cursor.getString(cursor.getColumnIndex(COLUMN_OPTIONAL_VALUE))
         );
     }
 

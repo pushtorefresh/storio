@@ -23,11 +23,13 @@ public class UserTableMeta {
     static final String TABLE = "users";
     static final String COLUMN_ID = "_id";
     static final String COLUMN_EMAIL = "email";
+    static final String COLUMN_PHONE = "phone";
 
     // We all will be very old when Java will support string interpolation :(
     static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + "(" +
             COLUMN_ID + " INTEGER PRIMARY KEY, " +
-            COLUMN_EMAIL + " TEXT NOT NULL" +
+            COLUMN_EMAIL + " TEXT NOT NULL, " +
+            COLUMN_PHONE + " TEXT" + // optional
             ");";
 
     static final Query QUERY_ALL = Query.builder()
@@ -64,6 +66,7 @@ public class UserTableMeta {
 
             contentValues.put(COLUMN_ID, user.id());
             contentValues.put(COLUMN_EMAIL, user.email());
+            contentValues.put(COLUMN_PHONE, user.phone());
 
             return contentValues;
         }
@@ -86,7 +89,8 @@ public class UserTableMeta {
         public User mapFromCursor(@NonNull Cursor cursor) {
             return User.newInstance(
                     cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
-                    cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL))
+                    cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL)),
+                    cursor.getString(cursor.getColumnIndex(COLUMN_PHONE))
             );
         }
     };

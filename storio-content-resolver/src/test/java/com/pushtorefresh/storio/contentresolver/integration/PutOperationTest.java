@@ -479,4 +479,107 @@ public class PutOperationTest extends IntegrationTest {
         changesTestSubscriber.assertNoErrors();
         changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
     }
+
+    @Test
+    public void insertOneWithNullField() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItem = TestItem.create(null, "value", null); // optional value is null
+
+        PutResult insertResult = storIOContentResolver
+                .put()
+                .object(testItem)
+                .prepare()
+                .executeAsBlocking();
+
+        assertThat(insertResult.wasInserted()).isTrue();
+
+        Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+
+        Assertions.assertThat(cursor).hasCount(1);
+
+        cursor.moveToFirst();
+
+        assertThat(testItem.equalsWithoutId(TestItem.fromCursor(cursor))).isTrue();
+
+        cursor.close();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void updateNullFieldToNotNull() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(2)
+                .subscribe(changesTestSubscriber);
+
+        Uri insertedUri =
+                contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value", null).toContentValues()); // firstly, optional value is null
+
+        TestItem testItem = TestItem.create(ContentUris.parseId(insertedUri), "value", "optionalValue"); // change to not null
+
+        PutResult updateResult = storIOContentResolver
+                .put()
+                .object(testItem)
+                .prepare()
+                .executeAsBlocking();
+
+        assertThat(updateResult.wasUpdated()).isTrue();
+
+        Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+
+        Assertions.assertThat(cursor).hasCount(1);
+
+        cursor.moveToFirst();
+
+        assertThat(testItem).isEqualTo(TestItem.fromCursor(cursor));
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void updateNotNullFieldToNull() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(2)
+                .subscribe(changesTestSubscriber);
+
+        Uri insertedUri = contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value", "optionalValue").toContentValues());
+
+        TestItem testItem = TestItem.create(ContentUris.parseId(insertedUri), "value", null);  // optional value changes to null
+
+        PutResult updateResult = storIOContentResolver
+                .put()
+                .object(testItem)
+                .prepare()
+                .executeAsBlocking();
+
+        assertThat(updateResult.wasUpdated()).isTrue();
+
+        Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+
+        Assertions.assertThat(cursor).hasCount(1);
+
+        cursor.moveToFirst();
+
+        assertThat(testItem).isEqualTo(TestItem.fromCursor(cursor));
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
+    }
 }

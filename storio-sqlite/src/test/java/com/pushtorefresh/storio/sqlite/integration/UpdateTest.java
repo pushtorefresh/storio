@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.integration;
 
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sqlite.BuildConfig;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult;
@@ -22,38 +23,47 @@ public class UpdateTest extends BaseTest {
 
     @Test
     public void updateOne() {
-        final User userForInsert = TestFactory.newUser();
-
-        final PutResult insertResult = storIOSQLite
-                .put()
-                .object(userForInsert)
-                .prepare()
-                .executeAsBlocking();
-
-        assertThat(insertResult.wasInserted()).isTrue();
+        final User userForInsert = putUserBlocking();
 
         final User userForUpdate = User.newInstance(
                 userForInsert.id(), // using id of inserted user
                 "new@email.com" // new value
         );
 
-        final PutResult updateResult = storIOSQLite
-                .put()
-                .object(userForUpdate)
-                .prepare()
-                .executeAsBlocking();
+        updateUserBlocking(userForUpdate);
+        checkOnlyOneItemInStorage(userForUpdate);  // update should not add new rows!
+    }
 
-        assertThat(updateResult.wasUpdated()).isTrue();
+    @Test
+    public void updateNullFieldToNotNull() {
+        final User userForInsert = User.newInstance(null, "user@email.com", null); // phone is null
 
-        final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+        putUserBlocking(userForInsert);
 
-        assertThat(cursor.getCount()).isEqualTo(1); // update should not add new rows!
-        assertThat(cursor.moveToFirst()).isTrue();
+        final User userForUpdate = User.newInstance(
+                userForInsert.id(),
+                userForInsert.email(),
+                "1-999-547867"  // phone not null
+        );
 
-        final User updatedUser = UserTableMeta.GET_RESOLVER.mapFromCursor(cursor);
-        assertThat(updatedUser).isEqualTo(userForUpdate);
+        updateUserBlocking(userForUpdate);
+        checkOnlyOneItemInStorage(userForUpdate);
+    }
 
-        cursor.close();
+    @Test
+    public void updateNotNullFieldToNull() {
+        final User userForInsert = User.newInstance(null, "user@email.com", "1-999-547867"); // phone not null
+
+        putUserBlocking(userForInsert);
+
+        final User userForUpdate = User.newInstance(
+                userForInsert.id(),
+                userForInsert.email(),
+                null    // phone is null
+        );
+
+        updateUserBlocking(userForUpdate);
+        checkOnlyOneItemInStorage(userForUpdate);
     }
 
     @Test
@@ -90,6 +100,28 @@ public class UpdateTest extends BaseTest {
             assertThat(cursor.moveToNext()).isTrue();
             assertThat(UserTableMeta.GET_RESOLVER.mapFromCursor(cursor)).isEqualTo(usersForUpdate.get(i));
         }
+
+        cursor.close();
+    }
+
+    private void updateUserBlocking(@NonNull final User userForUpdate) {
+        final PutResult updateResult = storIOSQLite
+                .put()
+                .object(userForUpdate)
+                .prepare()
+                .executeAsBlocking();
+
+        assertThat(updateResult.wasUpdated()).isTrue();
+    }
+
+    private void checkOnlyOneItemInStorage(@NonNull final User user) {
+        final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+
+        assertThat(cursor.getCount()).isEqualTo(1);
+        assertThat(cursor.moveToFirst()).isTrue();
+
+        final User updatedUser = UserTableMeta.GET_RESOLVER.mapFromCursor(cursor);
+        assertThat(updatedUser).isEqualTo(user);
 
         cursor.close();
     }

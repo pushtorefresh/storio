@@ -255,7 +255,7 @@ public class RxQueryTest extends BaseTest {
 
     @Test
     public void queryOneExistedObjectTableUpdate() {
-        User expectedUser = new User(null, "such@email.com");
+        User expectedUser = User.newInstance(null, "such@email.com");
         putUsersBlocking(3);
 
         final Observable<User> userObservable = storIOSQLite
