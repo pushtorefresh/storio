@@ -17,7 +17,8 @@ public class IntegrationSQLiteOpenHelper extends SQLiteOpenHelper {
     public void onCreate(@NonNull SQLiteDatabase db) {
         db.execSQL("create table " + TABLE_TEST_ITEMS + "("
                 + TestItem.COLUMN_ID + " INTEGER PRIMARY KEY, "
-                + TestItem.COLUMN_VALUE + " TEXT NOT NULL"
+                + TestItem.COLUMN_VALUE + " TEXT NOT NULL, "
+                + TestItem.COLUMN_OPTIONAL_VALUE + " TEXT"
                 + ");");
     }
 
