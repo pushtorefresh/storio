@@ -7,11 +7,13 @@ import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingCompletable;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingSingle;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.schedulers.Schedulers;
@@ -148,6 +150,25 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
 
         return Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(this))
+                .subscribeOn(Schedulers.io());
+    }
+
+    /**
+     * Creates {@link Completable} which will perform Delete Operation lazily when somebody subscribes to it.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Completable} which will perform Delete Operation.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Completable asRxComletable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxCompetable()");
+        return Completable
+                .create(OnSubscribeExecuteAsBlockingCompletable.newInstance(this))
                 .subscribeOn(Schedulers.io());
     }
 

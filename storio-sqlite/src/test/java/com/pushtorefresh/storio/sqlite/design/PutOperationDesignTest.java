@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
@@ -172,6 +173,41 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
                 .asRxSingle();
+    }
+
+    @Test
+    public void putObjectCompletable() {
+        User user = newUser();
+
+        Completable completablePut = storIOSQLite()
+                .put()
+                .object(user)
+                .withPutResolver(UserTableMeta.PUT_RESOLVER)
+                .prepare()
+                .asRxComletable();
+    }
+
+    @Test
+    public void putContentValuesCompletable() {
+        Completable completablePut = storIOSQLite()
+                .put()
+                .contentValues(mock(ContentValues.class))
+                .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
+                .prepare()
+                .asRxComletable();
+    }
+
+    @Test
+    public void putContentValuesIterableCompletable() {
+        Iterable<ContentValues> contentValuesIterable
+                = Arrays.asList(mock(ContentValues.class));
+
+        Completable completablePut = storIOSQLite()
+                .put()
+                .contentValues(contentValuesIterable)
+                .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
+                .prepare()
+                .asRxComletable();
     }
 
 }

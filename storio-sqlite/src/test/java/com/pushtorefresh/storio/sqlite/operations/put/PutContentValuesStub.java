@@ -10,6 +10,7 @@ import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
@@ -102,6 +103,10 @@ class PutContentValuesStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyBehaviorForMultipleContentValues(@NonNull Completable completable) {
+        verifyBehaviorForMultipleContentValues(completable.<PutResults<ContentValues>>toObservable());
+    }
+
     void verifyBehaviorForMultipleContentValues(@NonNull Single<PutResults<ContentValues>> putResultsSingle) {
         new ObservableBehaviorChecker<PutResults<ContentValues>>()
                 .observable(putResultsSingle.toObservable())
@@ -114,6 +119,7 @@ class PutContentValuesStub {
                 })
                 .checkBehaviorOfObservable();
     }
+
 
     void verifyBehaviorForOneContentValues(@NonNull PutResult putResult) {
         verifyBehaviorForMultipleContentValues(PutResults.newInstance(singletonMap(contentValues.get(0), putResult)));
@@ -143,6 +149,10 @@ class PutContentValuesStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForOneContentValues(@NonNull Completable completable) {
+       verifyBehaviorForOneContentValues(completable.<PutResult>toObservable());
     }
 
     private void verifyTransactionBehavior() {
