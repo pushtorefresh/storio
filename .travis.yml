@@ -4,8 +4,13 @@ sudo: false
 language: android
 jdk: oraclejdk8
 
+before_install:
+  - pip install --user codecov
+
 android:
   components:
+    - platform-tools
+    - tools
     - android-23
     - build-tools-23.0.1
     - extra-android-m2repository
@@ -13,6 +18,9 @@ android:
 
 script:
   - sh ci.sh
+  
+after_success:
+  - codecov
 
 notifications:
   email:
