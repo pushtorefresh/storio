@@ -24,7 +24,7 @@
 * `StorIO` annotated with `@NonNull` and `@Nullable` annotations -> less bugs
 * Open Source -> less bugs
 * Documentation, Sample app and Design tests -> less bugs
-* `StorIO` has unit and integration tests -> less bugs
+* `StorIO` has unit and integration tests [![codecov.io](https://codecov.io/github/pushtorefresh/storio/coverage.svg?branch=master)](https://codecov.io/github/pushtorefresh/storio?branch=master) -> less bugs
 * Less bugs -> less bugs
 
 ####Documentation:
