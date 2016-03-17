@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
@@ -64,6 +65,20 @@ public class PreparedPutObjectTest {
 
             putStub.verifyBehaviorForOneObject(putResultSingle);
         }
+
+        @Test
+        public void shouldPutObjectWithoutTypeMappingAsCompetable() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
+
+            final Completable completable = putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .asRxComletable();
+
+            putStub.verifyBehaviorForOneObject(completable);
+        }
     }
 
     public static class WithTypeMapping {
@@ -105,6 +120,19 @@ public class PreparedPutObjectTest {
                     .asRxSingle();
 
             putStub.verifyBehaviorForOneObject(putResultSingle);
+        }
+
+        @Test
+        public void shouldPutObjectWithTypeMappingAsCompletable() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
+
+            final Completable completable = putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .prepare()
+                    .asRxComletable();
+
+            putStub.verifyBehaviorForOneObject(completable);
         }
     }
 
@@ -185,6 +213,40 @@ public class PreparedPutObjectTest {
             new PreparedPutObject.Builder<Object>(storIOSQLite, object)
                     .prepare()
                     .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            testSubscriber.assertError(StorIOException.class);
+
+            //noinspection ThrowableResultOfMethodCallIgnored
+            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+
+            IllegalStateException cause = (IllegalStateException) expected.getCause();
+
+            assertThat(cause).hasMessage("Object does not have type mapping: " +
+                    "object = " + object + ", object.class = " + object.getClass() + ", " +
+                    "db was not affected by this operation, please add type mapping for this type");
+
+            verify(storIOSQLite).lowLevel();
+            verify(internal).typeMapping(Object.class);
+            verifyNoMoreInteractions(storIOSQLite, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbCompletable() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
+
+            final Object object = new Object();
+
+            final TestSubscriber<PutResult> testSubscriber = new TestSubscriber<PutResult>();
+
+            new PreparedPutObject.Builder<Object>(storIOSQLite, object)
+                    .prepare()
+                    .asRxComletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

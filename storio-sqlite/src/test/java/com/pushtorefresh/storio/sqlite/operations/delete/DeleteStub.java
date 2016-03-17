@@ -13,6 +13,7 @@ import org.mockito.stubbing.Answer;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
@@ -200,6 +201,10 @@ class DeleteStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyBehaviorForMultipleObjects(@NonNull Completable completable) {
+        verifyBehaviorForMultipleObjects(completable.<DeleteResults<TestItem>>toObservable());
+    }
+
     void verifyBehaviorForOneObject(@NonNull DeleteResult deleteResult) {
         verifyBehaviorForMultipleObjects(DeleteResults.newInstance(singletonMap(itemsRequestedForDelete.get(0), deleteResult)));
     }
@@ -215,6 +220,10 @@ class DeleteStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForOneObject(@NonNull Completable completable) {
+        verifyBehaviorForOneObject(completable.<DeleteResult>toObservable());
     }
 
     void verifyBehaviorForOneObject(@NonNull Single<DeleteResult> single) {

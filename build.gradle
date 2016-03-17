@@ -53,7 +53,7 @@ def daggerVersion = '2.0.1'
 ext.libraries = [
         // Core libraries
         supportAnnotations             : 'com.android.support:support-annotations:' + supportLibsVersion,
-        rxJava                         : 'io.reactivex:rxjava:1.1.0',
+        rxJava                         : 'io.reactivex:rxjava:1.1.1',
 
         // Parts of StorIO
         storIOCommon                              : project(':storio-common'),

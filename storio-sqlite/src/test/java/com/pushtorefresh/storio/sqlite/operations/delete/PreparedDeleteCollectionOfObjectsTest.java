@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
@@ -159,6 +160,38 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             deleteStub.verifyBehaviorForMultipleObjects(single);
         }
+
+        @Test
+        public void shouldDeleteObjectsWithoutTypeMappingWithoutTransactionAsCompletable() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithoutTypeMappingWithoutTransaction();
+
+            final Completable completable = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .useTransaction(false)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .asRxComletable();
+
+            deleteStub.verifyBehaviorForMultipleObjects(completable);
+        }
+
+        @Test
+        public void shouldDeleteObjectsWithoutTypeMappingWithTransactionAsCompletable() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithoutTypeMappingWithTransaction();
+
+            final Completable completable = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .useTransaction(true)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .asRxComletable();
+
+            deleteStub.verifyBehaviorForMultipleObjects(completable);
+        }
     }
 
     public static class WithTypeMapping {
@@ -282,6 +315,36 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             deleteStub.verifyBehaviorForMultipleObjects(single);
         }
+
+        @Test
+        public void shouldDeleteObjectsWithTypeMappingWithoutTransactionCompletable() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithTypeMappingWithoutTransaction();
+
+            final Completable completable = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .useTransaction(false)
+                    .prepare()
+                    .asRxComletable();
+
+            deleteStub.verifyBehaviorForMultipleObjects(completable);
+        }
+
+        @Test
+        public void shouldDeleteObjectsWithTypeMappingWithTransactionCompletable() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithTypeMappingWithTransaction();
+
+            final Completable completable = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .useTransaction(true)
+                    .prepare()
+                    .asRxComletable();
+
+            deleteStub.verifyBehaviorForMultipleObjects(completable);
+        }
     }
 
     public static class NoTypeMappingError {
@@ -371,6 +434,40 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .useTransaction(false)
                     .prepare()
                     .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOSQLite).delete();
+            verify(storIOSQLite).lowLevel();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutTransactionWithoutAffectingDbAsCompletable() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
+
+            when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
+
+            final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
+
+            final TestSubscriber<DeleteResults<TestItem>> testSubscriber = new TestSubscriber<DeleteResults<TestItem>>();
+
+            storIOSQLite
+                    .delete()
+                    .objects(items)
+                    .useTransaction(false)
+                    .prepare()
+                    .asRxComletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -485,6 +582,40 @@ public class PreparedDeleteCollectionOfObjectsTest {
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithTransactionWithoutAffectingDbAsCompletable() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
+
+            when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
+
+            final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
+
+            final TestSubscriber<DeleteResults<TestItem>> testSubscriber = new TestSubscriber<DeleteResults<TestItem>>();
+
+            storIOSQLite
+                    .delete()
+                    .objects(items)
+                    .useTransaction(true)
+                    .prepare()
+                    .asRxComletable()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOSQLite).delete();
+            verify(storIOSQLite).lowLevel();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, internal);
+        }
     }
 
     public static class OtherTests {
@@ -585,6 +716,47 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .withDeleteResolver(deleteResolver)
                     .prepare()
                     .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            testSubscriber.assertError(StorIOException.class);
+
+            //noinspection ThrowableResultOfMethodCallIgnored
+            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+
+            IllegalStateException cause = (IllegalStateException) expected.getCause();
+            assertThat(cause).hasMessage("test exception");
+
+            verify(internal).beginTransaction();
+            verify(internal, never()).setTransactionSuccessful();
+            verify(internal).endTransaction();
+
+            verify(storIOSQLite).lowLevel();
+            verify(deleteResolver).performDelete(same(storIOSQLite), anyObject());
+            verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        }
+
+        @Test
+        public void shouldFinishTransactionIfExceptionHasOccurredCompletable() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
+
+            //noinspection unchecked
+            final DeleteResolver<Object> deleteResolver = mock(DeleteResolver.class);
+
+            when(deleteResolver.performDelete(same(storIOSQLite), anyObject()))
+                    .thenThrow(new IllegalStateException("test exception"));
+
+            final TestSubscriber<DeleteResults<Object>> testSubscriber = new TestSubscriber<DeleteResults<Object>>();
+
+            new PreparedDeleteCollectionOfObjects.Builder<Object>(storIOSQLite, singletonList(new Object()))
+                    .useTransaction(true)
+                    .withDeleteResolver(deleteResolver)
+                    .prepare()
+                    .asRxComletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

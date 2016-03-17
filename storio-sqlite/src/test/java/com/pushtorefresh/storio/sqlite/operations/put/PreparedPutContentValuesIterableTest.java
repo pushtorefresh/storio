@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
@@ -72,6 +73,21 @@ public class PreparedPutContentValuesIterableTest {
     }
 
     @Test
+    public void putMultipleCompletableWithTransaction() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
+
+        final Completable completable = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .useTransaction(true)
+                .prepare()
+                .asRxComletable();
+
+        putStub.verifyBehaviorForMultipleContentValues(completable);
+    }
+
+    @Test
     public void putMultipleBlockingWithoutTransaction() {
         final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(false);
 
@@ -114,6 +130,21 @@ public class PreparedPutContentValuesIterableTest {
                 .asRxSingle();
 
         putStub.verifyBehaviorForMultipleContentValues(putResultsSingle);
+    }
+
+    @Test
+    public void putMultipleCompletableWithoutTransaction() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(false);
+
+        final Completable completable = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .useTransaction(false)
+                .prepare()
+                .asRxComletable();
+
+        putStub.verifyBehaviorForMultipleContentValues(completable);
     }
 
     @Test
@@ -241,6 +272,49 @@ public class PreparedPutContentValuesIterableTest {
     }
 
     @Test
+    public void shouldFinishTransactionIfExceptionHasOccurredCompletable() {
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+        when(storIOSQLite.lowLevel()).thenReturn(internal);
+
+        //noinspection unchecked
+        final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
+
+        final List<ContentValues> contentValues = singletonList(mock(ContentValues.class));
+
+        when(putResolver.performPut(same(storIOSQLite), any(ContentValues.class)))
+                .thenThrow(new IllegalStateException("test exception"));
+
+        final TestSubscriber<PutResults<ContentValues>> testSubscriber = new TestSubscriber<PutResults<ContentValues>>();
+
+        new PreparedPutContentValuesIterable.Builder(storIOSQLite, contentValues)
+                .withPutResolver(putResolver)
+                .useTransaction(true)
+                .prepare()
+                .asRxComletable()
+                .subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(StorIOException.class);
+
+        //noinspection ThrowableResultOfMethodCallIgnored
+        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+
+        IllegalStateException cause = (IllegalStateException) expected.getCause();
+        assertThat(cause).hasMessage("test exception");
+
+        verify(internal).beginTransaction();
+        verify(internal, never()).setTransactionSuccessful();
+        verify(internal).endTransaction();
+
+        verify(storIOSQLite).lowLevel();
+        verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
+        verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+    }
+
+    @Test
     public void verifyBehaviorInCaseOfExceptionWithoutTransactionBlocking() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
@@ -334,6 +408,46 @@ public class PreparedPutContentValuesIterableTest {
                 .useTransaction(false)
                 .prepare()
                 .asRxSingle()
+                .subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertNoValues();
+        testSubscriber.assertError(StorIOException.class);
+
+        //noinspection ThrowableResultOfMethodCallIgnored
+        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+
+        IllegalStateException cause = (IllegalStateException) expected.getCause();
+        assertThat(cause).hasMessage("test exception");
+
+        // Main check of this test
+        verify(internal, never()).endTransaction();
+
+        verify(storIOSQLite).lowLevel();
+        verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
+        verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+    }
+
+    @Test
+    public void verifyBehaviorInCaseOfExceptionWithoutTransactionCompletable() {
+        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+        //noinspection unchecked
+        final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
+
+        final List<ContentValues> contentValues = singletonList(mock(ContentValues.class));
+
+        when(putResolver.performPut(same(storIOSQLite), any(ContentValues.class)))
+                .thenThrow(new IllegalStateException("test exception"));
+
+        final TestSubscriber<PutResults<ContentValues>> testSubscriber = new TestSubscriber<PutResults<ContentValues>>();
+
+        new PreparedPutContentValuesIterable.Builder(storIOSQLite, contentValues)
+                .withPutResolver(putResolver)
+                .useTransaction(false)
+                .prepare()
+                .asRxComletable()
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();

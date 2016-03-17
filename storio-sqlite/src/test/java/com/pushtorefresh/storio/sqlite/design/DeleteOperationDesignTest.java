@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
@@ -123,5 +124,42 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                         .build())
                 .prepare()
                 .asRxSingle();
+    }
+
+    @Test
+    public void deleteObjectCompletable() {
+        User user = newUser();
+
+        Completable completableDelete = storIOSQLite()
+                .delete()
+                .object(user)
+                .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
+                .prepare()
+                .asRxComletable();
+    }
+
+    @Test
+    public void deleteCollectionOfObjectsCompletable() {
+        List<User> users = new ArrayList<User>();
+
+        Completable completableDelete = storIOSQLite()
+                .delete()
+                .objects(users)
+                .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
+                .prepare()
+                .asRxComletable();
+    }
+
+    @Test
+    public void deleteByQueryCompletable() {
+        Completable completableDelete = storIOSQLite()
+                .delete()
+                .byQuery(DeleteQuery.builder()
+                        .table("users")
+                        .where("email = ?")
+                        .whereArgs("artem.zinnatullin@gmail.com")
+                        .build())
+                .prepare()
+                .asRxComletable();
     }
 }

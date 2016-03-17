@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
@@ -69,6 +70,20 @@ public class PreparedDeleteObjectTest {
         }
 
         @Test
+        public void shouldDeleteObjectWithoutTypeMappingAsCompletable() {
+            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
+
+            final Completable completable = deleteStub.storIOSQLite
+                    .delete()
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .asRxComletable();
+
+            deleteStub.verifyBehaviorForOneObject(completable);
+        }
+
+        @Test
         public void shouldNotNotifyIfWasNotDeleted() {
             final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMappingNothingDeleted();
 
@@ -122,6 +137,19 @@ public class PreparedDeleteObjectTest {
                     .asRxSingle();
 
             deleteStub.verifyBehaviorForOneObject(single);
+        }
+
+        @Test
+        public void shouldDeleteObjectWithTypeMappingAsCompletable() {
+            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithTypeMapping();
+
+            final Completable completable = deleteStub.storIOSQLite
+                    .delete()
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
+                    .prepare()
+                    .asRxComletable();
+
+            deleteStub.verifyBehaviorForOneObject(completable);
         }
     }
 
@@ -202,6 +230,36 @@ public class PreparedDeleteObjectTest {
                     .object(TestItem.newInstance())
                     .prepare()
                     .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0)).
+                    hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOSQLite).delete();
+            verify(storIOSQLite).lowLevel();
+            verify(internal).typeMapping(TestItem.class);
+            verify(internal, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, internal);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbAsCompletable() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
+
+            when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
+
+            final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
+
+            storIOSQLite
+                    .delete()
+                    .object(TestItem.newInstance())
+                    .prepare()
+                    .asRxComletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

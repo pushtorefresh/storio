@@ -2,7 +2,7 @@ package com.pushtorefresh.storio.sqlite.operations.delete;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.operations.PreparedOperation;
+import com.pushtorefresh.storio.operations.PreparedWriteOperation;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 
@@ -13,7 +13,7 @@ import java.util.Collection;
  *
  * @param <T> type of object to delete.
  */
-public abstract class PreparedDelete<T> implements PreparedOperation<T> {
+public abstract class PreparedDelete<T> implements PreparedWriteOperation<T> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;

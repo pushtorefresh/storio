@@ -3,7 +3,7 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.operations.PreparedOperation;
+import com.pushtorefresh.storio.operations.PreparedWriteOperation;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import java.util.Collection;
  * Prepared Put Operation for {@link StorIOSQLite} which performs insert or update data
  * in {@link StorIOSQLite}.
  */
-public abstract class PreparedPut<Result> implements PreparedOperation<Result> {
+public abstract class PreparedPut<Result> implements PreparedWriteOperation<Result> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;
