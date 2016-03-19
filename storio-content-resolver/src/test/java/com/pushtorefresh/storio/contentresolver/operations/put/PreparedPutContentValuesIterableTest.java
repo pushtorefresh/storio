@@ -4,6 +4,7 @@ import android.content.ContentValues;
 
 import org.junit.Test;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
@@ -49,5 +50,19 @@ public class PreparedPutContentValuesIterableTest {
                 .asRxSingle();
 
         putStub.verifyBehaviorForMultipleContentValues(putResultsSingle);
+    }
+
+    @Test
+    public void putContentValuesIterableCompletable() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues();
+
+        final Completable completable = putStub.storIOContentResolver
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare()
+                .asRxCompletable();
+
+        putStub.verifyBehaviorForMultipleContentValues(completable);
     }
 }

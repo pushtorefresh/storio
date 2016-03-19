@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
@@ -64,6 +65,21 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
+    public void deleteByQueryCompletable() {
+        final DeleteQuery deleteQuery = DeleteQuery.builder()
+                .uri(mock(Uri.class))
+                .where("some_field = ?")
+                .whereArgs("someValue")
+                .build();
+
+        Completable completable = storIOContentResolver()
+                .delete()
+                .byQuery(deleteQuery)
+                .prepare()
+                .asRxCompletable();
+    }
+
+    @Test
     public void deleteObjectsBlocking() {
         final List<Article> articles = new ArrayList<Article>();
 
@@ -99,6 +115,17 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                 .asRxSingle();
     }
 
+    @Test
+    public void deleteObjectsCompletable() {
+        final List<Article> articles = new ArrayList<Article>();
+
+        Completable completable = storIOContentResolver()
+                .delete()
+                .objects(articles)
+                .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
+                .prepare()
+                .asRxCompletable();
+    }
 
     @Test
     public void deleteObjectBlocking() {
@@ -134,5 +161,17 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                 .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
                 .asRxSingle();
+    }
+
+    @Test
+    public void deleteObjectCompletable() {
+        Article article = mock(Article.class);
+
+        Completable completable = storIOContentResolver()
+                .delete()
+                .object(article)
+                .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
+                .prepare()
+                .asRxCompletable();
     }
 }

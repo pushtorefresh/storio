@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
@@ -164,6 +165,10 @@ class DeleteObjectsStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyBehaviorForDeleteMultipleObjects(@NonNull Completable completable) {
+        verifyBehaviorForDeleteOneObject(completable.<DeleteResult>toObservable());
+    }
+
     void verifyBehaviorForDeleteOneObject(@NonNull DeleteResult deleteResult) {
         Map<TestItem, DeleteResult> deleteResultsMap = new HashMap<TestItem, DeleteResult>(1);
         deleteResultsMap.put(items.get(0), deleteResult);
@@ -194,5 +199,9 @@ class DeleteObjectsStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForDeleteOneObject(@NonNull Completable completable) {
+        verifyBehaviorForDeleteOneObject(completable.<DeleteResult>toObservable());
     }
 }

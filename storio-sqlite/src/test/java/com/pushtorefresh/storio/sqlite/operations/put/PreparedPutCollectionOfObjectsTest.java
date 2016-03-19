@@ -143,7 +143,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(false)
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             putStub.verifyBehaviorForMultipleObjects(completable);
         }
@@ -159,7 +159,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(true)
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             putStub.verifyBehaviorForMultipleObjects(completable);
         }
@@ -267,7 +267,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(putStub.items)
                     .useTransaction(false)
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             putStub.verifyBehaviorForMultipleObjects(completable);
         }
@@ -282,7 +282,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(putStub.items)
                     .useTransaction(true)
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             putStub.verifyBehaviorForMultipleObjects(completable);
         }
@@ -411,7 +411,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(items)
                     .useTransaction(false)
                     .prepare()
-                    .asRxComletable()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -549,7 +549,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(items)
                     .useTransaction(true)
                     .prepare()
-                    .asRxComletable()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -711,7 +711,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(true)
                     .withPutResolver(putResolver)
                     .prepare()
-                    .asRxComletable()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -879,7 +879,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(false)
                     .withPutResolver(putResolver)
                     .prepare()
-                    .asRxComletable()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

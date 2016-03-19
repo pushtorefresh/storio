@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
@@ -67,6 +68,20 @@ public class PreparedDeleteObjectTest {
 
             deleteStub.verifyBehaviorForDeleteOneObject(single);
         }
+
+        @Test
+        public void shouldDeleteObjectWithoutTypeMappingAsCompletable() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObjectWithoutTypeMapping();
+
+            final Completable completable = deleteStub.storIOContentResolver
+                    .delete()
+                    .object(deleteStub.items.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .asRxCompletable();
+
+            deleteStub.verifyBehaviorForDeleteOneObject(completable);
+        }
     }
 
     public static class WithTypeMapping {
@@ -108,6 +123,19 @@ public class PreparedDeleteObjectTest {
                     .asRxSingle();
 
             deleteStub.verifyBehaviorForDeleteOneObject(single);
+        }
+
+        @Test
+        public void shouldDeleteObjectWithTypeMappingAsCompletable() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObjectWithTypeMapping();
+
+            final Completable completable = deleteStub.storIOContentResolver
+                    .delete()
+                    .object(deleteStub.items.get(0))
+                    .prepare()
+                    .asRxCompletable();
+
+            deleteStub.verifyBehaviorForDeleteOneObject(completable);
         }
     }
 
@@ -164,7 +192,8 @@ public class PreparedDeleteObjectTest {
             testSubscriber.assertNoValues();
             assertThat(testSubscriber.getOnErrorEvents().get(0))
                     .isInstanceOf(StorIOException.class)
-                    .hasCauseInstanceOf(IllegalStateException.class);
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessage("Error has occurred during Delete operation. object = TestItem{data='null'}");
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
@@ -195,7 +224,40 @@ public class PreparedDeleteObjectTest {
             testSubscriber.assertNoValues();
             assertThat(testSubscriber.getOnErrorEvents().get(0))
                     .isInstanceOf(StorIOException.class)
-                    .hasCauseInstanceOf(IllegalStateException.class);
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessage("Error has occurred during Delete operation. object = TestItem{data='null'}");
+
+            verify(storIOContentResolver).delete();
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsCompletable() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
+
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
+
+            when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
+
+            final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
+
+            storIOContentResolver
+                    .delete()
+                    .object(TestItem.newInstance())
+                    .prepare()
+                    .asRxCompletable()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessage("Error has occurred during Delete operation. object = TestItem{data='null'}");
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();

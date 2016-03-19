@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
@@ -125,6 +126,10 @@ class PutContentValuesStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyBehaviorForMultipleContentValues(@NonNull Completable completable) {
+        verifyBehaviorForMultipleContentValues(completable.<PutResults<ContentValues>>toObservable());
+    }
+
     void verifyBehaviorForOneContentValues(@NonNull PutResult putResult) {
         Map<ContentValues, PutResult> putResultsMap = new HashMap<ContentValues, PutResult>(1);
         putResultsMap.put(contentValues.get(0), putResult);
@@ -155,5 +160,9 @@ class PutContentValuesStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForOneContentValues(@NonNull Completable completable) {
+        verifyBehaviorForOneContentValues(completable.<PutResult>toObservable());
     }
 }

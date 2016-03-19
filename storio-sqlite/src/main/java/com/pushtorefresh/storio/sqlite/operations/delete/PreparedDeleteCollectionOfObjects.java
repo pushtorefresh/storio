@@ -244,8 +244,8 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
     @NonNull
     @CheckResult
     @Override
-    public Completable asRxComletable() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxCompetable()");
+    public Completable asRxCompletable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxCompletable()");
         return Completable
                 .create(OnSubscribeExecuteAsBlockingCompletable.newInstance(this))
                 .subscribeOn(Schedulers.io());

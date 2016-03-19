@@ -78,7 +78,7 @@ public class PreparedDeleteObjectTest {
                     .object(deleteStub.itemsRequestedForDelete.get(0))
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             deleteStub.verifyBehaviorForOneObject(completable);
         }
@@ -147,7 +147,7 @@ public class PreparedDeleteObjectTest {
                     .delete()
                     .object(deleteStub.itemsRequestedForDelete.get(0))
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             deleteStub.verifyBehaviorForOneObject(completable);
         }
@@ -259,7 +259,7 @@ public class PreparedDeleteObjectTest {
                     .delete()
                     .object(TestItem.newInstance())
                     .prepare()
-                    .asRxComletable()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

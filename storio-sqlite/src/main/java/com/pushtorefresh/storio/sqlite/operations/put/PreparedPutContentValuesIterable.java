@@ -194,8 +194,8 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
     @NonNull
     @CheckResult
     @Override
-    public Completable asRxComletable() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxCompetable()");
+    public Completable asRxCompletable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxCompletable()");
         return Completable
                 .create(OnSubscribeExecuteAsBlockingCompletable.newInstance(this))
                 .subscribeOn(Schedulers.io());

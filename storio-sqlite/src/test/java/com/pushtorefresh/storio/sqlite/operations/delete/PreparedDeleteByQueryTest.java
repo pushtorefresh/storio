@@ -160,7 +160,7 @@ public class PreparedDeleteByQueryTest {
         new PreparedDeleteByQuery.Builder(storIOSQLite, deleteQuery)
                 .withDeleteResolver(deleteResolver)
                 .prepare()
-                .asRxComletable()
+                .asRxCompletable()
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
@@ -290,7 +290,7 @@ public class PreparedDeleteByQueryTest {
         new PreparedDeleteByQuery.Builder(storIOSQLite, DeleteQuery.builder().table("test_table").build())
                 .withDeleteResolver(deleteResolver)
                 .prepare()
-                .asRxComletable()
+                .asRxCompletable()
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
