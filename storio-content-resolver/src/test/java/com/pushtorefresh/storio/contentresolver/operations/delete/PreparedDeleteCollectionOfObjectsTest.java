@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
@@ -70,6 +71,20 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             deleteStub.verifyBehaviorForDeleteMultipleObjects(single);
         }
+
+        @Test
+        public void shouldDeleteObjectsWithoutTypeMappingAsCompletable() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithoutTypeMapping();
+
+            final Completable completable = deleteStub.storIOContentResolver
+                    .delete()
+                    .objects(deleteStub.items)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare()
+                    .asRxCompletable();
+
+            deleteStub.verifyBehaviorForDeleteMultipleObjects(completable);
+        }
     }
 
     public static class WithTypeMapping {
@@ -111,6 +126,19 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .asRxSingle();
 
             deleteStub.verifyBehaviorForDeleteMultipleObjects(single);
+        }
+
+        @Test
+        public void shouldDeleteObjectsWithTypeMappingAsCompletable() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithTypeMapping();
+
+            final Completable completable = deleteStub.storIOContentResolver
+                    .delete()
+                    .objects(deleteStub.items)
+                    .prepare()
+                    .asRxCompletable();
+
+            deleteStub.verifyBehaviorForDeleteMultipleObjects(completable);
         }
     }
 
@@ -198,6 +226,45 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .objects(items)
                     .prepare()
                     .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+
+            testSubscriber.assertNoValues();
+            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+
+            assertThat(error)
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessage("Error has occurred during Delete operation. objects = [TestItem{data='test item 1'}, TestItem{data='test item 2'}]");
+
+            assertThat(error.getCause()).hasMessage("One of the objects from the collection does not have type mapping: object = TestItem{data='test item 1'}, object.class = class com.pushtorefresh.storio.contentresolver.operations.delete.TestItem,ContentProvider was not affected by this operation, please add type mapping for this type");
+
+            verify(storIOContentResolver).delete();
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsCompletable() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
+
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
+
+            when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
+
+            final List<TestItem> items = asList(TestItem.newInstance("test item 1"), TestItem.newInstance("test item 2"));
+
+            final TestSubscriber<DeleteResults<TestItem>> testSubscriber = new TestSubscriber<DeleteResults<TestItem>>();
+
+            storIOContentResolver
+                    .delete()
+                    .objects(items)
+                    .prepare()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

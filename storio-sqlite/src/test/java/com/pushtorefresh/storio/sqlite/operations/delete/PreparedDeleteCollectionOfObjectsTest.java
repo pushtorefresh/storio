@@ -172,7 +172,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .useTransaction(false)
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             deleteStub.verifyBehaviorForMultipleObjects(completable);
         }
@@ -188,7 +188,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .useTransaction(true)
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             deleteStub.verifyBehaviorForMultipleObjects(completable);
         }
@@ -326,7 +326,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(false)
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             deleteStub.verifyBehaviorForMultipleObjects(completable);
         }
@@ -341,7 +341,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .objects(deleteStub.itemsRequestedForDelete)
                     .useTransaction(true)
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             deleteStub.verifyBehaviorForMultipleObjects(completable);
         }
@@ -467,7 +467,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .objects(items)
                     .useTransaction(false)
                     .prepare()
-                    .asRxComletable()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -601,7 +601,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .objects(items)
                     .useTransaction(true)
                     .prepare()
-                    .asRxComletable()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -756,7 +756,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .useTransaction(true)
                     .withDeleteResolver(deleteResolver)
                     .prepare()
-                    .asRxComletable()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

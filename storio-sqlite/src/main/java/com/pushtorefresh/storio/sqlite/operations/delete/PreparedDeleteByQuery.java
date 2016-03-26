@@ -139,8 +139,8 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     @NonNull
     @CheckResult
     @Override
-    public Completable asRxComletable() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxCompetable()");
+    public Completable asRxCompletable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxCompletable()");
         return Completable
                 .create(OnSubscribeExecuteAsBlockingCompletable.newInstance(this))
                 .subscribeOn(Schedulers.io());

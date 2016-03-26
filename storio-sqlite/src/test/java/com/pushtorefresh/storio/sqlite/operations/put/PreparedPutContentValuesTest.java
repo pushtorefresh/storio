@@ -59,7 +59,7 @@ public class PreparedPutContentValuesTest {
                 .contentValues(putStub.contentValues.get(0))
                 .withPutResolver(putStub.putResolver)
                 .prepare()
-                .asRxComletable();
+                .asRxCompletable();
 
         putStub.verifyBehaviorForOneContentValues(completable);
     }

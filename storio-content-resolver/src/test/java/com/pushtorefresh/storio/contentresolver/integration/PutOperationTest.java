@@ -163,6 +163,41 @@ public class PutOperationTest extends IntegrationTest {
     }
 
     @Test
+    public void insertContentValuesAsCompletable() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItem = TestItem.create(null, "value");
+        ContentValues cv = testItem.toContentValues();
+
+        storIOContentResolver
+                .put()
+                .contentValues(cv)
+                .withPutResolver(testItemContentValuesPutResolver)
+                .prepare()
+                .asRxCompletable()
+                .toObservable()
+                .toBlocking()
+                .subscribe();
+
+        Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+
+        Assertions.assertThat(cursor).hasCount(1);
+
+        cursor.moveToFirst();
+
+        assertThat(testItem.equalsWithoutId(TestItem.fromCursor(cursor))).isTrue();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
     public void updateContentValuesExecuteAsBlocking() {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
@@ -256,6 +291,42 @@ public class PutOperationTest extends IntegrationTest {
                 .toBlocking();
 
         assertThat(updateResult.value().wasUpdated()).isTrue();
+
+        Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+
+        Assertions.assertThat(cursor).hasCount(1);
+
+        cursor.moveToFirst();
+
+        assertThat(testItem).isEqualTo(TestItem.fromCursor(cursor));
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void updateContentValuesAsCompletable() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(2)
+                .subscribe(changesTestSubscriber);
+
+        Uri insertedUri = contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value").toContentValues());
+
+        TestItem testItem = TestItem.create(ContentUris.parseId(insertedUri), "value2");
+
+        storIOContentResolver
+                .put()
+                .contentValues(testItem.toContentValues())
+                .withPutResolver(testItemContentValuesPutResolver)
+                .prepare()
+                .asRxCompletable()
+                .toObservable()
+                .toBlocking()
+                .subscribe();
 
         Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
 
@@ -376,6 +447,42 @@ public class PutOperationTest extends IntegrationTest {
     }
 
     @Test
+    public void insertObjectAsCompletable() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
+        TestItem testItem = TestItem.create(null, "value");
+
+        storIOContentResolver
+                .put()
+                .object(testItem)
+                .prepare()
+                .asRxCompletable()
+                .toObservable()
+                .toBlocking()
+                .subscribe();
+
+        Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+
+        Assertions.assertThat(cursor).hasCount(1);
+
+        cursor.moveToFirst();
+
+        assertThat(testItem.equalsWithoutId(TestItem.fromCursor(cursor))).isTrue();
+
+        cursor.close();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+
+    @Test
     public void updateObjectExecuteAsBlocking() {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
@@ -466,6 +573,41 @@ public class PutOperationTest extends IntegrationTest {
                 .toBlocking();
 
         assertThat(updateResult.value().wasUpdated()).isTrue();
+
+        Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
+
+        Assertions.assertThat(cursor).hasCount(1);
+
+        cursor.moveToFirst();
+
+        assertThat(testItem).isEqualTo(TestItem.fromCursor(cursor));
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValues(Changes.newInstance(TestItem.CONTENT_URI), Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void updateObjectAsCompletable() {
+        TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .take(2)
+                .subscribe(changesTestSubscriber);
+
+        Uri insertedUri = contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value").toContentValues());
+
+        TestItem testItem = TestItem.create(ContentUris.parseId(insertedUri), "value2");
+
+        storIOContentResolver
+                .put()
+                .object(testItem)
+                .prepare()
+                .asRxCompletable()
+                .toObservable()
+                .toBlocking()
+                .subscribe();
 
         Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
 

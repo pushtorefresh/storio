@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
@@ -73,6 +74,20 @@ public class PreparedPutCollectionOfObjectsTest {
 
             putStub.verifyBehaviorForMultipleObjects(single);
         }
+
+        @Test
+        public void shouldPutObjectsWithoutTypeMappingAsCompletable() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithoutTypeMapping();
+
+            final Completable completable = putStub.storIOContentResolver
+                    .put()
+                    .objects(putStub.items)
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .asRxCompletable();
+
+            putStub.verifyBehaviorForMultipleObjects(completable);
+        }
     }
 
     public static class WithTypeMapping {
@@ -114,6 +129,19 @@ public class PreparedPutCollectionOfObjectsTest {
                     .asRxSingle();
 
             putStub.verifyBehaviorForMultipleObjects(single);
+        }
+
+        @Test
+        public void shouldPutObjectsWithTypeMappingAsCompletable() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithTypeMapping();
+
+            final Completable completable = putStub.storIOContentResolver
+                    .put()
+                    .objects(putStub.items)
+                    .prepare()
+                    .asRxCompletable();
+
+            putStub.verifyBehaviorForMultipleObjects(completable);
         }
     }
 
@@ -203,6 +231,40 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(items)
                     .prepare()
                     .asRxSingle()
+                    .subscribe(testSubscriber);
+
+            testSubscriber.awaitTerminalEvent();
+            testSubscriber.assertNoValues();
+            assertThat(testSubscriber.getOnErrorEvents().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOContentResolver).put();
+            verify(storIOContentResolver).lowLevel();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsCompletable() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
+
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
+
+            when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
+
+            final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
+
+            final TestSubscriber<PutResults<TestItem>> testSubscriber = new TestSubscriber<PutResults<TestItem>>();
+
+            storIOContentResolver
+                    .put()
+                    .objects(items)
+                    .prepare()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

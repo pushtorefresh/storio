@@ -75,7 +75,7 @@ public class PreparedPutObjectTest {
                     .object(putStub.items.get(0))
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             putStub.verifyBehaviorForOneObject(completable);
         }
@@ -130,7 +130,7 @@ public class PreparedPutObjectTest {
                     .put()
                     .object(putStub.items.get(0))
                     .prepare()
-                    .asRxComletable();
+                    .asRxCompletable();
 
             putStub.verifyBehaviorForOneObject(completable);
         }
@@ -246,7 +246,7 @@ public class PreparedPutObjectTest {
 
             new PreparedPutObject.Builder<Object>(storIOSQLite, object)
                     .prepare()
-                    .asRxComletable()
+                    .asRxCompletable()
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();

@@ -82,7 +82,7 @@ public class PreparedPutContentValuesIterableTest {
                 .withPutResolver(putStub.putResolver)
                 .useTransaction(true)
                 .prepare()
-                .asRxComletable();
+                .asRxCompletable();
 
         putStub.verifyBehaviorForMultipleContentValues(completable);
     }
@@ -142,7 +142,7 @@ public class PreparedPutContentValuesIterableTest {
                 .withPutResolver(putStub.putResolver)
                 .useTransaction(false)
                 .prepare()
-                .asRxComletable();
+                .asRxCompletable();
 
         putStub.verifyBehaviorForMultipleContentValues(completable);
     }
@@ -292,7 +292,7 @@ public class PreparedPutContentValuesIterableTest {
                 .withPutResolver(putResolver)
                 .useTransaction(true)
                 .prepare()
-                .asRxComletable()
+                .asRxCompletable()
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
@@ -447,7 +447,7 @@ public class PreparedPutContentValuesIterableTest {
                 .withPutResolver(putResolver)
                 .useTransaction(false)
                 .prepare()
-                .asRxComletable()
+                .asRxCompletable()
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();

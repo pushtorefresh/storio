@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
@@ -84,6 +85,17 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .asRxSingle();
     }
 
+    @Test
+    public void putObjectCompletable() {
+        Article article = Article.newInstance(null, "test");
+
+        Completable completable = storIOContentResolver()
+                .put()
+                .object(article)
+                .withPutResolver(ArticleMeta.PUT_RESOLVER)
+                .prepare()
+                .asRxCompletable();
+    }
 
     @Test
     public void putCollectionOfObjectsBlocking() {
@@ -122,6 +134,18 @@ public class PutOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
+    public void putCollectionOfObjectsCompletable() {
+        Collection<Article> articles = new ArrayList<Article>();
+
+        Completable completable = storIOContentResolver()
+                .put()
+                .objects(articles)
+                .withPutResolver(ArticleMeta.PUT_RESOLVER)
+                .prepare()
+                .asRxCompletable();
+    }
+
+    @Test
     public void putContentValuesBlocking() {
         ContentValues contentValues = mock(ContentValues.class);
 
@@ -157,6 +181,17 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .asRxSingle();
     }
 
+    @Test
+    public void putContentValuesCompletable() {
+        ContentValues contentValues = mock(ContentValues.class);
+
+        Completable completable = storIOContentResolver()
+                .put()
+                .contentValues(contentValues)
+                .withPutResolver(putResolverForContentValues)
+                .prepare()
+                .asRxCompletable();
+    }
 
     @Test
     public void putContentValuesIterableBlocking() {
@@ -192,5 +227,17 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .withPutResolver(putResolverForContentValues)
                 .prepare()
                 .asRxSingle();
+    }
+
+    @Test
+    public void putContentValuesIterableCompletable() {
+        List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
+
+        Completable completable = storIOContentResolver()
+                .put()
+                .contentValues(contentValuesList)
+                .withPutResolver(putResolverForContentValues)
+                .prepare()
+                .asRxCompletable();
     }
 }

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
@@ -166,6 +167,10 @@ class PutObjectsStub {
                 .checkBehaviorOfObservable();
     }
 
+    void verifyBehaviorForMultipleObjects(@NonNull Completable completable) {
+        verifyBehaviorForMultipleObjects(completable.<PutResults<TestItem>>toObservable());
+    }
+
     void verifyBehaviorForOneObject(@NonNull PutResult putResult) {
         Map<TestItem, PutResult> putResultsMap = new HashMap<TestItem, PutResult>(1);
         putResultsMap.put(items.get(0), putResult);
@@ -196,5 +201,9 @@ class PutObjectsStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+    }
+
+    void verifyBehaviorForOneObject(@NonNull Completable completable) {
+        verifyBehaviorForOneObject(completable.<PutResult>toObservable());
     }
 }

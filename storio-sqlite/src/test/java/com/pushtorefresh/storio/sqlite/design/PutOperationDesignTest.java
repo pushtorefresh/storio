@@ -184,7 +184,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .object(user)
                 .withPutResolver(UserTableMeta.PUT_RESOLVER)
                 .prepare()
-                .asRxComletable();
+                .asRxCompletable();
     }
 
     @Test
@@ -194,7 +194,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .contentValues(mock(ContentValues.class))
                 .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
-                .asRxComletable();
+                .asRxCompletable();
     }
 
     @Test
@@ -207,7 +207,7 @@ public class PutOperationDesignTest extends OperationDesignTest {
                 .contentValues(contentValuesIterable)
                 .withPutResolver(CONTENT_VALUES_PUT_RESOLVER)
                 .prepare()
-                .asRxComletable();
+                .asRxCompletable();
     }
 
 }

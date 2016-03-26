@@ -7,6 +7,7 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
@@ -99,5 +100,9 @@ class DeleteByQueryStub {
                     }
                 })
                 .checkBehaviorOfObservable();
+    }
+
+    void verifyBehavior(@NonNull Completable completable) {
+        verifyBehavior(completable.<DeleteResult>toObservable());
     }
 }

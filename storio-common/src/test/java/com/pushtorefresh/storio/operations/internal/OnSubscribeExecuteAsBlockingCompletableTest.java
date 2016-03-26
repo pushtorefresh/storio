@@ -37,7 +37,7 @@ public class OnSubscribeExecuteAsBlockingCompletableTest {
         verify(preparedOperation).executeAsBlocking();
         verify(preparedOperation, times(0)).asRxObservable();
         verify(preparedOperation, times(0)).asRxSingle();
-        verify(preparedOperation, times(0)).asRxComletable();
+        verify(preparedOperation, times(0)).asRxCompletable();
     }
 
     @SuppressWarnings({"ThrowableInstanceNeverThrown", "ResourceType"})
@@ -63,6 +63,6 @@ public class OnSubscribeExecuteAsBlockingCompletableTest {
         verify(preparedOperation).executeAsBlocking();
         verify(preparedOperation, times(0)).asRxObservable();
         verify(preparedOperation, times(0)).asRxSingle();
-        verify(preparedOperation, times(0)).asRxComletable();
+        verify(preparedOperation, times(0)).asRxCompletable();
     }
 }

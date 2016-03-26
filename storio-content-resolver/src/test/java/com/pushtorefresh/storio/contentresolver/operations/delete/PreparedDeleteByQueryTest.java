@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.contentresolver.operations.delete;
 
 import org.junit.Test;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
@@ -47,5 +48,19 @@ public class PreparedDeleteByQueryTest {
                 .asRxSingle();
 
         deleteStub.verifyBehavior(deleteResultSingle);
+    }
+
+    @Test
+    public void shouldDeleteByQueryAsCompletable() {
+        final DeleteByQueryStub deleteStub = DeleteByQueryStub.newInstance();
+
+        final Completable completable = deleteStub.storIOContentResolver
+                .delete()
+                .byQuery(deleteStub.deleteQuery)
+                .withDeleteResolver(deleteStub.deleteResolver)
+                .prepare()
+                .asRxCompletable();
+
+        deleteStub.verifyBehavior(completable);
     }
 }

@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio.operations.PreparedOperation;
+import com.pushtorefresh.storio.operations.PreparedWriteOperation;
 
 import java.util.Collection;
 
@@ -13,7 +13,7 @@ import java.util.Collection;
  * in {@link android.content.ContentProvider}.
  *
  */
-public abstract class PreparedPut<Result> implements PreparedOperation<Result> {
+public abstract class PreparedPut<Result> implements PreparedWriteOperation<Result> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;

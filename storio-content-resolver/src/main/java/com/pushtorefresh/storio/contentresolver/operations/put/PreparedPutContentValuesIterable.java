@@ -8,11 +8,13 @@ import android.support.annotation.WorkerThread;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingCompletable;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingSingle;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.schedulers.Schedulers;
@@ -131,6 +133,25 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
         throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
 
         return Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(this))
+                .subscribeOn(Schedulers.io());
+    }
+
+    /**
+     * Creates {@link Completable} which will perform Put Operation lazily when somebody subscribes to it.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Completable} which will perform Put Operation.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Completable asRxCompletable() {
+        throwExceptionIfRxJavaIsNotAvailable("asRxCompletable()");
+        return Completable
+                .create(OnSubscribeExecuteAsBlockingCompletable.newInstance(this))
                 .subscribeOn(Schedulers.io());
     }
 

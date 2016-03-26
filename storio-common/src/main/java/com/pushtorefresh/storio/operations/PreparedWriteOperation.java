@@ -14,5 +14,5 @@ public interface PreparedWriteOperation<Result> extends PreparedOperation<Result
 
     @NonNull
     @CheckResult
-    Completable asRxComletable();
+    Completable asRxCompletable();
 }
