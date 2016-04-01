@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static rx.schedulers.Schedulers.io;
@@ -26,6 +25,7 @@ import static rx.schedulers.Schedulers.io;
 @PrepareForTest(Subscriber.class)
 public class OnSubscribeExecuteAsBlockingTest {
 
+    @SuppressWarnings("CheckResult")
     @Test
     public void shouldExecuteAsBlockingAfterSubscription() {
         //noinspection unchecked
@@ -41,9 +41,9 @@ public class OnSubscribeExecuteAsBlockingTest {
                 .toBlocking()
                 .first();
 
-        verify(preparedOperation, times(1)).executeAsBlocking();
-        //noinspection CheckResult
-        verify(preparedOperation, times(0)).asRxObservable();
+        verify(preparedOperation).executeAsBlocking();
+        verify(preparedOperation, never()).asRxObservable();
+        verify(preparedOperation, never()).asRxSingle();
 
         assertThat(actualResult).isEqualTo(expectedResult);
     }

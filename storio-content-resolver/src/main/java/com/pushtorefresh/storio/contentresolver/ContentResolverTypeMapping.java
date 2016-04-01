@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.contentresolver;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.internal.TypeMapping;
 import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio.contentresolver.operations.get.GetResolver;
 import com.pushtorefresh.storio.contentresolver.operations.put.PutResolver;
@@ -13,7 +14,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  *
  * @param <T> type.
  */
-public class ContentResolverTypeMapping<T> {
+public class ContentResolverTypeMapping<T> implements TypeMapping<T> {
 
     @NonNull
     private final PutResolver<T> putResolver;

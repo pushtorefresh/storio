@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.TypeMappingFinder;
+import com.pushtorefresh.storio.internal.TypeMappingFinderImpl;
 import com.pushtorefresh.storio.internal.ChangesBus;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
@@ -22,7 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
@@ -53,9 +54,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @NonNull
     private final Internal lowLevel;
 
-    protected DefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
+    protected DefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @NonNull TypeMappingFinder typeMappingFinder) {
         this.sqLiteOpenHelper = sqLiteOpenHelper;
-        lowLevel = new LowLevelImpl(typesMapping);
+        lowLevel = new LowLevelImpl(typeMappingFinder);
     }
 
     /**
@@ -157,7 +158,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @NonNull
         private final SQLiteOpenHelper sqLiteOpenHelper;
 
-        private Map<Class<?>, SQLiteTypeMapping<?>> typesMapping;
+        private Map<Class<?>, SQLiteTypeMapping<?>> typeMapping;
+
+        @Nullable
+        private TypeMappingFinder typeMappingFinder;
 
         CompleteBuilder(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
             this.sqLiteOpenHelper = sqLiteOpenHelper;
@@ -176,11 +180,26 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
             checkNotNull(type, "Please specify type");
             checkNotNull(typeMapping, "Please specify type mapping");
 
-            if (typesMapping == null) {
-                typesMapping = new HashMap<Class<?>, SQLiteTypeMapping<?>>();
+            if (this.typeMapping == null) {
+                this.typeMapping = new HashMap<Class<?>, SQLiteTypeMapping<?>>();
             }
 
-            typesMapping.put(type, typeMapping);
+            this.typeMapping.put(type, typeMapping);
+
+            return this;
+        }
+
+        /**
+         * Optional: Specifies {@link TypeMappingFinder} for low level usage.
+         *
+         * @param typeMappingFinder non-null custom implementation of {@link TypeMappingFinder}.
+         * @return builder.
+         */
+        @NonNull
+        public CompleteBuilder typeMappingFinder(@NonNull TypeMappingFinder typeMappingFinder) {
+            checkNotNull(typeMappingFinder, "Please specify typeMappingFinder");
+
+            this.typeMappingFinder = typeMappingFinder;
 
             return this;
         }
@@ -192,7 +211,15 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          */
         @NonNull
         public DefaultStorIOSQLite build() {
-            return new DefaultStorIOSQLite(sqLiteOpenHelper, typesMapping);
+
+            if (typeMappingFinder == null) {
+                typeMappingFinder = new TypeMappingFinderImpl();
+            }
+            if (typeMapping != null) {
+                typeMappingFinder.directTypeMapping(unmodifiableMap(typeMapping));
+            }
+
+            return new DefaultStorIOSQLite(sqLiteOpenHelper, typeMappingFinder);
         }
     }
 
@@ -204,13 +231,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @NonNull
         private final Object lock = new Object();
 
-        // Unmodifiable
-        @Nullable
-        private final Map<Class<?>, SQLiteTypeMapping<?>> directTypesMapping;
-
         @NonNull
-        private final Map<Class<?>, SQLiteTypeMapping<?>> indirectTypesMappingCache
-                = new ConcurrentHashMap<Class<?>, SQLiteTypeMapping<?>>();
+        private final TypeMappingFinder typeMappingFinder;
 
         @NonNull
         private AtomicInteger numberOfRunningTransactions = new AtomicInteger(0);
@@ -221,10 +243,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @NonNull
         private Set<Changes> pendingChanges = new HashSet<Changes>(5);
 
-        protected LowLevelImpl(@Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
-            this.directTypesMapping = typesMapping != null
-                    ? unmodifiableMap(typesMapping)
-                    : null;
+        protected LowLevelImpl(@NonNull TypeMappingFinder typeMappingFinder) {
+            this.typeMappingFinder = typeMappingFinder;
         }
 
         /**
@@ -240,93 +260,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          *
          * @return direct or indirect type mapping for passed type, or {@code null}.
          */
-        @SuppressWarnings("unchecked")
         @Nullable
         @Override
         public <T> SQLiteTypeMapping<T> typeMapping(final @NonNull Class<T> type) {
-            if (directTypesMapping == null) {
-                return null;
-            }
-
-            final SQLiteTypeMapping<T> directTypeMapping = (SQLiteTypeMapping<T>) directTypesMapping.get(type);
-
-            if (directTypeMapping != null) {
-                // fffast! O(1)
-                return directTypeMapping;
-            } else {
-                // If no direct type mapping found — search for indirect type mapping
-
-                // May be value already in cache.
-                SQLiteTypeMapping<T> indirectTypeMapping
-                        = (SQLiteTypeMapping<T>) indirectTypesMappingCache.get(type);
-
-                if (indirectTypeMapping != null) {
-                    // fffast! O(1)
-                    return indirectTypeMapping;
-                }
-
-                // Okay, we don't have direct type mapping.
-                // And we don't have cache for indirect type mapping.
-                // Let's find indirect type mapping and cache it!
-
-                // Let's try to find indirect type mapping in own interfaces
-                indirectTypeMapping = findMappingClassByInterface(type);
-                if (indirectTypeMapping != null) {
-                    indirectTypesMappingCache.put(type, indirectTypeMapping);
-                    return indirectTypeMapping;
-                }
-
-                // Search algorithm:
-                // Walk through all parent types of passed type.
-                // If parent type has direct mapping -> we found indirect type mapping!
-                // If current parent type == Object.class -> there is no indirect type mapping.
-                // Complexity:
-                // O(n) where n is number of parent types of passed type (pretty fast).
-
-                // Stop search if root parent is Object.class
-
-                Class<?> parentType = type.getSuperclass();
-                while (parentType != Object.class) {
-                    indirectTypeMapping = (SQLiteTypeMapping<T>) directTypesMapping.get(parentType);
-
-                    if (indirectTypeMapping != null) {
-                        // Store this typeMapping as known to make resolving O(1) for the next time
-                        indirectTypesMappingCache.put(type, indirectTypeMapping);
-                        return indirectTypeMapping;
-                    }
-
-                    // Try to find indirect type interfaces for parent class
-                    indirectTypeMapping = (SQLiteTypeMapping<T>) findMappingClassByInterface(parentType);
-                    if (indirectTypeMapping != null) {
-                        indirectTypesMappingCache.put(type, indirectTypeMapping);
-                        return indirectTypeMapping;
-                    }
-
-                    parentType = parentType.getSuperclass();
-                }
-
-                // No indirect type mapping found.
-                return null;
-            }
-        }
-
-        @Nullable
-        @SuppressWarnings("unchecked")
-        private <T> SQLiteTypeMapping<T> findMappingClassByInterface(@Nullable final Class<T> type) {
-            if (type == null || directTypesMapping == null) {
-                return null;
-            }
-
-            for (Class<?> ownInterface : type.getInterfaces()) {
-                SQLiteTypeMapping<T> mapping =
-                        (SQLiteTypeMapping<T>) directTypesMapping.get(ownInterface);
-
-                if (mapping != null) {
-                    return mapping;
-                }
-            }
-
-            return null;
+            return (SQLiteTypeMapping<T>) typeMappingFinder.findTypeMapping(type);
         }
 
         /**
@@ -527,8 +464,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @Deprecated
     protected class InternalImpl extends LowLevelImpl {
 
-        protected InternalImpl(@Nullable Map<Class<?>, SQLiteTypeMapping<?>> typesMapping) {
-            super(typesMapping);
+        protected InternalImpl(@NonNull TypeMappingFinder typeMappingFinder) {
+            super(typeMappingFinder);
         }
     }
 }

@@ -1,11 +1,11 @@
 package com.pushtorefresh.storio.operations.internal;
 
 import com.pushtorefresh.storio.StorIOException;
-import com.pushtorefresh.storio.operations.PreparedWriteOperation;
+import com.pushtorefresh.storio.operations.PreparedOperation;
 
 import org.junit.Test;
 
-import rx.Completable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static org.mockito.Mockito.mock;
@@ -14,22 +14,23 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-public class OnSubscribeExecuteAsBlockingCompletableTest {
+public class OnSubscribeExecuteAsBlockingSingleTest {
 
-    @SuppressWarnings("ResourceType")
+    @SuppressWarnings("CheckResult")
     @Test
     public void shouldExecuteAsBlockingAfterSubscription() {
-        final PreparedWriteOperation preparedOperation = mock(PreparedWriteOperation.class);
+        //noinspection unchecked
+        final PreparedOperation<Object> preparedOperation = mock(PreparedOperation.class);
 
-        TestSubscriber testSubscriber = new TestSubscriber();
-
-        verifyZeroInteractions(preparedOperation);
-
-        Completable completable = Completable.create(OnSubscribeExecuteAsBlockingCompletable.newInstance(preparedOperation));
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
 
         verifyZeroInteractions(preparedOperation);
 
-        completable.subscribe(testSubscriber);
+        Single<Object> single = Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(preparedOperation));
+
+        verifyZeroInteractions(preparedOperation);
+
+        single.subscribe(testSubscriber);
 
         testSubscriber.assertNoErrors();
         testSubscriber.assertCompleted();
@@ -37,32 +38,31 @@ public class OnSubscribeExecuteAsBlockingCompletableTest {
         verify(preparedOperation).executeAsBlocking();
         verify(preparedOperation, never()).asRxObservable();
         verify(preparedOperation, never()).asRxSingle();
-        verify(preparedOperation, never()).asRxCompletable();
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown", "ResourceType"})
+    @SuppressWarnings("CheckResult")
     @Test
     public void shouldCallOnErrorIfExceptionOccurred() {
-        final PreparedWriteOperation preparedOperation = mock(PreparedWriteOperation.class);
+        //noinspection unchecked
+        final PreparedOperation<Object> preparedOperation = mock(PreparedOperation.class);
 
         StorIOException expectedException = new StorIOException("test exception");
 
         when(preparedOperation.executeAsBlocking()).thenThrow(expectedException);
 
-        TestSubscriber testSubscriber = new TestSubscriber();
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
 
-        Completable completable = Completable.create(OnSubscribeExecuteAsBlockingCompletable.newInstance(preparedOperation));
+        Single<Object> single = Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(preparedOperation));
 
         verifyZeroInteractions(preparedOperation);
 
-        completable.subscribe(testSubscriber);
+        single.subscribe(testSubscriber);
 
         testSubscriber.assertError(expectedException);
         testSubscriber.assertTerminalEvent();
 
         verify(preparedOperation).executeAsBlocking();
-        verify(preparedOperation, never()).asRxObservable();
         verify(preparedOperation, never()).asRxSingle();
-        verify(preparedOperation, never()).asRxCompletable();
+        verify(preparedOperation, never()).asRxObservable();
     }
 }
