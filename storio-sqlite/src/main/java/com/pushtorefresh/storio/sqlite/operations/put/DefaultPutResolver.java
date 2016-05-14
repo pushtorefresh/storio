@@ -9,7 +9,7 @@ import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
-import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStringsFromListOfStrings;
 import static com.pushtorefresh.storio.internal.InternalQueries.nullableString;
 
 /**
@@ -64,7 +64,7 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
             final Cursor cursor = lowLevel.query(Query.builder()
                     .table(updateQuery.table())
                     .where(nullableString(updateQuery.where()))
-                    .whereArgs((Object[]) nullableArrayOfStrings(updateQuery.whereArgs()))
+                    .whereArgs((Object[]) nullableArrayOfStringsFromListOfStrings(updateQuery.whereArgs()))
                     .build());
 
             final PutResult putResult;

@@ -29,6 +29,7 @@ import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.RX_JAVA_IS_IN_THE_CLASS_PATH;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStringsFromListOfStrings;
 import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStrings;
 import static com.pushtorefresh.storio.internal.InternalQueries.nullableString;
 import static java.util.Collections.unmodifiableMap;
@@ -343,7 +344,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                         .getWritableDatabase()
                         .execSQL(
                                 rawQuery.query(),
-                                rawQuery.args().toArray(new String[rawQuery.args().size()])
+                                rawQuery.args().toArray(new Object[rawQuery.args().size()])
                         );
             }
         }
@@ -374,9 +375,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                     .getReadableDatabase().query(
                             query.distinct(),
                             query.table(),
-                            nullableArrayOfStrings(query.columns()),
+                            nullableArrayOfStringsFromListOfStrings(query.columns()),
                             nullableString(query.where()),
-                            nullableArrayOfStrings(query.whereArgs()),
+                            nullableArrayOfStringsFromListOfStrings(query.whereArgs()),
                             nullableString(query.groupBy()),
                             nullableString(query.having()),
                             nullableString(query.orderBy()),
@@ -427,7 +428,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                             updateQuery.table(),
                             contentValues,
                             nullableString(updateQuery.where()),
-                            nullableArrayOfStrings(updateQuery.whereArgs())
+                            nullableArrayOfStringsFromListOfStrings(updateQuery.whereArgs())
                     );
         }
 
@@ -442,7 +443,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                     .delete(
                             deleteQuery.table(),
                             nullableString(deleteQuery.where()),
-                            nullableArrayOfStrings(deleteQuery.whereArgs())
+                            nullableArrayOfStringsFromListOfStrings(deleteQuery.whereArgs())
                     );
         }
 
