@@ -27,19 +27,19 @@ public class InternalQueriesTest {
                 .check();
     }
 
-    //region Tests for Queries.unmodifiableNonNullListOfStrings()
+    //region Tests for Queries.unmodifiableNonNullListOfStrings() from array of objects
 
     @SuppressWarnings("ConstantConditions")
     @Test
     public void nullArrayToUnmodifiableNonNullListOfStrings() {
         Object[] array = null;
-        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(array)).isEqualTo(emptyList());
+        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(array)).isSameAs(emptyList());
     }
 
     @Test
     public void emptyArrayToUnmodifiableNonNullListOfStrings() {
         Object[] array = {};
-        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(array)).isEqualTo(emptyList());
+        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(array)).isSameAs(emptyList());
     }
 
     @Test
@@ -47,11 +47,7 @@ public class InternalQueriesTest {
         Object[] array = {"1", "2", "3"};
         List<String> list = InternalQueries.unmodifiableNonNullListOfStrings(array);
 
-        assertThat(list).hasSize(array.length);
-
-        for (int i = 0; i < array.length; i++) {
-            assertThat(list.get(i)).isEqualTo(array[i]);
-        }
+        assertThat(list).containsExactly("1", "2", "3");
     }
 
     @Test
@@ -59,26 +55,24 @@ public class InternalQueriesTest {
         Object[] array = {"1", null, "3"};
         List<String> strings = InternalQueries.unmodifiableNonNullListOfStrings(array);
 
-        assertThat(strings.get(0)).isEqualTo("1");
-        assertThat(strings.get(1)).isEqualTo("null");
-        assertThat(strings.get(2)).isEqualTo("3");
+        assertThat(strings).containsExactly("1", "null", "3");
     }
 
     //endregion
 
-    //region Tests for Queries.unmodifiableNonNullListOfStrings()
+    //region Tests for Queries.unmodifiableNonNullListOfStrings() from list of objects
 
     @SuppressWarnings("ConstantConditions")
     @Test
     public void nullListToUnmodifiableNonNullListOfStrings() {
         List<Object> list = null;
-        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(list)).isEqualTo(emptyList());
+        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(list)).isSameAs(emptyList());
     }
 
     @Test
     public void emptyListToUnmodifiableNonNullListOfStrings() {
         List<Object> list = new ArrayList<Object>();
-        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(list)).isEqualTo(emptyList());
+        assertThat(InternalQueries.unmodifiableNonNullListOfStrings(list)).isSameAs(emptyList());
     }
 
     @Test
@@ -92,26 +86,57 @@ public class InternalQueriesTest {
         List<String> strings = asList("1", null, "3");
         List<String> result = InternalQueries.unmodifiableNonNullListOfStrings(strings);
 
-        assertThat(result.get(0)).isEqualTo("1");
-        assertThat(result.get(1)).isEqualTo("null");
-        assertThat(result.get(2)).isEqualTo("3");
+        assertThat(result).containsExactly("1", "null", "3");
     }
 
     //endregion
 
-    //region Tests for Queries.unmodifiableNonNullList()
+    //region Tests for Queries.unmodifiableNonNullList() from array of objects
+
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void nullArrayToUnmodifiableNonNullList() {
+        Object[] array = null;
+        assertThat(InternalQueries.unmodifiableNonNullList(array)).isSameAs(emptyList());
+    }
+
+    @Test
+    public void emptyArrayToUnmodifiableNonNullList() {
+        Object[] array = {};
+        assertThat(InternalQueries.unmodifiableNonNullList(array)).isSameAs(emptyList());
+    }
+
+    @Test
+    public void nonEmptyArrayToUnmodifiableNonNullList() {
+        Object[] array = {"1", "2", "3"};
+        List<Object> list = InternalQueries.unmodifiableNonNullList(array);
+
+        assertThat(list).containsExactly(array);
+    }
+
+    @Test
+    public void nullItemInArrayToUnmodifiableNonNullList() {
+        Object[] array = {1, null, 3};
+        List<Object> objects = InternalQueries.unmodifiableNonNullList(array);
+
+        assertThat(objects).containsExactly(array);
+    }
+
+    //endregion
+
+    //region Tests for Queries.unmodifiableNonNullList() from list of objects
 
     @SuppressWarnings("ConstantConditions")
     @Test
     public void nullListToUnmodifiableNonNullList() {
         List<String> list = null;
-        assertThat(InternalQueries.unmodifiableNonNullList(list)).isEqualTo(emptyList());
+        assertThat(InternalQueries.unmodifiableNonNullList(list)).isSameAs(emptyList());
     }
 
     @Test
     public void emptyListToUnmodifiableNonNullList() {
         List<String> list = new ArrayList<String>();
-        assertThat(InternalQueries.unmodifiableNonNullList(list)).isEqualTo(emptyList());
+        assertThat(InternalQueries.unmodifiableNonNullList(list)).isSameAs(emptyList());
     }
 
     @Test
@@ -119,12 +144,7 @@ public class InternalQueriesTest {
         List<String> list = asList("1", "2", "3");
         List<String> unmodifiableList = InternalQueries.unmodifiableNonNullList(list);
 
-        assertThat(unmodifiableList).hasSize(list.size());
-
-        // don't believe equals from List :)
-        for (int i = 0; i < list.size(); i++) {
-            assertThat(list.get(i)).isEqualTo(unmodifiableList.get(i));
-        }
+        assertThat(unmodifiableList).containsExactly("1", "2", "3");
     }
 
     @Test
@@ -139,12 +159,12 @@ public class InternalQueriesTest {
 
     @Test
     public void nullSetToUnmodifiableNonNullSet() {
-        assertThat(InternalQueries.unmodifiableNonNullSet(null)).isEqualTo(emptySet());
+        assertThat(InternalQueries.unmodifiableNonNullSet(null)).isSameAs(emptySet());
     }
 
     @Test
     public void emptySetToUnmodifiableNonNullSet() {
-        assertThat(InternalQueries.unmodifiableNonNullSet(new HashSet<Object>())).isEqualTo(emptySet());
+        assertThat(InternalQueries.unmodifiableNonNullSet(new HashSet<Object>())).isSameAs(emptySet());
     }
 
     @Test
@@ -182,11 +202,30 @@ public class InternalQueriesTest {
         List<String> list = asList("1", "2", "3");
         String[] array = InternalQueries.nonNullArrayOfStrings(list);
 
-        assertThat(array.length).isEqualTo(list.size());
+        assertThat(array).containsExactly("1", "2", "3");
+    }
 
-        for (int i = 0; i < list.size(); i++) {
-            assertThat(array[i]).isEqualTo(list.get(i));
-        }
+    //endregion
+
+    //region Tests for Queries.nullableArrayOfStringsFromListOfStrings()
+
+    @Test
+    public void nullListOfStringsToNullableArrayOfStringFromListOfStrings() {
+        assertThat(InternalQueries.nullableArrayOfStringsFromListOfStrings(null)).isNull();
+    }
+
+    @Test
+    public void emptyListOfStringsToNullableArrayOfStringFromListOfStrings() {
+        List<String> list = new ArrayList<String>();
+        assertThat(InternalQueries.nullableArrayOfStringsFromListOfStrings(list)).isNull();
+    }
+
+    @Test
+    public void nonEmptyListOfStringsToNullableArrayOfStringsFromListOfStrings() {
+        List<String> list = asList("1", "2", "3");
+        String[] array = InternalQueries.nullableArrayOfStringsFromListOfStrings(list);
+
+        assertThat(array).containsExactly("1", "2", "3");
     }
 
     //endregion
@@ -194,29 +233,25 @@ public class InternalQueriesTest {
     //region Tests for Queries.nullableArrayOfStrings()
 
     @Test
-    public void nullListOfStringsToNullableArrayOfString() {
+    public void nullListOfObjectsToNullableArrayOfStrings() {
         assertThat(InternalQueries.nullableArrayOfStrings(null)).isNull();
     }
 
     @Test
-    public void emptyListOfStringsToNullableArrayOfString() {
-        List<String> list = new ArrayList<String>();
+    public void emptyListOfObjectsToNullableArrayOfStrings() {
+        List<Object> list = new ArrayList<Object>();
         assertThat(InternalQueries.nullableArrayOfStrings(list)).isNull();
     }
 
     @Test
-    public void nonEmptyListOfStringsToNullableArrayOfStrings() {
-        List<String> list = asList("1", "2", "3");
+    public void nonEmptyListOfObjectsToNullableArrayOfStrings() {
+        List<Object> list = new ArrayList<Object>(3);
+        list.add(1);
+        list.add(null);
+        list.add(3);
         String[] array = InternalQueries.nullableArrayOfStrings(list);
 
-        assertThat(array).isNotNull();
-
-        //noinspection ConstantConditions
-        assertThat(array.length).isEqualTo(list.size());
-
-        for (int i = 0; i < list.size(); i++) {
-            assertThat(array[i]).isEqualTo(list.get(i));
-        }
+        assertThat(array).containsExactly("1", "null", "3");
     }
 
     //endregion

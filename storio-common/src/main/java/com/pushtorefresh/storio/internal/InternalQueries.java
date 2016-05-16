@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableList;
@@ -68,6 +69,19 @@ public final class InternalQueries {
     }
 
     /**
+     * Converts array of objects to {@code List<Object>}.
+     *
+     * @param args array of objects.
+     * @return non-null, unmodifiable list of objects.
+     */
+    @NonNull
+    public static List<Object> unmodifiableNonNullList(@Nullable Object[] args) {
+        return args == null || args.length == 0
+                ? emptyList()
+                : unmodifiableList(asList(args));
+    }
+
+    /**
      * Converts list of something to unmodifiable non-null list.
      *
      * @param list list to convert, can be {@code null}.
@@ -115,10 +129,32 @@ public final class InternalQueries {
      * @return nullable array of strings.
      */
     @Nullable
-    public static String[] nullableArrayOfStrings(@Nullable List<String> list) {
+    public static String[] nullableArrayOfStringsFromListOfStrings(@Nullable List<String> list) {
         return list == null || list.isEmpty()
                 ? null
                 : list.toArray(new String[list.size()]);
+    }
+
+    /**
+     * Converts list of objects to nullable array of strings.
+     *
+     * @param list list of objects that will be converted to array of strings.
+     * @return nullable array of strings.
+     */
+    @Nullable
+    public static String[] nullableArrayOfStrings(@Nullable List<Object> list) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        } else {
+            final String[] strings = new String[list.size()];
+
+            //noinspection ForLoopReplaceableByForEach -> on Android it's faster
+            for (int i = 0; i < list.size(); i++) {
+                final Object arg = list.get(i);
+                strings[i] = arg != null ? arg.toString() : "null";
+            }
+            return strings;
+        }
     }
 
     /**

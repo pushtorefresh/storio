@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
-import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullListOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullList;
 import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullSet;
 
 /**
@@ -23,7 +23,7 @@ public final class RawQuery {
     private final String query;
 
     @NonNull
-    private final List<String> args;
+    private final List<Object> args;
 
     @NonNull
     private final Set<String> affectsTables;
@@ -35,10 +35,10 @@ public final class RawQuery {
      * Please use {@link com.pushtorefresh.storio.sqlite.queries.RawQuery.Builder}
      * instead of constructor.
      */
-    private RawQuery(@NonNull String query, @Nullable List<String> args,
+    private RawQuery(@NonNull String query, @Nullable List<Object> args,
                      @Nullable Set<String> affectsTables, @Nullable Set<String> observesTables) {
         this.query = query;
-        this.args = unmodifiableNonNullListOfStrings(args);
+        this.args = unmodifiableNonNullList(args);
         this.affectsTables = unmodifiableNonNullSet(affectsTables);
         this.observesTables = unmodifiableNonNullSet(observesTables);
     }
@@ -59,7 +59,7 @@ public final class RawQuery {
      * @return non-null, immutable list of arguments for query.
      */
     @NonNull
-    public List<String> args() {
+    public List<Object> args() {
         return args;
     }
 
@@ -173,7 +173,7 @@ public final class RawQuery {
         @NonNull
         private String query;
 
-        private List<String> args;
+        private List<Object> args;
 
         private Set<String> affectsTables;
 
@@ -208,18 +208,15 @@ public final class RawQuery {
          * Optional: Specifies arguments for SQL query,
          * please use arguments to avoid SQL injections.
          * <p>
-         * Passed objects will be immediately converted
-         * to list of {@link String} via calling {@link Object#toString()}.
-         * <p>
          * Default value is {@code null}.
          *
-         * @param args arguments fro SQL query.
+         * @param args arguments for SQL query.
          * @return builder.
          * @see RawQuery#args()
          */
         @NonNull
         public CompleteBuilder args(@NonNull Object... args) {
-            this.args = unmodifiableNonNullListOfStrings(args);
+            this.args = unmodifiableNonNullList(args);
             return this;
         }
 

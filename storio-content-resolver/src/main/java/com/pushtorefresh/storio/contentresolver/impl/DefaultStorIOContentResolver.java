@@ -29,7 +29,7 @@ import rx.Observable;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
-import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStringsFromListOfStrings;
 import static com.pushtorefresh.storio.internal.InternalQueries.nullableString;
 import static java.util.Collections.unmodifiableMap;
 
@@ -317,9 +317,9 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         public Cursor query(@NonNull Query query) {
             Cursor cursor = contentResolver.query(
                     query.uri(),
-                    nullableArrayOfStrings(query.columns()),
+                    nullableArrayOfStringsFromListOfStrings(query.columns()),
                     nullableString(query.where()),
-                    nullableArrayOfStrings(query.whereArgs()),
+                    nullableArrayOfStringsFromListOfStrings(query.whereArgs()),
                     nullableString(query.sortOrder())
             );
 
@@ -353,7 +353,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
                     updateQuery.uri(),
                     contentValues,
                     nullableString(updateQuery.where()),
-                    nullableArrayOfStrings(updateQuery.whereArgs())
+                    nullableArrayOfStringsFromListOfStrings(updateQuery.whereArgs())
             );
         }
 
@@ -366,7 +366,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
             return contentResolver.delete(
                     deleteQuery.uri(),
                     nullableString(deleteQuery.where()),
-                    nullableArrayOfStrings(deleteQuery.whereArgs())
+                    nullableArrayOfStringsFromListOfStrings(deleteQuery.whereArgs())
             );
         }
 

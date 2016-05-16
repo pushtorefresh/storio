@@ -10,7 +10,7 @@ import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 
-import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStringsFromListOfStrings;
 import static com.pushtorefresh.storio.internal.InternalQueries.nullableString;
 
 /**
@@ -58,7 +58,7 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
         final Query query = Query.builder()
                 .uri(updateQuery.uri())
                 .where(nullableString(updateQuery.where()))
-                .whereArgs((Object[]) nullableArrayOfStrings(updateQuery.whereArgs()))
+                .whereArgs((Object[]) nullableArrayOfStringsFromListOfStrings(updateQuery.whereArgs()))
                 .build();
 
         final StorIOContentResolver.LowLevel lowLevel = storIOContentResolver.lowLevel();
