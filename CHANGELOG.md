@@ -1,6 +1,27 @@
 StorIO Change Log
 ==========
 
+## Version 1.9.0
+
+_2016_05_19_
+
+* `asRxCompletable()`! Thanks to [@geralt-encore](https://github.com/geralt-encore)
+* Gradle Wrapper 2.12
+* RxJava 1.1.3
+* Integration with Codecov.io
+* `StorIOSQLite.LowLevel` instead of `StorIOSQLite.Internal`(deprecated). Feel free to use it!
+
+**Changes:**
+
+* [PR 651](https://github.com/pushtorefresh/storio/pull/651) `RawQuery` arguments are objects instead of strings
+* [PR 650](https://github.com/pushtorefresh/storio/pull/650) RxJava 1.1.3
+* [PR 632](https://github.com/pushtorefresh/storio/pull/632) Gradle Wrapper 2.12
+* [PR 629](https://github.com/pushtorefresh/storio/pull/629) **`asRxCompletable` for `StorIOSQLite`**
+* [PR 633](https://github.com/pushtorefresh/storio/pull/633) **`asRxCompletable` for `StorIOContentResolver`**
+* [PR 630](https://github.com/pushtorefresh/storio/pull/630) Integration CI with Codecov.io
+* [PR 599](https://github.com/pushtorefresh/storio/pull/599) `StorIOSQLite.LowLevel` instead of `StorIOSQLite.Internal` for `StorIOSQLite`
+* [PR 608](https://github.com/pushtorefresh/storio/pull/608) `StorIOSQLite.LowLevel` instead of `StorIOSQLite.Internal` for `StorIOContentResolver`
+
 ## Version 1.8.0
 
 _2016_01_19_
