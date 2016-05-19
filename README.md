@@ -7,7 +7,7 @@
 * Optional Type-Safe Object Mapping, if you don't want to work with `Cursor` and `ContentValues` you don't have to
 * No reflection in Operations and no annotations in the core, also `StorIO` is not ORM
 * **Full control** over queries, transaction and object mapping
-* Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`/`rx.Single`
+* Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`/`rx.Single`/`rx.Completable`
 * `RxJava` as first class citizen, but it's not required dependency!
 * **Reactive**: `rx.Observable` from `Get` Operation **will observe changes** in `StorIO` (`SQLite` or `ContentProvider`) and receive updates automatically
 * `StorIO` is replacements for `SQLiteDatabase` and `ContentResolver` APIs
@@ -42,10 +42,10 @@ Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tes
 ####Download:
 ```groovy
 // If you need StorIO for SQLite
-compile 'com.pushtorefresh.storio:sqlite:1.8.0'
+compile 'com.pushtorefresh.storio:sqlite:1.9.0'
 
 // If you need StorIO for ContentResolver
-compile 'com.pushtorefresh.storio:content-resolver:1.8.0'
+compile 'com.pushtorefresh.storio:content-resolver:1.9.0'
 
 // IN StorIO 2.0 we will remove default Scheduling from Rx Operations!
 // You'll have to put subscribeOn() manually!
@@ -256,7 +256,7 @@ You may notice that each Operation (Get, Put, Delete) should be prepared with `p
 You can customize behavior of every Operation via `Resolvers`: `GetResolver`, `PutResolver`, `DeleteResolver`.
 
 ####Rx Support Design
-Every Operation can be executed as `rx.Observable` or `rx.Single`. Get Operations will be automatically subscribed to the updates of the data.
+Every Operation can be executed as `rx.Observable`, `rx.Single` or `rx.Completable`. Get Operations will be automatically subscribed to the updates of the data.
 Every Observable runs on `Schedulers.io()`, in v2.0 we will remove default scheduling!
 
 ----
