@@ -259,6 +259,10 @@ You can customize behavior of every Operation via `Resolvers`: `GetResolver`, `P
 Every Operation can be executed as `rx.Observable`, `rx.Single` or `rx.Completable`. Get Operations will be automatically subscribed to the updates of the data.
 Every Observable runs on `Schedulers.io()`, in v2.0 we will remove default scheduling!
 
+####3rd party additions/integrations for StorIO
+
+* [CodeGenUnderStorIO](https://github.com/shivan42/CodeGenUnderStorIO) allows you generate Java classes for db entities from the db schema built in some visual editor.
+
 ----
 Master branch build status: [![Master branch build status](https://travis-ci.org/pushtorefresh/storio.svg?branch=master)](https://travis-ci.org/pushtorefresh/storio)
 
