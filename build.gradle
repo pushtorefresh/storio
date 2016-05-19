@@ -48,7 +48,7 @@ ext {
 }
 
 def supportLibsVersion = '23.1.0'
-def daggerVersion = '2.0.1'
+def daggerVersion = '2.4'
 
 ext.libraries = [
         // Core libraries
