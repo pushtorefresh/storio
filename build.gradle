@@ -47,7 +47,7 @@ ext {
     minSdkVersion = 14
 }
 
-def supportLibsVersion = '23.1.0'
+def supportLibsVersion = '23.4.0'
 def daggerVersion = '2.4'
 
 ext.libraries = [
