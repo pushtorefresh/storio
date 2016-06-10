@@ -30,6 +30,7 @@ dependencies {
     testCompile  libraries.powerMockMockito
     testCompile  libraries.equalsVerifier
     testCompile  libraries.storIOTestCommon
+    testCompile  libraries.privateConstructorChecker
     testCompile  libraries.guava
     testCompile  libraries.robolectric
     testCompile  libraries.autoParcel

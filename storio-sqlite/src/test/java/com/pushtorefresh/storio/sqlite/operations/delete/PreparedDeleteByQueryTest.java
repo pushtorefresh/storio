@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlite.operations.delete;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.SchedulerChecker;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 
 import org.junit.Test;
@@ -22,143 +23,103 @@ import static org.mockito.Mockito.when;
 
 public class PreparedDeleteByQueryTest {
 
+    private class DeleteByQueryStub {
+        final StorIOSQLite storIOSQLite;
+        final DeleteQuery deleteQuery;
+        final DeleteResolver<DeleteQuery> deleteResolver;
+        final StorIOSQLite.Internal internal;
+        final DeleteResult expectedDeleteResult;
+
+        private DeleteByQueryStub() {
+            storIOSQLite = mock(StorIOSQLite.class);
+            internal = mock(StorIOSQLite.Internal.class);
+
+            when(storIOSQLite.lowLevel()).thenReturn(internal);
+
+            deleteQuery = DeleteQuery.builder()
+                    .table("test_table")
+                    .where("column1 = ?")
+                    .whereArgs(1)
+                    .build();
+
+            //noinspection unchecked
+            deleteResolver = mock(DeleteResolver.class);
+
+            expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table());
+
+            when(deleteResolver.performDelete(same(storIOSQLite), same(deleteQuery)))
+                    .thenReturn(expectedDeleteResult);
+        }
+
+        void verifyBehaviour() {
+            verify(storIOSQLite).lowLevel();
+            verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
+            verify(internal).notifyAboutChanges(eq(Changes.newInstance(deleteQuery.table())));
+            verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        }
+    }
+
     @Test
     public void shouldPerformDeletionByQueryBlocking() {
-        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final DeleteByQueryStub stub = new DeleteByQueryStub();
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
-
-        final DeleteQuery deleteQuery = DeleteQuery.builder()
-                .table("test_table")
-                .where("column1 = ?")
-                .whereArgs(1)
-                .build();
-
-        //noinspection unchecked
-        final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
-
-        final DeleteResult expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table());
-
-        when(deleteResolver.performDelete(same(storIOSQLite), same(deleteQuery)))
-                .thenReturn(expectedDeleteResult);
-
-        final DeleteResult actualDeleteResult = new PreparedDeleteByQuery.Builder(storIOSQLite, deleteQuery)
-                .withDeleteResolver(deleteResolver)
+        final DeleteResult actualDeleteResult = new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
+                .withDeleteResolver(stub.deleteResolver)
                 .prepare()
                 .executeAsBlocking();
 
-        assertThat(actualDeleteResult).isEqualTo(expectedDeleteResult);
-
-        verify(storIOSQLite).lowLevel();
-        verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
-        verify(internal).notifyAboutChanges(eq(Changes.newInstance(deleteQuery.table())));
-        verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        assertThat(actualDeleteResult).isEqualTo(stub.expectedDeleteResult);
+        stub.verifyBehaviour();
     }
 
     @Test
     public void shouldPerformDeletionByQueryObservable() {
-        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
-
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
-
-        final DeleteQuery deleteQuery = DeleteQuery.builder()
-                .table("test_table")
-                .where("column1 = ?")
-                .whereArgs(1)
-                .build();
-
-        //noinspection unchecked
-        final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
-
-        final DeleteResult expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table());
-
-        when(deleteResolver.performDelete(same(storIOSQLite), same(deleteQuery)))
-                .thenReturn(expectedDeleteResult);
+        final DeleteByQueryStub stub = new DeleteByQueryStub();
 
         final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
 
-        new PreparedDeleteByQuery.Builder(storIOSQLite, deleteQuery)
-                .withDeleteResolver(deleteResolver)
+        new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
+                .withDeleteResolver(stub.deleteResolver)
                 .prepare()
                 .asRxObservable()
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertValue(expectedDeleteResult);
+        testSubscriber.assertValue(stub.expectedDeleteResult);
 
-        verify(storIOSQLite).lowLevel();
-        verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
-        verify(internal).notifyAboutChanges(eq(Changes.newInstance(deleteQuery.table())));
-        verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        verify(stub.storIOSQLite).defaultScheduler();
+        stub.verifyBehaviour();
     }
 
     @Test
     public void shouldPerformDeletionByQuerySingle() {
-        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
-
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
-
-        final DeleteQuery deleteQuery = DeleteQuery.builder()
-                .table("test_table")
-                .where("column1 = ?")
-                .whereArgs(1)
-                .build();
-
-        //noinspection unchecked
-        final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
-
-        final DeleteResult expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table());
-
-        when(deleteResolver.performDelete(same(storIOSQLite), same(deleteQuery)))
-                .thenReturn(expectedDeleteResult);
+        final DeleteByQueryStub stub = new DeleteByQueryStub();
 
         final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
 
-        new PreparedDeleteByQuery.Builder(storIOSQLite, deleteQuery)
-                .withDeleteResolver(deleteResolver)
+        new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
+                .withDeleteResolver(stub.deleteResolver)
                 .prepare()
                 .asRxSingle()
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertNoErrors();
-        testSubscriber.assertValue(expectedDeleteResult);
+        testSubscriber.assertValue(stub.expectedDeleteResult);
 
-        verify(storIOSQLite).lowLevel();
-        verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
-        verify(internal).notifyAboutChanges(eq(Changes.newInstance(deleteQuery.table())));
-        verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        verify(stub.storIOSQLite).defaultScheduler();
+        stub.verifyBehaviour();
     }
 
     @Test
     public void shouldPerformDeletionByQueryCompletable() {
-        final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
-
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
-
-        final DeleteQuery deleteQuery = DeleteQuery.builder()
-                .table("test_table")
-                .where("column1 = ?")
-                .whereArgs(1)
-                .build();
-
-        //noinspection unchecked
-        final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
-
-        final DeleteResult expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table());
-
-        when(deleteResolver.performDelete(same(storIOSQLite), same(deleteQuery)))
-                .thenReturn(expectedDeleteResult);
+        final DeleteByQueryStub stub = new DeleteByQueryStub();
 
         final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
 
-        new PreparedDeleteByQuery.Builder(storIOSQLite, deleteQuery)
-                .withDeleteResolver(deleteResolver)
+        new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
+                .withDeleteResolver(stub.deleteResolver)
                 .prepare()
                 .asRxCompletable()
                 .subscribe(testSubscriber);
@@ -167,10 +128,8 @@ public class PreparedDeleteByQueryTest {
         testSubscriber.assertNoErrors();
         testSubscriber.assertNoValues();
 
-        verify(storIOSQLite).lowLevel();
-        verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
-        verify(internal).notifyAboutChanges(eq(Changes.newInstance(deleteQuery.table())));
-        verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        verify(stub.storIOSQLite).defaultScheduler();
+        stub.verifyBehaviour();
     }
 
     @Test
@@ -234,6 +193,7 @@ public class PreparedDeleteByQueryTest {
         assertThat(cause).hasMessage("test exception");
 
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
+        verify(storIOSQLite).defaultScheduler();
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 
@@ -269,6 +229,7 @@ public class PreparedDeleteByQueryTest {
         assertThat(cause).hasMessage("test exception");
 
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
+        verify(storIOSQLite).defaultScheduler();
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 
@@ -303,6 +264,7 @@ public class PreparedDeleteByQueryTest {
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
+        verify(storIOSQLite).defaultScheduler();
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
@@ -338,5 +300,41 @@ public class PreparedDeleteByQueryTest {
         verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
         verify(internal, never()).notifyAboutChanges(any(Changes.class));
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+    }
+
+    @Test
+    public void deleteByQueryObservableExecutesOnSpecifiedScheduler() {
+        final DeleteByQueryStub stub = new DeleteByQueryStub();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(stub.storIOSQLite);
+
+        final PreparedDeleteByQuery operation = new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
+                .withDeleteResolver(stub.deleteResolver)
+                .prepare();
+
+        schedulerChecker.checkAsObservable(operation);
+    }
+
+    @Test
+    public void deleteByQuerySingleExecutesOnSpecifiedScheduler() {
+        final DeleteByQueryStub stub = new DeleteByQueryStub();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(stub.storIOSQLite);
+
+        final PreparedDeleteByQuery operation = new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
+                .withDeleteResolver(stub.deleteResolver)
+                .prepare();
+
+        schedulerChecker.checkAsSingle(operation);
+    }
+
+    @Test
+    public void deleteByQueryCompletableExecutesOnSpecifiedScheduler() {
+        final DeleteByQueryStub stub = new DeleteByQueryStub();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(stub.storIOSQLite);
+
+        final PreparedDeleteByQuery operation = new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
+                .withDeleteResolver(stub.deleteResolver)
+                .prepare();
+
+        schedulerChecker.checkAsCompletable(operation);
     }
 }

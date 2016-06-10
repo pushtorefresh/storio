@@ -196,6 +196,7 @@ class GetObjectsStub {
                         // Get Operation should be subscribed to changes of tables from query
                         verify(storIOSQLite).observeChangesInTables(eq(singleton(query.table())));
 
+                        verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehavior(testItems);
                     }
                 })
@@ -209,6 +210,7 @@ class GetObjectsStub {
                 .testAction(new Action1<List<TestItem>>() {
                     @Override
                     public void call(List<TestItem> testItems) {
+                        verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehavior(testItems);
                     }
                 })

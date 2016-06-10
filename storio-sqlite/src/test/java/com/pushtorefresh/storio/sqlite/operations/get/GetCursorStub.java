@@ -104,6 +104,7 @@ class GetCursorStub {
                     public void call(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
                         verify(storIOSQLite).observeChangesInTables(eq(singleton(query.table())));
+                        verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehaviorForCursor(cursor);
                     }
                 })
@@ -117,6 +118,7 @@ class GetCursorStub {
                 .testAction(new Action1<Cursor>() {
                     @Override
                     public void call(Cursor cursor) {
+                        verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehaviorForCursor(cursor);
                     }
                 })
@@ -140,6 +142,7 @@ class GetCursorStub {
                     public void call(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
                         verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
+                        verify(storIOSQLite).defaultScheduler();
                         verifyRawQueryBehaviorForCursor(cursor);
                     }
                 })
@@ -155,6 +158,7 @@ class GetCursorStub {
                 .testAction(new Action1<Cursor>() {
                     @Override
                     public void call(Cursor cursor) {
+                        verify(storIOSQLite).defaultScheduler();
                         verifyRawQueryBehaviorForCursor(cursor);
                     }
                 })

@@ -112,6 +112,7 @@ class GetNumberOfResultsStub {
                     public void call(Integer numberOfResults) {
                         // Get Operation should be subscribed to changes of tables from Query
                         verify(storIOSQLite).observeChangesInTables(eq(singleton(query.table())));
+                        verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehaviorForInteger(numberOfResults);
                     }
                 })
@@ -125,6 +126,7 @@ class GetNumberOfResultsStub {
                 .testAction(new Action1<Integer>() {
                     @Override
                     public void call(Integer numberOfResults) {
+                        verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehaviorForInteger(numberOfResults);
                     }
                 })
@@ -149,6 +151,7 @@ class GetNumberOfResultsStub {
                     public void call(Integer numberOfResults) {
                         // Get Operation should be subscribed to changes of tables from Query
                         verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
+                        verify(storIOSQLite).defaultScheduler();
                         verifyRawQueryBehaviorForInteger(numberOfResults);
                     }
                 })
@@ -164,6 +167,7 @@ class GetNumberOfResultsStub {
                 .testAction(new Action1<Integer>() {
                     @Override
                     public void call(Integer numberOfResults) {
+                        verify(storIOSQLite).defaultScheduler();
                         verifyRawQueryBehaviorForInteger(numberOfResults);
                     }
                 })

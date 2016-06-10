@@ -169,6 +169,7 @@ class PutObjectsStub {
                 .testAction(new Action1<PutResults<TestItem>>() {
                     @Override
                     public void call(PutResults<TestItem> testItemPutResults) {
+                        verify(storIOSQLite).defaultScheduler();
                         verifyBehaviorForMultipleObjects(testItemPutResults);
                     }
                 })
@@ -182,6 +183,7 @@ class PutObjectsStub {
                 .testAction(new Action1<PutResults<TestItem>>() {
                     @Override
                     public void call(PutResults<TestItem> testItemPutResults) {
+                        verify(storIOSQLite).defaultScheduler();
                         verifyBehaviorForMultipleObjects(testItemPutResults);
                     }
                 })
@@ -203,6 +205,7 @@ class PutObjectsStub {
                 .testAction(new Action1<PutResult>() {
                     @Override
                     public void call(PutResult putResult) {
+                        verify(storIOSQLite).defaultScheduler();
                         verifyBehaviorForOneObject(putResult);
                     }
                 })
@@ -216,6 +219,7 @@ class PutObjectsStub {
                 .testAction(new Action1<PutResult>() {
                     @Override
                     public void call(PutResult putResult) {
+                        verify(storIOSQLite).defaultScheduler();
                         verifyBehaviorForOneObject(putResult);
                     }
                 })

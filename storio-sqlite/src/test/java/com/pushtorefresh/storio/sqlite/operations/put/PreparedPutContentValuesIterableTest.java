@@ -4,6 +4,7 @@ import android.content.ContentValues;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.SchedulerChecker;
 
 import org.junit.Test;
 
@@ -224,6 +225,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(internal).endTransaction();
 
         verify(storIOSQLite).lowLevel();
+        verify(storIOSQLite).defaultScheduler();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -267,6 +269,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(internal).endTransaction();
 
         verify(storIOSQLite).lowLevel();
+        verify(storIOSQLite).defaultScheduler();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -310,6 +313,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(internal).endTransaction();
 
         verify(storIOSQLite).lowLevel();
+        verify(storIOSQLite).defaultScheduler();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -384,6 +388,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(internal, never()).endTransaction();
 
         verify(storIOSQLite).lowLevel();
+        verify(storIOSQLite).defaultScheduler();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -424,6 +429,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(internal, never()).endTransaction();
 
         verify(storIOSQLite).lowLevel();
+        verify(storIOSQLite).defaultScheduler();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -464,7 +470,50 @@ public class PreparedPutContentValuesIterableTest {
         verify(internal, never()).endTransaction();
 
         verify(storIOSQLite).lowLevel();
+        verify(storIOSQLite).defaultScheduler();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+    }
+
+    @Test
+    public void putMultipleObservableExecutesOnSpecifiedScheduler() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOSQLite);
+
+        final PreparedPutContentValuesIterable operation = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        schedulerChecker.checkAsObservable(operation);
+    }
+
+    @Test
+    public void putMultipleSingleExecutesOnSpecifiedScheduler() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOSQLite);
+
+        final PreparedPutContentValuesIterable operation = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        schedulerChecker.checkAsSingle(operation);
+    }
+
+    @Test
+    public void putMultipleCompletableExecutesOnSpecifiedScheduler() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOSQLite);
+
+        final PreparedPutContentValuesIterable operation = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        schedulerChecker.checkAsCompletable(operation);
     }
 }

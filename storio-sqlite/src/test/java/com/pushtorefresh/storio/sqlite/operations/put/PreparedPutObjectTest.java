@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.SchedulerChecker;
 
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -195,6 +196,7 @@ public class PreparedPutObjectTest {
                             "db was not affected by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
@@ -229,6 +231,7 @@ public class PreparedPutObjectTest {
                     "db was not affected by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
@@ -263,8 +266,51 @@ public class PreparedPutObjectTest {
                     "db was not affected by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
+        }
+    }
+
+    public static class OtherTests {
+
+        @Test
+        public void putObjectObservableExecutesOnSpecifiedScheduler() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOSQLite);
+
+            final PreparedPutObject<TestItem> operation = putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .prepare();
+
+            schedulerChecker.checkAsObservable(operation);
+        }
+
+        @Test
+        public void putObjectAsSingleExecutesOnSpecifiedScheduler() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOSQLite);
+
+            final PreparedPutObject<TestItem> operation = putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .prepare();
+
+            schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void putObjectAsCompletableExecutesOnSpecifiedScheduler() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOSQLite);
+
+            final PreparedPutObject<TestItem> operation = putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .prepare();
+
+            schedulerChecker.checkAsCompletable(operation);
         }
     }
 }
