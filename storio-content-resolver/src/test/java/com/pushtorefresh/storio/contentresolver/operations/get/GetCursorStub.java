@@ -88,6 +88,8 @@ class GetCursorStub {
                         // Get Operation should be subscribed to changes of Uri
                         verify(storIOContentResolver).observeChangesOfUri(query.uri());
 
+                        verify(storIOContentResolver).defaultScheduler();
+
                         verifyQueryBehaviorForCursor(cursor);
                     }
                 })
@@ -101,6 +103,7 @@ class GetCursorStub {
                 .testAction(new Action1<Cursor>() {
                     @Override
                     public void call(Cursor cursor) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyQueryBehaviorForCursor(cursor);
                     }
                 })

@@ -1,5 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.operations.delete;
 
+import com.pushtorefresh.storio.contentresolver.operations.SchedulerChecker;
+
 import org.junit.Test;
 
 import rx.Completable;
@@ -62,5 +64,47 @@ public class PreparedDeleteByQueryTest {
                 .asRxCompletable();
 
         deleteStub.verifyBehavior(completable);
+    }
+
+    @Test
+    public void deleteByQueryObservableExecutesOnSpecifiedScheduler() {
+        final DeleteByQueryStub deleteStub = DeleteByQueryStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOContentResolver);
+
+        final PreparedDeleteByQuery operation = deleteStub.storIOContentResolver
+                .delete()
+                .byQuery(deleteStub.deleteQuery)
+                .withDeleteResolver(deleteStub.deleteResolver)
+                .prepare();
+
+        schedulerChecker.checkAsObservable(operation);
+    }
+
+    @Test
+    public void deleteByQuerySingleExecutesOnSpecifiedScheduler() {
+        final DeleteByQueryStub deleteStub = DeleteByQueryStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOContentResolver);
+
+        final PreparedDeleteByQuery operation = deleteStub.storIOContentResolver
+                .delete()
+                .byQuery(deleteStub.deleteQuery)
+                .withDeleteResolver(deleteStub.deleteResolver)
+                .prepare();
+
+        schedulerChecker.checkAsSingle(operation);
+    }
+
+    @Test
+    public void deleteByQueryCompletableExecutesOnSpecifiedScheduler() {
+        final DeleteByQueryStub deleteStub = DeleteByQueryStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOContentResolver);
+
+        final PreparedDeleteByQuery operation = deleteStub.storIOContentResolver
+                .delete()
+                .byQuery(deleteStub.deleteQuery)
+                .withDeleteResolver(deleteStub.deleteResolver)
+                .prepare();
+
+        schedulerChecker.checkAsCompletable(operation);
     }
 }

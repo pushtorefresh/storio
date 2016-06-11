@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import rx.Observable;
+import rx.Scheduler;
 
 /**
  * Powerful abstraction over {@link android.content.ContentResolver}.
@@ -86,6 +87,19 @@ public abstract class StorIOContentResolver {
     public Observable<Changes> observeChangesOfUri(@NonNull Uri uri) {
         return observeChangesOfUris(Collections.singleton(uri));
     }
+
+    /**
+     * Provides a scheduler on which {@link rx.Observable} / {@link rx.Single}
+     * or {@link rx.Completable} will be subscribed.
+     * <p/>
+     * @see com.pushtorefresh.storio.operations.PreparedOperation#asRxObservable()
+     * @see com.pushtorefresh.storio.operations.PreparedOperation#asRxSingle()
+     * @see com.pushtorefresh.storio.operations.PreparedWriteOperation#asRxCompletable()
+     *
+     * @return the scheduler or {@code null} if it isn't needed to apply it.
+     */
+    @Nullable
+    public abstract Scheduler defaultScheduler();
 
     /**
      * An API for low level interaction with {@link ContentResolver}, it's part of public API, so feel free to use it,

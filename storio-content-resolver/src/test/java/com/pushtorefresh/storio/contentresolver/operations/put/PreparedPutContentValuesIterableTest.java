@@ -2,6 +2,8 @@ package com.pushtorefresh.storio.contentresolver.operations.put;
 
 import android.content.ContentValues;
 
+import com.pushtorefresh.storio.contentresolver.operations.SchedulerChecker;
+
 import org.junit.Test;
 
 import rx.Completable;
@@ -64,5 +66,47 @@ public class PreparedPutContentValuesIterableTest {
                 .asRxCompletable();
 
         putStub.verifyBehaviorForMultipleContentValues(completable);
+    }
+
+    @Test
+    public void putContentValuesIterableObservableExecutesOnSpecifiedScheduler() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOContentResolver);
+
+        final PreparedPutContentValuesIterable operation = putStub.storIOContentResolver
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        schedulerChecker.checkAsObservable(operation);
+    }
+
+    @Test
+    public void putContentValuesIterableSingleExecutesOnSpecifiedScheduler() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOContentResolver);
+
+        final PreparedPutContentValuesIterable operation = putStub.storIOContentResolver
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        schedulerChecker.checkAsSingle(operation);
+    }
+
+    @Test
+    public void putContentValuesIterableCompletableExecutesOnSpecifiedScheduler() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOContentResolver);
+
+        final PreparedPutContentValuesIterable operation = putStub.storIOContentResolver
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        schedulerChecker.checkAsCompletable(operation);
     }
 }

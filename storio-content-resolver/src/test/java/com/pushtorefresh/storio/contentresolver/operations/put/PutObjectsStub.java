@@ -148,6 +148,7 @@ class PutObjectsStub {
                 .testAction(new Action1<PutResults<TestItem>>() {
                     @Override
                     public void call(PutResults<TestItem> putResults) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyBehaviorForMultipleObjects(putResults);
                     }
                 })
@@ -161,6 +162,7 @@ class PutObjectsStub {
                 .testAction(new Action1<PutResults<TestItem>>() {
                     @Override
                     public void call(PutResults<TestItem> putResults) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyBehaviorForMultipleObjects(putResults);
                     }
                 })
@@ -184,6 +186,7 @@ class PutObjectsStub {
                 .testAction(new Action1<PutResult>() {
                     @Override
                     public void call(PutResult putResult) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyBehaviorForOneObject(putResult);
                     }
                 })
@@ -197,6 +200,7 @@ class PutObjectsStub {
                 .testAction(new Action1<PutResult>() {
                     @Override
                     public void call(PutResult putResult) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyBehaviorForOneObject(putResult);
                     }
                 })

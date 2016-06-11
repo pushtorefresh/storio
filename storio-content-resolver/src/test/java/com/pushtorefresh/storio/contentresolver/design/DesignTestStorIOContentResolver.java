@@ -18,6 +18,7 @@ import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 import java.util.Set;
 
 import rx.Observable;
+import rx.Scheduler;
 
 import static org.mockito.Mockito.mock;
 
@@ -30,6 +31,12 @@ class DesignTestStorIOContentResolver extends StorIOContentResolver {
     @Override
     public Observable<Changes> observeChangesOfUris(@NonNull Set<Uri> uris) {
         return Observable.empty();
+    }
+
+    @Nullable
+    @Override
+    public Scheduler defaultScheduler() {
+        return null;
     }
 
     @NonNull

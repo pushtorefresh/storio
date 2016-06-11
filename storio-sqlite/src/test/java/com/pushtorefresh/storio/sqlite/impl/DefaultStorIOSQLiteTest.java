@@ -568,7 +568,7 @@ public class DefaultStorIOSQLiteTest {
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build();
 
-        assertThat(storIOSQLite.defaultScheduler()).isEqualTo(io());
+        assertThat(storIOSQLite.defaultScheduler()).isSameAs(io());
     }
 
     @Test
@@ -579,7 +579,7 @@ public class DefaultStorIOSQLiteTest {
                 .defaultScheduler(scheduler)
                 .build();
 
-        assertThat(storIOSQLite.defaultScheduler()).isEqualTo(scheduler);
+        assertThat(storIOSQLite.defaultScheduler()).isSameAs(scheduler);
     }
 
     @Test

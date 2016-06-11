@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.operations.SchedulerChecker;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
@@ -99,5 +100,35 @@ public class PreparedGetCursorTest {
                 .mapFromCursor(cursor);
 
         assertThat(cursorAfterMap).isEqualTo(cursor);
+    }
+
+    @Test
+    public void getCursorObservableExecutesOnSpecifiedScheduler() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOContentResolver);
+
+        final PreparedGetCursor operation = getStub.storIOContentResolver
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolver)
+                .prepare();
+
+        schedulerChecker.checkAsObservable(operation);
+    }
+
+    @Test
+    public void getCursorSingleExecutesOnSpecifiedScheduler() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOContentResolver);
+
+        final PreparedGetCursor operation = getStub.storIOContentResolver
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolver)
+                .prepare();
+
+        schedulerChecker.checkAsSingle(operation);
     }
 }
