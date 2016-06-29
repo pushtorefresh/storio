@@ -10,9 +10,6 @@ buildscript {
         // Android Gradle plugin
         classpath 'com.android.tools.build:gradle:2.1.2'
 
-        // Resolves android-sdk dependencies
-        classpath 'com.github.JakeWharton:sdk-manager-plugin:master'
-
         // APT compile-time annotation processing
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
 
