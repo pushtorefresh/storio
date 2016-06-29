@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'com.uber.infer.java'
 
 targetCompatibility = '1.6'
 sourceCompatibility = '1.6'

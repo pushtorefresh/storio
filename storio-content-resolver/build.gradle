@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
+apply plugin: 'com.uber.infer.android'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
