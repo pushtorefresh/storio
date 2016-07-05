@@ -226,10 +226,13 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         @NonNull
         private final StorIOSQLite storIOSQLite;
 
+        @Nullable
         Query query;
 
+        @Nullable
         RawQuery rawQuery;
 
+        @Nullable
         private GetResolver<Cursor> getResolver;
 
         CompleteBuilder(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {

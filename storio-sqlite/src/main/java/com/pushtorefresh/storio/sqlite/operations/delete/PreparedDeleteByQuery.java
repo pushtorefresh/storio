@@ -165,6 +165,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         @NonNull
         private final DeleteQuery deleteQuery;
 
+        @Nullable
         private DeleteResolver<DeleteQuery> deleteResolver;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull DeleteQuery deleteQuery) {

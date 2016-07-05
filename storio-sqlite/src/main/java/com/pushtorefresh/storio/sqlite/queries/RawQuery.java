@@ -173,10 +173,13 @@ public final class RawQuery {
         @NonNull
         private String query;
 
+        @Nullable
         private List<Object> args;
 
+        @Nullable
         private Set<String> affectsTables;
 
+        @Nullable
         private Set<String> observesTables;
 
         CompleteBuilder(@NonNull String query) {

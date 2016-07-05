@@ -58,7 +58,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
      *
      * @return non-null results of Put Operation.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     @WorkerThread
     @NonNull
     @Override
@@ -108,7 +108,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
                             lowLevel.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                         }
                     }
-                } else {
+                } else if (objectsAndPutResolvers != null) {
                     for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
                         final T object = objectAndPutResolver.getKey();
                         final PutResolver<T> putResolver = objectAndPutResolver.getValue();
@@ -256,8 +256,10 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
         @NonNull
         private final Collection<T> objects;
 
+        @Nullable
         private PutResolver<T> putResolver;
 
+        @Nullable
         private boolean useTransaction = true;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects) {

@@ -157,6 +157,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @NonNull
         private final SQLiteOpenHelper sqLiteOpenHelper;
 
+        @Nullable
         private Map<Class<?>, SQLiteTypeMapping<?>> typesMapping;
 
         CompleteBuilder(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
