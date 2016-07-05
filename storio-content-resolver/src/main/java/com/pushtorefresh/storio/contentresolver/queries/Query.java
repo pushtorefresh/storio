@@ -223,12 +223,16 @@ public final class Query {
         @NonNull
         private Uri uri;
 
+        @Nullable
         private List<String> columns;
 
+        @Nullable
         private String where;
 
+        @Nullable
         private List<String> whereArgs;
 
+        @Nullable
         private String sortOrder;
 
         CompleteBuilder(@NonNull Uri uri) {

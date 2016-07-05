@@ -232,6 +232,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         @NonNull
         private final Query query;
 
+        @Nullable
         private GetResolver<T> getResolver;
 
         CompleteBuilder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Class<T> type, @NonNull Query query) {

@@ -178,6 +178,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         @NonNull
         private final T object;
 
+        @Nullable
         private DeleteResolver<T> deleteResolver;
 
         /**

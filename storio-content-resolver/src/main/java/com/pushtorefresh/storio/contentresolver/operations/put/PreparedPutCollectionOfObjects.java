@@ -56,7 +56,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
      *
      * @return non-null result of Put Operation.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     @WorkerThread
     @NonNull
     @Override
@@ -96,7 +96,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
                     final PutResult putResult = explicitPutResolver.performPut(storIOContentResolver, object);
                     results.put(object, putResult);
                 }
-            } else {
+            } else if (objectsAndPutResolvers != null) {
                 for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
                     final T object = objectAndPutResolver.getKey();
                     final PutResolver<T> putResolver = objectAndPutResolver.getValue();
