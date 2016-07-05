@@ -6,6 +6,8 @@ import com.pushtorefresh.storio.operations.PreparedOperation;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
+import rx.internal.producers.SingleDelayedProducer;
 
 /**
  * Required to avoid problems with ClassLoader when RxJava is not in ClassPath
@@ -36,11 +38,14 @@ public final class OnSubscribeExecuteAsBlocking<Result> implements Observable.On
 
     @Override
     public void call(Subscriber<? super Result> subscriber) {
-        final Result result = preparedOperation.executeAsBlocking();
+        final SingleDelayedProducer<Result> singleDelayedProducer = new SingleDelayedProducer<Result>(subscriber);
 
-        if (!subscriber.isUnsubscribed()) {
-            subscriber.onNext(result);
-            subscriber.onCompleted();
+        subscriber.setProducer(singleDelayedProducer);
+
+        try {
+            singleDelayedProducer.setValue(preparedOperation.executeAsBlocking());
+        } catch (Throwable t) {
+            Exceptions.throwOrReport(t, subscriber);
         }
     }
 }
