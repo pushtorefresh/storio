@@ -1,6 +1,26 @@
 StorIO Change Log
 ==========
 
+## Version 1.9.1
+
+_2016_07_7_
+
+* Gradle 2.1.2
+* RxJava 1.1.6
+* Apt plugin 1.8
+* Add link to [CodeGenUnderStorIO](https://github.com/shivan42/CodeGenUnderStorIO)
+* Backpressure fix in OnSubscribeExecuteAsBlocking
+* Dagger 2.4 in sample app
+
+**Changes:**
+
+* [PR 668](https://github.com/pushtorefresh/storio/pull/668) RxJava 1.1.6
+* [PR 667](https://github.com/pushtorefresh/storio/pull/667) Backpressure fix in OnSubscribeExecuteAsBlocking
+* [PR 665](https://github.com/pushtorefresh/storio/pull/665) Gradle 2.1.2
+* [PR 659](https://github.com/pushtorefresh/storio/pull/659) Apt plugin 1.8
+* [PR 657](https://github.com/pushtorefresh/storio/pull/657) Dagger 2.4 in sample app
+* [PR 655](https://github.com/pushtorefresh/storio/pull/655) Add link to [CodeGenUnderStorIO](https://github.com/shivan42/CodeGenUnderStorIO)
+
 ## Version 1.9.0
 
 _2016_05_19_
