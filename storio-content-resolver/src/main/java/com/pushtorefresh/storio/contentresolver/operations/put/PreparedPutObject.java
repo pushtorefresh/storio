@@ -178,6 +178,7 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
         @NonNull
         private final T object;
 
+        @Nullable
         private PutResolver<T> putResolver;
 
         public Builder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull T object) {

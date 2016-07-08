@@ -63,7 +63,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
      *
      * @return non-null results of Delete Operation.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     @WorkerThread
     @NonNull
     @Override
@@ -116,6 +116,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
                         }
                     }
                 } else {
+                    assert objectsAndDeleteResolvers != null;
                     for (final SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
                         final T object = objectAndDeleteResolver.getKey();
                         final DeleteResolver<T> deleteResolver = objectAndDeleteResolver.getValue();
@@ -264,8 +265,10 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
         @NonNull
         private final Collection<T> objects;
 
+        @Nullable
         private DeleteResolver<T> deleteResolver;
 
+        @Nullable
         private boolean useTransaction = true;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull Collection<T> objects) {

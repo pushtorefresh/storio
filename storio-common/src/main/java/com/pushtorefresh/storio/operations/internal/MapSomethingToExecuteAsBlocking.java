@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.operations.internal;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.operations.PreparedOperation;
 
@@ -9,7 +10,7 @@ import rx.functions.Func1;
 /**
  * Required to avoid problems with ClassLoader when RxJava is not in ClassPath
  * We can not use anonymous classes from RxJava directly in StorIO, ClassLoader won't be happy :(
- * <p>
+ * <p/>
  * For internal usage only!
  */
 public final class MapSomethingToExecuteAsBlocking<Something, Result> implements Func1<Something, Result> {
@@ -35,6 +36,7 @@ public final class MapSomethingToExecuteAsBlocking<Something, Result> implements
     }
 
     @Override
+    @Nullable
     public Result call(Something changes) {
         return preparedOperation.executeAsBlocking();
     }

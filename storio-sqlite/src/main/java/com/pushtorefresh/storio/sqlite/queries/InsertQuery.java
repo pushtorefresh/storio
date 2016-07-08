@@ -138,6 +138,7 @@ public final class InsertQuery {
         @NonNull
         private String table;
 
+        @Nullable
         private String nullColumnHack;
 
         CompleteBuilder(@NonNull String table) {

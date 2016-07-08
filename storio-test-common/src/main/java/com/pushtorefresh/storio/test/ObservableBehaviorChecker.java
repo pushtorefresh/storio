@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.test;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import rx.Observable;
 import rx.functions.Action1;
@@ -12,8 +13,13 @@ import rx.functions.Action1;
  */
 public class ObservableBehaviorChecker<T> {
 
+    @Nullable
     private Observable<T> observable;
+
+    @Nullable
     private Integer expectedNumberOfEmissions;
+
+    @Nullable
     private Action1<T> testAction;
 
     /**

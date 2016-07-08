@@ -185,6 +185,7 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
         @NonNull
         private final T object;
 
+        @Nullable
         private PutResolver<T> putResolver;
 
         Builder(@NonNull StorIOSQLite storIOSQLite, @NonNull T object) {

@@ -170,7 +170,10 @@ public final class DeleteQuery {
         @NonNull
         private Uri uri;
 
+        @Nullable
         private String where;
+
+        @Nullable
         private List<String> whereArgs;
 
         CompleteBuilder(@NonNull Uri uri) {

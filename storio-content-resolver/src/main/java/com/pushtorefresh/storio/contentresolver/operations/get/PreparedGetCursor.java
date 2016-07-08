@@ -179,6 +179,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         @NonNull
         private final Query query;
 
+        @Nullable
         private GetResolver<Cursor> getResolver;
 
         CompleteBuilder(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Query query) {

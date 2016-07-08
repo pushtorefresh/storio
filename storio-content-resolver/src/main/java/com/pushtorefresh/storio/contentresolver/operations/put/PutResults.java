@@ -65,6 +65,7 @@ public final class PutResults<T> {
         int numberOfInserts = 0;
 
         for (T object : results.keySet()) {
+            assert results.get(object) != null;
             if (results.get(object).wasInserted()) {
                 numberOfInserts++;
             }
@@ -92,7 +93,9 @@ public final class PutResults<T> {
         for (T object : results.keySet()) {
             final PutResult putResult = results.get(object);
 
+            assert putResult != null;
             if (putResult.wasUpdated()) {
+                assert putResult.numberOfRowsUpdated() != null;
                 //noinspection ConstantConditions
                 numberOfUpdates += putResult.numberOfRowsUpdated();
             }

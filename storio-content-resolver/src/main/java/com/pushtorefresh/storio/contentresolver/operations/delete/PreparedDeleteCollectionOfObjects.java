@@ -56,7 +56,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
      *
      * @return non-null results of Delete Operation.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     @WorkerThread
     @NonNull
     @Override
@@ -97,6 +97,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
                     results.put(object, deleteResult);
                 }
             } else {
+                assert objectsAndDeleteResolvers != null;
                 for (final SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
                     final T object = objectAndDeleteResolver.getKey();
                     final DeleteResolver<T> deleteResolver = objectAndDeleteResolver.getValue();

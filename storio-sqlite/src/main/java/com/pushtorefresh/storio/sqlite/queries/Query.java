@@ -289,18 +289,25 @@ public final class Query {
 
         private boolean distinct;
 
+        @Nullable
         private List<String> columns;
 
+        @Nullable
         private String where;
 
+        @Nullable
         private List<String> whereArgs;
 
+        @Nullable
         private String groupBy;
 
+        @Nullable
         private String having;
 
+        @Nullable
         private String orderBy;
 
+        @Nullable
         private String limit;
 
         CompleteBuilder(@NonNull String table) {
