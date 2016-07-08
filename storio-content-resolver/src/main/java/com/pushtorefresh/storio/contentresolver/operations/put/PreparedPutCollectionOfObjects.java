@@ -96,7 +96,8 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
                     final PutResult putResult = explicitPutResolver.performPut(storIOContentResolver, object);
                     results.put(object, putResult);
                 }
-            } else if (objectsAndPutResolvers != null) {
+            } else {
+                assert objectsAndPutResolvers != null;
                 for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
                     final T object = objectAndPutResolver.getKey();
                     final PutResolver<T> putResolver = objectAndPutResolver.getValue();

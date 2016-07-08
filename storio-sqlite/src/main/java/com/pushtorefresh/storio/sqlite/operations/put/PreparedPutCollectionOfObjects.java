@@ -108,7 +108,8 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
                             lowLevel.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
                         }
                     }
-                } else if (objectsAndPutResolvers != null) {
+                } else {
+                    assert objectsAndPutResolvers != null;
                     for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
                         final T object = objectAndPutResolver.getKey();
                         final PutResolver<T> putResolver = objectAndPutResolver.getValue();

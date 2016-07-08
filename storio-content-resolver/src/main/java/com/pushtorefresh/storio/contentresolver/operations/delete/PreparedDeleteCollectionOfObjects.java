@@ -96,7 +96,8 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
                     final DeleteResult deleteResult = explicitDeleteResolver.performDelete(storIOContentResolver, object);
                     results.put(object, deleteResult);
                 }
-            } else if (objectsAndDeleteResolvers != null) {
+            } else {
+                assert objectsAndDeleteResolvers != null;
                 for (final SimpleImmutableEntry<T, DeleteResolver<T>> objectAndDeleteResolver : objectsAndDeleteResolvers) {
                     final T object = objectAndDeleteResolver.getKey();
                     final DeleteResolver<T> deleteResolver = objectAndDeleteResolver.getValue();
