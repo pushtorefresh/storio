@@ -228,6 +228,12 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
 
         final StorIOContentResolverColumn storIOContentResolverColumn = annotatedField.getAnnotation(StorIOContentResolverColumn.class);
 
+        if (storIOContentResolverColumn.ignoreNull() && annotatedField.asType().getKind().isPrimitive()) {
+            throw new ProcessingException(
+                    annotatedField,
+                    "ignoreNull should not be used for primitive type: " + annotatedField.asType());
+        }
+
         final String columnName = storIOContentResolverColumn.name();
 
         if (columnName == null || columnName.length() == 0) {

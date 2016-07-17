@@ -19,7 +19,7 @@ import static com.pushtorefresh.storio.common.annotations.processor.generate.Com
 import static javax.lang.model.element.Modifier.PROTECTED;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
-public class PutResolverGenerator  implements Generator<StorIOContentResolverTypeMeta> {
+public class PutResolverGenerator implements Generator<StorIOContentResolverTypeMeta> {
 
     private static final String SUFFIX = "StorIOContentResolverPutResolver";
 
@@ -115,11 +115,18 @@ public class PutResolverGenerator  implements Generator<StorIOContentResolverTyp
                 .addCode("\n");
 
         for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta.columns.values()) {
+            final boolean ignoreNull = columnMeta.storIOColumn.ignoreNull();
+            if (ignoreNull) {
+                builder.beginControlFlow("if($L != null)", "object." + columnMeta.fieldName);
+            }
             builder.addStatement(
                     "contentValues.put($S, $L)",
                     columnMeta.storIOColumn.name(),
                     "object." + columnMeta.fieldName
             );
+            if (ignoreNull) {
+                builder.endControlFlow();
+            }
         }
 
         return builder

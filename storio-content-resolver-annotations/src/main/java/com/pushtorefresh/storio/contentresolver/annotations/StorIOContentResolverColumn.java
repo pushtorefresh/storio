@@ -23,4 +23,12 @@ public @interface StorIOContentResolverColumn {
      * @return true if column is key, false otherwise
      */
     boolean key() default false;
+
+    /**
+     * Optional: indicates that field should not be serialized when its value is {@code null}
+     * Should be used for not primitive types only
+     *
+     * @return true if column with {@code null} value should be ignored, false otherwise
+     */
+    boolean ignoreNull() default false;
 }

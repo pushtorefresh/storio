@@ -135,6 +135,12 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
 
         final StorIOSQLiteColumn storIOSQLiteColumn = annotatedField.getAnnotation(StorIOSQLiteColumn.class);
 
+        if (storIOSQLiteColumn.ignoreNull() && annotatedField.asType().getKind().isPrimitive()) {
+            throw new ProcessingException(
+                    annotatedField,
+                    "ignoreNull should not be used for primitive type: " + annotatedField.asType());
+        }
+
         final String columnName = storIOSQLiteColumn.name();
 
         if (columnName == null || columnName.length() == 0) {
