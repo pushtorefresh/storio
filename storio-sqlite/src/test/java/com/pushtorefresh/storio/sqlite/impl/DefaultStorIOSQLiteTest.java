@@ -3,7 +3,11 @@ package com.pushtorefresh.storio.sqlite.impl;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.TypeMappingFinder;
+import com.pushtorefresh.storio.internal.ChangesBus;
+import com.pushtorefresh.storio.internal.TypeMappingFinderImpl;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -13,17 +17,28 @@ import com.pushtorefresh.storio.sqlite.operations.put.PutResolver;
 import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
@@ -32,274 +47,144 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(ChangesBus.class)
 public class DefaultStorIOSQLiteTest {
 
-    @Test(expected = NullPointerException.class)
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    @Test
     public void nullSQLiteOpenHelper() {
+        DefaultStorIOSQLite.Builder builder = DefaultStorIOSQLite.builder();
+
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(equalTo("Please specify SQLiteOpenHelper instance"));
+        expectedException.expectCause(nullValue(Throwable.class));
+
         //noinspection ConstantConditions
-        DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(null);
+        builder.sqliteOpenHelper(null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void addTypeMappingNullType() {
+        DefaultStorIOSQLite.CompleteBuilder builder = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class));
+
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(equalTo("Please specify type"));
+        expectedException.expectCause(nullValue(Throwable.class));
+
         //noinspection unchecked,ConstantConditions
-        DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(null, SQLiteTypeMapping.builder()
-                        .putResolver(mock(PutResolver.class))
-                        .getResolver(mock(GetResolver.class))
-                        .deleteResolver(mock(DeleteResolver.class))
-                        .build());
+        builder.addTypeMapping(null, SQLiteTypeMapping.builder()
+                .putResolver(mock(PutResolver.class))
+                .getResolver(mock(GetResolver.class))
+                .deleteResolver(mock(DeleteResolver.class))
+                .build());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void addTypeMappingNullMapping() {
+        DefaultStorIOSQLite.CompleteBuilder builder = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class));
+
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(equalTo("Please specify type mapping"));
+        expectedException.expectCause(nullValue(Throwable.class));
+
         //noinspection ConstantConditions
-        DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(Object.class, null);
+        builder.addTypeMapping(Object.class, null);
     }
 
     @Test
-    public void shouldReturnNullIfNoTypeMappingsRegistered() {
-        class TestItem {
+    public void nullTypeMappingFinder() {
+        DefaultStorIOSQLite.CompleteBuilder builder = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class));
 
-        }
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(equalTo("Please specify typeMappingFinder"));
+        expectedException.expectCause(nullValue(Throwable.class));
 
-        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+        //noinspection ConstantConditions
+        builder.typeMappingFinder(null);
+    }
+
+    @Test
+    public void shouldUseSpecifiedTypeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
+        TypeMappingFinder typeMappingFinder = mock(TypeMappingFinder.class);
+        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .typeMappingFinder(typeMappingFinder)
                 .build();
 
-        assertThat(storIOSQLite.lowLevel().typeMapping(TestItem.class)).isNull();
+        assertThat(getTypeMappingFinder(storIOSQLite)).isEqualTo(typeMappingFinder);
     }
 
     @Test
-    public void shouldReturnNullIfNotTypeMappingRegisteredForType() {
-        class TestItem {
-
-        }
-
-        class Entity {
-
-        }
-
+    public void typeMappingShouldWorkWithoutSpecifiedTypeMappingFinder() {
         //noinspection unchecked
-        final SQLiteTypeMapping<Entity> entityContentResolverTypeMapping = SQLiteTypeMapping.<Entity>builder()
+        SQLiteTypeMapping<ClassEntity> typeMapping = SQLiteTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(Entity.class, entityContentResolverTypeMapping)
+                .addTypeMapping(ClassEntity.class, typeMapping)
                 .build();
 
-        assertThat(storIOSQLite.lowLevel().typeMapping(Entity.class)).isSameAs(entityContentResolverTypeMapping);
-
-        assertThat(storIOSQLite.lowLevel().typeMapping(TestItem.class)).isNull();
+        assertThat(storIOSQLite.lowLevel().typeMapping(ClassEntity.class)).isEqualTo(typeMapping);
     }
 
-    @Test
-    public void directTypeMappingShouldWork() {
-        class TestItem {
 
-        }
+    @Test
+    public void typeMappingShouldWorkWithSpecifiedTypeMappingFinder() {
+        TypeMappingFinder typeMappingFinder = new TypeMappingFinderImpl();
 
         //noinspection unchecked
-        final SQLiteTypeMapping<TestItem> typeMapping = SQLiteTypeMapping.<TestItem>builder()
+        SQLiteTypeMapping<ClassEntity> typeMapping = SQLiteTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(TestItem.class, typeMapping)
+                .typeMappingFinder(typeMappingFinder)
+                .addTypeMapping(ClassEntity.class, typeMapping)
                 .build();
 
-        assertThat(storIOSQLite.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(ClassEntity.class)).isEqualTo(typeMapping);
     }
 
     @Test
-    public void indirectTypeMappingShouldWork() {
-        class TestItem {
-
+    public void typeMappingShouldWorkForMultipleTypes() {
+        class AnotherEntity {
         }
 
         //noinspection unchecked
-        final SQLiteTypeMapping<TestItem> typeMapping = SQLiteTypeMapping.<TestItem>builder()
-                .putResolver(mock(PutResolver.class))
-                .getResolver(mock(GetResolver.class))
-                .deleteResolver(mock(DeleteResolver.class))
-                .build();
-
-        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(TestItem.class, typeMapping)
-                .build();
-
-        class TestItemSubclass extends TestItem {
-
-        }
-
-        // Direct type mapping should still work
-        assertThat(storIOSQLite.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
-
-        // Indirect type mapping should give same type mapping as for parent class
-        assertThat(storIOSQLite.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
-    }
-
-    @Test
-    public void typeMappingShouldWorkInCaseOfMoreConcreteTypeMapping() {
-        class TestItem {
-
-        }
-
-        //noinspection unchecked
-        final SQLiteTypeMapping<TestItem> typeMapping = SQLiteTypeMapping.<TestItem>builder()
-                .putResolver(mock(PutResolver.class))
-                .getResolver(mock(GetResolver.class))
-                .deleteResolver(mock(DeleteResolver.class))
-                .build();
-
-
-        class TestItemSubclass extends TestItem {
-
-        }
-
-        //noinspection unchecked
-        final SQLiteTypeMapping<TestItemSubclass> subclassTypeMapping = SQLiteTypeMapping.<TestItemSubclass>builder()
-                .putResolver(mock(PutResolver.class))
-                .getResolver(mock(GetResolver.class))
-                .deleteResolver(mock(DeleteResolver.class))
-                .build();
-
-
-        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(TestItem.class, typeMapping)
-                .addTypeMapping(TestItemSubclass.class, subclassTypeMapping)
-                .build();
-
-        // Parent class should have its own type mapping
-        assertThat(storIOSQLite.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
-
-        // Child class should have its own type mapping
-        assertThat(storIOSQLite.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(subclassTypeMapping);
-    }
-
-    @Test
-    public void typeMappingShouldFindIndirectTypeMappingInCaseOfComplexInheritance() {
-        // Good test case — inheritance with AutoValue/AutoParcel
-
-        class Entity {
-
-        }
-
-        class AutoValue_Entity extends Entity {
-
-        }
-
-        class ConcreteEntity extends Entity {
-
-        }
-
-        class AutoValue_ConcreteEntity extends ConcreteEntity {
-
-        }
-
-        //noinspection unchecked
-        final SQLiteTypeMapping<Entity> entitySQLiteTypeMapping = SQLiteTypeMapping.<Entity>builder()
+        SQLiteTypeMapping<ClassEntity> entityMapping = SQLiteTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
         //noinspection unchecked
-        final SQLiteTypeMapping<ConcreteEntity> concreteEntitySQLiteTypeMapping = SQLiteTypeMapping.<ConcreteEntity>builder()
+        SQLiteTypeMapping<AnotherEntity> anotherMapping = SQLiteTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(Entity.class, entitySQLiteTypeMapping)
-                .addTypeMapping(ConcreteEntity.class, concreteEntitySQLiteTypeMapping)
+                .addTypeMapping(ClassEntity.class, entityMapping)
+                .addTypeMapping(AnotherEntity.class, anotherMapping)
                 .build();
 
-        // Direct type mapping for Entity should work
-        assertThat(storIOSQLite.lowLevel().typeMapping(Entity.class)).isSameAs(entitySQLiteTypeMapping);
-
-        // Direct type mapping for ConcreteEntity should work
-        assertThat(storIOSQLite.lowLevel().typeMapping(ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
-
-        // Indirect type mapping for AutoValue_Entity should get type mapping for Entity
-        assertThat(storIOSQLite.lowLevel().typeMapping(AutoValue_Entity.class)).isSameAs(entitySQLiteTypeMapping);
-
-        // Indirect type mapping for AutoValue_ConcreteEntity should get type mapping for ConcreteEntity, not for Entity!
-        assertThat(storIOSQLite.lowLevel().typeMapping(AutoValue_ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
-    }
-
-    interface InterfaceEntity {
-    }
-
-    @Test
-    public void typeMappingShouldFindInterface() {
-        //noinspection unchecked
-        SQLiteTypeMapping<InterfaceEntity> typeMapping = mock(SQLiteTypeMapping.class);
-
-        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(InterfaceEntity.class, typeMapping)
-                .build();
-
-        assertThat(storIOSQLite.lowLevel().typeMapping(InterfaceEntity.class)).isSameAs(typeMapping);
-    }
-
-    @Test
-    public void typeMappingShouldFindIndirectTypeMappingForClassThatImplementsKnownInterface() {
-        //noinspection unchecked
-        SQLiteTypeMapping<InterfaceEntity> typeMapping = mock(SQLiteTypeMapping.class);
-
-        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(InterfaceEntity.class, typeMapping)
-                .build();
-
-        class ConcreteEntity implements InterfaceEntity {
-        }
-
-        assertThat(storIOSQLite.lowLevel().typeMapping(ConcreteEntity.class)).isSameAs(typeMapping);
-
-        // Just to make sure that we don't return this type mapping for all classes.
-        assertThat(storIOSQLite.lowLevel().typeMapping(Random.class)).isNull();
-    }
-
-    @Test
-    public void typeMappingShouldFindIndirectTypeMappingForClassThatHasParentThatImplementsKnownInterface() {
-        //noinspection unchecked
-        SQLiteTypeMapping<InterfaceEntity> typeMapping = mock(SQLiteTypeMapping.class);
-
-        final StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .addTypeMapping(InterfaceEntity.class, typeMapping)
-                .build();
-
-        class ConcreteEntity implements InterfaceEntity {
-        }
-
-        class Parent_ConcreteEntity extends ConcreteEntity {
-        }
-
-
-        assertThat(storIOSQLite.lowLevel().typeMapping(Parent_ConcreteEntity.class)).isSameAs(typeMapping);
-
-        // Just to make sure that we don't return this type mapping for all classes.
-        assertThat(storIOSQLite.lowLevel().typeMapping(Random.class)).isNull();
-
+        assertThat(storIOSQLite.lowLevel().typeMapping(ClassEntity.class)).isEqualTo(entityMapping);
+        assertThat(storIOSQLite.lowLevel().typeMapping(AnotherEntity.class)).isEqualTo(anotherMapping);
     }
 
     @Test
@@ -452,6 +337,7 @@ public class DefaultStorIOSQLiteTest {
         assertThat(lowLevel).isNotNull();
 
         try {
+            //noinspection ConstantConditions
             lowLevel.notifyAboutChanges(null);
             failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
@@ -488,12 +374,31 @@ public class DefaultStorIOSQLiteTest {
     }
 
     @Test
+    public void observeChangesShouldThrowIfRxJavaNotInClassPath() throws NoSuchFieldException, IllegalAccessException {
+        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
+
+        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .build();
+        //noinspection unchecked
+        ChangesBus<Changes> changesBus = PowerMockito.mock(ChangesBus.class);
+        setChangesBus(storIOSQLite, changesBus);
+
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage(equalTo("Observing changes in StorIOSQLite requires RxJava"));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        storIOSQLite.observeChanges();
+    }
+
+    @Test
     public void observeChangesInTablesShouldNotAcceptNullAsTables() {
         StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
                 .build();
 
         try {
+            //noinspection ConstantConditions
             storIOSQLite.observeChangesInTables(null);
             failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
@@ -554,6 +459,7 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         try {
+            //noinspection ConstantConditions
             storIOSQLite.observeChangesInTable(null);
             failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException expected) {
@@ -601,5 +507,57 @@ public class DefaultStorIOSQLiteTest {
         testSubscriber.assertValue(changes2);
         testSubscriber.assertNoErrors();
         testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void deprecatedInternalImplShouldReturnSentToConstructorTypeMapping() throws NoSuchFieldException, IllegalAccessException {
+        TypeMappingFinder typeMappingFinder = mock(TypeMappingFinder.class);
+
+        TestDefaultStorIOSQLite storIOSQLite =
+                new TestDefaultStorIOSQLite(mock(SQLiteOpenHelper.class), typeMappingFinder);
+
+        assertThat(storIOSQLite.typeMappingFinder()).isSameAs(typeMappingFinder);
+    }
+
+    static class ClassEntity {
+    }
+
+    @Nullable
+    private static TypeMappingFinder getTypeMappingFinder(@NonNull DefaultStorIOSQLite storIOSQLite)
+            throws NoSuchFieldException, IllegalAccessException {
+
+        Field field = DefaultStorIOSQLite.LowLevelImpl.class.getDeclaredField("typeMappingFinder");
+        field.setAccessible(true);
+        return (TypeMappingFinder) field.get(storIOSQLite.lowLevel());
+    }
+
+    private static void setChangesBus(@NonNull DefaultStorIOSQLite storIOSQLite, @NonNull ChangesBus<Changes> changesBus)
+            throws NoSuchFieldException, IllegalAccessException {
+
+        Field field = DefaultStorIOSQLite.class.getDeclaredField("changesBus");
+        field.setAccessible(true);
+
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+        //noinspection unchecked
+        field.set(storIOSQLite, changesBus);
+    }
+
+    class TestDefaultStorIOSQLite extends DefaultStorIOSQLite {
+        private final Internal internal;
+
+        protected TestDefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @NonNull TypeMappingFinder typeMappingFinder) {
+            super(sqLiteOpenHelper, typeMappingFinder);
+            internal = new InternalImpl(typeMappingFinder);
+        }
+
+        @Nullable
+        public TypeMappingFinder typeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
+            Field field = TestDefaultStorIOSQLite.LowLevelImpl.class.getDeclaredField("typeMappingFinder");
+            field.setAccessible(true);
+            return (TypeMappingFinder) field.get(internal);
+        }
     }
 }

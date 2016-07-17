@@ -2,7 +2,11 @@ package com.pushtorefresh.storio.contentresolver.impl;
 
 import android.content.ContentResolver;
 import android.net.Uri;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.TypeMappingFinder;
 import com.pushtorefresh.storio.contentresolver.BuildConfig;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
@@ -10,15 +14,19 @@ import com.pushtorefresh.storio.contentresolver.operations.delete.DeleteResolver
 import com.pushtorefresh.storio.contentresolver.operations.get.GetResolver;
 import com.pushtorefresh.storio.contentresolver.operations.put.PutResolver;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
+import com.pushtorefresh.storio.internal.TypeMappingFinderImpl;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.Random;
+import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -28,299 +36,143 @@ import static org.mockito.Mockito.when;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class DefaultStorIOContentResolverTest {
 
-    @SuppressWarnings("ConstantConditions")
-    @Test(expected = NullPointerException.class)
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    @Test
     public void nullContentResolver() {
-        DefaultStorIOContentResolver.builder()
-                .contentResolver(null);
+        DefaultStorIOContentResolver.Builder builder = DefaultStorIOContentResolver.builder();
+
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Please specify content resolver");
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        builder.contentResolver(null);
     }
 
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
-    @Test(expected = NullPointerException.class)
+    @Test
     public void addTypeMappingNullType() {
-        DefaultStorIOContentResolver.builder()
-                .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(null, ContentResolverTypeMapping.builder()
+        DefaultStorIOContentResolver.CompleteBuilder builder = DefaultStorIOContentResolver.builder()
+                .contentResolver(mock(ContentResolver.class));
+
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Please specify type");
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions,unchecked
+        builder.addTypeMapping(null, ContentResolverTypeMapping.builder()
                         .putResolver(mock(PutResolver.class))
                         .getResolver(mock(GetResolver.class))
                         .deleteResolver(mock(DeleteResolver.class))
                         .build());
     }
 
-    @SuppressWarnings("ConstantConditions")
-    @Test(expected = NullPointerException.class)
+    @Test
     public void addTypeMappingNullMapping() {
-        DefaultStorIOContentResolver.builder()
-                .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(Object.class, null);
+        DefaultStorIOContentResolver.CompleteBuilder builder = DefaultStorIOContentResolver.builder()
+                .contentResolver(mock(ContentResolver.class));
+
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Please specify type mapping");
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        builder.addTypeMapping(Object.class, null);
     }
 
     @Test
-    public void shouldReturnNullIfNoTypeMappingsRegistered() {
-        class TestItem {
+    public void nullTypeMappingFinder() {
+        DefaultStorIOContentResolver.CompleteBuilder builder = DefaultStorIOContentResolver.builder()
+                .contentResolver(mock(ContentResolver.class));
 
-        }
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Please specify typeMappingFinder");
+        expectedException.expectCause(nullValue(Throwable.class));
 
-        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+        //noinspection ConstantConditions
+        builder.typeMappingFinder(null);
+    }
+
+    @Test
+    public void shouldUseSpecifiedTypeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
+        TypeMappingFinder typeMappingFinder = mock(TypeMappingFinder.class);
+        DefaultStorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
+                .typeMappingFinder(typeMappingFinder)
                 .build();
 
-        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItem.class)).isNull();
+        assertThat(getTypeMappingFinder(storIOContentResolver)).isEqualTo(typeMappingFinder);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void shouldReturnNullIfNotTypeMappingRegisteredForType() {
-        class TestItem {
-
-        }
-
-        class Entity {
-
-        }
-
-        final ContentResolverTypeMapping<Entity> entityContentResolverTypeMapping = ContentResolverTypeMapping.<Entity>builder()
+    public void typeMappingShouldWorkWithoutSpecifiedTypeMappingFinder() {
+        //noinspection unchecked
+        ContentResolverTypeMapping<ClassEntity> typeMapping = ContentResolverTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+        StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(Entity.class, entityContentResolverTypeMapping)
+                .addTypeMapping(ClassEntity.class, typeMapping)
                 .build();
 
-        assertThat(storIOContentResolver.lowLevel().typeMapping(Entity.class)).isSameAs(entityContentResolverTypeMapping);
-
-        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItem.class)).isNull();
+        assertThat(storIOContentResolver.lowLevel().typeMapping(ClassEntity.class)).isEqualTo(typeMapping);
     }
 
-    @Test
-    public void directTypeMappingShouldWork() {
-        class TestItem {
 
-        }
+    @Test
+    public void typeMappingShouldWorkWithSpecifiedTypeMappingFinder() {
+        TypeMappingFinder typeMappingFinder = new TypeMappingFinderImpl();
 
         //noinspection unchecked
-        final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
+        ContentResolverTypeMapping<ClassEntity> typeMapping = ContentResolverTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+        StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(TestItem.class, typeMapping)
+                .typeMappingFinder(typeMappingFinder)
+                .addTypeMapping(ClassEntity.class, typeMapping)
                 .build();
 
-        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(ClassEntity.class)).isEqualTo(typeMapping);
     }
 
     @Test
-    public void indirectTypeMappingShouldWork() {
-        class TestItem {
-
+    public void typeMappingShouldWorkForMultipleTypes() {
+        class AnotherEntity {
         }
+
+        TypeMappingFinder typeMappingFinder = new TypeMappingFinderImpl();
 
         //noinspection unchecked
-        final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
-                .putResolver(mock(PutResolver.class))
-                .getResolver(mock(GetResolver.class))
-                .deleteResolver(mock(DeleteResolver.class))
-                .build();
-
-        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
-                .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(TestItem.class, typeMapping)
-                .build();
-
-        class TestItemSubclass extends TestItem {
-
-        }
-
-        // Direct type mapping should still work
-        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
-
-        // Indirect type mapping should give same type mapping as for parent class
-        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
-    }
-
-    @Test
-    public void indirectTypeMappingShouldCacheValue() {
-        class TestItem {
-
-        }
-
-        //noinspection unchecked
-        final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
-                .putResolver(mock(PutResolver.class))
-                .getResolver(mock(GetResolver.class))
-                .deleteResolver(mock(DeleteResolver.class))
-                .build();
-
-        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
-                .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(TestItem.class, typeMapping)
-                .build();
-
-        class TestItemSubclass extends TestItem {
-
-        }
-
-        // Indirect type mapping should give same type mapping as for parent class
-        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
-
-        // Next call should be faster (we can not check this exactly)
-        // But test coverage tool will check that we executed cache branch
-        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(typeMapping);
-    }
-
-    @Test
-    public void typeMappingShouldWorkInCaseOfMoreConcreteTypeMapping() {
-        class TestItem {
-
-        }
-
-        //noinspection unchecked
-        final ContentResolverTypeMapping<TestItem> typeMapping = ContentResolverTypeMapping.<TestItem>builder()
-                .putResolver(mock(PutResolver.class))
-                .getResolver(mock(GetResolver.class))
-                .deleteResolver(mock(DeleteResolver.class))
-                .build();
-
-        class TestItemSubclass extends TestItem {
-
-        }
-
-        //noinspection unchecked
-        final ContentResolverTypeMapping<TestItemSubclass> subclassTypeMapping = ContentResolverTypeMapping.<TestItemSubclass>builder()
-                .putResolver(mock(PutResolver.class))
-                .getResolver(mock(GetResolver.class))
-                .deleteResolver(mock(DeleteResolver.class))
-                .build();
-
-        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
-                .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(TestItem.class, typeMapping)
-                .addTypeMapping(TestItemSubclass.class, subclassTypeMapping)
-                .build();
-
-        // Parent class should have its own type mapping
-        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItem.class)).isSameAs(typeMapping);
-
-        // Child class should have its own type mapping
-        assertThat(storIOContentResolver.lowLevel().typeMapping(TestItemSubclass.class)).isSameAs(subclassTypeMapping);
-    }
-
-    @Test
-    public void typeMappingShouldFindIndirectTypeMappingInCaseOfComplexInheritance() {
-        // Good test case — inheritance with AutoValue/AutoParcel
-
-        class Entity {
-
-        }
-
-        class AutoValue_Entity extends Entity {
-
-        }
-
-        class ConcreteEntity extends Entity {
-
-        }
-
-        class AutoValue_ConcreteEntity extends ConcreteEntity {
-
-        }
-
-        //noinspection unchecked
-        final ContentResolverTypeMapping<Entity> entitySQLiteTypeMapping = ContentResolverTypeMapping.<Entity>builder()
+        ContentResolverTypeMapping<ClassEntity> typeMapping = ContentResolverTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
         //noinspection unchecked
-        final ContentResolverTypeMapping<ConcreteEntity> concreteEntitySQLiteTypeMapping = ContentResolverTypeMapping.<ConcreteEntity>builder()
+        ContentResolverTypeMapping<AnotherEntity> anotherMapping = ContentResolverTypeMapping.builder()
                 .putResolver(mock(PutResolver.class))
                 .getResolver(mock(GetResolver.class))
                 .deleteResolver(mock(DeleteResolver.class))
                 .build();
 
-        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+        StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
                 .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(Entity.class, entitySQLiteTypeMapping)
-                .addTypeMapping(ConcreteEntity.class, concreteEntitySQLiteTypeMapping)
+                .typeMappingFinder(typeMappingFinder)
+                .addTypeMapping(ClassEntity.class, typeMapping)
+                .addTypeMapping(AnotherEntity.class, anotherMapping)
                 .build();
 
-        // Direct type mapping for Entity should work
-        assertThat(storIOContentResolver.lowLevel().typeMapping(Entity.class)).isSameAs(entitySQLiteTypeMapping);
-
-        // Direct type mapping for ConcreteEntity should work
-        assertThat(storIOContentResolver.lowLevel().typeMapping(ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
-
-        // Indirect type mapping for AutoValue_Entity should get type mapping for Entity
-        assertThat(storIOContentResolver.lowLevel().typeMapping(AutoValue_Entity.class)).isSameAs(entitySQLiteTypeMapping);
-
-        // Indirect type mapping for AutoValue_ConcreteEntity should get type mapping for ConcreteEntity, not for Entity!
-        assertThat(storIOContentResolver.lowLevel().typeMapping(AutoValue_ConcreteEntity.class)).isSameAs(concreteEntitySQLiteTypeMapping);
-    }
-
-    interface InterfaceEntity {
-    }
-
-    @Test
-    public void typeMappingShouldFindInterface() {
-        //noinspection unchecked
-        ContentResolverTypeMapping<InterfaceEntity> typeMapping = mock(ContentResolverTypeMapping.class);
-
-        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
-                .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(InterfaceEntity.class, typeMapping)
-                .build();
-
-        assertThat(storIOContentResolver.lowLevel().typeMapping(InterfaceEntity.class)).isSameAs(typeMapping);
-    }
-
-    @Test
-    public void typeMappingShouldFindIndirectTypeMappingForClassThatImplementsKnownInterface() {
-        //noinspection unchecked
-        ContentResolverTypeMapping<InterfaceEntity> typeMapping = mock(ContentResolverTypeMapping.class);
-
-        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
-                .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(InterfaceEntity.class, typeMapping)
-                .build();
-
-        class ConcreteEntity implements InterfaceEntity {
-        }
-
-        assertThat(storIOContentResolver.lowLevel().typeMapping(ConcreteEntity.class)).isSameAs(typeMapping);
-
-        // Just to make sure that we don't return this type mapping for all classes.
-        assertThat(storIOContentResolver.lowLevel().typeMapping(Random.class)).isNull();
-    }
-
-    @Test
-    public void typeMappingShouldFindIndirectTypeMappingForClassThatHasParentThatImplementsKnownInterface() {
-        //noinspection unchecked
-        ContentResolverTypeMapping<InterfaceEntity> typeMapping = mock(ContentResolverTypeMapping.class);
-
-        final StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
-                .contentResolver(mock(ContentResolver.class))
-                .addTypeMapping(InterfaceEntity.class, typeMapping)
-                .build();
-
-        class ConcreteEntity implements InterfaceEntity {
-        }
-
-        class ParentConcreteEntity extends ConcreteEntity {
-        }
-
-
-        assertThat(storIOContentResolver.lowLevel().typeMapping(ParentConcreteEntity.class)).isSameAs(typeMapping);
-
-        // Just to make sure that we don't return this type mapping for all classes.
-        assertThat(storIOContentResolver.lowLevel().typeMapping(Random.class)).isNull();
+        assertThat(storIOContentResolver.lowLevel().typeMapping(ClassEntity.class)).isEqualTo(typeMapping);
+        assertThat(storIOContentResolver.lowLevel().typeMapping(AnotherEntity.class)).isEqualTo(anotherMapping);
     }
 
     @Test
@@ -357,5 +209,52 @@ public class DefaultStorIOContentResolverTest {
                 .build();
 
         assertThat(storIOContentResolver.lowLevel().contentResolver()).isSameAs(contentResolver);
+    }
+
+    @Test
+    public void deprecatedInternalImplShouldReturnSentToConstructorTypeMapping() throws NoSuchFieldException, IllegalAccessException {
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        TypeMappingFinder typeMappingFinder = mock(TypeMappingFinder.class);
+
+        TestDefaultStorIOContentResolver storIOContentResolver = new TestDefaultStorIOContentResolver(
+                contentResolver,
+                mock(Handler.class),
+                typeMappingFinder
+        );
+
+        assertThat(storIOContentResolver.typeMappingFinder()).isSameAs(typeMappingFinder);
+    }
+
+    static class ClassEntity {
+    }
+
+    @Nullable
+    private static TypeMappingFinder getTypeMappingFinder(@NonNull DefaultStorIOContentResolver storIOContentResolver)
+            throws NoSuchFieldException, IllegalAccessException {
+
+        Field field = DefaultStorIOContentResolver.LowLevelImpl.class.getDeclaredField("typeMappingFinder");
+        field.setAccessible(true);
+        return (TypeMappingFinder) field.get(storIOContentResolver.lowLevel());
+    }
+
+    class TestDefaultStorIOContentResolver extends DefaultStorIOContentResolver {
+
+        private final Internal internal;
+
+        public TestDefaultStorIOContentResolver(
+                @NonNull ContentResolver contentResolver,
+                @NonNull Handler contentObserverHandler,
+                @NonNull TypeMappingFinder typeMappingFinder
+        ) {
+            super(contentResolver, contentObserverHandler, typeMappingFinder);
+            internal = new InternalImpl(typeMappingFinder);
+        }
+
+        @Nullable
+        public TypeMappingFinder typeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
+            Field field = DefaultStorIOContentResolver.LowLevelImpl.class.getDeclaredField("typeMappingFinder");
+            field.setAccessible(true);
+            return (TypeMappingFinder) field.get(internal);
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.sqlite;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.internal.TypeMapping;
 import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio.sqlite.operations.get.GetResolver;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResolver;
@@ -13,7 +14,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  *
  * @param <T> type to map.
  */
-public class SQLiteTypeMapping<T> {
+public class SQLiteTypeMapping<T> implements TypeMapping<T> {
 
     @NonNull
     private final PutResolver<T> putResolver;

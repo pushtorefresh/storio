@@ -12,6 +12,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio.TypeMappingFinder;
+import com.pushtorefresh.storio.internal.TypeMappingFinderImpl;
 import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
@@ -23,7 +25,6 @@ import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import rx.Observable;
 
@@ -49,10 +50,10 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
 
     protected DefaultStorIOContentResolver(@NonNull ContentResolver contentResolver,
                                            @NonNull Handler contentObserverHandler,
-                                           @Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
+                                           @NonNull TypeMappingFinder typeMappingFinder) {
         this.contentResolver = contentResolver;
         this.contentObserverHandler = contentObserverHandler;
-        lowLevel = new LowLevelImpl(typesMapping);
+        lowLevel = new LowLevelImpl(typeMappingFinder);
     }
 
     /**
@@ -134,10 +135,13 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         private final ContentResolver contentResolver;
 
         @Nullable
-        private Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping;
+        private Map<Class<?>, ContentResolverTypeMapping<?>> typeMapping;
 
         @Nullable
         private Handler contentObserverHandler;
+
+        @Nullable
+        private TypeMappingFinder typeMappingFinder;
 
         CompleteBuilder(@NonNull ContentResolver contentResolver) {
             this.contentResolver = contentResolver;
@@ -156,11 +160,11 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
             checkNotNull(type, "Please specify type");
             checkNotNull(typeMapping, "Please specify type mapping");
 
-            if (typesMapping == null) {
-                typesMapping = new HashMap<Class<?>, ContentResolverTypeMapping<?>>();
+            if (this.typeMapping == null) {
+                this.typeMapping = new HashMap<Class<?>, ContentResolverTypeMapping<?>>();
             }
 
-            typesMapping.put(type, typeMapping);
+            this.typeMapping.put(type, typeMapping);
 
             return this;
         }
@@ -170,6 +174,21 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
             checkNotNull(contentObserverHandler, "contentObserverHandler should not be null");
 
             this.contentObserverHandler = contentObserverHandler;
+
+            return this;
+        }
+
+        /**
+         * Optional: Specifies {@link TypeMappingFinder} for low level usage.
+         *
+         * @param typeMappingFinder non-null custom implementation of {@link TypeMappingFinder}.
+         * @return builder.
+         */
+        @NonNull
+        public CompleteBuilder typeMappingFinder(@NonNull TypeMappingFinder typeMappingFinder) {
+            checkNotNull(typeMappingFinder, "Please specify typeMappingFinder");
+
+            this.typeMappingFinder = typeMappingFinder;
 
             return this;
         }
@@ -187,23 +206,24 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
                 contentObserverHandler = new Handler(handlerThread.getLooper());
             }
 
-            return new DefaultStorIOContentResolver(contentResolver, contentObserverHandler, typesMapping);
+            if (typeMappingFinder == null) {
+                typeMappingFinder = new TypeMappingFinderImpl();
+            }
+            if (typeMapping != null) {
+                typeMappingFinder.directTypeMapping(unmodifiableMap(typeMapping));
+            }
+
+            return new DefaultStorIOContentResolver(contentResolver, contentObserverHandler, typeMappingFinder);
         }
     }
 
     protected class LowLevelImpl extends Internal {
 
-        @Nullable
-        private final Map<Class<?>, ContentResolverTypeMapping<?>> directTypesMapping;
-
         @NonNull
-        private final Map<Class<?>, ContentResolverTypeMapping<?>> indirectTypesMappingCache
-                = new ConcurrentHashMap<Class<?>, ContentResolverTypeMapping<?>>();
+        private final TypeMappingFinder typeMappingFinder;
 
-        protected LowLevelImpl(@Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
-            this.directTypesMapping = typesMapping != null
-                    ? unmodifiableMap(typesMapping)
-                    : null;
+        protected LowLevelImpl(@NonNull TypeMappingFinder typeMappingFinder) {
+            this.typeMappingFinder = typeMappingFinder;
         }
 
         /**
@@ -219,92 +239,10 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
          *
          * @return direct or indirect type mapping for passed type, or {@code null}.
          */
-        @SuppressWarnings("unchecked")
         @Nullable
         @Override
-        public <T> ContentResolverTypeMapping<T> typeMapping(@NonNull Class<T> type) {
-            if (directTypesMapping == null) {
-                return null;
-            }
-
-            final ContentResolverTypeMapping<T> directTypeMapping = (ContentResolverTypeMapping<T>) directTypesMapping.get(type);
-
-            if (directTypeMapping != null) {
-                // fffast! O(1)
-                return directTypeMapping;
-            } else {
-                // If no direct type mapping found — search for indirect type mapping
-
-                // May be value already in cache.
-                ContentResolverTypeMapping<T> indirectTypeMapping =
-                        (ContentResolverTypeMapping<T>) indirectTypesMappingCache.get(type);
-
-                if (indirectTypeMapping != null) {
-                    // fffast! O(1)
-                    return indirectTypeMapping;
-                }
-
-                // Okay, we don't have direct type mapping.
-                // And we don't have cache for indirect type mapping.
-                // Let's find indirect type mapping and cache it!
-
-                // Let's try to find indirect type mapping in own interfaces
-                indirectTypeMapping = findMappingClassByInterface(type);
-                if (indirectTypeMapping != null) {
-                    indirectTypesMappingCache.put(type, indirectTypeMapping);
-                    return indirectTypeMapping;
-                }
-
-                // Search algorithm:
-                // Walk through all parent types of passed type.
-                // If parent type has direct mapping -> we found indirect type mapping!
-                // If current parent type == Object.class -> there is no indirect type mapping.
-                // Complexity:
-                // O(n) where n is number of parent types of passed type (pretty fast).
-
-                // Stop search if root parent is Object.class
-
-                Class<?> parentType = type.getSuperclass();
-                while (parentType != Object.class) {
-                    indirectTypeMapping = (ContentResolverTypeMapping<T>) directTypesMapping.get(parentType);
-
-                    if (indirectTypeMapping != null) {
-                        indirectTypesMappingCache.put(type, indirectTypeMapping);
-                        return indirectTypeMapping;
-                    }
-
-                    // Try to find indirect type interfaces for parent class
-                    indirectTypeMapping = (ContentResolverTypeMapping<T>) findMappingClassByInterface(parentType);
-                    if (indirectTypeMapping != null) {
-                        indirectTypesMappingCache.put(type, indirectTypeMapping);
-                        return indirectTypeMapping;
-                    }
-
-                    parentType = parentType.getSuperclass();
-                }
-
-                // No indirect type mapping found.
-                return null;
-            }
-        }
-
-        @Nullable
-        @SuppressWarnings("unchecked")
-        private <T> ContentResolverTypeMapping<T> findMappingClassByInterface(@Nullable final Class<T> type) {
-            if (type == null || directTypesMapping == null) {
-                return null;
-            }
-
-            for (Class<?> ownInterface : type.getInterfaces()) {
-                ContentResolverTypeMapping<T> mapping =
-                        (ContentResolverTypeMapping<T>) directTypesMapping.get(ownInterface);
-
-                if (mapping != null) {
-                    return mapping;
-                }
-            }
-
-            return null;
+        public <T> ContentResolverTypeMapping<T> typeMapping(final @NonNull Class<T> type) {
+            return (ContentResolverTypeMapping<T>) typeMappingFinder.findTypeMapping(type);
         }
 
         /**
@@ -386,8 +324,8 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     @Deprecated
     protected class InternalImpl extends LowLevelImpl {
 
-        protected InternalImpl(@Nullable Map<Class<?>, ContentResolverTypeMapping<?>> typesMapping) {
-            super(typesMapping);
+        protected InternalImpl(@NonNull TypeMappingFinder typeMappingFinder) {
+            super(typeMappingFinder);
         }
     }
 }
