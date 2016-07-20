@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.sqlite.operations.delete;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.SchedulerChecker;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 
 import org.junit.Test;
@@ -410,6 +411,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -444,6 +446,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -478,6 +481,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -544,6 +548,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -578,6 +583,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -612,6 +618,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -692,6 +699,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
             verify(internal).endTransaction();
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(deleteResolver).performDelete(same(storIOSQLite), anyObject());
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
         }
@@ -733,6 +741,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
             verify(internal).endTransaction();
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(deleteResolver).performDelete(same(storIOSQLite), anyObject());
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
         }
@@ -774,8 +783,54 @@ public class PreparedDeleteCollectionOfObjectsTest {
             verify(internal).endTransaction();
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(deleteResolver).performDelete(same(storIOSQLite), anyObject());
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        }
+
+        @Test
+        public void deleteCollectionOfObjectsObservableExecutesOnSpecifiedScheduler() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithoutTypeMappingWithoutTransaction();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOSQLite);
+
+            final PreparedDeleteCollectionOfObjects<TestItem> operation = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsObservable(operation);
+        }
+
+        @Test
+        public void deleteCollectionOfObjectsSingleExecutesOnSpecifiedScheduler() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithoutTypeMappingWithoutTransaction();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOSQLite);
+
+            final PreparedDeleteCollectionOfObjects<TestItem> operation = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void deleteCollectionOfObjectsCompletableExecutesOnSpecifiedScheduler() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithoutTypeMappingWithoutTransaction();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOSQLite);
+
+            final PreparedDeleteCollectionOfObjects<TestItem> operation = deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsCompletable(operation);
         }
     }
 }

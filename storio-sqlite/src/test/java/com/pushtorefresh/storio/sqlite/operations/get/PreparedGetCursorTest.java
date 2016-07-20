@@ -5,6 +5,7 @@ import android.database.Cursor;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.SchedulerChecker;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 
 import org.junit.Test;
@@ -20,6 +21,8 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PreparedGetCursorTest {
@@ -36,23 +39,8 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .executeAsBlocking();
 
+        verify(getStub.storIOSQLite, never()).defaultScheduler();
         getStub.verifyQueryBehaviorForCursor(cursor);
-    }
-
-    @Test
-    public void shouldGetCursorWithQueryAsObservable() {
-        final GetCursorStub getStub = GetCursorStub.newInstance();
-
-        final Observable<Cursor> cursorObservable = getStub.storIOSQLite
-                .get()
-                .cursor()
-                .withQuery(getStub.query)
-                .withGetResolver(getStub.getResolverForCursor)
-                .prepare()
-                .asRxObservable()
-                .take(1);
-
-        getStub.verifyQueryBehaviorForCursor(cursorObservable);
     }
 
     @Test
@@ -67,6 +55,7 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .asRxSingle();
 
+        verify(getStub.storIOSQLite).defaultScheduler();
         getStub.verifyQueryBehaviorForCursor(cursorSingle);
     }
 
@@ -82,6 +71,7 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .executeAsBlocking();
 
+        verify(getStub.storIOSQLite, never()).defaultScheduler();
         getStub.verifyRawQueryBehaviorForCursor(cursor);
     }
 
@@ -98,6 +88,7 @@ public class PreparedGetCursorTest {
                 .asRxObservable()
                 .take(1);
 
+        verify(getStub.storIOSQLite).defaultScheduler();
         getStub.verifyRawQueryBehaviorForCursor(cursorObservable);
     }
 
@@ -113,6 +104,7 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .asRxSingle();
 
+        verify(getStub.storIOSQLite).defaultScheduler();
         getStub.verifyRawQueryBehaviorForCursor(cursorSingle);
     }
 
@@ -252,5 +244,35 @@ public class PreparedGetCursorTest {
         final Cursor cursor = mock(Cursor.class);
 
         assertThat(standardGetResolver.mapFromCursor(cursor)).isSameAs(cursor);
+    }
+
+    @Test
+    public void getCursorObservableExecutesOnSpecifiedScheduler() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
+
+        final PreparedGetCursor operation = getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare();
+
+        schedulerChecker.checkAsObservable(operation);
+    }
+
+    @Test
+    public void getCursorSingleExecutesOnSpecifiedScheduler() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
+
+        final PreparedGetCursor operation = getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare();
+
+        schedulerChecker.checkAsSingle(operation);
     }
 }

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import rx.Observable;
+import rx.Scheduler;
 
 import static org.mockito.Mockito.mock;
 
@@ -99,6 +100,12 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
     @Override
     public Observable<Changes> observeChangesInTables(@NonNull Set<String> tables) {
         return Observable.empty();
+    }
+
+    @Nullable
+    @Override
+    public Scheduler defaultScheduler() {
+        return null;
     }
 
     @NonNull

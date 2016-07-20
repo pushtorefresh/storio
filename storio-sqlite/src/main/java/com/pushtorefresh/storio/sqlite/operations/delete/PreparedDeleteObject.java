@@ -6,19 +6,14 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
-import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
-import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingCompletable;
-import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingSingle;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
 
 import rx.Completable;
 import rx.Observable;
 import rx.Single;
-import rx.schedulers.Schedulers;
-
-import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Delete Operation for {@link StorIOSQLite}.
@@ -94,7 +89,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
      * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Delete Operation.
@@ -116,7 +111,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
      * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Observable} which will perform Delete Operation.
@@ -126,18 +121,14 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     @CheckResult
     @Override
     public Observable<DeleteResult> asRxObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
-
-        return Observable
-                .create(OnSubscribeExecuteAsBlocking.newInstance(this))
-                .subscribeOn(Schedulers.io());
+        return RxJavaUtils.createObservable(storIOSQLite, this);
     }
 
     /**
      * Creates {@link Single} which will perform Delete Operation lazily when somebody subscribes to it and send result to observer.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Single} which will perform Delete Operation.
@@ -147,17 +138,14 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     @CheckResult
     @Override
     public Single<DeleteResult> asRxSingle() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
-
-        return Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(this))
-                .subscribeOn(Schedulers.io());
-    }
+        return RxJavaUtils.createSingle(storIOSQLite, this);
+   }
 
     /**
      * Creates {@link Completable} which will perform Delete Operation lazily when somebody subscribes to it.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Completable} which will perform Delete Operation.
@@ -166,10 +154,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
     @CheckResult
     @Override
     public Completable asRxCompletable() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxCompletable()");
-        return Completable
-                .create(OnSubscribeExecuteAsBlockingCompletable.newInstance(this))
-                .subscribeOn(Schedulers.io());
+        return RxJavaUtils.createCompletable(storIOSQLite, this);
     }
 
     /**

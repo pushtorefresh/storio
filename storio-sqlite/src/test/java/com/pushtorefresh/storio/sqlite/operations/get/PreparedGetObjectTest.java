@@ -5,6 +5,7 @@ import android.database.Cursor;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.SchedulerChecker;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
@@ -288,6 +289,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verify(storIOSQLite).observeChangesInTables(anySet());
@@ -329,6 +331,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -400,6 +403,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -439,6 +443,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -607,6 +612,7 @@ public class PreparedGetObjectTest {
             verify(getResolver).mapFromCursor(cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
+            verify(storIOSQLite).defaultScheduler();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }
@@ -662,8 +668,39 @@ public class PreparedGetObjectTest {
             verify(getResolver).mapFromCursor(cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
+            verify(storIOSQLite).defaultScheduler();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
+        }
+
+        @Test
+        public void getObjectByQueryObservableExecutesOnSpecifiedScheduler() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
+
+            final PreparedGetObject<TestItem> operation = getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsObservable(operation);
+        }
+
+        @Test
+        public void getObjectByQuerySingleExecutesOnSpecifiedScheduler() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
+
+            final PreparedGetObject<TestItem> operation = getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsSingle(operation);
         }
     }
 }

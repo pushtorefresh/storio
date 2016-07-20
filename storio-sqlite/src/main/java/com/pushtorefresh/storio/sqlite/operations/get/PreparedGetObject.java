@@ -9,9 +9,9 @@ import android.support.annotation.WorkerThread;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
-import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingSingle;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
@@ -20,7 +20,6 @@ import java.util.Set;
 
 import rx.Observable;
 import rx.Single;
-import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -118,7 +117,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
      * the {@link Observable}.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
      * </dl>
      * <p>
      * Please don't forget to unsubscribe from this {@link Observable} because
@@ -145,7 +144,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
      * the {@link Observable}.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
      * </dl>
      * <p>
      * Please don't forget to unsubscribe from this {@link Observable} because
@@ -171,25 +170,25 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
             throw new IllegalStateException("Please specify query");
         }
 
+        final Observable<T> observable;
         if (!tables.isEmpty()) {
-            return storIOSQLite
+            observable = storIOSQLite
                     .observeChangesInTables(tables) // each change triggers executeAsBlocking
                     .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                     .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
-                    .onBackpressureLatest()
-                    .subscribeOn(Schedulers.io());
+                    .onBackpressureLatest();
         } else {
-            return Observable
-                    .create(OnSubscribeExecuteAsBlocking.newInstance(this))
-                    .subscribeOn(Schedulers.io());
+            observable = Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
         }
+
+        return RxJavaUtils.subscribeOn(storIOSQLite, observable);
     }
 
     /**
      * Creates {@link Single} which will perform Get Operation lazily when somebody subscribes to it and send result to observer.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Single} which will perform Get Operation.
@@ -199,10 +198,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
     @CheckResult
     @Override
     public Single<T> asRxSingle() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
-
-        return Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(this))
-                .subscribeOn(Schedulers.io());
+        return RxJavaUtils.createSingle(storIOSQLite, this);
     }
 
     /**

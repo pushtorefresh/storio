@@ -33,6 +33,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import rx.Scheduler;
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +47,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static rx.schedulers.Schedulers.io;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ChangesBus.class)
@@ -549,7 +551,7 @@ public class DefaultStorIOSQLiteTest {
         private final Internal internal;
 
         protected TestDefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @NonNull TypeMappingFinder typeMappingFinder) {
-            super(sqLiteOpenHelper, typeMappingFinder);
+            super(sqLiteOpenHelper, typeMappingFinder, null);
             internal = new InternalImpl(typeMappingFinder);
         }
 
@@ -559,5 +561,34 @@ public class DefaultStorIOSQLiteTest {
             field.setAccessible(true);
             return (TypeMappingFinder) field.get(internal);
         }
+    }
+
+    public void defaultSchedulerReturnsIOSchedulerIfNotSpecified() {
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .build();
+
+        assertThat(storIOSQLite.defaultScheduler()).isEqualTo(io());
+    }
+
+    @Test
+    public void defaultSchedulerReturnsSpecifiedScheduler() {
+        Scheduler scheduler = mock(Scheduler.class);
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .defaultScheduler(scheduler)
+                .build();
+
+        assertThat(storIOSQLite.defaultScheduler()).isEqualTo(scheduler);
+    }
+
+    @Test
+    public void defaultSchedulerReturnsNullIfSpecifiedSchedulerNull() {
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .defaultScheduler(null)
+                .build();
+
+        assertThat(storIOSQLite.defaultScheduler()).isNull();
     }
 }

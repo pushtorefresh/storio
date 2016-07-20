@@ -5,6 +5,7 @@ import android.database.Cursor;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.SchedulerChecker;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
@@ -307,6 +308,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verify(storIOSQLite).observeChangesInTables(anySet());
@@ -339,6 +341,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -371,6 +374,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -402,6 +406,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -567,6 +572,7 @@ public class PreparedGetListOfObjectsTest {
             verify(getResolver).mapFromCursor(cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
+            verify(storIOSQLite).defaultScheduler();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }
@@ -622,8 +628,39 @@ public class PreparedGetListOfObjectsTest {
             verify(getResolver).mapFromCursor(cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
+            verify(storIOSQLite).defaultScheduler();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
+        }
+
+        @Test
+        public void getListOfObjectsObservableExecutesOnSpecifiedScheduler() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
+
+            final PreparedGetListOfObjects<TestItem> operation = getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsObservable(operation);
+        }
+
+        @Test
+        public void getListOfObjectsSingleExecutesOnSpecifiedScheduler() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
+
+            final PreparedGetListOfObjects<TestItem> operation = getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsSingle(operation);
         }
     }
 }

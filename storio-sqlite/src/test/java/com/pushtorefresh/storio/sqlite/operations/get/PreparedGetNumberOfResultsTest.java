@@ -5,6 +5,7 @@ import android.database.Cursor;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.SchedulerChecker;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 
 import org.junit.Test;
@@ -238,6 +239,7 @@ public class PreparedGetNumberOfResultsTest {
                 = new PreparedGetNumberOfResults(mock(StorIOSQLite.class), (Query) null, (GetResolver<Integer>) mock(GetResolver.class));
 
         try {
+            //noinspection CheckResult
             preparedGetNumberOfResults.asRxObservable();
             failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
@@ -255,5 +257,35 @@ public class PreparedGetNumberOfResultsTest {
         when(cursor.getCount()).thenReturn(12314);
 
         assertThat(standardGetResolver.mapFromCursor(cursor)).isEqualTo(12314);
+    }
+
+    @Test
+    public void getNumberOfResultsObservableExecutesOnSpecifiedScheduler() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
+
+        final PreparedGetNumberOfResults operation = getStub.storIOSQLite
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare();
+
+        schedulerChecker.checkAsObservable(operation);
+    }
+
+    @Test
+    public void getNumberOfResultsSingleExecutesOnSpecifiedScheduler() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
+
+        final PreparedGetNumberOfResults operation = getStub.storIOSQLite
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare();
+
+        schedulerChecker.checkAsSingle(operation);
     }
 }

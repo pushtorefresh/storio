@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.operations.SchedulerChecker;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
@@ -19,7 +20,7 @@ import static java.util.Arrays.asList;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +36,7 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .executeAsBlocking();
 
+        verify(stub.storIOSQLite, never()).defaultScheduler();
         stub.verifyBehavior();
     }
 
@@ -48,6 +50,7 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .executeAsBlocking();
 
+        verify(stub.storIOSQLite, never()).defaultScheduler();
         stub.verifyBehavior();
     }
 
@@ -61,6 +64,7 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .asRxObservable();
 
+        verify(stub.storIOSQLite).defaultScheduler();
         stub.verifyBehavior(observable);
     }
 
@@ -74,6 +78,7 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .asRxSingle();
 
+        verify(stub.storIOSQLite).defaultScheduler();
         stub.verifyBehavior(single);
     }
 
@@ -87,6 +92,7 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .asRxSingle();
 
+        verify(stub.storIOSQLite).defaultScheduler();
         stub.verifyBehavior(single);
     }
 
@@ -100,7 +106,34 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .asRxObservable();
 
+        verify(stub.storIOSQLite).defaultScheduler();
         stub.verifyBehavior(observable);
+    }
+
+    @Test
+    public void executeSQLObservableExecutesOnSpecifiedScheduler() {
+        final Stub stub = Stub.newInstanceWithNotification();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(stub.storIOSQLite);
+
+        final PreparedExecuteSQL operation = stub.storIOSQLite
+                .executeSQL()
+                .withQuery(stub.rawQuery)
+                .prepare();
+
+        schedulerChecker.checkAsObservable(operation);
+    }
+
+    @Test
+    public void executeSQLSingleExecutesOnSpecifiedScheduler() {
+        final Stub stub = Stub.newInstanceWithNotification();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(stub.storIOSQLite);
+
+        final PreparedExecuteSQL operation = stub.storIOSQLite
+                .executeSQL()
+                .withQuery(stub.rawQuery)
+                .prepare();
+
+        schedulerChecker.checkAsSingle(operation);
     }
 
     static class Stub {
@@ -149,18 +182,18 @@ public class PreparedExecuteSQLTest {
         @SuppressWarnings("unchecked")
         void verifyBehavior() {
             // storIOSQLite.executeSQL() should be called once
-            verify(storIOSQLite, times(1)).executeSQL();
+            verify(storIOSQLite).executeSQL();
 
             // storIOSQLite.internal.executeSQL() should be called once for ANY RawQuery
-            verify(internal, times(1)).executeSQL(any(RawQuery.class));
+            verify(internal).executeSQL(any(RawQuery.class));
 
             // storIOSQLite.internal.executeSQL() should be called once for required RawQuery
-            verify(internal, times(1)).executeSQL(rawQuery);
+            verify(internal).executeSQL(rawQuery);
 
             if (queryWithNotification) {
                 verify(internal).notifyAboutChanges(eq(Changes.newInstance(new HashSet<String>(asList(affectedTables)))));
             } else {
-                verify(internal, times(0)).notifyAboutChanges(any(Changes.class));
+                verify(internal, never()).notifyAboutChanges(any(Changes.class));
             }
         }
 
