@@ -6,6 +6,7 @@ import android.net.Uri;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.operations.SchedulerChecker;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
@@ -187,6 +188,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOContentResolver).get();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).defaultScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
             verify(storIOContentResolver).observeChangesOfUri(any(Uri.class));
@@ -228,6 +230,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOContentResolver).get();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).defaultScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
 
@@ -282,6 +285,36 @@ public class PreparedGetListOfObjectsTest {
 
                 verifyNoMoreInteractions(storIOContentResolver, cursor);
             }
+        }
+
+        @Test
+        public void getListOfObjectsObservableExecutesOnSpecifiedScheduler() {
+            final GetObjectsStub getStub = GetObjectsStub.newStubWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOContentResolver);
+
+            final PreparedGetListOfObjects<TestItem> operation = getStub.storIOContentResolver
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsObservable(operation);
+        }
+
+        @Test
+        public void getListOfObjectsSingleExecutesOnSpecifiedScheduler() {
+            final GetObjectsStub getStub = GetObjectsStub.newStubWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOContentResolver);
+
+            final PreparedGetListOfObjects<TestItem> operation = getStub.storIOContentResolver
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsSingle(operation);
         }
     }
 }

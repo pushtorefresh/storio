@@ -4,6 +4,7 @@ import android.content.ContentValues;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.operations.SchedulerChecker;
 import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 
@@ -200,6 +201,7 @@ public class PreparedPutObjectTest {
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).defaultScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -232,6 +234,7 @@ public class PreparedPutObjectTest {
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).defaultScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -264,10 +267,56 @@ public class PreparedPutObjectTest {
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).defaultScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
             verifyNoMoreInteractions(storIOContentResolver, lowLevel);
+        }
+    }
+
+    class OtherTests {
+
+        @Test
+        public void putObjectObservableExecutesOnSpecifiedScheduler() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOContentResolver);
+
+            final PreparedPutObject<TestItem> operation = putStub.storIOContentResolver
+                    .put()
+                    .object(putStub.items.get(0))
+                    .withPutResolver(putStub.putResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsObservable(operation);
+        }
+
+        @Test
+        public void putObjectSingleExecutesOnSpecifiedScheduler() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOContentResolver);
+
+            final PreparedPutObject<TestItem> operation = putStub.storIOContentResolver
+                    .put()
+                    .object(putStub.items.get(0))
+                    .withPutResolver(putStub.putResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void putObjectCompletableExecutesOnSpecifiedScheduler() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOContentResolver);
+
+            final PreparedPutObject<TestItem> operation = putStub.storIOContentResolver
+                    .put()
+                    .object(putStub.items.get(0))
+                    .withPutResolver(putStub.putResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsCompletable(operation);
         }
     }
 }

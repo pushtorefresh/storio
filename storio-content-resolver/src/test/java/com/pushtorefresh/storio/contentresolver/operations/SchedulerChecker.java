@@ -1,36 +1,37 @@
-package com.pushtorefresh.storio.sqlite.operations;
+package com.pushtorefresh.storio.contentresolver.operations;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.operations.PreparedWriteOperation;
-import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+
+import org.mockito.Mockito;
 
 import rx.schedulers.TestScheduler;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static rx.schedulers.Schedulers.test;
 
 public class SchedulerChecker {
 
     @NonNull
-    private final StorIOSQLite storIOSQLite;
+    private final StorIOContentResolver storIOContentResolver;
 
     @NonNull
     private final TestScheduler scheduler;
 
-    private SchedulerChecker(@NonNull StorIOSQLite storIOSQLite) {
-        this.storIOSQLite = storIOSQLite;
+    private SchedulerChecker(@NonNull StorIOContentResolver storIOContentResolver) {
+        this.storIOContentResolver = storIOContentResolver;
         scheduler = test();
-        when(storIOSQLite.defaultScheduler()).thenReturn(scheduler);
+        Mockito.when(storIOContentResolver.defaultScheduler()).thenReturn(scheduler);
     }
 
     @NonNull
-    public static SchedulerChecker create(@NonNull StorIOSQLite storIOSQLite) {
-        return new SchedulerChecker(storIOSQLite);
+    public static SchedulerChecker create(@NonNull StorIOContentResolver storIOContentResolver) {
+        return new SchedulerChecker(storIOContentResolver);
     }
 
     public void checkAsObservable(@NonNull PreparedOperation operation) {
@@ -51,7 +52,7 @@ public class SchedulerChecker {
     private void check(@NonNull PreparedOperation operation) {
         final PreparedOperation operationSpy = spy(operation);
 
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOContentResolver).defaultScheduler();
 
         operationSpy.asRxObservable().subscribe();
 

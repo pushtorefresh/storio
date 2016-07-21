@@ -93,6 +93,7 @@ public class GetNumberOfResultsStub {
                     public void call(Integer numberOfResults) {
                         // Get Operation should be subscribed to changes of tables from Query
                         verify(storIOContentResolver).observeChangesOfUri(eq(query.uri()));
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyQueryBehaviorForInteger(numberOfResults);
                     }
                 })
@@ -106,6 +107,7 @@ public class GetNumberOfResultsStub {
                 .testAction(new Action1<Integer>() {
                     @Override
                     public void call(Integer numberOfResults) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyQueryBehaviorForInteger(numberOfResults);
                     }
                 })

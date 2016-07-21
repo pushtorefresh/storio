@@ -8,14 +8,13 @@ import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
-import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlockingSingle;
 
 import rx.Observable;
 import rx.Single;
-import rx.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 import static com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
@@ -65,7 +64,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
      * other emissions will occur only if changes of {@link #query} Uri will occur.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dd>Operates on {@link StorIOContentResolver#defaultScheduler()} if not {@code null}.</dd>
      * </dl>
      * <p>
      * Please don't forget to unsubscribe from this {@link Observable} because
@@ -90,7 +89,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
      * other emissions will occur only if changes of {@link #query} Uri will occur.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dd>Operates on {@link StorIOContentResolver#defaultScheduler()} if not {@code null}.</dd>
      * </dl>
      * <p>
      * Please don't forget to unsubscribe from this {@link Observable} because
@@ -105,19 +104,20 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     public Observable<Cursor> asRxObservable() {
         throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
-        return storIOContentResolver
+        final Observable<Cursor> observable = storIOContentResolver
                 .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
                 .map(MapSomethingToExecuteAsBlocking.newInstance(this))
                 .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
-                .onBackpressureLatest()
-                .subscribeOn(Schedulers.io());
+                .onBackpressureLatest();
+
+        return RxJavaUtils.subscribeOn(storIOContentResolver, observable);
     }
 
     /**
      * Creates {@link Single} which will perform Get Operation lazily when somebody subscribes to it and send result to observer.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link Schedulers#io()}.</dd>
+     * <dd>Operates on {@link StorIOContentResolver#defaultScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Single} which will perform Get Operation.
@@ -127,10 +127,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     @CheckResult
     @Override
     public Single<Cursor> asRxSingle() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
-
-        return Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(this))
-                .subscribeOn(Schedulers.io());
+         return RxJavaUtils.createSingle(storIOContentResolver, this);
     }
 
     /**

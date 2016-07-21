@@ -179,6 +179,8 @@ class GetObjectsStub {
                         // Get Operation should be subscribed to changes of Uri!
                         verify(storIOContentResolver).observeChangesOfUri(query.uri());
 
+                        verify(storIOContentResolver).defaultScheduler();
+
                         verifyBehavior(testItems);
                     }
                 })
@@ -193,6 +195,7 @@ class GetObjectsStub {
                 .testAction(new Action1<List<TestItem>>() {
                     @Override
                     public void call(List<TestItem> testItems) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyBehavior(testItems);
                     }
                 })

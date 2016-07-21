@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.contentresolver.operations.delete;
 
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.operations.SchedulerChecker;
 import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
 
 import org.junit.Test;
@@ -203,6 +204,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).defaultScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOContentResolver, lowLevel);
@@ -242,6 +244,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).defaultScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOContentResolver, lowLevel);
@@ -281,9 +284,55 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).defaultScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOContentResolver, lowLevel);
+        }
+    }
+
+    class OtherTests {
+
+        @Test
+        public void deleteCollectionOfObjectsObservableExecutesOnSpecifiedScheduler() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOContentResolver);
+
+            final PreparedDeleteCollectionOfObjects<TestItem> operation = deleteStub.storIOContentResolver
+                    .delete()
+                    .objects(deleteStub.items)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsObservable(operation);
+        }
+
+        @Test
+        public void deleteCollectionOfObjectsSingleExecutesOnSpecifiedScheduler() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOContentResolver);
+
+            final PreparedDeleteCollectionOfObjects<TestItem> operation = deleteStub.storIOContentResolver
+                    .delete()
+                    .objects(deleteStub.items)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void deleteCollectionOfObjectsCompletableExecutesOnSpecifiedScheduler() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOContentResolver);
+
+            final PreparedDeleteCollectionOfObjects<TestItem> operation = deleteStub.storIOContentResolver
+                    .delete()
+                    .objects(deleteStub.items)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsCompletable(operation);
         }
     }
 }

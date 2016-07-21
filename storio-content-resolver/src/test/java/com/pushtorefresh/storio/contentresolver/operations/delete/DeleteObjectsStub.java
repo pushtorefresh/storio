@@ -146,6 +146,7 @@ class DeleteObjectsStub {
                 .testAction(new Action1<DeleteResults<TestItem>>() {
                     @Override
                     public void call(DeleteResults<TestItem> deleteResults) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyBehaviorForDeleteMultipleObjects(deleteResults);
                     }
                 })
@@ -159,6 +160,7 @@ class DeleteObjectsStub {
                 .testAction(new Action1<DeleteResults<TestItem>>() {
                     @Override
                     public void call(DeleteResults<TestItem> deleteResults) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyBehaviorForDeleteMultipleObjects(deleteResults);
                     }
                 })
@@ -182,6 +184,7 @@ class DeleteObjectsStub {
                 .testAction(new Action1<DeleteResult>() {
                     @Override
                     public void call(DeleteResult deleteResult) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyBehaviorForDeleteOneObject(deleteResult);
                     }
                 })
@@ -195,6 +198,7 @@ class DeleteObjectsStub {
                 .testAction(new Action1<DeleteResult>() {
                     @Override
                     public void call(DeleteResult deleteResult) {
+                        verify(storIOContentResolver).defaultScheduler();
                         verifyBehaviorForDeleteOneObject(deleteResult);
                     }
                 })

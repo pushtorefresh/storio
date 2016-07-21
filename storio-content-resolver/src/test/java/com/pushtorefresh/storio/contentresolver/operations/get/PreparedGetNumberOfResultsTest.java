@@ -6,6 +6,7 @@ import android.net.Uri;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.contentresolver.Changes;
 import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio.contentresolver.operations.SchedulerChecker;
 import com.pushtorefresh.storio.contentresolver.queries.Query;
 
 import org.junit.Test;
@@ -169,5 +170,35 @@ public class PreparedGetNumberOfResultsTest {
         when(cursor.getCount()).thenReturn(12314);
 
         assertThat(standardGetResolver.mapFromCursor(cursor)).isEqualTo(12314);
+    }
+
+    @Test
+    public void getNumberOfResultsObservableExecutesOnSpecifiedScheduler() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOContentResolver);
+
+        final PreparedGetNumberOfResults operation = getStub.storIOContentResolver
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare();
+
+        schedulerChecker.checkAsObservable(operation);
+    }
+
+    @Test
+    public void getNumberOfResultsSingleExecutesOnSpecifiedScheduler() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOContentResolver);
+
+        final PreparedGetNumberOfResults operation = getStub.storIOContentResolver
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare();
+
+        schedulerChecker.checkAsSingle(operation);
     }
 }
