@@ -1,6 +1,24 @@
 StorIO Change Log
 ==========
 
+## Version 1.10.0
+
+_2016_07_26_
+
+* Find type mapping among interfaces recursively. Pluggable typemapping!
+* Default scheduler for StorIOSQLite
+* Default scheduler for StorIOContentResolver
+* `ignoreNull` property for annotation processing
+* Generated get resolver supports nulls for boxed types
+
+**Changes:**
+
+* [PR 601](https://github.com/pushtorefresh/storio/pull/601) Find type mapping among interfaces recursively
+* [PR 660](https://github.com/pushtorefresh/storio/pull/660) Default scheduler for StorIOSQLite
+* [PR 661](https://github.com/pushtorefresh/storio/pull/661) Default scheduler for StorIOContentResolver
+* [PR 642](https://github.com/pushtorefresh/storio/pull/642) `ignoreNull` property for annotation processing
+* [PR 643](https://github.com/pushtorefresh/storio/pull/643) Generated get resolver supports nulls for boxed types
+
 ## Version 1.9.1
 
 _2016_07_7_
