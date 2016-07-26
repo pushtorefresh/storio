@@ -154,4 +154,69 @@ public class JavaTypeTest {
         final TypeMirror typeMirror = mockTypeMirror(null, byte[].class.getCanonicalName());
         assertThat(JavaType.from(typeMirror)).isEqualTo(BYTE_ARRAY);
     }
+
+    @Test
+    public void booleanObjectIsBoxed() {
+        assertThat(BOOLEAN_OBJECT.isBoxedType()).isTrue();
+    }
+
+    @Test
+    public void shortObjectIsBoxed() {
+        assertThat(SHORT_OBJECT.isBoxedType()).isTrue();
+    }
+
+    @Test
+    public void integerObjectIsBoxed() {
+        assertThat(INTEGER_OBJECT.isBoxedType()).isTrue();
+    }
+
+    @Test
+    public void longObjectIsBoxed() {
+        assertThat(LONG_OBJECT.isBoxedType()).isTrue();
+    }
+
+    @Test
+    public void floatObjectIsBoxed() {
+        assertThat(FLOAT_OBJECT.isBoxedType()).isTrue();
+    }
+
+    @Test
+    public void doubleObjectIsBoxed() {
+        assertThat(DOUBLE_OBJECT.isBoxedType()).isTrue();
+    }
+
+    @Test
+    public void shortPrimitiveIsNotBoxed() {
+        assertThat(SHORT.isBoxedType()).isFalse();
+    }
+
+    @Test
+    public void integerPrimitiveIsNotBoxed() {
+        assertThat(INTEGER.isBoxedType()).isFalse();
+    }
+
+    @Test
+    public void longPrimitiveIsNotBoxed() {
+        assertThat(LONG.isBoxedType()).isFalse();
+    }
+
+    @Test
+    public void floatPrimitiveIsNotBoxed() {
+        assertThat(FLOAT.isBoxedType()).isFalse();
+    }
+
+    @Test
+    public void doublePrimitiveIsNotBoxed() {
+        assertThat(DOUBLE.isBoxedType()).isFalse();
+    }
+
+    @Test
+    public void stringIsNotBoxed() {
+        assertThat(STRING.isBoxedType()).isFalse();
+    }
+
+    @Test
+    public void byteArrayIsNotBoxed() {
+        assertThat(BYTE_ARRAY.isBoxedType()).isFalse();
+    }
 }

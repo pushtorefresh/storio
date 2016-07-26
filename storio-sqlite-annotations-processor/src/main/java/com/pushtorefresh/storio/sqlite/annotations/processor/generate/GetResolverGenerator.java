@@ -99,7 +99,16 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
                 throw new ProcessingException(columnMeta.element, "Can not generate GetResolver for field");
             }
 
+            final boolean isBoxed = javaType.isBoxedType();
+            if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
+                builder.beginControlFlow("if(!cursor.isNull($L))", columnIndex);
+            }
+
             builder.addStatement("object.$L = cursor.$L", columnMeta.fieldName, getFromCursor);
+
+            if (isBoxed) {
+                builder.endControlFlow();
+            }
         }
 
         return builder
