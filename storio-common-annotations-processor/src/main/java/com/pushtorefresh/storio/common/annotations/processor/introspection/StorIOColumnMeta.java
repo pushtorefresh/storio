@@ -27,7 +27,8 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
             @NotNull Element enclosingElement,
             @NotNull Element element,
             @NotNull String fieldName,
-            @NotNull JavaType javaType, @NotNull ColumnAnnotation storIOColumn) {
+            @NotNull JavaType javaType,
+            @NotNull ColumnAnnotation storIOColumn) {
         this.enclosingElement = enclosingElement;
         this.element = element;
         this.fieldName = fieldName;

@@ -104,11 +104,18 @@ public class PutResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
                 .addCode("\n");
 
         for (StorIOSQLiteColumnMeta columnMeta : storIOSQLiteTypeMeta.columns.values()) {
+            final boolean ignoreNull = columnMeta.storIOColumn.ignoreNull();
+            if (ignoreNull) {
+                builder.beginControlFlow("if($L != null)", "object." + columnMeta.fieldName);
+            }
             builder.addStatement(
                     "contentValues.put($S, $L)",
                     columnMeta.storIOColumn.name(),
                     "object." + columnMeta.fieldName
             );
+            if (ignoreNull) {
+                builder.endControlFlow();
+            }
         }
 
         return builder

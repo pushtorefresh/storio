@@ -11,49 +11,82 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+
+import static javax.lang.model.type.TypeKind.NONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PutResolverGeneratorTest {
 
-    @SuppressWarnings("ConstantConditions")
     @NotNull
-    private String generateJavaFile(@NotNull StorIOContentResolverType storIOContentResolverType) throws IOException {
-        final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
+    private static final String PART_PACKAGE = "package com.test;\n\n";
 
-        final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = new StorIOContentResolverTypeMeta("TestItem", "com.test", storIOContentResolverType);
+    @NotNull
+    private static final String PART_IMPORT =
+            "import android.content.ContentValues;\n" +
+                    "import android.support.annotation.NonNull;\n" +
+                    "import com.pushtorefresh.storio.contentresolver.operations.put.DefaultPutResolver;\n" +
+                    "import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;\n" +
+                    "import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;\n" +
+                    "import java.lang.Override;\n" +
+                    "\n";
 
-        final StorIOContentResolverColumn storIOContentResolverColumn1 = mock(StorIOContentResolverColumn.class);
-        when(storIOContentResolverColumn1.name()).thenReturn("column1");
-        when(storIOContentResolverColumn1.key()).thenReturn(true);
-        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta1 = new StorIOContentResolverColumnMeta(
-                null,
-                null,
-                "column1Field",
-                null,
-                storIOContentResolverColumn1
-        );
-        storIOContentResolverTypeMeta.columns.put("column1", storIOContentResolverColumnMeta1);
+    @NotNull
+    private static final String PART_CLASS =
+            "/**\n" +
+                    " * Generated resolver for Put Operation\n" +
+                    " */\n" +
+                    "public class TestItemStorIOContentResolverPutResolver extends DefaultPutResolver<TestItem> {\n";
 
-        final StorIOContentResolverColumn storIOContentResolverColumn2 = mock(StorIOContentResolverColumn.class);
-        when(storIOContentResolverColumn2.name()).thenReturn("column2");
-        when(storIOContentResolverColumn2.key()).thenReturn(false);
-        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta2 = new StorIOContentResolverColumnMeta(
-                null,
-                null,
-                "column2Field",
-                null,
-                storIOContentResolverColumn2
-        );
-        storIOContentResolverTypeMeta.columns.put("column2", storIOContentResolverColumnMeta2);
+    @NotNull
+    private static final String PART_MAP_TO_INSERT_QUERY_WITH_COMMON_URI =
+            "    /**\n" +
+                    "     * {@inheritDoc}\n" +
+                    "     */\n" +
+                    "    @Override\n" +
+                    "    @NonNull\n" +
+                    "    protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
+                    "        return InsertQuery.builder()\n" +
+                    "            .uri(\"content://test\")\n" +
+                    "            .build();\n" +
+                    "    }\n" +
+                    "\n";
 
-        final JavaFile javaFile = putResolverGenerator.generateJavaFile(storIOContentResolverTypeMeta);
-        final StringBuilder out = new StringBuilder();
-        javaFile.writeTo(out);
+    @NotNull
+    private static final String PART_MAP_TO_UPDATE_QUERY_WITH_COMMON_URI =
+            "    /**\n" +
+                    "     * {@inheritDoc}\n" +
+                    "     */\n" +
+                    "    @Override\n" +
+                    "    @NonNull\n" +
+                    "    protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
+                    "        return UpdateQuery.builder()\n" +
+                    "            .uri(\"content://test\")\n" +
+                    "            .where(\"column1 = ?\")\n" +
+                    "            .whereArgs(object.column1Field)\n" +
+                    "            .build();\n" +
+                    "    }\n" +
+                    "\n";
 
-        return out.toString();
-    }
+    @NotNull
+    private static final String PART_MAP_TO_CONTENT_VALUES_WITHOUT_NULL_CHECK =
+            "    /**\n" +
+                    "     * {@inheritDoc}\n" +
+                    "     */\n" +
+                    "    @Override\n" +
+                    "    @NonNull\n" +
+                    "    public ContentValues mapToContentValues(@NonNull TestItem object) {\n" +
+                    "        ContentValues contentValues = new ContentValues(2);\n" +
+                    "\n" +
+                    "        contentValues.put(\"column1\", object.column1Field);\n" +
+                    "        contentValues.put(\"column2\", object.column2Field);\n" +
+                    "\n" +
+                    "        return contentValues;\n" +
+                    "    }\n";
 
     @Test
     public void generateJavaFileWithCommonUri() throws IOException {
@@ -61,58 +94,37 @@ public class PutResolverGeneratorTest {
 
         when(storIOContentResolverType.uri()).thenReturn("content://test");
 
-        String javaFileAsString = generateJavaFile(storIOContentResolverType);
-        assertThat(javaFileAsString).isEqualTo("package com.test;\n" +
-                "\n" +
-                "import android.content.ContentValues;\n" +
-                "import android.support.annotation.NonNull;\n" +
-                "import com.pushtorefresh.storio.contentresolver.operations.put.DefaultPutResolver;\n" +
-                "import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;\n" +
-                "import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;\n" +
-                "import java.lang.Override;\n" +
-                "\n" +
-                "/**\n" +
-                " * Generated resolver for Put Operation\n" +
-                " */\n" +
-                "public class TestItemStorIOContentResolverPutResolver extends DefaultPutResolver<TestItem> {\n" +
-                "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
-                "        return InsertQuery.builder()\n" +
-                "            .uri(\"content://test\")\n" +
-                "            .build();\n" +
-                "    }\n" +
-                "\n" +
-                "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
-                "        return UpdateQuery.builder()\n" +
-                "            .uri(\"content://test\")\n" +
-                "            .where(\"column1 = ?\")\n" +
-                "            .whereArgs(object.column1Field)\n" +
-                "            .build();\n" +
-                "    }\n" +
-                "\n" +
-                "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    public ContentValues mapToContentValues(@NonNull TestItem object) {\n" +
-                "        ContentValues contentValues = new ContentValues(2);\n" +
-                "\n" +
-                "        contentValues.put(\"column1\", object.column1Field);\n" +
-                "        contentValues.put(\"column2\", object.column2Field);\n" +
-                "\n" +
-                "        return contentValues;\n" +
-                "    }\n" +
-                "}\n");
+        final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = new StorIOContentResolverTypeMeta("TestItem", "com.test", storIOContentResolverType);
+
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta1 = createColumnMetaMock(
+                createElementMock(NONE),
+                "column1",
+                "column1Field",
+                true,           // key
+                false);
+        storIOContentResolverTypeMeta.columns.put("column1", storIOContentResolverColumnMeta1);
+
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta2 = createColumnMetaMock(
+                createElementMock(NONE),
+                "column2",
+                "column2Field",
+                false,
+                false);
+        storIOContentResolverTypeMeta.columns.put("column2", storIOContentResolverColumnMeta2);
+
+        final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
+
+        final JavaFile javaFile = putResolverGenerator.generateJavaFile(storIOContentResolverTypeMeta);
+        final StringBuilder out = new StringBuilder();
+        javaFile.writeTo(out);
+
+        checkFile(out.toString(),
+                PART_PACKAGE,
+                PART_IMPORT,
+                PART_CLASS,
+                PART_MAP_TO_INSERT_QUERY_WITH_COMMON_URI,
+                PART_MAP_TO_UPDATE_QUERY_WITH_COMMON_URI,
+                PART_MAP_TO_CONTENT_VALUES_WITHOUT_NULL_CHECK);
     }
 
     @Test
@@ -122,58 +134,58 @@ public class PutResolverGeneratorTest {
         when(storIOContentResolverType.insertUri()).thenReturn("content://insert_test");
         when(storIOContentResolverType.updateUri()).thenReturn("content://update_test");
 
-        String javaFileAsString = generateJavaFile(storIOContentResolverType);
-        assertThat(javaFileAsString).isEqualTo("package com.test;\n" +
-                "\n" +
-                "import android.content.ContentValues;\n" +
-                "import android.support.annotation.NonNull;\n" +
-                "import com.pushtorefresh.storio.contentresolver.operations.put.DefaultPutResolver;\n" +
-                "import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;\n" +
-                "import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;\n" +
-                "import java.lang.Override;\n" +
-                "\n" +
-                "/**\n" +
-                " * Generated resolver for Put Operation\n" +
-                " */\n" +
-                "public class TestItemStorIOContentResolverPutResolver extends DefaultPutResolver<TestItem> {\n" +
+        final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = new StorIOContentResolverTypeMeta("TestItem", "com.test", storIOContentResolverType);
+
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta1 = createColumnMetaMock(
+                createElementMock(NONE),
+                "column1",
+                "column1Field",
+                true,           // key
+                false);
+        storIOContentResolverTypeMeta.columns.put("column1", storIOContentResolverColumnMeta1);
+
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta2 = createColumnMetaMock(
+                createElementMock(NONE),
+                "column2",
+                "column2Field",
+                false,
+                false);
+        storIOContentResolverTypeMeta.columns.put("column2", storIOContentResolverColumnMeta2);
+
+        final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
+        final JavaFile javaFile = putResolverGenerator.generateJavaFile(storIOContentResolverTypeMeta);
+        final StringBuilder out = new StringBuilder();
+        javaFile.writeTo(out);
+
+        checkFile(out.toString(),
+                PART_PACKAGE,
+                PART_IMPORT,
+                PART_CLASS,
                 "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
-                "        return InsertQuery.builder()\n" +
-                "            .uri(\"content://insert_test\")\n" +   // Operation specific
-                "            .build();\n" +
-                "    }\n" +
-                "\n" +
+                        "     * {@inheritDoc}\n" +
+                        "     */\n" +
+                        "    @Override\n" +
+                        "    @NonNull\n" +
+                        "    protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
+                        "        return InsertQuery.builder()\n" +
+                        "            .uri(\"content://insert_test\")\n" +   // Operation specific
+                        "            .build();\n" +
+                        "    }\n" +
+                        "\n",
                 "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
-                "        return UpdateQuery.builder()\n" +
-                "            .uri(\"content://update_test\")\n" +   // Operation specific
-                "            .where(\"column1 = ?\")\n" +
-                "            .whereArgs(object.column1Field)\n" +
-                "            .build();\n" +
-                "    }\n" +
-                "\n" +
-                "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    public ContentValues mapToContentValues(@NonNull TestItem object) {\n" +
-                "        ContentValues contentValues = new ContentValues(2);\n" +
-                "\n" +
-                "        contentValues.put(\"column1\", object.column1Field);\n" +
-                "        contentValues.put(\"column2\", object.column2Field);\n" +
-                "\n" +
-                "        return contentValues;\n" +
-                "    }\n" +
-                "}\n");
+                        "     * {@inheritDoc}\n" +
+                        "     */\n" +
+                        "    @Override\n" +
+                        "    @NonNull\n" +
+                        "    protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
+                        "        return UpdateQuery.builder()\n" +
+                        "            .uri(\"content://update_test\")\n" +   // Operation specific
+                        "            .where(\"column1 = ?\")\n" +
+                        "            .whereArgs(object.column1Field)\n" +
+                        "            .build();\n" +
+                        "    }\n" +
+                        "\n",
+                PART_MAP_TO_CONTENT_VALUES_WITHOUT_NULL_CHECK);
     }
 
     @Test
@@ -184,58 +196,58 @@ public class PutResolverGeneratorTest {
         when(storIOContentResolverType.insertUri()).thenReturn("content://insert_test");
         when(storIOContentResolverType.updateUri()).thenReturn("content://update_test");
 
-        String javaFileAsString = generateJavaFile(storIOContentResolverType);
-        assertThat(javaFileAsString).isEqualTo("package com.test;\n" +
-                "\n" +
-                "import android.content.ContentValues;\n" +
-                "import android.support.annotation.NonNull;\n" +
-                "import com.pushtorefresh.storio.contentresolver.operations.put.DefaultPutResolver;\n" +
-                "import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;\n" +
-                "import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;\n" +
-                "import java.lang.Override;\n" +
-                "\n" +
-                "/**\n" +
-                " * Generated resolver for Put Operation\n" +
-                " */\n" +
-                "public class TestItemStorIOContentResolverPutResolver extends DefaultPutResolver<TestItem> {\n" +
+        final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = new StorIOContentResolverTypeMeta("TestItem", "com.test", storIOContentResolverType);
+
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta1 = createColumnMetaMock(
+                createElementMock(NONE),
+                "column1",
+                "column1Field",
+                true,           // key
+                false);
+        storIOContentResolverTypeMeta.columns.put("column1", storIOContentResolverColumnMeta1);
+
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta2 = createColumnMetaMock(
+                createElementMock(NONE),
+                "column2",
+                "column2Field",
+                false,
+                false);
+        storIOContentResolverTypeMeta.columns.put("column2", storIOContentResolverColumnMeta2);
+
+        final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
+        final JavaFile javaFile = putResolverGenerator.generateJavaFile(storIOContentResolverTypeMeta);
+        final StringBuilder out = new StringBuilder();
+        javaFile.writeTo(out);
+
+        checkFile(out.toString(),
+                PART_PACKAGE,
+                PART_IMPORT,
+                PART_CLASS,
                 "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
-                "        return InsertQuery.builder()\n" +
-                "            .uri(\"content://insert_test\")\n" +   // Operation specific
-                "            .build();\n" +
-                "    }\n" +
-                "\n" +
+                        "     * {@inheritDoc}\n" +
+                        "     */\n" +
+                        "    @Override\n" +
+                        "    @NonNull\n" +
+                        "    protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
+                        "        return InsertQuery.builder()\n" +
+                        "            .uri(\"content://insert_test\")\n" +   // Operation specific
+                        "            .build();\n" +
+                        "    }\n" +
+                        "\n",
                 "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
-                "        return UpdateQuery.builder()\n" +
-                "            .uri(\"content://update_test\")\n" +   // Operation specific
-                "            .where(\"column1 = ?\")\n" +
-                "            .whereArgs(object.column1Field)\n" +
-                "            .build();\n" +
-                "    }\n" +
-                "\n" +
-                "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    public ContentValues mapToContentValues(@NonNull TestItem object) {\n" +
-                "        ContentValues contentValues = new ContentValues(2);\n" +
-                "\n" +
-                "        contentValues.put(\"column1\", object.column1Field);\n" +
-                "        contentValues.put(\"column2\", object.column2Field);\n" +
-                "\n" +
-                "        return contentValues;\n" +
-                "    }\n" +
-                "}\n");
+                        "     * {@inheritDoc}\n" +
+                        "     */\n" +
+                        "    @Override\n" +
+                        "    @NonNull\n" +
+                        "    protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
+                        "        return UpdateQuery.builder()\n" +
+                        "            .uri(\"content://update_test\")\n" +   // Operation specific
+                        "            .where(\"column1 = ?\")\n" +
+                        "            .whereArgs(object.column1Field)\n" +
+                        "            .build();\n" +
+                        "    }\n" +
+                        "\n",
+                PART_MAP_TO_CONTENT_VALUES_WITHOUT_NULL_CHECK);
     }
 
     @Test
@@ -246,57 +258,141 @@ public class PutResolverGeneratorTest {
         when(storIOContentResolverType.deleteUri()).thenReturn("content://delete_test");
         // There is no explicit uri for insert and update operations
 
-        String javaFileAsString = generateJavaFile(storIOContentResolverType);
-        assertThat(javaFileAsString).isEqualTo("package com.test;\n" +
-                "\n" +
-                "import android.content.ContentValues;\n" +
-                "import android.support.annotation.NonNull;\n" +
-                "import com.pushtorefresh.storio.contentresolver.operations.put.DefaultPutResolver;\n" +
-                "import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;\n" +
-                "import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;\n" +
-                "import java.lang.Override;\n" +
-                "\n" +
-                "/**\n" +
-                " * Generated resolver for Put Operation\n" +
-                " */\n" +
-                "public class TestItemStorIOContentResolverPutResolver extends DefaultPutResolver<TestItem> {\n" +
+        final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = new StorIOContentResolverTypeMeta("TestItem", "com.test", storIOContentResolverType);
+
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta1 = createColumnMetaMock(
+                createElementMock(NONE),
+                "column1",
+                "column1Field",
+                true,           // key
+                false);
+        storIOContentResolverTypeMeta.columns.put("column1", storIOContentResolverColumnMeta1);
+
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta2 = createColumnMetaMock(
+                createElementMock(NONE),
+                "column2",
+                "column2Field",
+                false,
+                false);
+        storIOContentResolverTypeMeta.columns.put("column2", storIOContentResolverColumnMeta2);
+
+        final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
+
+        final JavaFile javaFile = putResolverGenerator.generateJavaFile(storIOContentResolverTypeMeta);
+        final StringBuilder out = new StringBuilder();
+        javaFile.writeTo(out);
+
+        checkFile(out.toString(),
+                PART_PACKAGE,
+                PART_IMPORT,
+                PART_CLASS,
+                PART_MAP_TO_INSERT_QUERY_WITH_COMMON_URI,   // Common
+                PART_MAP_TO_UPDATE_QUERY_WITH_COMMON_URI,
+                PART_MAP_TO_CONTENT_VALUES_WITHOUT_NULL_CHECK);
+    }
+
+    @Test
+    public void ignoreNullsShouldAddCheck() throws IOException {
+        final StorIOContentResolverType storIOContentResolverType = mock(StorIOContentResolverType.class);
+
+        when(storIOContentResolverType.uri()).thenReturn("content://test");
+
+        final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = new StorIOContentResolverTypeMeta("TestItem", "com.test", storIOContentResolverType);
+
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta1 = createColumnMetaMock(
+                createElementMock(NONE),
+                "column1",
+                "column1Field",
+                true,                       // key
+                false);
+        storIOContentResolverTypeMeta.columns.put("column1", storIOContentResolverColumnMeta1);
+
+        final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta2 = createColumnMetaMock(
+                createElementMock(NONE),    // is not primitive
+                "column2",
+                "column2Field",
+                false,
+                true);                      // ignore nulls
+        storIOContentResolverTypeMeta.columns.put("column2", storIOContentResolverColumnMeta2);
+
+        final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
+
+        final JavaFile javaFile = putResolverGenerator.generateJavaFile(storIOContentResolverTypeMeta);
+        final StringBuilder out = new StringBuilder();
+        javaFile.writeTo(out);
+
+        checkFile(out.toString(),
+                PART_PACKAGE,
+                PART_IMPORT,
+                PART_CLASS,
+                PART_MAP_TO_INSERT_QUERY_WITH_COMMON_URI,
+                PART_MAP_TO_UPDATE_QUERY_WITH_COMMON_URI,
                 "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
-                "        return InsertQuery.builder()\n" +
-                "            .uri(\"content://test\")\n" +   // Common uri
-                "            .build();\n" +
-                "    }\n" +
-                "\n" +
-                "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
-                "        return UpdateQuery.builder()\n" +
-                "            .uri(\"content://test\")\n" +   // Common uri
-                "            .where(\"column1 = ?\")\n" +
-                "            .whereArgs(object.column1Field)\n" +
-                "            .build();\n" +
-                "    }\n" +
-                "\n" +
-                "    /**\n" +
-                "     * {@inheritDoc}\n" +
-                "     */\n" +
-                "    @Override\n" +
-                "    @NonNull\n" +
-                "    public ContentValues mapToContentValues(@NonNull TestItem object) {\n" +
-                "        ContentValues contentValues = new ContentValues(2);\n" +
-                "\n" +
-                "        contentValues.put(\"column1\", object.column1Field);\n" +
-                "        contentValues.put(\"column2\", object.column2Field);\n" +
-                "\n" +
-                "        return contentValues;\n" +
-                "    }\n" +
-                "}\n");
+                        "     * {@inheritDoc}\n" +
+                        "     */\n" +
+                        "    @Override\n" +
+                        "    @NonNull\n" +
+                        "    public ContentValues mapToContentValues(@NonNull TestItem object) {\n" +
+                        "        ContentValues contentValues = new ContentValues(2);\n" +
+                        "\n" +
+                        "        contentValues.put(\"column1\", object.column1Field);\n" +
+                        "        if(object.column2Field != null) {\n" +                         // check for null added
+                        "            contentValues.put(\"column2\", object.column2Field);\n" +
+                        "        }\n" +
+                        "\n" +
+                        "        return contentValues;\n" +
+                        "    }\n"
+        );
+    }
+
+    @NotNull
+    private static Element createElementMock(@NotNull TypeKind typeKind) {
+        final Element objectElement = mock(Element.class);
+        final TypeMirror typeMirror = mock(TypeMirror.class);
+        when(objectElement.asType()).thenReturn(typeMirror);
+        when(typeMirror.getKind()).thenReturn(typeKind);
+        return objectElement;
+    }
+
+    @NotNull
+    private static StorIOContentResolverColumnMeta createColumnMetaMock(
+            @NotNull Element element,
+            @NotNull String columnName,
+            @NotNull String fieldName,
+            boolean isKey,
+            boolean ignoreNull
+    ) {
+        final StorIOContentResolverColumn storIOSQLiteColumn = mock(StorIOContentResolverColumn.class);
+        when(storIOSQLiteColumn.name()).thenReturn(columnName);
+        when(storIOSQLiteColumn.key()).thenReturn(isKey);
+        when(storIOSQLiteColumn.ignoreNull()).thenReturn(ignoreNull);
+
+        //noinspection ConstantConditions
+        return new StorIOContentResolverColumnMeta(
+                null,
+                element,
+                fieldName,
+                null,
+                storIOSQLiteColumn
+        );
+    }
+
+    private void checkFile(
+            @NotNull String actualFile,
+            @NotNull String partPackage,
+            @NotNull String partImport,
+            @NotNull String partClass,
+            @NotNull String partMapToInsertQuery,
+            @NotNull String partMapToUpdateQuery,
+            @NotNull String partMapToContentValues
+    ) {
+        assertThat(actualFile).isEqualTo(
+                partPackage +
+                        partImport +
+                        partClass +
+                        partMapToInsertQuery +
+                        partMapToUpdateQuery +
+                        partMapToContentValues +
+                        "}\n");
     }
 }
