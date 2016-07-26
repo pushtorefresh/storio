@@ -6,6 +6,7 @@ import com.pushtorefresh.storio.operations.PreparedOperation;
 import org.junit.Test;
 
 import rx.Single;
+import rx.SingleSubscriber;
 import rx.observers.TestSubscriber;
 
 import static org.mockito.Mockito.mock;
@@ -64,5 +65,36 @@ public class OnSubscribeExecuteAsBlockingSingleTest {
         verify(preparedOperation).executeAsBlocking();
         verify(preparedOperation, never()).asRxSingle();
         verify(preparedOperation, never()).asRxObservable();
+    }
+
+    @Test
+    public void shouldCallExecuteAsBlockingEvenIfSubscriberAlreadyUnsubscribed() {
+        //noinspection unchecked
+        PreparedOperation<Object> preparedOperation = mock(PreparedOperation.class);
+
+        //noinspection unchecked
+        SingleSubscriber<Object> subscriber = new SingleSubscriber() {
+
+            @Override
+            public void onSuccess(Object value) {
+                // nothing
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                // nothing
+            }
+        };
+
+        subscriber.unsubscribe();
+
+        OnSubscribeExecuteAsBlockingSingle
+                .newInstance(preparedOperation)
+                .call(subscriber);
+
+        // Even if subscriber is unsubscribed when call was done,
+        // executeAsBlocking() must be called (for example for Put and Delete operations)
+        // But we should think about skipping call to executeAsBlocking() for Get Operation in same case
+        verify(preparedOperation).executeAsBlocking();
     }
 }

@@ -521,6 +521,15 @@ public class DefaultStorIOSQLiteTest {
         assertThat(storIOSQLite.typeMappingFinder()).isSameAs(typeMappingFinder);
     }
 
+    @Test
+    public void internalShouldReturnLowLevel() {
+        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .build();
+
+        assertThat(storIOSQLite.internal()).isSameAs(storIOSQLite.lowLevel());
+    }
+
     static class ClassEntity {
     }
 

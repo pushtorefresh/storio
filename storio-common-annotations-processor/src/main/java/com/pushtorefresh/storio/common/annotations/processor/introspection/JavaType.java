@@ -59,4 +59,18 @@ public enum JavaType {
             throw new IllegalArgumentException("Unsupported type: " + typeMirror);
         }
     }
+
+    public boolean isBoxedType() {
+        switch (this) {
+            case BOOLEAN_OBJECT:
+            case SHORT_OBJECT:
+            case INTEGER_OBJECT:
+            case LONG_OBJECT:
+            case FLOAT_OBJECT:
+            case DOUBLE_OBJECT:
+                return true;
+            default:
+                return false;
+        }
+    }
 }
