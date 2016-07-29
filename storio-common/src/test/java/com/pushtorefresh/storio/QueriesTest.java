@@ -23,21 +23,14 @@ public class QueriesTest {
             failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
         } catch (IllegalArgumentException expected) {
             assertThat(expected)
-                    .hasMessage("numberOfPlaceholders must be > 0, but was = -1")
+                    .hasMessage("numberOfPlaceholders must be >= 0, but was = -1")
                     .hasNoCause();
         }
     }
 
     @Test
     public void placeholders0() {
-        try {
-            Queries.placeholders(0);
-            failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
-        } catch (IllegalArgumentException expected) {
-            assertThat(expected)
-                    .hasMessage("numberOfPlaceholders must be > 0, but was = 0")
-                    .hasNoCause();
-        }
+        assertThat(Queries.placeholders(0)).isEqualTo("");
     }
 
     @Test
