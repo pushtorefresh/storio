@@ -74,7 +74,7 @@ public class DeleteResolverGeneratorTest {
                 "     */\n" +
                 "    @Override\n" +
                 "    @NonNull\n" +
-                "    protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
+                "    public DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
                 "        return DeleteQuery.builder()\n" +
                 "            .table(\"test_table\")\n" +
                 "            .where(null)\n" +

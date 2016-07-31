@@ -49,7 +49,7 @@ public class PutResolverGeneratorTest {
                     "     */\n" +
                     "    @Override\n" +
                     "    @NonNull\n" +
-                    "    protected InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
+                    "    public InsertQuery mapToInsertQuery(@NonNull TestItem object) {\n" +
                     "        return InsertQuery.builder()\n" +
                     "            .table(\"test_table\")\n" +
                     "            .build();\n" +
@@ -63,7 +63,7 @@ public class PutResolverGeneratorTest {
                     "     */\n" +
                     "    @Override\n" +
                     "    @NonNull\n" +
-                    "    protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
+                    "    public UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {\n" +
                     "        return UpdateQuery.builder()\n" +
                     "            .table(\"test_table\")\n" +
                     "            .where(\"column1 = ?\")\n" +
