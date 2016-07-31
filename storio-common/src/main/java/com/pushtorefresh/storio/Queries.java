@@ -24,8 +24,10 @@ public class Queries {
     public static String placeholders(final int numberOfPlaceholders) {
         if (numberOfPlaceholders == 1) {
             return "?"; // fffast
-        } else if (numberOfPlaceholders <= 0) {
-            throw new IllegalArgumentException("numberOfPlaceholders must be > 0, but was = " + numberOfPlaceholders);
+        } else if (numberOfPlaceholders == 0) {
+            return "";
+        } else if (numberOfPlaceholders < 0) {
+            throw new IllegalArgumentException("numberOfPlaceholders must be >= 0, but was = " + numberOfPlaceholders);
         }
 
         final StringBuilder stringBuilder = new StringBuilder((numberOfPlaceholders * 2) - 1);
