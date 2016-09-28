@@ -18,21 +18,20 @@ public class Toasts {
     }
 
     public static void safeShowToast(@Nullable Context context, @Nullable String message, int length) {
-        try {
-            if (context != null && !TextUtils.isEmpty(message)) {
-                Toast.makeText(context, message, length).show();
-            }
-        } catch (Exception e) {
-            Timber.w("safeShowToast failed", e);
+        if (context == null) {
+            Timber.w("Toast '%s' skipped, context is null", message);
+        } else if (TextUtils.isEmpty(message)) {
+            Timber.w("Unable to show toast with empty message");
+        } else {
+            Toast.makeText(context, message, length).show();
         }
     }
 
     public static void safeShowToast(@Nullable Context context, @StringRes int stringRes, int length, @Nullable Object... formatArgs) {
-        try {
-            //noinspection ConstantConditions
+        if (context != null) {
             safeShowToast(context, context.getString(stringRes, formatArgs), length);
-        } catch (Exception e) {
-            Timber.w("safeShowToast failed", e);
+        } else {
+            Timber.w("Toast skipped, context is null");
         }
     }
 

@@ -158,7 +158,7 @@ public class TweetsFragment extends BaseFragment {
                 .objects(tweets)
                 .prepare()
                 .asRxObservable()
-                .observeOn(mainThread()) // Remember, all Observables in StorIO already subscribed on Schedulers.io(), you just need to set observeOn()
+                .observeOn(mainThread()) // The default scheduler is Schedulers.io(), all Observables in StorIO already subscribed on this scheduler, you just need to set observeOn()
                 .subscribe(new Observer<PutResults<Tweet>>() {
                     @Override
                     public void onError(Throwable e) {
