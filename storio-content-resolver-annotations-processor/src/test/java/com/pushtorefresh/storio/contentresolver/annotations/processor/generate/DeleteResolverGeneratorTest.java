@@ -83,7 +83,7 @@ public class DeleteResolverGeneratorTest {
                 "     */\n" +
                 "    @Override\n" +
                 "    @NonNull\n" +
-                "    protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
+                "    public DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
                 "        return DeleteQuery.builder()\n" +
                 "            .uri(\"content://test\")\n" +
                 "            .where(null)\n" +
@@ -116,7 +116,7 @@ public class DeleteResolverGeneratorTest {
                 "     */\n" +
                 "    @Override\n" +
                 "    @NonNull\n" +
-                "    protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
+                "    public DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
                 "        return DeleteQuery.builder()\n" +
                 "            .uri(\"content://delete_test\")\n" +   // Operation specific
                 "            .where(null)\n" +
@@ -150,7 +150,7 @@ public class DeleteResolverGeneratorTest {
                 "     */\n" +
                 "    @Override\n" +
                 "    @NonNull\n" +
-                "    protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
+                "    public DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
                 "        return DeleteQuery.builder()\n" +
                 "            .uri(\"content://delete_test\")\n" +   // Operation specific
                 "            .where(null)\n" +
@@ -186,7 +186,7 @@ public class DeleteResolverGeneratorTest {
                 "     */\n" +
                 "    @Override\n" +
                 "    @NonNull\n" +
-                "    protected DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
+                "    public DeleteQuery mapToDeleteQuery(@NonNull TestItem object) {\n" +
                 "        return DeleteQuery.builder()\n" +
                 "            .uri(\"content://test\")\n" +   // Common uri
                 "            .where(null)\n" +
