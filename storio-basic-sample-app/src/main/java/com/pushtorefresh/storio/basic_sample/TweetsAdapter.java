@@ -13,7 +13,7 @@ import java.util.List;
 
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
 
-    private List<Tweet> tweets;
+    private @Nullable List<Tweet> tweets;
 
     public void setTweets(@Nullable List<Tweet> tweets) {
         this.tweets = tweets;
@@ -42,9 +42,9 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView authorTextView;
+        private @NonNull final TextView authorTextView;
 
-        private TextView contentTextView;
+        private @NonNull final TextView contentTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -20,6 +20,7 @@ android {
     }
 }
 
+// libraries declared in root build.gradle
 dependencies {
     compile libraries.appCompat
     compile libraries.recyclerView
