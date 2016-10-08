@@ -6,6 +6,7 @@ import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.PreparedOperation;
 
 import rx.Completable;
+import rx.CompletableSubscriber;
 
 /**
  * Required to avoid problems with ClassLoader when RxJava is not in ClassPath
@@ -13,7 +14,7 @@ import rx.Completable;
  * <p>
  * For internal usage only!
  */
-public final class OnSubscribeExecuteAsBlockingCompletable implements Completable.CompletableOnSubscribe {
+public final class OnSubscribeExecuteAsBlockingCompletable implements Completable.OnSubscribe {
 
     @NonNull
     private final PreparedOperation preparedOperation;
@@ -29,12 +30,12 @@ public final class OnSubscribeExecuteAsBlockingCompletable implements Completabl
      * @return new instance of {@link OnSubscribeExecuteAsBlockingCompletable}
      */
     @NonNull
-    public static Completable.CompletableOnSubscribe newInstance(@NonNull PreparedOperation preparedOperation) {
+    public static Completable.OnSubscribe newInstance(@NonNull PreparedOperation preparedOperation) {
         return new OnSubscribeExecuteAsBlockingCompletable(preparedOperation);
     }
 
     @Override
-    public void call(@NonNull Completable.CompletableSubscriber subscriber) {
+    public void call(@NonNull CompletableSubscriber subscriber) {
         try {
             preparedOperation.executeAsBlocking();
 
