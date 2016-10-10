@@ -1,6 +1,24 @@
 StorIO Change Log
 ==========
 
+## Version 1.11.0
+
+_2016_10_10_
+
+* Basic sample app which depends only on storio-sqlite and storio-annotations. Many thanks to [@skrzyneckik](https://github.com/skrzyneckik)
+* RxJava 1.2.1. Thanks to [@yshrsmz](https://github.com/yshrsmz)
+* Make generated map methods public
+* Placeholders generator allow zero count
+* Remove toast exceptions swallowing in Sample
+
+**Changes:**
+
+* [PR 686](https://github.com/pushtorefresh/storio/pull/686) Basic sample app which depends only on storio-sqlite and storio-annotations
+* [PR 692](https://github.com/pushtorefresh/storio/pull/692) RxJava 1.2.1
+* [PR 674](https://github.com/pushtorefresh/storio/pull/674) Make generated map methods public
+* [PR 676](https://github.com/pushtorefresh/storio/pull/676) Placeholders generator allow zero count
+* [PR 687](https://github.com/pushtorefresh/storio/pull/687) Remove toast exceptions swallowing in Sample
+
 ## Version 1.10.0
 
 _2016_07_26_
