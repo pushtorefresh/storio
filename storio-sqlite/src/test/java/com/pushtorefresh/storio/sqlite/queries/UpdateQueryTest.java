@@ -115,6 +115,19 @@ public class UpdateQueryTest {
     }
 
     @Test
+    public void shouldTakeStringArrayAsWhereArgs() {
+        final String[] whereArgs = {"arg1", "arg2", "arg3"};
+
+        final UpdateQuery updateQuery = UpdateQuery.builder()
+                .table("test_table")
+                .where("test_where")
+                .whereArgs(whereArgs)
+                .build();
+
+        assertThat(updateQuery.whereArgs()).isEqualTo(asList(whereArgs));
+    }
+
+    @Test
     public void buildWithNormalValues() {
         final String table = "test_table";
         final String where = "test_where";

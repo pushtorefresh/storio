@@ -152,6 +152,18 @@ public class RawQueryTest {
     }
 
     @Test
+    public void shouldTakeStringArrayAsWhereArgs() {
+        final String[] args = {"arg1", "arg2", "arg3"};
+
+        final RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .args(args)
+                .build();
+
+        assertThat(rawQuery.args()).isEqualTo(asList(args));
+   }
+
+    @Test
     public void buildWithNormalValues() {
         final String query = "test_query";
         final Object[] args = {"arg1", "arg2", "arg3"};

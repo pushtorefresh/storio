@@ -192,6 +192,19 @@ public class QueryTest {
     }
 
     @Test
+    public void shouldTakeStringArrayAsWhereArgs() {
+        final String[] whereArgs = {"arg1", "arg2", "arg3"};
+
+        final Query query = Query.builder()
+                .uri(mock(Uri.class))
+                .where("test_where")
+                .whereArgs(whereArgs)
+                .build();
+
+        assertThat(query.whereArgs()).isEqualTo(asList(whereArgs));
+    }
+
+    @Test
     public void buildWithNormalValues() {
         final Uri uri = mock(Uri.class);
         final String[] columns = {"1", "2", "3"};
