@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlite.queries;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -244,6 +245,29 @@ public final class RawQuery {
         }
 
         /**
+         * Optional: Specifies set of tables which will be affected by this query.
+         * They will be used to notify observers of that tables.
+         * <p>
+         * Default value is {@code null}.
+         *
+         * @param tables set of tables which will be affected by this query.
+         * @return builder.
+         * @see RawQuery#affectsTables()
+         */
+        @NonNull
+        public CompleteBuilder affectsTables(@NonNull Collection<String> tables) {
+            if (affectsTables == null) {
+                affectsTables = new HashSet<String>(tables.size());
+            } else {
+                affectsTables.clear();
+            }
+
+            affectsTables.addAll(tables);
+
+            return this;
+        }
+
+        /**
          * Optional: Specifies set of tables that should be observed by this query.
          * They will be used to re-execute query if one of the tables will be changed.
          * <p>
@@ -262,6 +286,29 @@ public final class RawQuery {
             }
 
             Collections.addAll(this.observesTables, tables);
+
+            return this;
+        }
+
+        /**
+         * Optional: Specifies set of tables that should be observed by this query.
+         * They will be used to re-execute query if one of the tables will be changed.
+         * <p>
+         * Default values is {@code null}.
+         *
+         * @param tables set of tables that should be observed by this query.
+         * @return builder.
+         * @see RawQuery#observesTables()
+         */
+        @NonNull
+        public CompleteBuilder observesTables(@NonNull Collection<String> tables) {
+            if (observesTables == null) {
+                observesTables = new HashSet<String>(tables.size());
+            } else {
+                observesTables.clear();
+            }
+
+            observesTables.addAll(tables);
 
             return this;
         }

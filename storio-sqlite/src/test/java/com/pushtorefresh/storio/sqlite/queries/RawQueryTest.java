@@ -5,10 +5,13 @@ import com.pushtorefresh.storio.test.ToStringChecker;
 
 import org.junit.Test;
 
+import java.util.HashSet;
+
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
@@ -72,25 +75,91 @@ public class RawQueryTest {
     }
 
     @Test
-    public void shouldRewriteAffectsTablesOnSecondCall() {
+    public void affectsTablesShouldRewriteCollectionWithVarargOnSecondCall() {
         RawQuery rawQuery = RawQuery.builder()
                 .query("test_query")
-                .affectsTables("first_call")
-                .affectsTables("second_call")
+                .affectsTables(new HashSet<String>((singletonList("first_call_collection"))))
+                .affectsTables("second_call_vararg")
                 .build();
 
-        assertThat(rawQuery.affectsTables()).isEqualTo(singleton("second_call"));
+        assertThat(rawQuery.affectsTables()).isEqualTo(singleton("second_call_vararg"));
     }
 
     @Test
-    public void shouldRewriteObservesTablesOnSecondCall() {
+    public void affectsTablesShouldRewriteVarargWithCollectionOnSecondCall() {
         RawQuery rawQuery = RawQuery.builder()
                 .query("test_query")
-                .observesTables("first_call")
-                .observesTables("second_call")
+                .affectsTables("first_call_vararg")
+                .affectsTables(new HashSet<String>((singletonList("second_call_collection"))))
                 .build();
 
-        assertThat(rawQuery.observesTables()).isEqualTo(singleton("second_call"));
+        assertThat(rawQuery.affectsTables()).isEqualTo(singleton("second_call_collection"));
+    }
+
+    @Test
+    public void affectsTablesShouldRewriteOnSecondCallVararg() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .affectsTables("first_call_vararg")
+                .affectsTables("second_call_vararg")
+                .build();
+
+        assertThat(rawQuery.affectsTables()).isEqualTo(singleton("second_call_vararg"));
+    }
+
+    @Test
+    public void affectsTablesShouldRewriteOnSecondCallCollection() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .affectsTables(new HashSet<String>((singletonList("first_call_collection"))))
+                .affectsTables(new HashSet<String>((singletonList("second_call_collection"))))
+                .build();
+
+        assertThat(rawQuery.affectsTables()).isEqualTo(singleton("second_call_collection"));
+    }
+
+    @Test
+    public void observesTablesShouldRewriteCollectionWithVarargOnSecondCall() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .observesTables(new HashSet<String>((singletonList("first_call_collection"))))
+                .observesTables("second_call_vararg")
+                .build();
+
+        assertThat(rawQuery.observesTables()).isEqualTo(singleton("second_call_vararg"));
+    }
+
+    @Test
+    public void observesTablesShouldRewriteVarargWithCollectionOnSecondCall() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .observesTables("first_call_vararg")
+                .observesTables(new HashSet<String>((singletonList("second_call_collection"))))
+                .build();
+
+        assertThat(rawQuery.observesTables()).isEqualTo(singleton("second_call_collection"));
+    }
+
+    @Test
+    public void observesTablesShouldRewriteOnSecondCallVararg() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .observesTables("first_call_vararg")
+                .observesTables("second_call_vararg")
+                .build();
+
+        assertThat(rawQuery.observesTables()).isEqualTo(singleton("second_call_vararg"));
+    }
+
+    @Test
+    public void observesTablesShouldRewriteOnSecondCallCollection() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .observesTables(new HashSet<String>((singletonList("first_call_collection"))))
+                .observesTables(new HashSet<String>((singletonList("second_call_collection"))))
+                .build();
+
+        assertThat(rawQuery.observesTables()).isEqualTo(singleton("second_call_collection"));
     }
 
     @Test
