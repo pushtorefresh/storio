@@ -4,10 +4,9 @@ import com.pushtorefresh.storio.test.ToStringChecker;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import nl.jqno.equalsverifier.EqualsVerifier;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
@@ -242,6 +241,19 @@ public class QueryTest {
     }
 
     @Test
+    public void shouldTakeStringArrayAsWhereArgs() {
+        final String[] whereArgs = {"arg1", "arg2", "arg3"};
+
+        final Query query = Query.builder()
+                .table("test_table")
+                .where("test_where")
+                .whereArgs(whereArgs)
+                .build();
+
+        assertThat(query.whereArgs()).isEqualTo(asList(whereArgs));
+    }
+
+    @Test
     public void buildWithNormalValues() {
         final String table = "test_table";
         final boolean distinct = true;
@@ -267,9 +279,9 @@ public class QueryTest {
 
         assertThat(query.table()).isEqualTo(table);
         assertThat(query.distinct()).isEqualTo(distinct);
-        assertThat(query.columns()).isEqualTo(Arrays.asList(columns));
+        assertThat(query.columns()).isEqualTo(asList(columns));
         assertThat(query.where()).isEqualTo(where);
-        assertThat(query.whereArgs()).isEqualTo(Arrays.asList(whereArgs));
+        assertThat(query.whereArgs()).isEqualTo(asList(whereArgs));
         assertThat(query.groupBy()).isEqualTo(groupBy);
         assertThat(query.having()).isEqualTo(having);
         assertThat(query.orderBy()).isEqualTo(orderBy);

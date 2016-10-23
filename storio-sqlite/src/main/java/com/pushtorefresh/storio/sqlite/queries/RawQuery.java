@@ -215,7 +215,7 @@ public final class RawQuery {
          * @see RawQuery#args()
          */
         @NonNull
-        public CompleteBuilder args(@NonNull Object... args) {
+        public <T> CompleteBuilder args(@NonNull T... args) {
             this.args = unmodifiableNonNullList(args);
             return this;
         }

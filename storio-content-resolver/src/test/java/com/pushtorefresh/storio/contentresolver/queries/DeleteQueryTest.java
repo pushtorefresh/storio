@@ -172,6 +172,19 @@ public class DeleteQueryTest {
     }
 
     @Test
+    public void shouldTakeStringArrayAsWhereArgs() {
+        final String[] whereArgs = {"arg1", "arg2", "arg3"};
+
+        final DeleteQuery deleteQuery = DeleteQuery.builder()
+                .uri(mock(Uri.class))
+                .where("test_where")
+                .whereArgs(whereArgs)
+                .build();
+
+        assertThat(deleteQuery.whereArgs()).isEqualTo(Arrays.asList(whereArgs));
+    }
+
+    @Test
     public void buildWithNormalValues() {
         final Uri uri = mock(Uri.class);
         final String where = "test_where";

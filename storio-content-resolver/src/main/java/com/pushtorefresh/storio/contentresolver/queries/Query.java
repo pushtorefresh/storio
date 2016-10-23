@@ -319,7 +319,7 @@ public final class Query {
          * @see Query#whereArgs()
          */
         @NonNull
-        public CompleteBuilder whereArgs(@Nullable Object... whereArgs) {
+        public <T> CompleteBuilder whereArgs(@Nullable T... whereArgs) {
             this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
             return this;
         }
