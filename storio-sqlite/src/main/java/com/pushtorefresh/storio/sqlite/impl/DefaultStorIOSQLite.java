@@ -493,6 +493,15 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
             numberOfRunningTransactions.decrementAndGet();
             notifyAboutPendingChangesIfNotInTransaction();
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public SQLiteOpenHelper sqliteOpenHelper() {
+            return sqLiteOpenHelper;
+        }
     }
 
     /**
