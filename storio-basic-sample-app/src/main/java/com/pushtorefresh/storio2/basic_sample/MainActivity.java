@@ -60,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
                 .prepare()
                 .executeAsBlocking();
 
-            Toast.makeText(this, getResources().getQuantityString(R.plurals.tweets_inserted, results.results().size()), Toast.LENGTH_LONG).show();
+            int count = results.results().size();
+            Toast.makeText(this, getResources().getQuantityString(R.plurals.tweets_inserted, count, count),
+                    Toast.LENGTH_SHORT).show();
 
             List<Tweet> receivedTweets = storIOSQLite
                 .get()
@@ -69,7 +71,9 @@ public class MainActivity extends AppCompatActivity {
                 .prepare()
                 .executeAsBlocking();
 
-            Toast.makeText(this, getResources().getQuantityString(R.plurals.tweets_loaded, receivedTweets.size()), Toast.LENGTH_LONG).show();
+            int rcvCount = receivedTweets.size();
+            Toast.makeText(this, getResources().getQuantityString(R.plurals.tweets_loaded, rcvCount, rcvCount),
+                    Toast.LENGTH_SHORT).show();
 
             tweetsAdapter.setTweets(receivedTweets);
         } catch (StorIOException e) {
