@@ -24,4 +24,10 @@
         android:textColor="@color/text_primary"
         tools:text="StorIO — modern API for SQLiteDatabase and ContentResolver" />
 
+    <Button
+        android:id="@+id/button_update"
+        android:layout_width="wrap_content"
+        android:text="@string/update_tweet"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>
