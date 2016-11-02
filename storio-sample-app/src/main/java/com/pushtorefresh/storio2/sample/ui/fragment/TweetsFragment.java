@@ -33,6 +33,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action1;
 import timber.log.Timber;
 
 import static com.pushtorefresh.storio2.sample.ui.Toasts.safeShowShortToast;
@@ -103,28 +104,27 @@ public class TweetsFragment extends BaseFragment {
                 .asRxObservable() // it will be subscribed to changes in tweets table!
                 .delay(1, SECONDS) // for better User Experience :) Actually, StorIO is so fast that we need to delay emissions (it's a joke, or not)
                 .observeOn(mainThread())
-                .subscribe(tweets -> {
-                    // Remember: subscriber will automatically receive updates
-                    // Of tables from Query (tweets table in our case)
-                    // This makes your code really Reactive and nice!
-
-                    // We guarantee, that list of objects will never be null (also we use @NonNull/@Nullable)
-                    // So you just need to check if it's empty or not
-                    if (tweets.isEmpty()) {
-                        uiStateController.setUiStateEmpty();
-                        tweetsAdapter.setTweets(Collections.emptyList());
-                    } else {
-                        uiStateController.setUiStateContent();
-                        tweetsAdapter.setTweets(tweets);
+                .subscribe(new Action1<List<Tweet>>() {
+                    @Override
+                    public void call(List<Tweet> tweets) {
+                        if (tweets.isEmpty()) {
+                            uiStateController.setUiStateEmpty();
+                            tweetsAdapter.setTweets(Collections.<Tweet>emptyList());
+                        } else {
+                            uiStateController.setUiStateContent();
+                            tweetsAdapter.setTweets(tweets);
+                        }
                     }
-                }, throwable -> {
-                    // In cases when you are not sure that query will be successful
-                    // You can prevent crash of the application via error handler
-                    Timber.e(throwable, "reloadData()");
-                    uiStateController.setUiStateError();
-                    tweetsAdapter.setTweets(Collections.emptyList());
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        // In cases when you are not sure that query will be successful
+                        // You can prevent crash of the application via error handler
+                        Timber.e(throwable, "reloadData()");
+                        uiStateController.setUiStateError();
+                        tweetsAdapter.setTweets(Collections.<Tweet>emptyList());
+                    }
                 });
-
         // Preventing memory leak (other Observables: Put, Delete emit result once so memory leak won't live long)
         // Because rx.Observable from Get Operation is endless (it watches for changes of tables from query)
         // You can easily create memory leak (in this case you'll leak the Fragment and all it's fields)

@@ -23,6 +23,8 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Single;
+import rx.functions.Func1;
 
 import static java.util.Collections.emptyList;
 
@@ -109,13 +111,23 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                     .prepare()
                     .asRxSingle()
                     // 2.
-                    .map(tweet -> Tweet.newTweet(id, tweet.author() + "+", tweet.content()))
+                    .map(new Func1<Tweet, Tweet>() {
+                        @Override
+                        public Tweet call(Tweet tweet) {
+                            return Tweet.newTweet(id, tweet.author() + "+", tweet.content());
+                        }
+                    })
                     // 3.
-                    .flatMap(tweet -> storIOSQLite
-                            .put()
-                            .object(tweet)
-                            .prepare()
-                            .asRxSingle())
+                    .flatMap(new Func1<Tweet, Single<?>>() {
+                        @Override
+                        public Single<?> call(Tweet tweet) {
+                            return storIOSQLite
+                                    .put()
+                                    .object(tweet)
+                                    .prepare()
+                                    .asRxSingle();
+                        }
+                    })
                     .subscribe();
         }
     }
