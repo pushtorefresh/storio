@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.sample.db.DbModule;
 import com.pushtorefresh.storio2.sample.many_to_many_sample.ManyToManyActivity;
-import com.pushtorefresh.storio2.sample.ui.adapter.TweetsAdapter;
 import com.pushtorefresh.storio2.sample.provider.SampleContentProvider;
 import com.pushtorefresh.storio2.sample.sqldelight.SqlDelightActivity;
 import com.pushtorefresh.storio2.sample.ui.fragment.TweetsFragment;
@@ -26,8 +25,6 @@ public interface AppComponent {
     void inject(@NonNull TweetsFragment fragment);
 
     void inject(@NonNull ManyToManyActivity manyToManyActivity);
-
-    void inject(@NonNull TweetsAdapter adapter);
 
     void inject(@NonNull SqlDelightActivity sqlDelightActivity);
 

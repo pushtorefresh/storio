@@ -1,8 +1,8 @@
 package com.pushtorefresh.storio2.sample.ui.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,28 +10,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.pushtorefresh.storio2.sample.R;
-import com.pushtorefresh.storio2.sample.SampleApp;
 import com.pushtorefresh.storio2.sample.db.entities.Tweet;
-import com.pushtorefresh.storio2.sample.db.tables.TweetsTable;
-import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio2.sqlite.queries.Query;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.Single;
-import rx.functions.Func1;
 
 import static java.util.Collections.emptyList;
 
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
-
-    @Inject
-    StorIOSQLite storIOSQLite;
 
     @NonNull
     private final LayoutInflater layoutInflater;
@@ -39,9 +28,12 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     @NonNull
     private List<Tweet> tweets = emptyList();
 
-    public TweetsAdapter(@NonNull Context context, @NonNull LayoutInflater layoutInflater) {
-        SampleApp.get(context).appComponent().inject(this);
+    @Nullable
+    private final OnUpdateTweetListener listener;
+
+    public TweetsAdapter(@NonNull LayoutInflater layoutInflater, @Nullable OnUpdateTweetListener listener) {
         this.layoutInflater = layoutInflater;
+        this.listener = listener;
     }
 
     public void setTweets(@NonNull List<Tweet> tweets) {
@@ -57,7 +49,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = layoutInflater.inflate(R.layout.list_item_tweet, parent, false);
-        return new ViewHolder(itemView, storIOSQLite);
+        return new ViewHolder(itemView, listener);
     }
 
     @SuppressLint("SetTextI18n")
@@ -72,8 +64,10 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final StorIOSQLite storIOSQLite;
+        @Nullable
+        private final OnUpdateTweetListener listener;
 
+        @NonNull
         Long id;
 
         @Bind(R.id.list_item_tweet_author)
@@ -82,53 +76,22 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         @Bind(R.id.list_item_tweet_content)
         TextView contentTextView;
 
-        public ViewHolder(@NonNull View itemView, @NonNull StorIOSQLite storIOSQLite) {
+        public ViewHolder(@NonNull View itemView, @Nullable OnUpdateTweetListener listener) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            this.storIOSQLite = storIOSQLite;
+            this.listener = listener;
         }
 
-        /**
-         * This method updates specific tweet by adding '+' to the end of tweet author
-         * every time when button pressed.
-         * It has chain of 3 steps in ReactiveX-way:
-         * 1. getting tweet via its id
-         * 2. mapping with changing author
-         * 3. putting result back to database
-         */
         @OnClick(R.id.button_update)
         void updateTweet () {
-
-            // 1.
-            storIOSQLite
-                    .get()
-                    .object(Tweet.class)
-                    .withQuery(Query.builder()
-                            .table(TweetsTable.TABLE)
-                            .where(TweetsTable.COLUMN_ID + " = ?")
-                            .whereArgs(id)
-                            .build())
-                    .prepare()
-                    .asRxSingle()
-                    // 2.
-                    .map(new Func1<Tweet, Tweet>() {
-                        @Override
-                        public Tweet call(Tweet tweet) {
-                            return Tweet.newTweet(id, tweet.author() + "+", tweet.content());
-                        }
-                    })
-                    // 3.
-                    .flatMap(new Func1<Tweet, Single<?>>() {
-                        @Override
-                        public Single<?> call(Tweet tweet) {
-                            return storIOSQLite
-                                    .put()
-                                    .object(tweet)
-                                    .prepare()
-                                    .asRxSingle();
-                        }
-                    })
-                    .subscribe();
+            if(listener != null) {
+                listener.onUpdateTweet(id);
+            }
         }
+    }
+
+    // Helps reflect to button update pressing
+    public interface OnUpdateTweetListener {
+        void onUpdateTweet(@NonNull Long tweetId);
     }
 }

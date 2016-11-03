@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.pushtorefresh.storio2.sample.R;
 import com.pushtorefresh.storio2.sample.SampleApp;
@@ -21,6 +22,7 @@ import com.pushtorefresh.storio2.sample.ui.UiStateController;
 import com.pushtorefresh.storio2.sample.ui.adapter.TweetsAdapter;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.put.PutResults;
+import com.pushtorefresh.storio2.sqlite.queries.Query;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,15 +34,17 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observer;
+import rx.Single;
 import rx.Subscription;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import timber.log.Timber;
 
 import static com.pushtorefresh.storio2.sample.ui.Toasts.safeShowShortToast;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
-public class TweetsFragment extends BaseFragment {
+public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpdateTweetListener {
 
     // In this sample app we use dependency injection (DI) to keep the code clean
     // Just remember that it's already configured instance of StorIOSQLite from DbModule
@@ -59,7 +63,7 @@ public class TweetsFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         final FragmentActivity activity = getActivity();
         SampleApp.get(activity).appComponent().inject(this);
-        tweetsAdapter = new TweetsAdapter(getContext(), LayoutInflater.from(activity));
+        tweetsAdapter = new TweetsAdapter(LayoutInflater.from(activity), this);
         new Relations(storIOSQLite).getTweetWithUser();
     }
 
@@ -107,6 +111,12 @@ public class TweetsFragment extends BaseFragment {
                 .subscribe(new Action1<List<Tweet>>() {
                     @Override
                     public void call(List<Tweet> tweets) {
+                        // Remember: subscriber will automatically receive updates
+                        // Of tables from Query (tweets table in our case)
+                        // This makes your code really Reactive and nice!
+
+                        // We guarantee, that list of objects will never be null (also we use @NonNull/@Nullable)
+                        // So you just need to check if it's empty or not
                         if (tweets.isEmpty()) {
                             uiStateController.setUiStateEmpty();
                             tweetsAdapter.setTweets(Collections.<Tweet>emptyList());
@@ -169,6 +179,65 @@ public class TweetsFragment extends BaseFragment {
                     @Override
                     public void onCompleted() {
                         // no impl required
+                    }
+                });
+    }
+
+    /**
+     * This method from {@link com.pushtorefresh.storio2.sample.ui.adapter.TweetsAdapter.OnUpdateTweetListener}
+     * interface.
+     * It updates specific tweet by adding '+' to the end of tweet author
+     * every time when is called.
+     * It has chain of 3 steps in ReactiveX-way:
+     * 1. getting tweet via its id
+     * 2. mapping with changing author
+     * 3. putting result back to database
+     */
+    @Override
+    public void onUpdateTweet(@NonNull final Long tweetId) {
+        // 1.
+        storIOSQLite
+                .get()
+                .object(Tweet.class)
+                .withQuery(Query.builder()
+                        .table(TweetsTable.TABLE)
+                        .where(TweetsTable.COLUMN_ID + " = ?")
+                        .whereArgs(tweetId)
+                        .build())
+                .prepare()
+                .asRxSingle()
+                // 2.
+                .map(new Func1<Tweet, Tweet>() {
+                    @Override
+                    public Tweet call(Tweet tweet) {
+                        // We can get NULL in parameter so we check it
+                        return tweet == null ? tweet :
+                                Tweet.newTweet(tweetId, tweet.author() + "+", tweet.content());
+                    }
+                })
+                // 3.
+                .flatMap(new Func1<Tweet, Single<?>>() {
+                    @Override
+                    public Single<?> call(Tweet tweet) {
+                        return storIOSQLite
+                                .put()
+                                .object(tweet)
+                                .prepare()
+                                .asRxSingle();
+                    }
+                })
+                // Let Subscriber run in Main Thread e.g. for Toast
+                .observeOn(mainThread())
+                .subscribe(new Action1<Object>() {
+                    @Override
+                    public void call(Object o) {
+
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable e) {
+                        // Just for curiosity )
+                        Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
