@@ -16,6 +16,6 @@ public class StorIOContentResolverColumnMeta extends StorIOColumnMeta<StorIOCont
             @NotNull String fieldName,
             @NotNull JavaType javaType,
             @NotNull StorIOContentResolverColumn storIOColumn) {
-        super(enclosingElement, element, fieldName, javaType, storIOColumn);
+        super(enclosingElement, element, fieldName, null, javaType, storIOColumn);
     }
 }

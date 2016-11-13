@@ -93,8 +93,9 @@ public abstract class StorIOAnnotationsProcessor
      * Checks that element annotated with {@link StorIOColumnMeta} satisfies all required conditions
      *
      * @param annotatedField an annotated field
+     * @param hasConstructor
      */
-    protected void validateAnnotatedField(@NotNull final Element annotatedField) {
+    protected void validateAnnotatedField(@NotNull final Element annotatedField, boolean hasConstructor) {
         // we expect here that annotatedElement is Field, annotation requires that via @Target
 
         final Element enclosingElement = annotatedField.getEnclosingElement();
@@ -112,19 +113,19 @@ public abstract class StorIOAnnotationsProcessor
                     "Please annotate class " + enclosingElement.getSimpleName() + " with " + getTypeAnnotationClass().getSimpleName()
             );
         }
-
-        if (annotatedField.getModifiers().contains(PRIVATE)) {
-            throw new ProcessingException(
-                    annotatedField,
-                    getColumnAnnotationClass().getSimpleName() + " can not be applied to private field: " + annotatedField.getSimpleName()
-            );
-        }
-
-        if (annotatedField.getModifiers().contains(FINAL)) {
-            throw new ProcessingException(
-                    annotatedField,
-                    getColumnAnnotationClass().getSimpleName() + " can not be applied to final field: " + annotatedField.getSimpleName()
-            );
+        if (!hasConstructor) {
+            if (annotatedField.getModifiers().contains(PRIVATE)) {
+                throw new ProcessingException(
+                        annotatedField,
+                        getColumnAnnotationClass().getSimpleName() + " can not be applied to private field: " + annotatedField.getSimpleName()
+                );
+            }
+            if (annotatedField.getModifiers().contains(FINAL)) {
+                throw new ProcessingException(
+                        annotatedField,
+                        getColumnAnnotationClass().getSimpleName() + " can not be applied to final field: " + annotatedField.getSimpleName()
+                );
+            }
         }
     }
 

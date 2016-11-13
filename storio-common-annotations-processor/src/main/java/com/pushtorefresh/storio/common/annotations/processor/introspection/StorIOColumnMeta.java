@@ -17,6 +17,8 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
     @NotNull
     public final String fieldName;
 
+    public final String getterName;
+
     @NotNull
     public final JavaType javaType;
 
@@ -27,11 +29,13 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
             @NotNull Element enclosingElement,
             @NotNull Element element,
             @NotNull String fieldName,
+            String getterName,
             @NotNull JavaType javaType,
             @NotNull ColumnAnnotation storIOColumn) {
         this.enclosingElement = enclosingElement;
         this.element = element;
         this.fieldName = fieldName;
+        this.getterName = getterName;
         this.javaType = javaType;
         this.storIOColumn = storIOColumn;
     }

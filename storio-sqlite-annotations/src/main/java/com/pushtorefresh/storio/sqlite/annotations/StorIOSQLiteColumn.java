@@ -34,4 +34,6 @@ public @interface StorIOSQLiteColumn {
      * @return true if column with {@code null} value should be ignored, false otherwise
      */
     boolean ignoreNull() default false;
+
+    int constructorSeq() default 0;
 }

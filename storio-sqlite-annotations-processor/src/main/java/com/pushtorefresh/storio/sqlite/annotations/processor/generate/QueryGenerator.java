@@ -31,7 +31,7 @@ public class QueryGenerator {
                     whereArgs
                             .append(varName)
                             .append(".")
-                            .append(columnMeta.fieldName);
+                            .append((columnMeta.getterName != null) ? columnMeta.getterName : columnMeta.fieldName);
                 } else {
                     whereClause
                             .append(" AND ")
@@ -42,7 +42,7 @@ public class QueryGenerator {
                             .append(", ")
                             .append(varName)
                             .append(".")
-                            .append(columnMeta.fieldName);
+                            .append((columnMeta.getterName != null) ? columnMeta.getterName : columnMeta.fieldName);
                 }
 
                 i++;

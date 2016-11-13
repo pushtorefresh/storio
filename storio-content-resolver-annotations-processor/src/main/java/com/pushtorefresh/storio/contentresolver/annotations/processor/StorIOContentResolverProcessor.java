@@ -140,8 +140,7 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                 = roundEnvironment.getElementsAnnotatedWith(StorIOContentResolverColumn.class);
 
         for (final Element annotatedFieldElement : elementsAnnotatedWithStorIOContentResolverColumn) {
-            validateAnnotatedField(annotatedFieldElement);
-
+            validateAnnotatedField(annotatedFieldElement, false);
             final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta = processAnnotatedField(annotatedFieldElement);
             final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = annotatedClasses.get(storIOContentResolverColumnMeta.enclosingElement);
 
@@ -167,9 +166,10 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
      * Checks that element annotated with {@link StorIOContentResolverColumn} satisfies all required conditions
      *
      * @param annotatedField element annotated with {@link StorIOContentResolverColumn}
+     * @param hasConstructor
      */
     @Override
-    protected void validateAnnotatedField(@NotNull final Element annotatedField) {
+    protected void validateAnnotatedField(@NotNull final Element annotatedField, boolean hasConstructor) {
         // we expect here that annotatedElement is Field, annotation requires that via @Target
 
         final Element enclosingElement = annotatedField.getEnclosingElement();
