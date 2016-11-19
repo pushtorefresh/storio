@@ -116,12 +116,12 @@ public class PutResolverGenerator implements Generator<StorIOContentResolverType
         for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta.columns.values()) {
             final boolean ignoreNull = columnMeta.storIOColumn.ignoreNull();
             if (ignoreNull) {
-                builder.beginControlFlow("if($L != null)", "object." + columnMeta.fieldName);
+                builder.beginControlFlow("if($L != null)", "object." + columnMeta.elementName);
             }
             builder.addStatement(
                     "contentValues.put($S, $L)",
                     columnMeta.storIOColumn.name(),
-                    "object." + columnMeta.fieldName
+                    "object." + columnMeta.elementName
             );
             if (ignoreNull) {
                 builder.endControlFlow();

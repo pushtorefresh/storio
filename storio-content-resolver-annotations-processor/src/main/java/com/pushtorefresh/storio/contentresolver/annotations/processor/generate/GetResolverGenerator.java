@@ -104,7 +104,7 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
                 builder.beginControlFlow("if(!cursor.isNull($L))", columnIndex);
             }
 
-            builder.addStatement("object.$L = cursor.$L", columnMeta.fieldName, getFromCursor);
+            builder.addStatement("object.$L = cursor.$L", columnMeta.elementName, getFromCursor);
 
             if (isBoxed) {
                 builder.endControlFlow();

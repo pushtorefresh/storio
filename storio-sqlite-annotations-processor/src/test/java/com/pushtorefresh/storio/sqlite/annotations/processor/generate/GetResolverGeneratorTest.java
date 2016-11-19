@@ -64,7 +64,8 @@ public class GetResolverGeneratorTest {
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta(
                 "TestItem",
                 "com.test",
-                storIOSQLiteType
+                storIOSQLiteType,
+                false
         );
 
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta1 = createColumnMetaMock(
@@ -73,7 +74,8 @@ public class GetResolverGeneratorTest {
                 "field1",
                 true,           // key
                 false,
-                JavaType.BOOLEAN
+                JavaType.BOOLEAN,
+                false
         );
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
@@ -83,7 +85,8 @@ public class GetResolverGeneratorTest {
                 "field2",
                 false,
                 false,
-                JavaType.STRING
+                JavaType.STRING,
+                false
         );
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 
@@ -109,7 +112,8 @@ public class GetResolverGeneratorTest {
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta(
                 "TestItem",
                 "com.test",
-                storIOSQLiteType
+                storIOSQLiteType,
+                false
         );
 
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta1 = createColumnMetaMock(
@@ -118,7 +122,8 @@ public class GetResolverGeneratorTest {
                 "field1",
                 true,                       // key
                 false,
-                JavaType.BOOLEAN
+                JavaType.BOOLEAN,
+                false
         );
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
@@ -128,7 +133,8 @@ public class GetResolverGeneratorTest {
                 "field2",
                 false,
                 false,
-                JavaType.INTEGER_OBJECT     // boxed type
+                JavaType.INTEGER_OBJECT,     // boxed type
+        false
         );
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 

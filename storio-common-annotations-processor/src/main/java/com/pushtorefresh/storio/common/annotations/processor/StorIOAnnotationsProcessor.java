@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.common.annotations.processor;
 
 import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOColumnMeta;
+import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOCreatorMeta;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOTypeMeta;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,12 +21,16 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 import static javax.lang.model.element.ElementKind.CLASS;
+import static javax.lang.model.element.ElementKind.FIELD;
+import static javax.lang.model.element.ElementKind.METHOD;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.STATIC;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
 /**
@@ -38,7 +43,8 @@ import static javax.tools.Diagnostic.Kind.ERROR;
  */
 // Generate file with annotation processor declaration via another Annotation Processor!
 public abstract class StorIOAnnotationsProcessor
-        <TypeMeta extends StorIOTypeMeta, ColumnMeta extends StorIOColumnMeta>
+        <TypeMeta extends StorIOTypeMeta,
+                ColumnMeta extends StorIOColumnMeta>
         extends AbstractProcessor {
 
     private Filer filer;
@@ -92,38 +98,91 @@ public abstract class StorIOAnnotationsProcessor
     /**
      * Checks that element annotated with {@link StorIOColumnMeta} satisfies all required conditions
      *
-     * @param annotatedField an annotated field
+     * @param annotatedElement an annotated field
      */
-    protected void validateAnnotatedField(@NotNull final Element annotatedField) {
-        // we expect here that annotatedElement is Field, annotation requires that via @Target
+    protected void validateAnnotatedField(@NotNull final Element annotatedElement) {
+        // we expect here that annotatedElement is Field or Method, annotation requires that via @Target
 
-        final Element enclosingElement = annotatedField.getEnclosingElement();
+        final Element enclosingElement = annotatedElement.getEnclosingElement();
 
-        if (!enclosingElement.getKind().equals(CLASS)) {
+        if (enclosingElement.getKind() != CLASS) {
             throw new ProcessingException(
-                    annotatedField,
-                    "Please apply " + getTypeAnnotationClass().getSimpleName() + " to fields of class: " + annotatedField.getSimpleName()
+                    annotatedElement,
+                    "Please apply " + getColumnAnnotationClass().getSimpleName() + " to fields or methods of class: " + annotatedElement.getSimpleName()
             );
         }
 
         if (enclosingElement.getAnnotation(getTypeAnnotationClass()) == null) {
             throw new ProcessingException(
-                    annotatedField,
+                    annotatedElement,
                     "Please annotate class " + enclosingElement.getSimpleName() + " with " + getTypeAnnotationClass().getSimpleName()
             );
         }
 
-        if (annotatedField.getModifiers().contains(PRIVATE)) {
+        if (annotatedElement.getKind() == FIELD && annotatedElement.getModifiers().contains(PRIVATE)) {
             throw new ProcessingException(
-                    annotatedField,
-                    getColumnAnnotationClass().getSimpleName() + " can not be applied to private field: " + annotatedField.getSimpleName()
+                    annotatedElement,
+                    getColumnAnnotationClass().getSimpleName() + " can not be applied to private field: " + annotatedElement.getSimpleName()
             );
         }
 
-        if (annotatedField.getModifiers().contains(FINAL)) {
+        if (annotatedElement.getKind() == FIELD && annotatedElement.getModifiers().contains(FINAL)) {
             throw new ProcessingException(
-                    annotatedField,
-                    getColumnAnnotationClass().getSimpleName() + " can not be applied to final field: " + annotatedField.getSimpleName()
+                    annotatedElement,
+                    getColumnAnnotationClass().getSimpleName() + " can not be applied to final field: " + annotatedElement.getSimpleName()
+            );
+        }
+
+        if (annotatedElement.getKind() == METHOD && !((ExecutableElement) annotatedElement).getParameters().isEmpty()) {
+            throw new ProcessingException(
+                    annotatedElement,
+                    getColumnAnnotationClass().getSimpleName() + " can not be applied to method with parameters: " + annotatedElement.getSimpleName()
+            );
+        }
+    }
+
+    /**
+     * Checks that element annotated with {@link StorIOCreatorMeta} satisfies all required conditions
+     *
+     * @param annotatedElement an annotated factory method or constructor
+     */
+    protected void validateAnnotatedExecutable(@NotNull final ExecutableElement annotatedElement) {
+        // we expect here that annotatedElement is Method or Constructor, annotation requires that via @Target
+
+        final Element enclosingElement = annotatedElement.getEnclosingElement();
+
+        if (enclosingElement.getKind() != CLASS) {
+            throw new ProcessingException(
+                    annotatedElement,
+                    "Please apply " + getCreatorAnnotationClass().getSimpleName() + " to constructor or factory method of class: " + enclosingElement.getSimpleName()
+            );
+        }
+
+        if (enclosingElement.getAnnotation(getTypeAnnotationClass()) == null) {
+            throw new ProcessingException(
+                    annotatedElement,
+                    "Please annotate class " + enclosingElement.getSimpleName() + " with " + getTypeAnnotationClass().getSimpleName()
+            );
+        }
+
+        if (annotatedElement.getModifiers().contains(PRIVATE)) {
+            throw new ProcessingException(
+                    annotatedElement,
+                    getCreatorAnnotationClass().getSimpleName() + " can not be applied to private methods or constructors: " + annotatedElement.getSimpleName()
+            );
+        }
+
+        if (annotatedElement.getKind() == METHOD && !annotatedElement.getModifiers().contains(STATIC)) {
+            throw new ProcessingException(
+                    annotatedElement,
+                    getCreatorAnnotationClass().getSimpleName() + " can not be applied to non-static methods: " + annotatedElement.getSimpleName()
+            );
+        }
+
+        if (annotatedElement.getKind() == METHOD && !annotatedElement.getReturnType().equals(enclosingElement.asType())) {
+            throw new ProcessingException(
+                    annotatedElement,
+                    getCreatorAnnotationClass().getSimpleName() + " can not be applied to method with different return type from: " + enclosingElement.getSimpleName()
             );
         }
     }
@@ -158,6 +217,8 @@ public abstract class StorIOAnnotationsProcessor
             final Map<TypeElement, TypeMeta> annotatedClasses = processAnnotatedClasses(roundEnv, elementUtils);
 
             processAnnotatedFields(roundEnv, annotatedClasses);
+
+            processAnnotatedExecutables(roundEnv, annotatedClasses);
 
             validateAnnotatedClassesAndColumns(annotatedClasses);
 
@@ -208,6 +269,14 @@ public abstract class StorIOAnnotationsProcessor
     @NotNull
     protected abstract ColumnMeta processAnnotatedField(@NotNull final Element annotatedField);
 
+    /**
+     * Processes methods and constructors
+     *
+     * @param roundEnvironment current processing environment
+     * @param annotatedClasses map of annotated classes
+     */
+    protected abstract void processAnnotatedExecutables(@NotNull final RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, TypeMeta> annotatedClasses);
+
     protected abstract void validateAnnotatedClassesAndColumns(@NotNull Map<TypeElement, TypeMeta> annotatedClasses);
 
     @NotNull
@@ -215,6 +284,9 @@ public abstract class StorIOAnnotationsProcessor
 
     @NotNull
     protected abstract Class<? extends Annotation> getColumnAnnotationClass();
+
+    @NotNull
+    protected abstract Class<? extends Annotation> getCreatorAnnotationClass();
 
     @NotNull
     protected abstract Generator<TypeMeta> createPutResolver();

@@ -15,7 +15,7 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
     public final Element element;
 
     @NotNull
-    public final String fieldName;
+    public final String elementName;
 
     @NotNull
     public final JavaType javaType;
@@ -23,17 +23,31 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
     @NotNull
     public final ColumnAnnotation storIOColumn;
 
+    public final boolean fromMethod;
+
     public StorIOColumnMeta(
             @NotNull Element enclosingElement,
             @NotNull Element element,
-            @NotNull String fieldName,
+            @NotNull String elementName,
             @NotNull JavaType javaType,
             @NotNull ColumnAnnotation storIOColumn) {
+        this(enclosingElement, element, elementName, javaType, storIOColumn, false);
+    }
+
+
+    public StorIOColumnMeta(
+            @NotNull Element enclosingElement,
+            @NotNull Element element,
+            @NotNull String elementName,
+            @NotNull JavaType javaType,
+            @NotNull ColumnAnnotation storIOColumn,
+            boolean fromMethod) {
         this.enclosingElement = enclosingElement;
         this.element = element;
-        this.fieldName = fieldName;
+        this.elementName = elementName;
         this.javaType = javaType;
         this.storIOColumn = storIOColumn;
+        this.fromMethod = fromMethod;
     }
 
     @Override
@@ -43,9 +57,10 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
 
         StorIOColumnMeta<?> that = (StorIOColumnMeta<?>) o;
 
+        if (fromMethod != that.fromMethod) return false;
         if (!enclosingElement.equals(that.enclosingElement)) return false;
         if (!element.equals(that.element)) return false;
-        if (!fieldName.equals(that.fieldName)) return false;
+        if (!elementName.equals(that.elementName)) return false;
         if (javaType != that.javaType) return false;
         return storIOColumn.equals(that.storIOColumn);
 
@@ -55,9 +70,10 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
     public int hashCode() {
         int result = enclosingElement.hashCode();
         result = 31 * result + element.hashCode();
-        result = 31 * result + fieldName.hashCode();
+        result = 31 * result + elementName.hashCode();
         result = 31 * result + javaType.hashCode();
         result = 31 * result + storIOColumn.hashCode();
+        result = 31 * result + (fromMethod ? 1 : 0);
         return result;
     }
 
@@ -66,9 +82,10 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
         return "StorIOColumnMeta{" +
                 "enclosingElement=" + enclosingElement +
                 ", element=" + element +
-                ", fieldName='" + fieldName + '\'' +
+                ", elementName='" + elementName + '\'' +
                 ", javaType=" + javaType +
                 ", storIOColumn=" + storIOColumn +
+                ", fromMethod=" + fromMethod +
                 '}';
     }
 }

@@ -19,7 +19,8 @@ public class MappingGeneratorTest {
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta(
                 "TestItem",
                 "com.test",
-                storIOSQLiteType
+                storIOSQLiteType,
+                false
         );
 
         MappingGenerator mappingGenerator = new MappingGenerator();

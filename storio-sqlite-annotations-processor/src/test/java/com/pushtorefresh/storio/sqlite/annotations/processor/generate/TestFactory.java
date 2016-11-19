@@ -36,7 +36,8 @@ public final class TestFactory {
             @NotNull String fieldName,
             boolean isKey,
             boolean ignoreNull,
-            @Nullable JavaType javaType) {
+            @Nullable JavaType javaType,
+            boolean needCreator) {
 
         final StorIOSQLiteColumn storIOSQLiteColumn = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn.name()).thenReturn(columnName);
@@ -49,7 +50,8 @@ public final class TestFactory {
                 element,
                 fieldName,
                 javaType,
-                storIOSQLiteColumn
+                storIOSQLiteColumn,
+                needCreator
         );
     }
 }
