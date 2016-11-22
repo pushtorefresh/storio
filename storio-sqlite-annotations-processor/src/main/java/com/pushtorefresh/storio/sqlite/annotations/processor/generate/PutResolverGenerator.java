@@ -110,7 +110,7 @@ public class PutResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
             builder.addStatement(
                     "contentValues.put($S, $L)",
                     columnMeta.storIOColumn.name(),
-                    "object." + columnMeta.elementName + (columnMeta.fromMethod ? "()" : "")
+                    "object." + columnMeta.elementName + (columnMeta.isMethod() ? "()" : "")
             );
             if (ignoreNull) {
                 builder.endControlFlow();

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.annotation.Annotation;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 
 public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
 
@@ -23,31 +24,21 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
     @NotNull
     public final ColumnAnnotation storIOColumn;
 
-    public final boolean fromMethod;
-
     public StorIOColumnMeta(
             @NotNull Element enclosingElement,
             @NotNull Element element,
             @NotNull String elementName,
             @NotNull JavaType javaType,
             @NotNull ColumnAnnotation storIOColumn) {
-        this(enclosingElement, element, elementName, javaType, storIOColumn, false);
-    }
-
-
-    public StorIOColumnMeta(
-            @NotNull Element enclosingElement,
-            @NotNull Element element,
-            @NotNull String elementName,
-            @NotNull JavaType javaType,
-            @NotNull ColumnAnnotation storIOColumn,
-            boolean fromMethod) {
         this.enclosingElement = enclosingElement;
         this.element = element;
         this.elementName = elementName;
         this.javaType = javaType;
         this.storIOColumn = storIOColumn;
-        this.fromMethod = fromMethod;
+    }
+
+    public boolean isMethod() {
+        return element.getKind() == ElementKind.METHOD;
     }
 
     @Override
@@ -57,7 +48,6 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
 
         StorIOColumnMeta<?> that = (StorIOColumnMeta<?>) o;
 
-        if (fromMethod != that.fromMethod) return false;
         if (!enclosingElement.equals(that.enclosingElement)) return false;
         if (!element.equals(that.element)) return false;
         if (!elementName.equals(that.elementName)) return false;
@@ -73,7 +63,6 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
         result = 31 * result + elementName.hashCode();
         result = 31 * result + javaType.hashCode();
         result = 31 * result + storIOColumn.hashCode();
-        result = 31 * result + (fromMethod ? 1 : 0);
         return result;
     }
 
@@ -85,7 +74,6 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
                 ", elementName='" + elementName + '\'' +
                 ", javaType=" + javaType +
                 ", storIOColumn=" + storIOColumn +
-                ", fromMethod=" + fromMethod +
                 '}';
     }
 }

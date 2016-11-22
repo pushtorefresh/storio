@@ -7,7 +7,7 @@ import java.lang.annotation.Annotation;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 
-public class StorIOCreatorMeta <CreatorAnnotation extends Annotation> {
+public class StorIOCreatorMeta<CreatorAnnotation extends Annotation> {
 
     @NotNull
     public final Element enclosingElement;

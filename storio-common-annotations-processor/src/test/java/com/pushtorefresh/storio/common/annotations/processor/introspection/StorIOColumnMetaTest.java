@@ -32,7 +32,7 @@ public class StorIOColumnMetaTest {
 	public final void constructor() {
 		// when
 		StorIOColumnMeta storioColumnMeta = new StorIOColumnMeta(elementMock, elementMock, "TEST", javaType,
-				annotationMock, true);
+				annotationMock);
 
 		// then
 		assertThat(elementMock).as("Constructor must be set enclosingElement field.")
@@ -45,8 +45,6 @@ public class StorIOColumnMetaTest {
 				.isEqualTo(getInternalState(storioColumnMeta, "javaType"));
 		assertThat(annotationMock).as("Constructor must be set storIOColumn field.")
 				.isEqualTo(getInternalState(storioColumnMeta, "storIOColumn"));
-		assertThat(true).as("Constructor must be set fromMethod field.")
-				.isEqualTo(getInternalState(storioColumnMeta, "fromMethod"));
 	}
 
 	@Test
@@ -59,9 +57,9 @@ public class StorIOColumnMetaTest {
 	public final void toStringValidation() {
 		// given
 		StorIOColumnMeta storioColumnMeta = new StorIOColumnMeta(elementMock, elementMock, "TEST", javaType,
-				annotationMock, true);
+				annotationMock);
 		String expectedString = "StorIOColumnMeta{enclosingElement=" + elementMock + ", element=" + elementMock
-				+ ", elementName='TEST" + '\'' + ", javaType=" + javaType + ", storIOColumn=" + annotationMock + ", fromMethod=true" + '}';
+				+ ", elementName='TEST" + '\'' + ", javaType=" + javaType + ", storIOColumn=" + annotationMock +  '}';
 
 		// when
 		String toString = storioColumnMeta.toString();

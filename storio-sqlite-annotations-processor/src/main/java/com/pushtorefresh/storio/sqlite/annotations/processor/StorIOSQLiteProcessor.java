@@ -115,8 +115,8 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
             }
 
             // If field annotation applied to both fields and methods in a same class
-            if ((storIOSQLiteTypeMeta.needCreator && !storIOSQLiteColumnMeta.fromMethod) ||
-                    (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.fromMethod && ! storIOSQLiteTypeMeta.columns.isEmpty())) {
+            if ((storIOSQLiteTypeMeta.needCreator && !storIOSQLiteColumnMeta.isMethod()) ||
+                    (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod() && ! storIOSQLiteTypeMeta.columns.isEmpty())) {
                 throw new ProcessingException(annotatedFieldElement, "Can't apply"
                         + StorIOSQLiteColumn.class.getSimpleName()
                         + " annotation to both fields and methods in a same class"
@@ -124,7 +124,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
             }
 
             // If column needs creator than enclosing class needs it as well
-            if (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.fromMethod) {
+            if (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod()) {
                 storIOSQLiteTypeMeta.needCreator = true;
             }
 
@@ -145,7 +145,6 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
         final JavaType javaType;
 
         try {
-
             javaType = JavaType.from(annotatedField.getKind() == ElementKind.FIELD ? annotatedField.asType() : ((ExecutableElement) annotatedField).getReturnType());
         } catch (Exception e) {
             throw new ProcessingException(annotatedField, "Unsupported type of field for "

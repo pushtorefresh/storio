@@ -43,8 +43,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
  */
 // Generate file with annotation processor declaration via another Annotation Processor!
 public abstract class StorIOAnnotationsProcessor
-        <TypeMeta extends StorIOTypeMeta,
-                ColumnMeta extends StorIOColumnMeta>
+        <TypeMeta extends StorIOTypeMeta, ColumnMeta extends StorIOColumnMeta>
         extends AbstractProcessor {
 
     private Filer filer;

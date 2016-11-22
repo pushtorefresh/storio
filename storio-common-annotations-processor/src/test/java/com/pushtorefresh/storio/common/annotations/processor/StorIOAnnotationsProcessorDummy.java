@@ -53,7 +53,6 @@ public final class StorIOAnnotationsProcessorDummy
 		return null;
 	}
 
-	@NotNull
 	@Override
 	protected Class<? extends Annotation> getCreatorAnnotationClass() {
 		return null;
