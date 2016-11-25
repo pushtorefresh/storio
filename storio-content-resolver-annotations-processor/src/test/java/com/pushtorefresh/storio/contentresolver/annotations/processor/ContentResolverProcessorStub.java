@@ -39,8 +39,8 @@ public class ContentResolverProcessorStub {
 
         // region Public Morozov
         @Override
-        public void validateAnnotatedField(@NotNull Element annotatedElement) {
-            super.validateAnnotatedField(annotatedElement);
+        public void validateAnnotatedFieldOrMethod(@NotNull Element annotatedElement) {
+            super.validateAnnotatedFieldOrMethod(annotatedElement);
         }
 
         public void validateUris(

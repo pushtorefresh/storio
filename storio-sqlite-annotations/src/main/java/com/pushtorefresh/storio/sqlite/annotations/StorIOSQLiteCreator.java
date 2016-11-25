@@ -8,9 +8,9 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation for marking constructor or factory method
+ * Annotation for marking constructor or factory method.
  */
 @Target({CONSTRUCTOR, METHOD})
-@Retention(RUNTIME) // we allow users to write reflection based code to work with annotation
+@Retention(RUNTIME) // We allow users to write reflection based code to work with annotation.
 public @interface StorIOSQLiteCreator {
 }

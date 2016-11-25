@@ -27,7 +27,7 @@ public class AnnotatedFieldValidationTest {
 
         expectedException.expect(ProcessingException.class);
         expectedException.expectMessage("Please apply TestFieldAnnotation to fields or methods of class: TestField");
-        stub.processor.validateAnnotatedField(stub.field);
+        stub.processor.validateAnnotatedFieldOrMethod(stub.field);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class AnnotatedFieldValidationTest {
 
         expectedException.expect(ProcessingException.class);
         expectedException.expectMessage("Please annotate class TestClass with TestClassAnnotation");
-        stub.processor.validateAnnotatedField(stub.field);
+        stub.processor.validateAnnotatedFieldOrMethod(stub.field);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class AnnotatedFieldValidationTest {
 
         expectedException.expect(ProcessingException.class);
         expectedException.expectMessage("TestFieldAnnotation can not be applied to private field: TestField");
-        stub.processor.validateAnnotatedField(stub.field);
+        stub.processor.validateAnnotatedFieldOrMethod(stub.field);
     }
 
     @Test
@@ -63,6 +63,6 @@ public class AnnotatedFieldValidationTest {
 
         expectedException.expect(ProcessingException.class);
         expectedException.expectMessage("TestFieldAnnotation can not be applied to final field: TestField");
-        stub.processor.validateAnnotatedField(stub.field);
+        stub.processor.validateAnnotatedFieldOrMethod(stub.field);
     }
 }

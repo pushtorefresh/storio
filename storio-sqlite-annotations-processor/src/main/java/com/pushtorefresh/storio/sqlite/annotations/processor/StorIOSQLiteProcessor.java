@@ -33,12 +33,12 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 /**
- * Annotation processor for StorIOSQLite
+ * Annotation processor for StorIOSQLite.
  * <p>
- * It'll process annotations to generate StorIOSQLite Object-Mapping
+ * It'll process annotations to generate StorIOSQLite Object-Mapping.
  * <p>
- * Addition: Annotation Processor should work fast and be optimized because it's part of compilation
- * We don't want to annoy developers, who use StorIO
+ * Addition: Annotation Processor should work fast and be optimized because it's part of compilation.
+ * We don't want to annoy developers, who use StorIO.
  */
 // Generate file with annotation processor declaration via another Annotation Processor!
 @AutoService(Processor.class)
@@ -57,7 +57,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
     }
 
     /**
-     * Processes annotated class
+     * Processes annotated class.
      *
      * @param classElement type element annotated with {@link StorIOSQLiteType}
      * @param elementUtils utils for working with elementUtils
@@ -84,7 +84,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
     }
 
     /**
-     * Processes fields annotated with {@link StorIOSQLiteColumn}
+     * Processes fields annotated with {@link StorIOSQLiteColumn}.
      *
      * @param roundEnvironment current processing environment
      * @param annotatedClasses map of classes annotated with {@link StorIOSQLiteType}
@@ -95,7 +95,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteColumn.class);
 
         for (final Element annotatedFieldElement : elementsAnnotatedWithStorIOSQLiteColumn) {
-            validateAnnotatedField(annotatedFieldElement);
+            validateAnnotatedFieldOrMethod(annotatedFieldElement);
             final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta = processAnnotatedField(annotatedFieldElement);
 
             final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = annotatedClasses.get(storIOSQLiteColumnMeta.enclosingElement);
@@ -109,12 +109,12 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 );
             }
 
-            // If class already contains column with same name -> throw exception
+            // If class already contains column with same name -> throw an exception.
             if (storIOSQLiteTypeMeta.columns.containsKey(storIOSQLiteColumnMeta.storIOColumn.name())) {
                 throw new ProcessingException(annotatedFieldElement, "Column name already used in this class");
             }
 
-            // If field annotation applied to both fields and methods in a same class
+            // If field annotation applied to both fields and methods in a same class.
             if ((storIOSQLiteTypeMeta.needCreator && !storIOSQLiteColumnMeta.isMethod()) ||
                     (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod() && ! storIOSQLiteTypeMeta.columns.isEmpty())) {
                 throw new ProcessingException(annotatedFieldElement, "Can't apply"
@@ -123,18 +123,18 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 );
             }
 
-            // If column needs creator than enclosing class needs it as well
+            // If column needs creator than enclosing class needs it as well.
             if (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod()) {
                 storIOSQLiteTypeMeta.needCreator = true;
             }
 
-            // Put meta column info
+            // Put meta column info.
             storIOSQLiteTypeMeta.columns.put(storIOSQLiteColumnMeta.storIOColumn.name(), storIOSQLiteColumnMeta);
         }
     }
 
     /**
-     * Processes annotated field and returns result of processing or throws exception
+     * Processes annotated field and returns result of processing or throws exception.
      *
      * @param annotatedField field that was annotated with {@link StorIOSQLiteColumn}
      * @return non-null {@link StorIOSQLiteColumnMeta} with meta information about field
@@ -180,7 +180,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
     }
 
     /**
-     * Processes factory methods or constructors annotated with {@link StorIOSQLiteCreator}
+     * Processes factory methods or constructors annotated with {@link StorIOSQLiteCreator}.
      *
      * @param roundEnvironment current processing environment
      * @param annotatedClasses map of classes annotated with {@link StorIOSQLiteType}
@@ -209,8 +209,8 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 );
             }
 
-            // Put meta creator info
-            // If class already contains another creator -> throw exception
+            // Put meta creator info.
+            // If class already contains another creator -> throw exception.
             if (storIOSQLiteTypeMeta.creator == null) {
                 storIOSQLiteTypeMeta.creator = annotatedExecutableElement;
             } else {
@@ -221,7 +221,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
 
     @Override
     protected void validateAnnotatedClassesAndColumns(@NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
-        // check that each annotated class has columns with at least one key column
+        // Check that each annotated class has columns with at least one key column.
         for (final Map.Entry<TypeElement, StorIOSQLiteTypeMeta> annotatedType : annotatedClasses.entrySet()) {
             final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = annotatedType.getValue();
 

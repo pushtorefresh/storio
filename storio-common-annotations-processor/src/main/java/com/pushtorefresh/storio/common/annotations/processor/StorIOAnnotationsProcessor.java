@@ -34,12 +34,12 @@ import static javax.lang.model.element.Modifier.STATIC;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
 /**
- * Base annotation processor for StorIO
+ * Base annotation processor for StorIO.
  * <p>
- * It'll process annotations to generate StorIO Object-Mapping
+ * It'll process annotations to generate StorIO Object-Mapping.
  * <p>
- * Addition: Annotation Processor should work fast and be optimized because it's part of compilation
- * We don't want to annoy developers, who use StorIO
+ * Addition: Annotation Processor should work fast and be optimized because it's part of compilation.
+ * We don't want to annoy developers, who use StorIO.
  */
 // Generate file with annotation processor declaration via another Annotation Processor!
 public abstract class StorIOAnnotationsProcessor
@@ -51,7 +51,7 @@ public abstract class StorIOAnnotationsProcessor
     private Messager messager;
 
     /**
-     * Processes class annotations
+     * Processes class annotations.
      *
      * @param roundEnvironment environment
      * @return non-null unmodifiable map(element, typeMeta)
@@ -74,14 +74,14 @@ public abstract class StorIOAnnotationsProcessor
     }
 
     /**
-     * Checks that annotated element satisfies all required conditions
+     * Checks that annotated element satisfies all required conditions.
      *
      * @param annotatedElement an annotated type
      * @return {@link TypeElement} object
      */
     @NotNull
     private TypeElement validateAnnotatedClass(@NotNull final Element annotatedElement) {
-        // we expect here that annotatedElement is Class, annotation requires that via @Target
+        // We expect here that annotatedElement is Class, annotation requires that via @Target.
         final TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
 
         if (annotatedTypeElement.getModifiers().contains(PRIVATE)) {
@@ -95,12 +95,12 @@ public abstract class StorIOAnnotationsProcessor
     }
 
     /**
-     * Checks that element annotated with {@link StorIOColumnMeta} satisfies all required conditions
+     * Checks that element annotated with {@link StorIOColumnMeta} satisfies all required conditions.
      *
      * @param annotatedElement an annotated field
      */
-    protected void validateAnnotatedField(@NotNull final Element annotatedElement) {
-        // we expect here that annotatedElement is Field or Method, annotation requires that via @Target
+    protected void validateAnnotatedFieldOrMethod(@NotNull final Element annotatedElement) {
+        // We expect here that annotatedElement is Field or Method, annotation requires that via @Target.
 
         final Element enclosingElement = annotatedElement.getEnclosingElement();
 
@@ -141,12 +141,12 @@ public abstract class StorIOAnnotationsProcessor
     }
 
     /**
-     * Checks that element annotated with {@link StorIOCreatorMeta} satisfies all required conditions
+     * Checks that element annotated with {@link StorIOCreatorMeta} satisfies all required conditions.
      *
      * @param annotatedElement an annotated factory method or constructor
      */
     protected void validateAnnotatedExecutable(@NotNull final ExecutableElement annotatedElement) {
-        // we expect here that annotatedElement is Method or Constructor, annotation requires that via @Target
+        // We expect here that annotatedElement is Method or Constructor, annotation requires that via @Target.
 
         final Element enclosingElement = annotatedElement.getEnclosingElement();
 
@@ -202,9 +202,9 @@ public abstract class StorIOAnnotationsProcessor
     //endregion
 
     /**
-     * For those who don't familiar with Annotation Processing API — this is the main method of Annotation Processor lifecycle
+     * For those who don't familiar with Annotation Processing API — this is the main method of Annotation Processor lifecycle.
      * <p>
-     * It will be called after Java Compiler will find lang elements annotated with annotations from {@link #getSupportedAnnotationTypes()}
+     * It will be called after Java Compiler will find lang elements annotated with annotations from {@link #getSupportedAnnotationTypes()}.
      *
      * @param annotations set of annotations
      * @param roundEnv    environment of current processing round
@@ -242,7 +242,7 @@ public abstract class StorIOAnnotationsProcessor
     }
 
     /**
-     * Processes annotated class
+     * Processes annotated class.
      *
      * @param classElement type element
      * @param elementUtils utils for working with elementUtils
@@ -252,7 +252,7 @@ public abstract class StorIOAnnotationsProcessor
     protected abstract TypeMeta processAnnotatedClass(@NotNull TypeElement classElement, @NotNull Elements elementUtils);
 
     /**
-     * Processes fields
+     * Processes fields.
      *
      * @param roundEnvironment current processing environment
      * @param annotatedClasses map of annotated classes
@@ -260,7 +260,7 @@ public abstract class StorIOAnnotationsProcessor
     protected abstract void processAnnotatedFields(@NotNull final RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, TypeMeta> annotatedClasses);
 
     /**
-     * Processes annotated field and returns result of processing or throws exception
+     * Processes annotated field and returns result of processing or throws exception.
      *
      * @param annotatedField field that was annotated as column
      * @return non-null {@link StorIOColumnMeta} with meta information about field
@@ -269,7 +269,7 @@ public abstract class StorIOAnnotationsProcessor
     protected abstract ColumnMeta processAnnotatedField(@NotNull final Element annotatedField);
 
     /**
-     * Processes methods and constructors
+     * Processes methods and constructors.
      *
      * @param roundEnvironment current processing environment
      * @param annotatedClasses map of annotated classes

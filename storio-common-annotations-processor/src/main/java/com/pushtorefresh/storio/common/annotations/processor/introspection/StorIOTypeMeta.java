@@ -26,7 +26,10 @@ public class StorIOTypeMeta <TypeAnnotation extends Annotation, ColumnMeta exten
     public ExecutableElement creator;
 
     /**
-     * Yep, this is MODIFIABLE Map, please use it carefully
+     * Yep, this is MODIFIABLE Map, please use it carefully.
+     * {@link LinkedHashMap} is used intentionally for building parameter list for
+     * constructor or factory method depending on ordering of methods annotated with
+     * column annotations.
      */
     @NotNull
     public final Map<String, ColumnMeta> columns = new LinkedHashMap<String, ColumnMeta>();
