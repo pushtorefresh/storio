@@ -53,8 +53,8 @@ public class AnnotationProcessorStub {
     protected static abstract class TestStorIOAnnotationsProcessor extends StorIOAnnotationsProcessor {
 
         @Override
-        public void validateAnnotatedField(@NotNull Element annotatedField) {
-            super.validateAnnotatedField(annotatedField);
+        public void validateAnnotatedField(@NotNull Element annotatedField, boolean hasConstructor) {
+            super.validateAnnotatedField(annotatedField, hasConstructor);
         }
 
         @NotNull

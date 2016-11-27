@@ -19,4 +19,11 @@ public @interface StorIOSQLiteType {
      * @return table name
      */
     String table();
+
+    /**
+     * Specifies if annotatated class has constructor that creates object with all fields filled in.
+     *
+     * @return has constructor
+     */
+    boolean hasConstructor() default false;
 }

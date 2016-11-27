@@ -27,6 +27,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
+import static javax.lang.model.util.ElementFilter.methodsIn;
+
 /**
  * Annotation processor for StorIOSQLite
  * <p>
@@ -89,10 +91,9 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteColumn.class);
 
         for (final Element annotatedFieldElement : elementsAnnotatedWithStorIOSQLiteColumn) {
-            validateAnnotatedField(annotatedFieldElement);
             final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta = processAnnotatedField(annotatedFieldElement);
-
             final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = annotatedClasses.get(storIOSQLiteColumnMeta.enclosingElement);
+            validateAnnotatedField(annotatedFieldElement, storIOSQLiteTypeMeta.storIOType.hasConstructor());
 
             if (storIOSQLiteTypeMeta == null) {
                 throw new ProcessingException(annotatedFieldElement, "Field marked with "
@@ -146,14 +147,29 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
         if (columnName == null || columnName.length() == 0) {
             throw new ProcessingException(annotatedField, "Column name is null or empty");
         }
+        String fieldName = annotatedField.getSimpleName().toString();
+        String getterName = findAccessorName(annotatedField, "get");
 
         return new StorIOSQLiteColumnMeta(
                 annotatedField.getEnclosingElement(),
                 annotatedField,
-                annotatedField.getSimpleName().toString(),
+                fieldName,
+                getterName,
                 javaType,
                 storIOSQLiteColumn
         );
+    }
+
+    private String findAccessorName(Element annotatedField, String prefix) {
+        Element enclosingElement = annotatedField.getEnclosingElement();
+        String s = annotatedField.getSimpleName().toString();
+        String compare = prefix + s.substring(0, 1).toUpperCase() + s.substring(1) + "()";
+        for (Element e : methodsIn(enclosingElement.getEnclosedElements())) {
+            if ((e.getSimpleName().toString() + "()").equals(compare)) {
+                return compare;
+            }
+        }
+        return null;
     }
 
     @Override

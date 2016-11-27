@@ -1,5 +1,4 @@
 package com.pushtorefresh.storio.common.annotations.processor.introspection;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;

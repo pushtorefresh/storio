@@ -26,7 +26,7 @@ public class AnnotatedFieldValidationTest {
 
         expectedException.expect(ProcessingException.class);
         expectedException.expectMessage("Please apply TestClassAnnotation to fields of class: TestField");
-        stub.processor.validateAnnotatedField(stub.field);
+        stub.processor.validateAnnotatedField(stub.field, storIOSQLiteTypeMeta.storIOType.hasConstructor());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class AnnotatedFieldValidationTest {
 
         expectedException.expect(ProcessingException.class);
         expectedException.expectMessage("Please annotate class TestClass with TestClassAnnotation");
-        stub.processor.validateAnnotatedField(stub.field);
+        stub.processor.validateAnnotatedField(stub.field, storIOSQLiteTypeMeta.storIOType.hasConstructor());
     }
 
     @Test
@@ -48,7 +48,7 @@ public class AnnotatedFieldValidationTest {
 
         expectedException.expect(ProcessingException.class);
         expectedException.expectMessage("TestFieldAnnotation can not be applied to private field: TestField");
-        stub.processor.validateAnnotatedField(stub.field);
+        stub.processor.validateAnnotatedField(stub.field, storIOSQLiteTypeMeta.storIOType.hasConstructor());
     }
 
     @Test
@@ -60,6 +60,6 @@ public class AnnotatedFieldValidationTest {
 
         expectedException.expect(ProcessingException.class);
         expectedException.expectMessage("TestFieldAnnotation can not be applied to final field: TestField");
-        stub.processor.validateAnnotatedField(stub.field);
+        stub.processor.validateAnnotatedField(stub.field, storIOSQLiteTypeMeta.storIOType.hasConstructor());
     }
 }

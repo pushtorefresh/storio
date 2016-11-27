@@ -14,8 +14,9 @@ public class StorIOSQLiteColumnMeta extends StorIOColumnMeta<StorIOSQLiteColumn>
             @NotNull Element enclosingElement,
             @NotNull Element element,
             @NotNull String fieldName,
+            String getterName,
             @NotNull JavaType javaType,
             @NotNull StorIOSQLiteColumn storIOColumn) {
-        super(enclosingElement, element, fieldName, javaType, storIOColumn);
+        super(enclosingElement, element, fieldName, getterName, javaType, storIOColumn);
     }
 }
