@@ -116,7 +116,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
 
             // If field annotation applied to both fields and methods in a same class.
             if ((storIOSQLiteTypeMeta.needCreator && !storIOSQLiteColumnMeta.isMethod()) ||
-                    (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod() && ! storIOSQLiteTypeMeta.columns.isEmpty())) {
+                    (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod() && !storIOSQLiteTypeMeta.columns.isEmpty())) {
                 throw new ProcessingException(annotatedFieldElement, "Can't apply"
                         + StorIOSQLiteColumn.class.getSimpleName()
                         + " annotation to both fields and methods in a same class"
