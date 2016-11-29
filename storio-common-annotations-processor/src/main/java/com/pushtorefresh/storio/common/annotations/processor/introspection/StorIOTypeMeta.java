@@ -1,10 +1,13 @@
 package com.pushtorefresh.storio.common.annotations.processor.introspection;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+
+import javax.lang.model.element.ExecutableElement;
 
 public class StorIOTypeMeta <TypeAnnotation extends Annotation, ColumnMeta extends StorIOColumnMeta> {
 
@@ -17,19 +20,36 @@ public class StorIOTypeMeta <TypeAnnotation extends Annotation, ColumnMeta exten
     @NotNull
     public final TypeAnnotation storIOType;
 
+    public boolean needCreator;
+
+    @Nullable
+    public ExecutableElement creator;
+
     /**
-     * Yep, this is MODIFIABLE Map, please use it carefully
+     * Yep, this is MODIFIABLE Map, please use it carefully.
+     * {@link LinkedHashMap} is used intentionally for building parameter list for
+     * constructor or factory method depending on ordering of methods annotated with
+     * column annotations.
      */
     @NotNull
-    public final Map<String, ColumnMeta> columns = new HashMap<String, ColumnMeta>();
+    public final Map<String, ColumnMeta> columns = new LinkedHashMap<String, ColumnMeta>();
 
     public StorIOTypeMeta(
             @NotNull String simpleName,
             @NotNull String packageName,
             @NotNull TypeAnnotation storIOType) {
+        this(simpleName, packageName, storIOType, false);
+    }
+
+    public StorIOTypeMeta(
+            @NotNull String simpleName,
+            @NotNull String packageName,
+            @NotNull TypeAnnotation storIOType,
+            boolean needCreator) {
         this.simpleName = simpleName;
         this.packageName = packageName;
         this.storIOType = storIOType;
+        this.needCreator = needCreator;
     }
 
     @Override
@@ -61,6 +81,8 @@ public class StorIOTypeMeta <TypeAnnotation extends Annotation, ColumnMeta exten
                 "simpleName='" + simpleName + '\'' +
                 ", packageName='" + packageName + '\'' +
                 ", storIOType=" + storIOType +
+                ", needCreator=" + needCreator +
+                ", creator=" + creator +
                 ", columns=" + columns +
                 '}';
     }

@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import java.lang.annotation.Annotation;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
 
 import static javax.lang.model.element.ElementKind.CLASS;
@@ -18,9 +19,11 @@ public class AnnotationProcessorStub {
 
     final TestStorIOAnnotationsProcessor processor;
     final Element field;
+    final ExecutableElement creator;
     final Element enclosingElement;
     final TestClassAnnotation classAnnotation;
     final TestFieldAnnotation fieldAnnotation;
+    final TestCreatorAnnotation creatorAnnotation;
 
     @NotNull
     static AnnotationProcessorStub newInstance() {
@@ -32,9 +35,15 @@ public class AnnotationProcessorStub {
 
         field = mock(Element.class);
 
-        Name name = mock(Name.class);
-        when(name.toString()).thenReturn("TestField");
-        when(field.getSimpleName()).thenReturn(name);
+        Name fieldName = mock(Name.class);
+        when(fieldName.toString()).thenReturn("TestField");
+        when(field.getSimpleName()).thenReturn(fieldName);
+
+        creator = mock(ExecutableElement.class);
+
+        Name creatorName = mock(Name.class);
+        when(creatorName.toString()).thenReturn("TestCreator");
+        when(creator.getSimpleName()).thenReturn(creatorName);
 
         enclosingElement = mock(Element.class);
         Name className = mock(Name.class);
@@ -43,9 +52,11 @@ public class AnnotationProcessorStub {
         when(enclosingElement.getKind()).thenReturn(CLASS);
 
         when(field.getEnclosingElement()).thenReturn(enclosingElement);
+        when(creator.getEnclosingElement()).thenReturn(enclosingElement);
 
         classAnnotation = mock(TestClassAnnotation.class);
         fieldAnnotation = mock(TestFieldAnnotation.class);
+        creatorAnnotation = mock(TestCreatorAnnotation.class);
 
         when(enclosingElement.getAnnotation(TestClassAnnotation.class)).thenReturn(classAnnotation);
     }
@@ -53,8 +64,13 @@ public class AnnotationProcessorStub {
     protected static abstract class TestStorIOAnnotationsProcessor extends StorIOAnnotationsProcessor {
 
         @Override
-        public void validateAnnotatedField(@NotNull Element annotatedField) {
-            super.validateAnnotatedField(annotatedField);
+        public void validateAnnotatedFieldOrMethod(@NotNull Element annotatedElement) {
+            super.validateAnnotatedFieldOrMethod(annotatedElement);
+        }
+
+        @Override
+        protected void validateAnnotatedExecutable(@NotNull ExecutableElement annotatedElement) {
+            super.validateAnnotatedExecutable(annotatedElement);
         }
 
         @NotNull
@@ -68,11 +84,20 @@ public class AnnotationProcessorStub {
         protected Class<? extends Annotation> getColumnAnnotationClass() {
             return TestFieldAnnotation.class;
         }
+
+        @NotNull
+        @Override
+        protected Class<? extends Annotation> getCreatorAnnotationClass() {
+            return TestCreatorAnnotation.class;
+        }
     }
 
     static abstract class TestClassAnnotation implements Annotation {
     }
 
     static abstract class TestFieldAnnotation implements Annotation {
+    }
+
+    static abstract class TestCreatorAnnotation implements Annotation {
     }
 }

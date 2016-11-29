@@ -140,7 +140,7 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                 = roundEnvironment.getElementsAnnotatedWith(StorIOContentResolverColumn.class);
 
         for (final Element annotatedFieldElement : elementsAnnotatedWithStorIOContentResolverColumn) {
-            validateAnnotatedField(annotatedFieldElement);
+            validateAnnotatedFieldOrMethod(annotatedFieldElement);
 
             final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta = processAnnotatedField(annotatedFieldElement);
             final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = annotatedClasses.get(storIOContentResolverColumnMeta.enclosingElement);
@@ -157,7 +157,7 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
 
             // Put meta column info
             // If class already contains column with same name -> throw exception
-            if (storIOContentResolverTypeMeta.columns.put(storIOContentResolverColumnMeta.fieldName, storIOContentResolverColumnMeta) != null) {
+            if (storIOContentResolverTypeMeta.columns.put(storIOContentResolverColumnMeta.elementName, storIOContentResolverColumnMeta) != null) {
                 throw new ProcessingException(annotatedFieldElement, "Column name already used in this class");
             }
         }
@@ -166,39 +166,39 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
     /**
      * Checks that element annotated with {@link StorIOContentResolverColumn} satisfies all required conditions
      *
-     * @param annotatedField element annotated with {@link StorIOContentResolverColumn}
+     * @param annotatedElement element annotated with {@link StorIOContentResolverColumn}
      */
     @Override
-    protected void validateAnnotatedField(@NotNull final Element annotatedField) {
+    protected void validateAnnotatedFieldOrMethod(@NotNull final Element annotatedElement) {
         // we expect here that annotatedElement is Field, annotation requires that via @Target
 
-        final Element enclosingElement = annotatedField.getEnclosingElement();
+        final Element enclosingElement = annotatedElement.getEnclosingElement();
 
         if (!enclosingElement.getKind().equals(CLASS)) {
             throw new ProcessingException(
-                annotatedField,
-                    "Please apply " + StorIOContentResolverType.class.getSimpleName() + " to fields of class: " + annotatedField.getSimpleName()
+                    annotatedElement,
+                    "Please apply " + StorIOContentResolverType.class.getSimpleName() + " to fields of class: " + annotatedElement.getSimpleName()
             );
         }
 
         if (enclosingElement.getAnnotation(StorIOContentResolverType.class) == null) {
             throw new ProcessingException(
-                    annotatedField,
+                    annotatedElement,
                     "Please annotate class " + enclosingElement.getSimpleName() + " with " + StorIOContentResolverType.class.getSimpleName()
             );
         }
 
-        if (annotatedField.getModifiers().contains(PRIVATE)) {
+        if (annotatedElement.getModifiers().contains(PRIVATE)) {
             throw new ProcessingException(
-              annotatedField,
-                    StorIOContentResolverColumn.class.getSimpleName() + " can not be applied to private field: " + annotatedField.getSimpleName()
+                    annotatedElement,
+                    StorIOContentResolverColumn.class.getSimpleName() + " can not be applied to private field: " + annotatedElement.getSimpleName()
             );
         }
 
-        if (annotatedField.getModifiers().contains(FINAL)) {
+        if (annotatedElement.getModifiers().contains(FINAL)) {
             throw new ProcessingException(
-                    annotatedField,
-                    StorIOContentResolverColumn.class.getSimpleName() + " can not be applied to final field: " + annotatedField.getSimpleName()
+                    annotatedElement,
+                    StorIOContentResolverColumn.class.getSimpleName() + " can not be applied to final field: " + annotatedElement.getSimpleName()
             );
         }
     }
@@ -250,6 +250,11 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
     }
 
     @Override
+    protected void processAnnotatedExecutables(@NotNull RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, StorIOContentResolverTypeMeta> annotatedClasses) {
+
+    }
+
+    @Override
     protected void validateAnnotatedClassesAndColumns(@NotNull final Map<TypeElement, StorIOContentResolverTypeMeta> annotatedClasses) {
         // check that each annotated class has columns with at least one key column
         for (Map.Entry<TypeElement, StorIOContentResolverTypeMeta> annotatedClass : annotatedClasses.entrySet()) {
@@ -291,6 +296,12 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
     @Override
     protected Class<? extends Annotation> getColumnAnnotationClass() {
         return StorIOContentResolverColumn.class;
+    }
+
+    @NotNull
+    @Override
+    protected Class<? extends Annotation> getCreatorAnnotationClass() {
+        return null;
     }
 
     @NotNull

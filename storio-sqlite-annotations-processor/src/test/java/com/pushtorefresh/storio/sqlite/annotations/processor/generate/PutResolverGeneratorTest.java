@@ -94,7 +94,7 @@ public class PutResolverGeneratorTest {
 
         when(storIOSQLiteType.table()).thenReturn("test_table");
 
-        final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta("TestItem", "com.test", storIOSQLiteType);
+        final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta("TestItem", "com.test", storIOSQLiteType, false);
 
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta1 = createColumnMetaMock(
                 createElementMock(NONE),
@@ -102,7 +102,8 @@ public class PutResolverGeneratorTest {
                 "column1Field",
                 true,           // key
                 false,
-                null);
+                null,
+                false);
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta2 = createColumnMetaMock(
@@ -111,7 +112,8 @@ public class PutResolverGeneratorTest {
                 "column2Field",
                 false,
                 false,
-                null);
+                null,
+                false);
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 
         final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
@@ -134,7 +136,7 @@ public class PutResolverGeneratorTest {
 
         when(storIOSQLiteType.table()).thenReturn("test_table");
 
-        final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta("TestItem", "com.test", storIOSQLiteType);
+        final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta("TestItem", "com.test", storIOSQLiteType, false);
 
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta1 = createColumnMetaMock(
                 createElementMock(NONE),
@@ -142,7 +144,8 @@ public class PutResolverGeneratorTest {
                 "column1Field",
                 true,
                 false,
-                null);
+                null,
+                false);
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta2 = createColumnMetaMock(
@@ -151,7 +154,8 @@ public class PutResolverGeneratorTest {
                 "column2Field",
                 false,
                 true,
-                null);                      // ignore nulls
+                null,
+                false);                      // ignore nulls
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 
         final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();

@@ -10,7 +10,8 @@ public class StorIOSQLiteTypeMeta extends StorIOTypeMeta<StorIOSQLiteType, StorI
     public StorIOSQLiteTypeMeta(
             @NotNull String simpleName,
             @NotNull String packageName,
-            @NotNull StorIOSQLiteType storIOType) {
-        super(simpleName, packageName, storIOType);
+            @NotNull StorIOSQLiteType storIOType,
+            boolean needCreator) {
+        super(simpleName, packageName, storIOType, needCreator);
     }
 }

@@ -10,9 +10,13 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import org.jetbrains.annotations.NotNull;
+
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 
 import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
 import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT;
@@ -49,7 +53,8 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
                 .addJavadoc("Generated resolver for Get Operation\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operations.get", "DefaultGetResolver"), storIOSQLiteTypeClassName))
-                .addMethod(createMapFromCursorMethodSpec(storIOSQLiteTypeMeta, storIOSQLiteTypeClassName))
+                .addMethod(storIOSQLiteTypeMeta.needCreator ? createMapFromCursorWithCreatorMethodSpec(storIOSQLiteTypeMeta, storIOSQLiteTypeClassName)
+                        : createMapFromCursorMethodSpec(storIOSQLiteTypeMeta, storIOSQLiteTypeClassName))
                 .build();
 
         return JavaFile
@@ -75,36 +80,16 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
         for (final StorIOSQLiteColumnMeta columnMeta : storIOSQLiteTypeMeta.columns.values()) {
             final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.storIOColumn.name() + "\")";
 
-            final String getFromCursor;
-
             final JavaType javaType = columnMeta.javaType;
 
-            if (javaType == BOOLEAN || javaType == BOOLEAN_OBJECT) {
-                getFromCursor = "getInt(" + columnIndex + ") == 1";
-            } else if (javaType == SHORT || javaType == SHORT_OBJECT) {
-                getFromCursor = "getShort(" + columnIndex + ")";
-            } else if (javaType == INTEGER || javaType == INTEGER_OBJECT) {
-                getFromCursor = "getInt(" + columnIndex + ")";
-            } else if (javaType == LONG || javaType == LONG_OBJECT) {
-                getFromCursor = "getLong(" + columnIndex + ")";
-            } else if (javaType == FLOAT || javaType == FLOAT_OBJECT) {
-                getFromCursor = "getFloat(" + columnIndex + ")";
-            } else if (javaType == DOUBLE || javaType == DOUBLE_OBJECT) {
-                getFromCursor = "getDouble(" + columnIndex + ")";
-            } else if (javaType == STRING) {
-                getFromCursor = "getString(" + columnIndex + ")";
-            } else if (javaType == BYTE_ARRAY) {
-                getFromCursor = "getBlob(" + columnIndex + ")";
-            } else {
-                throw new ProcessingException(columnMeta.element, "Can not generate GetResolver for field");
-            }
+            final String getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex);
 
             final boolean isBoxed = javaType.isBoxedType();
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
                 builder.beginControlFlow("if(!cursor.isNull($L))", columnIndex);
             }
 
-            builder.addStatement("object.$L = cursor.$L", columnMeta.fieldName, getFromCursor);
+            builder.addStatement("object.$L = cursor.$L", columnMeta.elementName, getFromCursor);
 
             if (isBoxed) {
                 builder.endControlFlow();
@@ -116,4 +101,88 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
                 .addStatement("return object")
                 .build();
     }
+
+    @NotNull
+    private MethodSpec createMapFromCursorWithCreatorMethodSpec(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta, @NotNull ClassName storIOSQLiteTypeClassName) {
+        final MethodSpec.Builder builder = MethodSpec.methodBuilder("mapFromCursor")
+                .addJavadoc("{@inheritDoc}\n")
+                .addAnnotation(Override.class)
+                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addModifiers(PUBLIC)
+                .returns(storIOSQLiteTypeClassName)
+                .addParameter(ParameterSpec.builder(ClassName.get("android.database", "Cursor"), "cursor")
+                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .build())
+                .addCode("\n");
+
+        // We don't know the name of the variable, just the type. So just use generic parameter names
+        int paramCount = 1;
+        final StringBuilder paramsBuilder = new StringBuilder();
+        paramsBuilder.append("(");
+        boolean first = true;
+        for (final StorIOSQLiteColumnMeta columnMeta : storIOSQLiteTypeMeta.columns.values()) {
+            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.storIOColumn.name() + "\")";
+
+            final JavaType javaType = columnMeta.javaType;
+
+            final String getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex);
+
+            final TypeName name = TypeName.get(((ExecutableElement) columnMeta.element).getReturnType());
+
+            final boolean isBoxed = javaType.isBoxedType();
+            if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
+                builder.addStatement("$T param" + paramCount + " = null", name);
+                builder.beginControlFlow("if(!cursor.isNull($L))", columnIndex);
+                builder.addStatement("param" + paramCount + " = cursor.$L", getFromCursor);
+                builder.endControlFlow();
+            } else {
+                builder.addStatement("$T param" + paramCount + " = cursor.$L", name, getFromCursor);
+            }
+
+            if (!first) {
+                paramsBuilder.append(" ,");
+            }
+            first = false;
+            paramsBuilder.append("param" + paramCount);
+
+            paramCount++;
+        }
+        paramsBuilder.append(")");
+        builder.addCode("\n");
+
+        if (storIOSQLiteTypeMeta.creator.getKind() == ElementKind.CONSTRUCTOR) {
+            builder.addStatement("$T object = new $T" + paramsBuilder.toString(), storIOSQLiteTypeClassName, storIOSQLiteTypeClassName);
+        } else {
+            builder.addStatement("$T object = $T." + storIOSQLiteTypeMeta.creator.getSimpleName() + paramsBuilder.toString(), storIOSQLiteTypeClassName, storIOSQLiteTypeClassName);
+        }
+
+        return builder
+                .addCode("\n")
+                .addStatement("return object")
+                .build();
+    }
+
+    @NotNull
+    private String getFromCursorString(@NotNull StorIOSQLiteColumnMeta columnMeta, @NotNull JavaType javaType, @NotNull String columnIndex) {
+        if (javaType == BOOLEAN || javaType == BOOLEAN_OBJECT) {
+            return "getInt(" + columnIndex + ") == 1";
+        } else if (javaType == SHORT || javaType == SHORT_OBJECT) {
+            return "getShort(" + columnIndex + ")";
+        } else if (javaType == INTEGER || javaType == INTEGER_OBJECT) {
+            return "getInt(" + columnIndex + ")";
+        } else if (javaType == LONG || javaType == LONG_OBJECT) {
+            return "getLong(" + columnIndex + ")";
+        } else if (javaType == FLOAT || javaType == FLOAT_OBJECT) {
+            return "getFloat(" + columnIndex + ")";
+        } else if (javaType == DOUBLE || javaType == DOUBLE_OBJECT) {
+            return "getDouble(" + columnIndex + ")";
+        } else if (javaType == STRING) {
+            return "getString(" + columnIndex + ")";
+        } else if (javaType == BYTE_ARRAY) {
+            return "getBlob(" + columnIndex + ")";
+        } else {
+            throw new ProcessingException(columnMeta.element, "Can not generate GetResolver for field");
+        }
+    }
+
 }

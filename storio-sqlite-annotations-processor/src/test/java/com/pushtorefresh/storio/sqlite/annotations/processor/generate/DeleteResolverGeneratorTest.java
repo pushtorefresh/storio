@@ -25,7 +25,8 @@ public class DeleteResolverGeneratorTest {
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta(
                 "TestItem",
                 "com.test",
-                storIOSQLiteType
+                storIOSQLiteType,
+                false
         );
 
         final StorIOSQLiteColumn storIOSQLiteColumn1 = mock(StorIOSQLiteColumn.class);
@@ -37,7 +38,8 @@ public class DeleteResolverGeneratorTest {
                 null,
                 "field1",
                 null,
-                storIOSQLiteColumn1
+                storIOSQLiteColumn1,
+                false
         );
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
@@ -50,7 +52,8 @@ public class DeleteResolverGeneratorTest {
                 null,
                 "field2",
                 null,
-                storIOSQLiteColumn2
+                storIOSQLiteColumn2,
+                false
         );
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 

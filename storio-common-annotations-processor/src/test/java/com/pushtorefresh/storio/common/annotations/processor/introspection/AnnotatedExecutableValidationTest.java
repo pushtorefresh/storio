@@ -11,23 +11,22 @@ import java.util.Set;
 
 import javax.lang.model.element.Modifier;
 
-import static javax.lang.model.element.ElementKind.FIELD;
 import static javax.lang.model.element.ElementKind.METHOD;
 import static org.mockito.Mockito.when;
 
-public class AnnotatedFieldValidationTest {
+public class AnnotatedExecutableValidationTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void failIfEnclosingElementIsNotType() {
+    public void failIfEnclosingElementIsNotClass() {
         AnnotationProcessorStub stub = AnnotationProcessorStub.newInstance();
         when(stub.enclosingElement.getKind()).thenReturn(METHOD);
 
         expectedException.expect(ProcessingException.class);
-        expectedException.expectMessage("Please apply TestFieldAnnotation to fields or methods of class: TestField");
-        stub.processor.validateAnnotatedFieldOrMethod(stub.field);
+        expectedException.expectMessage("Please apply TestCreatorAnnotation to constructor or factory method of class: TestClass");
+        stub.processor.validateAnnotatedExecutable(stub.creator);
     }
 
     @Test
@@ -37,32 +36,30 @@ public class AnnotatedFieldValidationTest {
 
         expectedException.expect(ProcessingException.class);
         expectedException.expectMessage("Please annotate class TestClass with TestClassAnnotation");
-        stub.processor.validateAnnotatedFieldOrMethod(stub.field);
+        stub.processor.validateAnnotatedExecutable(stub.creator);
     }
 
     @Test
-    public void failIfFieldPrivate() {
+    public void failIfExecutablePrivate() {
         AnnotationProcessorStub stub = AnnotationProcessorStub.newInstance();
         Set<Modifier> modifiers = new HashSet<Modifier>();
         modifiers.add(Modifier.PRIVATE);
-        when(stub.field.getModifiers()).thenReturn(modifiers);
-        when(stub.field.getKind()).thenReturn(FIELD);
+        when(stub.creator.getModifiers()).thenReturn(modifiers);
 
         expectedException.expect(ProcessingException.class);
-        expectedException.expectMessage("TestFieldAnnotation can not be applied to private field: TestField");
-        stub.processor.validateAnnotatedFieldOrMethod(stub.field);
+        expectedException.expectMessage("TestCreatorAnnotation can not be applied to private methods or constructors");
+        stub.processor.validateAnnotatedExecutable(stub.creator);
     }
 
     @Test
-    public void failIfFieldFinal() {
+    public void failIfFactoryMethodNotStatic() {
         AnnotationProcessorStub stub = AnnotationProcessorStub.newInstance();
         Set<Modifier> modifiers = new HashSet<Modifier>();
-        modifiers.add(Modifier.FINAL);
-        when(stub.field.getModifiers()).thenReturn(modifiers);
-        when(stub.field.getKind()).thenReturn(FIELD);
+        when(stub.creator.getModifiers()).thenReturn(modifiers);
+        when(stub.creator.getKind()).thenReturn(METHOD);
 
         expectedException.expect(ProcessingException.class);
-        expectedException.expectMessage("TestFieldAnnotation can not be applied to final field: TestField");
-        stub.processor.validateAnnotatedFieldOrMethod(stub.field);
+        expectedException.expectMessage("TestCreatorAnnotation can not be applied to non-static methods");
+        stub.processor.validateAnnotatedExecutable(stub.creator);
     }
 }

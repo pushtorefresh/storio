@@ -1,18 +1,18 @@
 package com.pushtorefresh.storio.common.annotations.processor.introspection;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.reflect.Whitebox.getInternalState;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.lang.annotation.Annotation;
 
 import javax.lang.model.element.Element;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.reflect.Whitebox.getInternalState;
 
 public class StorIOColumnMetaTest {
 
@@ -39,8 +39,8 @@ public class StorIOColumnMetaTest {
 				.isEqualTo(getInternalState(storioColumnMeta, "enclosingElement"));
 		assertThat(elementMock).as("Constructor must be set element field.")
 				.isEqualTo(getInternalState(storioColumnMeta, "element"));
-		assertThat("TEST").as("Constructor must be set fieldName field.")
-				.isEqualTo(getInternalState(storioColumnMeta, "fieldName"));
+		assertThat("TEST").as("Constructor must be set elementName field.")
+				.isEqualTo(getInternalState(storioColumnMeta, "elementName"));
 		assertThat(javaType).as("Constructor must be set javaType field.")
 				.isEqualTo(getInternalState(storioColumnMeta, "javaType"));
 		assertThat(annotationMock).as("Constructor must be set storIOColumn field.")
@@ -59,7 +59,7 @@ public class StorIOColumnMetaTest {
 		StorIOColumnMeta storioColumnMeta = new StorIOColumnMeta(elementMock, elementMock, "TEST", javaType,
 				annotationMock);
 		String expectedString = "StorIOColumnMeta{enclosingElement=" + elementMock + ", element=" + elementMock
-				+ ", fieldName='TEST" + '\'' + ", javaType=" + javaType + ", storIOColumn=" + annotationMock + '}';
+				+ ", elementName='TEST" + '\'' + ", javaType=" + javaType + ", storIOColumn=" + annotationMock +  '}';
 
 		// when
 		String toString = storioColumnMeta.toString();
