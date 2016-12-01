@@ -215,7 +215,7 @@ public abstract class StorIOAnnotationsProcessor
         try {
             final Map<TypeElement, TypeMeta> annotatedClasses = processAnnotatedClasses(roundEnv, elementUtils);
 
-            processAnnotatedFields(roundEnv, annotatedClasses);
+            processAnnotatedFieldsOrMethods(roundEnv, annotatedClasses);
 
             processAnnotatedExecutables(roundEnv, annotatedClasses);
 
@@ -257,7 +257,7 @@ public abstract class StorIOAnnotationsProcessor
      * @param roundEnvironment current processing environment
      * @param annotatedClasses map of annotated classes
      */
-    protected abstract void processAnnotatedFields(@NotNull final RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, TypeMeta> annotatedClasses);
+    protected abstract void processAnnotatedFieldsOrMethods(@NotNull final RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, TypeMeta> annotatedClasses);
 
     /**
      * Processes annotated field and returns result of processing or throws exception.
@@ -266,7 +266,7 @@ public abstract class StorIOAnnotationsProcessor
      * @return non-null {@link StorIOColumnMeta} with meta information about field
      */
     @NotNull
-    protected abstract ColumnMeta processAnnotatedField(@NotNull final Element annotatedField);
+    protected abstract ColumnMeta processAnnotatedFieldOrMethod(@NotNull final Element annotatedField);
 
     /**
      * Processes methods and constructors.
