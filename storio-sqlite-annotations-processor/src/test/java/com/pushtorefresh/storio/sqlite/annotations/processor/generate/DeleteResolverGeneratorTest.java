@@ -38,8 +38,7 @@ public class DeleteResolverGeneratorTest {
                 null,
                 "field1",
                 null,
-                storIOSQLiteColumn1,
-                false
+                storIOSQLiteColumn1
         );
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
@@ -52,8 +51,7 @@ public class DeleteResolverGeneratorTest {
                 null,
                 "field2",
                 null,
-                storIOSQLiteColumn2,
-                false
+                storIOSQLiteColumn2
         );
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 

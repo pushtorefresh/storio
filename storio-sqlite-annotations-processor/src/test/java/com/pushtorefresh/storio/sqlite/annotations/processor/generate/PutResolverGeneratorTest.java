@@ -102,8 +102,7 @@ public class PutResolverGeneratorTest {
                 "column1Field",
                 true,           // key
                 false,
-                null,
-                false);
+                null);
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta2 = createColumnMetaMock(
@@ -112,8 +111,7 @@ public class PutResolverGeneratorTest {
                 "column2Field",
                 false,
                 false,
-                null,
-                false);
+                null);
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 
         final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
@@ -144,8 +142,7 @@ public class PutResolverGeneratorTest {
                 "column1Field",
                 true,
                 false,
-                null,
-                false);
+                null);
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta2 = createColumnMetaMock(
@@ -154,8 +151,7 @@ public class PutResolverGeneratorTest {
                 "column2Field",
                 false,
                 true,
-                null,
-                false);                      // ignore nulls
+                null);                      // ignore nulls
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 
         final PutResolverGenerator putResolverGenerator = new PutResolverGenerator();
