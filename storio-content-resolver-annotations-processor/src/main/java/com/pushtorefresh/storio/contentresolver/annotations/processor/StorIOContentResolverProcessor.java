@@ -174,7 +174,7 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                 );
             }
 
-            // If column needs creator than enclosing class needs it as well.
+            // If column needs creator then enclosing class needs it as well.
             if (!storIOContentResolverTypeMeta.needCreator && storIOContentResolverColumnMeta.isMethod()) {
                 storIOContentResolverTypeMeta.needCreator = true;
             }

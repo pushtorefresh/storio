@@ -123,7 +123,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 );
             }
 
-            // If column needs creator than enclosing class needs it as well.
+            // If column needs creator then enclosing class needs it as well.
             if (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod()) {
                 storIOSQLiteTypeMeta.needCreator = true;
             }
