@@ -154,9 +154,9 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 
 *Notice that annotation processors are not part of the library core, you can work with StorIO without them, we just made them to save you from boilerplate*.
 
+`StorIOSQLite`:
 ```groovy
 dependencies {
-	// At the moment there is annotation processor only for StorIOSQLite 
 	compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
 
 	// We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
@@ -164,10 +164,19 @@ dependencies {
 }
 ```
 
+`StorIOContentResolver`:
+```groovy
+dependencies {
+	compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
+
+	apt 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
+}
+```
+
 ```java
 @StorIOSQLiteType(table = "tweets")
 public class Tweet {
-	
+
 	// annotated fields should have package-level visibility
 	@StorIOSQLiteColumn(name = "author")
 	String author;
@@ -178,6 +187,33 @@ public class Tweet {
     // please leave default constructor with package-level visibility
 	Tweet() {}
 }
+```
+
+[`AutoValue`](https://github.com/google/auto/blob/master/value/userguide/index.md):
+```java
+@AutoValue
+@StorIOSQLiteType(table = "tweets")
+public abstract class Tweet {
+
+	// annotated methods should have package-level or public visibility
+	@StorIOSQLiteColumn(name = "author")
+	abstract String author();
+
+	@StorIOSQLiteColumn(name = "content")
+	abstract String content();
+
+    // parameters order depends on declaration order
+    @StorIOSQLiteCreator
+    static Tweet create(String author, String content) {
+        return new AutoValue_Tweet(author, content)
+    }
+}
+```
+
+`Kotlin`
+```kotlin
+data class Tweet @StorIOSQLiteCreator constructor(@get:StorIOSQLiteColumn(name = "author") val author: String,
+                                                  @get:StorIOSQLiteColumn(name = "content") val content: String)
 ```
 
 Annotation Processor will generate three classes in same package as annotated class during compilation:
