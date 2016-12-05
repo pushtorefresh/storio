@@ -177,14 +177,14 @@ dependencies {
 @StorIOSQLiteType(table = "tweets")
 public class Tweet {
 
-	// annotated fields should have package-level visibility
+	// Annotated fields should have package-level visibility.
 	@StorIOSQLiteColumn(name = "author")
 	String author;
 
 	@StorIOSQLiteColumn(name = "content")
 	String content;
 
-    // please leave default constructor with package-level visibility
+    // Please leave default constructor with package-level visibility.
 	Tweet() {}
 }
 ```
@@ -195,14 +195,14 @@ public class Tweet {
 @StorIOSQLiteType(table = "tweets")
 public abstract class Tweet {
 
-	// annotated methods should have package-level or public visibility
+	// Annotated methods should have package-level or public visibility.
 	@StorIOSQLiteColumn(name = "author")
 	abstract String author();
 
 	@StorIOSQLiteColumn(name = "content")
 	abstract String content();
 
-    // parameters order depends on declaration order
+    // Parameters order depends on declaration order.
     @StorIOSQLiteCreator
     static Tweet create(String author, String content) {
         return new AutoValue_Tweet(author, content)
