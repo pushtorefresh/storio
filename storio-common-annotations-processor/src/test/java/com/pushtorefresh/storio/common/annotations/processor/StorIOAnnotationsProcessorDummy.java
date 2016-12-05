@@ -26,12 +26,11 @@ public final class StorIOAnnotationsProcessorDummy
 	}
 
 	@Override
-	protected void processAnnotatedFields(RoundEnvironment roundEnvironment,
-			Map<TypeElement, StorIOTypeMeta> annotatedClasses) {
+	protected void processAnnotatedFieldsOrMethods(RoundEnvironment roundEnvironment, Map<TypeElement, StorIOTypeMeta> annotatedClasses) {
 	}
 
 	@Override
-	protected StorIOColumnMeta processAnnotatedField(Element annotatedField) {
+	protected StorIOColumnMeta processAnnotatedFieldOrMethod(Element annotatedField) {
 		return null;
 	}
 

@@ -90,13 +90,13 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
      * @param annotatedClasses map of classes annotated with {@link StorIOSQLiteType}
      */
     @Override
-    protected void processAnnotatedFields(@NotNull final RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
+    protected void processAnnotatedFieldsOrMethods(@NotNull final RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
         final Set<? extends Element> elementsAnnotatedWithStorIOSQLiteColumn
                 = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteColumn.class);
 
         for (final Element annotatedFieldElement : elementsAnnotatedWithStorIOSQLiteColumn) {
             validateAnnotatedFieldOrMethod(annotatedFieldElement);
-            final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta = processAnnotatedField(annotatedFieldElement);
+            final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta = processAnnotatedFieldOrMethod(annotatedFieldElement);
 
             final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = annotatedClasses.get(storIOSQLiteColumnMeta.enclosingElement);
 
@@ -123,7 +123,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 );
             }
 
-            // If column needs creator than enclosing class needs it as well.
+            // If column needs creator then enclosing class needs it as well.
             if (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod()) {
                 storIOSQLiteTypeMeta.needCreator = true;
             }
@@ -141,7 +141,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
      */
     @NotNull
     @Override
-    protected StorIOSQLiteColumnMeta processAnnotatedField(@NotNull final Element annotatedField) {
+    protected StorIOSQLiteColumnMeta processAnnotatedFieldOrMethod(@NotNull final Element annotatedField) {
         final JavaType javaType;
 
         try {
@@ -174,8 +174,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 annotatedField,
                 annotatedField.getSimpleName().toString(),
                 javaType,
-                storIOSQLiteColumn,
-                annotatedField.getKind() == ElementKind.METHOD
+                storIOSQLiteColumn
         );
     }
 

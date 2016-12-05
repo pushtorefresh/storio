@@ -121,7 +121,7 @@ public class PutResolverGenerator implements Generator<StorIOContentResolverType
             builder.addStatement(
                     "contentValues.put($S, $L)",
                     columnMeta.storIOColumn.name(),
-                    "object." + columnMeta.elementName
+                    "object." + columnMeta.elementName + (columnMeta.isMethod() ? "()" : "")
             );
             if (ignoreNull) {
                 builder.endControlFlow();

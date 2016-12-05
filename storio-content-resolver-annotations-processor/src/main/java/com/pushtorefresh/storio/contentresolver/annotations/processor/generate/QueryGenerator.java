@@ -47,6 +47,10 @@ public class QueryGenerator {
                             .append(columnMeta.elementName);
                 }
 
+                if (columnMeta.isMethod()) {
+                    whereArgs.append("()");
+                }
+
                 i++;
             }
         }
