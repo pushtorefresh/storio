@@ -167,9 +167,9 @@ dependencies {
 `StorIOContentResolver`:
 ```groovy
 dependencies {
-	compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
+	compile 'com.pushtorefresh.storio:storio-content-resolver-annotations:insert-latest-version-here'
 
-	apt 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
+	apt 'com.pushtorefresh.storio:storio-content-resolver-annotations-processor:insert-latest-version-here'
 }
 ```
 
