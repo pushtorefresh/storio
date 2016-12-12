@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -380,25 +381,10 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
 
     @NotNull
     @Override
-    protected Generator<StorIOContentResolverTypeMeta> createPutResolver() {
-        return new PutResolverGenerator();
-    }
-
-    @NotNull
-    @Override
-    protected Generator<StorIOContentResolverTypeMeta> createGetResolver() {
-        return new GetResolverGenerator();
-    }
-
-    @NotNull
-    @Override
-    protected Generator<StorIOContentResolverTypeMeta> createDeleteResolver() {
-        return new DeleteResolverGenerator();
-    }
-
-    @NotNull
-    @Override
-    protected Generator<StorIOContentResolverTypeMeta> createMapping() {
-        return new MappingGenerator();
+    protected List<Generator<StorIOContentResolverTypeMeta>> createGenerators() {
+        return Arrays.asList(new PutResolverGenerator(),
+                new GetResolverGenerator(),
+                new DeleteResolverGenerator(),
+                new MappingGenerator());
     }
 }

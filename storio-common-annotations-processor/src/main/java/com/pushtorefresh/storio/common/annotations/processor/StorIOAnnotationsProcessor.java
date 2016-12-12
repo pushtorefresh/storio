@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -220,17 +221,12 @@ public abstract class StorIOAnnotationsProcessor
             processAnnotatedExecutables(roundEnv, annotatedClasses);
 
             validateAnnotatedClassesAndColumns(annotatedClasses);
-
-            final Generator<TypeMeta> putResolverGenerator = createPutResolver();
-            final Generator<TypeMeta> getResolverGenerator = createGetResolver();
-            final Generator<TypeMeta> deleteResolverGenerator = createDeleteResolver();
-            final Generator<TypeMeta> mappingGenerator = createMapping();
+            final List<Generator<TypeMeta>> generators = createGenerators();
 
             for (TypeMeta typeMeta : annotatedClasses.values()) {
-                putResolverGenerator.generateJavaFile(typeMeta).writeTo(filer);
-                getResolverGenerator.generateJavaFile(typeMeta).writeTo(filer);
-                deleteResolverGenerator.generateJavaFile(typeMeta).writeTo(filer);
-                mappingGenerator.generateJavaFile(typeMeta).writeTo(filer);
+                for (Generator<TypeMeta> generator : generators) {
+                    generator.generateJavaFile(typeMeta).writeTo(filer);
+                }
             }
         } catch (ProcessingException e) {
             messager.printMessage(ERROR, e.getMessage(), e.element());
@@ -288,14 +284,5 @@ public abstract class StorIOAnnotationsProcessor
     protected abstract Class<? extends Annotation> getCreatorAnnotationClass();
 
     @NotNull
-    protected abstract Generator<TypeMeta> createPutResolver();
-
-    @NotNull
-    protected abstract Generator<TypeMeta> createGetResolver();
-
-    @NotNull
-    protected abstract Generator<TypeMeta> createDeleteResolver();
-
-    @NotNull
-    protected abstract Generator<TypeMeta> createMapping();
+    protected abstract List<Generator<TypeMeta>> createGenerators();
 }

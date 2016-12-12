@@ -9,6 +9,8 @@ import com.squareup.javapoet.TypeSpec;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.processing.RoundEnvironment;
@@ -57,9 +59,14 @@ public final class StorIOAnnotationsProcessorDummy
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
+	@NotNull
 	@Override
-	protected Generator<StorIOTypeMeta> createPutResolver() {
+	protected List<Generator<StorIOTypeMeta>> createGenerators() {
+		return Arrays.asList(createPutResolver(), createGetResolver(), createDeleteResolver(), createMapping());
+	}
+
+	@SuppressWarnings("unchecked")
+	private Generator<StorIOTypeMeta> createPutResolver() {
 		Generator resolver = new Generator<StorIOTypeMeta>() {
 
 			@Override
@@ -73,8 +80,7 @@ public final class StorIOAnnotationsProcessorDummy
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	protected Generator<StorIOTypeMeta> createGetResolver() {
+	private Generator<StorIOTypeMeta> createGetResolver() {
 		Generator resolver = new Generator<StorIOTypeMeta>() {
 
 			@Override
@@ -88,8 +94,7 @@ public final class StorIOAnnotationsProcessorDummy
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	protected Generator<StorIOTypeMeta> createDeleteResolver() {
+	private Generator<StorIOTypeMeta> createDeleteResolver() {
 		Generator resolver = new Generator<StorIOTypeMeta>() {
 
 			@Override
@@ -103,8 +108,7 @@ public final class StorIOAnnotationsProcessorDummy
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	protected Generator<StorIOTypeMeta> createMapping() {
+	private Generator<StorIOTypeMeta> createMapping() {
 		Generator mapping = new Generator<StorIOTypeMeta>() {
 
 			@Override

@@ -12,6 +12,7 @@ import com.pushtorefresh.storio.sqlite.annotations.processor.generate.DeleteReso
 import com.pushtorefresh.storio.sqlite.annotations.processor.generate.GetResolverGenerator;
 import com.pushtorefresh.storio.sqlite.annotations.processor.generate.MappingGenerator;
 import com.pushtorefresh.storio.sqlite.annotations.processor.generate.PutResolverGenerator;
+import com.pushtorefresh.storio.sqlite.annotations.processor.generate.TableGenerator;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteColumnMeta;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteCreatorMeta;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta;
@@ -19,7 +20,9 @@ import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorI
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -288,25 +291,11 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
 
     @NotNull
     @Override
-    protected Generator<StorIOSQLiteTypeMeta> createPutResolver() {
-        return new PutResolverGenerator();
-    }
-
-    @NotNull
-    @Override
-    protected Generator<StorIOSQLiteTypeMeta> createGetResolver() {
-        return new GetResolverGenerator();
-    }
-
-    @NotNull
-    @Override
-    protected Generator<StorIOSQLiteTypeMeta> createDeleteResolver() {
-        return new DeleteResolverGenerator();
-    }
-
-    @NotNull
-    @Override
-    protected Generator<StorIOSQLiteTypeMeta> createMapping() {
-        return new MappingGenerator();
+    protected List<Generator<StorIOSQLiteTypeMeta>> createGenerators() {
+        return Arrays.asList(new PutResolverGenerator(),
+                new GetResolverGenerator(),
+                new DeleteResolverGenerator(),
+                new MappingGenerator(),
+                new TableGenerator());
     }
 }
