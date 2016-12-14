@@ -21,7 +21,7 @@ public enum JavaType {
     STRING("TEXT"),
     BYTE_ARRAY("BLOB");
 
-    JavaType(String sqlType) {
+    JavaType(@NotNull String sqlType) {
         this.sqlType = sqlType;
     }
 
@@ -79,6 +79,7 @@ public enum JavaType {
         }
     }
 
+    @NotNull
     public String getSqlType() {
         return sqlType;
     }

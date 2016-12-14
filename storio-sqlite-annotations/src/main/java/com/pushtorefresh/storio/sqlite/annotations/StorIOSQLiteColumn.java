@@ -38,11 +38,11 @@ public @interface StorIOSQLiteColumn {
 
     /**
      * Optional: Indicates version of database on which column was added. It is used for generating sql to create table.
-     * If version is 0 (default value) then code for creating column will be generated in createTable method.
+     * If version is 1 (default value) then code for creating column will be generated in createTable method.
      * Other values will create column code in updateTable section only for databases that version is lower than this field
      * Negative values are prohibited.
      *
      * @return version of database on which column was added.
      */
-    int version() default 0;
+    int version() default 1;
 }

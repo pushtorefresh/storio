@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sqlite.queries.Query;
 
-// We suggest to store table meta such as table name, columns names, queries, etc in separate class
+// We suggest to store queries in separate class
 // Because it makes code of the Entity itself cleaner and easier to read/understand/support
 public class TweetsQueries {
 

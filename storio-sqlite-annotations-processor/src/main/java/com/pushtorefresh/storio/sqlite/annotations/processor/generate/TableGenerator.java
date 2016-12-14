@@ -19,13 +19,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Modifier;
 
 import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT;
-
-/**
- * Created by Pawel Bochenski on 11.12.2016.
- */
 
 public class TableGenerator implements Generator<StorIOSQLiteTypeMeta> {
 
@@ -53,31 +50,34 @@ public class TableGenerator implements Generator<StorIOSQLiteTypeMeta> {
                 .build();
     }
 
-    private Iterable<FieldSpec> generateFields(String table, Collection<StorIOSQLiteColumnMeta> columns) {
+    @NotNull
+    private Iterable<FieldSpec> generateFields(@NotNull String table, @NotNull Collection<StorIOSQLiteColumnMeta> columns) {
         List<FieldSpec> list = new ArrayList<FieldSpec>();
         list.add(FieldSpec.builder(String.class, tableName)
                 .initializer("$S", table)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                 .build());
-        for (StorIOSQLiteColumnMeta m : columns) {
-            list.add(FieldSpec.builder(String.class, "COLUMN_" + m.elementName)
-                    .initializer("$S", m.storIOColumn.name())
+        for (StorIOSQLiteColumnMeta column : columns) {
+            list.add(FieldSpec.builder(String.class, "COLUMN_" + column.elementName)
+                    .initializer("$S", column.storIOColumn.name())
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                     .build());
         }
         return list;
     }
 
+    @NotNull
     private MethodSpec generateConstructor() {
         return MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE).build();
     }
 
-    private MethodSpec generateCreateMethod(String table, Collection<StorIOSQLiteColumnMeta> columns) {
+    @NotNull
+    private MethodSpec generateCreateMethod(@NotNull String table, @NotNull Collection<StorIOSQLiteColumnMeta> columns) {
         String code = "CREATE TABLE " + table + " (";
         int i = 0;
         for (StorIOSQLiteColumnMeta entry : columns) {
             code += entry.storIOColumn.name() + " " + entry.javaType.getSqlType();
-            if (!entry.storIOColumn.ignoreNull()) {
+            if (isNotNull(entry)) {
                 code += " NOT NULL";
             }
             if (entry.storIOColumn.key()) {
@@ -96,7 +96,8 @@ public class TableGenerator implements Generator<StorIOSQLiteTypeMeta> {
                 .build();
     }
 
-    private MethodSpec generateUpdateMethod(String table, Collection<StorIOSQLiteColumnMeta> columns) {
+    @NotNull
+    private MethodSpec generateUpdateMethod(@NotNull String table, @NotNull Collection<StorIOSQLiteColumnMeta> columns) {
         List<StorIOSQLiteColumnMeta> list = new ArrayList<StorIOSQLiteColumnMeta>(columns);
         //sort on version
         Collections.sort(list, new Comparator<StorIOSQLiteColumnMeta>() {
@@ -116,10 +117,10 @@ public class TableGenerator implements Generator<StorIOSQLiteTypeMeta> {
         if (filtered.size() > 0) {
             for (int i = 0; i < filtered.size(); i++) {
                 StorIOSQLiteColumnMeta o = filtered.get(i);
-                if (o.storIOColumn.version() != 0) {
+                if (o.storIOColumn.version() > 1) {
                     code += "if(" + UPDATE_METHOD_VERSION_OLD_PARAM + " < " + o.storIOColumn.version() + ") {\n" +
                             "    " + METHOD_DB_PARAM + ".execSQL(\"ALTER TABLE " + table + " ADD COLUMN " + o.storIOColumn.name() + " " + o.javaType.getSqlType();
-                    if (!o.storIOColumn.ignoreNull()) {
+                    if (isNotNull(o)) {
                         code += " NOT NULL";
                     }
                     code += ";\");\n";
@@ -134,5 +135,15 @@ public class TableGenerator implements Generator<StorIOSQLiteTypeMeta> {
                 .addParameter(ParameterSpec.builder(TypeName.INT, UPDATE_METHOD_VERSION_OLD_PARAM).build())
                 .addCode(code)
                 .build();
+    }
+
+    private boolean isNotNull(@NotNull StorIOSQLiteColumnMeta entry) {
+        for (AnnotationMirror mirror : entry.element.getAnnotationMirrors()) {
+            // android.support.annotation class is not in the classpath of annotation processor so I check it by name
+            if (mirror.getAnnotationType().toString().equals("android.support.annotation.NonNull")) {
+                return true;
+            }
+        }
+        return entry.element.getAnnotation(NotNull.class) != null;
     }
 }
