@@ -95,41 +95,42 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteColumn.class);
 
         for (final Element annotatedFieldElement : elementsAnnotatedWithStorIOSQLiteColumn) {
-            validateAnnotatedFieldOrMethod(annotatedFieldElement);
-            final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta = processAnnotatedFieldOrMethod(annotatedFieldElement);
+            if (validateAnnotatedFieldOrMethod(annotatedFieldElement)) {
+                final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta = processAnnotatedFieldOrMethod(annotatedFieldElement);
 
-            final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = annotatedClasses.get(storIOSQLiteColumnMeta.enclosingElement);
+                final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = annotatedClasses.get(storIOSQLiteColumnMeta.enclosingElement);
 
-            if (storIOSQLiteTypeMeta == null) {
-                throw new ProcessingException(annotatedFieldElement, "Field marked with "
-                        + StorIOSQLiteColumn.class.getSimpleName()
-                        + " annotation should be placed in class marked by "
-                        + StorIOSQLiteType.class.getSimpleName()
-                        + " annotation"
-                );
+                if (storIOSQLiteTypeMeta == null) {
+                    throw new ProcessingException(annotatedFieldElement, "Field marked with "
+                            + StorIOSQLiteColumn.class.getSimpleName()
+                            + " annotation should be placed in class marked by "
+                            + StorIOSQLiteType.class.getSimpleName()
+                            + " annotation"
+                    );
+                }
+
+                // If class already contains column with same name -> throw an exception.
+                if (storIOSQLiteTypeMeta.columns.containsKey(storIOSQLiteColumnMeta.storIOColumn.name())) {
+                    throw new ProcessingException(annotatedFieldElement, "Column name already used in this class");
+                }
+
+                // If field annotation applied to both fields and methods in a same class.
+                if ((storIOSQLiteTypeMeta.needCreator && !storIOSQLiteColumnMeta.isMethod()) ||
+                        (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod() && !storIOSQLiteTypeMeta.columns.isEmpty())) {
+                    throw new ProcessingException(annotatedFieldElement, "Can't apply"
+                            + StorIOSQLiteColumn.class.getSimpleName()
+                            + " annotation to both fields and methods in a same class"
+                    );
+                }
+
+                // If column needs creator then enclosing class needs it as well.
+                if (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod()) {
+                    storIOSQLiteTypeMeta.needCreator = true;
+                }
+
+                // Put meta column info.
+                storIOSQLiteTypeMeta.columns.put(storIOSQLiteColumnMeta.storIOColumn.name(), storIOSQLiteColumnMeta);
             }
-
-            // If class already contains column with same name -> throw an exception.
-            if (storIOSQLiteTypeMeta.columns.containsKey(storIOSQLiteColumnMeta.storIOColumn.name())) {
-                throw new ProcessingException(annotatedFieldElement, "Column name already used in this class");
-            }
-
-            // If field annotation applied to both fields and methods in a same class.
-            if ((storIOSQLiteTypeMeta.needCreator && !storIOSQLiteColumnMeta.isMethod()) ||
-                    (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod() && !storIOSQLiteTypeMeta.columns.isEmpty())) {
-                throw new ProcessingException(annotatedFieldElement, "Can't apply"
-                        + StorIOSQLiteColumn.class.getSimpleName()
-                        + " annotation to both fields and methods in a same class"
-                );
-            }
-
-            // If column needs creator then enclosing class needs it as well.
-            if (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod()) {
-                storIOSQLiteTypeMeta.needCreator = true;
-            }
-
-            // Put meta column info.
-            storIOSQLiteTypeMeta.columns.put(storIOSQLiteColumnMeta.storIOColumn.name(), storIOSQLiteColumnMeta);
         }
     }
 

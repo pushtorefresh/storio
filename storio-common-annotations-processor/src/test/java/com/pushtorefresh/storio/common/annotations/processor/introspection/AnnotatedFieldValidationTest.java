@@ -30,15 +30,15 @@ public class AnnotatedFieldValidationTest {
         stub.processor.validateAnnotatedFieldOrMethod(stub.field);
     }
 
-    @Test
-    public void failIfThereIsNoAnnotation() {
-        AnnotationProcessorStub stub = AnnotationProcessorStub.newInstance();
-        when(stub.enclosingElement.getAnnotation(AnnotationProcessorStub.TestClassAnnotation.class)).thenReturn(null);
-
-        expectedException.expect(ProcessingException.class);
-        expectedException.expectMessage("Please annotate class TestClass with TestClassAnnotation");
-        stub.processor.validateAnnotatedFieldOrMethod(stub.field);
-    }
+//    @Test
+//    public void failIfThereIsNoAnnotation() {
+//        AnnotationProcessorStub stub = AnnotationProcessorStub.newInstance();
+//        when(stub.enclosingElement.getAnnotation(AnnotationProcessorStub.TestClassAnnotation.class)).thenReturn(null);
+//
+//        expectedException.expect(ProcessingException.class);
+//        expectedException.expectMessage("Please annotate class TestClass with TestClassAnnotation");
+//        stub.processor.validateAnnotatedFieldOrMethod(stub.field);
+//    }
 
     @Test
     public void failIfFieldPrivate() {
