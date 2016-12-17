@@ -1,6 +1,24 @@
 StorIO Change Log
 ==========
 
+## Version 1.12.0
+
+_2016_12_7_
+
+* Support for **AutoValue** and **Kotlin** in StorIOSQLiteProcessor and StorIOContentResolverProcessor! :balloon::tada::fireworks: 100500 thanks to [@geralt-encore](https://github.com/geralt-encore)!
+* DefaultStorIOSQLite now combines affected tables from pending changes. **After the end of transaction DefaultStorIOSQLite will send only one notification instead of multiple for every change**.
+* Queries take generic args instead of objects.
+* Add `RawQuery#affectsTables` and `RawQuery#observesTables` that take collection.
+
+**Changes:**
+
+* [PR 720](https://github.com/pushtorefresh/storio/pull/720) Support for AutoValue and Kotlin data classes in StorIOSQLiteProcessor.
+* [PR 725](https://github.com/pushtorefresh/storio/pull/725) Support for AutoValue and Kotlin data classes in StorIOContentResolverProcessor.
+* [PR 726](https://github.com/pushtorefresh/storio/pull/726) Update README with AutoValue and Kotlin examples.
+* [PR 717](https://github.com/pushtorefresh/storio/pull/717) DefaultStorIOSQLite combines affected tables from pending changes.
+* [PR 699](https://github.com/pushtorefresh/storio/pull/699) Queries take generic args instead of objects.
+* [PR 698](https://github.com/pushtorefresh/storio/pull/698) Add RawQuery affectsTables and observesTables that take collection.
+
 ## Version 1.11.0
 
 _2016_10_10_
