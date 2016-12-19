@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.contentresolver.annotations.processor;
 
 import com.google.auto.service.AutoService;
 import com.pushtorefresh.storio.common.annotations.processor.ProcessingException;
+import com.pushtorefresh.storio.common.annotations.processor.SkipNotAnnotatedClassWithAnnotatedParentException;
 import com.pushtorefresh.storio.common.annotations.processor.StorIOAnnotationsProcessor;
 import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
@@ -90,18 +91,18 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
     /**
      * Verifies that uris are valid.
      *
-     * @param classElement type element
-     * @param commonUri nullable default uri for all operations
+     * @param classElement    type element
+     * @param commonUri       nullable default uri for all operations
      * @param operationUriMap non-null map where
-     *                              key - operation name,
-     *                              value - specific uri for this operation
+     *                        key - operation name,
+     *                        value - specific uri for this operation
      */
     protected void validateUris(
             @NotNull TypeElement classElement,
             @Nullable String commonUri,
             @NotNull Map<String, String> operationUriMap) {
 
-        if(!validateUri(commonUri)) {
+        if (!validateUri(commonUri)) {
             final List<String> operationsWithInvalidUris = new ArrayList<String>(operationUriMap.size());
             for (Map.Entry<String, String> entry : operationUriMap.entrySet()) {
                 if (!validateUri(entry.getValue())) {
@@ -141,7 +142,9 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                 = roundEnvironment.getElementsAnnotatedWith(StorIOContentResolverColumn.class);
 
         for (final Element annotatedFieldElement : elementsAnnotatedWithStorIOContentResolverColumn) {
-            if (validateAnnotatedFieldOrMethod(annotatedFieldElement)) {
+            try {
+                validateAnnotatedFieldOrMethod(annotatedFieldElement);
+
                 final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta = processAnnotatedFieldOrMethod(annotatedFieldElement);
 
                 final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = annotatedClasses.get(storIOContentResolverColumnMeta.enclosingElement);
@@ -176,6 +179,8 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
 
                 // Put meta column info.
                 storIOContentResolverTypeMeta.columns.put(storIOContentResolverColumnMeta.storIOColumn.name(), storIOContentResolverColumnMeta);
+            } catch (SkipNotAnnotatedClassWithAnnotatedParentException e) {
+                e.printStackTrace();
             }
         }
     }

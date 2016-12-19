@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.sqlite.annotations.processor;
 
 import com.google.auto.service.AutoService;
 import com.pushtorefresh.storio.common.annotations.processor.ProcessingException;
+import com.pushtorefresh.storio.common.annotations.processor.SkipNotAnnotatedClassWithAnnotatedParentException;
 import com.pushtorefresh.storio.common.annotations.processor.StorIOAnnotationsProcessor;
 import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
@@ -95,7 +96,9 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteColumn.class);
 
         for (final Element annotatedFieldElement : elementsAnnotatedWithStorIOSQLiteColumn) {
-            if (validateAnnotatedFieldOrMethod(annotatedFieldElement)) {
+            try {
+                validateAnnotatedFieldOrMethod(annotatedFieldElement);
+
                 final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta = processAnnotatedFieldOrMethod(annotatedFieldElement);
 
                 final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = annotatedClasses.get(storIOSQLiteColumnMeta.enclosingElement);
@@ -130,6 +133,8 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
 
                 // Put meta column info.
                 storIOSQLiteTypeMeta.columns.put(storIOSQLiteColumnMeta.storIOColumn.name(), storIOSQLiteColumnMeta);
+            } catch (SkipNotAnnotatedClassWithAnnotatedParentException e) {
+                e.printStackTrace();
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.common.annotations.processor.introspection;
 
+import com.pushtorefresh.storio.common.annotations.processor.SkipNotAnnotatedClassWithAnnotatedParentException;
 import com.pushtorefresh.storio.common.annotations.processor.StorIOAnnotationsProcessor;
 
 import org.jetbrains.annotations.NotNull;
@@ -64,8 +65,8 @@ public class AnnotationProcessorStub {
     protected static abstract class TestStorIOAnnotationsProcessor extends StorIOAnnotationsProcessor {
 
         @Override
-        public boolean validateAnnotatedFieldOrMethod(@NotNull Element annotatedElement) {
-            return super.validateAnnotatedFieldOrMethod(annotatedElement);
+        public void validateAnnotatedFieldOrMethod(@NotNull Element annotatedElement) throws SkipNotAnnotatedClassWithAnnotatedParentException {
+            super.validateAnnotatedFieldOrMethod(annotatedElement);
         }
 
         @Override

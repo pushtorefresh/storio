@@ -100,12 +100,10 @@ public abstract class StorIOAnnotationsProcessor
      * Checks that element annotated with {@link StorIOColumnMeta} satisfies all required conditions.
      *
      * @param annotatedElement an annotated field
-     * @return boolean flag which indicates if annotated element valid or not
+     * @throws SkipNotAnnotatedClassWithAnnotatedParentException
      */
-    protected boolean validateAnnotatedFieldOrMethod(@NotNull final Element annotatedElement) {
+    protected void validateAnnotatedFieldOrMethod(@NotNull final Element annotatedElement) throws SkipNotAnnotatedClassWithAnnotatedParentException {
         // We expect here that annotatedElement is Field or Method, annotation requires that via @Target.
-
-        boolean valid = true;
 
         final Element enclosingElement = annotatedElement.getEnclosingElement();
 
@@ -119,7 +117,8 @@ public abstract class StorIOAnnotationsProcessor
         if (enclosingElement.getAnnotation(getTypeAnnotationClass()) == null) {
             Element superClass = typeUtils.asElement(((TypeElement) enclosingElement).getSuperclass());
             if (superClass.getAnnotation(getTypeAnnotationClass()) != null) {
-                valid = false;
+                throw new SkipNotAnnotatedClassWithAnnotatedParentException("Fields of classes not annotated with" + getTypeAnnotationClass().getSimpleName() +
+                "which have parents annotated with" + getTypeAnnotationClass().getSimpleName() + "will be skipped (e.g. AutoValue case)");
             } else {
                 throw new ProcessingException(
                         annotatedElement,
@@ -148,8 +147,6 @@ public abstract class StorIOAnnotationsProcessor
                     getColumnAnnotationClass().getSimpleName() + " can not be applied to method with parameters: " + annotatedElement.getSimpleName()
             );
         }
-
-        return valid;
     }
 
     /**
