@@ -33,6 +33,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
+import static javax.tools.Diagnostic.Kind.WARNING;
+
 /**
  * Annotation processor for StorIOSQLite.
  * <p>
@@ -134,7 +136,7 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 // Put meta column info.
                 storIOSQLiteTypeMeta.columns.put(storIOSQLiteColumnMeta.storIOColumn.name(), storIOSQLiteColumnMeta);
             } catch (SkipNotAnnotatedClassWithAnnotatedParentException e) {
-                e.printStackTrace();
+                messager.printMessage(WARNING, e.getMessage());
             }
         }
     }

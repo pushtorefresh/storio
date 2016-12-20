@@ -50,7 +50,7 @@ public abstract class StorIOAnnotationsProcessor
     private Filer filer;
     private Elements elementUtils;
     private Types typeUtils;
-    private Messager messager;
+    protected Messager messager;
 
     /**
      * Processes class annotations.

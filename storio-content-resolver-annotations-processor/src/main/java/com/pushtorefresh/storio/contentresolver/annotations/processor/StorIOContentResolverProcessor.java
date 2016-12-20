@@ -36,6 +36,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
+import static javax.tools.Diagnostic.Kind.WARNING;
+
 /**
  * Annotation processor for StorIOContentResolver
  * <p>
@@ -180,7 +182,7 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                 // Put meta column info.
                 storIOContentResolverTypeMeta.columns.put(storIOContentResolverColumnMeta.storIOColumn.name(), storIOContentResolverColumnMeta);
             } catch (SkipNotAnnotatedClassWithAnnotatedParentException e) {
-                e.printStackTrace();
+                messager.printMessage(WARNING, e.getMessage());
             }
         }
     }
