@@ -41,6 +41,7 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
         return element.getKind() == ElementKind.METHOD;
     }
 
+    @NotNull
     public String getRealElementName() {
         if (elementName.startsWith("get") && Character.isUpperCase(elementName.charAt(3))) {
             return elementName.substring(3).toLowerCase();

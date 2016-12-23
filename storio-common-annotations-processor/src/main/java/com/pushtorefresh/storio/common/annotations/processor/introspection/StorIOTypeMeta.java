@@ -54,9 +54,10 @@ public class StorIOTypeMeta <TypeAnnotation extends Annotation, ColumnMeta exten
         this.needCreator = needCreator;
     }
 
+    @NotNull
     public Collection<ColumnMeta> getOrderedColumns() {
         if (needCreator) {
-            List<String> params = new ArrayList<String>();
+            List<String> params = new ArrayList<String>(columns.size());
             List<ColumnMeta> orderedColumns = new ArrayList<ColumnMeta>(Collections.<ColumnMeta>nCopies(columns.size(), null));
             // creator can't be null if needCreator is true
             //noinspection ConstantConditions
