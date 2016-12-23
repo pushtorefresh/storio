@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.contentresolver.annotations.processor;
 
 import com.google.auto.service.AutoService;
 import com.pushtorefresh.storio.common.annotations.processor.ProcessingException;
+import com.pushtorefresh.storio.common.annotations.processor.SkipNotAnnotatedClassWithAnnotatedParentException;
 import com.pushtorefresh.storio.common.annotations.processor.StorIOAnnotationsProcessor;
 import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
@@ -35,9 +36,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
-import static javax.lang.model.element.ElementKind.CLASS;
-import static javax.lang.model.element.Modifier.FINAL;
-import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.tools.Diagnostic.Kind.WARNING;
 
 /**
  * Annotation processor for StorIOContentResolver
@@ -94,18 +93,18 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
     /**
      * Verifies that uris are valid.
      *
-     * @param classElement type element
-     * @param commonUri nullable default uri for all operations
+     * @param classElement    type element
+     * @param commonUri       nullable default uri for all operations
      * @param operationUriMap non-null map where
-     *                              key - operation name,
-     *                              value - specific uri for this operation
+     *                        key - operation name,
+     *                        value - specific uri for this operation
      */
     protected void validateUris(
             @NotNull TypeElement classElement,
             @Nullable String commonUri,
             @NotNull Map<String, String> operationUriMap) {
 
-        if(!validateUri(commonUri)) {
+        if (!validateUri(commonUri)) {
             final List<String> operationsWithInvalidUris = new ArrayList<String>(operationUriMap.size());
             for (Map.Entry<String, String> entry : operationUriMap.entrySet()) {
                 if (!validateUri(entry.getValue())) {
@@ -145,82 +144,46 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                 = roundEnvironment.getElementsAnnotatedWith(StorIOContentResolverColumn.class);
 
         for (final Element annotatedFieldElement : elementsAnnotatedWithStorIOContentResolverColumn) {
-            validateAnnotatedFieldOrMethod(annotatedFieldElement);
-            final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta = processAnnotatedFieldOrMethod(annotatedFieldElement);
+            try {
+                validateAnnotatedFieldOrMethod(annotatedFieldElement);
 
-            final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = annotatedClasses.get(storIOContentResolverColumnMeta.enclosingElement);
+                final StorIOContentResolverColumnMeta storIOContentResolverColumnMeta = processAnnotatedFieldOrMethod(annotatedFieldElement);
 
-            if (storIOContentResolverTypeMeta == null) {
-                throw new ProcessingException(
-                        annotatedFieldElement, "Field marked with "
-                        + StorIOContentResolverColumn.class.getSimpleName()
-                        + " annotation should be placed in class marked by "
-                        + StorIOContentResolverType.class.getSimpleName()
-                        + " annotation"
-                );
+                final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = annotatedClasses.get(storIOContentResolverColumnMeta.enclosingElement);
+
+                if (storIOContentResolverTypeMeta == null) {
+                    throw new ProcessingException(annotatedFieldElement, "Field marked with "
+                            + StorIOContentResolverColumn.class.getSimpleName()
+                            + " annotation should be placed in class marked by "
+                            + StorIOContentResolverType.class.getSimpleName()
+                            + " annotation"
+                    );
+                }
+
+                // If class already contains column with same name -> throw an exception.
+                if (storIOContentResolverTypeMeta.columns.containsKey(storIOContentResolverColumnMeta.storIOColumn.name())) {
+                    throw new ProcessingException(annotatedFieldElement, "Column name already used in this class");
+                }
+
+                // If field annotation applied to both fields and methods in a same class.
+                if ((storIOContentResolverTypeMeta.needCreator && !storIOContentResolverColumnMeta.isMethod()) ||
+                        (!storIOContentResolverTypeMeta.needCreator && storIOContentResolverColumnMeta.isMethod() && !storIOContentResolverTypeMeta.columns.isEmpty())) {
+                    throw new ProcessingException(annotatedFieldElement, "Can't apply"
+                            + StorIOContentResolverColumn.class.getSimpleName()
+                            + " annotation to both fields and methods in a same class"
+                    );
+                }
+
+                // If column needs creator then enclosing class needs it as well.
+                if (!storIOContentResolverTypeMeta.needCreator && storIOContentResolverColumnMeta.isMethod()) {
+                    storIOContentResolverTypeMeta.needCreator = true;
+                }
+
+                // Put meta column info.
+                storIOContentResolverTypeMeta.columns.put(storIOContentResolverColumnMeta.storIOColumn.name(), storIOContentResolverColumnMeta);
+            } catch (SkipNotAnnotatedClassWithAnnotatedParentException e) {
+                messager.printMessage(WARNING, e.getMessage());
             }
-
-            // If class already contains column with same name -> throw an exception.
-            if (storIOContentResolverTypeMeta.columns.containsKey(storIOContentResolverColumnMeta.storIOColumn.name())) {
-                throw new ProcessingException(annotatedFieldElement, "Column name already used in this class");
-            }
-
-            // If field annotation applied to both fields and methods in a same class.
-            if ((storIOContentResolverTypeMeta.needCreator && !storIOContentResolverColumnMeta.isMethod()) ||
-                    (!storIOContentResolverTypeMeta.needCreator && storIOContentResolverColumnMeta.isMethod() && !storIOContentResolverTypeMeta.columns.isEmpty())) {
-                throw new ProcessingException(annotatedFieldElement, "Can't apply"
-                        + StorIOContentResolverColumn.class.getSimpleName()
-                        + " annotation to both fields and methods in a same class"
-                );
-            }
-
-            // If column needs creator then enclosing class needs it as well.
-            if (!storIOContentResolverTypeMeta.needCreator && storIOContentResolverColumnMeta.isMethod()) {
-                storIOContentResolverTypeMeta.needCreator = true;
-            }
-
-            // Put meta column info.
-            storIOContentResolverTypeMeta.columns.put(storIOContentResolverColumnMeta.storIOColumn.name(), storIOContentResolverColumnMeta);
-        }
-    }
-
-    /**
-     * Checks that element annotated with {@link StorIOContentResolverColumn} satisfies all required conditions
-     *
-     * @param annotatedElement element annotated with {@link StorIOContentResolverColumn}
-     */
-    @Override
-    protected void validateAnnotatedFieldOrMethod(@NotNull final Element annotatedElement) {
-        // we expect here that annotatedElement is Field, annotation requires that via @Target
-
-        final Element enclosingElement = annotatedElement.getEnclosingElement();
-
-        if (!enclosingElement.getKind().equals(CLASS)) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    "Please apply " + StorIOContentResolverType.class.getSimpleName() + " to fields of class: " + annotatedElement.getSimpleName()
-            );
-        }
-
-        if (enclosingElement.getAnnotation(StorIOContentResolverType.class) == null) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    "Please annotate class " + enclosingElement.getSimpleName() + " with " + StorIOContentResolverType.class.getSimpleName()
-            );
-        }
-
-        if (annotatedElement.getModifiers().contains(PRIVATE)) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    StorIOContentResolverColumn.class.getSimpleName() + " can not be applied to private field: " + annotatedElement.getSimpleName()
-            );
-        }
-
-        if (annotatedElement.getModifiers().contains(FINAL)) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    StorIOContentResolverColumn.class.getSimpleName() + " can not be applied to final field: " + annotatedElement.getSimpleName()
-            );
         }
     }
 
@@ -238,8 +201,7 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
         try {
             javaType = JavaType.from(annotatedField.getKind() == ElementKind.FIELD ? annotatedField.asType() : ((ExecutableElement) annotatedField).getReturnType());
         } catch (Exception e) {
-            throw new ProcessingException(
-                    annotatedField, "Unsupported type of field for "
+            throw new ProcessingException(annotatedField, "Unsupported type of field for "
                     + StorIOContentResolverColumn.class.getSimpleName()
                     + " annotation, if you need to serialize/deserialize field of that type "
                     + "-> please write your own resolver: "

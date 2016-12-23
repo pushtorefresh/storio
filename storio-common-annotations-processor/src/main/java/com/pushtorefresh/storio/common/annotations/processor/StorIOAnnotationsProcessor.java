@@ -24,6 +24,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 import static javax.lang.model.element.ElementKind.CLASS;
 import static javax.lang.model.element.ElementKind.FIELD;
@@ -48,7 +49,8 @@ public abstract class StorIOAnnotationsProcessor
 
     private Filer filer;
     private Elements elementUtils;
-    private Messager messager;
+    private Types typeUtils;
+    protected Messager messager;
 
     /**
      * Processes class annotations.
@@ -98,8 +100,9 @@ public abstract class StorIOAnnotationsProcessor
      * Checks that element annotated with {@link StorIOColumnMeta} satisfies all required conditions.
      *
      * @param annotatedElement an annotated field
+     * @throws SkipNotAnnotatedClassWithAnnotatedParentException
      */
-    protected void validateAnnotatedFieldOrMethod(@NotNull final Element annotatedElement) {
+    protected void validateAnnotatedFieldOrMethod(@NotNull final Element annotatedElement) throws SkipNotAnnotatedClassWithAnnotatedParentException {
         // We expect here that annotatedElement is Field or Method, annotation requires that via @Target.
 
         final Element enclosingElement = annotatedElement.getEnclosingElement();
@@ -112,10 +115,16 @@ public abstract class StorIOAnnotationsProcessor
         }
 
         if (enclosingElement.getAnnotation(getTypeAnnotationClass()) == null) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    "Please annotate class " + enclosingElement.getSimpleName() + " with " + getTypeAnnotationClass().getSimpleName()
-            );
+            Element superClass = typeUtils.asElement(((TypeElement) enclosingElement).getSuperclass());
+            if (superClass.getAnnotation(getTypeAnnotationClass()) != null) {
+                throw new SkipNotAnnotatedClassWithAnnotatedParentException("Fields of classes not annotated with" + getTypeAnnotationClass().getSimpleName() +
+                "which have parents annotated with" + getTypeAnnotationClass().getSimpleName() + "will be skipped (e.g. AutoValue case)");
+            } else {
+                throw new ProcessingException(
+                        annotatedElement,
+                        "Please annotate class " + enclosingElement.getSimpleName() + " with " + getTypeAnnotationClass().getSimpleName()
+                );
+            }
         }
 
         if (annotatedElement.getKind() == FIELD && annotatedElement.getModifiers().contains(PRIVATE)) {
@@ -191,6 +200,7 @@ public abstract class StorIOAnnotationsProcessor
         super.init(processingEnv);
         filer = processingEnv.getFiler();
         elementUtils = processingEnv.getElementUtils(); // why class name is "Elements" but method "getElementUtils()", OKAY..
+        typeUtils = processingEnv.getTypeUtils();
         messager = processingEnv.getMessager();
     }
 

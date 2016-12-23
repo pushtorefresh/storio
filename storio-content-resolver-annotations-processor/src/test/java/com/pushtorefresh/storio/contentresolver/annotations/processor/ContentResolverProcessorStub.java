@@ -1,5 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor;
 
+import com.pushtorefresh.storio.common.annotations.processor.SkipNotAnnotatedClassWithAnnotatedParentException;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mockito.Mockito;
@@ -39,7 +41,7 @@ public class ContentResolverProcessorStub {
 
         // region Public Morozov
         @Override
-        public void validateAnnotatedFieldOrMethod(@NotNull Element annotatedElement) {
+        public void validateAnnotatedFieldOrMethod(@NotNull Element annotatedElement) throws SkipNotAnnotatedClassWithAnnotatedParentException {
             super.validateAnnotatedFieldOrMethod(annotatedElement);
         }
 
