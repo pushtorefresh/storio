@@ -101,12 +101,10 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
                         .build())
                 .addCode("\n");
 
-        // We don't know the name of the variable, just the type. So just use generic parameter names
-        int paramCount = 1;
         final StringBuilder paramsBuilder = new StringBuilder();
         paramsBuilder.append("(");
         boolean first = true;
-        for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta.columns.values()) {
+        for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta.getOrderedColumns()) {
             final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.storIOColumn.name() + "\")";
 
             final JavaType javaType = columnMeta.javaType;
@@ -117,21 +115,19 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
 
             final boolean isBoxed = javaType.isBoxedType();
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
-                builder.addStatement("$T param" + paramCount + " = null", name);
+                builder.addStatement("$T " + columnMeta.getRealElementName() + " = null", name);
                 builder.beginControlFlow("if(!cursor.isNull($L))", columnIndex);
-                builder.addStatement("param" + paramCount + " = cursor.$L", getFromCursor);
+                builder.addStatement(columnMeta.getRealElementName() + " = cursor.$L", getFromCursor);
                 builder.endControlFlow();
             } else {
-                builder.addStatement("$T param" + paramCount + " = cursor.$L", name, getFromCursor);
+                builder.addStatement("$T " + columnMeta.getRealElementName() + " = cursor.$L", name, getFromCursor);
             }
 
             if (!first) {
                 paramsBuilder.append(", ");
             }
             first = false;
-            paramsBuilder.append("param" + paramCount);
-
-            paramCount++;
+            paramsBuilder.append(columnMeta.getRealElementName());
         }
         paramsBuilder.append(")");
         builder.addCode("\n");
