@@ -88,7 +88,8 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
                 '}';
     }
 
-    private static String decapitalize(String str) {
+    @NotNull
+    private static String decapitalize(@NotNull String str) {
         if (str.length() > 1) {
             return Character.toLowerCase(str.charAt(0)) + str.substring(1);
         } else {
