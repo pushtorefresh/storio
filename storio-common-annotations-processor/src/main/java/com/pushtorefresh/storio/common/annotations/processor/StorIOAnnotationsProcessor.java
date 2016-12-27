@@ -4,6 +4,7 @@ import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOColumnMeta;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOCreatorMeta;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOTypeMeta;
+import com.squareup.javapoet.JavaFile;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -225,7 +226,10 @@ public abstract class StorIOAnnotationsProcessor
 
             for (TypeMeta typeMeta : annotatedClasses.values()) {
                 for (Generator<TypeMeta> generator : generators) {
-                    generator.generateJavaFile(typeMeta).writeTo(filer);
+                    JavaFile javaFile = generator.generateJavaFile(typeMeta);
+                    if (javaFile != null) {
+                        javaFile.writeTo(filer);
+                    }
                 }
             }
         } catch (ProcessingException e) {

@@ -7,6 +7,5 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Generator<TypeMeta extends StorIOTypeMeta> {
 
-    @NotNull
     JavaFile generateJavaFile(@NotNull TypeMeta typeMeta);
 }

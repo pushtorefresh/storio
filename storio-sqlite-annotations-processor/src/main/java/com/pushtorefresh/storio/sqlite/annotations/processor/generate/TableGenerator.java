@@ -35,9 +35,12 @@ public class TableGenerator implements Generator<StorIOSQLiteTypeMeta> {
     private final ClassName db = ClassName.get("android.database.sqlite", "SQLiteDatabase");
     private static final String tableName = "tableName";
 
-    @NotNull
     @Override
     public JavaFile generateJavaFile(@NotNull StorIOSQLiteTypeMeta typeMeta) {
+        if (!typeMeta.storIOType.generateTableClass()) {
+            return null;
+        }
+
         TypeSpec tableSpec = TypeSpec.classBuilder(typeMeta.simpleName + SUFFIX)
                 .addFields(generateFields(typeMeta.storIOType.table(), typeMeta.columns.values()))
                 .addMethod(generateCreateMethod(typeMeta.storIOType.table(), typeMeta.columns.values()))

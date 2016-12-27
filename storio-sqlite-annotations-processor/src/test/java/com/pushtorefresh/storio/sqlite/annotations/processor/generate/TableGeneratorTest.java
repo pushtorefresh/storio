@@ -77,6 +77,7 @@ public class TableGeneratorTest {
     public void testHappyPath() throws IOException {
         final StorIOSQLiteType storIOSQLiteType = mock(StorIOSQLiteType.class);
         when(storIOSQLiteType.table()).thenReturn("test_table");
+        when(storIOSQLiteType.generateTableClass()).thenReturn(true);
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta("TestItem", "com.test", storIOSQLiteType, false);
         //int object with primary key
         final StorIOSQLiteColumnMeta storIOSQLiteColumnMeta1 = createColumnMetaMock(
@@ -162,5 +163,16 @@ public class TableGeneratorTest {
                         PART_CREATE_METHOD +
                         PART_UPDATE_METHOD +
                         "}\n");
+    }
+
+    @Test
+    public void testIfReturnsNullWhenGenerateTableIsSetToFalse() {
+        final StorIOSQLiteType storIOSQLiteType = mock(StorIOSQLiteType.class);
+        when(storIOSQLiteType.table()).thenReturn("test_table");
+        when(storIOSQLiteType.generateTableClass()).thenReturn(false);
+        final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta("TestItem", "com.test", storIOSQLiteType, false);
+        final TableGenerator generator = new TableGenerator();
+        final JavaFile javaFile = generator.generateJavaFile(storIOSQLiteTypeMeta);
+        assertThat(javaFile).isNull();
     }
 }
