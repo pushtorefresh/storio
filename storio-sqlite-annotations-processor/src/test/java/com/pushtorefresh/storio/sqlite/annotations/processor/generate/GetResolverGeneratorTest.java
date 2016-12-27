@@ -74,6 +74,7 @@ public class GetResolverGeneratorTest {
                 "field1",
                 true,           // key
                 false,
+                1,
                 JavaType.BOOLEAN
         );
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
@@ -84,6 +85,7 @@ public class GetResolverGeneratorTest {
                 "field2",
                 false,
                 false,
+                1,
                 JavaType.STRING
         );
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
@@ -120,6 +122,7 @@ public class GetResolverGeneratorTest {
                 "field1",
                 true,                       // key
                 false,
+                1,
                 JavaType.BOOLEAN
         );
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
@@ -130,6 +133,7 @@ public class GetResolverGeneratorTest {
                 "field2",
                 false,
                 false,
+                1,
                 JavaType.INTEGER_OBJECT     // boxed type
         );
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
