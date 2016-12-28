@@ -41,6 +41,17 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
         return element.getKind() == ElementKind.METHOD;
     }
 
+    @NotNull
+    public String getRealElementName() {
+        if (elementName.startsWith("get") && Character.isUpperCase(elementName.charAt(3))) {
+            return decapitalize(elementName.substring(3));
+        } else if (elementName.startsWith("is") && Character.isUpperCase(elementName.charAt(2))) {
+            return decapitalize(elementName.substring(2));
+        } else {
+            return elementName;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -75,5 +86,14 @@ public class StorIOColumnMeta <ColumnAnnotation extends Annotation> {
                 ", javaType=" + javaType +
                 ", storIOColumn=" + storIOColumn +
                 '}';
+    }
+
+    @NotNull
+    private static String decapitalize(@NotNull String str) {
+        if (str.length() > 1) {
+            return Character.toLowerCase(str.charAt(0)) + str.substring(1);
+        } else {
+            return str.toLowerCase();
+        }
     }
 }

@@ -68,4 +68,70 @@ public class StorIOColumnMetaTest {
 		assertThat(expectedString).as("toString method should be equal with expectedString.").isEqualTo(toString);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public final void shouldReturnRealElementNameForElementWithoutPrefixes() {
+		StorIOColumnMeta storioColumnMeta = new StorIOColumnMeta(elementMock, elementMock, "property", javaType,
+				annotationMock);
+
+		String realName = storioColumnMeta.getRealElementName();
+
+		assertThat(realName).isEqualTo("property");
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public final void shouldReturnRealElementNameForElementWithGetPrefix() {
+		StorIOColumnMeta storioColumnMeta = new StorIOColumnMeta(elementMock, elementMock, "getProperty", javaType,
+				annotationMock);
+
+		String realName = storioColumnMeta.getRealElementName();
+
+		assertThat(realName).isEqualTo("property");
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public final void shouldReturnRealElementNameForElementWithIsPrefix() {
+		StorIOColumnMeta storioColumnMeta = new StorIOColumnMeta(elementMock, elementMock, "isProperty", javaType,
+				annotationMock);
+
+		String realName = storioColumnMeta.getRealElementName();
+
+		assertThat(realName).isEqualTo("property");
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public final void shouldReturnRealElementNameForElementWithOneCharacterName() {
+		StorIOColumnMeta storioColumnMeta = new StorIOColumnMeta(elementMock, elementMock, "a", javaType,
+				annotationMock);
+
+		String realName = storioColumnMeta.getRealElementName();
+
+		assertThat(realName).isEqualTo("a");
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public final void shouldReturnRealElementNameForElementStartsWithGet() {
+		StorIOColumnMeta storioColumnMeta = new StorIOColumnMeta(elementMock, elementMock, "getter", javaType,
+				annotationMock);
+
+		String realName = storioColumnMeta.getRealElementName();
+
+		assertThat(realName).isEqualTo("getter");
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public final void shouldReturnRealElementNameForElementStartsWithIs() {
+		StorIOColumnMeta storioColumnMeta = new StorIOColumnMeta(elementMock, elementMock, "iso", javaType,
+				annotationMock);
+
+		String realName = storioColumnMeta.getRealElementName();
+
+		assertThat(realName).isEqualTo("iso");
+	}
+
 }
