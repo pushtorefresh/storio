@@ -212,7 +212,7 @@ public abstract class Tweet {
 
 `Kotlin`
 ```kotlin
-data class Tweet @StorIOSQLiteCreator constructor(@get:StorIOSQLiteColumn(name = "author") val author: String,
+@StorIOSQLiteType(table = "tweets") data class Tweet @StorIOSQLiteCreator constructor(@get:StorIOSQLiteColumn(name = "author") val author: String,
                                                   @get:StorIOSQLiteColumn(name = "content") val content: String)
 ```
 
