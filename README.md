@@ -210,7 +210,13 @@ public abstract class Tweet {
 }
 ```
 
-`Kotlin`
+`Kotlin`:
+
+In order to make annotation processors work with Kotlin you need to add the following to your `build.gradle`:
+```groovy
+apply plugin: 'kotlin-kapt'
+```
+
 ```kotlin
 data class Tweet @StorIOSQLiteCreator constructor(@get:StorIOSQLiteColumn(name = "author") val author: String,
                                                   @get:StorIOSQLiteColumn(name = "content") val content: String)
