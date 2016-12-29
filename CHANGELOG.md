@@ -1,6 +1,19 @@
 StorIO Change Log
 ==========
 
+## Version 1.12.1
+
+_2016_12_29_
+
+* Fixes for AutoValue and Kotlin support in `StorIOSQLiteProcessor` and `StorIOContentResolverProcessor`, thanks to reporters and [@geralt-encore](https://github.com/geralt-encore) and [@hotchemi](https://github.com/hotchemi) for fixes!
+
+**Changes:**
+
+* [PR 743](https://github.com/pushtorefresh/storio/pull/743): Update readme with kapt2 for Kotlin support.
+* [PR 742](https://github.com/pushtorefresh/storio/pull/742): Add missing annotation to Kotlin's example in README.
+* [PR 740](https://github.com/pushtorefresh/storio/pull/740): Mapping parameters by name for Kotlin and AutoValue support.
+* [PR 739](https://github.com/pushtorefresh/storio/pull/739): Fix AutoValue integration.
+
 ## Version 1.12.0
 
 _2016_12_7_
