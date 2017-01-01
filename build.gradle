@@ -74,7 +74,7 @@ ext.libraries = [
         equalsVerifier                 : 'nl.jqno.equalsverifier:equalsverifier:1.7.2',
         privateConstructorChecker      : 'com.pushtorefresh.java-private-constructor-checker:checker:1.1.0',
         guava                          : 'com.google.guava:guava:18.0',
-        robolectric                    : 'org.robolectric:robolectric:3.0',
+        robolectric                    : 'org.robolectric:robolectric:3.1.4',
 
         dagger                         : 'com.google.dagger:dagger:' + daggerVersion,
         daggerCompiler                 : 'com.google.dagger:dagger-compiler:' + daggerVersion,

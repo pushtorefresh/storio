@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.integration;
 
 import android.content.ContentResolver;
+import android.content.pm.ProviderInfo;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.contentresolver.ContentResolverTypeMapping;
@@ -8,8 +9,9 @@ import com.pushtorefresh.storio.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio.contentresolver.impl.DefaultStorIOContentResolver;
 
 import org.junit.Before;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.shadows.ShadowContentResolver;
+import org.robolectric.util.ContentProviderController;
 
 public abstract class IntegrationTest {
 
@@ -32,9 +34,11 @@ public abstract class IntegrationTest {
                         .build())
                 .build();
 
-        IntegrationContentProvider contentProvider = new IntegrationContentProvider();
-        contentProvider.onCreate();
+        ContentProviderController<IntegrationContentProvider> controller =
+                Robolectric.buildContentProvider(IntegrationContentProvider.class);
 
-        ShadowContentResolver.registerProvider(IntegrationContentProvider.AUTHORITY, contentProvider);
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = IntegrationContentProvider.AUTHORITY;
+        controller.create(providerInfo);
     }
 }
