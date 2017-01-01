@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         // Android Gradle plugin
-        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'com.android.tools.build:gradle:2.2.3'
 
         // APT compile-time annotation processing
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
@@ -39,7 +39,7 @@ task wrapper(type: Wrapper) {
 }
 
 ext {
-    buildToolsVersion = '23.0.1'
+    buildToolsVersion = '25.0.2'
     compileSdkVersion = 23
     minSdkVersion = 14
 }
