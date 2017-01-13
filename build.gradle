@@ -9,9 +9,6 @@ buildscript {
         // Android Gradle plugin
         classpath 'com.android.tools.build:gradle:2.2.3'
 
-        // APT compile-time annotation processing
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-
         // Jacoco Test Coverage Plugin
         // (addition to standard Jacoco plugin, allows us fail the build if coverage is not enough)
         // https://github.com/palantir/gradle-jacoco-coverage

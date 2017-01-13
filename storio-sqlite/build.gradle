@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
