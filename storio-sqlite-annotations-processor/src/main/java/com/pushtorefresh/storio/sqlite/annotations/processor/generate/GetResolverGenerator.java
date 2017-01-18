@@ -72,7 +72,7 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
 
             final boolean isBoxed = javaType.isBoxedType();
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
-                builder.beginControlFlow("if(!cursor.isNull($L))", columnIndex);
+                builder.beginControlFlow("if (!cursor.isNull($L))", columnIndex);
             }
 
             builder.addStatement("object.$L = cursor.$L", columnMeta.elementName, getFromCursor);
@@ -115,8 +115,8 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
 
             final boolean isBoxed = javaType.isBoxedType();
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
-                builder.addStatement("$T" + columnMeta.getRealElementName() + "= null", name);
-                builder.beginControlFlow("if(!cursor.isNull($L))", columnIndex);
+                builder.addStatement("$T " + columnMeta.getRealElementName() + " = null", name);
+                builder.beginControlFlow("if (!cursor.isNull($L))", columnIndex);
                 builder.addStatement(columnMeta.getRealElementName() + " = cursor.$L", getFromCursor);
                 builder.endControlFlow();
             } else {
