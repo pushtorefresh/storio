@@ -145,7 +145,7 @@ public class GetResolverGeneratorTest {
                         "        TestItem object = new TestItem();\n" +
                         "\n" +
                         "        object.field1 = cursor.getInt(cursor.getColumnIndex(\"column1\")) == 1;\n" +
-                        "        if(!cursor.isNull(cursor.getColumnIndex(\"column2\"))) {\n" +
+                        "        if (!cursor.isNull(cursor.getColumnIndex(\"column2\"))) {\n" +
                         "            object.field2 = cursor.getInt(cursor.getColumnIndex(\"column2\"));\n" +
                         "        }\n" +
                         "\n" +
