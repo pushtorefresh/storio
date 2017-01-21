@@ -159,8 +159,7 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 dependencies {
 	compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
 
-	// We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
-	apt 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
+	annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
 }
 ```
 
@@ -169,7 +168,7 @@ dependencies {
 dependencies {
 	compile 'com.pushtorefresh.storio:content-resolver-annotations:insert-latest-version-here'
 
-	apt 'com.pushtorefresh.storio:content-resolver-annotations-processor:insert-latest-version-here'
+	annotationProcessor 'com.pushtorefresh.storio:content-resolver-annotations-processor:insert-latest-version-here'
 }
 ```
 
