@@ -135,8 +135,8 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
         if (storIOSQLiteTypeMeta.creator.getKind() == ElementKind.CONSTRUCTOR) {
             builder.addStatement("$T object = new $T" + paramsBuilder.toString(), storIOSQLiteTypeClassName, storIOSQLiteTypeClassName);
         } else {
-            builder.addStatement("$T object = $T.$L", storIOSQLiteTypeMeta.creator.getSimpleName() + paramsBuilder.toString(),
-                    storIOSQLiteTypeClassName, storIOSQLiteTypeClassName);
+            builder.addStatement("$T object = $T.$L", storIOSQLiteTypeClassName, storIOSQLiteTypeClassName,
+                    storIOSQLiteTypeMeta.creator.getSimpleName() + paramsBuilder.toString());
         }
 
         return builder
