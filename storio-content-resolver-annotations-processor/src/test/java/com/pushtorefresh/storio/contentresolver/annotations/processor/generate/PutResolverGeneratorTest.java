@@ -346,7 +346,7 @@ public class PutResolverGeneratorTest {
                         "        ContentValues contentValues = new ContentValues(2);\n" +
                         "\n" +
                         "        contentValues.put(\"column1\", object.column1Field);\n" +
-                        "        if(object.column2Field != null) {\n" +                         // check for null added
+                        "        if (object.column2Field != null) {\n" +                         // check for null added
                         "            contentValues.put(\"column2\", object.column2Field);\n" +
                         "        }\n" +
                         "\n" +

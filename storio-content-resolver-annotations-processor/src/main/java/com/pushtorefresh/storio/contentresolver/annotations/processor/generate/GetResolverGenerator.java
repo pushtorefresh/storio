@@ -72,7 +72,7 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
 
             final boolean isBoxed = javaType.isBoxedType();
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
-                builder.beginControlFlow("if(!cursor.isNull($L))", columnIndex);
+                builder.beginControlFlow("if (!cursor.isNull($L))", columnIndex);
             }
 
             builder.addStatement("object.$L = cursor.$L", columnMeta.elementName, getFromCursor);
@@ -115,12 +115,12 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
 
             final boolean isBoxed = javaType.isBoxedType();
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
-                builder.addStatement("$T " + columnMeta.getRealElementName() + " = null", name);
-                builder.beginControlFlow("if(!cursor.isNull($L))", columnIndex);
-                builder.addStatement(columnMeta.getRealElementName() + " = cursor.$L", getFromCursor);
+                builder.addStatement("$T $L = null", name, columnMeta.getRealElementName());
+                builder.beginControlFlow("if (!cursor.isNull($L))", columnIndex);
+                builder.addStatement("$L = cursor.$L", columnMeta.getRealElementName(), getFromCursor);
                 builder.endControlFlow();
             } else {
-                builder.addStatement("$T " + columnMeta.getRealElementName() + " = cursor.$L", name, getFromCursor);
+                builder.addStatement("$T $L = cursor.$L", name, columnMeta.getRealElementName(), getFromCursor);
             }
 
             if (!first) {
@@ -135,7 +135,8 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
         if (storIOContentResolverTypeMeta.creator.getKind() == ElementKind.CONSTRUCTOR) {
             builder.addStatement("$T object = new $T" + paramsBuilder.toString(), storIOSQLiteTypeClassName, storIOSQLiteTypeClassName);
         } else {
-            builder.addStatement("$T object = $T." + storIOContentResolverTypeMeta.creator.getSimpleName() + paramsBuilder.toString(), storIOSQLiteTypeClassName, storIOSQLiteTypeClassName);
+            builder.addStatement("$T object = $T.$L", storIOSQLiteTypeClassName, storIOSQLiteTypeClassName,
+                    storIOContentResolverTypeMeta.creator.getSimpleName() + paramsBuilder.toString());
         }
 
         return builder
