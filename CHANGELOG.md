@@ -1,6 +1,24 @@
 StorIO Change Log
 ==========
 
+## Version 1.12.2
+
+_2017_01_22_
+
+* Fixes for [#749](https://github.com/pushtorefresh/storio/issues/749), thanks to [@bluebery](https://github.com/bluebery) and [@michaelcarrano](https://github.com/michaelcarrano) for reporting.
+* Fix typo in README. Thanks to [@mikeyxkcd](https://github.com/mikeyxkcd).
+* Gradle 2.2.3.
+* Build tools 25.0.2.
+* Robolectric 3.1.4.
+
+**Changes:**
+
+* [PR 747](https://github.com/pushtorefresh/storio/pull/747): Updated gradle/plugin/tools versions.
+* [PR 748](https://github.com/pushtorefresh/storio/pull/748): Update README.md dependency typo.
+* [PR 750](https://github.com/pushtorefresh/storio/pull/750): Use annotationProcessor instead of apt.
+* [PR 755](https://github.com/pushtorefresh/storio/pull/755): Update readme with annotationProcessor instead of apt.
+* [PR 754](https://github.com/pushtorefresh/storio/pull/754): Fixes for resolver generators.
+
 ## Version 1.12.1
 
 _2016_12_29_
@@ -135,7 +153,7 @@ _2015_12_30_
 * Option to get one object for `StorIOSQLite` and `StorIOContentResolver`
 * Handle backpressure for `Get` operation via RxJava (**requires RxJava 1.1.0**)
 * `SQLiteTypeMapping` and `ContentResolverTypeMapping` generation
-* Annotation processor for `StorIOContentResolver` 
+* Annotation processor for `StorIOContentResolver`
 * Option to set different uri's for `insert`, `update` and `delete` (`StorIOContentResolver`)
 * `PutResult` and `DeleteResult` now allow `0` updated tables
 * Jacoco is alive!
@@ -194,12 +212,12 @@ _2015_10_01_
 * `get().numberOfResults()` for both SQLite and ContentResolver!
 * `@CheckResult` annotation for better IDE experience!
 * `insertWithOnConflict()` for StorIOSQLite.
-* We've added example of composite entity! 
+* We've added example of composite entity!
 
 **Changes:**
 
 * [PR 534](https://github.com/pushtorefresh/storio/pull/534) Add StorIOContentResolver get().numberOfResults()!
-* [PR 533](https://github.com/pushtorefresh/storio/pull/533) Add StorIOSQLite get().numberOfResults()! 
+* [PR 533](https://github.com/pushtorefresh/storio/pull/533) Add StorIOSQLite get().numberOfResults()!
 * [PR 531](https://github.com/pushtorefresh/storio/pull/531) Add @CheckResult annotation, makes life in the Android Studio Better!
 * [PR 530](https://github.com/pushtorefresh/storio/pull/530) Add insertWithOnConflict() for StorIOSQLite!
 * [PR 520](https://github.com/pushtorefresh/storio/pull/520) Example of UserWithTweets entity with custom Put/Get/Delete resolvers
