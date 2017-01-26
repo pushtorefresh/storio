@@ -127,10 +127,10 @@ public abstract class StorIOAnnotationsProcessor
             }
         }
 
-        if (annotatedElement.getKind() == FIELD && annotatedElement.getModifiers().contains(PRIVATE)) {
+        if (annotatedElement.getModifiers().contains(PRIVATE)) {
             throw new ProcessingException(
                     annotatedElement,
-                    getColumnAnnotationClass().getSimpleName() + " can not be applied to private field: " + annotatedElement.getSimpleName()
+                    getColumnAnnotationClass().getSimpleName() + " can not be applied to private field or method: " + annotatedElement.getSimpleName()
             );
         }
 

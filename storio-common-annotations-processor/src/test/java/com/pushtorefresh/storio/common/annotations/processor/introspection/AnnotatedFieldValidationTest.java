@@ -50,7 +50,7 @@ public class AnnotatedFieldValidationTest {
         when(stub.field.getKind()).thenReturn(FIELD);
 
         expectedException.expect(ProcessingException.class);
-        expectedException.expectMessage("TestFieldAnnotation can not be applied to private field: TestField");
+        expectedException.expectMessage("TestFieldAnnotation can not be applied to private field or method: TestField");
         stub.processor.validateAnnotatedFieldOrMethod(stub.field);
     }
 
