@@ -73,10 +73,12 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
 
         final String tableName = storIOSQLiteType.table();
 
-        if (tableName == null || tableName.length() == 0) {
-            throw new ProcessingException(
-                    classElement,
-                    "Table name of " + classElement.getQualifiedName() + " annotated with " + StorIOSQLiteType.class.getSimpleName() + " is null or empty"
+        if (tableName.length() == 0) {
+            throw new ProcessingException(classElement,
+                    "Table name of "
+                            + classElement.getSimpleName()
+                            + " annotated with " + StorIOSQLiteType.class.getSimpleName()
+                            + " is empty"
             );
         }
 
@@ -93,7 +95,8 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
      * @param annotatedClasses map of classes annotated with {@link StorIOSQLiteType}
      */
     @Override
-    protected void processAnnotatedFieldsOrMethods(@NotNull final RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
+    protected void processAnnotatedFieldsOrMethods(@NotNull final RoundEnvironment roundEnvironment,
+                                                   @NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
         final Set<? extends Element> elementsAnnotatedWithStorIOSQLiteColumn
                 = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteColumn.class);
 
@@ -105,26 +108,21 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
 
                 final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = annotatedClasses.get(storIOSQLiteColumnMeta.enclosingElement);
 
-                if (storIOSQLiteTypeMeta == null) {
-                    throw new ProcessingException(annotatedFieldElement, "Field marked with "
-                            + StorIOSQLiteColumn.class.getSimpleName()
-                            + " annotation should be placed in class marked by "
-                            + StorIOSQLiteType.class.getSimpleName()
-                            + " annotation"
-                    );
-                }
-
                 // If class already contains column with same name -> throw an exception.
                 if (storIOSQLiteTypeMeta.columns.containsKey(storIOSQLiteColumnMeta.storIOColumn.name())) {
-                    throw new ProcessingException(annotatedFieldElement, "Column name already used in this class");
+                    throw new ProcessingException(annotatedFieldElement,
+                            "Column name already used in this class: "
+                                    + storIOSQLiteColumnMeta.storIOColumn.name());
                 }
 
                 // If field annotation applied to both fields and methods in a same class.
                 if ((storIOSQLiteTypeMeta.needCreator && !storIOSQLiteColumnMeta.isMethod()) ||
                         (!storIOSQLiteTypeMeta.needCreator && storIOSQLiteColumnMeta.isMethod() && !storIOSQLiteTypeMeta.columns.isEmpty())) {
-                    throw new ProcessingException(annotatedFieldElement, "Can't apply"
-                            + StorIOSQLiteColumn.class.getSimpleName()
-                            + " annotation to both fields and methods in a same class"
+                    throw new ProcessingException(annotatedFieldElement,
+                            "Can't apply "
+                                    + StorIOSQLiteColumn.class.getSimpleName()
+                                    + " annotation to both fields and methods in a same class: "
+                                    + storIOSQLiteTypeMeta.simpleName
                     );
                 }
 
@@ -153,28 +151,33 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
         final JavaType javaType;
 
         try {
-            javaType = JavaType.from(annotatedField.getKind() == ElementKind.FIELD ? annotatedField.asType() : ((ExecutableElement) annotatedField).getReturnType());
+            javaType = JavaType.from(annotatedField.getKind() == ElementKind.FIELD
+                    ? annotatedField.asType()
+                    : ((ExecutableElement) annotatedField).getReturnType());
         } catch (Exception e) {
-            throw new ProcessingException(annotatedField, "Unsupported type of field for "
-                    + StorIOSQLiteColumn.class.getSimpleName()
-                    + " annotation, if you need to serialize/deserialize field of that type "
-                    + "-> please write your own resolver: "
-                    + e.getMessage()
+            throw new ProcessingException(annotatedField,
+                    "Unsupported type of field or method for "
+                            + StorIOSQLiteColumn.class.getSimpleName()
+                            + " annotation, if you need to serialize/deserialize field of that type "
+                            + "-> please write your own resolver: "
+                            + e.getMessage()
             );
         }
 
         final StorIOSQLiteColumn storIOSQLiteColumn = annotatedField.getAnnotation(StorIOSQLiteColumn.class);
 
         if (storIOSQLiteColumn.ignoreNull() && annotatedField.asType().getKind().isPrimitive()) {
-            throw new ProcessingException(
-                    annotatedField,
-                    "ignoreNull should not be used for primitive type: " + annotatedField.asType());
+            throw new ProcessingException(annotatedField,
+                    "ignoreNull should not be used for primitive type: "
+                            + annotatedField.getSimpleName());
         }
 
         final String columnName = storIOSQLiteColumn.name();
 
-        if (columnName == null || columnName.length() == 0) {
-            throw new ProcessingException(annotatedField, "Column name is null or empty");
+        if (columnName.length() == 0) {
+            throw new ProcessingException(annotatedField,
+                    "Column name is empty: "
+                            + annotatedField.getSimpleName());
         }
 
         return new StorIOSQLiteColumnMeta(
@@ -193,7 +196,8 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
      * @param annotatedClasses map of classes annotated with {@link StorIOSQLiteType}
      */
     @Override
-    protected void processAnnotatedExecutables(@NotNull RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
+    protected void processAnnotatedExecutables(@NotNull RoundEnvironment roundEnvironment,
+                                               @NotNull Map<TypeElement, StorIOSQLiteTypeMeta> annotatedClasses) {
         final Set<? extends Element> elementsAnnotatedWithStorIOSQLiteCreator
                 = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteCreator.class);
 
@@ -207,21 +211,14 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
 
             final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = annotatedClasses.get(storIOSQLiteCreatorMeta.enclosingElement);
 
-            if (storIOSQLiteTypeMeta == null) {
-                throw new ProcessingException(annotatedElement, "Method or constructor marked with "
-                        + StorIOSQLiteCreator.class.getSimpleName()
-                        + " annotation should be placed in class marked by "
-                        + StorIOSQLiteType.class.getSimpleName()
-                        + " annotation"
-                );
-            }
-
             // Put meta creator info.
             // If class already contains another creator -> throw exception.
             if (storIOSQLiteTypeMeta.creator == null) {
                 storIOSQLiteTypeMeta.creator = annotatedExecutableElement;
             } else {
-                throw new ProcessingException(annotatedExecutableElement, "Only one creator method or constructor is allowed");
+                throw new ProcessingException(annotatedExecutableElement,
+                        "Only one creator method or constructor is allowed: "
+                                + annotatedExecutableElement.getEnclosingElement().getSimpleName());
             }
         }
     }
@@ -236,9 +233,9 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 throw new ProcessingException(annotatedType.getKey(),
                         "Class marked with "
                                 + StorIOSQLiteType.class.getSimpleName()
-                                + " annotation should have at least one field marked with "
+                                + " annotation should have at least one field or method marked with "
                                 + StorIOSQLiteColumn.class.getSimpleName()
-                                + " annotation");
+                                + " annotation: " + storIOSQLiteTypeMeta.simpleName);
             }
 
             boolean hasAtLeastOneKeyColumn = false;
@@ -254,8 +251,10 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                 throw new ProcessingException(annotatedType.getKey(),
                         "Class marked with "
                                 + StorIOSQLiteType.class.getSimpleName()
-                                + " annotation should have at least one KEY field marked with "
-                                + StorIOSQLiteColumn.class.getSimpleName() + " annotation");
+                                + " annotation should have at least one KEY field or method marked with "
+                                + StorIOSQLiteColumn.class.getSimpleName()
+                                + " annotation: "
+                                + storIOSQLiteTypeMeta.simpleName);
             }
 
             if (storIOSQLiteTypeMeta.needCreator && storIOSQLiteTypeMeta.creator == null) {
@@ -263,7 +262,9 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                         "Class marked with "
                                 + StorIOSQLiteType.class.getSimpleName()
                                 + " annotation needs factory method or constructor marked with "
-                                + StorIOSQLiteCreator.class.getSimpleName() + " annotation");
+                                + StorIOSQLiteCreator.class.getSimpleName()
+                                + " annotation: "
+                                + storIOSQLiteTypeMeta.simpleName);
             }
 
             if (storIOSQLiteTypeMeta.needCreator && storIOSQLiteTypeMeta.creator.getParameters().size() != storIOSQLiteTypeMeta.columns.size()) {
@@ -271,7 +272,9 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                         "Class marked with "
                                 + StorIOSQLiteType.class.getSimpleName()
                                 + " annotation needs factory method or constructor marked with "
-                                + StorIOSQLiteCreator.class.getSimpleName() + " annotation with the same amount of parameters as the number of columns");
+                                + StorIOSQLiteCreator.class.getSimpleName()
+                                + " annotation with the same amount of parameters as the number of columns: "
+                                + storIOSQLiteTypeMeta.simpleName);
             }
         }
     }

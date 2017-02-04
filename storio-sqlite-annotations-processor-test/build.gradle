@@ -1,0 +1,21 @@
+import org.gradle.internal.jvm.Jvm
+
+apply plugin: 'com.android.library'
+apply from: 'build.workaround-missing-resource.gradle'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+}
+
+dependencies {
+    testCompile libraries.storIOSQLite
+    testCompile libraries.storIOSQLiteAnnotationsProcessor
+    testCompile libraries.googleTestingCompile
+    testCompile files(Jvm.current().getRuntimeJar())
+    testCompile files(Jvm.current().getToolsJar())
+}

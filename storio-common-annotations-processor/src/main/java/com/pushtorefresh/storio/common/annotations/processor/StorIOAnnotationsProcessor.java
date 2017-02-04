@@ -59,7 +59,8 @@ public abstract class StorIOAnnotationsProcessor
      * @return non-null unmodifiable map(element, typeMeta)
      */
     @NotNull
-    private Map<TypeElement, TypeMeta> processAnnotatedClasses(@NotNull final RoundEnvironment roundEnvironment, @NotNull final Elements elementUtils) {
+    private Map<TypeElement, TypeMeta> processAnnotatedClasses(@NotNull final RoundEnvironment roundEnvironment,
+                                                               @NotNull final Elements elementUtils) {
         final Set<? extends Element> elementsAnnotatedWithStorIOType
                 = roundEnvironment.getElementsAnnotatedWith(getTypeAnnotationClass());
 
@@ -87,9 +88,18 @@ public abstract class StorIOAnnotationsProcessor
         final TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
 
         if (annotatedTypeElement.getModifiers().contains(PRIVATE)) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    getTypeAnnotationClass().getSimpleName() + " can not be applied to private class: " + annotatedTypeElement.getQualifiedName()
+            throw new ProcessingException(annotatedElement,
+                    getTypeAnnotationClass().getSimpleName()
+                            + " can not be applied to private class: "
+                            + annotatedTypeElement.getSimpleName()
+            );
+        }
+
+        if (annotatedTypeElement.getKind() != CLASS) {
+            throw new ProcessingException(annotatedElement,
+                    getTypeAnnotationClass().getSimpleName()
+                            + " can be applied only to classes not to "
+                            + annotatedTypeElement.getSimpleName()
             );
         }
 
@@ -108,43 +118,53 @@ public abstract class StorIOAnnotationsProcessor
         final Element enclosingElement = annotatedElement.getEnclosingElement();
 
         if (enclosingElement.getKind() != CLASS) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    "Please apply " + getColumnAnnotationClass().getSimpleName() + " to fields or methods of class: " + annotatedElement.getSimpleName()
+            throw new ProcessingException(annotatedElement,
+                    "Please apply "
+                            + getColumnAnnotationClass().getSimpleName()
+                            + " only to members of class (fields or methods) - not to members of "
+                            + enclosingElement.getSimpleName()
             );
         }
 
         if (enclosingElement.getAnnotation(getTypeAnnotationClass()) == null) {
             Element superClass = typeUtils.asElement(((TypeElement) enclosingElement).getSuperclass());
             if (superClass.getAnnotation(getTypeAnnotationClass()) != null) {
-                throw new SkipNotAnnotatedClassWithAnnotatedParentException("Fields of classes not annotated with" + getTypeAnnotationClass().getSimpleName() +
-                "which have parents annotated with" + getTypeAnnotationClass().getSimpleName() + "will be skipped (e.g. AutoValue case)");
+                throw new SkipNotAnnotatedClassWithAnnotatedParentException("Fields of classes not annotated with"
+                        + getTypeAnnotationClass().getSimpleName()
+                        + "which have parents annotated with"
+                        + getTypeAnnotationClass().getSimpleName()
+                        + "will be skipped (e.g. AutoValue case)");
             } else {
-                throw new ProcessingException(
-                        annotatedElement,
-                        "Please annotate class " + enclosingElement.getSimpleName() + " with " + getTypeAnnotationClass().getSimpleName()
+                throw new ProcessingException(annotatedElement,
+                        "Please annotate class "
+                                + enclosingElement.getSimpleName()
+                                + " with "
+                                + getTypeAnnotationClass().getSimpleName()
                 );
             }
         }
 
         if (annotatedElement.getModifiers().contains(PRIVATE)) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    getColumnAnnotationClass().getSimpleName() + " can not be applied to private field or method: " + annotatedElement.getSimpleName()
+            throw new ProcessingException(annotatedElement,
+                    getColumnAnnotationClass().getSimpleName()
+                            + " can not be applied to private field or method: "
+                            + annotatedElement.getSimpleName()
             );
         }
 
         if (annotatedElement.getKind() == FIELD && annotatedElement.getModifiers().contains(FINAL)) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    getColumnAnnotationClass().getSimpleName() + " can not be applied to final field: " + annotatedElement.getSimpleName()
+            throw new ProcessingException(annotatedElement,
+                    getColumnAnnotationClass().getSimpleName()
+                            + " can not be applied to final field: "
+                            + annotatedElement.getSimpleName()
             );
         }
 
         if (annotatedElement.getKind() == METHOD && !((ExecutableElement) annotatedElement).getParameters().isEmpty()) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    getColumnAnnotationClass().getSimpleName() + " can not be applied to method with parameters: " + annotatedElement.getSimpleName()
+            throw new ProcessingException(annotatedElement,
+                    getColumnAnnotationClass().getSimpleName()
+                            + " can not be applied to method with parameters: "
+                            + annotatedElement.getSimpleName()
             );
         }
     }
@@ -160,37 +180,44 @@ public abstract class StorIOAnnotationsProcessor
         final Element enclosingElement = annotatedElement.getEnclosingElement();
 
         if (enclosingElement.getKind() != CLASS) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    "Please apply " + getCreatorAnnotationClass().getSimpleName() + " to constructor or factory method of class: " + enclosingElement.getSimpleName()
+            throw new ProcessingException(annotatedElement,
+                    "Please apply "
+                            + getCreatorAnnotationClass().getSimpleName()
+                            + " to constructor or factory method of class - not to "
+                            + enclosingElement.getSimpleName()
             );
         }
 
         if (enclosingElement.getAnnotation(getTypeAnnotationClass()) == null) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    "Please annotate class " + enclosingElement.getSimpleName() + " with " + getTypeAnnotationClass().getSimpleName()
+            throw new ProcessingException(annotatedElement,
+                    "Please annotate class "
+                            + enclosingElement.getSimpleName()
+                            + " with "
+                            + getTypeAnnotationClass().getSimpleName()
             );
         }
 
         if (annotatedElement.getModifiers().contains(PRIVATE)) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    getCreatorAnnotationClass().getSimpleName() + " can not be applied to private methods or constructors: " + annotatedElement.getSimpleName()
+            throw new ProcessingException(annotatedElement,
+                    getCreatorAnnotationClass().getSimpleName()
+                            + " can not be applied to private methods or constructors: "
+                            + annotatedElement.getSimpleName()
             );
         }
 
         if (annotatedElement.getKind() == METHOD && !annotatedElement.getModifiers().contains(STATIC)) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    getCreatorAnnotationClass().getSimpleName() + " can not be applied to non-static methods: " + annotatedElement.getSimpleName()
+            throw new ProcessingException(annotatedElement,
+                    getCreatorAnnotationClass().getSimpleName()
+                            + " can not be applied to non-static methods: "
+                            + annotatedElement.getSimpleName()
             );
         }
 
         if (annotatedElement.getKind() == METHOD && !annotatedElement.getReturnType().equals(enclosingElement.asType())) {
-            throw new ProcessingException(
-                    annotatedElement,
-                    getCreatorAnnotationClass().getSimpleName() + " can not be applied to method with different return type from: " + enclosingElement.getSimpleName()
+            throw new ProcessingException(annotatedElement,
+                    getCreatorAnnotationClass().getSimpleName()
+                            + " can not be applied to method with return type different from "
+                            + enclosingElement.getSimpleName()
             );
         }
     }
@@ -267,7 +294,8 @@ public abstract class StorIOAnnotationsProcessor
      * @param roundEnvironment current processing environment
      * @param annotatedClasses map of annotated classes
      */
-    protected abstract void processAnnotatedFieldsOrMethods(@NotNull final RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, TypeMeta> annotatedClasses);
+    protected abstract void processAnnotatedFieldsOrMethods(@NotNull final RoundEnvironment roundEnvironment,
+                                                            @NotNull Map<TypeElement, TypeMeta> annotatedClasses);
 
     /**
      * Processes annotated field and returns result of processing or throws exception.
@@ -284,7 +312,8 @@ public abstract class StorIOAnnotationsProcessor
      * @param roundEnvironment current processing environment
      * @param annotatedClasses map of annotated classes
      */
-    protected abstract void processAnnotatedExecutables(@NotNull final RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, TypeMeta> annotatedClasses);
+    protected abstract void processAnnotatedExecutables(@NotNull final RoundEnvironment roundEnvironment,
+                                                        @NotNull Map<TypeElement, TypeMeta> annotatedClasses);
 
     protected abstract void validateAnnotatedClassesAndColumns(@NotNull Map<TypeElement, TypeMeta> annotatedClasses);
 
