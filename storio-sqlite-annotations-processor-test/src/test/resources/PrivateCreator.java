@@ -4,5 +4,7 @@ package com.pushtorefresh.storio.sqlite.annotations;
 public class PrivateCreator {
 
     @StorIOSQLiteCreator
-    private PrivateCreator();
+    private PrivateCreator() {
+        return new PrivateCreator();
+    }
 }

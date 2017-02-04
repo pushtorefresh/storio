@@ -4,5 +4,7 @@ package com.pushtorefresh.storio.sqlite.annotations;
 public class NoCreator {
 
     @StorIOSQLiteColumn(name = "id", key = true)
-    long id();
+    long id() {
+        return 0;
+    }
 }

@@ -4,8 +4,12 @@ package com.pushtorefresh.storio.sqlite.annotations;
 public class CreatorWithWrongNumberOfArguments {
 
     @StorIOSQLiteColumn(name = "id", key = true)
-    long id();
+    long id() {
+        return 0;
+    }
 
     @StorIOSQLiteCreator
-    static CreatorWithWrongNumberOfArguments creator();
+    static CreatorWithWrongNumberOfArguments creator() {
+        return new CreatorWithWrongNumberOfArguments();
+    }
 }

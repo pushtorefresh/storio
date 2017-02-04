@@ -4,5 +4,7 @@ package com.pushtorefresh.storio.sqlite.annotations;
 public class CreatorMethodWithDifferentReturnType {
 
     @StorIOSQLiteCreator
-    static int creator();
+    static int creator() {
+        return 0;
+    }
 }

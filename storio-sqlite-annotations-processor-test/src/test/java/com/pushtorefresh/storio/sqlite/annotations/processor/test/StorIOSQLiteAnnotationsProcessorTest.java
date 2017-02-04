@@ -73,7 +73,6 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .withErrorContaining("StorIOSQLiteColumn can not be applied to private field or method: id");
     }
 
-    //TODO ok for final method
     @Test
     public void shouldNotCompileIfAnnotatedFieldIsFinal() {
         JavaFileObject model = JavaFileObjects
@@ -84,6 +83,17 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
                 .withErrorContaining("StorIOSQLiteColumn can not be applied to final field: id");
+    }
+
+    @Test
+    public void shouldCompileIfAnnotatedMethodIsFinal() {
+        JavaFileObject model = JavaFileObjects
+                .forResource("FinalMethod.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError();
     }
 
     @Test

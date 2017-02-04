@@ -7,5 +7,7 @@ public class MixedFieldsAndMethods {
     long id;
 
     @StorIOSQLiteColumn(name = "name")
-    String name();
+    String name() {
+        return "name";
+    }
 }

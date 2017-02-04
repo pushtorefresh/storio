@@ -4,5 +4,7 @@ package com.pushtorefresh.storio.sqlite.annotations;
 public class NonStaticCreatorMethod {
 
     @StorIOSQLiteCreator
-    NonStaticCreatorMethod creator();
+    NonStaticCreatorMethod creator() {
+        return new NonStaticCreatorMethod();
+    }
 }
