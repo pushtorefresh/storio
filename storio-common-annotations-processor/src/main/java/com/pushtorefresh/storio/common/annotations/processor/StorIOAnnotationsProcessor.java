@@ -29,6 +29,7 @@ import javax.lang.model.util.Types;
 import static javax.lang.model.element.ElementKind.CLASS;
 import static javax.lang.model.element.ElementKind.FIELD;
 import static javax.lang.model.element.ElementKind.METHOD;
+import static javax.lang.model.element.ElementKind.PACKAGE;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.STATIC;
@@ -87,18 +88,18 @@ public abstract class StorIOAnnotationsProcessor
         // We expect here that annotatedElement is Class, annotation requires that via @Target.
         final TypeElement annotatedTypeElement = (TypeElement) annotatedElement;
 
-        if (annotatedTypeElement.getModifiers().contains(PRIVATE)) {
-            throw new ProcessingException(annotatedElement,
-                    getTypeAnnotationClass().getSimpleName()
-                            + " can not be applied to private class: "
-                            + annotatedTypeElement.getSimpleName()
-            );
-        }
-
         if (annotatedTypeElement.getKind() != CLASS) {
             throw new ProcessingException(annotatedElement,
                     getTypeAnnotationClass().getSimpleName()
                             + " can be applied only to classes not to "
+                            + annotatedTypeElement.getSimpleName()
+            );
+        }
+
+        if (annotatedTypeElement.getEnclosingElement().getKind() != PACKAGE) {
+            throw new ProcessingException(annotatedElement,
+                    getTypeAnnotationClass().getSimpleName()
+                            + " can't be applied to nested or inner classes: "
                             + annotatedTypeElement.getSimpleName()
             );
         }

@@ -1,9 +1,9 @@
 package com.pushtorefresh.storio.sqlite.annotations;
 
-public class PrivateClass {
+public class NestedClass {
 
     @StorIOSQLiteType(table = "table")
-    private class ActualClass {
+    public static class ActualClass {
 
         @StorIOSQLiteColumn(name = "id", key = true)
         long id;
