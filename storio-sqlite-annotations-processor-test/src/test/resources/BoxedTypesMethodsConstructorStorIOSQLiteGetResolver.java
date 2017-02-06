@@ -2,8 +2,14 @@ package com.pushtorefresh.storio.sqlite.annotations;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-
 import com.pushtorefresh.storio.sqlite.operations.get.DefaultGetResolver;
+import java.lang.Boolean;
+import java.lang.Double;
+import java.lang.Float;
+import java.lang.Integer;
+import java.lang.Long;
+import java.lang.Override;
+import java.lang.Short;
 
 /**
  * Generated resolver for Get Operation
