@@ -3,56 +3,56 @@ package com.pushtorefresh.storio.sqlite.annotations;
 @StorIOSQLiteType(table = "table")
 public class BoxedTypesMethodsConstructorIgnoreNull {
 
-    private Boolean booleanField;
+    private Boolean field1;
 
-    private Short shortField;
+    private Short field2;
 
-    private Integer intField;
+    private Integer field3;
 
-    private Long longField;
+    private Long field4;
 
-    private Float floatField;
+    private Float field5;
 
-    private Double doubleField;
+    private Double field6;
 
     @StorIOSQLiteCreator
-    public BoxedTypesMethodsConstructorIgnoreNull(Boolean booleanField, Short shortField, Integer intField, Long longField, Float floatField,
-                                                  Double doubleField) {
-        this.booleanField = booleanField;
-        this.shortField = shortField;
-        this.intField = intField;
-        this.longField = longField;
-        this.floatField = floatField;
-        this.doubleField = doubleField;
+    public BoxedTypesMethodsConstructorIgnoreNull(Boolean field1, Short field2, Integer field3, Long field4, Float field5,
+                                                  Double field6) {
+        this.field1 = field1;
+        this.field2 = field2;
+        this.field3 = field3;
+        this.field4 = field4;
+        this.field5 = field5;
+        this.field6 = field6;
     }
 
-    @StorIOSQLiteColumn(name = "booleanField", ignoreNull = true)
-    public Boolean isBooleanField() {
-        return booleanField;
+    @StorIOSQLiteColumn(name = "field1", ignoreNull = true)
+    public Boolean getField1() {
+        return field1;
     }
 
-    @StorIOSQLiteColumn(name = "shortField", ignoreNull = true)
-    public Short getShortField() {
-        return shortField;
+    @StorIOSQLiteColumn(name = "field2", ignoreNull = true)
+    public Short getField2() {
+        return field2;
     }
 
-    @StorIOSQLiteColumn(name = "intField", ignoreNull = true)
-    public Integer getIntField() {
-        return intField;
+    @StorIOSQLiteColumn(name = "field3", ignoreNull = true)
+    public Integer getField3() {
+        return field3;
     }
 
-    @StorIOSQLiteColumn(name = "longField", key = true, ignoreNull = true)
-    public Long getLongField() {
-        return longField;
+    @StorIOSQLiteColumn(name = "field4", key = true, ignoreNull = true)
+    public Long getField4() {
+        return field4;
     }
 
-    @StorIOSQLiteColumn(name = "floatField", ignoreNull = true)
-    public Float getFloatField() {
-        return floatField;
+    @StorIOSQLiteColumn(name = "field5", ignoreNull = true)
+    public Float getField5() {
+        return field5;
     }
 
-    @StorIOSQLiteColumn(name = "doubleField", ignoreNull = true)
-    public Double getDoubleField() {
-        return doubleField;
+    @StorIOSQLiteColumn(name = "field6", ignoreNull = true)
+    public Double getField6() {
+        return field6;
     }
 }

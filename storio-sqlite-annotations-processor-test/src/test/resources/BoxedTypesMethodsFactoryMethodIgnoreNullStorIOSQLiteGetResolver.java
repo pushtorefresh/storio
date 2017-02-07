@@ -12,7 +12,7 @@ import java.lang.Override;
 import java.lang.Short;
 
 /**
- * Generated resolver for Get Operation
+ * Generated resolver for Get Operation.
  */
 public class BoxedTypesMethodsFactoryMethodIgnoreNullStorIOSQLiteGetResolver extends DefaultGetResolver<BoxedTypesMethodsFactoryMethodIgnoreNull> {
     /**
@@ -22,32 +22,32 @@ public class BoxedTypesMethodsFactoryMethodIgnoreNullStorIOSQLiteGetResolver ext
     @NonNull
     public BoxedTypesMethodsFactoryMethodIgnoreNull mapFromCursor(@NonNull Cursor cursor) {
 
-        Boolean booleanField = null;
-        if (!cursor.isNull(cursor.getColumnIndex("booleanField"))) {
-            booleanField = cursor.getInt(cursor.getColumnIndex("booleanField")) == 1;
+        Boolean field1 = null;
+        if (!cursor.isNull(cursor.getColumnIndex("field1"))) {
+            field1 = cursor.getInt(cursor.getColumnIndex("field1")) == 1;
         }
-        Short shortField = null;
-        if (!cursor.isNull(cursor.getColumnIndex("shortField"))) {
-            shortField = cursor.getShort(cursor.getColumnIndex("shortField"));
+        Short field2 = null;
+        if (!cursor.isNull(cursor.getColumnIndex("field2"))) {
+            field2 = cursor.getShort(cursor.getColumnIndex("field2"));
         }
-        Integer intField = null;
-        if (!cursor.isNull(cursor.getColumnIndex("intField"))) {
-            intField = cursor.getInt(cursor.getColumnIndex("intField"));
+        Integer field3 = null;
+        if (!cursor.isNull(cursor.getColumnIndex("field3"))) {
+            field3 = cursor.getInt(cursor.getColumnIndex("field3"));
         }
-        Long longField = null;
-        if (!cursor.isNull(cursor.getColumnIndex("longField"))) {
-            longField = cursor.getLong(cursor.getColumnIndex("longField"));
+        Long field4 = null;
+        if (!cursor.isNull(cursor.getColumnIndex("field4"))) {
+            field4 = cursor.getLong(cursor.getColumnIndex("field4"));
         }
-        Float floatField = null;
-        if (!cursor.isNull(cursor.getColumnIndex("floatField"))) {
-            floatField = cursor.getFloat(cursor.getColumnIndex("floatField"));
+        Float field5 = null;
+        if (!cursor.isNull(cursor.getColumnIndex("field5"))) {
+            field5 = cursor.getFloat(cursor.getColumnIndex("field5"));
         }
-        Double doubleField = null;
-        if (!cursor.isNull(cursor.getColumnIndex("doubleField"))) {
-            doubleField = cursor.getDouble(cursor.getColumnIndex("doubleField"));
+        Double field6 = null;
+        if (!cursor.isNull(cursor.getColumnIndex("field6"))) {
+            field6 = cursor.getDouble(cursor.getColumnIndex("field6"));
         }
 
-        BoxedTypesMethodsFactoryMethodIgnoreNull object = BoxedTypesMethodsFactoryMethodIgnoreNull.create(booleanField, shortField, intField, longField, floatField, doubleField);
+        BoxedTypesMethodsFactoryMethodIgnoreNull object = BoxedTypesMethodsFactoryMethodIgnoreNull.create(field1, field2, field3, field4, field5, field6);
 
         return object;
     }

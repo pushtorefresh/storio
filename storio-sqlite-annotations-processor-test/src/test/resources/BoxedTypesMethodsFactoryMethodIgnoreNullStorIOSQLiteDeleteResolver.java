@@ -6,7 +6,7 @@ import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 import java.lang.Override;
 
 /**
- * Generated resolver for Delete Operation
+ * Generated resolver for Delete Operation.
  */
 public class BoxedTypesMethodsFactoryMethodIgnoreNullStorIOSQLiteDeleteResolver extends DefaultDeleteResolver<BoxedTypesMethodsFactoryMethodIgnoreNull> {
     /**
@@ -17,8 +17,8 @@ public class BoxedTypesMethodsFactoryMethodIgnoreNullStorIOSQLiteDeleteResolver 
     public DeleteQuery mapToDeleteQuery(@NonNull BoxedTypesMethodsFactoryMethodIgnoreNull object) {
         return DeleteQuery.builder()
             .table("table")
-            .where("longField = ?")
-            .whereArgs(object.getLongField())
+            .where("field4 = ?")
+            .whereArgs(object.getField4())
             .build();
     }
 }

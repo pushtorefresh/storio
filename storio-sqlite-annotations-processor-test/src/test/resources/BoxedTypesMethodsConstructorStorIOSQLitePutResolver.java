@@ -8,7 +8,7 @@ import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 import java.lang.Override;
 
 /**
- * Generated resolver for Put Operation
+ * Generated resolver for Put Operation.
  */
 public class BoxedTypesMethodsConstructorStorIOSQLitePutResolver extends DefaultPutResolver<BoxedTypesMethodsConstructor> {
     /**
@@ -30,8 +30,8 @@ public class BoxedTypesMethodsConstructorStorIOSQLitePutResolver extends Default
     public UpdateQuery mapToUpdateQuery(@NonNull BoxedTypesMethodsConstructor object) {
         return UpdateQuery.builder()
             .table("table")
-            .where("longField = ?")
-            .whereArgs(object.getLongField())
+            .where("field4 = ?")
+            .whereArgs(object.getField4())
             .build();
     }
 
@@ -43,12 +43,12 @@ public class BoxedTypesMethodsConstructorStorIOSQLitePutResolver extends Default
     public ContentValues mapToContentValues(@NonNull BoxedTypesMethodsConstructor object) {
         ContentValues contentValues = new ContentValues(6);
 
-        contentValues.put("floatField", object.getFloatField());
-        contentValues.put("longField", object.getLongField());
-        contentValues.put("doubleField", object.getDoubleField());
-        contentValues.put("booleanField", object.isBooleanField());
-        contentValues.put("intField", object.getIntField());
-        contentValues.put("shortField", object.getShortField());
+        contentValues.put("field1", object.getField1());
+        contentValues.put("field6", object.getField6());
+        contentValues.put("field3", object.getField3());
+        contentValues.put("field2", object.getField2());
+        contentValues.put("field5", object.getField5());
+        contentValues.put("field4", object.getField4());
 
         return contentValues;
     }

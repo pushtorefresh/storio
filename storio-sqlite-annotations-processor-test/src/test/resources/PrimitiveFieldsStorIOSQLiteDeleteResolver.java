@@ -6,7 +6,7 @@ import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 import java.lang.Override;
 
 /**
- * Generated resolver for Delete Operation
+ * Generated resolver for Delete Operation.
  */
 public class PrimitiveFieldsStorIOSQLiteDeleteResolver extends DefaultDeleteResolver<PrimitiveFields> {
     /**
@@ -17,8 +17,8 @@ public class PrimitiveFieldsStorIOSQLiteDeleteResolver extends DefaultDeleteReso
     public DeleteQuery mapToDeleteQuery(@NonNull PrimitiveFields object) {
         return DeleteQuery.builder()
                 .table("table")
-                .where("longField = ?")
-                .whereArgs(object.longField)
+                .where("field4 = ?")
+                .whereArgs(object.field4)
                 .build();
     }
 }

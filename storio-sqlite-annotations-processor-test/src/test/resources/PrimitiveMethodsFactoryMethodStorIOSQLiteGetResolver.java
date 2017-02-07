@@ -7,7 +7,7 @@ import java.lang.Override;
 import java.lang.String;
 
 /**
- * Generated resolver for Get Operation
+ * Generated resolver for Get Operation.
  */
 public class PrimitiveMethodsFactoryMethodStorIOSQLiteGetResolver extends DefaultGetResolver<PrimitiveMethodsFactoryMethod> {
     /**
@@ -17,16 +17,16 @@ public class PrimitiveMethodsFactoryMethodStorIOSQLiteGetResolver extends Defaul
     @NonNull
     public PrimitiveMethodsFactoryMethod mapFromCursor(@NonNull Cursor cursor) {
 
-        boolean booleanField = cursor.getInt(cursor.getColumnIndex("booleanField")) == 1;
-        short shortField = cursor.getShort(cursor.getColumnIndex("shortField"));
-        int intField = cursor.getInt(cursor.getColumnIndex("intField"));
-        long longField = cursor.getLong(cursor.getColumnIndex("longField"));
-        float floatField = cursor.getFloat(cursor.getColumnIndex("floatField"));
-        double doubleField = cursor.getDouble(cursor.getColumnIndex("doubleField"));
-        String stringField = cursor.getString(cursor.getColumnIndex("stringField"));
-        byte[] byteArrayField = cursor.getBlob(cursor.getColumnIndex("byteArrayField"));
+        boolean field1 = cursor.getInt(cursor.getColumnIndex("field1")) == 1;
+        short field2 = cursor.getShort(cursor.getColumnIndex("field2"));
+        int field3 = cursor.getInt(cursor.getColumnIndex("field3"));
+        long field4 = cursor.getLong(cursor.getColumnIndex("field4"));
+        float field5 = cursor.getFloat(cursor.getColumnIndex("field5"));
+        double field6 = cursor.getDouble(cursor.getColumnIndex("field6"));
+        String field7 = cursor.getString(cursor.getColumnIndex("field7"));
+        byte[] field8 = cursor.getBlob(cursor.getColumnIndex("field8"));
 
-        PrimitiveMethodsFactoryMethod object = PrimitiveMethodsFactoryMethod.create(booleanField, shortField, intField, longField, floatField, doubleField, stringField, byteArrayField);
+        PrimitiveMethodsFactoryMethod object = PrimitiveMethodsFactoryMethod.create(field1, field2, field3, field4, field5, field6, field7, field8);
 
         return object;
     }

@@ -8,7 +8,7 @@ import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 import java.lang.Override;
 
 /**
- * Generated resolver for Put Operation
+ * Generated resolver for Put Operation.
  */
 public class BoxedTypesMethodsConstructorIgnoreNullStorIOSQLitePutResolver extends DefaultPutResolver<BoxedTypesMethodsConstructorIgnoreNull> {
     /**
@@ -30,8 +30,8 @@ public class BoxedTypesMethodsConstructorIgnoreNullStorIOSQLitePutResolver exten
     public UpdateQuery mapToUpdateQuery(@NonNull BoxedTypesMethodsConstructorIgnoreNull object) {
         return UpdateQuery.builder()
             .table("table")
-            .where("longField = ?")
-            .whereArgs(object.getLongField())
+            .where("field4 = ?")
+            .whereArgs(object.getField4())
             .build();
     }
 
@@ -43,23 +43,23 @@ public class BoxedTypesMethodsConstructorIgnoreNullStorIOSQLitePutResolver exten
     public ContentValues mapToContentValues(@NonNull BoxedTypesMethodsConstructorIgnoreNull object) {
         ContentValues contentValues = new ContentValues(6);
 
-        if (object.getFloatField() != null) {
-            contentValues.put("floatField", object.getFloatField());
+        if (object.getField1() != null) {
+            contentValues.put("field1", object.getField1());
         }
-        if (object.getLongField() != null) {
-            contentValues.put("longField", object.getLongField());
+        if (object.getField6() != null) {
+            contentValues.put("field6", object.getField6());
         }
-        if (object.getDoubleField() != null) {
-            contentValues.put("doubleField", object.getDoubleField());
+        if (object.getField3() != null) {
+            contentValues.put("field3", object.getField3());
         }
-        if (object.isBooleanField() != null) {
-            contentValues.put("booleanField", object.isBooleanField());
+        if (object.getField2() != null) {
+            contentValues.put("field2", object.getField2());
         }
-        if (object.getIntField() != null) {
-            contentValues.put("intField", object.getIntField());
+        if (object.getField5() != null) {
+            contentValues.put("field5", object.getField5());
         }
-        if (object.getShortField() != null) {
-            contentValues.put("shortField", object.getShortField());
+        if (object.getField4() != null) {
+            contentValues.put("field4", object.getField4());
         }
 
         return contentValues;

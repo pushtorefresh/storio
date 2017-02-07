@@ -3,61 +3,61 @@ package com.pushtorefresh.storio.sqlite.annotations;
 @StorIOSQLiteType(table = "table")
 public class BoxedTypesMethodsFactoryMethod {
 
-    private Boolean booleanField;
+    private Boolean field1;
 
-    private Short shortField;
+    private Short field2;
 
-    private Integer intField;
+    private Integer field3;
 
-    private Long longField;
+    private Long field4;
 
-    private Float floatField;
+    private Float field5;
 
-    private Double doubleField;
+    private Double field6;
 
     @StorIOSQLiteCreator
-    public static BoxedTypesMethodsFactoryMethod create(Boolean booleanField, Short shortField, Integer intField, Long longField, Float floatField,
-                                                 Double doubleField) {
-        return new BoxedTypesMethodsFactoryMethod(booleanField, shortField, intField, longField, floatField, doubleField);
+    public static BoxedTypesMethodsFactoryMethod create(Boolean field1, Short field2, Integer field3, Long field4, Float field5,
+                                                 Double field6) {
+        return new BoxedTypesMethodsFactoryMethod(field1, field2, field3, field4, field5, field6);
     }
 
-    private BoxedTypesMethodsFactoryMethod(Boolean booleanField, Short shortField, Integer intField, Long longField, Float floatField,
-                                           Double doubleField) {
-        this.booleanField = booleanField;
-        this.shortField = shortField;
-        this.intField = intField;
-        this.longField = longField;
-        this.floatField = floatField;
-        this.doubleField = doubleField;
+    private BoxedTypesMethodsFactoryMethod(Boolean field1, Short field2, Integer field3, Long field4, Float field5,
+                                           Double field6) {
+        this.field1 = field1;
+        this.field2 = field2;
+        this.field3 = field3;
+        this.field4 = field4;
+        this.field5 = field5;
+        this.field6 = field6;
     }
 
-    @StorIOSQLiteColumn(name = "booleanField")
-    public Boolean isBooleanField() {
-        return booleanField;
+    @StorIOSQLiteColumn(name = "field1")
+    public Boolean getField1() {
+        return field1;
     }
 
-    @StorIOSQLiteColumn(name = "shortField")
-    public Short getShortField() {
-        return shortField;
+    @StorIOSQLiteColumn(name = "field2")
+    public Short getField2() {
+        return field2;
     }
 
-    @StorIOSQLiteColumn(name = "intField")
-    public Integer getIntField() {
-        return intField;
+    @StorIOSQLiteColumn(name = "field3")
+    public Integer getField3() {
+        return field3;
     }
 
-    @StorIOSQLiteColumn(name = "longField", key = true)
-    public Long getLongField() {
-        return longField;
+    @StorIOSQLiteColumn(name = "field4", key = true)
+    public Long getField4() {
+        return field4;
     }
 
-    @StorIOSQLiteColumn(name = "floatField")
-    public Float getFloatField() {
-        return floatField;
+    @StorIOSQLiteColumn(name = "field5")
+    public Float getField5() {
+        return field5;
     }
 
-    @StorIOSQLiteColumn(name = "doubleField")
-    public Double getDoubleField() {
-        return doubleField;
+    @StorIOSQLiteColumn(name = "field6")
+    public Double getField6() {
+        return field6;
     }
 }

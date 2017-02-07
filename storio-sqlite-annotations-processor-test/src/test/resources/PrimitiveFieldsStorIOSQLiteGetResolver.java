@@ -6,7 +6,7 @@ import com.pushtorefresh.storio.sqlite.operations.get.DefaultGetResolver;
 import java.lang.Override;
 
 /**
- * Generated resolver for Get Operation
+ * Generated resolver for Get Operation.
  */
 public class PrimitiveFieldsStorIOSQLiteGetResolver extends DefaultGetResolver<PrimitiveFields> {
     /**
@@ -17,14 +17,14 @@ public class PrimitiveFieldsStorIOSQLiteGetResolver extends DefaultGetResolver<P
     public PrimitiveFields mapFromCursor(@NonNull Cursor cursor) {
         PrimitiveFields object = new PrimitiveFields();
 
-        object.floatField = cursor.getFloat(cursor.getColumnIndex("floatField"));
-        object.longField = cursor.getLong(cursor.getColumnIndex("longField"));
-        object.doubleField = cursor.getDouble(cursor.getColumnIndex("doubleField"));
-        object.booleanField = cursor.getInt(cursor.getColumnIndex("booleanField")) == 1;
-        object.intField = cursor.getInt(cursor.getColumnIndex("intField"));
-        object.stringField = cursor.getString(cursor.getColumnIndex("stringField"));
-        object.shortField = cursor.getShort(cursor.getColumnIndex("shortField"));
-        object.byteArrayField = cursor.getBlob(cursor.getColumnIndex("byteArrayField"));
+        object.field1 = cursor.getInt(cursor.getColumnIndex("field1")) == 1;
+        object.field7 = cursor.getString(cursor.getColumnIndex("field7"));
+        object.field6 = cursor.getDouble(cursor.getColumnIndex("field6"));
+        object.field8 = cursor.getBlob(cursor.getColumnIndex("field8"));
+        object.field3 = cursor.getInt(cursor.getColumnIndex("field3"));
+        object.field2 = cursor.getShort(cursor.getColumnIndex("field2"));
+        object.field5 = cursor.getFloat(cursor.getColumnIndex("field5"));
+        object.field4 = cursor.getLong(cursor.getColumnIndex("field4"));
 
         return object;
     }

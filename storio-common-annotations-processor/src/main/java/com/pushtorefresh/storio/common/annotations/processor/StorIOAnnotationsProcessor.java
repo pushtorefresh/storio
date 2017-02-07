@@ -130,11 +130,11 @@ public abstract class StorIOAnnotationsProcessor
         if (enclosingElement.getAnnotation(getTypeAnnotationClass()) == null) {
             Element superClass = typeUtils.asElement(((TypeElement) enclosingElement).getSuperclass());
             if (superClass.getAnnotation(getTypeAnnotationClass()) != null) {
-                throw new SkipNotAnnotatedClassWithAnnotatedParentException("Fields of classes not annotated with"
+                throw new SkipNotAnnotatedClassWithAnnotatedParentException("Fields of classes not annotated with "
                         + getTypeAnnotationClass().getSimpleName()
-                        + "which have parents annotated with"
+                        + " which have parents annotated with "
                         + getTypeAnnotationClass().getSimpleName()
-                        + "will be skipped (e.g. AutoValue case)");
+                        + " will be skipped (e.g. AutoValue case)");
             } else {
                 throw new ProcessingException(annotatedElement,
                         "Please annotate class "
