@@ -25,7 +25,8 @@ public class DeleteResolverGeneratorTest {
         final StorIOSQLiteTypeMeta storIOSQLiteTypeMeta = new StorIOSQLiteTypeMeta(
                 "TestItem",
                 "com.test",
-                storIOSQLiteType
+                storIOSQLiteType,
+                false
         );
 
         final StorIOSQLiteColumn storIOSQLiteColumn1 = mock(StorIOSQLiteColumn.class);

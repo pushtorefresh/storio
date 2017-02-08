@@ -8,7 +8,7 @@ import com.pushtorefresh.storio.test.AbstractEmissionChecker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.Queue;
 import rx.Subscription;
 import rx.functions.Action1;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class ObserveChangesTest extends BaseTest {
 

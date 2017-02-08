@@ -8,8 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.TypeMappingFinder;
-import com.pushtorefresh.storio.internal.TypeMappingFinderImpl;
 import com.pushtorefresh.storio.internal.ChangesBus;
+import com.pushtorefresh.storio.internal.TypeMappingFinderImpl;
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -452,10 +452,13 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                 changesToSend = null;
             }
 
-            if (changesToSend != null) {
+            if (changesToSend != null && changesToSend.size() > 0) {
+                final Set<String> affectedTables = new HashSet<String>(3);
                 for (Changes changes : changesToSend) {
-                    changesBus.onNext(changes);
+                    // Merge all changes into one Changes object.
+                    affectedTables.addAll(changes.affectedTables());
                 }
+                changesBus.onNext(Changes.newInstance(affectedTables));
             }
         }
 

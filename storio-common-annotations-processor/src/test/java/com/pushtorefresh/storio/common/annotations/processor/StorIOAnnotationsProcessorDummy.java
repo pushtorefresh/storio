@@ -1,5 +1,13 @@
 package com.pushtorefresh.storio.common.annotations.processor;
 
+import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
+import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOColumnMeta;
+import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOTypeMeta;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
@@ -7,12 +15,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
-
-import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
-import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOColumnMeta;
-import com.pushtorefresh.storio.common.annotations.processor.introspection.StorIOTypeMeta;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
 
 @SuppressWarnings("rawtypes")
 public final class StorIOAnnotationsProcessorDummy
@@ -24,13 +26,16 @@ public final class StorIOAnnotationsProcessorDummy
 	}
 
 	@Override
-	protected void processAnnotatedFields(RoundEnvironment roundEnvironment,
-			Map<TypeElement, StorIOTypeMeta> annotatedClasses) {
+	protected void processAnnotatedFieldsOrMethods(RoundEnvironment roundEnvironment, Map<TypeElement, StorIOTypeMeta> annotatedClasses) {
 	}
 
 	@Override
-	protected StorIOColumnMeta processAnnotatedField(Element annotatedField) {
+	protected StorIOColumnMeta processAnnotatedFieldOrMethod(Element annotatedField) {
 		return null;
+	}
+
+	@Override
+	protected void processAnnotatedExecutables(@NotNull RoundEnvironment roundEnvironment, @NotNull Map<TypeElement, StorIOTypeMeta> annotatedClasses) {
 	}
 
 	@Override
@@ -44,6 +49,11 @@ public final class StorIOAnnotationsProcessorDummy
 
 	@Override
 	protected Class<? extends Annotation> getColumnAnnotationClass() {
+		return null;
+	}
+
+	@Override
+	protected Class<? extends Annotation> getCreatorAnnotationClass() {
 		return null;
 	}
 
