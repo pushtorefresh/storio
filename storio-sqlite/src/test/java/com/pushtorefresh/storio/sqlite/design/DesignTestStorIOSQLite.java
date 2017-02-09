@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.sqlite.design;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -93,6 +94,14 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
         @Override
         public void endTransaction() {
             // no impl
+        }
+
+        @NonNull
+        @Override
+        public SQLiteOpenHelper sqliteOpenHelper() {
+            // not required in design test
+            // noinspection ConstantConditions
+            return null;
         }
     };
 

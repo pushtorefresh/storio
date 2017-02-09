@@ -69,6 +69,15 @@ public class DefaultStorIOSQLiteTest {
     }
 
     @Test
+    public void lowLevelReturnsSameInstanceOfSQLiteOpenHelper() {
+        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
+        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .build();
+        assertThat(storIOSQLite.lowLevel().sqliteOpenHelper()).isSameAs(sqLiteOpenHelper);
+    }
+
+    @Test
     public void addTypeMappingNullType() {
         DefaultStorIOSQLite.CompleteBuilder builder = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(mock(SQLiteOpenHelper.class));
