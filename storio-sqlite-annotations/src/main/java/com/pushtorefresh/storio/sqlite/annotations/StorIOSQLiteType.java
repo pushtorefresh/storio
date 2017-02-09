@@ -19,4 +19,11 @@ public @interface StorIOSQLiteType {
      * @return table name
      */
     String table();
+
+    /**
+     * Option to opt out of feature that generates Table class based on field annotations.
+     *
+     * @return if table class should be generated
+     */
+    boolean generateTableClass() default true;
 }

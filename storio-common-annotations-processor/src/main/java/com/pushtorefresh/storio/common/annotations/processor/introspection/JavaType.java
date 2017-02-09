@@ -6,21 +6,26 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 public enum JavaType {
+    BOOLEAN("INTEGER"),
+    BOOLEAN_OBJECT("INTEGER"),
+    SHORT("INTEGER"),
+    SHORT_OBJECT("INTEGER"),
+    INTEGER("INTEGER"),
+    INTEGER_OBJECT("INTEGER"),
+    LONG("INTEGER"),
+    LONG_OBJECT("INTEGER"),
+    FLOAT("REAL"),
+    FLOAT_OBJECT("REAL"),
+    DOUBLE("REAL"),
+    DOUBLE_OBJECT("REAL"),
+    STRING("TEXT"),
+    BYTE_ARRAY("BLOB");
 
-    BOOLEAN,
-    BOOLEAN_OBJECT,
-    SHORT,
-    SHORT_OBJECT,
-    INTEGER,
-    INTEGER_OBJECT,
-    LONG,
-    LONG_OBJECT,
-    FLOAT,
-    FLOAT_OBJECT,
-    DOUBLE,
-    DOUBLE_OBJECT,
-    STRING,
-    BYTE_ARRAY;
+    JavaType(@NotNull String sqlType) {
+        this.sqlType = sqlType;
+    }
+
+    private String sqlType;
 
     @NotNull
     public static JavaType from(@NotNull TypeMirror typeMirror) {
@@ -72,5 +77,10 @@ public enum JavaType {
             default:
                 return false;
         }
+    }
+
+    @NotNull
+    public String getSqlType() {
+        return sqlType;
     }
 }

@@ -7,7 +7,11 @@ import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorI
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
@@ -30,18 +34,36 @@ public final class TestFactory {
     }
 
     @NotNull
+    public static Element createNonNullElementMock(@NotNull TypeKind typeKind) {
+        final Element objectElement = mock(Element.class);
+        final TypeMirror typeMirror = mock(TypeMirror.class);
+        final AnnotationMirror annotationMirror = mock(AnnotationMirror.class);
+        final DeclaredType annotationType = mock(DeclaredType.class);
+        when(annotationType.toString()).thenReturn("android.support.annotation.NonNull");
+        when(objectElement.asType()).thenReturn(typeMirror);
+        when(typeMirror.getKind()).thenReturn(typeKind);
+        when(annotationMirror.getAnnotationType()).thenReturn(annotationType);
+        ArrayList annotationMirrors = new ArrayList();
+        annotationMirrors.add(annotationMirror);
+        when(objectElement.getAnnotationMirrors()).thenReturn(annotationMirrors);
+        return objectElement;
+    }
+
+    @NotNull
     public static StorIOSQLiteColumnMeta createColumnMetaMock(
             @NotNull Element element,
             @NotNull String columnName,
             @NotNull String fieldName,
             boolean isKey,
             boolean ignoreNull,
+            int version,
             @Nullable JavaType javaType) {
 
         final StorIOSQLiteColumn storIOSQLiteColumn = mock(StorIOSQLiteColumn.class);
         when(storIOSQLiteColumn.name()).thenReturn(columnName);
         when(storIOSQLiteColumn.key()).thenReturn(isKey);
         when(storIOSQLiteColumn.ignoreNull()).thenReturn(ignoreNull);
+        when(storIOSQLiteColumn.version()).thenReturn(version);
 
         //noinspection ConstantConditions
         return new StorIOSQLiteColumnMeta(

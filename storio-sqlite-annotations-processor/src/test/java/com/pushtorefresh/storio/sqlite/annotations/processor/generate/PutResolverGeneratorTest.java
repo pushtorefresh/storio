@@ -102,6 +102,7 @@ public class PutResolverGeneratorTest {
                 "column1Field",
                 true,           // key
                 false,
+                1,
                 null);
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
@@ -111,6 +112,7 @@ public class PutResolverGeneratorTest {
                 "column2Field",
                 false,
                 false,
+                1,
                 null);
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 
@@ -142,6 +144,7 @@ public class PutResolverGeneratorTest {
                 "column1Field",
                 true,
                 false,
+                1,
                 null);
         storIOSQLiteTypeMeta.columns.put("column1", storIOSQLiteColumnMeta1);
 
@@ -151,6 +154,7 @@ public class PutResolverGeneratorTest {
                 "column2Field",
                 false,
                 true,
+                1,
                 null);                      // ignore nulls
         storIOSQLiteTypeMeta.columns.put("column2", storIOSQLiteColumnMeta2);
 
