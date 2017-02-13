@@ -31,7 +31,7 @@ public class DeleteResolverGenerator implements Generator<StorIOSQLiteTypeMeta> 
         final ClassName storIOSQLiteTypeClassName = ClassName.get(storIOSQLiteTypeMeta.packageName, storIOSQLiteTypeMeta.simpleName);
 
         final TypeSpec deleteResolver = TypeSpec.classBuilder(generateName(storIOSQLiteTypeMeta))
-                .addJavadoc("Generated resolver for Delete Operation\n")
+                .addJavadoc("Generated resolver for Delete Operation.\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operations.delete", "DefaultDeleteResolver"), storIOSQLiteTypeClassName))
                 .addMethod(createMapToDeleteQueryMethodSpec(storIOSQLiteTypeMeta, storIOSQLiteTypeClassName))
