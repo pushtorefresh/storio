@@ -101,7 +101,7 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
      */
     protected void validateUris(
             @NotNull TypeElement classElement,
-            @Nullable String commonUri,
+            @NotNull String commonUri,
             @NotNull Map<String, String> operationUriMap) {
 
         if (!validateUri(commonUri)) {
@@ -112,11 +112,15 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                 }
             }
             if (!operationsWithInvalidUris.isEmpty()) {
-                String message = "Uri of " + classElement.getQualifiedName()
-                        + " annotated with " + getTypeAnnotationClass().getSimpleName() + " is null or empty";
+                String message = "Uri of "
+                        + classElement.getSimpleName()
+                        + " annotated with "
+                        + getTypeAnnotationClass().getSimpleName()
+                        + " is empty";
 
                 if (operationsWithInvalidUris.size() < operationUriMap.size()) {
-                    message += " for operation " + operationsWithInvalidUris.get(0);
+                    message += " for operation "
+                            + operationsWithInvalidUris.get(0);
                 }
                 // Else (there is no any uris) - do not specify operation,
                 // because commonUri is default and straightforward way.
@@ -128,8 +132,8 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
         }
     }
 
-    private boolean validateUri(@Nullable String uri) {
-        return uri != null && uri.length() > 0;
+    private boolean validateUri(@NotNull String uri) {
+        return uri.length() > 0;
     }
 
     /**
@@ -151,26 +155,20 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
 
                 final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = annotatedClasses.get(storIOContentResolverColumnMeta.enclosingElement);
 
-                if (storIOContentResolverTypeMeta == null) {
-                    throw new ProcessingException(annotatedFieldElement, "Field marked with "
-                            + StorIOContentResolverColumn.class.getSimpleName()
-                            + " annotation should be placed in class marked by "
-                            + StorIOContentResolverType.class.getSimpleName()
-                            + " annotation"
-                    );
-                }
-
                 // If class already contains column with same name -> throw an exception.
                 if (storIOContentResolverTypeMeta.columns.containsKey(storIOContentResolverColumnMeta.storIOColumn.name())) {
-                    throw new ProcessingException(annotatedFieldElement, "Column name already used in this class");
+                    throw new ProcessingException(annotatedFieldElement,
+                            "Column name already used in this class: "
+                                    + storIOContentResolverColumnMeta.storIOColumn.name());
                 }
 
                 // If field annotation applied to both fields and methods in a same class.
                 if ((storIOContentResolverTypeMeta.needCreator && !storIOContentResolverColumnMeta.isMethod()) ||
                         (!storIOContentResolverTypeMeta.needCreator && storIOContentResolverColumnMeta.isMethod() && !storIOContentResolverTypeMeta.columns.isEmpty())) {
-                    throw new ProcessingException(annotatedFieldElement, "Can't apply"
+                    throw new ProcessingException(annotatedFieldElement, "Can't apply "
                             + StorIOContentResolverColumn.class.getSimpleName()
-                            + " annotation to both fields and methods in a same class"
+                            + " annotation to both fields and methods in a same class: "
+                            + storIOContentResolverTypeMeta.simpleName
                     );
                 }
 
@@ -201,7 +199,7 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
         try {
             javaType = JavaType.from(annotatedField.getKind() == ElementKind.FIELD ? annotatedField.asType() : ((ExecutableElement) annotatedField).getReturnType());
         } catch (Exception e) {
-            throw new ProcessingException(annotatedField, "Unsupported type of field for "
+            throw new ProcessingException(annotatedField, "Unsupported type of field or method for "
                     + StorIOContentResolverColumn.class.getSimpleName()
                     + " annotation, if you need to serialize/deserialize field of that type "
                     + "-> please write your own resolver: "
@@ -214,13 +212,16 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
         if (storIOContentResolverColumn.ignoreNull() && annotatedField.asType().getKind().isPrimitive()) {
             throw new ProcessingException(
                     annotatedField,
-                    "ignoreNull should not be used for primitive type: " + annotatedField.asType());
+                    "ignoreNull should not be used for primitive type: "
+                            + annotatedField.getSimpleName());
         }
 
         final String columnName = storIOContentResolverColumn.name();
 
-        if (columnName == null || columnName.length() == 0) {
-            throw new ProcessingException(annotatedField, "Column name is null or empty");
+        if (columnName.length() == 0) {
+            throw new ProcessingException(annotatedField,
+                    "Column name is empty: "
+                            + annotatedField.getSimpleName());
         }
 
         return new StorIOContentResolverColumnMeta(
@@ -253,21 +254,14 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
 
             final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = annotatedClasses.get(storIOContentResolverCreatorMeta.enclosingElement);
 
-            if (storIOContentResolverTypeMeta == null) {
-                throw new ProcessingException(annotatedElement, "Method or constructor marked with "
-                        + StorIOContentResolverCreator.class.getSimpleName()
-                        + " annotation should be placed in class marked by "
-                        + StorIOContentResolverType.class.getSimpleName()
-                        + " annotation"
-                );
-            }
-
             // Put meta creator info.
             // If class already contains another creator -> throw exception.
             if (storIOContentResolverTypeMeta.creator == null) {
                 storIOContentResolverTypeMeta.creator = annotatedExecutableElement;
             } else {
-                throw new ProcessingException(annotatedExecutableElement, "Only one creator method or constructor is allowed");
+                throw new ProcessingException(annotatedExecutableElement,
+                        "Only one creator method or constructor is allowed: "
+                                + annotatedExecutableElement.getEnclosingElement().getSimpleName());
             }
         }
     }
@@ -282,9 +276,10 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                 throw new ProcessingException(annotatedType.getKey(),
                         "Class marked with "
                                 + StorIOContentResolverType.class.getSimpleName()
-                                + " annotation should have at least one field marked with "
+                                + " annotation should have at least one field or method marked with "
                                 + StorIOContentResolverColumn.class.getSimpleName()
-                                + " annotation");
+                                + " annotation: "
+                                + storIOContentResolverTypeMeta.simpleName);
             }
 
             boolean hasAtLeastOneKeyColumn = false;
@@ -300,8 +295,10 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                 throw new ProcessingException(annotatedType.getKey(),
                         "Class marked with "
                                 + StorIOContentResolverType.class.getSimpleName()
-                                + " annotation should have at least one KEY field marked with "
-                                + StorIOContentResolverColumn.class.getSimpleName() + " annotation");
+                                + " annotation should have at least one KEY field or method marked with "
+                                + StorIOContentResolverColumn.class.getSimpleName()
+                                + " annotation: "
+                                + storIOContentResolverTypeMeta.simpleName);
             }
 
             if (storIOContentResolverTypeMeta.needCreator && storIOContentResolverTypeMeta.creator == null) {
@@ -309,7 +306,9 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                         "Class marked with "
                                 + StorIOContentResolverType.class.getSimpleName()
                                 + " annotation needs factory method or constructor marked with "
-                                + StorIOContentResolverColumn.class.getSimpleName() + " annotation");
+                                + StorIOContentResolverCreator.class.getSimpleName()
+                                + " annotation: "
+                                + storIOContentResolverTypeMeta.simpleName);
             }
 
             if (storIOContentResolverTypeMeta.needCreator && storIOContentResolverTypeMeta.creator.getParameters().size() != storIOContentResolverTypeMeta.columns.size()) {
@@ -317,7 +316,9 @@ public class StorIOContentResolverProcessor extends StorIOAnnotationsProcessor<S
                         "Class marked with "
                                 + StorIOContentResolverType.class.getSimpleName()
                                 + " annotation needs factory method or constructor marked with "
-                                + StorIOContentResolverColumn.class.getSimpleName() + " annotation with the same amount of parameters as the number of columns");
+                                + StorIOContentResolverCreator.class.getSimpleName()
+                                + " annotation with the same amount of parameters as the number of columns: "
+                                + storIOContentResolverTypeMeta.simpleName);
             }
         }
     }
