@@ -11,8 +11,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.reflect.Whitebox.getInternalState;
+import static org.mockito.Mockito.mock;
 
 public class StorIOColumnMetaTest {
 
@@ -36,15 +35,15 @@ public class StorIOColumnMetaTest {
 
 		// then
 		assertThat(elementMock).as("Constructor must be set enclosingElement field.")
-				.isEqualTo(getInternalState(storioColumnMeta, "enclosingElement"));
+				.isEqualTo(storioColumnMeta.enclosingElement);
 		assertThat(elementMock).as("Constructor must be set element field.")
-				.isEqualTo(getInternalState(storioColumnMeta, "element"));
+				.isEqualTo(storioColumnMeta.element);
 		assertThat("TEST").as("Constructor must be set elementName field.")
-				.isEqualTo(getInternalState(storioColumnMeta, "elementName"));
+				.isEqualTo(storioColumnMeta.elementName);
 		assertThat(javaType).as("Constructor must be set javaType field.")
-				.isEqualTo(getInternalState(storioColumnMeta, "javaType"));
+				.isEqualTo(storioColumnMeta.javaType);
 		assertThat(annotationMock).as("Constructor must be set storIOColumn field.")
-				.isEqualTo(getInternalState(storioColumnMeta, "storIOColumn"));
+				.isEqualTo(storioColumnMeta.storIOColumn);
 	}
 
 	@Test

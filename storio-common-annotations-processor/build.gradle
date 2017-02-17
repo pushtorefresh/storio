@@ -11,8 +11,6 @@ dependencies {
     testCompile libraries.junit
     testCompile libraries.assertJ
     testCompile libraries.mockitoCore
-    testCompile libraries.powerMockJUnit
-    testCompile libraries.powerMockMockito
     testCompile libraries.equalsVerifier
 }
 
