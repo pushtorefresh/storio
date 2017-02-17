@@ -9,8 +9,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.reflect.Whitebox.getInternalState;
+import static org.mockito.Mockito.mock;
 
 public class StorIOTypeMetaTest {
 	
@@ -28,10 +27,10 @@ public class StorIOTypeMetaTest {
 		StorIOTypeMeta storioTypeMeta = new StorIOTypeMeta("TEST", "TEST", annotationMock, true);
 		
 		// then
-		assertThat("TEST").as("Constructor must be set simpleName field.").isEqualTo(getInternalState(storioTypeMeta, "simpleName"));
-		assertThat("TEST").as("Constructor must be set packageName field.").isEqualTo(getInternalState(storioTypeMeta, "packageName"));
-		assertThat(annotationMock).as("Constructor must be set storIOType field.").isEqualTo(getInternalState(storioTypeMeta, "storIOType"));
-		assertThat(true).as("Constructor must be set needCreator field.").isEqualTo(getInternalState(storioTypeMeta, "needCreator"));
+		assertThat("TEST").as("Constructor must be set simpleName field.").isEqualTo(storioTypeMeta.simpleName);
+		assertThat("TEST").as("Constructor must be set packageName field.").isEqualTo(storioTypeMeta.packageName);
+		assertThat(annotationMock).as("Constructor must be set storIOType field.").isEqualTo(storioTypeMeta.storIOType);
+		assertThat(true).as("Constructor must be set needCreator field.").isEqualTo(storioTypeMeta.needCreator);
 	}
 
 	@Test
@@ -50,7 +49,7 @@ public class StorIOTypeMetaTest {
                 ", storIOType=" + annotationMock +
 				", needCreator=true" +
 				", creator=null" +
-                ", columns=" + getInternalState(storioTypeMeta, "columns") +
+                ", columns=" + storioTypeMeta.columns +
                 '}';
 		
 		// when

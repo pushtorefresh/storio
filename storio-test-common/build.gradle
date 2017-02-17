@@ -14,6 +14,10 @@ android {
     packagingOptions {
         exclude 'LICENSE.txt' // multiple libs have this file -> cause build error
     }
+
+    lintOptions {
+        disable 'InvalidPackage' // Mockito references net.bytebuddy package, which is not available on Android
+    }
 }
 
 dependencies {

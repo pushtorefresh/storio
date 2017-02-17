@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import rx.Observable;
@@ -20,10 +21,10 @@ import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singleton;
+import static java.util.Collections.unmodifiableSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -292,7 +293,9 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
-            verify(storIOSQLite).observeChangesInTables(anySet());
+            verify(storIOSQLite).observeChangesInTables(unmodifiableSet(new HashSet<String>() {{
+                add("test_table");
+            }}));
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
 
@@ -606,8 +609,9 @@ public class PreparedGetObjectTest {
             // Cursor must be closed in case of exception
             verify(cursor).close();
 
-            //noinspection unchecked
-            verify(storIOSQLite).observeChangesInTables(anySet());
+            verify(storIOSQLite).observeChangesInTables(unmodifiableSet(new HashSet<String>() {{
+                add("test_table");
+            }}));
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
             verify(getResolver).mapFromCursor(cursor);
             verify(cursor).getCount();
