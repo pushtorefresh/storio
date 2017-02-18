@@ -235,7 +235,8 @@ public class StorIOSQLiteProcessor extends StorIOAnnotationsProcessor<StorIOSQLi
                                 + StorIOSQLiteType.class.getSimpleName()
                                 + " annotation should have at least one field or method marked with "
                                 + StorIOSQLiteColumn.class.getSimpleName()
-                                + " annotation: " + storIOSQLiteTypeMeta.simpleName);
+                                + " annotation: "
+                                + storIOSQLiteTypeMeta.simpleName);
             }
 
             boolean hasAtLeastOneKeyColumn = false;

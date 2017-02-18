@@ -1,3 +1,5 @@
+import org.gradle.internal.jvm.Jvm
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
@@ -89,10 +91,28 @@ ext.libraries = [
         autoService                    : 'com.google.auto.service:auto-service:1.0-rc2',
         javaPoet                       : 'com.squareup:javapoet:1.8.0',
         intellijAnnotations            : 'com.intellij:annotations:12.0',
+        runtimeJar                     : files(getRuntimeJar()),
+        toolsJar                       : files(Jvm.current().getToolsJar()),
 
         autoParcel                     : 'com.github.frankiesardo:auto-parcel:0.3',
         autoParcelProcessor            : 'com.github.frankiesardo:auto-parcel-processor:0.3'
+
+
 ]
+
+def getRuntimeJar() {
+    try {
+        final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
+        File runtimeJar = new File(javaBase, "lib/rt.jar");
+        if (runtimeJar.exists()) {
+            return runtimeJar;
+        }
+        runtimeJar = new File(javaBase, "jre/lib/rt.jar");
+        return runtimeJar.exists() ? runtimeJar : null;
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+}
 
 // Option to disable Pre-Dexing on CI env
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')
@@ -122,3 +142,4 @@ subprojects {
         }
     }
 }
+
