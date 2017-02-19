@@ -1,6 +1,26 @@
 StorIO Change Log
 ==========
 
+## Version 1.12.3
+
+_2017_02_19_
+
+* Tests for StorIOSQLiteAnnotationsProcessor with [google compile testing](https://github.com/google/compile-testing). :tada::tada: Great work from [@geralt-encore](https://github.com/geralt-encore)!
+* Tests for StorIOContentResolverAnnotationsProcessor with [google compile testing](https://github.com/google/compile-testing).
+* JavaPoet 1.8. Fixes for [#763](https://github.com/pushtorefresh/storio/issues/763), thanks [@joelpet](https://github.com/joelpet) for reporting.
+* Add to StorIO.LowLevel getter for underlying SQLiteOpenHelper.
+* Fix for [#757](https://github.com/pushtorefresh/storio/issues/757) compilation error after applying column annotation on a private method.
+* Mockito 2.7.7.
+
+**Changes:**
+
+* [PR 760](https://github.com/pushtorefresh/storio/pull/760): Compile testing for StorIOSQLiteAnnotationsProcessor.
+* [PR 761](https://github.com/pushtorefresh/storio/pull/761): Compile testing for StorIOContentResolverAnnotationsProcessor.
+* [PR 763](https://github.com/pushtorefresh/storio/pull/763): JavaPoet 1.8.
+* [PR 706](https://github.com/pushtorefresh/storio/pull/706): Add to StorIO.LowLevel getter for underlying SQLiteOpenHelper.
+* [PR 754](https://github.com/pushtorefresh/storio/pull/754): Fix compilation error after applying column annotation on a private method.
+* [PR 762](https://github.com/pushtorefresh/storio/pull/762): Mockito 2.7.7.
+
 ## Version 1.12.2
 
 _2017_01_22_
