@@ -72,7 +72,11 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
             final PutResult putResult = putResolver.performPut(storIOSQLite, object);
 
             if (putResult.wasInserted() || putResult.wasUpdated()) {
-                lowLevel.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                final Changes changes = Changes.newInstance(
+                        putResult.affectedTables(),
+                        putResult.affectedTags()
+                );
+                lowLevel.notifyAboutChanges(changes);
             }
 
             return putResult;

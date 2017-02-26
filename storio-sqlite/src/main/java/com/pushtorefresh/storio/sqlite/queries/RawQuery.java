@@ -30,18 +30,32 @@ public final class RawQuery {
     private final Set<String> affectsTables;
 
     @NonNull
+    private final Set<String> affectsTags;
+
+    @NonNull
     private final Set<String> observesTables;
+
+    @NonNull
+    private final Set<String> observesTags;
 
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.queries.RawQuery.Builder}
      * instead of constructor.
      */
-    private RawQuery(@NonNull String query, @Nullable List<Object> args,
-                     @Nullable Set<String> affectsTables, @Nullable Set<String> observesTables) {
+    private RawQuery(
+            @NonNull String query,
+            @Nullable List<Object> args,
+            @Nullable Set<String> affectsTables,
+            @Nullable Set<String> affectsTags,
+            @Nullable Set<String> observesTables,
+            @Nullable Set<String> observesTags
+    ) {
         this.query = query;
         this.args = unmodifiableNonNullList(args);
         this.affectsTables = unmodifiableNonNullSet(affectsTables);
+        this.affectsTags = unmodifiableNonNullSet(affectsTags);
         this.observesTables = unmodifiableNonNullSet(observesTables);
+        this.observesTags = unmodifiableNonNullSet(observesTags);
     }
 
     /**
@@ -77,6 +91,18 @@ public final class RawQuery {
     }
 
     /**
+     * Gets optional immutable set of tags which will be affected by this query.
+     * <p>
+     * They will be used to notify observers of that tags.
+     *
+     * @return non-null, immutable set of tags, affected by this query.
+     */
+    @NonNull
+    public Set<String> affectsTags() {
+        return affectsTags;
+    }
+
+    /**
      * Gets optional immutable set of tables that should be observed by this query.
      * <p>
      * They will be used to observe changes of that tables and re-execute this query.
@@ -86,6 +112,18 @@ public final class RawQuery {
     @NonNull
     public Set<String> observesTables() {
         return observesTables;
+    }
+
+    /**
+     * Gets optional immutable set of tags that should be observed by this query.
+     * <p>
+     * They will be used to observe changes of that tags and re-execute this query.
+     *
+     * @return non-null, immutable set of tags, that should be observed by this query.
+     */
+    @NonNull
+    public Set<String> observesTags() {
+        return observesTags;
     }
 
     /**
@@ -109,7 +147,10 @@ public final class RawQuery {
         if (!query.equals(rawQuery.query)) return false;
         if (!args.equals(rawQuery.args)) return false;
         if (!affectsTables.equals(rawQuery.affectsTables)) return false;
-        return observesTables.equals(rawQuery.observesTables);
+        if (!affectsTags.equals(rawQuery.affectsTags)) return false;
+        if (!observesTables.equals(rawQuery.observesTables)) return false;
+        return observesTags.equals(rawQuery.observesTags);
+
     }
 
     @Override
@@ -117,7 +158,9 @@ public final class RawQuery {
         int result = query.hashCode();
         result = 31 * result + args.hashCode();
         result = 31 * result + affectsTables.hashCode();
+        result = 31 * result + affectsTags.hashCode();
         result = 31 * result + observesTables.hashCode();
+        result = 31 * result + observesTags.hashCode();
         return result;
     }
 
@@ -127,7 +170,9 @@ public final class RawQuery {
                 "query='" + query + '\'' +
                 ", args=" + args +
                 ", affectsTables=" + affectsTables +
+                ", affectsTags=" + affectsTags +
                 ", observesTables=" + observesTables +
+                ", observesTags=" + observesTags +
                 '}';
     }
 
@@ -178,7 +223,11 @@ public final class RawQuery {
 
         private Set<String> affectsTables;
 
+        private Set<String> affectsTags;
+
         private Set<String> observesTables;
+
+        private Set<String> observesTags;
 
         CompleteBuilder(@NonNull String query) {
             this.query = query;
@@ -188,7 +237,9 @@ public final class RawQuery {
             this.query = rawQuery.query;
             this.args = rawQuery.args;
             this.affectsTables = rawQuery.affectsTables;
+            this.affectsTags = rawQuery.affectsTags;
             this.observesTables = rawQuery.observesTables;
+            this.observesTags = rawQuery.observesTags;
         }
 
         /**
@@ -268,6 +319,52 @@ public final class RawQuery {
         }
 
         /**
+         * Optional: Specifies set of tags which will be affected by this query.
+         * They will be used to notify observers of that tags.
+         * <p>
+         * Default value is {@code null}.
+         *
+         * @param tags set of tags which will be affected by this query.
+         * @return builder.
+         * @see RawQuery#affectsTables()
+         */
+        @NonNull
+        public CompleteBuilder affectsTags(@NonNull String... tags) {
+            if (affectsTags == null) {
+                affectsTags = new HashSet<String>(tags.length);
+            } else {
+                affectsTags.clear();
+            }
+
+            Collections.addAll(affectsTags, tags);
+
+            return this;
+        }
+
+        /**
+         * Optional: Specifies set of tags which will be affected by this query.
+         * They will be used to notify observers of that tags.
+         * <p>
+         * Default value is {@code null}.
+         *
+         * @param tags set of tags which will be affected by this query.
+         * @return builder.
+         * @see RawQuery#affectsTables()
+         */
+        @NonNull
+        public CompleteBuilder affectsTags(@NonNull Collection<String> tags) {
+            if (affectsTags == null) {
+                affectsTags = new HashSet<String>(tags.size());
+            } else {
+                affectsTags.clear();
+            }
+
+            affectsTags.addAll(tags);
+
+            return this;
+        }
+
+        /**
          * Optional: Specifies set of tables that should be observed by this query.
          * They will be used to re-execute query if one of the tables will be changed.
          * <p>
@@ -314,6 +411,52 @@ public final class RawQuery {
         }
 
         /**
+         * Optional: Specifies set of tags that should be observed by this query.
+         * They will be used to re-execute query if one of the tags will be changed.
+         * <p>
+         * Default values is {@code null}.
+         *
+         * @param tags set of tags that should be observed by this query.
+         * @return builder.
+         * @see RawQuery#observesTags()
+         */
+        @NonNull
+        public CompleteBuilder observesTags(@NonNull String... tags) {
+            if (observesTags == null) {
+                observesTags = new HashSet<String>(tags.length);
+            } else {
+                observesTags.clear();
+            }
+
+            Collections.addAll(this.observesTags, tags);
+
+            return this;
+        }
+
+        /**
+         * Optional: Specifies set of tags that should be observed by this query.
+         * They will be used to re-execute query if one of the tags will be changed.
+         * <p>
+         * Default values is {@code null}.
+         *
+         * @param tags set of tags that should be observed by this query.
+         * @return builder.
+         * @see RawQuery#observesTables()
+         */
+        @NonNull
+        public CompleteBuilder observesTags(@NonNull Collection<String> tags) {
+            if (observesTags == null) {
+                observesTags = new HashSet<String>(tags.size());
+            } else {
+                observesTags.clear();
+            }
+
+            observesTags.addAll(tags);
+
+            return this;
+        }
+
+        /**
          * Builds immutable instance of {@link RawQuery}.
          *
          * @return immutable instance of {@link RawQuery}.
@@ -324,7 +467,9 @@ public final class RawQuery {
                     query,
                     args,
                     affectsTables,
-                    observesTables
+                    affectsTags,
+                    observesTables,
+                    observesTags
             );
         }
     }

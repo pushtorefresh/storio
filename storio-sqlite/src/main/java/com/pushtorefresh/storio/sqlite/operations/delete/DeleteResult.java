@@ -1,11 +1,15 @@
 package com.pushtorefresh.storio.sqlite.operations.delete;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.Set;
 
+import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static java.util.Collections.singleton;
+import static java.util.Collections.unmodifiableSet;
 
 /**
  * Immutable container for result of Delete Operation.
@@ -19,10 +23,46 @@ public final class DeleteResult {
     @NonNull
     private final Set<String> affectedTables;
 
-    private DeleteResult(int numberOfRowsDeleted, @NonNull Set<String> affectedTables) {
+    @NonNull
+    private final Set<String> affectedTags;
+
+    private DeleteResult(
+            int numberOfRowsDeleted,
+            @NonNull Set<String> affectedTables,
+            @Nullable Set<String> affectedTags
+    ) {
         checkNotNull(affectedTables, "Please specify affected tables");
+
+        for (String table : affectedTables) {
+            checkNotEmpty(table, "affectedTable must not be null or empty, affectedTables = " + affectedTables);
+        }
+
+        if (affectedTags != null) {
+            for (String tag : affectedTags) {
+                checkNotEmpty(tag, "affectedTag must not be null or empty, affectedTags = " + affectedTags);
+            }
+        }
+
         this.numberOfRowsDeleted = numberOfRowsDeleted;
         this.affectedTables = Collections.unmodifiableSet(affectedTables);
+        this.affectedTags = affectedTags == null ? Collections.<String>emptySet() : unmodifiableSet(affectedTags);
+    }
+
+    /**
+     * Creates new instance of immutable container for results of Delete Operation.
+     *
+     * @param numberOfRowsDeleted number of rows that were deleted.
+     * @param affectedTables      tables that were affected.
+     * @param affectedTags        notification tags that were affected.
+     * @return new instance of immutable container for result of Delete Operation.
+     */
+    @NonNull
+    public static DeleteResult newInstance(
+            int numberOfRowsDeleted,
+            @NonNull Set<String> affectedTables,
+            @Nullable Set<String> affectedTags
+    ) {
+        return new DeleteResult(numberOfRowsDeleted, affectedTables, affectedTags);
     }
 
     /**
@@ -34,8 +74,26 @@ public final class DeleteResult {
      */
     @NonNull
     public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull Set<String> affectedTables) {
-        checkNotNull(affectedTables, "Please specify affected tables");
-        return new DeleteResult(numberOfRowsDeleted, affectedTables);
+        return newInstance(numberOfRowsDeleted, affectedTables, null);
+    }
+
+    /**
+     * Creates new instance of immutable container for results of Delete Operation.
+     *
+     * @param numberOfRowsDeleted number of rows that were deleted.
+     * @param affectedTable       table that was affected.
+     * @param affectedTag         notification tag that was affected.
+     * @return new instance of immutable container for results of Delete Operation.
+     */
+    @NonNull
+    public static DeleteResult newInstance(
+            int numberOfRowsDeleted,
+            @NonNull String affectedTable,
+            @Nullable String affectedTag
+    ) {
+        checkNotNull(affectedTable, "Please specify affected table");
+        final Set<String> tags = affectedTag == null ? null : singleton(affectedTag);
+        return newInstance(numberOfRowsDeleted, Collections.singleton(affectedTable), tags);
     }
 
     /**
@@ -47,8 +105,7 @@ public final class DeleteResult {
      */
     @NonNull
     public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull String affectedTable) {
-        checkNotNull(affectedTable, "Please specify affected table");
-        return new DeleteResult(numberOfRowsDeleted, Collections.singleton(affectedTable));
+        return newInstance(numberOfRowsDeleted, affectedTable, null);
     }
 
     /**
@@ -70,6 +127,16 @@ public final class DeleteResult {
         return affectedTables;
     }
 
+    /**
+     * Gets notification tags which were affected by Delete Operation.
+     *
+     * @return non-null unmodifiable set of affected tags.
+     */
+    @NonNull
+    public Set<String> affectedTags() {
+        return affectedTags;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -78,13 +145,16 @@ public final class DeleteResult {
         DeleteResult that = (DeleteResult) o;
 
         if (numberOfRowsDeleted != that.numberOfRowsDeleted) return false;
-        return affectedTables.equals(that.affectedTables);
+        if (!affectedTables.equals(that.affectedTables)) return false;
+        return affectedTags.equals(that.affectedTags);
+
     }
 
     @Override
     public int hashCode() {
         int result = numberOfRowsDeleted;
         result = 31 * result + affectedTables.hashCode();
+        result = 31 * result + affectedTags.hashCode();
         return result;
     }
 
@@ -93,6 +163,7 @@ public final class DeleteResult {
         return "DeleteResult{" +
                 "numberOfRowsDeleted=" + numberOfRowsDeleted +
                 ", affectedTables=" + affectedTables +
+                ", affectedTags=" + affectedTags +
                 '}';
     }
 }

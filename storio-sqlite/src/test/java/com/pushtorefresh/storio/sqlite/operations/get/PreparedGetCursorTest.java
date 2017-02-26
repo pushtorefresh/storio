@@ -136,7 +136,7 @@ public class PreparedGetCursorTest {
     public void shouldWrapExceptionIntoStorIOExceptionForObservable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
 
-        when(storIOSQLite.observeChangesInTables(eq(singleton("test_table"))))
+        when(storIOSQLite.observeChangesOfTablesAndTags(singleton("test_table"), singleton("test_tag")))
                 .thenReturn(Observable.<Changes>empty());
 
         //noinspection unchecked
@@ -148,7 +148,7 @@ public class PreparedGetCursorTest {
         final TestSubscriber<Cursor> testSubscriber = new TestSubscriber<Cursor>();
 
         new PreparedGetCursor.Builder(storIOSQLite)
-                .withQuery(Query.builder().table("test_table").build())
+                .withQuery(Query.builder().table("test_table").tag("test_tag").build())
                 .withGetResolver(getResolver)
                 .prepare()
                 .asRxObservable()

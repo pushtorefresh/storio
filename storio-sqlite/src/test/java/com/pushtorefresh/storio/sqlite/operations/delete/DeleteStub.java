@@ -86,7 +86,7 @@ class DeleteStub {
                         Object[] args = invocation.getArguments();
                         TestItem item = (TestItem) args[1];
                         int numberOfDeletedRows = itemsWillBeDeleted.contains(item) ? 1 : 0;
-                        return DeleteResult.newInstance(numberOfDeletedRows, TestItem.TABLE);
+                        return DeleteResult.newInstance(numberOfDeletedRows, TestItem.TABLE, TestItem.NOTIFICATION_TAG);
                     }
                 });
 
@@ -251,7 +251,7 @@ class DeleteStub {
 
             // No more than one notification should be thrown
             verify(internal, times(Math.min(1, itemsWillBeDeleted.size())))
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE)));
+                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, TestItem.NOTIFICATION_TAG)));
         } else {
             verify(internal, never()).beginTransaction();
             verify(internal, never()).setTransactionSuccessful();
@@ -259,7 +259,7 @@ class DeleteStub {
 
             // Each delete should trigger notification
             verify(internal, times(itemsWillBeDeleted.size()))
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE)));
+                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, TestItem.NOTIFICATION_TAG)));
         }
     }
 }

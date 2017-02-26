@@ -73,7 +73,11 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
                     putResults.put(contentValues, putResult);
 
                     if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
-                        lowLevel.notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
+                        final Changes changes = Changes.newInstance(
+                                putResult.affectedTables(),
+                                putResult.affectedTags()
+                        );
+                        lowLevel.notifyAboutChanges(changes);
                     }
                 }
 
@@ -87,18 +91,20 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
 
                     if (transactionSuccessful) {
                         final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+                        final Set<String> affectedTags = new HashSet<String>(1);
 
                         for (final ContentValues contentValues : putResults.keySet()) {
                             final PutResult putResult = putResults.get(contentValues);
                             if (putResult.wasInserted() || putResult.wasUpdated()) {
                                 affectedTables.addAll(putResult.affectedTables());
+                                affectedTags.addAll(putResult.affectedTags());
                             }
                         }
 
                         // IMPORTANT: Notifying about change should be done after end of transaction
                         // It'll reduce number of possible deadlock situations
                         if (!affectedTables.isEmpty()) {
-                            lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables));
+                            lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
                         }
                     }
                 }

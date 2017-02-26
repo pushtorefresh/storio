@@ -91,7 +91,30 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @NonNull
     public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
         // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
-        return ChangesFilter.apply(observeChanges(), tables);
+        return ChangesFilter.applyForTables(observeChanges(), tables);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NonNull
+    public Observable<Changes> observeChangesOfTags(@NonNull final Set<String> tags) {
+        // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
+        return ChangesFilter.applyForTags(observeChanges(), tags);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NonNull
+    public Observable<Changes> observeChangesOfTablesAndTags(
+            @NonNull Set<String> tables,
+            @NonNull Set<String> tags
+    ) {
+        // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
+        return ChangesFilter.applyForTablesAndTags(observeChanges(), tables, tags);
     }
 
     /**
@@ -454,11 +477,13 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
 
             if (changesToSend != null && changesToSend.size() > 0) {
                 final Set<String> affectedTables = new HashSet<String>(3);
+                final Set<String> affectedTags = new HashSet<String>(3);
                 for (Changes changes : changesToSend) {
                     // Merge all changes into one Changes object.
                     affectedTables.addAll(changes.affectedTables());
+                    affectedTags.addAll(changes.affectedTags());
                 }
-                changesBus.onNext(Changes.newInstance(affectedTables));
+                changesBus.onNext(Changes.newInstance(affectedTables, affectedTags));
             }
         }
 

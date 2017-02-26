@@ -15,7 +15,6 @@ import rx.functions.Action1;
 
 import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,15 +49,20 @@ class GetCursorStub {
         when(storIOSQLite.lowLevel())
                 .thenReturn(lowLevel);
 
+        String table = "test_table";
+        String tag = "test_tag";
+
         query = Query
                 .builder()
-                .table("test_table")
+                .table(table)
+                .tag(tag)
                 .build();
 
         rawQuery = RawQuery
                 .builder()
                 .query("select * from who_cares")
-                .observesTables("test_table")
+                .observesTables(table)
+                .observesTags(tag)
                 .build();
 
         getResolverForCursor = mock(GetResolver.class);
@@ -67,13 +71,10 @@ class GetCursorStub {
         when(storIOSQLite.get())
                 .thenReturn(new PreparedGet.Builder(storIOSQLite));
 
-        when(storIOSQLite.observeChangesInTables(eq(singleton(query.table()))))
+        when(storIOSQLite.observeChangesOfTablesAndTags(singleton(table), singleton(tag)))
                 .thenReturn(Observable.<Changes>empty());
 
         assertThat(rawQuery.observesTables()).isNotNull();
-
-        when(storIOSQLite.observeChangesInTables(rawQuery.observesTables()))
-                .thenReturn(Observable.<Changes>empty());
 
         when(getResolverForCursor.performGet(storIOSQLite, query))
                 .thenReturn(cursor);
@@ -103,7 +104,7 @@ class GetCursorStub {
                     @Override
                     public void call(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOSQLite).observeChangesInTables(eq(singleton(query.table())));
+                        verify(storIOSQLite).observeChangesOfTablesAndTags(singleton(query.table()), singleton(query.tag()));
                         verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehaviorForCursor(cursor);
                     }
@@ -141,7 +142,7 @@ class GetCursorStub {
                     @Override
                     public void call(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
+                        verify(storIOSQLite).observeChangesOfTablesAndTags(rawQuery.observesTables(), rawQuery.observesTags());
                         verify(storIOSQLite).defaultScheduler();
                         verifyRawQueryBehaviorForCursor(cursor);
                     }

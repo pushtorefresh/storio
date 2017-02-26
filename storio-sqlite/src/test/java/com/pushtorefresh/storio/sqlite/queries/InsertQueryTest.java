@@ -90,10 +90,12 @@ public class InsertQueryTest {
     public void createdThroughToBuilderQueryShouldBeEqual() {
         final String table = "test_table";
         final String nullColumnHack = "test_null_column_hack";
+        final String tag = "test_tag";
 
         final InsertQuery firstQuery = InsertQuery.builder()
                 .table(table)
                 .nullColumnHack(nullColumnHack)
+                .tag(tag)
                 .build();
 
         final InsertQuery secondQuery = firstQuery.toBuilder().build();
@@ -105,14 +107,17 @@ public class InsertQueryTest {
     public void buildWithNormalValues() {
         final String table = "test_table";
         final String nullColumnHack = "test_null_column_hack";
+        final String tag = "tag";
 
         final InsertQuery insertQuery = InsertQuery.builder()
                 .table(table)
                 .nullColumnHack(nullColumnHack)
+                .tag(tag)
                 .build();
 
         assertThat(insertQuery.table()).isEqualTo(table);
         assertThat(insertQuery.nullColumnHack()).isEqualTo(nullColumnHack);
+        assertThat(insertQuery.tag()).isEqualTo(tag);
     }
 
     @Test

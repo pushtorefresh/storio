@@ -18,7 +18,6 @@ import rx.functions.Action1;
 
 import static java.util.Arrays.asList;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -145,6 +144,8 @@ public class PreparedExecuteSQLTest {
 
         private final String[] affectedTables = {"test_table1", "test_table2"};
 
+        private final String[] affectedTags = {"test_tag1", "test_tag2"};
+
         @NonNull
         public static Stub newInstanceWithoutNotification() {
             return new Stub(false);
@@ -165,6 +166,7 @@ public class PreparedExecuteSQLTest {
                 rawQuery = RawQuery.builder()
                         .query("DROP TABLE users!")
                         .affectsTables(affectedTables)
+                        .affectsTags(affectedTags)
                         .build();
             } else {
                 rawQuery = RawQuery.builder()
@@ -191,7 +193,11 @@ public class PreparedExecuteSQLTest {
             verify(internal).executeSQL(rawQuery);
 
             if (queryWithNotification) {
-                verify(internal).notifyAboutChanges(eq(Changes.newInstance(new HashSet<String>(asList(affectedTables)))));
+                final Changes changes = Changes.newInstance(
+                        new HashSet<String>(asList(affectedTables)),
+                        new HashSet<String>(asList(affectedTags))
+                );
+                verify(internal).notifyAboutChanges(changes);
             } else {
                 verify(internal, never()).notifyAboutChanges(any(Changes.class));
             }

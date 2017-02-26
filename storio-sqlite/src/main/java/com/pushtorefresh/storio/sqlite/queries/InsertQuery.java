@@ -18,13 +18,21 @@ public final class InsertQuery {
     @Nullable
     private final String nullColumnHack;
 
+    @Nullable
+    private final String tag;
+
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.queries.InsertQuery.Builder}
      * instead of constructor.
      */
-    private InsertQuery(@NonNull String table, @Nullable String nullColumnHack) {
+    private InsertQuery(
+            @NonNull String table,
+            @Nullable String nullColumnHack,
+            @Nullable String tag
+    ) {
         this.table = table;
         this.nullColumnHack = nullColumnHack;
+        this.tag = tag;
     }
 
     /**
@@ -56,6 +64,16 @@ public final class InsertQuery {
     }
 
     /**
+     * Gets notification tag name.
+     *
+     * @return nullable notification tag.
+     */
+    @Nullable
+    public String tag() {
+        return tag;
+    }
+
+    /**
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
@@ -67,23 +85,24 @@ public final class InsertQuery {
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         InsertQuery that = (InsertQuery) o;
 
+        if (!table.equals(that.table)) return false;
         if (nullColumnHack != null ? !nullColumnHack.equals(that.nullColumnHack) : that.nullColumnHack != null)
             return false;
-        if (!table.equals(that.table)) return false;
+        return tag != null ? tag.equals(that.tag) : that.tag == null;
 
-        return true;
     }
 
     @Override
     public int hashCode() {
         int result = table.hashCode();
         result = 31 * result + (nullColumnHack != null ? nullColumnHack.hashCode() : 0);
+        result = 31 * result + (tag != null ? tag.hashCode() : 0);
         return result;
     }
 
@@ -92,6 +111,7 @@ public final class InsertQuery {
         return "InsertQuery{" +
                 "table='" + table + '\'' +
                 ", nullColumnHack='" + nullColumnHack + '\'' +
+                ", tag='" + tag + '\'' +
                 '}';
     }
 
@@ -140,6 +160,9 @@ public final class InsertQuery {
 
         private String nullColumnHack;
 
+        @Nullable
+        private String tag;
+
         CompleteBuilder(@NonNull String table) {
             this.table = table;
         }
@@ -147,6 +170,7 @@ public final class InsertQuery {
         CompleteBuilder(@NonNull InsertQuery insertQuery) {
             this.table = insertQuery.table;
             this.nullColumnHack = insertQuery.nullColumnHack;
+            this.tag = insertQuery.tag;
         }
 
         /**
@@ -184,6 +208,21 @@ public final class InsertQuery {
         }
 
         /**
+         * Optional: Specifies notification tag to provide detailed information
+         * about which particular change were occurred.
+         *
+         * @param tag nullable notification tag name.
+         * @return builder.
+         * @see InsertQuery#tag()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder tag(@Nullable String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        /**
          * Builds immutable instance of {@link InsertQuery}.
          *
          * @return immutable instance of {@link InsertQuery}.
@@ -192,7 +231,8 @@ public final class InsertQuery {
         public InsertQuery build() {
             return new InsertQuery(
                     table,
-                    nullColumnHack
+                    nullColumnHack,
+                    tag
             );
         }
     }

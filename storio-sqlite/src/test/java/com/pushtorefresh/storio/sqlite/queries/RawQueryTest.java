@@ -65,6 +65,16 @@ public class RawQueryTest {
     }
 
     @Test
+    public void observesTagsShouldNotBeNull() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("lalala I know SQL")
+                .build();
+
+        assertThat(rawQuery.observesTags()).isNotNull();
+        assertThat(rawQuery.observesTags()).isEmpty();
+    }
+
+    @Test
     public void affectsTablesShouldNotBeNull() {
         RawQuery rawQuery = RawQuery.builder()
                 .query("lalala I know SQL")
@@ -72,6 +82,16 @@ public class RawQueryTest {
 
         assertThat(rawQuery.affectsTables()).isNotNull();
         assertThat(rawQuery.affectsTables()).isEmpty();
+    }
+
+    @Test
+    public void affectsTagsShouldNotBeNull() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("lalala I know SQL")
+                .build();
+
+        assertThat(rawQuery.affectsTags()).isNotNull();
+        assertThat(rawQuery.affectsTags()).isEmpty();
     }
 
     @Test
@@ -119,6 +139,50 @@ public class RawQueryTest {
     }
 
     @Test
+    public void affectsTagsShouldRewriteCollectionWithVarargOnSecondCall() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .affectsTags(new HashSet<String>((singletonList("first_call_collection"))))
+                .affectsTags("second_call_vararg")
+                .build();
+
+        assertThat(rawQuery.affectsTags()).isEqualTo(singleton("second_call_vararg"));
+    }
+
+    @Test
+    public void affectsTagsShouldRewriteVarargWithCollectionOnSecondCall() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .affectsTags("first_call_vararg")
+                .affectsTags(new HashSet<String>((singletonList("second_call_collection"))))
+                .build();
+
+        assertThat(rawQuery.affectsTags()).isEqualTo(singleton("second_call_collection"));
+    }
+
+    @Test
+    public void affectsTagsShouldRewriteOnSecondCallVararg() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .affectsTags("first_call_vararg")
+                .affectsTags("second_call_vararg")
+                .build();
+
+        assertThat(rawQuery.affectsTags()).isEqualTo(singleton("second_call_vararg"));
+    }
+
+    @Test
+    public void affectsTagsShouldRewriteOnSecondCallCollection() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .affectsTags(new HashSet<String>((singletonList("first_call_collection"))))
+                .affectsTags(new HashSet<String>((singletonList("second_call_collection"))))
+                .build();
+
+        assertThat(rawQuery.affectsTags()).isEqualTo(singleton("second_call_collection"));
+    }
+
+    @Test
     public void observesTablesShouldRewriteCollectionWithVarargOnSecondCall() {
         RawQuery rawQuery = RawQuery.builder()
                 .query("test_query")
@@ -160,6 +224,50 @@ public class RawQueryTest {
                 .build();
 
         assertThat(rawQuery.observesTables()).isEqualTo(singleton("second_call_collection"));
+    }
+
+    @Test
+    public void observesTagsShouldRewriteCollectionWithVarargOnSecondCall() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .observesTags(new HashSet<String>((singletonList("first_call_collection"))))
+                .observesTags("second_call_vararg")
+                .build();
+
+        assertThat(rawQuery.observesTags()).isEqualTo(singleton("second_call_vararg"));
+    }
+
+    @Test
+    public void observesTagsShouldRewriteVarargWithCollectionOnSecondCall() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .observesTags("first_call_vararg")
+                .observesTags(new HashSet<String>((singletonList("second_call_collection"))))
+                .build();
+
+        assertThat(rawQuery.observesTags()).isEqualTo(singleton("second_call_collection"));
+    }
+
+    @Test
+    public void observesTagsShouldRewriteOnSecondCallVararg() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .observesTags("first_call_vararg")
+                .observesTags("second_call_vararg")
+                .build();
+
+        assertThat(rawQuery.observesTags()).isEqualTo(singleton("second_call_vararg"));
+    }
+
+    @Test
+    public void observesTagsShouldRewriteOnSecondCallCollection() {
+        RawQuery rawQuery = RawQuery.builder()
+                .query("test_query")
+                .observesTags(new HashSet<String>((singletonList("first_call_collection"))))
+                .observesTags(new HashSet<String>((singletonList("second_call_collection"))))
+                .build();
+
+        assertThat(rawQuery.observesTags()).isEqualTo(singleton("second_call_collection"));
     }
 
     @Test
@@ -206,13 +314,17 @@ public class RawQueryTest {
         final String query = "test_query";
         final Object[] args = {"arg1", "arg2", "arg3"};
         final String[] observesTables = {"table_to_observe_1", "table_to_observe_2"};
+        final String[] observesTags = {"tag_to_observe_1", "tag_to_observe_2"};
         final String[] affectsTables = {"table_to_affect_1", "table_to_affect_2"};
+        final String[] affectsTags = {"tag_to_affect_1", "tag_to_affect_2"};
 
         final RawQuery firstQuery = RawQuery.builder()
                 .query(query)
                 .args(args)
                 .observesTables(observesTables)
+                .observesTags(observesTags)
                 .affectsTables(affectsTables)
+                .affectsTags(affectsTags)
                 .build();
 
         final RawQuery secondQuery = firstQuery.toBuilder().build();
@@ -237,19 +349,25 @@ public class RawQueryTest {
         final String query = "test_query";
         final Object[] args = {"arg1", "arg2", "arg3"};
         final String[] observesTables = {"table_to_observe_1", "table_to_observe_2"};
+        final String[] observesTags = {"tag_to_observe_1", "tag_to_observe_2"};
         final String[] affectsTables = {"table_to_affect_1", "table_to_affect_2"};
+        final String[] affectsTags = {"tag_to_affect_1", "tag_to_affect_2"};
 
         final RawQuery rawQuery = RawQuery.builder()
                 .query(query)
                 .args(args)
                 .observesTables(observesTables)
+                .observesTags(observesTags)
                 .affectsTables(affectsTables)
+                .affectsTags(affectsTags)
                 .build();
 
         assertThat(rawQuery.query()).isEqualTo(query);
         assertThat(rawQuery.args()).isEqualTo(asList(args));
         assertThat(HashMultiset.create(rawQuery.observesTables())).isEqualTo(HashMultiset.create(asList(observesTables)));
+        assertThat(HashMultiset.create(rawQuery.observesTags())).isEqualTo(HashMultiset.create(asList(observesTags)));
         assertThat(HashMultiset.create(rawQuery.affectsTables())).isEqualTo(HashMultiset.create(asList(affectsTables)));
+        assertThat(HashMultiset.create(rawQuery.affectsTags())).isEqualTo(HashMultiset.create(asList(affectsTags)));
     }
 
     @Test

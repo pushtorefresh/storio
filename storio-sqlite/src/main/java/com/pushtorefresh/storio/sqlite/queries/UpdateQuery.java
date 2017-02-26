@@ -25,14 +25,23 @@ public final class UpdateQuery {
     @NonNull
     private final List<String> whereArgs;
 
+    @Nullable
+    private final String tag;
+
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.queries.UpdateQuery.Builder}
      * instead of constructor.
      */
-    private UpdateQuery(@NonNull String table, @Nullable String where, @Nullable List<String> whereArgs) {
+    private UpdateQuery(
+            @NonNull String table,
+            @Nullable String where,
+            @Nullable List<String> whereArgs,
+            @Nullable String tag
+    ) {
         this.table = table;
         this.where = nonNullString(where);
         this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
+        this.tag = tag;
     }
 
     /**
@@ -72,6 +81,16 @@ public final class UpdateQuery {
     }
 
     /**
+     * Gets notification tag name.
+     *
+     * @return nullable notification tag.
+     */
+    @Nullable
+    public String tag() {
+        return tag;
+    }
+
+    /**
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
@@ -91,7 +110,9 @@ public final class UpdateQuery {
 
         if (!table.equals(that.table)) return false;
         if (!where.equals(that.where)) return false;
-        return whereArgs.equals(that.whereArgs);
+        if (!whereArgs.equals(that.whereArgs)) return false;
+        return tag != null ? tag.equals(that.tag) : that.tag == null;
+
     }
 
     @Override
@@ -99,6 +120,7 @@ public final class UpdateQuery {
         int result = table.hashCode();
         result = 31 * result + where.hashCode();
         result = 31 * result + whereArgs.hashCode();
+        result = 31 * result + (tag != null ? tag.hashCode() : 0);
         return result;
     }
 
@@ -108,6 +130,7 @@ public final class UpdateQuery {
                 "table='" + table + '\'' +
                 ", where='" + where + '\'' +
                 ", whereArgs=" + whereArgs +
+                ", tag='" + tag + '\'' +
                 '}';
     }
 
@@ -158,6 +181,9 @@ public final class UpdateQuery {
 
         private List<String> whereArgs;
 
+        @Nullable
+        private String tag;
+
         CompleteBuilder(@NonNull String table) {
             this.table = table;
         }
@@ -166,6 +192,7 @@ public final class UpdateQuery {
             this.table = updateQuery.table;
             this.where = updateQuery.where;
             this.whereArgs = updateQuery.whereArgs;
+            this.tag = updateQuery.tag;
         }
 
         /**
@@ -222,6 +249,21 @@ public final class UpdateQuery {
         }
 
         /**
+         * Optional: Specifies notification tag to provide detailed information
+         * about which particular change were occurred.
+         *
+         * @param tag nullable notification tag name.
+         * @return builder.
+         * @see UpdateQuery#tag()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder tag(@Nullable String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        /**
          * Builds immutable instance of {@link UpdateQuery}.
          *
          * @return immutable instance of {@link UpdateQuery}.
@@ -235,7 +277,8 @@ public final class UpdateQuery {
             return new UpdateQuery(
                     table,
                     where,
-                    whereArgs
+                    whereArgs,
+                    tag
             );
         }
     }

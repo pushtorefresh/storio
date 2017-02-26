@@ -222,6 +222,7 @@ public class QueryTest {
         final String having = "test_having";
         final String orderBy = "test_order_by";
         final String limit = "test_limit";
+        final String tag = "test_tag";
 
         final Query firstQuery = Query.builder()
                 .table(table)
@@ -233,6 +234,7 @@ public class QueryTest {
                 .having(having)
                 .orderBy(orderBy)
                 .limit(limit)
+                .tag(tag)
                 .build();
 
         final Query secondQuery = firstQuery.toBuilder().build();
@@ -264,6 +266,7 @@ public class QueryTest {
         final String having = "test_having";
         final String orderBy = "test_order_by";
         final String limit = "test_limit";
+        final String tag = "test_tag";
 
         final Query query = Query.builder()
                 .table(table)
@@ -275,6 +278,7 @@ public class QueryTest {
                 .having(having)
                 .orderBy(orderBy)
                 .limit(limit)
+                .tag(tag)
                 .build();
 
         assertThat(query.table()).isEqualTo(table);
@@ -286,6 +290,7 @@ public class QueryTest {
         assertThat(query.having()).isEqualTo(having);
         assertThat(query.orderBy()).isEqualTo(orderBy);
         assertThat(query.limit()).isEqualTo(limit);
+        assertThat(query.tag()).isEqualTo(tag);
     }
 
     @Test

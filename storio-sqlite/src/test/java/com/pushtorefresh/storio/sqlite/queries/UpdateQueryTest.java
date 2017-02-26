@@ -102,11 +102,13 @@ public class UpdateQueryTest {
         final String table = "test_table";
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+        final String tag = "test_tag";
 
         final UpdateQuery firstQuery = UpdateQuery.builder()
                 .table(table)
                 .where(where)
                 .whereArgs(whereArgs)
+                .tag(tag)
                 .build();
 
         final UpdateQuery secondQuery = firstQuery.toBuilder().build();
@@ -132,16 +134,19 @@ public class UpdateQueryTest {
         final String table = "test_table";
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+        final String tag = "tag";
 
         final UpdateQuery updateQuery = UpdateQuery.builder()
                 .table(table)
                 .where(where)
                 .whereArgs(whereArgs)
+                .tag(tag)
                 .build();
 
         assertThat(updateQuery.table()).isEqualTo(table);
         assertThat(updateQuery.where()).isEqualTo(where);
         assertThat(updateQuery.whereArgs()).isEqualTo(asList(whereArgs));
+        assertThat(updateQuery.tag()).isEqualTo(tag);
     }
 
     @Test

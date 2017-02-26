@@ -13,7 +13,6 @@ import rx.observers.TestSubscriber;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -40,12 +39,13 @@ public class PreparedDeleteByQueryTest {
                     .table("test_table")
                     .where("column1 = ?")
                     .whereArgs(1)
+                    .tag("test_tag")
                     .build();
 
             //noinspection unchecked
             deleteResolver = mock(DeleteResolver.class);
 
-            expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table());
+            expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table(), deleteQuery.tag());
 
             when(deleteResolver.performDelete(same(storIOSQLite), same(deleteQuery)))
                     .thenReturn(expectedDeleteResult);
@@ -54,7 +54,7 @@ public class PreparedDeleteByQueryTest {
         void verifyBehaviour() {
             verify(storIOSQLite).lowLevel();
             verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
-            verify(internal).notifyAboutChanges(eq(Changes.newInstance(deleteQuery.table())));
+            verify(internal).notifyAboutChanges(Changes.newInstance(deleteQuery.table(), deleteQuery.tag()));
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
         }
     }

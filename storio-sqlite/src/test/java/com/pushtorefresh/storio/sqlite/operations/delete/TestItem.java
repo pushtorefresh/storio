@@ -6,6 +6,8 @@ class TestItem {
 
     static final String TABLE = "test_items";
 
+    static final String NOTIFICATION_TAG = "test_tag";
+
     private TestItem() {
 
     }

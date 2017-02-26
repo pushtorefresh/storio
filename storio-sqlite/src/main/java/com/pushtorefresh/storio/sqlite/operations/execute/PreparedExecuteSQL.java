@@ -54,9 +54,10 @@ public class PreparedExecuteSQL implements PreparedOperation<Object> {
             lowLevel.executeSQL(rawQuery);
 
             final Set<String> affectedTables = rawQuery.affectsTables();
+            final Set<String> affectedTags = rawQuery.affectsTags();
 
-            if (affectedTables.size() > 0) {
-                lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables));
+            if (!affectedTables.isEmpty() || !affectedTags.isEmpty()) {
+                lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
             }
 
             return new Object();

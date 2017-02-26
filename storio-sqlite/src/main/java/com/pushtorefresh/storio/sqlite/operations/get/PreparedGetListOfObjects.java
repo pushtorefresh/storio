@@ -176,20 +176,22 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         final Set<String> tables;
+        final Set<String> tags;
 
         if (query != null) {
             tables = Collections.singleton(query.table());
+            tags = Collections.singleton(query.tag());
         } else if (rawQuery != null) {
             tables = rawQuery.observesTables();
+            tags = rawQuery.observesTags();
         } else {
             throw new IllegalStateException("Please specify query");
         }
 
         final Observable<List<T>> observable;
-        if (!tables.isEmpty()) {
-            observable = storIOSQLite
-                    .observeChangesInTables(tables) // each change triggers executeAsBlocking
-                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))
+        if (!tables.isEmpty() || !tags.isEmpty()) {
+            observable = storIOSQLite.observeChangesOfTablesAndTags(tables, tags)
+                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))  // each change triggers executeAsBlocking
                     .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
                     .onBackpressureLatest();
         } else {

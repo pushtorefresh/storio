@@ -25,14 +25,23 @@ public final class DeleteQuery {
     @NonNull
     private final List<String> whereArgs;
 
+    @Nullable
+    private final String tag;
+
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.queries.DeleteQuery.Builder}
      * instead of constructor.
      */
-    private DeleteQuery(@NonNull String table, @Nullable String where, @Nullable List<String> whereArgs) {
+    private DeleteQuery(
+            @NonNull String table,
+            @Nullable String where,
+            @Nullable List<String> whereArgs,
+            @Nullable String tag
+    ) {
         this.table = table;
         this.where = nonNullString(where);
         this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
+        this.tag = tag;
     }
 
     /**
@@ -72,6 +81,16 @@ public final class DeleteQuery {
     }
 
     /**
+     * Gets notification tag name.
+     *
+     * @return nullable notification tag.
+     */
+    @Nullable
+    public String tag() {
+        return tag;
+    }
+
+    /**
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
@@ -91,7 +110,9 @@ public final class DeleteQuery {
 
         if (!table.equals(that.table)) return false;
         if (!where.equals(that.where)) return false;
-        return whereArgs.equals(that.whereArgs);
+        if (!whereArgs.equals(that.whereArgs)) return false;
+        return tag != null ? tag.equals(that.tag) : that.tag == null;
+
     }
 
     @Override
@@ -99,6 +120,7 @@ public final class DeleteQuery {
         int result = table.hashCode();
         result = 31 * result + where.hashCode();
         result = 31 * result + whereArgs.hashCode();
+        result = 31 * result + (tag != null ? tag.hashCode() : 0);
         return result;
     }
 
@@ -108,6 +130,7 @@ public final class DeleteQuery {
                 "table='" + table + '\'' +
                 ", where='" + where + '\'' +
                 ", whereArgs=" + whereArgs +
+                ", tag='" + tag + '\'' +
                 '}';
     }
 
@@ -160,6 +183,9 @@ public final class DeleteQuery {
         @Nullable
         private List<String> whereArgs;
 
+        @Nullable
+        private String tag;
+
         CompleteBuilder(@NonNull String table) {
             this.table = table;
         }
@@ -168,6 +194,7 @@ public final class DeleteQuery {
             this.table = deleteQuery.table;
             this.where = deleteQuery.where;
             this.whereArgs = deleteQuery.whereArgs;
+            this.tag = deleteQuery.tag;
         }
 
         /**
@@ -224,6 +251,21 @@ public final class DeleteQuery {
         }
 
         /**
+         * Optional: Specifies notification tag to provide detailed information
+         * about which particular change were occurred.
+         *
+         * @param tag nullable notification tag name.
+         * @return builder.
+         * @see DeleteQuery#tag()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder tag(@Nullable String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        /**
          * Builds immutable instance of {@link DeleteQuery}.
          *
          * @return immutable instance of {@link DeleteQuery}.
@@ -237,7 +279,8 @@ public final class DeleteQuery {
             return new DeleteQuery(
                     table,
                     where,
-                    whereArgs
+                    whereArgs,
+                    tag
             );
         }
     }

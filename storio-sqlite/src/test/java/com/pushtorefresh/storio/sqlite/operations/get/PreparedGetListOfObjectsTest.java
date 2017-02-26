@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -284,11 +283,11 @@ public class PreparedGetListOfObjectsTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
-            when(storIOSQLite.observeChangesInTables(any(Set.class)))
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
+            when(storIOSQLite.observeChangesOfTablesAndTags(any(Set.class), any(Set.class)))
                     .thenReturn(Observable.empty());
 
             final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
@@ -296,7 +295,7 @@ public class PreparedGetListOfObjectsTest {
             storIOSQLite
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(Query.builder().table("test_table").build())
+                    .withQuery(Query.builder().table("test_table").tag("test_tag").build())
                     .prepare()
                     .asRxObservable()
                     .subscribe(testSubscriber);
@@ -310,12 +309,13 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).query(any(Query.class));
-            verify(storIOSQLite).observeChangesInTables(unmodifiableSet(new HashSet<String>() {{
-                add("test_table");
-            }}));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
+            verify(storIOSQLite).observeChangesOfTablesAndTags(
+                    unmodifiableSet(singleton("test_table")),
+                    unmodifiableSet(singleton("test_tag"))
+            );
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
@@ -524,7 +524,7 @@ public class PreparedGetListOfObjectsTest {
         public void cursorMustBeClosedInCaseOfExceptionForObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
 
-            when(storIOSQLite.observeChangesInTables(eq(singleton("test_table"))))
+            when(storIOSQLite.observeChangesOfTablesAndTags(singleton("test_table"), singleton("test_tag")))
                     .thenReturn(Observable.<Changes>empty());
 
             //noinspection unchecked
@@ -546,7 +546,7 @@ public class PreparedGetListOfObjectsTest {
                     new PreparedGetListOfObjects<Object>(
                             storIOSQLite,
                             Object.class,
-                            Query.builder().table("test_table").build(),
+                            Query.builder().table("test_table").tag("test_tag").build(),
                             getResolver
                     );
 
@@ -569,9 +569,10 @@ public class PreparedGetListOfObjectsTest {
             // Cursor must be closed in case of exception
             verify(cursor).close();
 
-            verify(storIOSQLite).observeChangesInTables(unmodifiableSet(new HashSet<String>() {{
-                add("test_table");
-            }}));
+            verify(storIOSQLite).observeChangesOfTablesAndTags(
+                    unmodifiableSet(singleton("test_table")),
+                    unmodifiableSet(singleton("test_tag"))
+            );
 
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
             verify(getResolver).mapFromCursor(cursor);

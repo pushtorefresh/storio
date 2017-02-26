@@ -103,11 +103,13 @@ public class DeleteQueryTest {
         final String table = "test_table";
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+        final String tag = "test_tag";
 
         final DeleteQuery firstQuery = DeleteQuery.builder()
                 .table(table)
                 .where(where)
                 .whereArgs(whereArgs)
+                .tag(tag)
                 .build();
 
         final DeleteQuery secondQuery = firstQuery.toBuilder().build();
@@ -157,16 +159,19 @@ public class DeleteQueryTest {
         final String table = "test_table";
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+        final String tag = "tag";
 
         final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table(table)
                 .where(where)
                 .whereArgs(whereArgs)
+                .tag(tag)
                 .build();
 
         assertThat(deleteQuery.table()).isEqualTo(table);
         assertThat(deleteQuery.where()).isEqualTo(where);
         assertThat(deleteQuery.whereArgs()).isEqualTo(Arrays.asList(whereArgs));
+        assertThat(deleteQuery.tag()).isEqualTo(tag);
     }
 
     @Test

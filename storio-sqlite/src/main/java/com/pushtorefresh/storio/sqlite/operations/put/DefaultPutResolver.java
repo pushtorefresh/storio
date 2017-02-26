@@ -75,10 +75,10 @@ public abstract class DefaultPutResolver<T> extends PutResolver<T> {
                 if (cursor.getCount() == 0) {
                     final InsertQuery insertQuery = mapToInsertQuery(object);
                     final long insertedId = lowLevel.insert(insertQuery, contentValues);
-                    putResult = PutResult.newInsertResult(insertedId, insertQuery.table());
+                    putResult = PutResult.newInsertResult(insertedId, insertQuery.table(), insertQuery.tag());
                 } else {
                     final int numberOfRowsUpdated = lowLevel.update(updateQuery, contentValues);
-                    putResult = PutResult.newUpdateResult(numberOfRowsUpdated, updateQuery.table());
+                    putResult = PutResult.newUpdateResult(numberOfRowsUpdated, updateQuery.table(), updateQuery.tag());
                 }
             } finally {
                 cursor.close();

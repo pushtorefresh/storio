@@ -3,6 +3,7 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Collections;
 import java.util.Set;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
@@ -26,9 +27,17 @@ public final class PutResult {
     @NonNull
     private final Set<String> affectedTables;
 
-    private PutResult(@Nullable Long insertedId, @Nullable Integer numberOfRowsUpdated, @NonNull Set<String> affectedTables) {
+    @NonNull
+    private final Set<String> affectedTags;
+
+    private PutResult(
+            @Nullable Long insertedId,
+            @Nullable Integer numberOfRowsUpdated,
+            @NonNull Set<String> affectedTables,
+            @Nullable Set<String> affectedTags
+    ) {
         if (numberOfRowsUpdated != null && numberOfRowsUpdated < 0) {
-            throw new IllegalArgumentException("Number of rows updated must be >= 0");
+            throw new IllegalArgumentException("Number of rows updated must be >= 0, but was: " + numberOfRowsUpdated);
         }
 
         checkNotNull(affectedTables, "affectedTables must not be null");
@@ -41,9 +50,33 @@ public final class PutResult {
             checkNotEmpty(table, "affectedTable must not be null or empty, affectedTables = " + affectedTables);
         }
 
+        if (affectedTags != null) {
+            for (String tag : affectedTags) {
+                checkNotEmpty(tag, "affectedTag must not be null or empty, affectedTags = " + affectedTags);
+            }
+        }
+
         this.insertedId = insertedId;
         this.numberOfRowsUpdated = numberOfRowsUpdated;
         this.affectedTables = unmodifiableSet(affectedTables);
+        this.affectedTags = affectedTags == null ? Collections.<String>emptySet() : unmodifiableSet(affectedTags);
+    }
+
+    /**
+     * Creates {@link PutResult} of insert.
+     *
+     * @param insertedId     id of new row.
+     * @param affectedTables tables that were affected.
+     * @param affectedTags   notification tags that were affected.
+     * @return new {@link PutResult} instance.
+     */
+    @NonNull
+    public static PutResult newInsertResult(
+            long insertedId,
+            @NonNull Set<String> affectedTables,
+            @Nullable Set<String> affectedTags
+    ) {
+        return new PutResult(insertedId, null, affectedTables, affectedTags);
     }
 
     /**
@@ -55,7 +88,26 @@ public final class PutResult {
      */
     @NonNull
     public static PutResult newInsertResult(long insertedId, @NonNull Set<String> affectedTables) {
-        return new PutResult(insertedId, null, affectedTables);
+        return newInsertResult(insertedId, affectedTables, null);
+    }
+
+    /**
+     * Creates {@link PutResult} of insert.
+     *
+     * @param insertedId    id of new row.
+     * @param affectedTable table that was affected.
+     * @param affectedTag   notification tag that was affected.
+     * @return new {@link PutResult} instance.
+     */
+    @NonNull
+    public static PutResult newInsertResult(
+            long insertedId,
+            @NonNull String affectedTable,
+            @Nullable String affectedTag
+    ) {
+        checkNotNull(affectedTable, "Please specify affected table");
+        final Set<String> tags = affectedTag == null ? null : singleton(affectedTag);
+        return newInsertResult(insertedId, singleton(affectedTable), tags);
     }
 
     /**
@@ -67,7 +119,24 @@ public final class PutResult {
      */
     @NonNull
     public static PutResult newInsertResult(long insertedId, @NonNull String affectedTable) {
-        return new PutResult(insertedId, null, singleton(affectedTable));
+        return newInsertResult(insertedId, affectedTable, null);
+    }
+
+    /**
+     * Creates {@link PutResult} of update.
+     *
+     * @param numberOfRowsUpdated number of rows that were updated, must be {@code >= 0}.
+     * @param affectedTables      tables that were affected.
+     * @param affectedTags        notification tags that were affected.
+     * @return new {@link PutResult} instance.
+     */
+    @NonNull
+    public static PutResult newUpdateResult(
+            int numberOfRowsUpdated,
+            @NonNull Set<String> affectedTables,
+            @Nullable Set<String> affectedTags
+    ) {
+        return new PutResult(null, numberOfRowsUpdated, affectedTables, affectedTags);
     }
 
     /**
@@ -79,7 +148,26 @@ public final class PutResult {
      */
     @NonNull
     public static PutResult newUpdateResult(int numberOfRowsUpdated, @NonNull Set<String> affectedTables) {
-        return new PutResult(null, numberOfRowsUpdated, affectedTables);
+        return newUpdateResult(numberOfRowsUpdated, affectedTables, null);
+    }
+
+    /**
+     * Creates {@link PutResult} of update.
+     *
+     * @param numberOfRowsUpdated number of rows that were updated, must be {@code >= 0}.
+     * @param affectedTable       table that was affected.
+     * @param affectedTag         notification tag that was affected.
+     * @return new {@link PutResult} instance.
+     */
+    @NonNull
+    public static PutResult newUpdateResult(
+            int numberOfRowsUpdated,
+            @NonNull String affectedTable,
+            @Nullable String affectedTag
+    ) {
+        checkNotNull(affectedTable, "Please specify affected table");
+        final Set<String> tags = affectedTag == null ? null : singleton(affectedTag);
+        return newUpdateResult(numberOfRowsUpdated, singleton(affectedTable), tags);
     }
 
     /**
@@ -91,7 +179,7 @@ public final class PutResult {
      */
     @NonNull
     public static PutResult newUpdateResult(int numberOfRowsUpdated, @NonNull String affectedTable) {
-        return new PutResult(null, numberOfRowsUpdated, singleton(affectedTable));
+        return newUpdateResult(numberOfRowsUpdated, affectedTable, null);
     }
 
     /**
@@ -170,6 +258,16 @@ public final class PutResult {
         return affectedTables;
     }
 
+    /**
+     * Gets notification tags which were affected.
+     *
+     * @return non-null unmodifiable set of affected tags.
+     */
+    @NonNull
+    public Set<String> affectedTags() {
+        return affectedTags;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -181,7 +279,9 @@ public final class PutResult {
             return false;
         if (numberOfRowsUpdated != null ? !numberOfRowsUpdated.equals(putResult.numberOfRowsUpdated) : putResult.numberOfRowsUpdated != null)
             return false;
-        return affectedTables.equals(putResult.affectedTables);
+        if (!affectedTables.equals(putResult.affectedTables)) return false;
+        return affectedTags.equals(putResult.affectedTags);
+
     }
 
     @Override
@@ -189,6 +289,7 @@ public final class PutResult {
         int result = insertedId != null ? insertedId.hashCode() : 0;
         result = 31 * result + (numberOfRowsUpdated != null ? numberOfRowsUpdated.hashCode() : 0);
         result = 31 * result + affectedTables.hashCode();
+        result = 31 * result + affectedTags.hashCode();
         return result;
     }
 
@@ -198,6 +299,7 @@ public final class PutResult {
                 "insertedId=" + insertedId +
                 ", numberOfRowsUpdated=" + numberOfRowsUpdated +
                 ", affectedTables=" + affectedTables +
+                ", affectedTags=" + affectedTags +
                 '}';
     }
 }

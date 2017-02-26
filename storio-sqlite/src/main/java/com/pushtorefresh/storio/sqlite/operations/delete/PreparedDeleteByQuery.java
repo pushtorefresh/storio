@@ -48,7 +48,11 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         try {
             final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
             if (deleteResult.numberOfRowsDeleted() > 0) {
-                storIOSQLite.lowLevel().notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                final Changes changes = Changes.newInstance(
+                        deleteResult.affectedTables(),
+                        deleteResult.affectedTags()
+                );
+                storIOSQLite.lowLevel().notifyAboutChanges(changes);
             }
             return deleteResult;
         } catch (Exception exception) {

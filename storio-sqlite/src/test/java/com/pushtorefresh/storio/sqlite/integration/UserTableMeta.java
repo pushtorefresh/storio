@@ -24,6 +24,7 @@ public class UserTableMeta {
     static final String COLUMN_ID = "_id";
     static final String COLUMN_EMAIL = "email";
     static final String COLUMN_PHONE = "phone";
+    static final String NOTIFICATION_TAG = "tag";
 
     // We all will be very old when Java will support string interpolation :(
     static final String SQL_CREATE_TABLE = "CREATE TABLE " + TABLE + "(" +
@@ -38,6 +39,7 @@ public class UserTableMeta {
 
     static final DeleteQuery DELETE_QUERY_ALL = DeleteQuery.builder()
             .table(TABLE)
+            .tag(NOTIFICATION_TAG)
             .build();
 
     static final PutResolver<User> PUT_RESOLVER = new DefaultPutResolver<User>() {
@@ -46,6 +48,7 @@ public class UserTableMeta {
         protected InsertQuery mapToInsertQuery(@NonNull User user) {
             return InsertQuery.builder()
                     .table(TABLE)
+                    .tag(NOTIFICATION_TAG)
                     .build();
         }
 
@@ -56,6 +59,7 @@ public class UserTableMeta {
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(user.id())
+                    .tag(NOTIFICATION_TAG)
                     .build();
         }
 
@@ -102,6 +106,7 @@ public class UserTableMeta {
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(user.id())
+                    .tag(NOTIFICATION_TAG)
                     .build();
         }
     };

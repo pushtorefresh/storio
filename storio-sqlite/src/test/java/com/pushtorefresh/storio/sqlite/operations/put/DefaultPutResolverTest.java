@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,11 +34,11 @@ public class DefaultPutResolverTest {
     @Test
     public void insert() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
         final TestItem testItem = new TestItem(null); // item without id, should be inserted
 
         when(storIOSQLite.lowLevel())
-                .thenReturn(internal);
+                .thenReturn(lowLevel);
 
         final Long expectedInsertedId = 24L;
 
@@ -50,17 +50,20 @@ public class DefaultPutResolverTest {
 
         final Cursor cursor = mock(Cursor.class);
 
-        when(internal.query(eq(expectedQuery)))
+        when(lowLevel.query(eq(expectedQuery)))
                 .thenReturn(cursor);
 
         when(cursor.getCount())
                 .thenReturn(0); // No results -> insert should be performed
 
-        when(internal.insert(any(InsertQuery.class), any(ContentValues.class)))
+        when(lowLevel.insert(any(InsertQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedInsertedId);
+
+        final String tag = "affected_tag";
 
         final InsertQuery expectedInsertQuery = InsertQuery.builder()
                 .table(TestItem.TABLE)
+                .tag(tag)
                 .nullColumnHack(null)
                 .build();
 
@@ -93,27 +96,27 @@ public class DefaultPutResolverTest {
         // Performing Put that should "insert"
         final PutResult putResult = putResolver.performPut(storIOSQLite, testItem);
 
-        verify(internal, times(1)).beginTransaction();
-        verify(internal, times(1)).setTransactionSuccessful();
-        verify(internal, times(1)).endTransaction();
+        verify(lowLevel).beginTransaction();
+        verify(lowLevel).setTransactionSuccessful();
+        verify(lowLevel).endTransaction();
 
         // checks that it asks db for results
-        verify(internal, times(1)).query(eq(expectedQuery));
+        verify(lowLevel).query(eq(expectedQuery));
 
         // checks that cursor was closed
-        verify(cursor, times(1)).close();
+        verify(cursor).close();
 
         // only one query should occur
-        verify(internal, times(1)).query(any(Query.class));
+        verify(lowLevel).query(any(Query.class));
 
         // checks that required insert was performed
-        verify(internal, times(1)).insert(eq(expectedInsertQuery), eq(expectedContentValues));
+        verify(lowLevel).insert(eq(expectedInsertQuery), eq(expectedContentValues));
 
         // only one insert should occur
-        verify(internal, times(1)).insert(any(InsertQuery.class), any(ContentValues.class));
+        verify(lowLevel).insert(any(InsertQuery.class), any(ContentValues.class));
 
         // no updates should occur
-        verify(internal, times(0)).update(any(UpdateQuery.class), any(ContentValues.class));
+        verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
 
         // put result checks
         assertThat(putResult.wasInserted()).isTrue();
@@ -121,6 +124,9 @@ public class DefaultPutResolverTest {
 
         assertThat(putResult.insertedId()).isEqualTo(expectedInsertedId);
         assertThat(putResult.numberOfRowsUpdated()).isNull();
+        
+        assertThat(putResult.affectedTables()).containsExactly(TestItem.TABLE);
+        assertThat(putResult.affectedTags()).containsExactly(tag);
     }
 
     /**
@@ -154,8 +160,11 @@ public class DefaultPutResolverTest {
         when(internal.update(any(UpdateQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedNumberOfRowsUpdated);
 
+        final String tag = "affected_tag";
+
         final UpdateQuery expectedUpdateQuery = UpdateQuery.builder()
                 .table(TestItem.TABLE)
+                .tag(tag)
                 .where(TestItem.COLUMN_ID + " = ?")
                 .whereArgs(testItem.getId())
                 .build();
@@ -171,11 +180,7 @@ public class DefaultPutResolverTest {
             @NonNull
             @Override
             protected UpdateQuery mapToUpdateQuery(@NonNull TestItem object) {
-                return UpdateQuery.builder()
-                        .table(TestItem.TABLE)
-                        .where(TestItem.COLUMN_ID + " = ?")
-                        .whereArgs(object.getId())
-                        .build();
+                return expectedUpdateQuery;
             }
 
             @NonNull
@@ -190,27 +195,27 @@ public class DefaultPutResolverTest {
         // Performing Put that should "update"
         final PutResult putResult = putResolver.performPut(storIOSQLite, testItem);
 
-        verify(internal, times(1)).beginTransaction();
-        verify(internal, times(1)).setTransactionSuccessful();
-        verify(internal, times(1)).endTransaction();
+        verify(internal).beginTransaction();
+        verify(internal).setTransactionSuccessful();
+        verify(internal).endTransaction();
 
         // checks that it asks db for results
-        verify(internal, times(1)).query(eq(expectedQuery));
+        verify(internal).query(eq(expectedQuery));
 
         // checks that cursor was closed
-        verify(cursor, times(1)).close();
+        verify(cursor).close();
 
         // only one query should occur
-        verify(internal, times(1)).query(any(Query.class));
+        verify(internal).query(any(Query.class));
 
         // checks that required update was performed
-        verify(internal, times(1)).update(eq(expectedUpdateQuery), eq(expectedContentValues));
+        verify(internal).update(eq(expectedUpdateQuery), eq(expectedContentValues));
 
         // only one update should occur
-        verify(internal, times(1)).update(any(UpdateQuery.class), any(ContentValues.class));
+        verify(internal).update(any(UpdateQuery.class), any(ContentValues.class));
 
         // no inserts should occur
-        verify(internal, times(0)).insert(any(InsertQuery.class), any(ContentValues.class));
+        verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
 
         // put result checks
         assertThat(putResult.wasInserted()).isFalse();
@@ -218,6 +223,9 @@ public class DefaultPutResolverTest {
 
         assertThat(putResult.numberOfRowsUpdated()).isEqualTo(expectedNumberOfRowsUpdated);
         assertThat(putResult.insertedId()).isNull();
+
+        assertThat(putResult.affectedTables()).containsExactly(TestItem.TABLE);
+        assertThat(putResult.affectedTags()).containsExactly(tag);
     }
 
     private static class TestItem {

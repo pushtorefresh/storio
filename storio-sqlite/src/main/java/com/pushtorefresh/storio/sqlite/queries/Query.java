@@ -42,6 +42,9 @@ public final class Query {
     @NonNull
     private final String limit;
 
+    @Nullable
+    private final String tag;
+
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.queries.Query.Builder}
      * instead of constructor.
@@ -49,7 +52,7 @@ public final class Query {
     private Query(boolean distinct, @NonNull String table, @Nullable List<String> columns,
                   @Nullable String where, @Nullable List<String> whereArgs,
                   @Nullable String groupBy, @Nullable String having,
-                  @Nullable String orderBy, @Nullable String limit) {
+                  @Nullable String orderBy, @Nullable String limit, @Nullable String tag) {
         this.distinct = distinct;
         this.table = table;
         this.columns = unmodifiableNonNullListOfStrings(columns);
@@ -59,6 +62,7 @@ public final class Query {
         this.having = nonNullString(having);
         this.orderBy = nonNullString(orderBy);
         this.limit = nonNullString(limit);
+        this.tag = tag;
     }
 
     /**
@@ -187,6 +191,18 @@ public final class Query {
     }
 
     /**
+     * Gets optional tag that should be observed by this query.
+     * <p>
+     * It will be used to observe changes of this tag and re-execute this query.
+     *
+     * @return nullable notification tag, that should be observed by this query.
+     */
+    @Nullable
+    public String tag() {
+        return tag;
+    }
+
+    /**
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
@@ -212,7 +228,8 @@ public final class Query {
         if (!groupBy.equals(query.groupBy)) return false;
         if (!having.equals(query.having)) return false;
         if (!orderBy.equals(query.orderBy)) return false;
-        return limit.equals(query.limit);
+        if (!limit.equals(query.limit)) return false;
+        return tag != null ? tag.equals(query.tag) : query.tag == null;
     }
 
     @Override
@@ -226,6 +243,7 @@ public final class Query {
         result = 31 * result + having.hashCode();
         result = 31 * result + orderBy.hashCode();
         result = 31 * result + limit.hashCode();
+        result = 31 * result + (tag != null ? tag.hashCode() : 0);
         return result;
     }
 
@@ -241,6 +259,7 @@ public final class Query {
                 ", having='" + having + '\'' +
                 ", orderBy='" + orderBy + '\'' +
                 ", limit='" + limit + '\'' +
+                ", tag='" + tag + '\'' +
                 '}';
     }
 
@@ -303,6 +322,9 @@ public final class Query {
 
         private String limit;
 
+        @Nullable
+        private String tag;
+
         CompleteBuilder(@NonNull String table) {
             this.table = table;
         }
@@ -317,6 +339,7 @@ public final class Query {
             this.having = query.having;
             this.orderBy = query.orderBy;
             this.limit = query.limit;
+            this.tag = query.tag;
         }
 
         /**
@@ -567,6 +590,23 @@ public final class Query {
         }
 
         /**
+         * Optional: Specifies notification tag that should be observed by this query.
+         * about which particular change were occurred.
+         * <p/>
+         * It will be used to observe changes of this tag and re-execute this query.
+         *
+         * @param tag nullable notification tag, that should be observed by this query.
+         * @return builder.
+         * @see Query#tag()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder tag(@Nullable String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        /**
          * Builds immutable instance of {@link Query}.
          *
          * @return immutable instance of {@link Query}.
@@ -586,7 +626,8 @@ public final class Query {
                     groupBy,
                     having,
                     orderBy,
-                    limit
+                    limit,
+                    tag
             );
         }
     }

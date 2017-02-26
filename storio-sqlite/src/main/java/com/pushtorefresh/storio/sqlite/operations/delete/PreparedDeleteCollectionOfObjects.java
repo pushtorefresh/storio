@@ -107,7 +107,11 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
                         results.put(object, deleteResult);
 
                         if (!useTransaction && deleteResult.numberOfRowsDeleted() > 0) {
-                            lowLevel.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                            final Changes changes = Changes.newInstance(
+                                    deleteResult.affectedTables(),
+                                    deleteResult.affectedTags()
+                            );
+                            lowLevel.notifyAboutChanges(changes);
                         }
                     }
                 } else {
@@ -120,7 +124,11 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
                         results.put(object, deleteResult);
 
                         if (!useTransaction && deleteResult.numberOfRowsDeleted() > 0) {
-                            lowLevel.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                            final Changes changes = Changes.newInstance(
+                                    deleteResult.affectedTables(),
+                                    deleteResult.affectedTags()
+                            );
+                            lowLevel.notifyAboutChanges(changes);
                         }
                     }
                 }
@@ -136,18 +144,21 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
                     // if delete was in transaction and it was successful -> notify about changes
                     if (transactionSuccessful) {
                         final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be one table
+                        final Set<String> affectedTags = new HashSet<String>(1);
 
                         for (final T object : results.keySet()) {
                             final DeleteResult deleteResult = results.get(object);
                             if (deleteResult.numberOfRowsDeleted() > 0) {
                                 affectedTables.addAll(results.get(object).affectedTables());
+                                affectedTags.addAll(results.get(object).affectedTags());
                             }
                         }
 
                         // IMPORTANT: Notifying about change should be done after end of transaction
                         // It'll reduce number of possible deadlock situations
-                        if (!affectedTables.isEmpty()) {
-                            lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables));
+                        if (!affectedTables.isEmpty() || !affectedTags.isEmpty()) {
+                            final Changes changes = Changes.newInstance(affectedTables, affectedTags);
+                            lowLevel.notifyAboutChanges(changes);
                         }
                     }
                 }

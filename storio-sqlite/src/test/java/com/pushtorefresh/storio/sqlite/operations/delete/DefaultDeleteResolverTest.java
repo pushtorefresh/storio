@@ -24,8 +24,10 @@ public class DefaultDeleteResolverTest {
         final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
 
         final String testTable = "test_table";
+        final String testTag = "test_tag";
         final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table(testTable)
+                .tag(testTag)
                 .build();
 
         when(storIOSQLite.lowLevel())
@@ -51,6 +53,7 @@ public class DefaultDeleteResolverTest {
 
         assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
         assertThat(deleteResult.affectedTables()).isEqualTo(Collections.singleton(testTable));
+        assertThat(deleteResult.affectedTags()).isEqualTo(Collections.singleton(testTag));
     }
 
     private static class TestItem {

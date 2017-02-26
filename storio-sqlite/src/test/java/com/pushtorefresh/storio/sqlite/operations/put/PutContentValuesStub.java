@@ -19,6 +19,7 @@ import static java.util.Collections.singletonMap;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +40,9 @@ class PutContentValuesStub {
     final PutResolver<ContentValues> putResolver;
 
     private final boolean useTransaction;
+
+    @NonNull
+    private final String affectedTag = "test_tag";
 
     @SuppressWarnings("unchecked")
     private PutContentValuesStub(boolean useTransaction, int numberOfItems) {
@@ -62,7 +66,7 @@ class PutContentValuesStub {
         putResolver = (PutResolver<ContentValues>) mock(PutResolver.class);
 
         when(putResolver.performPut(eq(storIOSQLite), any(ContentValues.class)))
-                .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE));
+                .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE, affectedTag));
     }
 
     @NonNull
@@ -77,14 +81,14 @@ class PutContentValuesStub {
 
     void verifyBehaviorForMultipleContentValues(@NonNull PutResults<ContentValues> putResults) {
         // only one call to storIOSQLite.put() should occur
-        verify(storIOSQLite, times(1)).put();
+        verify(storIOSQLite).put();
 
         // number of calls to putResolver's performPut() should be equal to number of objects
         verify(putResolver, times(contentValues.size())).performPut(eq(storIOSQLite), any(ContentValues.class));
 
         // each item should be "put"
         for (final ContentValues cv : contentValues) {
-            verify(putResolver, times(1)).performPut(storIOSQLite, cv);
+            verify(putResolver).performPut(storIOSQLite, cv);
         }
 
         verifyTransactionBehavior();
@@ -157,22 +161,22 @@ class PutContentValuesStub {
 
     private void verifyTransactionBehavior() {
         if (useTransaction) {
-            verify(internal, times(1)).beginTransaction();
-            verify(internal, times(1)).setTransactionSuccessful();
-            verify(internal, times(1)).endTransaction();
+            verify(internal).beginTransaction();
+            verify(internal).setTransactionSuccessful();
+            verify(internal).endTransaction();
 
             // if put() operation used transaction, only one notification should be thrown
-            verify(internal, times(1))
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE)));
+            verify(internal)
+                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTag)));
         } else {
-            verify(internal, times(0)).beginTransaction();
-            verify(internal, times(0)).setTransactionSuccessful();
-            verify(internal, times(0)).endTransaction();
+            verify(internal, never()).beginTransaction();
+            verify(internal, never()).setTransactionSuccessful();
+            verify(internal, never()).endTransaction();
 
             // if put() operation didn't use transaction,
             // number of notifications should be equal to number of objects
             verify(internal, times(contentValues.size()))
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE)));
+                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTag)));
         }
     }
 }
