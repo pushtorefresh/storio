@@ -32,7 +32,7 @@ public class PutResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
         final ClassName storIOSQLiteTypeClassName = ClassName.get(storIOSQLiteTypeMeta.packageName, storIOSQLiteTypeMeta.simpleName);
 
         final TypeSpec putResolver = TypeSpec.classBuilder(generateName(storIOSQLiteTypeMeta))
-                .addJavadoc("Generated resolver for Put Operation\n")
+                .addJavadoc("Generated resolver for Put Operation.\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operations.put", "DefaultPutResolver"), storIOSQLiteTypeClassName))
                 .addMethod(createMapToInsertQueryMethodSpec(storIOSQLiteTypeMeta, storIOSQLiteTypeClassName))
@@ -105,12 +105,12 @@ public class PutResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
         for (StorIOSQLiteColumnMeta columnMeta : storIOSQLiteTypeMeta.columns.values()) {
             final boolean ignoreNull = columnMeta.storIOColumn.ignoreNull();
             if (ignoreNull) {
-                builder.beginControlFlow("if($L != null)", "object." + columnMeta.fieldName);
+                builder.beginControlFlow("if (object.$L != null)", columnMeta.elementName + (columnMeta.isMethod() ? "()" : ""));
             }
             builder.addStatement(
-                    "contentValues.put($S, $L)",
+                    "contentValues.put($S, object.$L)",
                     columnMeta.storIOColumn.name(),
-                    "object." + columnMeta.fieldName
+                    columnMeta.elementName + (columnMeta.isMethod() ? "()" : "")
             );
             if (ignoreNull) {
                 builder.endControlFlow();

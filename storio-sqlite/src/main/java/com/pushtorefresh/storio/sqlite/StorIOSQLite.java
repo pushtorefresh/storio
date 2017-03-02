@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.sqlite;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -329,6 +330,21 @@ public abstract class StorIOSQLite implements Closeable {
          * how to use this and when transactions are committed and rolled back.
          */
         public abstract void endTransaction();
+
+        /**
+         * Returns {@link SQLiteOpenHelper} for the direct access to underlining database.
+         * It can be used in cases when {@link StorIOSQLite} APIs are not enough.
+         * <p>
+         * Notice: Database changes through the direct access
+         * to the {@link SQLiteOpenHelper} will not trigger notifications.
+         * If it possible you should use {@link StorIOSQLite} methods instead
+         * or call {@link #notifyAboutChanges(Changes)} manually.
+         *
+         * @return {@link SQLiteOpenHelper}.
+         */
+        @NonNull
+        public abstract SQLiteOpenHelper sqliteOpenHelper();
+
     }
 
     /**

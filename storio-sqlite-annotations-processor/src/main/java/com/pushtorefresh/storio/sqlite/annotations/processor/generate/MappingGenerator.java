@@ -29,7 +29,7 @@ public class MappingGenerator implements Generator<StorIOSQLiteTypeMeta> {
 
 
         final TypeSpec mapping = TypeSpec.classBuilder(storIOSQLiteTypeMeta.simpleName + SUFFIX)
-                .addJavadoc("Generated mapping with collection of resolvers\n")
+                .addJavadoc("Generated mapping with collection of resolvers.\n")
                 .addModifiers(PUBLIC)
                 .superclass(superclassParametrized)
                 .addMethod(createConstructor(storIOSQLiteTypeMeta))

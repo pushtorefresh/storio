@@ -20,10 +20,6 @@ import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -49,8 +45,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static rx.schedulers.Schedulers.io;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ChangesBus.class)
 public class DefaultStorIOSQLiteTest {
 
     @Rule
@@ -66,6 +60,15 @@ public class DefaultStorIOSQLiteTest {
 
         //noinspection ConstantConditions
         builder.sqliteOpenHelper(null);
+    }
+
+    @Test
+    public void lowLevelReturnsSameInstanceOfSQLiteOpenHelper() {
+        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
+        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .build();
+        assertThat(storIOSQLite.lowLevel().sqliteOpenHelper()).isSameAs(sqLiteOpenHelper);
     }
 
     @Test
@@ -383,7 +386,7 @@ public class DefaultStorIOSQLiteTest {
                 .sqliteOpenHelper(sqLiteOpenHelper)
                 .build();
         //noinspection unchecked
-        ChangesBus<Changes> changesBus = PowerMockito.mock(ChangesBus.class);
+        ChangesBus<Changes> changesBus = mock(ChangesBus.class);
         setChangesBus(storIOSQLite, changesBus);
 
         expectedException.expect(IllegalStateException.class);
