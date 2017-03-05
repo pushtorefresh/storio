@@ -3,10 +3,11 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 import android.content.ContentValues;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
 
@@ -41,80 +42,6 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
         this.contentValuesIterable = contentValuesIterable;
         this.putResolver = putResolver;
         this.useTransaction = useTransaction;
-    }
-
-    /**
-     * Executes Put Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null results of Put Operation.
-     */
-    @WorkerThread
-    @NonNull
-    @Override
-    public PutResults<ContentValues> executeAsBlocking() {
-        try {
-            final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
-
-            final Map<ContentValues, PutResult> putResults = new HashMap<ContentValues, PutResult>();
-
-            if (useTransaction) {
-                lowLevel.beginTransaction();
-            }
-
-            boolean transactionSuccessful = false;
-
-            try {
-                for (ContentValues contentValues : contentValuesIterable) {
-                    final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
-                    putResults.put(contentValues, putResult);
-
-                    if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
-                        final Changes changes = Changes.newInstance(
-                                putResult.affectedTables(),
-                                putResult.affectedTags()
-                        );
-                        lowLevel.notifyAboutChanges(changes);
-                    }
-                }
-
-                if (useTransaction) {
-                    lowLevel.setTransactionSuccessful();
-                    transactionSuccessful = true;
-                }
-            } finally {
-                if (useTransaction) {
-                    lowLevel.endTransaction();
-
-                    if (transactionSuccessful) {
-                        final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
-                        final Set<String> affectedTags = new HashSet<String>(1);
-
-                        for (final ContentValues contentValues : putResults.keySet()) {
-                            final PutResult putResult = putResults.get(contentValues);
-                            if (putResult.wasInserted() || putResult.wasUpdated()) {
-                                affectedTables.addAll(putResult.affectedTables());
-                                affectedTags.addAll(putResult.affectedTags());
-                            }
-                        }
-
-                        // IMPORTANT: Notifying about change should be done after end of transaction
-                        // It'll reduce number of possible deadlock situations
-                        if (!affectedTables.isEmpty() || !affectedTags.isEmpty()) {
-                            lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
-                        }
-                    }
-                }
-            }
-
-            return PutResults.newInstance(putResults);
-
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValuesIterable, exception);
-        }
     }
 
     /**
@@ -175,6 +102,84 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
     @Override
     public Single<PutResults<ContentValues>> asRxSingle() {
         return RxJavaUtils.createSingle(storIOSQLite, this);
+    }
+
+    @NonNull
+    @Override
+    protected Interceptor getRealInterceptor() {
+        return new RealInterceptor();
+    }
+
+    @NonNull
+    @Override
+    public Object getData() {
+        return contentValuesIterable;
+    }
+
+    private class RealInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+            try {
+                final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
+
+                final Map<ContentValues, PutResult> putResults = new HashMap<ContentValues, PutResult>();
+
+                if (useTransaction) {
+                    lowLevel.beginTransaction();
+                }
+
+                boolean transactionSuccessful = false;
+
+                try {
+                    for (ContentValues contentValues : contentValuesIterable) {
+                        final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
+                        putResults.put(contentValues, putResult);
+
+                        if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
+                            final Changes changes = Changes.newInstance(
+                                    putResult.affectedTables(),
+                                    putResult.affectedTags()
+                            );
+                            lowLevel.notifyAboutChanges(changes);
+                        }
+                    }
+
+                    if (useTransaction) {
+                        lowLevel.setTransactionSuccessful();
+                        transactionSuccessful = true;
+                    }
+                } finally {
+                    if (useTransaction) {
+                        lowLevel.endTransaction();
+
+                        if (transactionSuccessful) {
+                            final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+                            final Set<String> affectedTags = new HashSet<String>(1);
+
+                            for (final ContentValues contentValues : putResults.keySet()) {
+                                final PutResult putResult = putResults.get(contentValues);
+                                if (putResult.wasInserted() || putResult.wasUpdated()) {
+                                    affectedTables.addAll(putResult.affectedTables());
+                                    affectedTags.addAll(putResult.affectedTags());
+                                }
+                            }
+
+                            // IMPORTANT: Notifying about change should be done after end of transaction
+                            // It'll reduce number of possible deadlock situations
+                            if (!affectedTables.isEmpty() || !affectedTags.isEmpty()) {
+                                lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
+                            }
+                        }
+                    }
+                }
+
+                return (Result) PutResults.newInstance(putResults);
+
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValuesIterable, exception);
+            }
+        }
     }
 
     /**

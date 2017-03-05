@@ -2,11 +2,15 @@ package com.pushtorefresh.storio.sqlite.operations.get;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.operations.PreparedOperation;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
+
+import static com.pushtorefresh.storio.sqlite.impl.ChainImpl.buildChain;
 
 /**
  * Prepared Get Operation for {@link StorIOSQLite}.
@@ -34,6 +38,37 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
         this.storIOSQLite = storIOSQLite;
         this.rawQuery = rawQuery;
         query = null;
+    }
+
+    /**
+     * Executes Get Operation immediately in current thread.
+     * <p>
+     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
+     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
+     * So please, call this method on some background thread. See {@link WorkerThread}.
+     *
+     * @return result of an operation. Can be null in get(Object).
+     */
+    @WorkerThread
+    @Nullable
+    public final Result executeAsBlocking() {
+        return buildChain(storIOSQLite.interceptors(), getRealInterceptor())
+                .proceed(this);
+    }
+
+    @NonNull
+    protected abstract Interceptor getRealInterceptor();
+
+    @NonNull
+    @Override
+    public Object getData() {
+        if (rawQuery != null) {
+            return rawQuery;
+        } else if (query != null) {
+            return query;
+        } else {
+            throw new IllegalStateException("Either rawQuery or query should be set!");
+        }
     }
 
     /**

@@ -56,6 +56,7 @@ public class PreparedDeleteByQueryTest {
 
         void verifyBehaviour() {
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
             verify(internal).notifyAboutChanges(Changes.newInstance(deleteQuery.table(), deleteQuery.affectsTags()));
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
@@ -160,6 +161,7 @@ public class PreparedDeleteByQueryTest {
             assertThat(cause).hasMessage("test exception");
 
             verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
+            verify(storIOSQLite).interceptors();
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
         }
     }
@@ -197,6 +199,7 @@ public class PreparedDeleteByQueryTest {
 
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 
@@ -233,6 +236,7 @@ public class PreparedDeleteByQueryTest {
 
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 
@@ -269,6 +273,7 @@ public class PreparedDeleteByQueryTest {
 
         verify(storIOSQLite).defaultScheduler();
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
+        verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 
@@ -302,6 +307,7 @@ public class PreparedDeleteByQueryTest {
 
         verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
         verify(internal, never()).notifyAboutChanges(any(Changes.class));
+        verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 

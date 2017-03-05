@@ -156,6 +156,8 @@ class DeleteStub {
 
         verify(storIOSQLite).lowLevel(); // Only one call to internal should occur
 
+        verify(storIOSQLite).interceptors(); // Only one call to internal should occur
+
         // Number of calls to perform deletion of objects should be equals to number of items
         verify(deleteResolver, times(itemsRequestedForDelete.size()))
                 .performDelete(eq(storIOSQLite), any(TestItem.class));

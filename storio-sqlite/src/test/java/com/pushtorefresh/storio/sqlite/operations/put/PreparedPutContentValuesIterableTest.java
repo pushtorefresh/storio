@@ -193,6 +193,7 @@ public class PreparedPutContentValuesIterableTest {
 
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
             verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
         }
@@ -238,6 +239,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -282,6 +284,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -326,6 +329,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -359,6 +363,7 @@ public class PreparedPutContentValuesIterableTest {
             verify(internal, never()).endTransaction();
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
             verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
         }
@@ -401,6 +406,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -442,6 +448,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -483,6 +490,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }

@@ -132,6 +132,12 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         return RxJavaUtils.createCompletable(storIOContentResolver, this);
     }
 
+    @NonNull
+    @Override
+    public Object getData() {
+        return deleteQuery;
+    }
+
     /**
      * Builder for {@link PreparedDeleteByQuery}.
      */

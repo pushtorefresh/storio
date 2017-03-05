@@ -138,6 +138,9 @@ class PutObjectsStub {
         // should be called once because of Performance!
         verify(storIOSQLite).lowLevel();
 
+        // should be called once
+        verify(storIOSQLite).interceptors();
+
         // only one call to storIOSQLite.put() should occur
         verify(storIOSQLite).put();
 

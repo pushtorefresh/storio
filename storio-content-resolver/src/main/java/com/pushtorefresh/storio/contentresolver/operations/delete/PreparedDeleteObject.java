@@ -151,6 +151,12 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         return RxJavaUtils.createCompletable(storIOContentResolver, this);
     }
 
+    @NonNull
+    @Override
+    public Object getData() {
+        return object;
+    }
+
     /**
      * Builder for {@link PreparedDeleteObject}.
      *

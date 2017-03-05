@@ -163,6 +163,7 @@ public class PreparedPutObjectTest {
                                 "db was not affected by this operation, please add type mapping for this type");
 
                 verify(storIOSQLite).lowLevel();
+                verify(storIOSQLite).interceptors();
                 verify(internal).typeMapping(Object.class);
                 verifyNoMoreInteractions(storIOSQLite, internal);
             }
@@ -199,6 +200,7 @@ public class PreparedPutObjectTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
@@ -234,6 +236,7 @@ public class PreparedPutObjectTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
@@ -269,6 +272,7 @@ public class PreparedPutObjectTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
         }

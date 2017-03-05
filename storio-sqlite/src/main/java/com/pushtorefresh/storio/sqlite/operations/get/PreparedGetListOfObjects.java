@@ -4,11 +4,12 @@ import android.database.Cursor;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.impl.ChangesFilter;
@@ -58,70 +59,6 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         super(storIOSQLite, rawQuery);
         this.type = type;
         this.explicitGetResolver = explicitGetResolver;
-    }
-
-    /**
-     * Executes Get Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null, immutable {@link List} with mapped results, list can be empty.
-     */
-    @WorkerThread
-    @SuppressWarnings({"TryFinallyCanBeTryWithResources", "unchecked"})
-    // Min SDK :( unchecked for empty list
-    @NonNull
-    @Override
-    public List<T> executeAsBlocking() {
-        try {
-            final GetResolver<T> getResolver;
-
-            if (explicitGetResolver != null) {
-                getResolver = explicitGetResolver;
-            } else {
-                final SQLiteTypeMapping<T> typeMapping = storIOSQLite.lowLevel().typeMapping(type);
-
-                if (typeMapping == null) {
-                    throw new IllegalStateException("This type does not have type mapping: " +
-                            "type = " + type + "," +
-                            "db was not touched by this operation, please add type mapping for this type");
-                }
-
-                getResolver = typeMapping.getResolver();
-            }
-
-            final Cursor cursor;
-
-            if (query != null) {
-                cursor = getResolver.performGet(storIOSQLite, query);
-            } else if (rawQuery != null) {
-                cursor = getResolver.performGet(storIOSQLite, rawQuery);
-            } else {
-                throw new IllegalStateException("Please specify query");
-            }
-
-            try {
-                final int count = cursor.getCount();
-
-                if (count == 0) {
-                    return EMPTY_LIST; // it's immutable
-                }
-
-                final List<T> list = new ArrayList<T>(count);
-
-                while (cursor.moveToNext()) {
-                    list.add(getResolver.mapFromCursor(cursor));
-                }
-
-                return unmodifiableList(list);
-            } finally {
-                cursor.close();
-            }
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Get operation. query = " + (query != null ? query : rawQuery), exception);
-        }
     }
 
     /**
@@ -217,6 +154,68 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @Override
     public Single<List<T>> asRxSingle() {
         return RxJavaUtils.createSingle(storIOSQLite, this);
+    }
+
+    @NonNull
+    @Override
+    protected Interceptor getRealInterceptor() {
+        return new RealInterceptor();
+    }
+
+    private class RealInterceptor implements Interceptor {
+        @SuppressWarnings({"TryFinallyCanBeTryWithResources", "unchecked"})
+        // Min SDK :( unchecked for empty list
+        @NonNull
+        @Override
+        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+            try {
+                final GetResolver<T> getResolver;
+
+                if (explicitGetResolver != null) {
+                    getResolver = explicitGetResolver;
+                } else {
+                    final SQLiteTypeMapping<T> typeMapping = storIOSQLite.lowLevel().typeMapping(type);
+
+                    if (typeMapping == null) {
+                        throw new IllegalStateException("This type does not have type mapping: " +
+                                "type = " + type + "," +
+                                "db was not touched by this operation, please add type mapping for this type");
+                    }
+
+                    getResolver = typeMapping.getResolver();
+                }
+
+                final Cursor cursor;
+
+                if (query != null) {
+                    cursor = getResolver.performGet(storIOSQLite, query);
+                } else if (rawQuery != null) {
+                    cursor = getResolver.performGet(storIOSQLite, rawQuery);
+                } else {
+                    throw new IllegalStateException("Please specify query");
+                }
+
+                try {
+                    final int count = cursor.getCount();
+
+                    if (count == 0) {
+                        return (Result) EMPTY_LIST; // it's immutable
+                    }
+
+                    final List<T> list = new ArrayList<T>(count);
+
+                    while (cursor.moveToNext()) {
+                        list.add(getResolver.mapFromCursor(cursor));
+                    }
+
+                    return (Result) unmodifiableList(list);
+                } finally {
+                    cursor.close();
+                }
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Get operation. query = " + (query != null ? query : rawQuery), exception);
+            }
+        }
     }
 
     /**

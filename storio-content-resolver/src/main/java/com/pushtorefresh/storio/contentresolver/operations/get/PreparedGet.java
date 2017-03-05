@@ -24,6 +24,12 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
         this.query = query;
     }
 
+    @NonNull
+    @Override
+    public Object getData() {
+        return query;
+    }
+
     /**
      * Builder for {@link PreparedGet}.
      */

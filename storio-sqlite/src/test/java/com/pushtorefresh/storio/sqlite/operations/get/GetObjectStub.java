@@ -132,6 +132,9 @@ class GetObjectStub {
 
     void verifyQueryBehavior(@Nullable TestItem actualItem) {
         // should be called once
+        verify(storIOSQLite).interceptors();
+
+        // should be called once
         verify(storIOSQLite).get();
 
         // should be called only once

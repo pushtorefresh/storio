@@ -62,4 +62,7 @@ public interface PreparedOperation<Result> {
     @NonNull
     @CheckResult
     Single<Result> asRxSingle();
+
+    @NonNull
+    Object getData();
 }

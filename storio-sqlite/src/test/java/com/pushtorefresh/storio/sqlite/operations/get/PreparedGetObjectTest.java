@@ -245,6 +245,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -287,6 +288,7 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
             verify(storIOSQLite).observeChanges();
@@ -329,6 +331,7 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, lowLevel);
@@ -361,6 +364,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -401,6 +405,7 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -441,6 +446,7 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -549,6 +555,7 @@ public class PreparedGetObjectTest {
                 verify(getResolver).mapFromCursor(cursor);
                 verify(cursor).getCount();
                 verify(cursor).moveToNext();
+                verify(storIOSQLite).interceptors();
 
                 verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
             }
@@ -608,6 +615,7 @@ public class PreparedGetObjectTest {
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }
@@ -664,6 +672,7 @@ public class PreparedGetObjectTest {
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }

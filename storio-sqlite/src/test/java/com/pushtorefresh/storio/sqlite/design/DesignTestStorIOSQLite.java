@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.delete.PreparedDelete;
@@ -20,6 +21,8 @@ import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import rx.Observable;
@@ -163,6 +166,12 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
     @Override
     public LowLevel lowLevel() {
         return lowLevel;
+    }
+
+    @NonNull
+    @Override
+    public List<Interceptor> interceptors() {
+        return Collections.emptyList();
     }
 
     @Override

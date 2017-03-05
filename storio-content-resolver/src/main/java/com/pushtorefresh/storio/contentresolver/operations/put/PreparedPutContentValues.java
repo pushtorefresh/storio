@@ -130,6 +130,12 @@ public class PreparedPutContentValues extends PreparedPut<PutResult> {
         return RxJavaUtils.createCompletable(storIOContentResolver, this);
     }
 
+    @NonNull
+    @Override
+    public Object getData() {
+        return contentValues;
+    }
+
     /**
      * Builder for {@link PreparedPutContentValues}.
      * <p>

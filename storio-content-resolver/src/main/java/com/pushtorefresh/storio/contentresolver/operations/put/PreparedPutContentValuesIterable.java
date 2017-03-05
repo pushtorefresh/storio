@@ -141,6 +141,12 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
         return RxJavaUtils.createCompletable(storIOContentResolver, this);
     }
 
+    @NonNull
+    @Override
+    public Object getData() {
+        return contentValues;
+    }
+
     /**
      * Builder for {@link PreparedPutContentValuesIterable}.
      * <p>

@@ -150,6 +150,12 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
         return RxJavaUtils.createCompletable(storIOContentResolver, this);
     }
 
+    @NonNull
+    @Override
+    public Object getData() {
+        return object;
+    }
+
     /**
      * Builder for {@link PreparedPutObject}.
      *

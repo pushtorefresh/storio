@@ -184,6 +184,12 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
         return RxJavaUtils.createCompletable(storIOContentResolver, this);
     }
 
+    @NonNull
+    @Override
+    public Object getData() {
+        return objects;
+    }
+
     /**
      * Builder for {@link PreparedDeleteCollectionOfObjects}.
      *
