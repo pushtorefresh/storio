@@ -1,5 +1,9 @@
 package com.pushtorefresh.storio.sample.ui.fragment;
 
+import static com.pushtorefresh.storio.sample.ui.Toasts.safeShowShortToast;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static rx.android.schedulers.AndroidSchedulers.mainThread;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,7 +13,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.SampleApp;
 import com.pushtorefresh.storio.sample.db.entities.Tweet;
@@ -20,23 +26,13 @@ import com.pushtorefresh.storio.sample.ui.UiStateController;
 import com.pushtorefresh.storio.sample.ui.adapter.TweetsAdapter;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import rx.Observer;
 import rx.Subscription;
 import rx.functions.Action1;
 import timber.log.Timber;
-
-import static com.pushtorefresh.storio.sample.ui.Toasts.safeShowShortToast;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 public class TweetsFragment extends BaseFragment {
 
@@ -47,7 +43,7 @@ public class TweetsFragment extends BaseFragment {
 
     UiStateController uiStateController;
 
-    @Bind(R.id.tweets_recycler_view)
+    @BindView(R.id.tweets_recycler_view)
     RecyclerView recyclerView;
 
     TweetsAdapter tweetsAdapter;
