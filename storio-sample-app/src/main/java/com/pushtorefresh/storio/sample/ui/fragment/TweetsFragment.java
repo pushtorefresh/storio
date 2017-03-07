@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,7 +22,6 @@ import com.pushtorefresh.storio.sample.SampleApp;
 import com.pushtorefresh.storio.sample.db.entities.Tweet;
 import com.pushtorefresh.storio.sample.db.tables.TweetsTable;
 import com.pushtorefresh.storio.sample.sample_code.Relations;
-import com.pushtorefresh.storio.sample.ui.DividerItemDecoration;
 import com.pushtorefresh.storio.sample.ui.UiStateController;
 import com.pushtorefresh.storio.sample.ui.adapter.TweetsAdapter;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
@@ -70,7 +70,7 @@ public class TweetsFragment extends BaseFragment {
         recyclerView.setAdapter(tweetsAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
 
         uiStateController = new UiStateController.Builder()
                 .withLoadingUi(view.findViewById(R.id.tweets_loading_ui))
