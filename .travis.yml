@@ -22,6 +22,9 @@ script:
 after_success:
   - codecov
 
+after_failure:
+  - cat storio-basic-sample-app/build/reports/lint-results.xml
+
 notifications:
   email:
     recipients:
