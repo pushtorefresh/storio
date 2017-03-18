@@ -34,7 +34,7 @@ allprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
+    gradleVersion = '3.3'
 }
 
 ext {
@@ -43,7 +43,7 @@ ext {
     minSdkVersion = 14
 }
 
-def supportLibsVersion = '25.2.0'
+def supportLibsVersion = '25.3.0'
 def daggerVersion = '2.9'
 
 ext.libraries = [
