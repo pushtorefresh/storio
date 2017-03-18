@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.InternalQueries.nonNullSet;
 import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullList;
 import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullSet;
 
@@ -50,6 +51,18 @@ public final class RawQuery {
             @Nullable Set<String> observesTables,
             @Nullable Set<String> observesTags
     ) {
+        if (affectsTags != null) {
+            for (String tag : affectsTags) {
+                checkNotEmpty(tag, "affectsTag must not be null or empty, affectsTags = " + affectsTags);
+            }
+        }
+
+        if (observesTags != null) {
+            for (String tag : observesTags) {
+                checkNotEmpty(tag, "observesTag must not be null or empty, observesTags = " + observesTags);
+            }
+        }
+
         this.query = query;
         this.args = unmodifiableNonNullList(args);
         this.affectsTables = unmodifiableNonNullSet(affectsTables);
@@ -324,20 +337,14 @@ public final class RawQuery {
          * <p>
          * Default value is {@code null}.
          *
-         * @param tags set of tags which will be affected by this query.
+         * @param tag the first required tag which will be affected by this query.
+         * @param tags optional set of tags which will be affected by this query.
          * @return builder.
          * @see RawQuery#affectsTables()
          */
         @NonNull
-        public CompleteBuilder affectsTags(@NonNull String... tags) {
-            if (affectsTags == null) {
-                affectsTags = new HashSet<String>(tags.length);
-            } else {
-                affectsTags.clear();
-            }
-
-            Collections.addAll(affectsTags, tags);
-
+        public CompleteBuilder affectsTags(@NonNull String tag, @Nullable String... tags) {
+            affectsTags = nonNullSet(tag, tags);
             return this;
         }
 
@@ -352,15 +359,8 @@ public final class RawQuery {
          * @see RawQuery#affectsTables()
          */
         @NonNull
-        public CompleteBuilder affectsTags(@NonNull Collection<String> tags) {
-            if (affectsTags == null) {
-                affectsTags = new HashSet<String>(tags.size());
-            } else {
-                affectsTags.clear();
-            }
-
-            affectsTags.addAll(tags);
-
+        public CompleteBuilder affectsTags(@Nullable Collection<String> tags) {
+            affectsTags = nonNullSet(tags);
             return this;
         }
 
@@ -416,20 +416,14 @@ public final class RawQuery {
          * <p>
          * Default values is {@code null}.
          *
-         * @param tags set of tags that should be observed by this query.
+         * @param tag the first required tag which should be observed by this query.
+         * @param tags optional set of tags which should be observed by this query.
          * @return builder.
          * @see RawQuery#observesTags()
          */
         @NonNull
-        public CompleteBuilder observesTags(@NonNull String... tags) {
-            if (observesTags == null) {
-                observesTags = new HashSet<String>(tags.length);
-            } else {
-                observesTags.clear();
-            }
-
-            Collections.addAll(this.observesTags, tags);
-
+        public CompleteBuilder observesTags(@NonNull String tag, @Nullable String... tags) {
+            observesTags = nonNullSet(tag, tags);
             return this;
         }
 
@@ -444,15 +438,8 @@ public final class RawQuery {
          * @see RawQuery#observesTables()
          */
         @NonNull
-        public CompleteBuilder observesTags(@NonNull Collection<String> tags) {
-            if (observesTags == null) {
-                observesTags = new HashSet<String>(tags.size());
-            } else {
-                observesTags.clear();
-            }
-
-            observesTags.addAll(tags);
-
+        public CompleteBuilder observesTags(@Nullable Collection<String> tags) {
+            observesTags = nonNullSet(tags);
             return this;
         }
 

@@ -14,9 +14,11 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import rx.functions.Func1;
 
+import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Matchers.any;
@@ -59,11 +61,11 @@ public class DefaultPutResolverTest {
         when(lowLevel.insert(any(InsertQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedInsertedId);
 
-        final String tag = "affected_tag";
+        final Set<String> tags = singleton("test_tag");
 
         final InsertQuery expectedInsertQuery = InsertQuery.builder()
                 .table(TestItem.TABLE)
-                .tag(tag)
+                .affectsTags(tags)
                 .nullColumnHack(null)
                 .build();
 
@@ -126,7 +128,7 @@ public class DefaultPutResolverTest {
         assertThat(putResult.numberOfRowsUpdated()).isNull();
         
         assertThat(putResult.affectedTables()).containsExactly(TestItem.TABLE);
-        assertThat(putResult.affectedTags()).containsExactly(tag);
+        assertThat(putResult.affectedTags()).isEqualTo(tags);
     }
 
     /**
@@ -160,11 +162,11 @@ public class DefaultPutResolverTest {
         when(internal.update(any(UpdateQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedNumberOfRowsUpdated);
 
-        final String tag = "affected_tag";
+        final Set<String> tags = singleton("test_tag");
 
         final UpdateQuery expectedUpdateQuery = UpdateQuery.builder()
                 .table(TestItem.TABLE)
-                .tag(tag)
+                .affectsTags(tags)
                 .where(TestItem.COLUMN_ID + " = ?")
                 .whereArgs(testItem.getId())
                 .build();
@@ -225,7 +227,7 @@ public class DefaultPutResolverTest {
         assertThat(putResult.insertedId()).isNull();
 
         assertThat(putResult.affectedTables()).containsExactly(TestItem.TABLE);
-        assertThat(putResult.affectedTags()).containsExactly(tag);
+        assertThat(putResult.affectedTags()).isEqualTo(tags);
     }
 
     private static class TestItem {

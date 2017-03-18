@@ -3,11 +3,12 @@ package com.pushtorefresh.storio.sqlite.operations.delete;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Set;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.internal.InternalQueries.nonNullSet;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableSet;
 
@@ -29,7 +30,7 @@ public final class DeleteResult {
     private DeleteResult(
             int numberOfRowsDeleted,
             @NonNull Set<String> affectedTables,
-            @Nullable Set<String> affectedTags
+            @NonNull Set<String> affectedTags
     ) {
         checkNotNull(affectedTables, "Please specify affected tables");
 
@@ -37,15 +38,13 @@ public final class DeleteResult {
             checkNotEmpty(table, "affectedTable must not be null or empty, affectedTables = " + affectedTables);
         }
 
-        if (affectedTags != null) {
-            for (String tag : affectedTags) {
-                checkNotEmpty(tag, "affectedTag must not be null or empty, affectedTags = " + affectedTags);
-            }
+        for (String tag : affectedTags) {
+            checkNotEmpty(tag, "affectedTag must not be null or empty, affectedTags = " + affectedTags);
         }
 
         this.numberOfRowsDeleted = numberOfRowsDeleted;
-        this.affectedTables = Collections.unmodifiableSet(affectedTables);
-        this.affectedTags = affectedTags == null ? Collections.<String>emptySet() : unmodifiableSet(affectedTags);
+        this.affectedTables = unmodifiableSet(affectedTables);
+        this.affectedTags = unmodifiableSet(affectedTags);
     }
 
     /**
@@ -60,9 +59,9 @@ public final class DeleteResult {
     public static DeleteResult newInstance(
             int numberOfRowsDeleted,
             @NonNull Set<String> affectedTables,
-            @Nullable Set<String> affectedTags
+            @Nullable Collection<String> affectedTags
     ) {
-        return new DeleteResult(numberOfRowsDeleted, affectedTables, affectedTags);
+        return new DeleteResult(numberOfRowsDeleted, affectedTables, nonNullSet(affectedTags));
     }
 
     /**
@@ -70,11 +69,16 @@ public final class DeleteResult {
      *
      * @param numberOfRowsDeleted number of rows that were deleted.
      * @param affectedTables      tables that were affected.
+     * @param affectedTags        notification tags that were affected.
      * @return new instance of immutable container for result of Delete Operation.
      */
     @NonNull
-    public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull Set<String> affectedTables) {
-        return newInstance(numberOfRowsDeleted, affectedTables, null);
+    public static DeleteResult newInstance(
+            int numberOfRowsDeleted,
+            @NonNull Set<String> affectedTables,
+            @Nullable String... affectedTags
+    ) {
+        return new DeleteResult(numberOfRowsDeleted, affectedTables, nonNullSet(affectedTags));
     }
 
     /**
@@ -82,18 +86,16 @@ public final class DeleteResult {
      *
      * @param numberOfRowsDeleted number of rows that were deleted.
      * @param affectedTable       table that was affected.
-     * @param affectedTag         notification tag that was affected.
+     * @param affectedTags        notification tags that were affected.
      * @return new instance of immutable container for results of Delete Operation.
      */
     @NonNull
     public static DeleteResult newInstance(
             int numberOfRowsDeleted,
             @NonNull String affectedTable,
-            @Nullable String affectedTag
+            @Nullable Collection<String> affectedTags
     ) {
-        checkNotNull(affectedTable, "Please specify affected table");
-        final Set<String> tags = affectedTag == null ? null : singleton(affectedTag);
-        return newInstance(numberOfRowsDeleted, Collections.singleton(affectedTable), tags);
+        return new DeleteResult(numberOfRowsDeleted, singleton(affectedTable), nonNullSet(affectedTags));
     }
 
     /**
@@ -101,11 +103,17 @@ public final class DeleteResult {
      *
      * @param numberOfRowsDeleted number of rows that were deleted.
      * @param affectedTable       table that was affected.
+     * @param affectedTags        notification tags that were affected.
      * @return new instance of immutable container for results of Delete Operation.
      */
     @NonNull
-    public static DeleteResult newInstance(int numberOfRowsDeleted, @NonNull String affectedTable) {
-        return newInstance(numberOfRowsDeleted, affectedTable, null);
+    public static DeleteResult newInstance(
+            int numberOfRowsDeleted,
+            @NonNull String affectedTable,
+            @Nullable String... affectedTags
+    ) {
+        checkNotNull(affectedTable, "Please specify affected table");
+        return new DeleteResult(numberOfRowsDeleted, singleton(affectedTable), nonNullSet(affectedTags));
     }
 
     /**

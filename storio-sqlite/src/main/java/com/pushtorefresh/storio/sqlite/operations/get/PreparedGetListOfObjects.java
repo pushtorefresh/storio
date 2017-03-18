@@ -11,6 +11,7 @@ import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlock
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.impl.ChangesFilter;
 import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
@@ -180,7 +181,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
         if (query != null) {
             tables = Collections.singleton(query.table());
-            tags = Collections.singleton(query.tag());
+            tags = query.observesTags();
         } else if (rawQuery != null) {
             tables = rawQuery.observesTables();
             tags = rawQuery.observesTags();
@@ -190,7 +191,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
         final Observable<List<T>> observable;
         if (!tables.isEmpty() || !tags.isEmpty()) {
-            observable = storIOSQLite.observeChangesOfTablesAndTags(tables, tags)
+            observable = ChangesFilter.applyForTablesAndTags(storIOSQLite.observeChanges(), tables, tags)
                     .map(MapSomethingToExecuteAsBlocking.newInstance(this))  // each change triggers executeAsBlocking
                     .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
                     .onBackpressureLatest();

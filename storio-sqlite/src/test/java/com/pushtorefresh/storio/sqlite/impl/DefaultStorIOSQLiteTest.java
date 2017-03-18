@@ -27,7 +27,6 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -425,9 +424,11 @@ public class DefaultStorIOSQLiteTest {
     public void observeChangesOfTags_shouldReceiveIfObservedTagExistInChanges() {
         TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
+        String tag1 = "tag1";
+        String tag2 = "tag2";
         Set<String> tags = new HashSet<String>(2);
-        tags.add("tag1");
-        tags.add("tag2");
+        tags.add(tag1);
+        tags.add(tag2);
 
         storIOSQLite
                 .observeChangesOfTags(tags)
@@ -435,7 +436,7 @@ public class DefaultStorIOSQLiteTest {
 
         testSubscriber.assertNoValues();
 
-        Changes changes = Changes.newInstance("table1", "tag1");
+        Changes changes = Changes.newInstance("table1", tag1);
 
         storIOSQLite
                 .lowLevel()
@@ -468,195 +469,6 @@ public class DefaultStorIOSQLiteTest {
     }
 
     @Test
-    public void observeChangesInTables_shouldNotReceiveChangesOfTagsWithSameName() {
-        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
-
-        storIOSQLite
-                .observeChangesInTables(Collections.singleton("shared_text"))
-                .subscribe(testSubscriber);
-
-        Changes changes = Changes.newInstance("some_table", "shared_text");
-
-        storIOSQLite
-                .lowLevel()
-                .notifyAboutChanges(changes);
-
-        testSubscriber.assertNoValues();
-        testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
-    }
-
-    @Test
-    public void observeChangesInTable_shouldNotReceiveChangeOfTagWithSameName() {
-        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
-
-        storIOSQLite
-                .observeChangesInTable("shared_text")
-                .subscribe(testSubscriber);
-
-        Changes changes = Changes.newInstance("some_table", "shared_text");
-
-        storIOSQLite
-                .lowLevel()
-                .notifyAboutChanges(changes);
-
-        testSubscriber.assertNoValues();
-        testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
-    }
-
-    @Test
-    public void observeChangesOfTags_shouldNotReceiveChangesInTablesWithSameName() {
-        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
-
-        storIOSQLite
-                .observeChangesOfTags(Collections.singleton("shared_text"))
-                .subscribe(testSubscriber);
-
-        Changes changes = Changes.newInstance("shared_text", "some_tag");
-
-        storIOSQLite
-                .lowLevel()
-                .notifyAboutChanges(changes);
-
-        testSubscriber.assertNoValues();
-        testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
-    }
-
-    @Test
-    public void observeChangesOfTag_shouldNotReceiveChangeInTableWithSameName() {
-        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
-
-        storIOSQLite
-                .observeChangesOfTag("shared_text")
-                .subscribe(testSubscriber);
-
-        Changes changes = Changes.newInstance("shared_text", "some_tag");
-
-        storIOSQLite
-                .lowLevel()
-                .notifyAboutChanges(changes);
-
-        testSubscriber.assertNoValues();
-        testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
-    }
-
-    @Test
-    public void observeChangesOfTablesAndTags_shouldReceiveIfObservedTableExistInChanges() {
-        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
-
-        Set<String> tables = new HashSet<String>(2);
-        tables.add("table1");
-        tables.add("table2");
-
-        Set<String> tags = new HashSet<String>(2);
-        tags.add("tag3");
-        tags.add("tag4");
-
-        storIOSQLite
-                .observeChangesOfTablesAndTags(tables, tags)
-                .subscribe(testSubscriber);
-
-        testSubscriber.assertNoValues();
-
-        Changes changes = Changes.newInstance("table1", "tag1");
-
-        storIOSQLite
-                .lowLevel()
-                .notifyAboutChanges(changes);
-
-        testSubscriber.assertValues(changes);
-        testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
-    }
-
-    @Test
-    public void observeChangesOfTablesAndTags_shouldReceiveIfObservedTagExistInChanges() {
-        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
-
-        Set<String> tables = new HashSet<String>(2);
-        tables.add("table1");
-        tables.add("table2");
-
-        Set<String> tags = new HashSet<String>(2);
-        tags.add("tag3");
-        tags.add("tag4");
-
-        storIOSQLite
-                .observeChangesOfTablesAndTags(tables, tags)
-                .subscribe(testSubscriber);
-
-        testSubscriber.assertNoValues();
-
-        Changes changes = Changes.newInstance("table3", "tag3");
-
-        storIOSQLite
-                .lowLevel()
-                .notifyAboutChanges(changes);
-
-        testSubscriber.assertValues(changes);
-        testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
-    }
-
-    @Test
-    public void observeChangesOfTablesAndTags_shouldNotReceiveIfObservedTableAndTagDoesNotExistInChanges() {
-        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
-
-        Set<String> tables = new HashSet<String>(2);
-        tables.add("table1");
-        tables.add("table2");
-
-        Set<String> tags = new HashSet<String>(2);
-        tags.add("tag3");
-        tags.add("tag4");
-
-        storIOSQLite
-                .observeChangesOfTablesAndTags(tables, tags)
-                .subscribe(testSubscriber);
-
-        storIOSQLite
-                .lowLevel()
-                .notifyAboutChanges(Changes.newInstance("table5", "tag5"));
-
-        testSubscriber.assertNoValues();
-        testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
-    }
-
-    @Test
-    public void observeChangesOfTablesAndTags_shouldBeNotifiedJustOnceIfBothTableAndTagExistInChanges() {
-        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
-
-        Set<String> tables = new HashSet<String>(2);
-        tables.add("table1");
-        tables.add("table2");
-
-        Set<String> tags = new HashSet<String>(2);
-        tags.add("tag2");
-        tags.add("tag3");
-
-        storIOSQLite
-                .observeChangesOfTablesAndTags(tables, tags)
-                .subscribe(testSubscriber);
-
-        testSubscriber.assertNoValues();
-
-        Changes changes = Changes.newInstance("table2", "tag2");
-
-        storIOSQLite
-                .lowLevel()
-                .notifyAboutChanges(changes);
-
-        testSubscriber.assertValueCount(1);
-        testSubscriber.assertValues(changes);
-        testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
-    }
-
-    @Test
     public void observeChangesInTable_shouldNotAcceptNullAsTable() {
         expectedException.expect(NullPointerException.class);
         expectedException.expectMessage("Table can not be null or empty");
@@ -677,23 +489,12 @@ public class DefaultStorIOSQLiteTest {
     }
 
     @Test
-    public void observeChangesOfTableAndTag_shouldNotAcceptNullAsTable() {
-        expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage("Table can not be null or empty");
-        expectedException.expectCause(nullValue(Throwable.class));
-
-        //noinspection ConstantConditions
-        storIOSQLite.observeChangesOfTableAndTag(null, "tag");
-    }
-
-    @Test
-    public void observeChangesOfTableAndTag_shouldNotAcceptNullAsTag() {
-        expectedException.expect(NullPointerException.class);
+    public void observeChangeOfTag_shouldNotAcceptEmptyTag() {
+        expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Tag can not be null or empty");
         expectedException.expectCause(nullValue(Throwable.class));
 
-        //noinspection ConstantConditions
-        storIOSQLite.observeChangesOfTableAndTag("table", null);
+        storIOSQLite.observeChangesOfTag("");
     }
 
     @Test
@@ -730,34 +531,6 @@ public class DefaultStorIOSQLiteTest {
 
         // Subscriber should not see changes of table2 and table3
         testSubscriber.assertValue(changes2);
-        testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
-    }
-
-    @Test
-    public void observeChangesOfTableAndTag() {
-        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
-
-        storIOSQLite
-                .observeChangesOfTableAndTag("table1", "tag1")
-                .subscribe(testSubscriber);
-
-        testSubscriber.assertNoValues();
-
-        Changes changes1 = Changes.newInstance("table1", "another_tag");
-        Changes changes2 = Changes.newInstance("another_table", "tag1");
-        Changes changes3 = Changes.newInstance("table1", "tag1");
-        Changes changes4 = Changes.newInstance("another_table", "another_tag");
-
-        StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
-        lowLevel.notifyAboutChanges(changes1);
-        lowLevel.notifyAboutChanges(changes2);
-        lowLevel.notifyAboutChanges(changes3);
-        lowLevel.notifyAboutChanges(changes4);
-
-        // Subscriber should not see changes 4
-        testSubscriber.assertValueCount(3);
-        testSubscriber.assertValues(changes1, changes2, changes3);
         testSubscriber.assertNoErrors();
         testSubscriber.unsubscribe();
     }

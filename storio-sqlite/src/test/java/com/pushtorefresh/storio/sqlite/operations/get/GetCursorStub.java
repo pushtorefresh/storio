@@ -13,7 +13,6 @@ import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
 
-import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -55,7 +54,7 @@ class GetCursorStub {
         query = Query
                 .builder()
                 .table(table)
-                .tag(tag)
+                .observesTags(tag)
                 .build();
 
         rawQuery = RawQuery
@@ -71,8 +70,7 @@ class GetCursorStub {
         when(storIOSQLite.get())
                 .thenReturn(new PreparedGet.Builder(storIOSQLite));
 
-        when(storIOSQLite.observeChangesOfTablesAndTags(singleton(table), singleton(tag)))
-                .thenReturn(Observable.<Changes>empty());
+        when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
         assertThat(rawQuery.observesTables()).isNotNull();
 
@@ -104,7 +102,7 @@ class GetCursorStub {
                     @Override
                     public void call(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOSQLite).observeChangesOfTablesAndTags(singleton(query.table()), singleton(query.tag()));
+                        verify(storIOSQLite).observeChanges();
                         verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehaviorForCursor(cursor);
                     }
@@ -142,7 +140,7 @@ class GetCursorStub {
                     @Override
                     public void call(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOSQLite).observeChangesOfTablesAndTags(rawQuery.observesTables(), rawQuery.observesTags());
+                        verify(storIOSQLite).observeChanges();
                         verify(storIOSQLite).defaultScheduler();
                         verifyRawQueryBehaviorForCursor(cursor);
                     }

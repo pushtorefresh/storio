@@ -6,12 +6,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
+import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -52,6 +52,16 @@ public class DeleteResultTest {
     }
 
     @Test
+    public void nullAffectedTag() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(startsWith("affectedTag must not be null or empty, affectedTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        DeleteResult.newInstance(0, "table", (String) null);
+    }
+
+    @Test
     public void emptyAffectedTag() {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage(startsWith("affectedTag must not be null or empty, affectedTags = "));
@@ -69,13 +79,7 @@ public class DeleteResultTest {
     @Test
     public void oneAffectedTable() {
         final DeleteResult deleteResult = DeleteResult.newInstance(2, "test_table");
-        assertThat(deleteResult.affectedTables()).isEqualTo(Collections.singleton("test_table"));
-    }
-
-    @Test
-    public void oneAffectedTag() {
-        final DeleteResult deleteResult = DeleteResult.newInstance(2, "test_table", "test_tag");
-        assertThat(deleteResult.affectedTags()).isEqualTo(Collections.singleton("test_tag"));
+        assertThat(deleteResult.affectedTables()).isEqualTo(singleton("test_table"));
     }
 
     @Test
@@ -90,12 +94,18 @@ public class DeleteResultTest {
     }
 
     @Test
-    public void multipleAffectedTags() {
+    public void affectedTagVarArg() {
+        final DeleteResult deleteResult = DeleteResult.newInstance(2, "test_table", "test_tag");
+        assertThat(deleteResult.affectedTags()).isEqualTo(singleton("test_tag"));
+    }
+
+    @Test
+    public void affectedTagsCollection() {
         final Set<String> affectedTags = new HashSet<String>();
         affectedTags.add("tag1");
         affectedTags.add("tag2");
 
-        final DeleteResult deleteResult = DeleteResult.newInstance(2, Collections.singleton("table1"), affectedTags);
+        final DeleteResult deleteResult = DeleteResult.newInstance(2, singleton("table1"), affectedTags);
 
         assertThat(deleteResult.affectedTags()).isEqualTo(affectedTags);
     }

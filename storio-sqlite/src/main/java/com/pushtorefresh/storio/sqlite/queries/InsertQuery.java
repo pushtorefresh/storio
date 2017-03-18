@@ -3,7 +3,12 @@ package com.pushtorefresh.storio.sqlite.queries;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Collection;
+import java.util.Set;
+
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.InternalQueries.nonNullSet;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullSet;
 
 /**
  * Insert query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
@@ -18,8 +23,8 @@ public final class InsertQuery {
     @Nullable
     private final String nullColumnHack;
 
-    @Nullable
-    private final String tag;
+    @NonNull
+    private final Set<String> affectsTags;
 
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.queries.InsertQuery.Builder}
@@ -28,11 +33,17 @@ public final class InsertQuery {
     private InsertQuery(
             @NonNull String table,
             @Nullable String nullColumnHack,
-            @Nullable String tag
+            @Nullable Set<String> affectsTags
     ) {
+        if (affectsTags != null) {
+            for (String tag : affectsTags) {
+                checkNotEmpty(tag, "affectsTag must not be null or empty, affectsTags = " + affectsTags);
+            }
+        }
+
         this.table = table;
         this.nullColumnHack = nullColumnHack;
-        this.tag = tag;
+        this.affectsTags = unmodifiableNonNullSet(affectsTags);
     }
 
     /**
@@ -64,13 +75,15 @@ public final class InsertQuery {
     }
 
     /**
-     * Gets notification tag name.
+     * Gets optional immutable set of tags which will be affected by this query.
+     * <p>
+     * They will be used to notify observers of that tags.
      *
-     * @return nullable notification tag.
+     * @return non-null, immutable set of tags, affected by this query.
      */
-    @Nullable
-    public String tag() {
-        return tag;
+    @NonNull
+    public Set<String> affectsTags() {
+        return affectsTags;
     }
 
     /**
@@ -94,15 +107,14 @@ public final class InsertQuery {
         if (!table.equals(that.table)) return false;
         if (nullColumnHack != null ? !nullColumnHack.equals(that.nullColumnHack) : that.nullColumnHack != null)
             return false;
-        return tag != null ? tag.equals(that.tag) : that.tag == null;
-
+        return affectsTags.equals(that.affectsTags);
     }
 
     @Override
     public int hashCode() {
         int result = table.hashCode();
         result = 31 * result + (nullColumnHack != null ? nullColumnHack.hashCode() : 0);
-        result = 31 * result + (tag != null ? tag.hashCode() : 0);
+        result = 31 * result + affectsTags.hashCode();
         return result;
     }
 
@@ -111,7 +123,7 @@ public final class InsertQuery {
         return "InsertQuery{" +
                 "table='" + table + '\'' +
                 ", nullColumnHack='" + nullColumnHack + '\'' +
-                ", tag='" + tag + '\'' +
+                ", affectsTags='" + affectsTags + '\'' +
                 '}';
     }
 
@@ -161,7 +173,7 @@ public final class InsertQuery {
         private String nullColumnHack;
 
         @Nullable
-        private String tag;
+        private Set<String> affectsTags;
 
         CompleteBuilder(@NonNull String table) {
             this.table = table;
@@ -170,7 +182,7 @@ public final class InsertQuery {
         CompleteBuilder(@NonNull InsertQuery insertQuery) {
             this.table = insertQuery.table;
             this.nullColumnHack = insertQuery.nullColumnHack;
-            this.tag = insertQuery.tag;
+            this.affectsTags = insertQuery.affectsTags;
         }
 
         /**
@@ -208,17 +220,33 @@ public final class InsertQuery {
         }
 
         /**
-         * Optional: Specifies notification tag to provide detailed information
+         * Optional: Specifies set of notification tags to provide detailed information
          * about which particular change were occurred.
          *
-         * @param tag nullable notification tag name.
+         * @param tag the first required tag which will be affected by this query.
+         * @param tags optional set of tags which will be affected by this query.
          * @return builder.
-         * @see InsertQuery#tag()
+         * @see InsertQuery#affectsTags()
          * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
          */
         @NonNull
-        public CompleteBuilder tag(@Nullable String tag) {
-            this.tag = tag;
+        public CompleteBuilder affectsTags(@NonNull String tag, @Nullable String... tags) {
+            affectsTags = nonNullSet(tag, tags);
+            return this;
+        }
+
+        /**
+         * Optional: Specifies set of notification tags to provide detailed information
+         * about which particular change were occurred.
+         *
+         * @param tags set of tags which will be affected by this query.
+         * @return builder.
+         * @see InsertQuery#affectsTags()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder affectsTags(@Nullable Collection<String> tags) {
+            affectsTags = nonNullSet(tags);
             return this;
         }
 
@@ -232,7 +260,7 @@ public final class InsertQuery {
             return new InsertQuery(
                     table,
                     nullColumnHack,
-                    tag
+                    affectsTags
             );
         }
     }

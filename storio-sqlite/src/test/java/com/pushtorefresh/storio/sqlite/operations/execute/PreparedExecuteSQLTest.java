@@ -11,6 +11,7 @@ import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 import org.junit.Test;
 
 import java.util.HashSet;
+import java.util.List;
 
 import rx.Observable;
 import rx.Single;
@@ -144,7 +145,7 @@ public class PreparedExecuteSQLTest {
 
         private final String[] affectedTables = {"test_table1", "test_table2"};
 
-        private final String[] affectedTags = {"test_tag1", "test_tag2"};
+        private final List<String> affectedTags = asList("test_tag1", "test_tag2");
 
         @NonNull
         public static Stub newInstanceWithoutNotification() {
@@ -195,7 +196,7 @@ public class PreparedExecuteSQLTest {
             if (queryWithNotification) {
                 final Changes changes = Changes.newInstance(
                         new HashSet<String>(asList(affectedTables)),
-                        new HashSet<String>(asList(affectedTags))
+                        new HashSet<String>(affectedTags)
                 );
                 verify(internal).notifyAboutChanges(changes);
             } else {

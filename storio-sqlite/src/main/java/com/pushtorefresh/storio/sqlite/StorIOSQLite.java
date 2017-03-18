@@ -25,7 +25,6 @@ import rx.Observable;
 import rx.Scheduler;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
-import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
 /**
  * Powerful but simple abstraction for {@link android.database.sqlite.SQLiteDatabase}.
@@ -147,8 +146,8 @@ public abstract class StorIOSQLite implements Closeable {
     /**
      * Allows observe changes of required tags.
      * <p/>
-     * Tags are the addition level of notifications that provides
-     * more detailed information about of which particular changes were occurred.
+     * Tags are optional meta information that you can attach to Changes object
+     * to have more fine-grained control over observing changes in the database.
      * <p/>
      * Notice that {@link StorIOSQLite} knows only about changes
      * that happened as a result of Put or Delete Operations executed
@@ -171,8 +170,8 @@ public abstract class StorIOSQLite implements Closeable {
     /**
      * Allows observer changes of required tag.
      * <p/>
-     * Tags are the addition level of notifications that provides
-     * more detailed information about which particular changes were occurred.
+     * Tags are optional meta information that you can attach to Changes object
+     * to have more fine-grained control over observing changes in the database.
      * <p/>
      * Notice that {@link StorIOSQLite} knows only about changes
      * that happened as a result of Put or Delete Operations executed
@@ -186,66 +185,13 @@ public abstract class StorIOSQLite implements Closeable {
      * that you should manually unsubscribe from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
-     * @param tag tag name to monitor.
+     * @param tag tag to monitor.
      * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required tag.
      */
     @NonNull
     public Observable<Changes> observeChangesOfTag(@NonNull String tag) {
-        checkNotNull(tag, "Tag can not be null or empty");
+        checkNotEmpty(tag, "Tag can not be null or empty");
         return observeChangesOfTags(Collections.singleton(tag));
-    }
-
-
-    /**
-     * Allows observe changes of required tables and tags.
-     * <p/>
-     * Notice that {@link StorIOSQLite} knows only about changes
-     * that happened as a result of Put or Delete Operations executed
-     * on this instance of {@link StorIOSQLite}.
-     * <p/>
-     * Emission may happen on any thread that performed Put or Delete operation,
-     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
-     * if you need to receive events on a special thread.
-     * <p/>
-     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
-     * Also, it can cause BackPressure problems.
-     *
-     * @param tags set of tags that should be monitored.
-     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required tags.
-     */
-    @NonNull
-    public abstract Observable<Changes> observeChangesOfTablesAndTags(
-            @NonNull Set<String> tables,
-            @NonNull Set<String> tags
-    );
-
-    /**
-     * Allows observer changes of required table and tag.
-     * <p/>
-     * Tags are the addition level of notifications that provides
-     * more detailed information about which particular changes were occurred.
-     * <p/>
-     * Notice that {@link StorIOSQLite} knows only about changes
-     * that happened as a result of Put or Delete Operations executed
-     * on this instance of {@link StorIOSQLite}.
-     * <p/>
-     * Emission may happen on any thread that performed Put or Delete operation,
-     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
-     * if you need to receive events on a special thread.
-     * <p/>
-     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
-     * Also, it can cause BackPressure problems.
-     *
-     * @param tag tag name to monitor.
-     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required tag.
-     */
-    @NonNull
-    public Observable<Changes> observeChangesOfTableAndTag(@NonNull String table, @NonNull String tag) {
-        checkNotNull(table, "Table can not be null or empty");
-        checkNotNull(tag, "Tag can not be null or empty");
-        return observeChangesOfTablesAndTags(Collections.singleton(table), Collections.singleton(tag));
     }
 
     /**

@@ -14,12 +14,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
 
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -55,7 +57,7 @@ class PutObjectsStub {
     private final boolean withTypeMapping, useTransaction;
 
     @NonNull
-    private final String affectedTag = "test_tag";
+    private final Set<String> affectedTags = singleton("test_tag");
 
     @SuppressWarnings("unchecked")
     private PutObjectsStub(boolean withTypeMapping, boolean useTransaction, int numberOfItems) {
@@ -78,7 +80,7 @@ class PutObjectsStub {
             final TestItem testItem = TestItem.newInstance();
             items.add(testItem);
 
-            final PutResult putResult = PutResult.newInsertResult(1, TestItem.TABLE, affectedTag);
+            final PutResult putResult = PutResult.newInsertResult(1, TestItem.TABLE, affectedTags);
 
             itemsToPutResultsMap.put(testItem, putResult);
         }
@@ -242,7 +244,7 @@ class PutObjectsStub {
 
             // if put() operation used transaction, only one notification should be thrown
             verify(internal)
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTag)));
+                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTags)));
         } else {
             verify(internal, never()).beginTransaction();
             verify(internal, never()).setTransactionSuccessful();
@@ -251,7 +253,7 @@ class PutObjectsStub {
             // if put() operation didn't use transaction,
             // number of notifications should be equal to number of objects
             verify(internal, times(items.size()))
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTag)));
+                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTags)));
         }
     }
 }

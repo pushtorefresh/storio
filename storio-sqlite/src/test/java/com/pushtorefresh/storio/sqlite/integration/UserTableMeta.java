@@ -39,7 +39,7 @@ public class UserTableMeta {
 
     static final DeleteQuery DELETE_QUERY_ALL = DeleteQuery.builder()
             .table(TABLE)
-            .tag(NOTIFICATION_TAG)
+            .affectsTags(NOTIFICATION_TAG)
             .build();
 
     static final PutResolver<User> PUT_RESOLVER = new DefaultPutResolver<User>() {
@@ -48,7 +48,7 @@ public class UserTableMeta {
         protected InsertQuery mapToInsertQuery(@NonNull User user) {
             return InsertQuery.builder()
                     .table(TABLE)
-                    .tag(NOTIFICATION_TAG)
+                    .affectsTags(NOTIFICATION_TAG)
                     .build();
         }
 
@@ -59,7 +59,7 @@ public class UserTableMeta {
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(user.id())
-                    .tag(NOTIFICATION_TAG)
+                    .affectsTags(NOTIFICATION_TAG)
                     .build();
         }
 
@@ -106,7 +106,7 @@ public class UserTableMeta {
                     .table(TABLE)
                     .where(COLUMN_ID + " = ?")
                     .whereArgs(user.id())
-                    .tag(NOTIFICATION_TAG)
+                    .affectsTags(NOTIFICATION_TAG)
                     .build();
         }
     };

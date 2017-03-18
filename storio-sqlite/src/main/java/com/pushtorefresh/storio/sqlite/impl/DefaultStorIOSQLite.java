@@ -108,19 +108,6 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      * {@inheritDoc}
      */
     @Override
-    @NonNull
-    public Observable<Changes> observeChangesOfTablesAndTags(
-            @NonNull Set<String> tables,
-            @NonNull Set<String> tags
-    ) {
-        // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
-        return ChangesFilter.applyForTablesAndTags(observeChanges(), tables, tags);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public Scheduler defaultScheduler() {
         return defaultScheduler;
     }

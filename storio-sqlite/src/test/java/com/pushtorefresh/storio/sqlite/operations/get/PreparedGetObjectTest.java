@@ -13,14 +13,10 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import java.util.Set;
-
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static java.util.Collections.singleton;
-import static java.util.Collections.unmodifiableSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
@@ -260,15 +256,14 @@ public class PreparedGetObjectTest {
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
-            when(storIOSQLite.observeChangesOfTablesAndTags(any(Set.class), any(Set.class)))
-                    .thenReturn(Observable.empty());
+            when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
             final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
 
             storIOSQLite
                     .get()
                     .object(TestItem.class)
-                    .withQuery(Query.builder().table("test_table").tag("test_tag").build())
+                    .withQuery(Query.builder().table("test_table").observesTags("test_tag").build())
                     .prepare()
                     .asRxObservable()
                     .subscribe(testSubscriber);
@@ -280,7 +275,7 @@ public class PreparedGetObjectTest {
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit='', tag='test_tag'}");
+                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit='', observesTags='[test_tag]'}");
 
             assertThat(error.getCause())
                     .hasMessage("This type does not have type mapping: "
@@ -292,10 +287,7 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).defaultScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
-            verify(storIOSQLite).observeChangesOfTablesAndTags(
-                    unmodifiableSet(singleton("test_table")),
-                    unmodifiableSet(singleton("test_tag"))
-            );
+            verify(storIOSQLite).observeChanges();
             verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
@@ -303,10 +295,10 @@ public class PreparedGetObjectTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsSingle() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
 
@@ -325,7 +317,7 @@ public class PreparedGetObjectTest {
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit='', tag='null'}");
+                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit='', observesTags='[]'}");
 
             assertThat(error.getCause())
                     .hasMessage("This type does not have type mapping: "
@@ -335,9 +327,9 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).query(any(Query.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
@@ -564,10 +556,7 @@ public class PreparedGetObjectTest {
         public void cursorMustBeClosedInCaseOfExceptionForObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
 
-            when(storIOSQLite.observeChangesOfTablesAndTags(
-                    singleton("test_table"),
-                    singleton("test_tag"))
-            ).thenReturn(Observable.<Changes>empty());
+            when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
             //noinspection unchecked
             final GetResolver<Object> getResolver = mock(GetResolver.class);
@@ -588,7 +577,7 @@ public class PreparedGetObjectTest {
                     new PreparedGetObject<Object>(
                             storIOSQLite,
                             Object.class,
-                            Query.builder().table("test_table").tag("test_tag").build(),
+                            Query.builder().table("test_table").observesTags("test_tag").build(),
                             getResolver
                     );
 
@@ -611,10 +600,7 @@ public class PreparedGetObjectTest {
             // Cursor must be closed in case of exception
             verify(cursor).close();
 
-            verify(storIOSQLite).observeChangesOfTablesAndTags(
-                    unmodifiableSet(singleton("test_table")),
-                    unmodifiableSet(singleton("test_tag"))
-            );
+            verify(storIOSQLite).observeChanges();
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
             verify(getResolver).mapFromCursor(cursor);
             verify(cursor).getCount();

@@ -21,7 +21,6 @@ import rx.Single;
 import rx.functions.Action1;
 
 import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
-import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -72,7 +71,7 @@ class GetObjectsStub {
         query = Query
                 .builder()
                 .table(table)
-                .tag(tag)
+                .observesTags(tag)
                 .build();
 
         rawQuery = RawQuery
@@ -106,8 +105,7 @@ class GetObjectsStub {
         when(storIOSQLite.get())
                 .thenReturn(new PreparedGet.Builder(storIOSQLite));
 
-        when(storIOSQLite.observeChangesOfTablesAndTags(singleton(table), singleton(tag)))
-                .thenReturn(Observable.<Changes>empty());
+        when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
         assertThat(rawQuery.observesTables()).isNotNull();
 
@@ -195,11 +193,7 @@ class GetObjectsStub {
                     @Override
                     public void call(List<TestItem> testItems) {
                         // Get Operation should be subscribed to changes of tables from query
-                        verify(storIOSQLite).observeChangesOfTablesAndTags(
-                                singleton(query.table()),
-                                singleton(query.tag())
-                        );
-
+                        verify(storIOSQLite).observeChanges();
                         verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehavior(testItems);
                     }
@@ -239,11 +233,7 @@ class GetObjectsStub {
                     @Override
                     public void call(List<TestItem> testItems) {
                         // Get Operation should be subscribed to changes of tables from query
-                        verify(storIOSQLite).observeChangesOfTablesAndTags(
-                                rawQuery.observesTables(),
-                                rawQuery.observesTags()
-                        );
-
+                        verify(storIOSQLite).observeChanges();
                         verifyRawQueryBehavior(testItems);
                     }
                 })

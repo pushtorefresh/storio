@@ -9,12 +9,14 @@ import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
 
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -42,7 +44,7 @@ class PutContentValuesStub {
     private final boolean useTransaction;
 
     @NonNull
-    private final String affectedTag = "test_tag";
+    private final Set<String> affectedTags = singleton("test_tag");
 
     @SuppressWarnings("unchecked")
     private PutContentValuesStub(boolean useTransaction, int numberOfItems) {
@@ -66,7 +68,7 @@ class PutContentValuesStub {
         putResolver = (PutResolver<ContentValues>) mock(PutResolver.class);
 
         when(putResolver.performPut(eq(storIOSQLite), any(ContentValues.class)))
-                .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE, affectedTag));
+                .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE, affectedTags));
     }
 
     @NonNull
@@ -156,7 +158,7 @@ class PutContentValuesStub {
     }
 
     void verifyBehaviorForOneContentValues(@NonNull Completable completable) {
-       verifyBehaviorForOneContentValues(completable.<PutResult>toObservable());
+        verifyBehaviorForOneContentValues(completable.<PutResult>toObservable());
     }
 
     private void verifyTransactionBehavior() {
@@ -167,7 +169,7 @@ class PutContentValuesStub {
 
             // if put() operation used transaction, only one notification should be thrown
             verify(internal)
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTag)));
+                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTags)));
         } else {
             verify(internal, never()).beginTransaction();
             verify(internal, never()).setTransactionSuccessful();
@@ -176,7 +178,7 @@ class PutContentValuesStub {
             // if put() operation didn't use transaction,
             // number of notifications should be equal to number of objects
             verify(internal, times(contentValues.size()))
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTag)));
+                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTags)));
         }
     }
 }

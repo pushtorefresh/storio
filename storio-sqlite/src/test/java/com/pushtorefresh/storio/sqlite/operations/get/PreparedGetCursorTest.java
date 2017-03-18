@@ -14,7 +14,6 @@ import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static java.util.Collections.singleton;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -136,8 +135,7 @@ public class PreparedGetCursorTest {
     public void shouldWrapExceptionIntoStorIOExceptionForObservable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
 
-        when(storIOSQLite.observeChangesOfTablesAndTags(singleton("test_table"), singleton("test_tag")))
-                .thenReturn(Observable.<Changes>empty());
+        when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
         //noinspection unchecked
         final GetResolver<Cursor> getResolver = mock(GetResolver.class);
@@ -148,7 +146,7 @@ public class PreparedGetCursorTest {
         final TestSubscriber<Cursor> testSubscriber = new TestSubscriber<Cursor>();
 
         new PreparedGetCursor.Builder(storIOSQLite)
-                .withQuery(Query.builder().table("test_table").tag("test_tag").build())
+                .withQuery(Query.builder().table("test_table").observesTags("test_tag").build())
                 .withGetResolver(getResolver)
                 .prepare()
                 .asRxObservable()

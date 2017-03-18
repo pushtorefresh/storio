@@ -14,14 +14,11 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
 import java.util.List;
-import java.util.Set;
 
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static java.util.Collections.singleton;
-import static java.util.Collections.unmodifiableSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
@@ -287,15 +284,14 @@ public class PreparedGetListOfObjectsTest {
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
-            when(storIOSQLite.observeChangesOfTablesAndTags(any(Set.class), any(Set.class)))
-                    .thenReturn(Observable.empty());
+            when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
             final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
 
             storIOSQLite
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(Query.builder().table("test_table").tag("test_tag").build())
+                    .withQuery(Query.builder().table("test_table").observesTags("test_tag").build())
                     .prepare()
                     .asRxObservable()
                     .subscribe(testSubscriber);
@@ -311,10 +307,7 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).defaultScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
-            verify(storIOSQLite).observeChangesOfTablesAndTags(
-                    unmodifiableSet(singleton("test_table")),
-                    unmodifiableSet(singleton("test_tag"))
-            );
+            verify(storIOSQLite).observeChanges();
             verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
@@ -524,8 +517,7 @@ public class PreparedGetListOfObjectsTest {
         public void cursorMustBeClosedInCaseOfExceptionForObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
 
-            when(storIOSQLite.observeChangesOfTablesAndTags(singleton("test_table"), singleton("test_tag")))
-                    .thenReturn(Observable.<Changes>empty());
+            when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
             //noinspection unchecked
             final GetResolver<Object> getResolver = mock(GetResolver.class);
@@ -546,7 +538,7 @@ public class PreparedGetListOfObjectsTest {
                     new PreparedGetListOfObjects<Object>(
                             storIOSQLite,
                             Object.class,
-                            Query.builder().table("test_table").tag("test_tag").build(),
+                            Query.builder().table("test_table").observesTags("test_tag").build(),
                             getResolver
                     );
 
@@ -569,10 +561,7 @@ public class PreparedGetListOfObjectsTest {
             // Cursor must be closed in case of exception
             verify(cursor).close();
 
-            verify(storIOSQLite).observeChangesOfTablesAndTags(
-                    unmodifiableSet(singleton("test_table")),
-                    unmodifiableSet(singleton("test_tag"))
-            );
+            verify(storIOSQLite).observeChanges();
 
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
             verify(getResolver).mapFromCursor(cursor);

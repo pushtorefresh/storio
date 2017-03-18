@@ -39,13 +39,13 @@ public class PreparedDeleteByQueryTest {
                     .table("test_table")
                     .where("column1 = ?")
                     .whereArgs(1)
-                    .tag("test_tag")
+                    .affectsTags("test_tag")
                     .build();
 
             //noinspection unchecked
             deleteResolver = mock(DeleteResolver.class);
 
-            expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table(), deleteQuery.tag());
+            expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table(), deleteQuery.affectsTags());
 
             when(deleteResolver.performDelete(same(storIOSQLite), same(deleteQuery)))
                     .thenReturn(expectedDeleteResult);
@@ -54,7 +54,7 @@ public class PreparedDeleteByQueryTest {
         void verifyBehaviour() {
             verify(storIOSQLite).lowLevel();
             verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
-            verify(internal).notifyAboutChanges(Changes.newInstance(deleteQuery.table(), deleteQuery.tag()));
+            verify(internal).notifyAboutChanges(Changes.newInstance(deleteQuery.table(), deleteQuery.affectsTags()));
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
         }
     }

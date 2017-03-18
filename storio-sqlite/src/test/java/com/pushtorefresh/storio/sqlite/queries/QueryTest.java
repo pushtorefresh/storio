@@ -2,41 +2,46 @@ package com.pushtorefresh.storio.sqlite.queries;
 
 import com.pushtorefresh.storio.test.ToStringChecker;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.startsWith;
 
 public class QueryTest {
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Test
     public void shouldNotAllowNullTable() {
-        try {
-            //noinspection ConstantConditions
-            Query.builder()
-                    .table(null);
-            failBecauseExceptionWasNotThrown(NullPointerException.class);
-        } catch (NullPointerException expected) {
-            assertThat(expected)
-                    .hasNoCause()
-                    .hasMessage("Table name is null or empty");
-        }
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(equalTo("Table name is null or empty"));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        Query.builder().table(null);
     }
 
     @Test
     public void shouldNotAllowEmptyTable() {
-        try {
-            Query.builder()
-                    .table("");
-            failBecauseExceptionWasNotThrown(IllegalStateException.class);
-        } catch (IllegalStateException expected) {
-            assertThat(expected)
-                    .hasNoCause()
-                    .hasMessage("Table name is null or empty");
-        }
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage(equalTo("Table name is null or empty"));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        Query.builder().table("");
     }
 
     @Test
@@ -234,7 +239,7 @@ public class QueryTest {
                 .having(having)
                 .orderBy(orderBy)
                 .limit(limit)
-                .tag(tag)
+                .observesTags(tag)
                 .build();
 
         final Query secondQuery = firstQuery.toBuilder().build();
@@ -256,6 +261,39 @@ public class QueryTest {
     }
 
     @Test
+    public void observesTagsCollectionShouldRewrite() {
+        Query query = Query.builder()
+                .table("table")
+                .observesTags(new HashSet<String>((singletonList("first_call_collection"))))
+                .observesTags(new HashSet<String>((singletonList("second_call_collection"))))
+                .build();
+
+        assertThat(query.observesTags()).isEqualTo(singleton("second_call_collection"));
+    }
+
+    @Test
+    public void observesTagsVarargShouldRewrite() {
+        Query query = Query.builder()
+                .table("table")
+                .observesTags("first_call_vararg")
+                .observesTags("second_call_vararg")
+                .build();
+
+        assertThat(query.observesTags()).isEqualTo(singleton("second_call_vararg"));
+    }
+
+    @Test
+    public void observesTagsCollectionAllowsNull() {
+        Query query = Query.builder()
+                .table("table")
+                .observesTags(new HashSet<String>((singletonList("first_call_collection"))))
+                .observesTags(null)
+                .build();
+
+        assertThat(query.observesTags()).isEmpty();
+    }
+
+    @Test
     public void buildWithNormalValues() {
         final String table = "test_table";
         final boolean distinct = true;
@@ -266,7 +304,7 @@ public class QueryTest {
         final String having = "test_having";
         final String orderBy = "test_order_by";
         final String limit = "test_limit";
-        final String tag = "test_tag";
+        final Set<String> tags = singleton("test_tag");
 
         final Query query = Query.builder()
                 .table(table)
@@ -278,7 +316,7 @@ public class QueryTest {
                 .having(having)
                 .orderBy(orderBy)
                 .limit(limit)
-                .tag(tag)
+                .observesTags(tags)
                 .build();
 
         assertThat(query.table()).isEqualTo(table);
@@ -290,7 +328,7 @@ public class QueryTest {
         assertThat(query.having()).isEqualTo(having);
         assertThat(query.orderBy()).isEqualTo(orderBy);
         assertThat(query.limit()).isEqualTo(limit);
-        assertThat(query.tag()).isEqualTo(tag);
+        assertThat(query.observesTags()).isEqualTo(tags);
     }
 
     @Test
@@ -311,6 +349,32 @@ public class QueryTest {
                 .build();
 
         assertThat(query.limit()).isEqualTo("10, 20");
+    }
+
+    @Test
+    public void shouldNotAllowNullTag() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(startsWith("observesTag must not be null or empty, observesTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        Query.builder()
+                .table("table")
+                .observesTags((String) null)
+                .build();
+    }
+
+    @Test
+    public void shouldNotAllowEmptyTag() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage(startsWith("observesTag must not be null or empty, observesTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        Query.builder()
+                .table("table")
+                .observesTags("")
+                .build();
     }
 
     @Test

@@ -17,7 +17,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  * <p>
  * Hides RxJava from ClassLoader via separate class.
  */
-final class ChangesFilter implements Func1<Changes, Boolean> {
+public final class ChangesFilter implements Func1<Changes, Boolean> {
 
     @Nullable
     private final Set<String> tables;
@@ -31,21 +31,21 @@ final class ChangesFilter implements Func1<Changes, Boolean> {
     }
 
     @NonNull
-    static Observable<Changes> applyForTables(@NonNull Observable<Changes> rxBus, @NonNull Set<String> tables) {
+    public static Observable<Changes> applyForTables(@NonNull Observable<Changes> rxBus, @NonNull Set<String> tables) {
         checkNotNull(tables, "Set of tables can not be null");
         return rxBus
                 .filter(new ChangesFilter(tables, null));
     }
 
     @NonNull
-    static Observable<Changes> applyForTags(@NonNull Observable<Changes> rxBus, @NonNull Set<String> tags) {
+    public static Observable<Changes> applyForTags(@NonNull Observable<Changes> rxBus, @NonNull Set<String> tags) {
         checkNotNull(tags, "Set of tags can not be null");
         return rxBus
                 .filter(new ChangesFilter(null, tags));
     }
 
     @NonNull
-    static Observable<Changes> applyForTablesAndTags(
+    public static Observable<Changes> applyForTablesAndTags(
             @NonNull Observable<Changes> rxBus,
             @NonNull Set<String> tables,
             @NonNull Set<String> tags

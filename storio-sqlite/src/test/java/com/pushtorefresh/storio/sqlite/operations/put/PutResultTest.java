@@ -30,7 +30,7 @@ public class PutResultTest {
     private void checkCreateInsertResult(
             long insertedId,
             @NonNull Set<String> affectedTables,
-            @Nullable Set<String> affectedTags,
+            @Nullable Set<?> affectedTags,
             @NonNull PutResult insertResult
     ) {
         assertThat(insertResult.wasInserted()).isTrue();
@@ -137,6 +137,16 @@ public class PutResultTest {
         expectedException.expectCause(nullValue(Throwable.class));
 
         PutResult.newInsertResult(1, "");
+    }
+
+    @Test
+    public void shouldNotCreateInsertResultWithNullAffectedTag() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(startsWith("affectedTag must not be null or empty, affectedTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        PutResult.newInsertResult(1, "table", (String) null);
     }
 
     @Test
@@ -276,6 +286,16 @@ public class PutResultTest {
         expectedException.expectCause(nullValue(Throwable.class));
 
         PutResult.newUpdateResult(1, "");
+    }
+
+    @Test
+    public void shouldNotCreateUpdateResultWithNullAffectedTag() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(startsWith("affectedTag must not be null or empty, affectedTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        PutResult.newUpdateResult(1, "tag", (String) null);
     }
 
     @Test

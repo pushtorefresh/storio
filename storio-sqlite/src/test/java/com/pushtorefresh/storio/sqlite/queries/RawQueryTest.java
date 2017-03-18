@@ -3,9 +3,12 @@ package com.pushtorefresh.storio.sqlite.queries;
 import com.google.common.collect.HashMultiset;
 import com.pushtorefresh.storio.test.ToStringChecker;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.HashSet;
+import java.util.List;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -14,34 +17,32 @@ import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.startsWith;
 
 public class RawQueryTest {
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Test
     public void shouldNotAllowNullQuery() {
-        try {
-            //noinspection ConstantConditions
-            RawQuery.builder()
-                    .query(null);
-            failBecauseExceptionWasNotThrown(NullPointerException.class);
-        } catch (NullPointerException expected) {
-            assertThat(expected)
-                    .hasMessage("Query is null or empty")
-                    .hasNoCause();
-        }
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(equalTo("Query is null or empty"));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        RawQuery.builder().query(null);
     }
 
     @Test
     public void shouldNotAllowEmptyQuery() {
-        try {
-            RawQuery.builder()
-                    .query("");
-            failBecauseExceptionWasNotThrown(IllegalStateException.class);
-        } catch (IllegalStateException expected) {
-            assertThat(expected)
-                    .hasMessage("Query is null or empty")
-                    .hasNoCause();
-        }
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage(equalTo("Query is null or empty"));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        RawQuery.builder().query("");
     }
 
     @Test
@@ -139,21 +140,10 @@ public class RawQueryTest {
     }
 
     @Test
-    public void affectsTagsShouldRewriteCollectionWithVarargOnSecondCall() {
+    public void affectsTagsCollectionShouldRewrite() {
         RawQuery rawQuery = RawQuery.builder()
                 .query("test_query")
                 .affectsTags(new HashSet<String>((singletonList("first_call_collection"))))
-                .affectsTags("second_call_vararg")
-                .build();
-
-        assertThat(rawQuery.affectsTags()).isEqualTo(singleton("second_call_vararg"));
-    }
-
-    @Test
-    public void affectsTagsShouldRewriteVarargWithCollectionOnSecondCall() {
-        RawQuery rawQuery = RawQuery.builder()
-                .query("test_query")
-                .affectsTags("first_call_vararg")
                 .affectsTags(new HashSet<String>((singletonList("second_call_collection"))))
                 .build();
 
@@ -161,7 +151,7 @@ public class RawQueryTest {
     }
 
     @Test
-    public void affectsTagsShouldRewriteOnSecondCallVararg() {
+    public void affectsTagsVarargShouldRewrite() {
         RawQuery rawQuery = RawQuery.builder()
                 .query("test_query")
                 .affectsTags("first_call_vararg")
@@ -172,14 +162,14 @@ public class RawQueryTest {
     }
 
     @Test
-    public void affectsTagsShouldRewriteOnSecondCallCollection() {
+    public void affectsTagsCollectionAllowsNull() {
         RawQuery rawQuery = RawQuery.builder()
                 .query("test_query")
                 .affectsTags(new HashSet<String>((singletonList("first_call_collection"))))
-                .affectsTags(new HashSet<String>((singletonList("second_call_collection"))))
+                .affectsTags(null)
                 .build();
 
-        assertThat(rawQuery.affectsTags()).isEqualTo(singleton("second_call_collection"));
+        assertThat(rawQuery.affectsTags()).isEmpty();
     }
 
     @Test
@@ -227,21 +217,10 @@ public class RawQueryTest {
     }
 
     @Test
-    public void observesTagsShouldRewriteCollectionWithVarargOnSecondCall() {
+    public void observesTagsCollectionShouldRewrite() {
         RawQuery rawQuery = RawQuery.builder()
                 .query("test_query")
                 .observesTags(new HashSet<String>((singletonList("first_call_collection"))))
-                .observesTags("second_call_vararg")
-                .build();
-
-        assertThat(rawQuery.observesTags()).isEqualTo(singleton("second_call_vararg"));
-    }
-
-    @Test
-    public void observesTagsShouldRewriteVarargWithCollectionOnSecondCall() {
-        RawQuery rawQuery = RawQuery.builder()
-                .query("test_query")
-                .observesTags("first_call_vararg")
                 .observesTags(new HashSet<String>((singletonList("second_call_collection"))))
                 .build();
 
@@ -249,7 +228,7 @@ public class RawQueryTest {
     }
 
     @Test
-    public void observesTagsShouldRewriteOnSecondCallVararg() {
+    public void observesTagsVarargShouldRewrite() {
         RawQuery rawQuery = RawQuery.builder()
                 .query("test_query")
                 .observesTags("first_call_vararg")
@@ -260,14 +239,14 @@ public class RawQueryTest {
     }
 
     @Test
-    public void observesTagsShouldRewriteOnSecondCallCollection() {
+    public void observesTagsCollectionAllowsNull() {
         RawQuery rawQuery = RawQuery.builder()
                 .query("test_query")
                 .observesTags(new HashSet<String>((singletonList("first_call_collection"))))
-                .observesTags(new HashSet<String>((singletonList("second_call_collection"))))
+                .observesTags(null)
                 .build();
 
-        assertThat(rawQuery.observesTags()).isEqualTo(singleton("second_call_collection"));
+        assertThat(rawQuery.affectsTags()).isEmpty();
     }
 
     @Test
@@ -314,9 +293,9 @@ public class RawQueryTest {
         final String query = "test_query";
         final Object[] args = {"arg1", "arg2", "arg3"};
         final String[] observesTables = {"table_to_observe_1", "table_to_observe_2"};
-        final String[] observesTags = {"tag_to_observe_1", "tag_to_observe_2"};
+        final List<String> observesTags = asList("tag_to_observe_1", "tag_to_observe_2");
         final String[] affectsTables = {"table_to_affect_1", "table_to_affect_2"};
-        final String[] affectsTags = {"tag_to_affect_1", "tag_to_affect_2"};
+        final List<String> affectsTags = asList("tag_to_affect_1", "tag_to_affect_2");
 
         final RawQuery firstQuery = RawQuery.builder()
                 .query(query)
@@ -349,9 +328,9 @@ public class RawQueryTest {
         final String query = "test_query";
         final Object[] args = {"arg1", "arg2", "arg3"};
         final String[] observesTables = {"table_to_observe_1", "table_to_observe_2"};
-        final String[] observesTags = {"tag_to_observe_1", "tag_to_observe_2"};
+        final List<String> observesTags = asList("tag_to_observe_1", "tag_to_observe_2");
         final String[] affectsTables = {"table_to_affect_1", "table_to_affect_2"};
-        final String[] affectsTags = {"tag_to_affect_1", "tag_to_affect_2"};
+        final List<String> affectsTags = asList("tag_to_affect_1", "tag_to_affect_2");
 
         final RawQuery rawQuery = RawQuery.builder()
                 .query(query)
@@ -365,9 +344,61 @@ public class RawQueryTest {
         assertThat(rawQuery.query()).isEqualTo(query);
         assertThat(rawQuery.args()).isEqualTo(asList(args));
         assertThat(HashMultiset.create(rawQuery.observesTables())).isEqualTo(HashMultiset.create(asList(observesTables)));
-        assertThat(HashMultiset.create(rawQuery.observesTags())).isEqualTo(HashMultiset.create(asList(observesTags)));
+        assertThat(HashMultiset.create(rawQuery.observesTags())).isEqualTo(HashMultiset.create(observesTags));
         assertThat(HashMultiset.create(rawQuery.affectsTables())).isEqualTo(HashMultiset.create(asList(affectsTables)));
-        assertThat(HashMultiset.create(rawQuery.affectsTags())).isEqualTo(HashMultiset.create(asList(affectsTags)));
+        assertThat(HashMultiset.create(rawQuery.affectsTags())).isEqualTo(HashMultiset.create(affectsTags));
+    }
+
+    @Test
+    public void shouldNotAllowNullAffectedTag() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(startsWith("affectsTag must not be null or empty, affectsTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        RawQuery.builder()
+                .query("some query")
+                .affectsTags((String) null)
+                .build();
+    }
+
+    @Test
+    public void shouldNotAllowEmptyAffectedTag() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage(startsWith("affectsTag must not be null or empty, affectsTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        RawQuery.builder()
+                .query("some query")
+                .affectsTags("")
+                .build();
+    }
+
+    @Test
+    public void shouldNotAllowNullObservedTag() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(startsWith("observesTag must not be null or empty, observesTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        RawQuery.builder()
+                .query("some query")
+                .observesTags((String) null)
+                .build();
+    }
+
+    @Test
+    public void shouldNotAllowEmptyObservedTag() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage(startsWith("observesTag must not be null or empty, observesTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        RawQuery.builder()
+                .query("some query")
+                .observesTags("")
+                .build();
     }
 
     @Test
