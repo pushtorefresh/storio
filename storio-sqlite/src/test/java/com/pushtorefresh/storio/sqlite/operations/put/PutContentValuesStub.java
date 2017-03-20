@@ -30,10 +30,10 @@ import static org.mockito.Mockito.when;
 class PutContentValuesStub {
 
     @NonNull
-    final StorIOSQLite storIOSQLite;
+    public final StorIOSQLite storIOSQLite;
 
     @NonNull
-    private final StorIOSQLite.Internal internal;
+    public final StorIOSQLite.LowLevel lowLevel;
 
     @NonNull
     final List<ContentValues> contentValues;
@@ -51,10 +51,9 @@ class PutContentValuesStub {
         this.useTransaction = useTransaction;
 
         storIOSQLite = mock(StorIOSQLite.class);
-        internal = mock(StorIOSQLite.Internal.class);
+        lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel())
-                .thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         when(storIOSQLite.put())
                 .thenReturn(new PreparedPut.Builder(storIOSQLite));
@@ -163,21 +162,21 @@ class PutContentValuesStub {
 
     private void verifyTransactionBehavior() {
         if (useTransaction) {
-            verify(internal).beginTransaction();
-            verify(internal).setTransactionSuccessful();
-            verify(internal).endTransaction();
+            verify(lowLevel).beginTransaction();
+            verify(lowLevel).setTransactionSuccessful();
+            verify(lowLevel).endTransaction();
 
             // if put() operation used transaction, only one notification should be thrown
-            verify(internal)
+            verify(lowLevel)
                     .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTags)));
         } else {
-            verify(internal, never()).beginTransaction();
-            verify(internal, never()).setTransactionSuccessful();
-            verify(internal, never()).endTransaction();
+            verify(lowLevel, never()).beginTransaction();
+            verify(lowLevel, never()).setTransactionSuccessful();
+            verify(lowLevel, never()).endTransaction();
 
             // if put() operation didn't use transaction,
             // number of notifications should be equal to number of objects
-            verify(internal, times(contentValues.size()))
+            verify(lowLevel, times(contentValues.size()))
                     .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTags)));
         }
     }

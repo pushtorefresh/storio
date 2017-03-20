@@ -19,8 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -272,5 +274,28 @@ public class PreparedGetCursorTest {
                 .prepare();
 
         schedulerChecker.checkAsSingle(operation);
+    }
+
+    @Test
+    public void createObservableReturnsAsRxObservable() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+
+        PreparedGetCursor preparedOperation = spy(getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare());
+
+        Observable<Cursor> observable = Observable.just(mock(Cursor.class));
+
+        //noinspection CheckResult
+        doReturn(observable).when(preparedOperation).asRxObservable();
+
+        //noinspection deprecation
+        assertThat(preparedOperation.createObservable()).isEqualTo(observable);
+
+        //noinspection CheckResult
+        verify(preparedOperation).asRxObservable();
     }
 }

@@ -330,5 +330,18 @@ public class InternalQueriesTest {
         assertThat(InternalQueries.nonNullSet(values)).isEqualTo((new HashSet<String>(asList(values))));
     }
 
+    @Test
+    public void nonNullSetWithFirstItemAndNullArray() {
+        assertThat(InternalQueries.nonNullSet("one", null)).isEqualTo((new HashSet<String>(asList("one"))));
+    }
+
+    @Test
+    public void nonNullSetWithFirstItemAndNotEmptyArray() {
+        String[] values = {"two"};
+        assertThat(InternalQueries.nonNullSet("one", values)).isEqualTo((new HashSet<String>() {{
+            add("one");
+            add("two");
+        }}));
+    }
     //endregion}
 }

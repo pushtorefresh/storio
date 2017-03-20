@@ -21,8 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -694,6 +696,28 @@ public class PreparedGetObjectTest {
                     .prepare();
 
             schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void createObservableReturnsAsRxObservable() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
+
+            PreparedGetObject<TestItem> preparedOperation = spy(getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare());
+
+            Observable<TestItem> observable = Observable.just(new TestItem());
+
+            //noinspection CheckResult
+            doReturn(observable).when(preparedOperation).asRxObservable();
+
+            //noinspection deprecation
+            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
+
+            //noinspection CheckResult
+            verify(preparedOperation).asRxObservable();
         }
     }
 }

@@ -103,7 +103,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
 
                         // IMPORTANT: Notifying about change should be done after end of transaction
                         // It'll reduce number of possible deadlock situations
-                        if (!affectedTables.isEmpty()) {
+                        if (!affectedTables.isEmpty() || !affectedTags.isEmpty()) {
                             lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
                         }
                     }
