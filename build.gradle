@@ -39,11 +39,11 @@ task wrapper(type: Wrapper) {
 
 ext {
     buildToolsVersion = '25.0.2'
-    compileSdkVersion = 25
+    compileSdkVersion = 24
     minSdkVersion = 14
 }
 
-def supportLibsVersion = '25.3.0'
+def supportLibsVersion = '24.2.1'
 def daggerVersion = '2.9'
 
 ext.libraries = [
