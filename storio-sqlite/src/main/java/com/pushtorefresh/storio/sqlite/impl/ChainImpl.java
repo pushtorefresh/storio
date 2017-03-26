@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+/**
+ * A concrete interceptor chain that carries the entire interceptor chain:
+ * all user interceptors and finally the database caller.
+ */
 public class ChainImpl implements Interceptor.Chain {
 
     @NonNull

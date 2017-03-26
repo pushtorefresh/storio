@@ -139,6 +139,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         return lowLevel;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public List<Interceptor> interceptors() {
@@ -253,11 +256,11 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * Provides a scheduler on which {@link rx.Observable} / {@link rx.Single}
+         * Optional: Specifies a scheduler on which {@link rx.Observable} / {@link rx.Single}
          * or {@link rx.Completable} will be subscribed.
          * <p/>
          *
-         * @return the scheduler or {@code null} if it isn't needed to apply it.
+         * @return builder.
          * @see com.pushtorefresh.storio.operations.PreparedOperation#asRxObservable()
          * @see com.pushtorefresh.storio.operations.PreparedOperation#asRxSingle()
          * @see com.pushtorefresh.storio.operations.PreparedWriteOperation#asRxCompletable()
@@ -268,6 +271,13 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
             return this;
         }
 
+        /**
+         * Optional: Adds {@link Interceptor} to all database operation.
+         * Multiple interceptors would be called in the order they were added.
+         *
+         * @param interceptor non-null custom implementation of {@link Interceptor}.
+         * @return builder.
+         */
         @NonNull
         public CompleteBuilder addInterceptor(@NonNull Interceptor interceptor) {
             interceptors.add(interceptor);
