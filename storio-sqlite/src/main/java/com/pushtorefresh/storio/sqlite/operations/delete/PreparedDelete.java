@@ -39,12 +39,12 @@ public abstract class PreparedDelete<T> implements PreparedWriteOperation<T> {
     @WorkerThread
     @Nullable
     public final T executeAsBlocking() {
-        return buildChain(storIOSQLite.interceptors(), getRealInterceptor())
+        return buildChain(storIOSQLite.interceptors(), getRealCallInterceptor())
                 .proceed(this);
     }
 
     @NonNull
-    protected abstract Interceptor getRealInterceptor();
+    protected abstract Interceptor getRealCallInterceptor();
 
     /**
      * Builder for {@link PreparedDelete}.

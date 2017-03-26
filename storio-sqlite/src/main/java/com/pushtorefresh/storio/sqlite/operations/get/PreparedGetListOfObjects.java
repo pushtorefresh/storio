@@ -158,11 +158,11 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
 
     @NonNull
     @Override
-    protected Interceptor getRealInterceptor() {
-        return new RealInterceptor();
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
     }
 
-    private class RealInterceptor implements Interceptor {
+    private class RealCallInterceptor implements Interceptor {
         @SuppressWarnings({"TryFinallyCanBeTryWithResources", "unchecked"})
         // Min SDK :( unchecked for empty list
         @NonNull

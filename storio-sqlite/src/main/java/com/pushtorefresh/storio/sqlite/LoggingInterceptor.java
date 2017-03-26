@@ -11,19 +11,25 @@ import java.util.Locale;
 public class LoggingInterceptor implements Interceptor {
 
     @NonNull
-    private final Logger logger;
-
-    public LoggingInterceptor(@NonNull Logger logger) {
-        this.logger = logger;
-    }
-
-    public LoggingInterceptor() {
-        this(new Logger() {
+    public static LoggingInterceptor defaultLogger() {
+        return new LoggingInterceptor(new Logger() {
             @Override
             public void log(@NonNull String message) {
                 Log.d("StorIO", message);
             }
         });
+    }
+
+    @NonNull
+    public static LoggingInterceptor withLogger(@NonNull Logger logger) {
+        return new LoggingInterceptor(logger);
+    }
+
+    @NonNull
+    private final Logger logger;
+
+    private LoggingInterceptor(@NonNull Logger logger) {
+        this.logger = logger;
     }
 
     @Nullable

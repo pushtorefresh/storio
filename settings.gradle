@@ -1,4 +1,4 @@
-include ':storio-common', ':logginginterceptor'
+include ':storio-common'
 include ':storio-test-common'
 include ':storio-sqlite'
 include ':storio-content-resolver'

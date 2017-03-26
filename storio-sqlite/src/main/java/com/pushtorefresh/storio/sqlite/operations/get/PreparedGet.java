@@ -52,12 +52,12 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
     @WorkerThread
     @Nullable
     public final Result executeAsBlocking() {
-        return buildChain(storIOSQLite.interceptors(), getRealInterceptor())
+        return buildChain(storIOSQLite.interceptors(), getRealCallInterceptor())
                 .proceed(this);
     }
 
     @NonNull
-    protected abstract Interceptor getRealInterceptor();
+    protected abstract Interceptor getRealCallInterceptor();
 
     @NonNull
     @Override

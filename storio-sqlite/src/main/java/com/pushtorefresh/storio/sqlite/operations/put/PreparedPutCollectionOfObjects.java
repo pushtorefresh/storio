@@ -122,8 +122,8 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
 
     @NonNull
     @Override
-    protected Interceptor getRealInterceptor() {
-        return new RealInterceptor();
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
     }
 
     @NonNull
@@ -132,7 +132,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
         return objects;
     }
 
-    private class RealInterceptor implements Interceptor {
+    private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
         public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {

@@ -8,6 +8,7 @@ import com.pushtorefresh.storio.sqlite.Interceptor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 public class ChainImpl implements Interceptor.Chain {
 
@@ -20,45 +21,37 @@ public class ChainImpl implements Interceptor.Chain {
         interceptors.addAll(registeredInterceptors);
         interceptors.add(realInterceptor);
 
-        return new ChainImpl(interceptors, 0);
+        return new ChainImpl(interceptors.listIterator());
     }
 
     @NonNull
-    private final List<Interceptor> interceptors;
-
-    @NonNull
-    private final int index;
+    private final ListIterator<Interceptor> interceptors;
 
     private int calls;
 
-    public ChainImpl(@NonNull List<Interceptor> interceptors, int index) {
+    public ChainImpl(@NonNull ListIterator<Interceptor> interceptors) {
         this.interceptors = interceptors;
-        this.index = index;
     }
 
     @Nullable // can be null on PreparedGetObject
     @Override
     public <Result> Result proceed(@NonNull PreparedOperation<Result> operation) {
-        if (index >= interceptors.size()) throw new AssertionError();
+        if (!interceptors.hasNext()) {
+            throw new IllegalStateException("proceed was called on empty iterator");
+        }
 
         calls++;
 
         // Confirm that this is the only call to chain.proceed().
         if (calls > 1) {
-            throw new IllegalStateException("nextInterceptor " + interceptors.get(index - 1)
+            throw new IllegalStateException("nextInterceptor " + interceptors.previous()
                     + " must call proceed() exactly once");
         }
 
         // Call the nextChain nextInterceptor in the chain.
-        final ChainImpl nextChain = new ChainImpl(interceptors, index + 1);
-        final Interceptor nextInterceptor = interceptors.get(index);
+        final Interceptor nextInterceptor = interceptors.next();
+        final ChainImpl nextChain = new ChainImpl(interceptors);
         final Result result = nextInterceptor.intercept(operation, nextChain);
-
-        // Confirm that the nextChain nextInterceptor made its required call to chain.proceed().
-        if (index + 1 < interceptors.size() && nextChain.calls != 1) {
-            throw new IllegalStateException("network nextInterceptor " + nextInterceptor
-                    + " must call proceed() exactly once");
-        }
 
         return result;
     }

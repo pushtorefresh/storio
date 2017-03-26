@@ -115,11 +115,11 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
     @NonNull
     @Override
-    protected Interceptor getRealInterceptor() {
-        return new RealInterceptor();
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
     }
 
-    private class RealInterceptor implements Interceptor {
+    private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
         public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {

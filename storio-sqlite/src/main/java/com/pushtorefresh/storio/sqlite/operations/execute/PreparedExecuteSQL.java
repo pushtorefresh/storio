@@ -51,7 +51,7 @@ public class PreparedExecuteSQL implements PreparedOperation<Object> {
     @NonNull
     @Override
     public Object executeAsBlocking() {
-        return buildChain(storIOSQLite.interceptors(), new RealInterceptor())
+        return buildChain(storIOSQLite.interceptors(), new RealCallInterceptor())
                 .proceed(this);
     }
 
@@ -123,7 +123,7 @@ public class PreparedExecuteSQL implements PreparedOperation<Object> {
         return RxJavaUtils.createSingle(storIOSQLite, this);
     }
 
-    private class RealInterceptor implements Interceptor {
+    private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
         public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {

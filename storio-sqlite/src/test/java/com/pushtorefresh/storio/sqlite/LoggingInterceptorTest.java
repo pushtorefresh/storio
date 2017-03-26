@@ -26,7 +26,7 @@ public class LoggingInterceptorTest {
     public void beforeEachTest() {
         resultBuilder = new StringBuilder();
 
-        loggingInterceptor = new LoggingInterceptor(new LoggingInterceptor.Logger() {
+        loggingInterceptor = LoggingInterceptor.withLogger(new LoggingInterceptor.Logger() {
             @Override
             public void log(@NonNull String message) {
                 resultBuilder.append(message).append("\n");

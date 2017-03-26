@@ -39,12 +39,12 @@ public abstract class PreparedPut<Result> implements PreparedWriteOperation<Resu
     @WorkerThread
     @Nullable
     public final Result executeAsBlocking() {
-        return buildChain(storIOSQLite.interceptors(), getRealInterceptor())
+        return buildChain(storIOSQLite.interceptors(), getRealCallInterceptor())
                 .proceed(this);
     }
 
     @NonNull
-    protected abstract Interceptor getRealInterceptor();
+    protected abstract Interceptor getRealCallInterceptor();
 
     /**
      * Builder for {@link PreparedPut}.

@@ -150,11 +150,11 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
 
     @NonNull
     @Override
-    protected Interceptor getRealInterceptor() {
-        return new RealInterceptor();
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
     }
 
-    private class RealInterceptor implements Interceptor {
+    private class RealCallInterceptor implements Interceptor {
         @Nullable // TODO every other interceptor is NonNull, handle this case separately?
         @SuppressWarnings({"ConstantConditions", "NullableProblems"})
         @Override
