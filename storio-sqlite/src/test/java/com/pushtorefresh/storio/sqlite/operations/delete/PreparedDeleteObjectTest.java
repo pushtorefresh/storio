@@ -308,6 +308,19 @@ public class PreparedDeleteObjectTest {
     }
 
     @Test
+    public void shouldReturnObjectInGetData() {
+        final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
+
+        final PreparedDeleteObject<TestItem> operation = deleteStub.storIOSQLite
+                .delete()
+                .object(deleteStub.itemsRequestedForDelete.get(0))
+                .withDeleteResolver(deleteStub.deleteResolver)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(deleteStub.itemsRequestedForDelete.get(0));
+    }
+
+    @Test
     public void deleteObjectObservableExecutesOnSpecifiedScheduler() {
         final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
         final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOSQLite);

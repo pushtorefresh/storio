@@ -41,6 +41,19 @@ public class PreparedPutContentValuesIterableTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
+    public void shouldReturnContentValuesInGetData() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(false);
+
+        final PreparedPutContentValuesIterable operation = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(putStub.contentValues);
+    }
+
+    @Test
     public void putMultipleBlockingWithTransaction() {
         final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
 

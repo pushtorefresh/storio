@@ -64,6 +64,15 @@ public class PreparedDeleteByQueryTest {
     }
 
     @Test
+    public void shouldReturnQueryInGetData() {
+        final DeleteByQueryStub stub = new DeleteByQueryStub();
+        final PreparedDeleteByQuery prepared = new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
+                .withDeleteResolver(stub.deleteResolver)
+                .prepare();
+        assertThat(prepared.getData()).isEqualTo(stub.deleteQuery);
+    }
+
+    @Test
     public void shouldPerformDeletionByQueryBlocking() {
         final DeleteByQueryStub stub = new DeleteByQueryStub();
 

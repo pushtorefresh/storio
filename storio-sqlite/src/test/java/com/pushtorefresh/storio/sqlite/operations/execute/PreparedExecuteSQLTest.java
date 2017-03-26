@@ -40,6 +40,18 @@ public class PreparedExecuteSQLTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
+    public void shouldReturnRawQueryInGetData() {
+        final Stub stub = Stub.newInstanceWithoutNotification();
+
+        final PreparedExecuteSQL operation =  stub.storIOSQLite
+                .executeSQL()
+                .withQuery(stub.rawQuery)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(stub.rawQuery);
+    }
+
+    @Test
     public void executeSQLBlockingWithoutNotifications() {
         final Stub stub = Stub.newInstanceWithoutNotification();
 

@@ -242,6 +242,25 @@ public class PreparedGetListOfObjectsTest {
     public static class OtherTests {
 
         @Test
+        public void shouldReturnItemsInGetData() {
+            final Query query = Query.builder()
+                    .uri(mock(Uri.class))
+                    .build();
+
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final PreparedGetListOfObjects<Object> operation =
+                    new PreparedGetListOfObjects.Builder<Object>(storIOContentResolver, Object.class)
+                    .withQuery(query)
+                    .withGetResolver(getResolver)
+                    .prepare();
+
+            assertThat(operation.getData()).isEqualTo(query);
+        }
+
+        @Test
         public void shouldCloseCursorInCaseOfException() {
             StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
 

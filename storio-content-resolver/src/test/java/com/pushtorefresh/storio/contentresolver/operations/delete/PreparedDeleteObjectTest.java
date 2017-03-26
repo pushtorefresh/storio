@@ -274,6 +274,19 @@ public class PreparedDeleteObjectTest {
     public static class OtherTests {
 
         @Test
+        public void shouldReturnObjectInGetData() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObjectWithoutTypeMapping();
+
+            final PreparedDeleteObject<TestItem> operation = deleteStub.storIOContentResolver
+                    .delete()
+                    .object(deleteStub.items.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            assertThat(operation.getData()).isEqualTo(deleteStub.items.get(0));
+        }
+
+        @Test
         public void deleteObjectObservableExecutesOnSpecifiedScheduler() {
             final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObjectWithoutTypeMapping();
             final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOContentResolver);

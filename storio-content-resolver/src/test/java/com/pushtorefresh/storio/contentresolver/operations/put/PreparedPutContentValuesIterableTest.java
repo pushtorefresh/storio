@@ -10,7 +10,22 @@ import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class PreparedPutContentValuesIterableTest {
+
+    @Test
+    public void shouldReturnContentValuesInGetData() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues();
+
+        final PreparedPutContentValuesIterable operation = putStub.storIOContentResolver
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(putStub.contentValues);
+    }
 
     @Test
     public void putContentValuesIterableBlocking() {

@@ -457,6 +457,44 @@ public class PreparedGetObjectTest {
     public static class OtherTests {
 
         @Test
+        public void shouldReturnQueryInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final Query query = Query.builder().table("test_table").build();
+            final PreparedGetObject<Object> operation =
+                    new PreparedGetObject<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            query,
+                            getResolver
+                    );
+
+            assertThat(operation.getData()).isEqualTo(query);
+        }
+
+        @Test
+        public void shouldReturnRawQueryInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final RawQuery query = RawQuery.builder().query("test").build();
+            final PreparedGetObject<Object> operation =
+                    new PreparedGetObject<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            query,
+                            getResolver
+                    );
+
+            assertThat(operation.getData()).isEqualTo(query);
+        }
+
+        @Test
         public void completeBuilderShouldThrowExceptionIfNoQueryWasSet() {
             PreparedGetObject.CompleteBuilder completeBuilder = new PreparedGetObject.Builder<Object>(mock(StorIOSQLite.class), Object.class)
                     .withQuery(Query.builder().table("test_table").build()); // We will null it later;

@@ -638,6 +638,21 @@ public class PreparedDeleteCollectionOfObjectsTest {
     public static class OtherTests {
 
         @Test
+        public void shouldReturnItemsInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            //noinspection unchecked
+            final DeleteResolver<Object> deleteResolver = mock(DeleteResolver.class);
+            final List<Object> items = singletonList(new Object());
+            final PreparedDeleteCollectionOfObjects<Object> operation =
+                    new PreparedDeleteCollectionOfObjects.Builder<Object>(storIOSQLite, items)
+                            .useTransaction(true)
+                            .withDeleteResolver(deleteResolver)
+                            .prepare();
+
+            assertThat(operation.getData()).isEqualTo(items);
+        }
+
+        @Test
         public void shouldFinishTransactionIfExceptionHasOccurredBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);

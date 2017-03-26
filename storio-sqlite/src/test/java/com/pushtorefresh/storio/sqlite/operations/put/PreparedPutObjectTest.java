@@ -281,6 +281,20 @@ public class PreparedPutObjectTest {
     public static class OtherTests {
 
         @Test
+        public void shouldReturnObjectInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
+
+            final TestItem object = TestItem.newInstance();
+            final PreparedPut<PutResult> operation = storIOSQLite
+                    .put()
+                    .object(object)
+                    .prepare();
+
+            assertThat(operation.getData()).isEqualTo(object);
+        }
+
+        @Test
         public void putObjectObservableExecutesOnSpecifiedScheduler() {
             final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
             final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOSQLite);

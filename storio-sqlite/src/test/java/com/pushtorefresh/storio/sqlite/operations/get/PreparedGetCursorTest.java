@@ -29,6 +29,34 @@ import static org.mockito.Mockito.when;
 public class PreparedGetCursorTest {
 
     @Test
+    public void shouldReturnQueryInGetData() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+
+        final PreparedGetCursor operation =  getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(getStub.query);
+    }
+
+    @Test
+    public void shouldReturnRawQueryInGetData() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+
+        final PreparedGetCursor operation =  getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(getStub.rawQuery);
+    }
+
+    @Test
     public void shouldGetCursorWithQueryBlocking() {
         final GetCursorStub getStub = GetCursorStub.newInstance();
 

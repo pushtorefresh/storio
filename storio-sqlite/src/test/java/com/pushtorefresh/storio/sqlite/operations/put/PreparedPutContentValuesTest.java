@@ -22,10 +22,25 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class PreparedPutContentValuesTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+
+    @Test
+    public void shouldReturnContentValuesInGetData() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValues();
+
+        final PreparedPutContentValues operation = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues.get(0))
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(putStub.contentValues.get(0));
+    }
 
     @Test
     public void putContentValuesBlocking() {

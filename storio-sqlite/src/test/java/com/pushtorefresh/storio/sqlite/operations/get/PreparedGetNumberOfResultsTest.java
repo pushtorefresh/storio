@@ -28,6 +28,34 @@ import static org.mockito.Mockito.when;
 public class PreparedGetNumberOfResultsTest {
 
     @Test
+    public void shouldReturnQueryInGetData() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+
+        final PreparedGetNumberOfResults operation = getStub.storIOSQLite
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(getStub.query);
+    }
+
+    @Test
+    public void shouldReturnRawQueryInGetData() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+
+        final PreparedGetNumberOfResults operation = getStub.storIOSQLite
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(getStub.rawQuery);
+    }
+
+    @Test
     public void shouldGetNumberOfResultsWithQueryBlocking() {
         final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
 

@@ -8,7 +8,22 @@ import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class PreparedPutContentValuesTest {
+
+    @Test
+    public void shouldReturnContentValuesInGetData() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValues();
+
+        final PreparedPutContentValues operation = putStub.storIOContentResolver
+                .put()
+                .contentValues(putStub.contentValues.get(0))
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(putStub.contentValues.get(0));
+    }
 
     @Test
     public void putContentValuesBlocking() {

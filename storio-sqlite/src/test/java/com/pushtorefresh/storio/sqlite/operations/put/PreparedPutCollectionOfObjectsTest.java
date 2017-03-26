@@ -587,6 +587,24 @@ public class PreparedPutCollectionOfObjectsTest {
     public static class OtherTests {
 
         @Test
+        public void shouldReturnItemsInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final PutResolver<TestItem> putResolver = mock(PutResolver.class);
+
+            final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
+
+            final PreparedPutCollectionOfObjects<TestItem> operation =
+                    new PreparedPutCollectionOfObjects.Builder<TestItem>(storIOSQLite, items)
+                            .useTransaction(true)
+                            .withPutResolver(putResolver)
+                            .prepare();
+
+            assertThat(operation.getData()).isEqualTo(items);
+        }
+
+        @Test
         public void shouldFinishTransactionIfExceptionHasOccurredBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);

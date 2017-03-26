@@ -146,6 +146,20 @@ public class PreparedPutObjectTest {
     public static class NoTypeMappingError {
 
         @Test
+        public void shouldReturnObjectInGetData() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
+
+            final TestItem object = TestItem.newInstance();
+            final PreparedPut<PutResult> operation = storIOContentResolver
+                    .put()
+                    .object(object)
+                    .prepare();
+
+            assertThat(operation.getData()).isEqualTo(object);
+        }
+
+        @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderBlocking() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
             final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
