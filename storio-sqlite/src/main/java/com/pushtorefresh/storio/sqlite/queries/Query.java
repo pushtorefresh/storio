@@ -3,11 +3,15 @@ package com.pushtorefresh.storio.sqlite.queries;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.InternalQueries.nonNullSet;
 import static com.pushtorefresh.storio.internal.InternalQueries.nonNullString;
 import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullListOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullSet;
 
 /**
  * Get query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
@@ -42,6 +46,9 @@ public final class Query {
     @NonNull
     private final String limit;
 
+    @NonNull
+    private final Set<String> observesTags;
+
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.queries.Query.Builder}
      * instead of constructor.
@@ -49,7 +56,14 @@ public final class Query {
     private Query(boolean distinct, @NonNull String table, @Nullable List<String> columns,
                   @Nullable String where, @Nullable List<String> whereArgs,
                   @Nullable String groupBy, @Nullable String having,
-                  @Nullable String orderBy, @Nullable String limit) {
+                  @Nullable String orderBy, @Nullable String limit, @Nullable Set<String> observesTags) {
+
+        if (observesTags != null) {
+            for (String tag : observesTags) {
+                checkNotEmpty(tag, "observesTag must not be null or empty, observesTags = " + observesTags);
+            }
+        }
+
         this.distinct = distinct;
         this.table = table;
         this.columns = unmodifiableNonNullListOfStrings(columns);
@@ -59,6 +73,7 @@ public final class Query {
         this.having = nonNullString(having);
         this.orderBy = nonNullString(orderBy);
         this.limit = nonNullString(limit);
+        this.observesTags = unmodifiableNonNullSet(observesTags);
     }
 
     /**
@@ -187,6 +202,18 @@ public final class Query {
     }
 
     /**
+     * Gets optional immutable set of tags that should be observed by this query.
+     * <p>
+     * It will be used to observe changes of this tags and re-execute this query.
+     *
+     * @return non-null, immutable set of tags, that should be observed by this query.
+     */
+    @NonNull
+    public Set<String> observesTags() {
+        return observesTags;
+    }
+
+    /**
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
@@ -212,7 +239,8 @@ public final class Query {
         if (!groupBy.equals(query.groupBy)) return false;
         if (!having.equals(query.having)) return false;
         if (!orderBy.equals(query.orderBy)) return false;
-        return limit.equals(query.limit);
+        if (!limit.equals(query.limit)) return false;
+        return observesTags.equals(query.observesTags);
     }
 
     @Override
@@ -226,6 +254,7 @@ public final class Query {
         result = 31 * result + having.hashCode();
         result = 31 * result + orderBy.hashCode();
         result = 31 * result + limit.hashCode();
+        result = 31 * result + observesTags.hashCode();
         return result;
     }
 
@@ -241,6 +270,7 @@ public final class Query {
                 ", having='" + having + '\'' +
                 ", orderBy='" + orderBy + '\'' +
                 ", limit='" + limit + '\'' +
+                ", observesTags='" + observesTags + '\'' +
                 '}';
     }
 
@@ -303,6 +333,9 @@ public final class Query {
 
         private String limit;
 
+        @Nullable
+        private Set<String> observesTags;
+
         CompleteBuilder(@NonNull String table) {
             this.table = table;
         }
@@ -317,6 +350,7 @@ public final class Query {
             this.having = query.having;
             this.orderBy = query.orderBy;
             this.limit = query.limit;
+            this.observesTags = query.observesTags;
         }
 
         /**
@@ -567,6 +601,39 @@ public final class Query {
         }
 
         /**
+         * Optional: Specifies set of tags which should be observed by this query.
+         * <p/>
+         * It will be used to observe changes of tags and re-execute this query.
+         *
+         * @param tag the first required tag which will be observed by this query.
+         * @param tags optional set of tags which will be observed by this query.
+         * @return builder.
+         * @see Query#observesTags()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder observesTags(@NonNull String tag, @Nullable String... tags) {
+            observesTags = nonNullSet(tag, tags);
+            return this;
+        }
+
+        /**
+         * Optional: Specifies set of tags which should be observed by this query.
+         * <p/>
+         * It will be used to observe changes of tags and re-execute this query.
+         *
+         * @param tags set of tags which will be observed by this query.
+         * @return builder.
+         * @see Query#observesTags()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder observesTags(@Nullable Collection<String> tags) {
+            observesTags = nonNullSet(tags);
+            return this;
+        }
+
+        /**
          * Builds immutable instance of {@link Query}.
          *
          * @return immutable instance of {@link Query}.
@@ -586,7 +653,8 @@ public final class Query {
                     groupBy,
                     having,
                     orderBy,
-                    limit
+                    limit,
+                    observesTags
             );
         }
     }

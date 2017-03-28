@@ -17,9 +17,12 @@ import com.pushtorefresh.storio.sqlite.operations.put.PutResolver;
 import com.pushtorefresh.storio.sqlite.queries.InsertQuery;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -33,13 +36,11 @@ import rx.Scheduler;
 import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -50,12 +51,34 @@ public class DefaultStorIOSQLiteTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+    @Mock
+    @NonNull
+    private SQLiteOpenHelper sqLiteOpenHelper;
+
+    @Mock
+    @NonNull
+    private SQLiteDatabase sqLiteDatabase;
+
+    @NonNull
+    private DefaultStorIOSQLite storIOSQLite;
+
+    @Before
+    public void beforeEachTest() {
+        MockitoAnnotations.initMocks(this);
+
+        when(sqLiteOpenHelper.getWritableDatabase()).thenReturn(sqLiteDatabase);
+
+        storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .build();
+    }
+
     @Test
     public void nullSQLiteOpenHelper() {
         DefaultStorIOSQLite.Builder builder = DefaultStorIOSQLite.builder();
 
         expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage(equalTo("Please specify SQLiteOpenHelper instance"));
+        expectedException.expectMessage("Please specify SQLiteOpenHelper instance");
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
@@ -64,20 +87,16 @@ public class DefaultStorIOSQLiteTest {
 
     @Test
     public void lowLevelReturnsSameInstanceOfSQLiteOpenHelper() {
-        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
         assertThat(storIOSQLite.lowLevel().sqliteOpenHelper()).isSameAs(sqLiteOpenHelper);
     }
 
     @Test
     public void addTypeMappingNullType() {
         DefaultStorIOSQLite.CompleteBuilder builder = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class));
+                .sqliteOpenHelper(sqLiteOpenHelper);
 
         expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage(equalTo("Please specify type"));
+        expectedException.expectMessage("Please specify type");
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection unchecked,ConstantConditions
@@ -91,10 +110,10 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void addTypeMappingNullMapping() {
         DefaultStorIOSQLite.CompleteBuilder builder = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class));
+                .sqliteOpenHelper(sqLiteOpenHelper);
 
         expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage(equalTo("Please specify type mapping"));
+        expectedException.expectMessage("Please specify type mapping");
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
@@ -104,10 +123,10 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void nullTypeMappingFinder() {
         DefaultStorIOSQLite.CompleteBuilder builder = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class));
+                .sqliteOpenHelper(sqLiteOpenHelper);
 
         expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage(equalTo("Please specify typeMappingFinder"));
+        expectedException.expectMessage("Please specify typeMappingFinder");
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
@@ -118,7 +137,7 @@ public class DefaultStorIOSQLiteTest {
     public void shouldUseSpecifiedTypeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
         TypeMappingFinder typeMappingFinder = mock(TypeMappingFinder.class);
         DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(sqLiteOpenHelper)
                 .typeMappingFinder(typeMappingFinder)
                 .build();
 
@@ -135,7 +154,7 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(sqLiteOpenHelper)
                 .addTypeMapping(ClassEntity.class, typeMapping)
                 .build();
 
@@ -155,7 +174,7 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(sqLiteOpenHelper)
                 .typeMappingFinder(typeMappingFinder)
                 .addTypeMapping(ClassEntity.class, typeMapping)
                 .build();
@@ -183,7 +202,7 @@ public class DefaultStorIOSQLiteTest {
                 .build();
 
         DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(sqLiteOpenHelper)
                 .addTypeMapping(ClassEntity.class, entityMapping)
                 .addTypeMapping(AnotherEntity.class, anotherMapping)
                 .build();
@@ -194,14 +213,8 @@ public class DefaultStorIOSQLiteTest {
 
     @Test
     public void shouldCloseSQLiteOpenHelper() throws IOException {
-        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
-
         // Should not call close before explicit call to close
-        verify(sqLiteOpenHelper, times(0)).close();
+        verify(sqLiteOpenHelper, never()).close();
 
         storIOSQLite.close();
 
@@ -211,15 +224,6 @@ public class DefaultStorIOSQLiteTest {
 
     @Test
     public void shouldPassSQLWithArgsToExecSQL() {
-        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-        SQLiteDatabase sqLiteDatabase = mock(SQLiteDatabase.class);
-
-        when(sqLiteOpenHelper.getWritableDatabase()).thenReturn(sqLiteDatabase);
-
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
-
         RawQuery rawQuery = RawQuery.builder()
                 .query("DROP TABLE users")
                 .args("arg1", "arg2")
@@ -236,15 +240,6 @@ public class DefaultStorIOSQLiteTest {
 
     @Test
     public void shouldPassSQLWithoutArgsToExecSQL() {
-        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-        SQLiteDatabase sqLiteDatabase = mock(SQLiteDatabase.class);
-
-        when(sqLiteOpenHelper.getWritableDatabase()).thenReturn(sqLiteDatabase);
-
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
-
         RawQuery rawQuery = RawQuery.builder()
                 .query("DROP TABLE IF EXISTS someTable")
                 .build(); // No args!
@@ -261,15 +256,6 @@ public class DefaultStorIOSQLiteTest {
     // See https://github.com/pushtorefresh/storio/issues/478
     @Test
     public void nestedTransactionShouldWorkNormally() {
-        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-        SQLiteDatabase sqLiteDatabase = mock(SQLiteDatabase.class);
-
-        when(sqLiteOpenHelper.getWritableDatabase()).thenReturn(sqLiteDatabase);
-
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
-
         // External transaction
         storIOSQLite.lowLevel().beginTransaction();
 
@@ -302,15 +288,6 @@ public class DefaultStorIOSQLiteTest {
 
     @Test
     public void shouldPassArgsToInsertWithOnConflict() {
-        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-        SQLiteDatabase sqLiteDatabase = mock(SQLiteDatabase.class);
-
-        when(sqLiteOpenHelper.getWritableDatabase()).thenReturn(sqLiteDatabase);
-
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
-
         InsertQuery insertQuery = InsertQuery.builder()
                 .table("test_table")
                 .nullColumnHack("custom_null_hack")
@@ -332,32 +309,19 @@ public class DefaultStorIOSQLiteTest {
 
     @Test
     public void notifyAboutChangesShouldNotAcceptNullAsChanges() {
-        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
-
         StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
         assertThat(lowLevel).isNotNull();
 
-        try {
-            //noinspection ConstantConditions
-            lowLevel.notifyAboutChanges(null);
-            failBecauseExceptionWasNotThrown(NullPointerException.class);
-        } catch (NullPointerException expected) {
-            assertThat(expected).hasMessage("Changes can not be null");
-        }
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Changes can not be null");
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        lowLevel.notifyAboutChanges(null);
     }
 
     @Test
     public void observeChangesAndNotifyAboutChangesShouldWorkCorrectly() {
-        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
-
         TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
@@ -366,7 +330,7 @@ public class DefaultStorIOSQLiteTest {
 
         testSubscriber.assertNoValues();
 
-        Changes changes = Changes.newInstance("test_table");
+        Changes changes = Changes.newInstance("test_table", "tag");
 
         storIOSQLite
                 .lowLevel()
@@ -374,23 +338,17 @@ public class DefaultStorIOSQLiteTest {
 
         testSubscriber.assertValue(changes);
         testSubscriber.assertNoErrors();
-
         testSubscriber.unsubscribe();
     }
 
     @Test
     public void observeChangesShouldThrowIfRxJavaNotInClassPath() throws NoSuchFieldException, IllegalAccessException {
-        SQLiteOpenHelper sqLiteOpenHelper = mock(SQLiteOpenHelper.class);
-
-        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(sqLiteOpenHelper)
-                .build();
         //noinspection unchecked
         ChangesBus<Changes> changesBus = mock(ChangesBus.class);
         setChangesBus(storIOSQLite, changesBus);
 
         expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage(equalTo("Observing changes in StorIOSQLite requires RxJava"));
+        expectedException.expectMessage("Observing changes in StorIOSQLite requires RxJava");
         expectedException.expectCause(nullValue(Throwable.class));
 
         storIOSQLite.observeChanges();
@@ -398,25 +356,26 @@ public class DefaultStorIOSQLiteTest {
 
     @Test
     public void observeChangesInTablesShouldNotAcceptNullAsTables() {
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .build();
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Set of tables can not be null");
+        expectedException.expectCause(nullValue(Throwable.class));
 
-        try {
-            //noinspection ConstantConditions
-            storIOSQLite.observeChangesInTables(null);
-            failBecauseExceptionWasNotThrown(NullPointerException.class);
-        } catch (NullPointerException expected) {
-            assertThat(expected).hasMessage("Set of tables can not be null");
-        }
+        //noinspection ConstantConditions
+        storIOSQLite.observeChangesInTables(null);
     }
 
     @Test
-    public void observeChangesInTables() {
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .build();
+    public void observeChangesOfTagsShouldNotAcceptNullAsTags() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Set of tags can not be null");
+        expectedException.expectCause(nullValue(Throwable.class));
 
+        //noinspection ConstantConditions
+        storIOSQLite.observeChangesOfTags(null);
+    }
+
+    @Test
+    public void observeChangesInTables_shouldReceiveIfTableWasChanged() {
         TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         Set<String> tables = new HashSet<String>(2);
@@ -429,55 +388,117 @@ public class DefaultStorIOSQLiteTest {
 
         testSubscriber.assertNoValues();
 
-        Changes changes1 = Changes.newInstance("table1");
+        Changes changes = Changes.newInstance("table2");
 
         storIOSQLite
                 .lowLevel()
-                .notifyAboutChanges(changes1);
+                .notifyAboutChanges(changes);
 
-        testSubscriber.assertValue(changes1);
-
-        Changes changes2 = Changes.newInstance("table2");
-
-        storIOSQLite
-                .lowLevel()
-                .notifyAboutChanges(changes2);
-
-        testSubscriber.assertValues(changes1, changes2);
-
-        Changes changes3 = Changes.newInstance("table3");
-
-        storIOSQLite
-                .lowLevel()
-                .notifyAboutChanges(changes3);
-
-        // changes3 or any other changes are not expected here
-        testSubscriber.assertValues(changes1, changes2);
+        testSubscriber.assertValues(changes);
         testSubscriber.assertNoErrors();
         testSubscriber.unsubscribe();
     }
 
     @Test
-    public void observeChangesInTableShouldNotAcceptNullAsTables() {
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .build();
+    public void observeChangesInTables_shouldNotReceiveIfTableWasNotChanged() {
+        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
-        try {
-            //noinspection ConstantConditions
-            storIOSQLite.observeChangesInTable(null);
-            failBecauseExceptionWasNotThrown(NullPointerException.class);
-        } catch (NullPointerException expected) {
-            assertThat(expected).hasMessage("Table can not be null or empty");
-        }
+        Set<String> tables = new HashSet<String>(2);
+        tables.add("table1");
+        tables.add("table2");
+
+        storIOSQLite
+                .observeChangesInTables(tables)
+                .subscribe(testSubscriber);
+
+        storIOSQLite
+                .lowLevel()
+                .notifyAboutChanges(Changes.newInstance("table3"));
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void observeChangesOfTags_shouldReceiveIfObservedTagExistInChanges() {
+        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
+
+        String tag1 = "tag1";
+        String tag2 = "tag2";
+        Set<String> tags = new HashSet<String>(2);
+        tags.add(tag1);
+        tags.add(tag2);
+
+        storIOSQLite
+                .observeChangesOfTags(tags)
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertNoValues();
+
+        Changes changes = Changes.newInstance("table1", tag1);
+
+        storIOSQLite
+                .lowLevel()
+                .notifyAboutChanges(changes);
+
+        testSubscriber.assertValues(changes);
+        testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void observeChangesOfTags_shouldNotReceiveIfObservedTagDoesNotExistInChanges() {
+        TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
+
+        Set<String> tags = new HashSet<String>(2);
+        tags.add("tag1");
+        tags.add("tag2");
+
+        storIOSQLite
+                .observeChangesOfTags(tags)
+                .subscribe(testSubscriber);
+
+        storIOSQLite
+                .lowLevel()
+                .notifyAboutChanges(Changes.newInstance("table3", "tag3"));
+
+        testSubscriber.assertNoValues();
+        testSubscriber.assertNoErrors();
+        testSubscriber.unsubscribe();
+    }
+
+    @Test
+    public void observeChangesInTable_shouldNotAcceptNullAsTable() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Table can not be null or empty");
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        storIOSQLite.observeChangesInTable(null);
+    }
+
+    @Test
+    public void observeChangeOfTag_shouldNotAcceptNullAsTag() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("Tag can not be null or empty");
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        storIOSQLite.observeChangesOfTag(null);
+    }
+
+    @Test
+    public void observeChangeOfTag_shouldNotAcceptEmptyTag() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage("Tag can not be null or empty");
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        storIOSQLite.observeChangesOfTag("");
     }
 
     @Test
     public void observeChangesInTable() {
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .build();
-
         TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
@@ -519,18 +540,40 @@ public class DefaultStorIOSQLiteTest {
         TypeMappingFinder typeMappingFinder = mock(TypeMappingFinder.class);
 
         TestDefaultStorIOSQLite storIOSQLite =
-                new TestDefaultStorIOSQLite(mock(SQLiteOpenHelper.class), typeMappingFinder);
+                new TestDefaultStorIOSQLite(sqLiteOpenHelper, typeMappingFinder);
 
         assertThat(storIOSQLite.typeMappingFinder()).isSameAs(typeMappingFinder);
     }
 
     @Test
     public void internalShouldReturnLowLevel() {
-        DefaultStorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+        assertThat(storIOSQLite.internal()).isSameAs(storIOSQLite.lowLevel());
+    }
+
+    @Test
+    public void defaultSchedulerReturnsIOSchedulerIfNotSpecified() {
+        assertThat(storIOSQLite.defaultScheduler()).isSameAs(io());
+    }
+
+    @Test
+    public void defaultSchedulerReturnsSpecifiedScheduler() {
+        Scheduler scheduler = mock(Scheduler.class);
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .defaultScheduler(scheduler)
                 .build();
 
-        assertThat(storIOSQLite.internal()).isSameAs(storIOSQLite.lowLevel());
+        assertThat(storIOSQLite.defaultScheduler()).isSameAs(scheduler);
+    }
+
+    @Test
+    public void defaultSchedulerReturnsNullIfSpecifiedSchedulerNull() {
+        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
+                .sqliteOpenHelper(sqLiteOpenHelper)
+                .defaultScheduler(null)
+                .build();
+
+        assertThat(storIOSQLite.defaultScheduler()).isNull();
     }
 
     static class ClassEntity {
@@ -562,45 +605,16 @@ public class DefaultStorIOSQLiteTest {
     class TestDefaultStorIOSQLite extends DefaultStorIOSQLite {
         private final Internal internal;
 
-        protected TestDefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @NonNull TypeMappingFinder typeMappingFinder) {
+        TestDefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @NonNull TypeMappingFinder typeMappingFinder) {
             super(sqLiteOpenHelper, typeMappingFinder, null);
             internal = new InternalImpl(typeMappingFinder);
         }
 
         @Nullable
-        public TypeMappingFinder typeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
+        TypeMappingFinder typeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
             Field field = TestDefaultStorIOSQLite.LowLevelImpl.class.getDeclaredField("typeMappingFinder");
             field.setAccessible(true);
             return (TypeMappingFinder) field.get(internal);
         }
-    }
-
-    public void defaultSchedulerReturnsIOSchedulerIfNotSpecified() {
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .build();
-
-        assertThat(storIOSQLite.defaultScheduler()).isSameAs(io());
-    }
-
-    @Test
-    public void defaultSchedulerReturnsSpecifiedScheduler() {
-        Scheduler scheduler = mock(Scheduler.class);
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .defaultScheduler(scheduler)
-                .build();
-
-        assertThat(storIOSQLite.defaultScheduler()).isSameAs(scheduler);
-    }
-
-    @Test
-    public void defaultSchedulerReturnsNullIfSpecifiedSchedulerNull() {
-        StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
-                .defaultScheduler(null)
-                .build();
-
-        assertThat(storIOSQLite.defaultScheduler()).isNull();
     }
 }

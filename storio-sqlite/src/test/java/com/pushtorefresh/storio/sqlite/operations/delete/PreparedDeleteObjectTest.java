@@ -17,8 +17,10 @@ import rx.observers.TestSubscriber;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -151,6 +153,28 @@ public class PreparedDeleteObjectTest {
                     .asRxCompletable();
 
             deleteStub.verifyBehaviorForOneObject(completable);
+        }
+
+        @Test
+        public void createObservableReturnsAsRxObservable() {
+            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithTypeMapping();
+
+            PreparedDeleteObject<TestItem> preparedOperation = spy(deleteStub.storIOSQLite
+                    .delete()
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
+                    .prepare());
+
+            Observable<DeleteResult> observable =
+                    Observable.just(DeleteResult.newInstance(1, TestItem.TABLE));
+
+            //noinspection CheckResult
+            doReturn(observable).when(preparedOperation).asRxObservable();
+
+            //noinspection deprecation
+            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
+
+            //noinspection CheckResult
+            verify(preparedOperation).asRxObservable();
         }
     }
 

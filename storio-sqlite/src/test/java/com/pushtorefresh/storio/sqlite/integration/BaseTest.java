@@ -21,6 +21,9 @@ import org.robolectric.annotation.Config;
 
 import java.util.List;
 
+import rx.Scheduler;
+import rx.schedulers.Schedulers;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -44,6 +47,7 @@ public abstract class BaseTest {
 
         storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(sqLiteOpenHelper)
+                .defaultScheduler(defaultScheduler())
                 .addTypeMapping(User.class, SQLiteTypeMapping.<User>builder()
                         .putResolver(UserTableMeta.PUT_RESOLVER)
                         .getResolver(UserTableMeta.GET_RESOLVER)
@@ -68,6 +72,11 @@ public abstract class BaseTest {
                 .byQuery(TweetTableMeta.DELETE_QUERY_ALL)
                 .prepare()
                 .executeAsBlocking();
+    }
+
+    @NonNull
+    protected Scheduler defaultScheduler() {
+        return Schedulers.io();
     }
 
     @NonNull

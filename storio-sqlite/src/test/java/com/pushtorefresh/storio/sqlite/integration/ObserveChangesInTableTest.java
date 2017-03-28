@@ -21,7 +21,7 @@ import rx.functions.Action1;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class ObserveChangesTest extends BaseTest {
+public class ObserveChangesInTableTest extends BaseTest {
 
     public class EmissionChecker extends AbstractEmissionChecker<Changes> {
 
@@ -48,7 +48,7 @@ public class ObserveChangesTest extends BaseTest {
         final List<User> users = TestFactory.newUsers(10);
 
         final Queue<Changes> expectedChanges = new LinkedList<Changes>();
-        expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE));
+        expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE, UserTableMeta.NOTIFICATION_TAG));
 
         final EmissionChecker emissionChecker = new EmissionChecker(expectedChanges);
         final Subscription subscription = emissionChecker.subscribe();
@@ -73,7 +73,7 @@ public class ObserveChangesTest extends BaseTest {
         }
 
         final Queue<Changes> expectedChanges = new LinkedList<Changes>();
-        expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE));
+        expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE, UserTableMeta.NOTIFICATION_TAG));
 
         final EmissionChecker emissionChecker = new EmissionChecker(expectedChanges);
         final Subscription subscription = emissionChecker.subscribe();
@@ -97,7 +97,7 @@ public class ObserveChangesTest extends BaseTest {
         final List<User> users = putUsersBlocking(10);
 
         final Queue<Changes> expectedChanges = new LinkedList<Changes>();
-        expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE));
+        expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE, UserTableMeta.NOTIFICATION_TAG));
 
         final EmissionChecker emissionChecker = new EmissionChecker(expectedChanges);
         final Subscription subscription = emissionChecker.subscribe();

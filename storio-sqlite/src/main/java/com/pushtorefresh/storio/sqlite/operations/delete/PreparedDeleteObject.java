@@ -72,7 +72,11 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
 
             final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, object);
             if (deleteResult.numberOfRowsDeleted() > 0) {
-                lowLevel.notifyAboutChanges(Changes.newInstance(deleteResult.affectedTables()));
+                final Changes changes = Changes.newInstance(
+                        deleteResult.affectedTables(),
+                        deleteResult.affectedTags()
+                );
+                lowLevel.notifyAboutChanges(changes);
             }
             return deleteResult;
 

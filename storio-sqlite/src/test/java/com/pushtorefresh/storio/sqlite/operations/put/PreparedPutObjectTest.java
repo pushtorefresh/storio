@@ -15,7 +15,9 @@ import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -311,6 +313,27 @@ public class PreparedPutObjectTest {
                     .prepare();
 
             schedulerChecker.checkAsCompletable(operation);
+        }
+
+        @Test
+        public void createObservableReturnsAsRxObservable() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
+
+            PreparedPutObject<TestItem> preparedOperation = spy(putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .prepare());
+
+            Observable<PutResult> observable = Observable.just(PutResult.newInsertResult(1, TestItem.TABLE));
+
+            //noinspection CheckResult
+            doReturn(observable).when(preparedOperation).asRxObservable();
+
+            //noinspection deprecation
+            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
+
+            //noinspection CheckResult
+            verify(preparedOperation).asRxObservable();
         }
     }
 }

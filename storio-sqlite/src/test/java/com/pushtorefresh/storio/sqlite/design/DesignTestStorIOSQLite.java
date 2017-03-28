@@ -111,6 +111,12 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
         return Observable.empty();
     }
 
+    @NonNull
+    @Override
+    public Observable<Changes> observeChangesOfTags(@NonNull Set<String> tags) {
+        return Observable.empty();
+    }
+
     @Nullable
     @Override
     public Scheduler defaultScheduler() {
