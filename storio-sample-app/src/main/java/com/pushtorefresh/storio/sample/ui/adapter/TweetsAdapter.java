@@ -9,12 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import butterknife.BindView;
 import com.pushtorefresh.storio.sample.R;
 import com.pushtorefresh.storio.sample.db.entities.Tweet;
 
 import java.util.List;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
@@ -48,10 +48,10 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.list_item_tweet_author)
+        @BindView(R.id.list_item_tweet_author)
         TextView authorTextView;
 
-        @Bind(R.id.list_item_tweet_content)
+        @BindView(R.id.list_item_tweet_content)
         TextView contentTextView;
 
         public ViewHolder(@NonNull View itemView) {
