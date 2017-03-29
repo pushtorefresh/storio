@@ -36,18 +36,18 @@ enum class JavaType {
 
             when {
                 typeKind == TypeKind.BOOLEAN -> return BOOLEAN
-                typeName == java.lang.Boolean::class.java.canonicalName -> return BOOLEAN_OBJECT
+                typeName == Boolean::class.javaObjectType.canonicalName -> return BOOLEAN_OBJECT
                 typeKind == TypeKind.SHORT -> return SHORT
-                typeName == java.lang.Short::class.java.canonicalName -> return SHORT_OBJECT
+                typeName == Short::class.javaObjectType.canonicalName -> return SHORT_OBJECT
                 typeKind == TypeKind.INT -> return INTEGER
-                typeName == java.lang.Integer::class.java.canonicalName -> return INTEGER_OBJECT
+                typeName == Integer::class.javaObjectType.canonicalName -> return INTEGER_OBJECT
                 typeKind == TypeKind.LONG -> return LONG
-                typeName == java.lang.Long::class.java.canonicalName -> return LONG_OBJECT
+                typeName == Long::class.javaObjectType.canonicalName -> return LONG_OBJECT
                 typeKind == TypeKind.FLOAT -> return FLOAT
-                typeName == java.lang.Float::class.java.canonicalName -> return FLOAT_OBJECT
+                typeName == Float::class.javaObjectType.canonicalName -> return FLOAT_OBJECT
                 typeKind == TypeKind.DOUBLE -> return DOUBLE
-                typeName == java.lang.Double::class.java.canonicalName -> return DOUBLE_OBJECT
-                typeName == java.lang.String::class.java.canonicalName -> return STRING
+                typeName == Double::class.javaObjectType.canonicalName -> return DOUBLE_OBJECT
+                typeName == String::class.javaObjectType.canonicalName -> return STRING
                 typeName == ByteArray::class.java.canonicalName -> return BYTE_ARRAY
                 else -> throw IllegalArgumentException("Unsupported type: $typeMirror")
             }

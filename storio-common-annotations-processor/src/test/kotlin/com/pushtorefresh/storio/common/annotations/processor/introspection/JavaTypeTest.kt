@@ -8,7 +8,6 @@ import org.assertj.core.api.Assertions.fail
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
-import org.mockito.Mockito.mock
 import javax.lang.model.type.TypeKind
 import javax.lang.model.type.TypeMirror
 
@@ -31,7 +30,7 @@ class JavaTypeTest {
         // given
         expectedException.expect(IllegalArgumentException::class.java)
         expectedException.expectMessage("Unsupported type: null")
-        val typeMirror = mock(TypeMirror::class.java)
+        val typeMirror = mock<TypeMirror>()
         whenever(typeMirror.kind).thenReturn(null)
         whenever(typeMirror.toString()).thenReturn(null)
 
@@ -59,7 +58,7 @@ class JavaTypeTest {
 
     @Test
     fun fromBooleanObject() {
-        val typeMirror = mockTypeMirror(null, java.lang.Boolean::class.java.canonicalName)
+        val typeMirror = mockTypeMirror(null, Boolean::class.javaObjectType.canonicalName)
         assertThat(JavaType.from(typeMirror)).isEqualTo(BOOLEAN_OBJECT)
     }
 
@@ -71,7 +70,7 @@ class JavaTypeTest {
 
     @Test
     fun fromShortObject() {
-        val typeMirror = mockTypeMirror(null, java.lang.Short::class.java.canonicalName)
+        val typeMirror = mockTypeMirror(null, Short::class.javaObjectType.canonicalName)
         assertThat(JavaType.from(typeMirror)).isEqualTo(SHORT_OBJECT)
     }
 
@@ -83,7 +82,7 @@ class JavaTypeTest {
 
     @Test
     fun fromIntegerObject() {
-        val typeMirror = mockTypeMirror(null, java.lang.Integer::class.java.canonicalName)
+        val typeMirror = mockTypeMirror(null, Integer::class.javaObjectType.canonicalName)
         assertThat(JavaType.from(typeMirror)).isEqualTo(INTEGER_OBJECT)
     }
 
@@ -95,7 +94,7 @@ class JavaTypeTest {
 
     @Test
     fun fromLongObject() {
-        val typeMirror = mockTypeMirror(null, java.lang.Long::class.java.canonicalName)
+        val typeMirror = mockTypeMirror(null, Long::class.javaObjectType.canonicalName)
         assertThat(JavaType.from(typeMirror)).isEqualTo(LONG_OBJECT)
     }
 
@@ -107,7 +106,7 @@ class JavaTypeTest {
 
     @Test
     fun fromFloatObject() {
-        val typeMirror = mockTypeMirror(null, java.lang.Float::class.java.canonicalName)
+        val typeMirror = mockTypeMirror(null, Float::class.javaObjectType.canonicalName)
         assertThat(JavaType.from(typeMirror)).isEqualTo(FLOAT_OBJECT)
     }
 
@@ -119,13 +118,13 @@ class JavaTypeTest {
 
     @Test
     fun fromDoubleObject() {
-        val typeMirror = mockTypeMirror(null, java.lang.Double::class.java.canonicalName)
+        val typeMirror = mockTypeMirror(null, Double::class.javaObjectType.canonicalName)
         assertThat(JavaType.from(typeMirror)).isEqualTo(DOUBLE_OBJECT)
     }
 
     @Test
     fun fromString() {
-        val typeMirror = mockTypeMirror(null, java.lang.String::class.java.canonicalName)
+        val typeMirror = mockTypeMirror(null, String::class.javaObjectType.canonicalName)
         assertThat(JavaType.from(typeMirror)).isEqualTo(STRING)
     }
 
