@@ -16,7 +16,7 @@ public interface Interceptor {
     <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain);
 
     /**
-     * Encapsulates logic of getting from one interceptor to the next one.
+     * Encapsulates logic of proceeding from one interceptor to another.
      */
     interface Chain {
 

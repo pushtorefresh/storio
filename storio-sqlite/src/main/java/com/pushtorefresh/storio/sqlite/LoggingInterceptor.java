@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.sqlite;
 
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -35,11 +36,11 @@ public class LoggingInterceptor implements Interceptor {
     @Nullable
     @Override
     public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
-        final long startMillis = System.currentTimeMillis();
+        final long startMillis = SystemClock.elapsedRealtime();
 
         final Result result = chain.proceed(operation);
 
-        final long endMillis = System.currentTimeMillis();
+        final long endMillis = SystemClock.elapsedRealtime();
         logger.log(
                 String.format(
                         Locale.US,
