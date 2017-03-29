@@ -11,14 +11,15 @@ dependencies {
 
     testCompile libraries.junit
     testCompile libraries.assertJ
-    testCompile libraries.mockitoCore
+    testCompile libraries.mockitoKotlin
     testCompile libraries.equalsVerifier
-    compile libraries.kotlin
+    compile libraries.kotlinStdLib
 }
 
 
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
+    test.java.srcDir 'src/test/kotlin'
 }
 
 apply from: '../gradle/publish-java-lib.gradle'
