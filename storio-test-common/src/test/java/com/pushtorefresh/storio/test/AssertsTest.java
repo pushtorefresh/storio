@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -56,7 +56,7 @@ public class AssertsTest {
             assertThat(expected).hasMessage("List is not immutable: list = " + list);
         }
 
-        verify(list).add(anyObject());
+        verify(list).add(any());
         verifyNoMoreInteractions(list);
     }
 
@@ -65,7 +65,7 @@ public class AssertsTest {
         //noinspection unchecked
         List<Object> list = mock(List.class);
 
-        when(list.add(anyObject()))
+        when(list.add(any()))
                 .thenThrow(new UnsupportedOperationException("add() not supported"));
 
         try {
@@ -75,7 +75,7 @@ public class AssertsTest {
             assertThat(expected).hasMessage("List is not immutable: list = " + list);
         }
 
-        verify(list).add(anyObject());
+        verify(list).add(any());
         verify(list).remove(0);
         verifyNoMoreInteractions(list);
     }

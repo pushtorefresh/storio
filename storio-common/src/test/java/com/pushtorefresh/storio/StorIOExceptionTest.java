@@ -2,7 +2,7 @@ package com.pushtorefresh.storio;
 
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class StorIOExceptionTest {
 

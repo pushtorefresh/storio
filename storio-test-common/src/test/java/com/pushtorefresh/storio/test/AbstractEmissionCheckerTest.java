@@ -17,7 +17,7 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class AbstractEmissionCheckerTest {

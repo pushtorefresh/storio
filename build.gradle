@@ -64,14 +64,14 @@ ext.libraries = [
 
         // Libraries for tests and sample app
         junit                          : 'junit:junit:4.12',
-        assertJ                        : 'org.assertj:assertj-core:1.7.1',
-        assertJAndroid                 : 'com.squareup.assertj:assertj-android:1.0.1',
-        mockitoCore                    : 'org.mockito:mockito-core:2.7.7',
+        assertJ                        : 'org.assertj:assertj-core:3.6.2',
+        assertJAndroid                 : 'com.squareup.assertj:assertj-android:1.1.1',
+        mockitoCore                    : 'org.mockito:mockito-core:2.7.19',
 
         equalsVerifier                 : 'nl.jqno.equalsverifier:equalsverifier:1.7.2',
         privateConstructorChecker      : 'com.pushtorefresh.java-private-constructor-checker:checker:1.1.0',
         guava                          : 'com.google.guava:guava:18.0',
-        robolectric                    : 'org.robolectric:robolectric:3.1.4',
+        robolectric                    : 'org.robolectric:robolectric:3.3.2',
         googleTestingCompile           : 'com.google.testing.compile:compile-testing:0.10',
 
         dagger                         : 'com.google.dagger:dagger:' + daggerVersion,

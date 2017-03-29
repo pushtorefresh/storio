@@ -8,7 +8,7 @@ import rx.Observable;
 import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
 public class ChangesBusTest {

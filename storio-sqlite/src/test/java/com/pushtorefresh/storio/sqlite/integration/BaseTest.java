@@ -24,7 +24,7 @@ import java.util.List;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
