@@ -17,7 +17,7 @@ import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -275,7 +275,7 @@ public class PreparedPutObjectTest {
         }
     }
 
-    class OtherTests {
+    public static class OtherTests {
 
         @Test
         public void putObjectObservableExecutesOnSpecifiedScheduler() {

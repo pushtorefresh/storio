@@ -4,7 +4,7 @@ import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
 
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class UtilsTest {
 

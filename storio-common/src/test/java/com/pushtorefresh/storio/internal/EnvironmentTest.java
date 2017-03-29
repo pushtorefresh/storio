@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 
 import static java.lang.reflect.Modifier.FINAL;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class EnvironmentTest {

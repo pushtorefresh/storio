@@ -15,7 +15,7 @@ import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class InternalQueriesTest {
 

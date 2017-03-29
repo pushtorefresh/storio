@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
 

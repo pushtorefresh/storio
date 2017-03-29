@@ -14,7 +14,7 @@ import static com.pushtorefresh.storio.common.annotations.processor.introspectio
 import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.SHORT;
 import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.SHORT_OBJECT;
 import static com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType.STRING;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.functions.Action1;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;

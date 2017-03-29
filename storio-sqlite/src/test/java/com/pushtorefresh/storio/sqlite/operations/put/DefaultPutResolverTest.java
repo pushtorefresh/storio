@@ -19,7 +19,7 @@ import java.util.Set;
 import rx.functions.Func1;
 
 import static java.util.Collections.singleton;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
