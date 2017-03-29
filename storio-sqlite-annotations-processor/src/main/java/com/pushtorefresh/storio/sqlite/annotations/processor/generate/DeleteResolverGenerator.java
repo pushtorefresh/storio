@@ -1,5 +1,8 @@
 package com.pushtorefresh.storio.sqlite.annotations.processor.generate;
 
+import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INSTANCE;
+import static javax.lang.model.element.Modifier.PUBLIC;
+
 import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta;
 import com.squareup.javapoet.ClassName;
@@ -8,14 +11,8 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
-
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
-
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT;
-import static javax.lang.model.element.Modifier.PUBLIC;
+import org.jetbrains.annotations.NotNull;
 
 public class DeleteResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
 
@@ -23,12 +20,13 @@ public class DeleteResolverGenerator implements Generator<StorIOSQLiteTypeMeta> 
 
     @NotNull
     public static String generateName(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
-        return storIOSQLiteTypeMeta.simpleName + SUFFIX;
+        return storIOSQLiteTypeMeta.getSimpleName() + SUFFIX;
     }
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
-        final ClassName storIOSQLiteTypeClassName = ClassName.get(storIOSQLiteTypeMeta.packageName, storIOSQLiteTypeMeta.simpleName);
+        final ClassName storIOSQLiteTypeClassName = ClassName.get(
+            storIOSQLiteTypeMeta.getPackageName(), storIOSQLiteTypeMeta.getSimpleName());
 
         final TypeSpec deleteResolver = TypeSpec.classBuilder(generateName(storIOSQLiteTypeMeta))
                 .addJavadoc("Generated resolver for Delete Operation.\n")
@@ -38,8 +36,8 @@ public class DeleteResolverGenerator implements Generator<StorIOSQLiteTypeMeta> 
                 .build();
 
         return JavaFile
-                .builder(storIOSQLiteTypeMeta.packageName, deleteResolver)
-                .indent(INDENT)
+                .builder(storIOSQLiteTypeMeta.getPackageName(), deleteResolver)
+                .indent(INSTANCE.getINDENT())
                 .build();
     }
 
@@ -50,18 +48,18 @@ public class DeleteResolverGenerator implements Generator<StorIOSQLiteTypeMeta> 
         return MethodSpec.methodBuilder("mapToDeleteQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("com.pushtorefresh.storio.sqlite.queries", "DeleteQuery"))
                 .addParameter(ParameterSpec.builder(storIOSQLiteTypeClassName, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                         .build())
                 .addCode("return DeleteQuery.builder()\n" +
-                                INDENT + ".table($S)\n" +
-                                INDENT + ".where($S)\n" +
-                                INDENT + ".whereArgs($L)\n" +
-                                INDENT + ".build();\n",
-                        storIOSQLiteTypeMeta.storIOType.table(),
+                        INSTANCE.getINDENT() + ".table($S)\n" +
+                        INSTANCE.getINDENT() + ".where($S)\n" +
+                        INSTANCE.getINDENT() + ".whereArgs($L)\n" +
+                        INSTANCE.getINDENT() + ".build();\n",
+                        storIOSQLiteTypeMeta.getStorIOType().table(),
                         where.get(QueryGenerator.WHERE_CLAUSE),
                         where.get(QueryGenerator.WHERE_ARGS))
                 .build();

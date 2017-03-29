@@ -24,12 +24,14 @@ public class PutResolverGenerator implements Generator<StorIOContentResolverType
 
     @NotNull
     public static String generateName(@NotNull StorIOContentResolverTypeMeta storIOSQLiteTypeMeta) {
-        return storIOSQLiteTypeMeta.simpleName + SUFFIX;
+        return storIOSQLiteTypeMeta.getSimpleName() + SUFFIX;
     }
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta) {
-        final ClassName storIOContentResolverTypeClassName = ClassName.get(storIOContentResolverTypeMeta.packageName, storIOContentResolverTypeMeta.simpleName);
+        final ClassName storIOContentResolverTypeClassName = ClassName.get(
+            storIOContentResolverTypeMeta.getPackageName(),
+            storIOContentResolverTypeMeta.getSimpleName());
 
         final TypeSpec putResolver = TypeSpec.classBuilder(generateName(storIOContentResolverTypeMeta))
                 .addJavadoc("Generated resolver for Put Operation\n")
@@ -41,31 +43,31 @@ public class PutResolverGenerator implements Generator<StorIOContentResolverType
                 .build();
 
         return JavaFile
-                .builder(storIOContentResolverTypeMeta.packageName, putResolver)
-                .indent(INDENT)
+                .builder(storIOContentResolverTypeMeta.getPackageName(), putResolver)
+                .indent(INSTANCE.getINDENT())
                 .build();
 
     }
 
     @NotNull
     private MethodSpec createMapToInsertQueryMethodSpec(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta, @NotNull final ClassName storIOContentResolverClassName) {
-        String insertUri = storIOContentResolverTypeMeta.storIOType.insertUri();
+        String insertUri = storIOContentResolverTypeMeta.getStorIOType().insertUri();
         if (insertUri == null || insertUri.length() == 0) {
-            insertUri = storIOContentResolverTypeMeta.storIOType.uri();
+            insertUri = storIOContentResolverTypeMeta.getStorIOType().uri();
         }
 
         return MethodSpec.methodBuilder("mapToInsertQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("com.pushtorefresh.storio.contentresolver.queries", "InsertQuery"))
                 .addParameter(ParameterSpec.builder(storIOContentResolverClassName, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                         .build())
                 .addCode("return InsertQuery.builder()\n" +
-                                INDENT + ".uri($S)\n" +
-                                INDENT + ".build();\n",
+                        INSTANCE.getINDENT() + ".uri($S)\n" +
+                        INSTANCE.getINDENT() + ".build();\n",
                         insertUri)
                 .build();
     }
@@ -74,25 +76,25 @@ public class PutResolverGenerator implements Generator<StorIOContentResolverType
     private MethodSpec createMapToUpdateQueryMethodSpec(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta, @NotNull final ClassName storIOContentResolverClassName) {
         final Map<String, String> where = QueryGenerator.createWhere(storIOContentResolverTypeMeta, "object");
 
-        String updateUri = storIOContentResolverTypeMeta.storIOType.updateUri();
+        String updateUri = storIOContentResolverTypeMeta.getStorIOType().updateUri();
         if (updateUri == null || updateUri.length() == 0) {
-            updateUri = storIOContentResolverTypeMeta.storIOType.uri();
+            updateUri = storIOContentResolverTypeMeta.getStorIOType().uri();
         }
 
         return MethodSpec.methodBuilder("mapToUpdateQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("com.pushtorefresh.storio.contentresolver.queries", "UpdateQuery"))
                 .addParameter(ParameterSpec.builder(storIOContentResolverClassName, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                         .build())
                 .addCode("return UpdateQuery.builder()\n" +
-                                INDENT + ".uri($S)\n" +
-                                INDENT + ".where($S)\n" +
-                                INDENT + ".whereArgs($L)\n" +
-                                INDENT + ".build();\n",
+                        INSTANCE.getINDENT() + ".uri($S)\n" +
+                        INSTANCE.getINDENT() + ".where($S)\n" +
+                        INSTANCE.getINDENT() + ".whereArgs($L)\n" +
+                        INSTANCE.getINDENT() + ".build();\n",
                         updateUri,
                         where.get(QueryGenerator.WHERE_CLAUSE),
                         where.get(QueryGenerator.WHERE_ARGS))
@@ -104,24 +106,27 @@ public class PutResolverGenerator implements Generator<StorIOContentResolverType
         MethodSpec.Builder builder = MethodSpec.methodBuilder("mapToContentValues")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("android.content", "ContentValues"))
                 .addParameter(ParameterSpec.builder(storIOContentResolverClassName, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                         .build())
-                .addStatement("ContentValues contentValues = new ContentValues($L)", storIOContentResolverTypeMeta.columns.size())
+                .addStatement("ContentValues contentValues = new ContentValues($L)",
+                    storIOContentResolverTypeMeta
+                    .getColumns().size())
                 .addCode("\n");
 
-        for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta.columns.values()) {
-            final boolean ignoreNull = columnMeta.storIOColumn.ignoreNull();
+        for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta
+            .getColumns().values()) {
+            final boolean ignoreNull = columnMeta.getStorIOColumn().ignoreNull();
             if (ignoreNull) {
-                builder.beginControlFlow("if (object.$L != null)", columnMeta.elementName + (columnMeta.isMethod() ? "()" : ""));
+                builder.beginControlFlow("if (object.$L != null)", columnMeta.getElementName() + (columnMeta.isMethod() ? "()" : ""));
             }
             builder.addStatement(
                     "contentValues.put($S, object.$L)",
-                    columnMeta.storIOColumn.name(),
-                    columnMeta.elementName + (columnMeta.isMethod() ? "()" : "")
+                    columnMeta.getStorIOColumn().name(),
+                    columnMeta.getElementName() + (columnMeta.isMethod() ? "()" : "")
             );
             if (ignoreNull) {
                 builder.endControlFlow();

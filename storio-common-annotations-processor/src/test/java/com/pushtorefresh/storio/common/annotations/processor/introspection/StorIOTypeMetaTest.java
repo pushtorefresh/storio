@@ -27,10 +27,14 @@ public class StorIOTypeMetaTest {
 		StorIOTypeMeta storioTypeMeta = new StorIOTypeMeta("TEST", "TEST", annotationMock, true);
 		
 		// then
-		assertThat("TEST").as("Constructor must be set simpleName field.").isEqualTo(storioTypeMeta.simpleName);
-		assertThat("TEST").as("Constructor must be set packageName field.").isEqualTo(storioTypeMeta.packageName);
-		assertThat(annotationMock).as("Constructor must be set storIOType field.").isEqualTo(storioTypeMeta.storIOType);
-		assertThat(true).as("Constructor must be set needCreator field.").isEqualTo(storioTypeMeta.needCreator);
+		assertThat("TEST").as("Constructor must be set simpleName field.").isEqualTo(
+        storioTypeMeta.getSimpleName());
+		assertThat("TEST").as("Constructor must be set packageName field.").isEqualTo(
+        storioTypeMeta.getPackageName());
+		assertThat(annotationMock).as("Constructor must be set storIOType field.").isEqualTo(
+        storioTypeMeta.getStorIOType());
+		assertThat(true).as("Constructor must be set needCreator field.").isEqualTo(
+        storioTypeMeta.getNeedCreator());
 	}
 
 	@Test
@@ -43,14 +47,14 @@ public class StorIOTypeMetaTest {
 	public final void toStringValitadion() {
 		// given
 		StorIOTypeMeta storioTypeMeta = new StorIOTypeMeta("TEST", "TEST", annotationMock, true);
-		String expectedString = "StorIOTypeMeta{" +
+		String expectedString = "StorIOTypeMeta(" +
                 "simpleName='TEST" + '\'' +
                 ", packageName='TEST" + '\'' +
                 ", storIOType=" + annotationMock +
 				", needCreator=true" +
 				", creator=null" +
-                ", columns=" + storioTypeMeta.columns +
-                '}';
+                ", columns=" + storioTypeMeta.getColumns() +
+                ')';
 		
 		// when
 		String toString = storioTypeMeta.toString();

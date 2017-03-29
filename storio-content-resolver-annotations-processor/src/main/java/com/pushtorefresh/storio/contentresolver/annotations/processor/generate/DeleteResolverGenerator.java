@@ -23,12 +23,14 @@ public class DeleteResolverGenerator implements Generator<StorIOContentResolverT
 
     @NotNull
     public static String generateName(@NotNull StorIOContentResolverTypeMeta storIOSQLiteTypeMeta) {
-        return storIOSQLiteTypeMeta.simpleName + SUFFIX;
+        return storIOSQLiteTypeMeta.getSimpleName() + SUFFIX;
     }
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta) {
-        final ClassName storIOContentResolverTypeClassName = ClassName.get(storIOContentResolverTypeMeta.packageName, storIOContentResolverTypeMeta.simpleName);
+        final ClassName storIOContentResolverTypeClassName = ClassName.get(
+            storIOContentResolverTypeMeta.getPackageName(),
+            storIOContentResolverTypeMeta.getSimpleName());
 
         final TypeSpec deleteResolver = TypeSpec.classBuilder(generateName(storIOContentResolverTypeMeta))
                 .addJavadoc("Generated resolver for Delete Operation\n")
@@ -38,8 +40,8 @@ public class DeleteResolverGenerator implements Generator<StorIOContentResolverT
                 .build();
 
         return JavaFile
-                .builder(storIOContentResolverTypeMeta.packageName, deleteResolver)
-                .indent(INDENT)
+                .builder(storIOContentResolverTypeMeta.getPackageName(), deleteResolver)
+                .indent(INSTANCE.getINDENT())
                 .build();
     }
 
@@ -47,25 +49,25 @@ public class DeleteResolverGenerator implements Generator<StorIOContentResolverT
     private MethodSpec createMapToDeleteQueryMethodSpec(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta, @NotNull final ClassName storIOContentResolverTypeClassName) {
         final Map<String, String> where = QueryGenerator.createWhere(storIOContentResolverTypeMeta, "object");
 
-        String deleteUri = storIOContentResolverTypeMeta.storIOType.deleteUri();
+        String deleteUri = storIOContentResolverTypeMeta.getStorIOType().deleteUri();
         if (deleteUri == null || deleteUri.length() == 0) {
-            deleteUri = storIOContentResolverTypeMeta.storIOType.uri();
+            deleteUri = storIOContentResolverTypeMeta.getStorIOType().uri();
         }
 
         return MethodSpec.methodBuilder("mapToDeleteQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("com.pushtorefresh.storio.contentresolver.queries", "DeleteQuery"))
                 .addParameter(ParameterSpec.builder(storIOContentResolverTypeClassName, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                         .build())
                 .addCode("return DeleteQuery.builder()\n" +
-                                INDENT + ".uri($S)\n" +
-                                INDENT + ".where($S)\n" +
-                                INDENT + ".whereArgs($L)\n" +
-                                INDENT + ".build();\n",
+                        INSTANCE.getINDENT() + ".uri($S)\n" +
+                        INSTANCE.getINDENT() + ".where($S)\n" +
+                        INSTANCE.getINDENT() + ".whereArgs($L)\n" +
+                        INSTANCE.getINDENT() + ".build();\n",
                         deleteUri,
                         where.get(QueryGenerator.WHERE_CLAUSE),
                         where.get(QueryGenerator.WHERE_ARGS))

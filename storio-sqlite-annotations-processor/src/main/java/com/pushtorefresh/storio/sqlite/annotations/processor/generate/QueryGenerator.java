@@ -21,28 +21,28 @@ public class QueryGenerator {
 
         int i = 0;
 
-        for (final StorIOSQLiteColumnMeta columnMeta : storIOSQLiteTypeMeta.columns.values()) {
-            if (columnMeta.storIOColumn.key()) {
+        for (final StorIOSQLiteColumnMeta columnMeta : storIOSQLiteTypeMeta.getColumns().values()) {
+            if (columnMeta.getStorIOColumn().key()) {
                 if (i == 0) {
                     whereClause
-                            .append(columnMeta.storIOColumn.name())
+                            .append(columnMeta.getStorIOColumn().name())
                             .append(" = ?");
 
                     whereArgs
                             .append(varName)
                             .append(".")
-                            .append(columnMeta.elementName);
+                            .append(columnMeta.getElementName());
                 } else {
                     whereClause
                             .append(" AND ")
-                            .append(columnMeta.storIOColumn.name())
+                            .append(columnMeta.getStorIOColumn().name())
                             .append(" = ?");
 
                     whereArgs
                             .append(", ")
                             .append(varName)
                             .append(".")
-                            .append(columnMeta.elementName);
+                            .append(columnMeta.getElementName());
                 }
 
                 if (columnMeta.isMethod()) {

@@ -10,6 +10,7 @@ import javax.tools.JavaFileObject;
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class StorIOSQLiteAnnotationsProcessorTest {
 
     @Test

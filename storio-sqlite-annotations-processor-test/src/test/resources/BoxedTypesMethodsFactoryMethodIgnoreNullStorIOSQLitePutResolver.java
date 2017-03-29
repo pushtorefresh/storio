@@ -46,20 +46,20 @@ public class BoxedTypesMethodsFactoryMethodIgnoreNullStorIOSQLitePutResolver ext
         if (object.getField1() != null) {
             contentValues.put("field1", object.getField1());
         }
-        if (object.getField6() != null) {
-            contentValues.put("field6", object.getField6());
+        if (object.getField2() != null) {
+            contentValues.put("field2", object.getField2());
         }
         if (object.getField3() != null) {
             contentValues.put("field3", object.getField3());
         }
-        if (object.getField2() != null) {
-            contentValues.put("field2", object.getField2());
+        if (object.getField4() != null) {
+            contentValues.put("field4", object.getField4());
         }
         if (object.getField5() != null) {
             contentValues.put("field5", object.getField5());
         }
-        if (object.getField4() != null) {
-            contentValues.put("field4", object.getField4());
+        if (object.getField6() != null) {
+            contentValues.put("field6", object.getField6());
         }
 
         return contentValues;

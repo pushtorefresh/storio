@@ -21,14 +21,14 @@ public class MappingGenerator implements Generator<StorIOContentResolverTypeMeta
     @Override
     public JavaFile generateJavaFile(@NotNull StorIOContentResolverTypeMeta storIOSQLiteTypeMeta) {
         final ClassName storIOSQLiteTypeClassName = ClassName.get(
-                storIOSQLiteTypeMeta.packageName, storIOSQLiteTypeMeta.simpleName);
+            storIOSQLiteTypeMeta.getPackageName(), storIOSQLiteTypeMeta.getSimpleName());
 
         ClassName superclass = ClassName.get("com.pushtorefresh.storio.contentresolver", SUFFIX);
         ParameterizedTypeName superclassParametrized =
                 ParameterizedTypeName.get(superclass, storIOSQLiteTypeClassName);
 
 
-        final TypeSpec mapping = TypeSpec.classBuilder(storIOSQLiteTypeMeta.simpleName + SUFFIX)
+        final TypeSpec mapping = TypeSpec.classBuilder(storIOSQLiteTypeMeta.getSimpleName() + SUFFIX)
                 .addJavadoc("Generated mapping with collection of resolvers\n")
                 .addModifiers(PUBLIC)
                 .superclass(superclassParametrized)
@@ -36,18 +36,18 @@ public class MappingGenerator implements Generator<StorIOContentResolverTypeMeta
                 .build();
 
         return JavaFile
-                .builder(storIOSQLiteTypeMeta.packageName, mapping)
-                .indent(INDENT)
+                .builder(storIOSQLiteTypeMeta.getPackageName(), mapping)
+                .indent(INSTANCE.getINDENT())
                 .build();
     }
 
     @NotNull
     private MethodSpec createConstructor(StorIOContentResolverTypeMeta storIOSQLiteTypeMeta) {
-        final ClassName putResolver = ClassName.get(storIOSQLiteTypeMeta.packageName,
+        final ClassName putResolver = ClassName.get(storIOSQLiteTypeMeta.getPackageName(),
                 PutResolverGenerator.generateName(storIOSQLiteTypeMeta));
-        final ClassName getResolver = ClassName.get(storIOSQLiteTypeMeta.packageName,
+        final ClassName getResolver = ClassName.get(storIOSQLiteTypeMeta.getPackageName(),
                 GetResolverGenerator.generateName(storIOSQLiteTypeMeta));
-        final ClassName deleteResolver = ClassName.get(storIOSQLiteTypeMeta.packageName,
+        final ClassName deleteResolver = ClassName.get(storIOSQLiteTypeMeta.getPackageName(),
                 DeleteResolverGenerator.generateName(storIOSQLiteTypeMeta));
 
         return MethodSpec.constructorBuilder()

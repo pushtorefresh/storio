@@ -56,7 +56,7 @@ public class JavaTypeTest {
         when(typeMirror.toString()).thenReturn(null);
 
         // when
-        JavaType.from(typeMirror);
+        JavaType.Companion.from(typeMirror);
         
         // then
         fail("IllegalArgumentException expected.");
@@ -74,85 +74,85 @@ public class JavaTypeTest {
     @Test
     public void fromBoolean() {
         final TypeMirror typeMirror = mockTypeMirror(TypeKind.BOOLEAN, null);
-        assertThat(JavaType.from(typeMirror)).isEqualTo(BOOLEAN);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(BOOLEAN);
     }
 
     @Test
     public void fromBooleanObject() {
         final TypeMirror typeMirror = mockTypeMirror(null, Boolean.class.getCanonicalName());
-        assertThat(JavaType.from(typeMirror)).isEqualTo(BOOLEAN_OBJECT);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(BOOLEAN_OBJECT);
     }
 
     @Test
     public void fromShort() {
         final TypeMirror typeMirror = mockTypeMirror(TypeKind.SHORT, null);
-        assertThat(JavaType.from(typeMirror)).isEqualTo(SHORT);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(SHORT);
     }
 
     @Test
     public void fromShortObject() {
         final TypeMirror typeMirror = mockTypeMirror(null, Short.class.getCanonicalName());
-        assertThat(JavaType.from(typeMirror)).isEqualTo(SHORT_OBJECT);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(SHORT_OBJECT);
     }
 
     @Test
     public void fromInteger() {
         final TypeMirror typeMirror = mockTypeMirror(TypeKind.INT, null);
-        assertThat(JavaType.from(typeMirror)).isEqualTo(INTEGER);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(INTEGER);
     }
 
     @Test
     public void fromIntegerObject() {
         final TypeMirror typeMirror = mockTypeMirror(null, Integer.class.getCanonicalName());
-        assertThat(JavaType.from(typeMirror)).isEqualTo(INTEGER_OBJECT);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(INTEGER_OBJECT);
     }
 
     @Test
     public void fromLong() {
         final TypeMirror typeMirror = mockTypeMirror(TypeKind.LONG, null);
-        assertThat(JavaType.from(typeMirror)).isEqualTo(LONG);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(LONG);
     }
 
     @Test
     public void fromLongObject() {
         final TypeMirror typeMirror = mockTypeMirror(null, Long.class.getCanonicalName());
-        assertThat(JavaType.from(typeMirror)).isEqualTo(LONG_OBJECT);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(LONG_OBJECT);
     }
 
     @Test
     public void fromFloat() {
         final TypeMirror typeMirror = mockTypeMirror(TypeKind.FLOAT, null);
-        assertThat(JavaType.from(typeMirror)).isEqualTo(FLOAT);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(FLOAT);
     }
 
     @Test
     public void fromFloatObject() {
         final TypeMirror typeMirror = mockTypeMirror(null, Float.class.getCanonicalName());
-        assertThat(JavaType.from(typeMirror)).isEqualTo(FLOAT_OBJECT);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(FLOAT_OBJECT);
     }
 
     @Test
     public void fromDouble() {
         final TypeMirror typeMirror = mockTypeMirror(TypeKind.DOUBLE, null);
-        assertThat(JavaType.from(typeMirror)).isEqualTo(DOUBLE);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(DOUBLE);
     }
 
     @Test
     public void fromDoubleObject() {
         final TypeMirror typeMirror = mockTypeMirror(null, Double.class.getCanonicalName());
-        assertThat(JavaType.from(typeMirror)).isEqualTo(DOUBLE_OBJECT);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(DOUBLE_OBJECT);
     }
 
     @Test
     public void fromString() {
         final TypeMirror typeMirror = mockTypeMirror(null, String.class.getCanonicalName());
-        assertThat(JavaType.from(typeMirror)).isEqualTo(STRING);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(STRING);
     }
 
     @Test
     public void fromByteArray() {
         final TypeMirror typeMirror = mockTypeMirror(null, byte[].class.getCanonicalName());
-        assertThat(JavaType.from(typeMirror)).isEqualTo(BYTE_ARRAY);
+        assertThat(JavaType.Companion.from(typeMirror)).isEqualTo(BYTE_ARRAY);
     }
 
     @Test

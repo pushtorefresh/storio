@@ -1,5 +1,8 @@
 package com.pushtorefresh.storio.sqlite.annotations.processor.generate;
 
+import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INSTANCE;
+import static javax.lang.model.element.Modifier.PUBLIC;
+
 import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteColumnMeta;
@@ -11,16 +14,9 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-
-import org.jetbrains.annotations.NotNull;
-
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT;
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.getFromCursorString;
-import static javax.lang.model.element.Modifier.PUBLIC;
+import org.jetbrains.annotations.NotNull;
 
 public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
 
@@ -28,24 +24,25 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
 
     @NotNull
     public static String generateName(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
-        return storIOSQLiteTypeMeta.simpleName + SUFFIX;
+        return storIOSQLiteTypeMeta.getSimpleName() + SUFFIX;
     }
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull StorIOSQLiteTypeMeta storIOSQLiteTypeMeta) {
-        final ClassName storIOSQLiteTypeClassName = ClassName.get(storIOSQLiteTypeMeta.packageName, storIOSQLiteTypeMeta.simpleName);
+        final ClassName storIOSQLiteTypeClassName = ClassName.get(
+            storIOSQLiteTypeMeta.getPackageName(), storIOSQLiteTypeMeta.getSimpleName());
 
         final TypeSpec getResolver = TypeSpec.classBuilder(generateName(storIOSQLiteTypeMeta))
                 .addJavadoc("Generated resolver for Get Operation.\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operations.get", "DefaultGetResolver"), storIOSQLiteTypeClassName))
-                .addMethod(storIOSQLiteTypeMeta.needCreator ? createMapFromCursorWithCreatorMethodSpec(storIOSQLiteTypeMeta, storIOSQLiteTypeClassName)
+                .addMethod(storIOSQLiteTypeMeta.getNeedCreator() ? createMapFromCursorWithCreatorMethodSpec(storIOSQLiteTypeMeta, storIOSQLiteTypeClassName)
                         : createMapFromCursorMethodSpec(storIOSQLiteTypeMeta, storIOSQLiteTypeClassName))
                 .build();
 
         return JavaFile
-                .builder(storIOSQLiteTypeMeta.packageName, getResolver)
-                .indent(INDENT)
+                .builder(storIOSQLiteTypeMeta.getPackageName(), getResolver)
+                .indent(INSTANCE.getINDENT())
                 .build();
     }
 
@@ -54,28 +51,29 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
         final MethodSpec.Builder builder = MethodSpec.methodBuilder("mapFromCursor")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                 .addModifiers(PUBLIC)
                 .returns(storIOSQLiteTypeClassName)
                 .addParameter(ParameterSpec.builder(ClassName.get("android.database", "Cursor"), "cursor")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                         .build())
                 .addStatement("$T object = new $T()", storIOSQLiteTypeClassName, storIOSQLiteTypeClassName)
                 .addCode("\n");
 
-        for (final StorIOSQLiteColumnMeta columnMeta : storIOSQLiteTypeMeta.columns.values()) {
-            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.storIOColumn.name() + "\")";
+        for (final StorIOSQLiteColumnMeta columnMeta : storIOSQLiteTypeMeta.getColumns().values()) {
+            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.getStorIOColumn().name() + "\")";
 
-            final JavaType javaType = columnMeta.javaType;
+            final JavaType javaType = columnMeta.getJavaType();
 
-            final String getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex);
+            final String getFromCursor = INSTANCE
+                .getFromCursorString(columnMeta, javaType, columnIndex);
 
             final boolean isBoxed = javaType.isBoxedType();
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
                 builder.beginControlFlow("if (!cursor.isNull($L))", columnIndex);
             }
 
-            builder.addStatement("object.$L = cursor.$L", columnMeta.elementName, getFromCursor);
+            builder.addStatement("object.$L = cursor.$L", columnMeta.getElementName(), getFromCursor);
 
             if (isBoxed) {
                 builder.endControlFlow();
@@ -93,11 +91,11 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
         final MethodSpec.Builder builder = MethodSpec.methodBuilder("mapFromCursor")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                 .addModifiers(PUBLIC)
                 .returns(storIOSQLiteTypeClassName)
                 .addParameter(ParameterSpec.builder(ClassName.get("android.database", "Cursor"), "cursor")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                         .build())
                 .addCode("\n");
 
@@ -105,13 +103,14 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
         paramsBuilder.append("(");
         boolean first = true;
         for (final StorIOSQLiteColumnMeta columnMeta : storIOSQLiteTypeMeta.getOrderedColumns()) {
-            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.storIOColumn.name() + "\")";
+            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.getStorIOColumn().name() + "\")";
 
-            final JavaType javaType = columnMeta.javaType;
+            final JavaType javaType = columnMeta.getJavaType();
 
-            final String getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex);
+            final String getFromCursor = INSTANCE
+                .getFromCursorString(columnMeta, javaType, columnIndex);
 
-            final TypeName name = TypeName.get(((ExecutableElement) columnMeta.element).getReturnType());
+            final TypeName name = TypeName.get(((ExecutableElement) columnMeta.getElement()).getReturnType());
 
             final boolean isBoxed = javaType.isBoxedType();
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
@@ -132,11 +131,11 @@ public class GetResolverGenerator implements Generator<StorIOSQLiteTypeMeta> {
         paramsBuilder.append(")");
         builder.addCode("\n");
 
-        if (storIOSQLiteTypeMeta.creator.getKind() == ElementKind.CONSTRUCTOR) {
+        if (storIOSQLiteTypeMeta.getCreator().getKind() == ElementKind.CONSTRUCTOR) {
             builder.addStatement("$T object = new $T" + paramsBuilder.toString(), storIOSQLiteTypeClassName, storIOSQLiteTypeClassName);
         } else {
             builder.addStatement("$T object = $T.$L", storIOSQLiteTypeClassName, storIOSQLiteTypeClassName,
-                    storIOSQLiteTypeMeta.creator.getSimpleName() + paramsBuilder.toString());
+                    storIOSQLiteTypeMeta.getCreator().getSimpleName() + paramsBuilder.toString());
         }
 
         return builder

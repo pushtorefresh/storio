@@ -28,24 +28,26 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
 
     @NotNull
     public static String generateName(@NotNull StorIOContentResolverTypeMeta storIOSQLiteTypeMeta) {
-        return storIOSQLiteTypeMeta.simpleName + SUFFIX;
+        return storIOSQLiteTypeMeta.getSimpleName() + SUFFIX;
     }
 
     @NotNull
     public JavaFile generateJavaFile(@NotNull final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta) {
-        final ClassName storIOContentResolverTypeClassName = ClassName.get(storIOContentResolverTypeMeta.packageName, storIOContentResolverTypeMeta.simpleName);
+        final ClassName storIOContentResolverTypeClassName = ClassName.get(
+            storIOContentResolverTypeMeta.getPackageName(),
+            storIOContentResolverTypeMeta.getSimpleName());
 
         final TypeSpec getResolver = TypeSpec.classBuilder(generateName(storIOContentResolverTypeMeta))
                 .addJavadoc("Generated resolver for Get Operation\n")
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.contentresolver.operations.get", "DefaultGetResolver"), storIOContentResolverTypeClassName))
-                .addMethod(storIOContentResolverTypeMeta.needCreator ? createMapFromCursorWithCreatorMethodSpec(storIOContentResolverTypeMeta, storIOContentResolverTypeClassName)
+                .addMethod(storIOContentResolverTypeMeta.getNeedCreator() ? createMapFromCursorWithCreatorMethodSpec(storIOContentResolverTypeMeta, storIOContentResolverTypeClassName)
                         : createMapFromCursorMethodSpec(storIOContentResolverTypeMeta, storIOContentResolverTypeClassName))
                 .build();
 
         return JavaFile
-                .builder(storIOContentResolverTypeMeta.packageName, getResolver)
-                .indent(INDENT)
+                .builder(storIOContentResolverTypeMeta.getPackageName(), getResolver)
+                .indent(INSTANCE.getINDENT())
                 .build();
     }
 
@@ -54,28 +56,30 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
         final MethodSpec.Builder builder = MethodSpec.methodBuilder("mapFromCursor")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                 .addModifiers(PUBLIC)
                 .returns(storIOContentResolverTypeClassName)
                 .addParameter(ParameterSpec.builder(ClassName.get("android.database", "Cursor"), "cursor")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                         .build())
                 .addStatement("$T object = new $T()", storIOContentResolverTypeClassName, storIOContentResolverTypeClassName)
                 .addCode("\n");
 
-        for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta.columns.values()) {
-            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.storIOColumn.name() + "\")";
+        for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta
+            .getColumns().values()) {
+            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.getStorIOColumn().name() + "\")";
 
-            final JavaType javaType = columnMeta.javaType;
+            final JavaType javaType = columnMeta.getJavaType();
 
-            final String getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex);
+            final String getFromCursor = INSTANCE
+                .getFromCursorString(columnMeta, javaType, columnIndex);
 
             final boolean isBoxed = javaType.isBoxedType();
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
                 builder.beginControlFlow("if (!cursor.isNull($L))", columnIndex);
             }
 
-            builder.addStatement("object.$L = cursor.$L", columnMeta.elementName, getFromCursor);
+            builder.addStatement("object.$L = cursor.$L", columnMeta.getElementName(), getFromCursor);
 
             if (isBoxed) {
                 builder.endControlFlow();
@@ -93,11 +97,11 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
         final MethodSpec.Builder builder = MethodSpec.methodBuilder("mapFromCursor")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override.class)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                 .addModifiers(PUBLIC)
                 .returns(storIOSQLiteTypeClassName)
                 .addParameter(ParameterSpec.builder(ClassName.get("android.database", "Cursor"), "cursor")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(INSTANCE.getANDROID_NON_NULL_ANNOTATION_CLASS_NAME())
                         .build())
                 .addCode("\n");
 
@@ -105,13 +109,14 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
         paramsBuilder.append("(");
         boolean first = true;
         for (final StorIOContentResolverColumnMeta columnMeta : storIOContentResolverTypeMeta.getOrderedColumns()) {
-            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.storIOColumn.name() + "\")";
+            final String columnIndex = "cursor.getColumnIndex(\"" + columnMeta.getStorIOColumn().name() + "\")";
 
-            final JavaType javaType = columnMeta.javaType;
+            final JavaType javaType = columnMeta.getJavaType();
 
-            final String getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex);
+            final String getFromCursor = INSTANCE
+                .getFromCursorString(columnMeta, javaType, columnIndex);
 
-            final TypeName name = TypeName.get(((ExecutableElement) columnMeta.element).getReturnType());
+            final TypeName name = TypeName.get(((ExecutableElement) columnMeta.getElement()).getReturnType());
 
             final boolean isBoxed = javaType.isBoxedType();
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
@@ -132,11 +137,11 @@ public class GetResolverGenerator implements Generator<StorIOContentResolverType
         paramsBuilder.append(")");
         builder.addCode("\n");
 
-        if (storIOContentResolverTypeMeta.creator.getKind() == ElementKind.CONSTRUCTOR) {
+        if (storIOContentResolverTypeMeta.getCreator().getKind() == ElementKind.CONSTRUCTOR) {
             builder.addStatement("$T object = new $T" + paramsBuilder.toString(), storIOSQLiteTypeClassName, storIOSQLiteTypeClassName);
         } else {
             builder.addStatement("$T object = $T.$L", storIOSQLiteTypeClassName, storIOSQLiteTypeClassName,
-                    storIOContentResolverTypeMeta.creator.getSimpleName() + paramsBuilder.toString());
+                    storIOContentResolverTypeMeta.getCreator().getSimpleName() + paramsBuilder.toString());
         }
 
         return builder

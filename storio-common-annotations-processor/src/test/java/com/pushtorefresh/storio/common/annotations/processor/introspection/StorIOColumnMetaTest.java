@@ -35,15 +35,15 @@ public class StorIOColumnMetaTest {
 
 		// then
 		assertThat(elementMock).as("Constructor must be set enclosingElement field.")
-				.isEqualTo(storioColumnMeta.enclosingElement);
+				.isEqualTo(storioColumnMeta.getEnclosingElement());
 		assertThat(elementMock).as("Constructor must be set element field.")
-				.isEqualTo(storioColumnMeta.element);
+				.isEqualTo(storioColumnMeta.getElement());
 		assertThat("TEST").as("Constructor must be set elementName field.")
-				.isEqualTo(storioColumnMeta.elementName);
+				.isEqualTo(storioColumnMeta.getElementName());
 		assertThat(javaType).as("Constructor must be set javaType field.")
-				.isEqualTo(storioColumnMeta.javaType);
+				.isEqualTo(storioColumnMeta.getJavaType());
 		assertThat(annotationMock).as("Constructor must be set storIOColumn field.")
-				.isEqualTo(storioColumnMeta.storIOColumn);
+				.isEqualTo(storioColumnMeta.getStorIOColumn());
 	}
 
 	@Test
@@ -57,8 +57,8 @@ public class StorIOColumnMetaTest {
 		// given
 		StorIOColumnMeta storioColumnMeta = new StorIOColumnMeta(elementMock, elementMock, "TEST", javaType,
 				annotationMock);
-		String expectedString = "StorIOColumnMeta{enclosingElement=" + elementMock + ", element=" + elementMock
-				+ ", elementName='TEST" + '\'' + ", javaType=" + javaType + ", storIOColumn=" + annotationMock +  '}';
+		String expectedString = "StorIOColumnMeta(enclosingElement=" + elementMock + ", element=" + elementMock
+				+ ", elementName='TEST" + '\'' + ", javaType=" + javaType + ", storIOColumn=" + annotationMock +  ')';
 
 		// when
 		String toString = storioColumnMeta.toString();

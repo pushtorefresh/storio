@@ -18,13 +18,13 @@ public class PrimitiveFieldsStorIOSQLiteGetResolver extends DefaultGetResolver<P
         PrimitiveFields object = new PrimitiveFields();
 
         object.field1 = cursor.getInt(cursor.getColumnIndex("field1")) == 1;
-        object.field7 = cursor.getString(cursor.getColumnIndex("field7"));
-        object.field6 = cursor.getDouble(cursor.getColumnIndex("field6"));
-        object.field8 = cursor.getBlob(cursor.getColumnIndex("field8"));
-        object.field3 = cursor.getInt(cursor.getColumnIndex("field3"));
         object.field2 = cursor.getShort(cursor.getColumnIndex("field2"));
-        object.field5 = cursor.getFloat(cursor.getColumnIndex("field5"));
+        object.field3 = cursor.getInt(cursor.getColumnIndex("field3"));
         object.field4 = cursor.getLong(cursor.getColumnIndex("field4"));
+        object.field5 = cursor.getFloat(cursor.getColumnIndex("field5"));
+        object.field6 = cursor.getDouble(cursor.getColumnIndex("field6"));
+        object.field7 = cursor.getString(cursor.getColumnIndex("field7"));
+        object.field8 = cursor.getBlob(cursor.getColumnIndex("field8"));
 
         return object;
     }
