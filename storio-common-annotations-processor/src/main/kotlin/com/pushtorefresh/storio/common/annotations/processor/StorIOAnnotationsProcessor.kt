@@ -65,23 +65,23 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
      */
     private fun validateAnnotatedClass(annotatedElement: Element): TypeElement {
         // We expect here that annotatedElement is Class, annotation requires that via @Target.
-        val annotatedTypeElement = annotatedElement as TypeElement
+        val typeElement = annotatedElement as TypeElement
 
-        if (annotatedTypeElement.kind != CLASS) {
+        if (typeElement.kind != CLASS) {
             throw ProcessingException(annotatedElement,
                     "${typeAnnotationClass.simpleName} can be" +
-                            " applied only to classes not to ${annotatedTypeElement.simpleName}"
+                            " applied only to classes not to ${typeElement.simpleName}"
             )
         }
 
-        if (annotatedTypeElement.enclosingElement.kind != PACKAGE) {
+        if (typeElement.enclosingElement.kind != PACKAGE) {
             throw ProcessingException(annotatedElement,
                     "${typeAnnotationClass.simpleName} can't be applied to nested or inner" +
-                            " classes: ${annotatedTypeElement.simpleName}"
+                            " classes: ${typeElement.simpleName}"
             )
         }
 
-        return annotatedTypeElement
+        return typeElement
     }
 
     /**

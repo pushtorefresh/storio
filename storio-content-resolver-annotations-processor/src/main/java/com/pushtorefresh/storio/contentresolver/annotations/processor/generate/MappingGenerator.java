@@ -10,7 +10,6 @@ import com.squareup.javapoet.TypeSpec;
 
 import org.jetbrains.annotations.NotNull;
 
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
 public class MappingGenerator implements Generator<StorIOContentResolverTypeMeta> {
@@ -19,24 +18,24 @@ public class MappingGenerator implements Generator<StorIOContentResolverTypeMeta
 
     @NotNull
     @Override
-    public JavaFile generateJavaFile(@NotNull StorIOContentResolverTypeMeta storIOSQLiteTypeMeta) {
+    public JavaFile generateJavaFile(@NotNull StorIOContentResolverTypeMeta typeMeta) {
         final ClassName storIOSQLiteTypeClassName = ClassName.get(
-            storIOSQLiteTypeMeta.getPackageName(), storIOSQLiteTypeMeta.getSimpleName());
+            typeMeta.getPackageName(), typeMeta.getSimpleName());
 
         ClassName superclass = ClassName.get("com.pushtorefresh.storio.contentresolver", SUFFIX);
         ParameterizedTypeName superclassParametrized =
                 ParameterizedTypeName.get(superclass, storIOSQLiteTypeClassName);
 
 
-        final TypeSpec mapping = TypeSpec.classBuilder(storIOSQLiteTypeMeta.getSimpleName() + SUFFIX)
+        final TypeSpec mapping = TypeSpec.classBuilder(typeMeta.getSimpleName() + SUFFIX)
                 .addJavadoc("Generated mapping with collection of resolvers\n")
                 .addModifiers(PUBLIC)
                 .superclass(superclassParametrized)
-                .addMethod(createConstructor(storIOSQLiteTypeMeta))
+                .addMethod(createConstructor(typeMeta))
                 .build();
 
         return JavaFile
-                .builder(storIOSQLiteTypeMeta.getPackageName(), mapping)
+                .builder(typeMeta.getPackageName(), mapping)
                 .indent(INSTANCE.getINDENT())
                 .build();
     }

@@ -2,8 +2,7 @@ package com.pushtorefresh.storio.common.annotations.processor.introspection
 
 import javax.lang.model.element.ExecutableElement
 
-open class StorIOTypeMeta<out TypeAnnotation : Annotation,
-        out ColumnMeta : StorIOColumnMeta<*>>
+open class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOColumnMeta<*>>
 @JvmOverloads constructor(
         val simpleName: String,
         val packageName: String,
@@ -15,7 +14,7 @@ open class StorIOTypeMeta<out TypeAnnotation : Annotation,
     /**
      * Yep, this is MODIFIABLE Map, please use it carefully.
      */
-    val columns: Map<String, ColumnMeta> = mutableMapOf()
+    val columns: MutableMap<String, ColumnMeta> = mutableMapOf()
 
     val orderedColumns: Collection<ColumnMeta>
         get() = when {
@@ -26,7 +25,7 @@ open class StorIOTypeMeta<out TypeAnnotation : Annotation,
                 }
                 val orderedColumns = mutableListOf<ColumnMeta?>().apply {
                     for (i in 0..columns.size - 1) {
-                        this.add(null)
+                        add(null)
                     }
                 }
                 columns.values.forEach { orderedColumns[params.indexOf(it.realElementName)] = it }
