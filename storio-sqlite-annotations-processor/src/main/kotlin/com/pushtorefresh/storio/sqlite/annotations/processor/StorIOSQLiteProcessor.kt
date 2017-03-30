@@ -33,8 +33,7 @@ import javax.tools.Diagnostic.Kind.WARNING
  */
 // Generate file with annotation processor declaration via another Annotation Processor!
 @AutoService(Processor::class)
-class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta,
-        StorIOSQLiteColumnMeta>() {
+class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta, StorIOSQLiteColumnMeta>() {
 
     override fun getSupportedAnnotationTypes() = mutableSetOf<String>().apply {
         add(StorIOSQLiteType::class.java.canonicalName)
@@ -50,24 +49,19 @@ class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta,
      *
      * @return result of processing as [StorIOSQLiteTypeMeta]
      */
-    override fun processAnnotatedClass(classElement: TypeElement,
-                                       elementUtils: Elements): StorIOSQLiteTypeMeta {
+    override fun processAnnotatedClass(classElement: TypeElement, elementUtils: Elements): StorIOSQLiteTypeMeta {
         val storIOSQLiteType = classElement.getAnnotation(StorIOSQLiteType::class.java)
 
         val tableName = storIOSQLiteType.table
 
         if (tableName.isEmpty()) {
-            throw ProcessingException(classElement,
-                    "Table name of ${classElement.simpleName} annotated with" +
-                            " ${StorIOSQLiteType::class.java.simpleName} is empty"
-            )
+            throw ProcessingException(classElement, "Table name of ${classElement.simpleName} annotated with ${StorIOSQLiteType::class.java.simpleName} is empty")
         }
 
         val simpleName = classElement.simpleName.toString()
         val packageName = elementUtils.getPackageOf(classElement).qualifiedName.toString()
 
-        return StorIOSQLiteTypeMeta(simpleName, packageName, storIOSQLiteType,
-                Modifier.ABSTRACT in classElement.modifiers)
+        return StorIOSQLiteTypeMeta(simpleName, packageName, storIOSQLiteType, Modifier.ABSTRACT in classElement.modifiers)
     }
 
     /**
@@ -76,11 +70,8 @@ class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta,
      *
      * @param annotatedClasses map of classes annotated with [StorIOSQLiteType]
      */
-    override fun processAnnotatedFieldsOrMethods(roundEnvironment: RoundEnvironment,
-                                                 annotatedClasses: Map<TypeElement,
-                                                         StorIOSQLiteTypeMeta>) {
-        val elementsAnnotatedWithStorIOSQLiteColumn =
-                roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteColumn::class.java)
+    override fun processAnnotatedFieldsOrMethods(roundEnvironment: RoundEnvironment, annotatedClasses: Map<TypeElement, StorIOSQLiteTypeMeta>) {
+        val elementsAnnotatedWithStorIOSQLiteColumn = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteColumn::class.java)
 
         elementsAnnotatedWithStorIOSQLiteColumn.forEach { element ->
             try {
@@ -96,16 +87,9 @@ class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta,
                     }
 
                     // If field annotation applied to both fields and methods in a same class.
-                    if (typeMeta.needCreator
-                            && !columnMeta.isMethod
-                            || !typeMeta.needCreator
-                            && columnMeta.isMethod
-                            && typeMeta.columns.isNotEmpty()) {
-                        throw ProcessingException(element, "Can't apply" +
-                                " ${StorIOSQLiteColumn::class.java.simpleName} annotation" +
-                                " to both fields and methods in a same class:" +
-                                " ${typeMeta.simpleName}"
-                        )
+                    if (typeMeta.needCreator && !columnMeta.isMethod || !typeMeta.needCreator && columnMeta.isMethod && typeMeta.columns.isNotEmpty()) {
+                        throw ProcessingException(element, "Can't apply ${StorIOSQLiteColumn::class.java.simpleName} annotation to both fields and methods in a same class:" +
+                                " ${typeMeta.simpleName}")
                     }
 
                     // If column needs creator then enclosing class needs typeMeta as well.
@@ -132,38 +116,23 @@ class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta,
         val javaType: JavaType
 
         try {
-            javaType = JavaType.from(
-                    if (annotatedField.kind == ElementKind.FIELD) annotatedField.asType()
-                    else (annotatedField as ExecutableElement).returnType)
+            javaType = JavaType.from(if (annotatedField.kind == ElementKind.FIELD) annotatedField.asType() else (annotatedField as ExecutableElement).returnType)
         } catch (e: Exception) {
-            throw ProcessingException(annotatedField,
-                    "Unsupported type of field or method for" +
-                            " ${StorIOSQLiteColumn::class.java.simpleName} annotation, if you" +
-                            " need to serialize/deserialize field of that type -> please write" +
-                            " your own resolver: ${e.message}"
-            )
+            throw ProcessingException(annotatedField, "Unsupported type of field or method for ${StorIOSQLiteColumn::class.java.simpleName} annotation, if you" +
+                    " need to serialize/deserialize field of that type -> please write your own resolver: ${e.message}")
         }
 
         val column = annotatedField.getAnnotation(StorIOSQLiteColumn::class.java)
 
         if (column.ignoreNull && annotatedField.asType().kind.isPrimitive) {
-            throw ProcessingException(annotatedField,
-                    "ignoreNull should not be used for primitive type:" +
-                            " ${annotatedField.simpleName}")
+            throw ProcessingException(annotatedField, "ignoreNull should not be used for primitive type: ${annotatedField.simpleName}")
         }
 
         if (column.name.isEmpty()) {
-            throw ProcessingException(annotatedField,
-                    "Column name is empty: ${annotatedField.simpleName}")
+            throw ProcessingException(annotatedField, "Column name is empty: ${annotatedField.simpleName}")
         }
 
-        return StorIOSQLiteColumnMeta(
-                annotatedField.enclosingElement,
-                annotatedField,
-                annotatedField.simpleName.toString(),
-                javaType,
-                column
-        )
+        return StorIOSQLiteColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column)
     }
 
     /**
@@ -172,11 +141,8 @@ class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta,
      *
      * @param annotatedClasses map of classes annotated with [StorIOSQLiteType]
      */
-    override fun processAnnotatedExecutables(roundEnvironment: RoundEnvironment,
-                                             annotatedClasses: Map<TypeElement,
-                                                     StorIOSQLiteTypeMeta>) {
-        val elementsAnnotatedWithStorIOSQLiteCreator =
-                roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteCreator::class.java)
+    override fun processAnnotatedExecutables(roundEnvironment: RoundEnvironment, annotatedClasses: Map<TypeElement, StorIOSQLiteTypeMeta>) {
+        val elementsAnnotatedWithStorIOSQLiteCreator = roundEnvironment.getElementsAnnotatedWith(StorIOSQLiteCreator::class.java)
 
         elementsAnnotatedWithStorIOSQLiteCreator.forEach { element ->
             val executableElement = element as ExecutableElement
@@ -192,53 +158,36 @@ class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta,
                 if (it.creator == null) {
                     it.creator = executableElement
                 } else {
-                    throw ProcessingException(executableElement,
-                            "Only one creator method or constructor is allowed:" +
-                                    " ${executableElement.enclosingElement.simpleName}")
+                    throw ProcessingException(executableElement, "Only one creator method or constructor is allowed: ${executableElement.enclosingElement.simpleName}")
                 }
             }
         }
     }
 
-    override fun validateAnnotatedClassesAndColumns(annotatedClasses: Map<TypeElement,
-            StorIOSQLiteTypeMeta>) {
+    override fun validateAnnotatedClassesAndColumns(annotatedClasses: Map<TypeElement, StorIOSQLiteTypeMeta>) {
         // Check that each annotated class has columns with at least one key column.
         annotatedClasses.forEach { (key, typeMeta) ->
             if (typeMeta.columns.isEmpty()) {
-                throw ProcessingException(key,
-                        "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation" +
-                                " should have at least one field or method marked with" +
-                                " ${StorIOSQLiteColumn::class.java.simpleName} annotation:" +
-                                " ${typeMeta.simpleName}")
+                throw ProcessingException(key, "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation should have at least one field or method marked with" +
+                        " ${StorIOSQLiteColumn::class.java.simpleName} annotation: ${typeMeta.simpleName}")
             }
 
             val hasAtLeastOneKeyColumn = typeMeta.columns.values.any { it.storIOColumn.key }
 
             if (!hasAtLeastOneKeyColumn) {
-                throw ProcessingException(key,
-                        "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation" +
-                                " should have at least one KEY field or method marked with" +
-                                " ${StorIOSQLiteColumn::class.java.simpleName} annotation:" +
-                                " ${typeMeta.simpleName}")
+                throw ProcessingException(key, "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation should have at least one KEY field or method marked with" +
+                        " ${StorIOSQLiteColumn::class.java.simpleName} annotation: ${typeMeta.simpleName}")
             }
 
             if (typeMeta.needCreator && typeMeta.creator == null) {
-                throw ProcessingException(key,
-                        "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation" +
-                                " needs factory method or constructor marked with" +
-                                " ${StorIOSQLiteCreator::class.java.simpleName} annotation:" +
-                                " ${typeMeta.simpleName}")
+                throw ProcessingException(key, "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation needs factory method or constructor marked with" +
+                        " ${StorIOSQLiteCreator::class.java.simpleName} annotation: ${typeMeta.simpleName}")
             }
 
             // creator can't be null since we have checked it before
-            if (typeMeta.needCreator
-                    && typeMeta.creator!!.parameters.size != typeMeta.columns.size) {
-                throw ProcessingException(key,
-                        "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation" +
-                                " needs factory method or constructor marked with" +
-                                " ${StorIOSQLiteCreator::class.java.simpleName} annotation" +
-                                " with the same amount of parameters as the number of columns:" +
-                                " ${typeMeta.simpleName}")
+            if (typeMeta.needCreator && typeMeta.creator!!.parameters.size != typeMeta.columns.size) {
+                throw ProcessingException(key, "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation needs factory method or constructor marked with" +
+                        " ${StorIOSQLiteCreator::class.java.simpleName} annotation with the same amount of parameters as the number of columns: ${typeMeta.simpleName}")
             }
         }
     }

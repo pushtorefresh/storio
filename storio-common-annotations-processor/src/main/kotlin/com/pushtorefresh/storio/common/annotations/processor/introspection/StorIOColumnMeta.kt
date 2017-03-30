@@ -16,10 +16,8 @@ open class StorIOColumnMeta<out ColumnAnnotation : Annotation>(
 
     val realElementName: String
         get() = when {
-            elementName.startsWith("get") && isUpperCase(elementName[3]) ->
-                decapitalize(elementName.substring(3))
-            elementName.startsWith("is") && isUpperCase(elementName[2]) ->
-                decapitalize(elementName.substring(2))
+            elementName.startsWith("get") && isUpperCase(elementName[3]) -> decapitalize(elementName.substring(3))
+            elementName.startsWith("is") && isUpperCase(elementName[2]) -> decapitalize(elementName.substring(2))
             else -> elementName
         }
 
@@ -47,10 +45,7 @@ open class StorIOColumnMeta<out ColumnAnnotation : Annotation>(
         return result
     }
 
-    override fun toString(): String {
-        return "StorIOColumnMeta(enclosingElement=$enclosingElement, element=$element," +
-                " elementName='$elementName', javaType=$javaType, storIOColumn=$storIOColumn)"
-    }
+    override fun toString() = "StorIOColumnMeta(enclosingElement=$enclosingElement, element=$element, elementName='$elementName', javaType=$javaType, storIOColumn=$storIOColumn)"
 
     private fun decapitalize(str: String) = when {
         str.length > 1 -> Character.toLowerCase(str[0]) + str.substring(1)

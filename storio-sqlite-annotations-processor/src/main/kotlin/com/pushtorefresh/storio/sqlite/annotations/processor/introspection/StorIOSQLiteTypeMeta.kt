@@ -8,8 +8,7 @@ class StorIOSQLiteTypeMeta(
         packageName: String,
         storIOType: StorIOSQLiteType,
         needCreator: Boolean)
-    : StorIOTypeMeta<StorIOSQLiteType,
-        StorIOSQLiteColumnMeta>(simpleName,
+    : StorIOTypeMeta<StorIOSQLiteType, StorIOSQLiteColumnMeta>(simpleName,
         packageName,
         storIOType,
         needCreator)

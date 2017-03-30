@@ -1,28 +1,24 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor;
 
-import static javax.tools.Diagnostic.Kind.WARNING;
-
 import com.google.auto.service.AutoService;
 import com.pushtorefresh.storio.common.annotations.processor.ProcessingException;
-import com.pushtorefresh.storio.common.annotations.processor
-    .SkipNotAnnotatedClassWithAnnotatedParentException;
+import com.pushtorefresh.storio.common.annotations.processor.SkipNotAnnotatedClassWithAnnotatedParentException;
 import com.pushtorefresh.storio.common.annotations.processor.StorIOAnnotationsProcessor;
 import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.common.annotations.processor.introspection.JavaType;
 import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverColumn;
 import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverCreator;
 import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolverType;
-import com.pushtorefresh.storio.contentresolver.annotations.processor.generate
-    .DeleteResolverGenerator;
+import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.DeleteResolverGenerator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.GetResolverGenerator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.MappingGenerator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.PutResolverGenerator;
-import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection
-    .StorIOContentResolverColumnMeta;
-import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection
-    .StorIOContentResolverCreatorMeta;
-import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection
-    .StorIOContentResolverTypeMeta;
+import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverColumnMeta;
+import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverCreatorMeta;
+import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
@@ -37,7 +34,8 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
-import org.jetbrains.annotations.NotNull;
+
+import static javax.tools.Diagnostic.Kind.WARNING;
 
 /**
  * Annotation processor for StorIOContentResolver
@@ -148,7 +146,7 @@ public class StorIOContentResolverProcessor extends
    */
   @Override
   protected void processAnnotatedFieldsOrMethods(@NotNull final RoundEnvironment roundEnvironment,
-      @NotNull final Map<TypeElement, StorIOContentResolverTypeMeta> annotatedClasses) {
+      @NotNull final Map<TypeElement, ? extends StorIOContentResolverTypeMeta> annotatedClasses) {
     final Set<? extends Element> elementsAnnotatedWithStorIOContentResolverColumn
         = roundEnvironment.getElementsAnnotatedWith(StorIOContentResolverColumn.class);
 
@@ -261,7 +259,7 @@ public class StorIOContentResolverProcessor extends
    */
   @Override
   protected void processAnnotatedExecutables(@NotNull RoundEnvironment roundEnvironment,
-      @NotNull Map<TypeElement, StorIOContentResolverTypeMeta> annotatedClasses) {
+      @NotNull Map<TypeElement, ? extends StorIOContentResolverTypeMeta> annotatedClasses) {
     final Set<? extends Element> elementsAnnotatedWithStorIOContentResolverCreator
         = roundEnvironment.getElementsAnnotatedWith(StorIOContentResolverCreator.class);
 
@@ -291,9 +289,9 @@ public class StorIOContentResolverProcessor extends
 
   @Override
   protected void validateAnnotatedClassesAndColumns(
-      @NotNull final Map<TypeElement, StorIOContentResolverTypeMeta> annotatedClasses) {
+      @NotNull final Map<TypeElement, ? extends StorIOContentResolverTypeMeta> annotatedClasses) {
     // check that each annotated class has columns with at least one key column
-    for (Map.Entry<TypeElement, StorIOContentResolverTypeMeta> annotatedType : annotatedClasses
+    for (Map.Entry<TypeElement, ? extends StorIOContentResolverTypeMeta> annotatedType : annotatedClasses
         .entrySet()) {
       final StorIOContentResolverTypeMeta storIOContentResolverTypeMeta = annotatedType.getValue();
 

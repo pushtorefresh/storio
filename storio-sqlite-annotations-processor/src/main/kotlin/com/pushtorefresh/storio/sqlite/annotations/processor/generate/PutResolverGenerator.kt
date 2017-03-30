@@ -10,17 +10,15 @@ import javax.lang.model.element.Modifier.PUBLIC
 object PutResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
 
     override fun generateJavaFile(typeMeta: StorIOSQLiteTypeMeta): JavaFile {
-        val storIOSQLiteTypeClassName = ClassName.get(typeMeta.packageName, typeMeta.simpleName)
+        val className = ClassName.get(typeMeta.packageName, typeMeta.simpleName)
 
         val putResolver = TypeSpec.classBuilder(generateName(typeMeta))
                 .addJavadoc("Generated resolver for Put Operation.\n")
                 .addModifiers(PUBLIC)
-                .superclass(ParameterizedTypeName.get(ClassName.get(
-                        "com.pushtorefresh.storio.sqlite.operations.put", "DefaultPutResolver"),
-                        storIOSQLiteTypeClassName))
-                .addMethod(createMapToInsertQueryMethodSpec(typeMeta, storIOSQLiteTypeClassName))
-                .addMethod(createMapToUpdateQueryMethodSpec(typeMeta, storIOSQLiteTypeClassName))
-                .addMethod(createMapToContentValuesMethodSpec(typeMeta, storIOSQLiteTypeClassName))
+                .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operations.put", "DefaultPutResolver"), className))
+                .addMethod(createMapToInsertQueryMethodSpec(typeMeta, className))
+                .addMethod(createMapToUpdateQueryMethodSpec(typeMeta, className))
+                .addMethod(createMapToContentValuesMethodSpec(typeMeta, className))
                 .build()
 
         return JavaFile
@@ -29,8 +27,7 @@ object PutResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                 .build()
     }
 
-    private fun createMapToInsertQueryMethodSpec(typeMeta: StorIOSQLiteTypeMeta,
-                                                 className: ClassName): MethodSpec {
+    private fun createMapToInsertQueryMethodSpec(typeMeta: StorIOSQLiteTypeMeta, className: ClassName): MethodSpec {
         return MethodSpec.methodBuilder("mapToInsertQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
@@ -48,10 +45,8 @@ $INDENT.build();
                 .build()
     }
 
-    private fun createMapToUpdateQueryMethodSpec(typeMeta: StorIOSQLiteTypeMeta,
-                                                 className: ClassName): MethodSpec {
-        val where = QueryGenerator
-                .createWhere(typeMeta, "object")
+    private fun createMapToUpdateQueryMethodSpec(typeMeta: StorIOSQLiteTypeMeta, className: ClassName): MethodSpec {
+        val where = QueryGenerator.createWhere(typeMeta, "object")
 
         return MethodSpec.methodBuilder("mapToUpdateQuery")
                 .addJavadoc("{@inheritDoc}\n")
@@ -74,8 +69,7 @@ $INDENT.build();
                 .build()
     }
 
-    private fun createMapToContentValuesMethodSpec(typeMeta: StorIOSQLiteTypeMeta,
-                                                   className: ClassName): MethodSpec {
+    private fun createMapToContentValuesMethodSpec(typeMeta: StorIOSQLiteTypeMeta, className: ClassName): MethodSpec {
         val builder = MethodSpec.methodBuilder("mapToContentValues")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
@@ -85,23 +79,16 @@ $INDENT.build();
                 .addParameter(ParameterSpec.builder(className, "object")
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
-                .addStatement("ContentValues contentValues = new ContentValues(\$L)",
-                        typeMeta.columns.size)
+                .addStatement("ContentValues contentValues = new ContentValues(\$L)", typeMeta.columns.size)
                 .addCode("\n")
 
-        for (columnMeta in typeMeta.columns.values) {
-            val ignoreNull = columnMeta.storIOColumn.ignoreNull
+        typeMeta.columns.values.forEach {
+            val ignoreNull = it.storIOColumn.ignoreNull
             if (ignoreNull) {
-                builder.beginControlFlow("if (object.\$L != null)",
-                        "${columnMeta.elementName}${if (columnMeta.isMethod) "()" else ""}")
+                builder.beginControlFlow("if (object.\$L != null)", "${it.elementName}${if (it.isMethod) "()" else ""}")
             }
-            builder.addStatement("contentValues.put(\$S, object.\$L)",
-                    columnMeta.storIOColumn.name,
-                    "${columnMeta.elementName}${if (columnMeta.isMethod) "()" else ""}"
-            )
-            if (ignoreNull) {
-                builder.endControlFlow()
-            }
+            builder.addStatement("contentValues.put(\$S, object.\$L)", it.storIOColumn.name, "${it.elementName}${if (it.isMethod) "()" else ""}")
+            if (ignoreNull) builder.endControlFlow()
         }
 
         return builder
@@ -112,6 +99,5 @@ $INDENT.build();
 
     val SUFFIX = "StorIOSQLitePutResolver"
 
-    fun generateName(storIOSQLiteTypeMeta: StorIOSQLiteTypeMeta) =
-            "${storIOSQLiteTypeMeta.simpleName}$SUFFIX"
+    fun generateName(typeMeta: StorIOSQLiteTypeMeta) = "${typeMeta.simpleName}$SUFFIX"
 }

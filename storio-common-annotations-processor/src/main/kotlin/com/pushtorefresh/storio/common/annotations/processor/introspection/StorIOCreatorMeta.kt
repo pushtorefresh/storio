@@ -28,9 +28,6 @@ open class StorIOCreatorMeta<out CreatorAnnotation : Annotation>(
         return result
     }
 
-    override fun toString(): String {
-        return "StorIOCreatorMeta(enclosingElement=$enclosingElement, element=$element," +
-                " creatorAnnotation=$creatorAnnotation)"
-    }
+    override fun toString(): String = "StorIOCreatorMeta(enclosingElement=$enclosingElement, element=$element, creatorAnnotation=$creatorAnnotation)"
 
 }

@@ -24,9 +24,7 @@ open class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOCo
                     it.parameters.mapTo(params) { it.simpleName.toString() }
                 }
                 val orderedColumns = mutableListOf<ColumnMeta?>().apply {
-                    for (i in 0..columns.size - 1) {
-                        add(null)
-                    }
+                    (0..columns.size - 1).forEach { add(null) }
                 }
                 columns.values.forEach { orderedColumns[params.indexOf(it.realElementName)] = it }
                 orderedColumns.map { it as ColumnMeta }
@@ -56,9 +54,5 @@ open class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOCo
         return result
     }
 
-    override fun toString(): String {
-        return "StorIOTypeMeta(simpleName='$simpleName', packageName='$packageName'," +
-                " storIOType=$storIOType, needCreator=$needCreator, creator=$creator," +
-                " columns=$columns)"
-    }
+    override fun toString() = "StorIOTypeMeta(simpleName='$simpleName', packageName='$packageName', storIOType=$storIOType, needCreator=$needCreator, creator=$creator, columns=$columns)"
 }

@@ -17,9 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT;
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.getFromCursorString;
+import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INSTANCE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
 public class GetResolverGenerator implements Generator<StorIOContentResolverTypeMeta> {

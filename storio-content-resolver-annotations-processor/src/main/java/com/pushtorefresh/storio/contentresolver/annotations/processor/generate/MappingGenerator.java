@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor.generate;
 
+import com.pushtorefresh.storio.common.annotations.processor.generate.Common;
 import com.pushtorefresh.storio.common.annotations.processor.generate.Generator;
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta;
 import com.squareup.javapoet.ClassName;
@@ -36,7 +37,7 @@ public class MappingGenerator implements Generator<StorIOContentResolverTypeMeta
 
         return JavaFile
                 .builder(typeMeta.getPackageName(), mapping)
-                .indent(INSTANCE.getINDENT())
+                .indent(Common.INSTANCE.getINDENT())
                 .build();
     }
 

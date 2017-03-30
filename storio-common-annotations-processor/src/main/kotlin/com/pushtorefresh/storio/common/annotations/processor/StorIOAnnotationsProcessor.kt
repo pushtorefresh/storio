@@ -27,8 +27,7 @@ import javax.tools.Diagnostic.Kind.ERROR
  * We don't want to annoy developers, who use StorIO.
  */
 // Generate file with annotation processor declaration via another Annotation Processor!
-abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
-        out ColumnMeta : StorIOColumnMeta<*>> : AbstractProcessor() {
+abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out ColumnMeta : StorIOColumnMeta<*>> : AbstractProcessor() {
 
     private lateinit var filer: Filer
     private lateinit var elementUtils: Elements
@@ -41,10 +40,8 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
      *
      * @return non-null unmodifiable map(element, typeMeta)
      */
-    private fun processAnnotatedClasses(roundEnvironment: RoundEnvironment, elementUtils: Elements)
-            : Map<TypeElement, TypeMeta> {
-        val elementsAnnotatedWithStorIOType
-                = roundEnvironment.getElementsAnnotatedWith(typeAnnotationClass)
+    private fun processAnnotatedClasses(roundEnvironment: RoundEnvironment, elementUtils: Elements): Map<TypeElement, TypeMeta> {
+        val elementsAnnotatedWithStorIOType = roundEnvironment.getElementsAnnotatedWith(typeAnnotationClass)
 
         val results = mutableMapOf<TypeElement, TypeMeta>()
 
@@ -68,17 +65,11 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
         val typeElement = annotatedElement as TypeElement
 
         if (typeElement.kind != CLASS) {
-            throw ProcessingException(annotatedElement,
-                    "${typeAnnotationClass.simpleName} can be" +
-                            " applied only to classes not to ${typeElement.simpleName}"
-            )
+            throw ProcessingException(annotatedElement, "${typeAnnotationClass.simpleName} can be applied only to classes not to ${typeElement.simpleName}")
         }
 
         if (typeElement.enclosingElement.kind != PACKAGE) {
-            throw ProcessingException(annotatedElement,
-                    "${typeAnnotationClass.simpleName} can't be applied to nested or inner" +
-                            " classes: ${typeElement.simpleName}"
-            )
+            throw ProcessingException(annotatedElement, "${typeAnnotationClass.simpleName} can't be applied to nested or inner classes: ${typeElement.simpleName}")
         }
 
         return typeElement
@@ -97,49 +88,30 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
         val enclosingElement = annotatedElement.enclosingElement
 
         if (enclosingElement.kind != CLASS) {
-            throw ProcessingException(annotatedElement,
-                    "Please apply ${columnAnnotationClass.simpleName} only to members of" +
-                            " class (fields or methods) - not to members of" +
-                            " ${enclosingElement.simpleName}"
-            )
+            throw ProcessingException(annotatedElement, "Please apply ${columnAnnotationClass.simpleName} only to members of class (fields or methods)" +
+                    " - not to members of ${enclosingElement.simpleName}")
         }
 
         if (enclosingElement.getAnnotation(typeAnnotationClass) == null) {
             val superClass = typeUtils.asElement((enclosingElement as TypeElement).superclass)
             if (superClass.getAnnotation(typeAnnotationClass) != null) {
-                throw SkipNotAnnotatedClassWithAnnotatedParentException(
-                        "Fields of classes not annotated with ${typeAnnotationClass.simpleName}" +
-                                " which have parents annotated with" +
-                                " ${typeAnnotationClass.simpleName} will be skipped" +
-                                " (e.g. AutoValue case)")
+                throw SkipNotAnnotatedClassWithAnnotatedParentException("Fields of classes not annotated with ${typeAnnotationClass.simpleName}" +
+                        " which have parents annotated with ${typeAnnotationClass.simpleName} will be skipped (e.g. AutoValue case)")
             } else {
-                throw ProcessingException(annotatedElement,
-                        "Please annotate class ${enclosingElement.getSimpleName()}" +
-                                " with ${typeAnnotationClass.simpleName}"
-                )
+                throw ProcessingException(annotatedElement, "Please annotate class ${enclosingElement.getSimpleName()} with ${typeAnnotationClass.simpleName}")
             }
         }
 
         if (PRIVATE in annotatedElement.modifiers) {
-            throw ProcessingException(annotatedElement,
-                    "${columnAnnotationClass.simpleName} can not be applied to private field" +
-                            " or method: ${annotatedElement.simpleName}"
-            )
+            throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to private field or method: ${annotatedElement.simpleName}")
         }
 
         if (annotatedElement.kind == FIELD && FINAL in annotatedElement.modifiers) {
-            throw ProcessingException(annotatedElement,
-                    "${columnAnnotationClass.simpleName} can not be applied to final field:" +
-                            " ${annotatedElement.simpleName}"
-            )
+            throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to final field: ${annotatedElement.simpleName}")
         }
 
-        if (annotatedElement.kind == METHOD
-                && (annotatedElement as ExecutableElement).parameters.isNotEmpty()) {
-            throw ProcessingException(annotatedElement,
-                    "${columnAnnotationClass.simpleName} can not be applied to method with" +
-                            " parameters: ${annotatedElement.getSimpleName()}"
-            )
+        if (annotatedElement.kind == METHOD && (annotatedElement as ExecutableElement).parameters.isNotEmpty()) {
+            throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to method with parameters: ${annotatedElement.getSimpleName()}")
         }
     }
 
@@ -155,39 +127,23 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
         val enclosingElement = annotatedElement.enclosingElement
 
         if (enclosingElement.kind != CLASS) {
-            throw ProcessingException(annotatedElement,
-                    "Please apply ${creatorAnnotationClass.simpleName} to constructor or" +
-                            " factory method of class - not to ${enclosingElement.simpleName}"
-            )
+            throw ProcessingException(annotatedElement, "Please apply ${creatorAnnotationClass.simpleName} to constructor or factory method of class - not to ${enclosingElement.simpleName}")
         }
 
         if (enclosingElement.getAnnotation(typeAnnotationClass) == null) {
-            throw ProcessingException(annotatedElement,
-                    "Please annotate class ${enclosingElement.simpleName}" +
-                            " with ${typeAnnotationClass.simpleName}"
-            )
+            throw ProcessingException(annotatedElement, "Please annotate class ${enclosingElement.simpleName} with ${typeAnnotationClass.simpleName}")
         }
 
         if (PRIVATE in annotatedElement.modifiers) {
-            throw ProcessingException(annotatedElement,
-                    "${creatorAnnotationClass.simpleName} can not be applied to private methods" +
-                            " or constructors: ${annotatedElement.simpleName}"
-            )
+            throw ProcessingException(annotatedElement, "${creatorAnnotationClass.simpleName} can not be applied to private methods or constructors: ${annotatedElement.simpleName}")
         }
 
         if (annotatedElement.kind == METHOD && STATIC !in annotatedElement.modifiers) {
-            throw ProcessingException(annotatedElement,
-                    "${creatorAnnotationClass.simpleName} can not be applied to non-static" +
-                            " methods: ${annotatedElement.simpleName}"
-            )
+            throw ProcessingException(annotatedElement, "${creatorAnnotationClass.simpleName} can not be applied to non-static methods: ${annotatedElement.simpleName}")
         }
 
-        if (annotatedElement.kind == METHOD
-                && annotatedElement.returnType != enclosingElement.asType()) {
-            throw ProcessingException(annotatedElement,
-                    "${creatorAnnotationClass.simpleName} can not be applied to method with" +
-                            " return type different from ${enclosingElement.simpleName}"
-            )
+        if (annotatedElement.kind == METHOD && annotatedElement.returnType != enclosingElement.asType()) {
+            throw ProcessingException(annotatedElement, "${creatorAnnotationClass.simpleName} can not be applied to method with return type different from ${enclosingElement.simpleName}")
         }
     }
 
@@ -214,8 +170,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
      * @return true if annotation processor should not be invoked in next rounds of annotation
      * * processing, false otherwise
      */
-    override fun process(annotations: Set<TypeElement>?,
-                         roundEnv: RoundEnvironment): Boolean {
+    override fun process(annotations: Set<TypeElement>?, roundEnv: RoundEnvironment): Boolean {
         try {
             val annotatedClasses = processAnnotatedClasses(roundEnv, elementUtils)
 
@@ -253,8 +208,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
      *
      * @return result of processing as [TypeMeta]
      */
-    protected abstract fun processAnnotatedClass(classElement: TypeElement,
-                                                 elementUtils: Elements): TypeMeta
+    protected abstract fun processAnnotatedClass(classElement: TypeElement, elementUtils: Elements): TypeMeta
 
     /**
      * Processes fields.
@@ -262,9 +216,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
      *
      * @param annotatedClasses map of annotated classes
      */
-    protected abstract fun processAnnotatedFieldsOrMethods(
-            roundEnvironment: RoundEnvironment,
-            annotatedClasses: Map<TypeElement, TypeMeta>)
+    protected abstract fun processAnnotatedFieldsOrMethods(roundEnvironment: RoundEnvironment, annotatedClasses: Map<TypeElement, TypeMeta>)
 
     /**
      * Processes annotated field and returns result of processing or throws exception.
@@ -272,8 +224,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
      *
      * @return non-null [StorIOColumnMeta] with meta information about field
      */
-    protected abstract fun processAnnotatedFieldOrMethod(
-            annotatedField: Element): ColumnMeta
+    protected abstract fun processAnnotatedFieldOrMethod(annotatedField: Element): ColumnMeta
 
     /**
      * Processes methods and constructors.
@@ -281,12 +232,9 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>,
      *
      * @param annotatedClasses map of annotated classes
      */
-    protected abstract fun processAnnotatedExecutables(
-            roundEnvironment: RoundEnvironment,
-            annotatedClasses: Map<TypeElement, TypeMeta>)
+    protected abstract fun processAnnotatedExecutables(roundEnvironment: RoundEnvironment, annotatedClasses: Map<TypeElement, TypeMeta>)
 
-    protected abstract fun validateAnnotatedClassesAndColumns(
-            annotatedClasses: Map<TypeElement, TypeMeta>)
+    protected abstract fun validateAnnotatedClassesAndColumns(annotatedClasses: Map<TypeElement, TypeMeta>)
 
     protected abstract val typeAnnotationClass: Class<out Annotation>
 

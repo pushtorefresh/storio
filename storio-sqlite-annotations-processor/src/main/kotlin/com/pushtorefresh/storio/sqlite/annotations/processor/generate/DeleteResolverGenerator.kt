@@ -15,10 +15,7 @@ object DeleteResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
         val deleteResolver = TypeSpec.classBuilder(generateName(typeMeta))
                 .addJavadoc("Generated resolver for Delete Operation.\n")
                 .addModifiers(PUBLIC)
-                .superclass(ParameterizedTypeName.get(ClassName.get(
-                        "com.pushtorefresh.storio.sqlite.operations.delete",
-                        "DefaultDeleteResolver"),
-                        className))
+                .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operations.delete", "DefaultDeleteResolver"), className))
                 .addMethod(createMapToDeleteQueryMethodSpec(typeMeta, className))
                 .build()
 
@@ -28,9 +25,8 @@ object DeleteResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                 .build()
     }
 
-    private fun createMapToDeleteQueryMethodSpec(storIOSQLiteTypeMeta: StorIOSQLiteTypeMeta,
-                                                 storIOSQLiteTypeClassName: ClassName): MethodSpec {
-        val where = QueryGenerator.createWhere(storIOSQLiteTypeMeta, "object")
+    private fun createMapToDeleteQueryMethodSpec(typeMeta: StorIOSQLiteTypeMeta, className: ClassName): MethodSpec {
+        val where = QueryGenerator.createWhere(typeMeta, "object")
 
         return MethodSpec.methodBuilder("mapToDeleteQuery")
                 .addJavadoc("{@inheritDoc}\n")
@@ -38,7 +34,7 @@ object DeleteResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                 .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("com.pushtorefresh.storio.sqlite.queries", "DeleteQuery"))
-                .addParameter(ParameterSpec.builder(storIOSQLiteTypeClassName, "object")
+                .addParameter(ParameterSpec.builder(className, "object")
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
                 .addCode("""return DeleteQuery.builder()
@@ -47,7 +43,7 @@ $INDENT.where(${"$"}S)
 $INDENT.whereArgs(${"$"}L)
 $INDENT.build();
 """,
-                        storIOSQLiteTypeMeta.storIOType.table,
+                        typeMeta.storIOType.table,
                         where[QueryGenerator.WHERE_CLAUSE],
                         where[QueryGenerator.WHERE_ARGS])
                 .build()
@@ -55,6 +51,5 @@ $INDENT.build();
 
     private val SUFFIX = "StorIOSQLiteDeleteResolver"
 
-    fun generateName(storIOSQLiteTypeMeta: StorIOSQLiteTypeMeta) =
-            "${storIOSQLiteTypeMeta.simpleName}$SUFFIX"
+    fun generateName(typeMeta: StorIOSQLiteTypeMeta) = "${typeMeta.simpleName}$SUFFIX"
 }

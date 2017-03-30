@@ -37,18 +37,16 @@ object QueryGenerator {
                             .append(it.elementName)
                 }
 
-                if (it.isMethod) {
-                    whereArgs.append("()")
-                }
+                if (it.isMethod) whereArgs.append("()")
 
                 i++
             }
         }
 
-        if (whereClause.isEmpty() || whereArgs.isEmpty()) {
-            return emptyMap()
-        } else {
-            return mapOf(WHERE_CLAUSE to whereClause.toString(),
+        return when {
+            whereClause.isEmpty() || whereArgs.isEmpty() -> emptyMap()
+            else -> mapOf(
+                    WHERE_CLAUSE to whereClause.toString(),
                     WHERE_ARGS to whereArgs.toString())
         }
     }

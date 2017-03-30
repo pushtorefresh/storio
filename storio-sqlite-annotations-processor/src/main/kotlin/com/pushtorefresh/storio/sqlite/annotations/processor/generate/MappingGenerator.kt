@@ -30,18 +30,14 @@ object MappingGenerator : Generator<StorIOSQLiteTypeMeta> {
                 .build()
     }
 
-    private fun createConstructor(storIOSQLiteTypeMeta: StorIOSQLiteTypeMeta): MethodSpec {
-        val putResolver = ClassName.get(storIOSQLiteTypeMeta.packageName,
-                PutResolverGenerator.generateName(storIOSQLiteTypeMeta))
-        val getResolver = ClassName.get(storIOSQLiteTypeMeta.packageName,
-                GetResolverGenerator.generateName(storIOSQLiteTypeMeta))
-        val deleteResolver = ClassName.get(storIOSQLiteTypeMeta.packageName,
-                DeleteResolverGenerator.generateName(storIOSQLiteTypeMeta))
+    private fun createConstructor(typeMeta: StorIOSQLiteTypeMeta): MethodSpec {
+        val putResolver = ClassName.get(typeMeta.packageName, PutResolverGenerator.generateName(typeMeta))
+        val getResolver = ClassName.get(typeMeta.packageName, GetResolverGenerator.generateName(typeMeta))
+        val deleteResolver = ClassName.get(typeMeta.packageName, DeleteResolverGenerator.generateName(typeMeta))
 
         return MethodSpec.constructorBuilder()
                 .addModifiers(PUBLIC)
-                .addStatement("super(new \$T(),\nnew \$T(),\nnew \$T())",
-                        putResolver, getResolver, deleteResolver)
+                .addStatement("super(new \$T(),\nnew \$T(),\nnew \$T())", putResolver, getResolver, deleteResolver)
                 .build()
     }
 }

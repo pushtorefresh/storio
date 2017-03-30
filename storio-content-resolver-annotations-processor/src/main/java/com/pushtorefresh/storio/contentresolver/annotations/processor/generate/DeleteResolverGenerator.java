@@ -13,8 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME;
-import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT;
+import static com.pushtorefresh.storio.common.annotations.processor.generate.Common.INSTANCE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
 public class DeleteResolverGenerator implements Generator<StorIOContentResolverTypeMeta> {

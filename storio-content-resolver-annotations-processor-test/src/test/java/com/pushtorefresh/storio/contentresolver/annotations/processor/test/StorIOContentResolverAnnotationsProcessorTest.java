@@ -1,9 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor.test;
 
 import com.google.testing.compile.JavaFileObjects;
-
-import com.pushtorefresh.storio.contentresolver.annotations.processor
-        .StorIOContentResolverProcessor;
+import com.pushtorefresh.storio.contentresolver.annotations.processor.StorIOContentResolverProcessor;
 
 import org.junit.Test;
 
@@ -12,6 +10,7 @@ import javax.tools.JavaFileObject;
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class StorIOContentResolverAnnotationsProcessorTest {
 
     @Test
@@ -121,7 +120,8 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("Please apply StorIOContentResolverCreator to constructor or factory method of class - not to CreatorNotInsideClass");
+                .withErrorContaining("Please apply StorIOContentResolverCreator to constructor or factory method of class - not to" +
+                        " CreatorNotInsideClass");
     }
 
     @Test
@@ -233,7 +233,8 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("Can't apply StorIOContentResolverColumn annotation to both fields and methods in a same class: MixedFieldsAndMethods");
+                .withErrorContaining("Can't apply StorIOContentResolverColumn annotation to both fields and methods in a same class:" +
+                        " MixedFieldsAndMethods");
     }
 
     @Test
@@ -302,8 +303,8 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOContentResolverType annotation should have at least one KEY field or method marked with " +
-                        "StorIOContentResolverColumn annotation: NoKey");
+                .withErrorContaining("Class marked with StorIOContentResolverType annotation should have at least one KEY field or method marked" +
+                        " with StorIOContentResolverColumn annotation: NoKey");
     }
 
     @Test
@@ -436,9 +437,12 @@ public class StorIOContentResolverAnnotationsProcessorTest {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesMethodsConstructorIgnoreNull.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesMethodsConstructorIgnoreNullContentResolverTypeMapping.java");
-        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource("BoxedTypesMethodsConstructorIgnoreNullStorIOContentResolverDeleteResolver.java");
-        JavaFileObject generatedGetResolver = JavaFileObjects.forResource("BoxedTypesMethodsConstructorIgnoreNullStorIOContentResolverGetResolver.java");
-        JavaFileObject generatedPutResolver = JavaFileObjects.forResource("BoxedTypesMethodsConstructorIgnoreNullStorIOContentResolverPutResolver.java");
+        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource(
+                "BoxedTypesMethodsConstructorIgnoreNullStorIOContentResolverDeleteResolver.java");
+        JavaFileObject generatedGetResolver = JavaFileObjects.forResource
+                ("BoxedTypesMethodsConstructorIgnoreNullStorIOContentResolverGetResolver.java");
+        JavaFileObject generatedPutResolver = JavaFileObjects.forResource(
+                "BoxedTypesMethodsConstructorIgnoreNullStorIOContentResolverPutResolver.java");
 
         assert_().about(javaSource())
                 .that(model)
@@ -470,7 +474,8 @@ public class StorIOContentResolverAnnotationsProcessorTest {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethod.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodContentResolverTypeMapping.java");
-        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodStorIOContentResolverDeleteResolver.java");
+        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource(
+                "BoxedTypesMethodsFactoryMethodStorIOContentResolverDeleteResolver.java");
         JavaFileObject generatedGetResolver = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodStorIOContentResolverGetResolver.java");
         JavaFileObject generatedPutResolver = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodStorIOContentResolverPutResolver.java");
 
@@ -487,9 +492,12 @@ public class StorIOContentResolverAnnotationsProcessorTest {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodIgnoreNull.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodIgnoreNullContentResolverTypeMapping.java");
-        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodIgnoreNullStorIOContentResolverDeleteResolver.java");
-        JavaFileObject generatedGetResolver = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodIgnoreNullStorIOContentResolverGetResolver.java");
-        JavaFileObject generatedPutResolver = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodIgnoreNullStorIOContentResolverPutResolver.java");
+        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource(
+                "BoxedTypesMethodsFactoryMethodIgnoreNullStorIOContentResolverDeleteResolver.java");
+        JavaFileObject generatedGetResolver = JavaFileObjects.forResource(
+                "BoxedTypesMethodsFactoryMethodIgnoreNullStorIOContentResolverGetResolver.java");
+        JavaFileObject generatedPutResolver = JavaFileObjects.forResource(
+                "BoxedTypesMethodsFactoryMethodIgnoreNullStorIOContentResolverPutResolver.java");
 
         assert_().about(javaSource())
                 .that(model)
