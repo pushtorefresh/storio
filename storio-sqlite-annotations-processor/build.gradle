@@ -11,10 +11,6 @@ dependencies {
     compile libraries.autoService
     compile libraries.javaPoet
     compile libraries.kotlinStdLib
-
-    testCompile libraries.junit
-    testCompile libraries.assertJ
-    testCompile libraries.mockitoKotlin
 }
 
 sourceSets {
