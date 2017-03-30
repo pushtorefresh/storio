@@ -22,11 +22,9 @@ import javax.tools.Diagnostic.Kind.ERROR
  * It'll process annotations to generate StorIO Object-Mapping.
  *
  *
- * Addition: Annotation Processor should work fast and be optimized because it's part of
- * compilation.
+ * Addition: Annotation Processor should work fast and be optimized because it's part of compilation.
  * We don't want to annoy developers, who use StorIO.
  */
-// Generate file with annotation processor declaration via another Annotation Processor!
 abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out ColumnMeta : StorIOColumnMeta<*>> : AbstractProcessor() {
 
     private lateinit var filer: Filer
@@ -76,15 +74,12 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
     }
 
     /**
-     * Checks that element annotated with [StorIOColumnMeta] satisfies all required
-     * conditions.
+     * Checks that element annotated with [StorIOColumnMeta] satisfies all required conditions.
      * @param annotatedElement an annotated field
      */
     @Throws(SkipNotAnnotatedClassWithAnnotatedParentException::class)
     protected fun validateAnnotatedFieldOrMethod(annotatedElement: Element) {
-        // We expect here that annotatedElement is Field or Method,
-        // annotation requires that via @Target.
-
+        // We expect here that annotatedElement is Field or Method, annotation requires that via @Target.
         val enclosingElement = annotatedElement.enclosingElement
 
         if (enclosingElement.kind != CLASS) {
@@ -116,14 +111,11 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
     }
 
     /**
-     * Checks that element annotated with [StorIOCreatorMeta] satisfies all required
-     * conditions.
+     * Checks that element annotated with [StorIOCreatorMeta] satisfies all required conditions.
      * @param annotatedElement an annotated factory method or constructor
      */
     protected fun validateAnnotatedExecutable(annotatedElement: ExecutableElement) {
-        // We expect here that annotatedElement is Method or Constructor, annotation requires that
-        // via @Target.
-
+        // We expect here that annotatedElement is Method or Constructor, annotation requires that via @Target.
         val enclosingElement = annotatedElement.enclosingElement
 
         if (enclosingElement.kind != CLASS) {
@@ -158,17 +150,14 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latestSupported()
 
     /**
-     * For those who don't familiar with Annotation Processing API — this is the main method of
-     * Annotation Processor lifecycle.
+     * For those who don't familiar with Annotation Processing API — this is the main method of Annotation Processor lifecycle.
      *
-     * It will be called after Java Compiler will find lang
-     * elements annotated with annotations from [.getSupportedAnnotationTypes].
+     * It will be called after Java Compiler will find lang elements annotated with annotations from [getSupportedAnnotationTypes].
      * @param annotations set of annotations
      *
      * @param roundEnv environment of current processing round
      *
-     * @return true if annotation processor should not be invoked in next rounds of annotation
-     * * processing, false otherwise
+     * @return true if annotation processor should not be invoked in next rounds of annotation processing, false otherwise
      */
     override fun process(annotations: Set<TypeElement>?, roundEnv: RoundEnvironment): Boolean {
         try {
@@ -192,7 +181,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
                 mappingGenerator.generateJavaFile(it).writeTo(filer)
             }
         } catch (e: ProcessingException) {
-            messager.printMessage(ERROR, e.message, e.element())
+            messager.printMessage(ERROR, e.message, e.element)
         } catch (e: Exception) {
             messager.printMessage(ERROR, "Problem occurred with StorIOProcessor: ${e.message}")
         }

@@ -24,15 +24,14 @@ class StorIOColumnMetaTest {
     @Test
     fun constructor() {
         // when
-        val storioColumnMeta = StorIOColumnMeta(elementMock, elementMock, "TEST", javaType,
-                annotationMock)
+        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "TEST", javaType, annotationMock)
 
         // then
-        assertThat(storioColumnMeta.enclosingElement).isEqualTo(elementMock)
-        assertThat(storioColumnMeta.element).isEqualTo(elementMock)
-        assertThat(storioColumnMeta.elementName).isEqualTo("TEST")
-        assertThat(storioColumnMeta.javaType).isEqualTo(javaType)
-        assertThat(storioColumnMeta.storIOColumn).isEqualTo(annotationMock)
+        assertThat(columnMeta.enclosingElement).isEqualTo(elementMock)
+        assertThat(columnMeta.element).isEqualTo(elementMock)
+        assertThat(columnMeta.elementName).isEqualTo("TEST")
+        assertThat(columnMeta.javaType).isEqualTo(javaType)
+        assertThat(columnMeta.storIOColumn).isEqualTo(annotationMock)
     }
 
     @Test
@@ -46,14 +45,13 @@ class StorIOColumnMetaTest {
     @Test
     fun toStringValidation() {
         // given
-        val storioColumnMeta = StorIOColumnMeta(elementMock, elementMock, "TEST", javaType,
-                annotationMock)
+        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "TEST", javaType, annotationMock)
         val expectedString = "StorIOColumnMeta(enclosingElement=$elementMock," +
                 " element=$elementMock, elementName='TEST', javaType=" + javaType +
                 ", storIOColumn=" + annotationMock + ')'
 
         // when
-        val toString = storioColumnMeta.toString()
+        val toString = columnMeta.toString()
 
         // then
         assertThat(expectedString).isEqualTo(toString)
@@ -61,60 +59,55 @@ class StorIOColumnMetaTest {
 
     @Test
     fun shouldReturnRealElementNameForElementWithoutPrefixes() {
-        val storioColumnMeta = StorIOColumnMeta(elementMock, elementMock, "property", javaType,
-                annotationMock)
+        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "property", javaType, annotationMock)
 
-        val realName = storioColumnMeta.realElementName
+        val realName = columnMeta.realElementName
 
         assertThat(realName).isEqualTo("property")
     }
 
     @Test
     fun shouldReturnRealElementNameForElementWithGetPrefix() {
-        val storioColumnMeta = StorIOColumnMeta(elementMock, elementMock, "getProperty", javaType,
-                annotationMock)
+        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "getProperty", javaType, annotationMock)
 
-        val realName = storioColumnMeta.realElementName
+        val realName = columnMeta.realElementName
 
         assertThat(realName).isEqualTo("property")
     }
 
     @Test
     fun shouldReturnRealElementNameForElementWithIsPrefix() {
-        val storioColumnMeta = StorIOColumnMeta(elementMock, elementMock, "isProperty", javaType,
-                annotationMock)
+        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "isProperty", javaType, annotationMock)
 
-        val realName = storioColumnMeta.realElementName
+        val realName = columnMeta.realElementName
 
         assertThat(realName).isEqualTo("property")
     }
 
     @Test
     fun shouldReturnRealElementNameForElementWithOneCharacterName() {
-        val storioColumnMeta = StorIOColumnMeta(elementMock, elementMock, "a", javaType,
-                annotationMock)
+        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "a", javaType, annotationMock)
 
-        val realName = storioColumnMeta.realElementName
+        val realName = columnMeta.realElementName
 
         assertThat(realName).isEqualTo("a")
     }
 
     @Test
     fun shouldReturnRealElementNameForElementStartsWithGet() {
-        val storioColumnMeta = StorIOColumnMeta(elementMock, elementMock, "getter", javaType,
-                annotationMock)
+        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "getter", javaType, annotationMock)
 
-        val realName = storioColumnMeta.realElementName
+        val realName = columnMeta.realElementName
 
         assertThat(realName).isEqualTo("getter")
     }
 
     @Test
     fun shouldReturnRealElementNameForElementStartsWithIs() {
-        val storioColumnMeta = StorIOColumnMeta(elementMock, elementMock, "iso", javaType,
+        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "iso", javaType,
                 annotationMock)
 
-        val realName = storioColumnMeta.realElementName
+        val realName = columnMeta.realElementName
 
         assertThat(realName).isEqualTo("iso")
     }

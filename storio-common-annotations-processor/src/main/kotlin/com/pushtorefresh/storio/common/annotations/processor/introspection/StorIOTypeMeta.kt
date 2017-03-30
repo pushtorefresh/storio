@@ -11,9 +11,7 @@ open class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOCo
 
     var creator: ExecutableElement? = null
 
-    /**
-     * Yep, this is MODIFIABLE Map, please use it carefully.
-     */
+    // Yep, this is MODIFIABLE Map, please use it carefully.
     val columns: MutableMap<String, ColumnMeta> = mutableMapOf()
 
     val orderedColumns: Collection<ColumnMeta>

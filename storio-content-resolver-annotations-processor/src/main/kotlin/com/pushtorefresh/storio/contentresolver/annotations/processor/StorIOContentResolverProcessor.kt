@@ -44,9 +44,9 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
     /**
      * Processes annotated class
      * @param classElement type element annotated with [StorIOContentResolverType]
-     * *
+     *
      * @param elementUtils utils for working with elementUtils
-     * *
+     *
      * @return result of processing as [StorIOContentResolverTypeMeta]
      */
     override fun processAnnotatedClass(classElement: TypeElement, elementUtils: Elements): StorIOContentResolverTypeMeta {
@@ -72,9 +72,9 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
     /**
      * Verifies that uris are valid.
      * @param classElement type element
-     * *
+     *
      * @param commonUri nullable default uri for all operations
-     * *
+     *
      * @param operationUriMap non-null map where key - operation name, value - specific uri for this
      * * operation
      */
@@ -103,7 +103,7 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
     /**
      * Processes fields annotated with [StorIOContentResolverColumn]
      * @param roundEnvironment current processing environment
-     * *
+     *
      * @param annotatedClasses map of classes annotated with [StorIOContentResolverType]
      */
     override fun processAnnotatedFieldsOrMethods(roundEnvironment: RoundEnvironment, annotatedClasses: Map<TypeElement, StorIOContentResolverTypeMeta>) {
@@ -143,7 +143,7 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
     /**
      * Processes annotated field and returns result of processing or throws exception
      * @param annotatedField field that was annotated with [StorIOContentResolverColumn]
-     * *
+     *
      * @return non-null [StorIOContentResolverColumnMeta] with meta information about field
      */
     override fun processAnnotatedFieldOrMethod(annotatedField: Element): StorIOContentResolverColumnMeta {
@@ -178,7 +178,7 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
      * Processes factory methods or constructors annotated with
      * [StorIOContentResolverCreator].
      * @param roundEnvironment current processing environment
-     * *
+     *
      * @param annotatedClasses map of classes annotated with [StorIOContentResolverType]
      */
     override fun processAnnotatedExecutables(roundEnvironment: RoundEnvironment, annotatedClasses: Map<TypeElement, StorIOContentResolverTypeMeta>) {
