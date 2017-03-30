@@ -1,16 +1,8 @@
-apply plugin: 'java'
 apply plugin: 'kotlin'
-
-targetCompatibility = '1.6'
-sourceCompatibility = '1.6'
 
 dependencies {
     compile libraries.storIOSQLiteAnnotations
     compile libraries.storIOCommonAnnotationsProcessor
-    compile libraries.intellijAnnotations
-    compile libraries.autoService
-    compile libraries.javaPoet
-    compile libraries.kotlinStdLib
 }
 
 sourceSets {

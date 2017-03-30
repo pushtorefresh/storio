@@ -1,8 +1,4 @@
-apply plugin: 'java'
 apply plugin: 'kotlin'
-
-targetCompatibility = '1.6'
-sourceCompatibility = '1.6'
 
 dependencies {
     compile libraries.intellijAnnotations
