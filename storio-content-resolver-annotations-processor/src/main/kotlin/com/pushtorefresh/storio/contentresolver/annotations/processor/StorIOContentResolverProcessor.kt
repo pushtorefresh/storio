@@ -1,6 +1,5 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor
 
-import com.google.auto.service.AutoService
 import com.pushtorefresh.storio.common.annotations.processor.ProcessingException
 import com.pushtorefresh.storio.common.annotations.processor.SkipNotAnnotatedClassWithAnnotatedParentException
 import com.pushtorefresh.storio.common.annotations.processor.StorIOAnnotationsProcessor
@@ -16,7 +15,6 @@ import com.pushtorefresh.storio.contentresolver.annotations.processor.generate.P
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverColumnMeta
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverCreatorMeta
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta
-import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -35,9 +33,7 @@ import javax.tools.Diagnostic.Kind.WARNING
  * Addition: Annotation Processor should work fast and be optimized because it's part of compilation
  * We don't want to annoy developers, who use StorIO
  */
-// Generate file with annotation processor declaration via another Annotation Processor!
-@AutoService(Processor::class)
-class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOContentResolverTypeMeta, StorIOContentResolverColumnMeta>() {
+open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOContentResolverTypeMeta, StorIOContentResolverColumnMeta>() {
 
     override fun getSupportedAnnotationTypes() = setOf(
             StorIOContentResolverType::class.java.canonicalName,

@@ -1,6 +1,5 @@
 package com.pushtorefresh.storio.sqlite.annotations.processor
 
-import com.google.auto.service.AutoService
 import com.pushtorefresh.storio.common.annotations.processor.ProcessingException
 import com.pushtorefresh.storio.common.annotations.processor.SkipNotAnnotatedClassWithAnnotatedParentException
 import com.pushtorefresh.storio.common.annotations.processor.StorIOAnnotationsProcessor
@@ -16,7 +15,6 @@ import com.pushtorefresh.storio.sqlite.annotations.processor.generate.PutResolve
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteColumnMeta
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteCreatorMeta
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta
-import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.*
 import javax.lang.model.util.Elements
@@ -31,9 +29,7 @@ import javax.tools.Diagnostic.Kind.WARNING
  * Addition: Annotation Processor should work fast and be optimized because it's
  * part of compilation. We don't want to annoy developers, who use StorIO.
  */
-// Generate file with annotation processor declaration via another Annotation Processor!
-@AutoService(Processor::class)
-class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta, StorIOSQLiteColumnMeta>() {
+open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta, StorIOSQLiteColumnMeta>() {
 
     override fun getSupportedAnnotationTypes() = setOf(
             StorIOSQLiteType::class.java.canonicalName,
