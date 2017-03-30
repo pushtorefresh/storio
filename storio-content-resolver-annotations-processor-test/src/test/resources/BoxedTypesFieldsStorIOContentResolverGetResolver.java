@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import com.pushtorefresh.storio.contentresolver.operations.get.DefaultGetResolver;
 import java.lang.Override;
+
 /**
  * Generated resolver for Get Operation.
  */

@@ -7,6 +7,7 @@ import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
 import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
 import java.lang.Override;
 
+
 /**
  * Generated resolver for Put Operation.
  */

@@ -35,11 +35,11 @@ import javax.tools.Diagnostic.Kind.WARNING
 @AutoService(Processor::class)
 class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta, StorIOSQLiteColumnMeta>() {
 
-    override fun getSupportedAnnotationTypes() = mutableSetOf<String>().apply {
-        add(StorIOSQLiteType::class.java.canonicalName)
-        add(StorIOSQLiteColumn::class.java.canonicalName)
-        add(StorIOSQLiteCreator::class.java.canonicalName)
-    }
+    override fun getSupportedAnnotationTypes() = setOf(
+            StorIOSQLiteType::class.java.canonicalName,
+            StorIOSQLiteColumn::class.java.canonicalName,
+            StorIOSQLiteCreator::class.java.canonicalName
+    )
 
     /**
      * Processes annotated class.
@@ -93,9 +93,7 @@ class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta, S
                     }
 
                     // If column needs creator then enclosing class needs typeMeta as well.
-                    if (!typeMeta.needCreator && columnMeta.isMethod) {
-                        typeMeta.needCreator = true
-                    }
+                    if (!typeMeta.needCreator && columnMeta.isMethod) typeMeta.needCreator = true
 
                     // Put meta column info.
                     typeMeta.columns += columnMeta.storIOColumn.name to columnMeta
@@ -116,7 +114,12 @@ class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta, S
         val javaType: JavaType
 
         try {
-            javaType = JavaType.from(if (annotatedField.kind == ElementKind.FIELD) annotatedField.asType() else (annotatedField as ExecutableElement).returnType)
+            javaType = JavaType.from(
+                    if (annotatedField.kind == ElementKind.FIELD)
+                        annotatedField.asType()
+                    else
+                        (annotatedField as ExecutableElement).returnType
+            )
         } catch (e: Exception) {
             throw ProcessingException(annotatedField, "Unsupported type of field or method for ${StorIOSQLiteColumn::class.java.simpleName} annotation, if you" +
                     " need to serialize/deserialize field of that type -> please write your own resolver: ${e.message}")
@@ -147,10 +150,7 @@ class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMeta, S
         elementsAnnotatedWithStorIOSQLiteCreator.forEach { element ->
             val executableElement = element as ExecutableElement
             validateAnnotatedExecutable(executableElement)
-            val creatorMeta = StorIOSQLiteCreatorMeta(
-                    executableElement.enclosingElement,
-                    executableElement,
-                    executableElement.getAnnotation(StorIOSQLiteCreator::class.java))
+            val creatorMeta = StorIOSQLiteCreatorMeta(executableElement.enclosingElement, executableElement, executableElement.getAnnotation(StorIOSQLiteCreator::class.java))
 
             annotatedClasses[creatorMeta.enclosingElement]?.let {
                 // Put meta creator info.

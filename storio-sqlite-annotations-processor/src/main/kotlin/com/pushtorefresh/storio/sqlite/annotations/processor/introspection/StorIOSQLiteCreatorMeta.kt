@@ -8,6 +8,7 @@ import javax.lang.model.element.ExecutableElement
 class StorIOSQLiteCreatorMeta(enclosingElement: Element,
                               element: ExecutableElement,
                               storIOSQLiteCreator: StorIOSQLiteCreator)
-    : StorIOCreatorMeta<StorIOSQLiteCreator>(enclosingElement,
+    : StorIOCreatorMeta<StorIOSQLiteCreator>(
+        enclosingElement,
         element,
         storIOSQLiteCreator)

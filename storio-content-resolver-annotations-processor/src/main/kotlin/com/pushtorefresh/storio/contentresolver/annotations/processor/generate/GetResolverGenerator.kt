@@ -1,26 +1,26 @@
-package com.pushtorefresh.storio.sqlite.annotations.processor.generate
+package com.pushtorefresh.storio.contentresolver.annotations.processor.generate
 
 import com.pushtorefresh.storio.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME
 import com.pushtorefresh.storio.common.annotations.processor.generate.Common.INDENT
 import com.pushtorefresh.storio.common.annotations.processor.generate.Common.getFromCursorString
 import com.pushtorefresh.storio.common.annotations.processor.generate.Generator
-import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta
+import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta
 import com.squareup.javapoet.*
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier.PUBLIC
 
-private const val SUFFIX = "StorIOSQLiteGetResolver"
+private const val SUFFIX = "StorIOContentResolverGetResolver"
 
-object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
+object GetResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
 
-    override fun generateJavaFile(typeMeta: StorIOSQLiteTypeMeta): JavaFile {
+    override fun generateJavaFile(typeMeta: StorIOContentResolverTypeMeta): JavaFile {
         val className = ClassName.get(typeMeta.packageName, typeMeta.simpleName)
 
         val getResolver = TypeSpec.classBuilder(generateName(typeMeta))
-                .addJavadoc("Generated resolver for Get Operation.\n")
+                .addJavadoc("Generated resolver for Get Operation\n")
                 .addModifiers(PUBLIC)
-                .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.sqlite.operations.get", "DefaultGetResolver"), className))
+                .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.contentresolver.operations.get", "DefaultGetResolver"), className))
                 .addMethod(
                         if (typeMeta.needCreator)
                             createMapFromCursorWithCreatorMethodSpec(typeMeta, className)
@@ -34,7 +34,7 @@ object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                 .build()
     }
 
-    private fun createMapFromCursorMethodSpec(typeMeta: StorIOSQLiteTypeMeta, className: ClassName): MethodSpec {
+    private fun createMapFromCursorMethodSpec(typeMeta: StorIOContentResolverTypeMeta, className: ClassName): MethodSpec {
         val builder = MethodSpec.methodBuilder("mapFromCursor")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
@@ -69,7 +69,7 @@ object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                 .build()
     }
 
-    private fun createMapFromCursorWithCreatorMethodSpec(typeMeta: StorIOSQLiteTypeMeta, className: ClassName): MethodSpec {
+    private fun createMapFromCursorWithCreatorMethodSpec(typeMeta: StorIOContentResolverTypeMeta, className: ClassName): MethodSpec {
         val builder = MethodSpec.methodBuilder("mapFromCursor")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
@@ -99,8 +99,7 @@ object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                 builder.addStatement("\$L = cursor.\$L", it.realElementName, getFromCursor)
                 builder.endControlFlow()
             } else {
-                builder.addStatement("\$T \$L = cursor.\$L", name, it.realElementName,
-                        getFromCursor)
+                builder.addStatement("\$T \$L = cursor.\$L", name, it.realElementName, getFromCursor)
             }
 
             if (!first) paramsBuilder.append(", ")
@@ -123,5 +122,5 @@ object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                 .build()
     }
 
-    fun generateName(typeMeta: StorIOSQLiteTypeMeta) = "${typeMeta.simpleName}$SUFFIX"
+    fun generateName(storIOSQLiteTypeMeta: StorIOContentResolverTypeMeta) = "${storIOSQLiteTypeMeta.simpleName}$SUFFIX"
 }
