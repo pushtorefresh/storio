@@ -84,12 +84,12 @@ $INDENT.build();
                 .addStatement("ContentValues contentValues = new ContentValues(\$L)", typeMeta.columns.size)
                 .addCode("\n")
 
-        typeMeta.columns.values.forEach {
-            val ignoreNull = it.storIOColumn.ignoreNull
+        typeMeta.columns.values.forEach { columnMeta ->
+            val ignoreNull = columnMeta.storIOColumn.ignoreNull
             if (ignoreNull) {
-                builder.beginControlFlow("if (object.\$L != null)", "${it.elementName}${if (it.isMethod) "()" else ""}")
+                builder.beginControlFlow("if (object.\$L != null)", "${columnMeta.elementName}${if (columnMeta.isMethod) "()" else ""}")
             }
-            builder.addStatement("contentValues.put(\$S, object.\$L)", it.storIOColumn.name, "${it.elementName}${if (it.isMethod) "()" else ""}")
+            builder.addStatement("contentValues.put(\$S, object.\$L)", columnMeta.storIOColumn.name, "${columnMeta.elementName}${if (columnMeta.isMethod) "()" else ""}")
             if (ignoreNull) builder.endControlFlow()
         }
 

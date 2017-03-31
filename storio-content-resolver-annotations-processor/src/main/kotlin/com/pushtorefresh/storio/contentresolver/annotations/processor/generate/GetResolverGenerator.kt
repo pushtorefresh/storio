@@ -47,18 +47,18 @@ object GetResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
                 .addStatement("\$T object = new \$T()", className, className)
                 .addCode("\n")
 
-        typeMeta.columns.values.forEach {
-            val columnIndex = "cursor.getColumnIndex(\"${it.storIOColumn.name}\")"
+        typeMeta.columns.values.forEach { columnMeta ->
+            val columnIndex = "cursor.getColumnIndex(\"${columnMeta.storIOColumn.name}\")"
 
-            val javaType = it.javaType
+            val javaType = columnMeta.javaType
 
-            val getFromCursor = getFromCursorString(it, javaType, columnIndex)
+            val getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex)
 
             val isBoxed = javaType.isBoxedType
             // otherwise -> if primitive and value from cursor null -> fail early
             if (isBoxed) builder.beginControlFlow("if (!cursor.isNull(\$L))", columnIndex)
 
-            builder.addStatement("object.\$L = cursor.\$L", it.elementName, getFromCursor)
+            builder.addStatement("object.\$L = cursor.\$L", columnMeta.elementName, getFromCursor)
 
             if (isBoxed) builder.endControlFlow()
         }
@@ -83,28 +83,28 @@ object GetResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
 
         val paramsBuilder = StringBuilder().apply { append("(") }
         var first = true
-        typeMeta.orderedColumns.forEach {
-            val columnIndex = "cursor.getColumnIndex(\"${it.storIOColumn.name}\")"
+        typeMeta.orderedColumns.forEach { columnMeta ->
+            val columnIndex = "cursor.getColumnIndex(\"${columnMeta.storIOColumn.name}\")"
 
-            val javaType = it.javaType
+            val javaType = columnMeta.javaType
 
-            val getFromCursor = getFromCursorString(it, javaType, columnIndex)
+            val getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex)
 
-            val name = TypeName.get((it.element as ExecutableElement).returnType)
+            val name = TypeName.get((columnMeta.element as ExecutableElement).returnType)
 
             val isBoxed = javaType.isBoxedType
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early
-                builder.addStatement("\$T \$L = null", name, it.realElementName)
+                builder.addStatement("\$T \$L = null", name, columnMeta.realElementName)
                 builder.beginControlFlow("if (!cursor.isNull(\$L))", columnIndex)
-                builder.addStatement("\$L = cursor.\$L", it.realElementName, getFromCursor)
+                builder.addStatement("\$L = cursor.\$L", columnMeta.realElementName, getFromCursor)
                 builder.endControlFlow()
             } else {
-                builder.addStatement("\$T \$L = cursor.\$L", name, it.realElementName, getFromCursor)
+                builder.addStatement("\$T \$L = cursor.\$L", name, columnMeta.realElementName, getFromCursor)
             }
 
             if (!first) paramsBuilder.append(", ")
             first = false
-            paramsBuilder.append(it.realElementName)
+            paramsBuilder.append(columnMeta.realElementName)
         }
         paramsBuilder.append(")")
         builder.addCode("\n")

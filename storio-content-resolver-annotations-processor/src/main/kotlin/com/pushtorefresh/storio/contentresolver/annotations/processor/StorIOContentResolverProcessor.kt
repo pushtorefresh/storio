@@ -190,11 +190,11 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
             val creatorMeta = StorIOContentResolverCreatorMeta(executableElement.enclosingElement, executableElement,
                     executableElement.getAnnotation(StorIOContentResolverCreator::class.java))
 
-            annotatedClasses[creatorMeta.enclosingElement]?.let {
+            annotatedClasses[creatorMeta.enclosingElement]?.let { typeMeta ->
                 // Put meta creator info.
                 // If class already contains another creator -> throw exception.
-                if (it.creator == null) {
-                    it.creator = executableElement
+                if (typeMeta.creator == null) {
+                    typeMeta.creator = executableElement
                 } else {
                     throw ProcessingException(executableElement, "Only one creator method or constructor is allowed: ${executableElement.enclosingElement.simpleName}")
                 }

@@ -13,31 +13,31 @@ object QueryGenerator {
 
         var i = 0
 
-        typeMeta.columns.values.forEach {
-            if (it.storIOColumn.key) {
+        typeMeta.columns.values.forEach { columnMeta ->
+            if (columnMeta.storIOColumn.key) {
                 if (i == 0) {
                     whereClause
-                            .append(it.storIOColumn.name)
+                            .append(columnMeta.storIOColumn.name)
                             .append(" = ?")
 
                     whereArgs
                             .append(varName)
                             .append(".")
-                            .append(it.elementName)
+                            .append(columnMeta.elementName)
                 } else {
                     whereClause
                             .append(" AND ")
-                            .append(it.storIOColumn.name)
+                            .append(columnMeta.storIOColumn.name)
                             .append(" = ?")
 
                     whereArgs
                             .append(", ")
                             .append(varName)
                             .append(".")
-                            .append(it.elementName)
+                            .append(columnMeta.elementName)
                 }
 
-                if (it.isMethod) whereArgs.append("()")
+                if (columnMeta.isMethod) whereArgs.append("()")
 
                 i++
             }
