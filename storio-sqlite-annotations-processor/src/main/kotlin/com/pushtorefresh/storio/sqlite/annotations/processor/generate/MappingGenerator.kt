@@ -16,7 +16,6 @@ object MappingGenerator : Generator<StorIOSQLiteTypeMeta> {
         val superclass = ClassName.get("com.pushtorefresh.storio.sqlite", SUFFIX)
         val superclassParametrized = ParameterizedTypeName.get(superclass, typeClassName)
 
-
         val mapping = TypeSpec.classBuilder(typeMeta.simpleName + SUFFIX)
                 .addJavadoc("Generated mapping with collection of resolvers.\n")
                 .addModifiers(PUBLIC)

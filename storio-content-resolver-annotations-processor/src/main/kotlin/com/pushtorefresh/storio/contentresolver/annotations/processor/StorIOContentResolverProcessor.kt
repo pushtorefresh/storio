@@ -67,7 +67,6 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
         return StorIOContentResolverTypeMeta(simpleName, packageName, storIOContentResolverType)
     }
 
-
     /**
      * Verifies that uris are valid.
      *

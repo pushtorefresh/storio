@@ -16,7 +16,6 @@ object MappingGenerator : Generator<StorIOContentResolverTypeMeta> {
         val superclass = ClassName.get("com.pushtorefresh.storio.contentresolver", SUFFIX)
         val superclassParametrized = ParameterizedTypeName.get(superclass, storIOSQLiteTypeClassName)
 
-
         val mapping = TypeSpec.classBuilder(typeMeta.simpleName + SUFFIX)
                 .addJavadoc("Generated mapping with collection of resolvers\n")
                 .addModifiers(PUBLIC)
