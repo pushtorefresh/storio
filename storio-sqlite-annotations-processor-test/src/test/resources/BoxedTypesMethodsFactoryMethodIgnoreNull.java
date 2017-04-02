@@ -61,4 +61,3 @@ public class BoxedTypesMethodsFactoryMethodIgnoreNull {
         return field6;
     }
 }
-

@@ -18,9 +18,7 @@ import javax.tools.Diagnostic.Kind.ERROR
 /**
  * Base annotation processor for StorIO.
  *
- *
  * It'll process annotations to generate StorIO Object-Mapping.
- *
  *
  * Addition: Annotation Processor should work fast and be optimized because it's part of compilation.
  * We don't want to annoy developers, who use StorIO.
@@ -34,6 +32,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
 
     /**
      * Processes class annotations.
+     *
      * @param roundEnvironment environment
      *
      * @return non-null unmodifiable map(element, typeMeta)
@@ -54,6 +53,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
 
     /**
      * Checks that annotated element satisfies all required conditions.
+     *
      * @param annotatedElement an annotated type
      *
      * @return [TypeElement] object
@@ -75,6 +75,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
 
     /**
      * Checks that element annotated with [StorIOColumnMeta] satisfies all required conditions.
+     *
      * @param annotatedElement an annotated field
      */
     @Throws(SkipNotAnnotatedClassWithAnnotatedParentException::class)
@@ -112,6 +113,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
 
     /**
      * Checks that element annotated with [StorIOCreatorMeta] satisfies all required conditions.
+     *
      * @param annotatedElement an annotated factory method or constructor
      */
     protected fun validateAnnotatedExecutable(annotatedElement: ExecutableElement) {
@@ -153,6 +155,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
      * For those who don't familiar with Annotation Processing API — this is the main method of Annotation Processor lifecycle.
      *
      * It will be called after Java Compiler will find lang elements annotated with annotations from [getSupportedAnnotationTypes].
+     *
      * @param annotations set of annotations
      *
      * @param roundEnv environment of current processing round
@@ -191,6 +194,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
 
     /**
      * Processes annotated class.
+     *
      * @param classElement type element
      *
      * @param elementUtils utils for working with elementUtils
@@ -201,6 +205,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
 
     /**
      * Processes fields.
+     *
      * @param roundEnvironment current processing environment
      *
      * @param annotatedClasses map of annotated classes
@@ -209,6 +214,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
 
     /**
      * Processes annotated field and returns result of processing or throws exception.
+     *
      * @param annotatedField field that was annotated as column
      *
      * @return non-null [StorIOColumnMeta] with meta information about field
@@ -217,6 +223,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
 
     /**
      * Processes methods and constructors.
+     *
      * @param roundEnvironment current processing environment
      *
      * @param annotatedClasses map of annotated classes

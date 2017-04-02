@@ -26,9 +26,7 @@ import javax.tools.Diagnostic.Kind.WARNING
 /**
  * Annotation processor for StorIOContentResolver
  *
- *
  * It'll process annotations to generate StorIOContentResolver Object-Mapping
- *
  *
  * Addition: Annotation Processor should work fast and be optimized because it's part of compilation
  * We don't want to annoy developers, who use StorIO
@@ -43,6 +41,7 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
 
     /**
      * Processes annotated class
+     *
      * @param classElement type element annotated with [StorIOContentResolverType]
      *
      * @param elementUtils utils for working with elementUtils
@@ -71,6 +70,7 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
 
     /**
      * Verifies that uris are valid.
+     *
      * @param classElement type element
      *
      * @param commonUri nullable default uri for all operations
@@ -102,6 +102,7 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
 
     /**
      * Processes fields annotated with [StorIOContentResolverColumn]
+     *
      * @param roundEnvironment current processing environment
      *
      * @param annotatedClasses map of classes annotated with [StorIOContentResolverType]
@@ -142,6 +143,7 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
 
     /**
      * Processes annotated field and returns result of processing or throws exception
+     *
      * @param annotatedField field that was annotated with [StorIOContentResolverColumn]
      *
      * @return non-null [StorIOContentResolverColumnMeta] with meta information about field
@@ -175,8 +177,8 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
     }
 
     /**
-     * Processes factory methods or constructors annotated with
-     * [StorIOContentResolverCreator].
+     * Processes factory methods or constructors annotated with [StorIOContentResolverCreator].
+     *
      * @param roundEnvironment current processing environment
      *
      * @param annotatedClasses map of classes annotated with [StorIOContentResolverType]

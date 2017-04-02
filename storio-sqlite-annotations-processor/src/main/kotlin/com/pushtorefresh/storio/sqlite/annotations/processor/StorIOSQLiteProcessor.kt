@@ -23,8 +23,7 @@ import javax.tools.Diagnostic.Kind.WARNING
 /**
  * Annotation processor for StorIOSQLite.
  *
- * It'll process annotations to generate StorIOSQLite
- * Object-Mapping.
+ * It'll process annotations to generate StorIOSQLite Object-Mapping.
  *
  * Addition: Annotation Processor should work fast and be optimized because it's
  * part of compilation. We don't want to annoy developers, who use StorIO.
@@ -39,6 +38,7 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
 
     /**
      * Processes annotated class.
+     *
      * @param classElement type element annotated with [StorIOSQLiteType]
      *
      * @param elementUtils utils for working with elementUtils
@@ -62,6 +62,7 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
 
     /**
      * Processes fields annotated with [StorIOSQLiteColumn].
+     *
      * @param roundEnvironment current processing environment
      *
      * @param annotatedClasses map of classes annotated with [StorIOSQLiteType]
@@ -102,6 +103,7 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
 
     /**
      * Processes annotated field and returns result of processing or throws exception.
+     *
      * @param annotatedField field that was annotated with [StorIOSQLiteColumn]
      *
      * @return non-null [StorIOSQLiteColumnMeta] with meta information about field
@@ -136,6 +138,7 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
 
     /**
      * Processes factory methods or constructors annotated with [StorIOSQLiteCreator].
+     *
      * @param roundEnvironment current processing environment
      *
      * @param annotatedClasses map of classes annotated with [StorIOSQLiteType]
