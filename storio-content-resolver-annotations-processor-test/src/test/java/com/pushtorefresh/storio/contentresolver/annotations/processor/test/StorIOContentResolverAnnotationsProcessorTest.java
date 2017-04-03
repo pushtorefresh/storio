@@ -1,9 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.annotations.processor.test;
 
 import com.google.testing.compile.JavaFileObjects;
-
-import com.pushtorefresh.storio.contentresolver.annotations.processor
-        .StorIOContentResolverProcessor;
+import com.pushtorefresh.storio.contentresolver.annotations.processor.StorIOContentResolverProcessor;
 
 import org.junit.Test;
 
@@ -12,6 +10,7 @@ import javax.tools.JavaFileObject;
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class StorIOContentResolverAnnotationsProcessorTest {
 
     @Test
@@ -165,8 +164,7 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("StorIOContentResolverCreator can not be applied to method with return type different " +
-                        "from CreatorMethodWithDifferentReturnType");
+                .withErrorContaining("StorIOContentResolverCreator can not be applied to method with return type different from CreatorMethodWithDifferentReturnType");
     }
 
     @Test
@@ -245,8 +243,8 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("Unsupported type of field or method for StorIOContentResolverColumn annotation," +
-                        " if you need to serialize/deserialize field of that type -> please write your own resolver");
+                .withErrorContaining("Unsupported type of field or method for StorIOContentResolverColumn annotation, if you need to"
+                        + " serialize/deserialize field of that type -> please write your own resolver");
     }
 
     @Test
@@ -290,8 +288,8 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOContentResolverType annotation should have at least one field or method marked with " +
-                        "StorIOContentResolverColumn annotation: EmptyClass");
+                .withErrorContaining("Class marked with StorIOContentResolverType annotation should have at least one field or method marked with "
+                        + "StorIOContentResolverColumn annotation: EmptyClass");
     }
 
     @Test
@@ -302,8 +300,8 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOContentResolverType annotation should have at least one KEY field or method marked with " +
-                        "StorIOContentResolverColumn annotation: NoKey");
+                .withErrorContaining("Class marked with StorIOContentResolverType annotation should have at least one KEY field or method marked"
+                        + " with StorIOContentResolverColumn annotation: NoKey");
     }
 
     @Test
@@ -314,8 +312,8 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOContentResolverType annotation needs factory method or constructor marked with " +
-                        "StorIOContentResolverCreator annotation: NoCreator");
+                .withErrorContaining("Class marked with StorIOContentResolverType annotation needs factory method or constructor marked with "
+                        + "StorIOContentResolverCreator annotation: NoCreator");
     }
 
     @Test
@@ -326,9 +324,8 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOContentResolverType annotation needs factory method or constructor marked with " +
-                        "StorIOContentResolverCreator annotation with the same amount of parameters as the number of columns: " +
-                        "CreatorWithWrongNumberOfArguments");
+                .withErrorContaining("Class marked with StorIOContentResolverType annotation needs factory method or constructor marked with StorIOContentResolverCreator"
+                        + " annotation with the same amount of parameters as the number of columns: CreatorWithWrongNumberOfArguments");
     }
 
     @Test

@@ -44,13 +44,13 @@ public class PrimitiveFieldsStorIOContentResolverPutResolver extends DefaultPutR
         ContentValues contentValues = new ContentValues(8);
 
         contentValues.put("field1", object.field1);
-        contentValues.put("field7", object.field7);
-        contentValues.put("field6", object.field6);
-        contentValues.put("field8", object.field8);
-        contentValues.put("field3", object.field3);
         contentValues.put("field2", object.field2);
-        contentValues.put("field5", object.field5);
+        contentValues.put("field3", object.field3);
         contentValues.put("field4", object.field4);
+        contentValues.put("field5", object.field5);
+        contentValues.put("field6", object.field6);
+        contentValues.put("field7", object.field7);
+        contentValues.put("field8", object.field8);
 
         return contentValues;
     }

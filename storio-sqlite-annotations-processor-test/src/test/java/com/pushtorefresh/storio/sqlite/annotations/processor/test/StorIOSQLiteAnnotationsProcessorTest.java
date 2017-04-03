@@ -10,6 +10,7 @@ import javax.tools.JavaFileObject;
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class StorIOSQLiteAnnotationsProcessorTest {
 
     @Test
@@ -53,13 +54,14 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Please apply StorIOSQLiteColumn only to members of class (fields or methods)" +
-                        " - not to members of AnnotatedFieldNotInsideClass");
+                .withErrorContaining("Please apply StorIOSQLiteColumn only to members of class (fields or methods) - not to members of"
+                        + " AnnotatedFieldNotInsideClass");
     }
 
     @Test
     public void shouldNotCompileIfAnnotatedFieldInsideNotAnnotatedClass() {
-        JavaFileObject model = JavaFileObjects.forResource("AnnotatedFieldInsideNotAnnotatedClass.java");
+        JavaFileObject model = JavaFileObjects.forResource(
+                "AnnotatedFieldInsideNotAnnotatedClass.java");
 
         assert_().about(javaSource())
                 .that(model)
@@ -163,8 +165,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("StorIOSQLiteCreator can not be applied to method with return type different " +
-                        "from CreatorMethodWithDifferentReturnType");
+                .withErrorContaining("StorIOSQLiteCreator can not be applied to method with return type different from"
+                        + " CreatorMethodWithDifferentReturnType");
     }
 
     @Test
@@ -209,8 +211,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Unsupported type of field or method for StorIOSQLiteColumn annotation," +
-                        " if you need to serialize/deserialize field of that type -> please write your own resolver");
+                .withErrorContaining("Unsupported type of field or method for StorIOSQLiteColumn annotation, if you need to serialize/deserialize"
+                        + " field of that type -> please write your own resolver");
     }
 
     @Test
@@ -254,8 +256,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOSQLiteType annotation should have at least one field or method marked with " +
-                        "StorIOSQLiteColumn annotation: EmptyClass");
+                .withErrorContaining("Class marked with StorIOSQLiteType annotation should have at least one field or method marked with"
+                        + " StorIOSQLiteColumn annotation: EmptyClass");
     }
 
     @Test
@@ -266,8 +268,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOSQLiteType annotation should have at least one KEY field or method marked with " +
-                        "StorIOSQLiteColumn annotation: NoKey");
+                .withErrorContaining("Class marked with StorIOSQLiteType annotation should have at least one KEY field or method marked with"
+                        + " StorIOSQLiteColumn annotation: NoKey");
     }
 
     @Test
@@ -278,8 +280,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with " +
-                        "StorIOSQLiteCreator annotation: NoCreator");
+                .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with"
+                        + " StorIOSQLiteCreator annotation: NoCreator");
     }
 
     @Test
@@ -290,9 +292,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with " +
-                        "StorIOSQLiteCreator annotation with the same amount of parameters as the number of columns: " +
-                        "CreatorWithWrongNumberOfArguments");
+                .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with"
+                        + " StorIOSQLiteCreator annotation with the same amount of parameters as the number of columns: CreatorWithWrongNumberOfArguments");
     }
 
     @Test
@@ -303,11 +304,11 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("constructor AbsenceOfNoArgConstructor in class " +
-                        "com.pushtorefresh.storio.sqlite.annotations.AbsenceOfNoArgConstructor cannot be applied to given types;\n" +
-                        "  required: long\n" +
-                        "  found: no arguments\n" +
-                        "  reason: actual and formal argument lists differ in length");
+                .withErrorContaining("constructor AbsenceOfNoArgConstructor in class com.pushtorefresh.storio.sqlite.annotations.AbsenceOfNoArgConstructor"
+                        + " cannot be applied to given types;\n"
+                        + "  required: long\n"
+                        + "  found: no arguments\n"
+                        + "  reason: actual and formal argument lists differ in length");
     }
 
     @Test
@@ -396,7 +397,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldCompileWithMethodsReturningBoxedTypesAndMarkedAsIgnoreNullAndConstructorAsCreator() {
+    public void
+    shouldCompileWithMethodsReturningBoxedTypesAndMarkedAsIgnoreNullAndConstructorAsCreator() {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesMethodsConstructorIgnoreNull.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesMethodsConstructorIgnoreNullSQLiteTypeMapping.java");
@@ -447,7 +449,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldCompileWithMethodsReturningBoxedTypesAndMarkedAsIgnoreNullAndFactoryMethodAsCreator() {
+    public void
+    shouldCompileWithMethodsReturningBoxedTypesAndMarkedAsIgnoreNullAndFactoryMethodAsCreator() {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodIgnoreNull.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodIgnoreNullSQLiteTypeMapping.java");
