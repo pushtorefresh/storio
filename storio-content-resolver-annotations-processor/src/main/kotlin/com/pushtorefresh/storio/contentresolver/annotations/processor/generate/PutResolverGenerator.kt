@@ -44,9 +44,9 @@ object PutResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
                 .addCode("""return InsertQuery.builder()
-$INDENT.uri(${"$"}S)
-$INDENT.build();
-""",
+                            $INDENT.uri(${"$"}S)
+                            $INDENT.build();
+                         """.trimIndent(),
                         insertUri)
                 .build()
     }

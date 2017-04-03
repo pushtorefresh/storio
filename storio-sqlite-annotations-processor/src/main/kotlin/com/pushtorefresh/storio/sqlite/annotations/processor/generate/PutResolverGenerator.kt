@@ -40,9 +40,9 @@ object PutResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
                 .addCode("""return InsertQuery.builder()
-$INDENT.table(${"$"}S)
-$INDENT.build();
-""",
+                            $INDENT.table(${"$"}S)
+                            $INDENT.build();
+                         """.trimIndent(),
                         typeMeta.storIOType.table)
                 .build()
     }

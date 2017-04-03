@@ -43,11 +43,11 @@ object DeleteResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
                 .addCode("""return DeleteQuery.builder()
-$INDENT.uri(${"$"}S)
-$INDENT.where(${"$"}S)
-$INDENT.whereArgs(${"$"}L)
-$INDENT.build();
-""",
+                            $INDENT.uri(${"$"}S)
+                            $INDENT.where(${"$"}S)
+                            $INDENT.whereArgs(${"$"}L)
+                            $INDENT.build();
+                         """.trimIndent(),
                         deleteUri,
                         where[QueryGenerator.WHERE_CLAUSE],
                         where[QueryGenerator.WHERE_ARGS])
