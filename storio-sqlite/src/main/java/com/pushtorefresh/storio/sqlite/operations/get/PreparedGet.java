@@ -7,6 +7,7 @@ import android.support.annotation.WorkerThread;
 import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.queries.GetQuery;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
@@ -17,7 +18,7 @@ import static com.pushtorefresh.storio.sqlite.impl.ChainImpl.buildChain;
  *
  * @param <Result> type of result.
  */
-public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
+public abstract class PreparedGet<Result> implements PreparedOperation<Result, GetQuery> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;
@@ -61,7 +62,7 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result> {
 
     @NonNull
     @Override
-    public Object getData() {
+    public GetQuery getData() {
         if (rawQuery != null) {
             return rawQuery;
         } else if (query != null) {

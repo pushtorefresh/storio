@@ -18,7 +18,7 @@ import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonN
  * <p>
  * Instances of this class are immutable.
  */
-public final class Query {
+public final class Query implements GetQuery {
 
     private final boolean distinct;
 

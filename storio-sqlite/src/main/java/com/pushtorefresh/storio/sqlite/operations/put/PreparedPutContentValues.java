@@ -20,7 +20,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 /**
  * Prepared Put Operation for {@link StorIOSQLite}.
  */
-public class PreparedPutContentValues extends PreparedPut<PutResult> {
+public class PreparedPutContentValues extends PreparedPut<PutResult, ContentValues> {
 
     @NonNull
     private final ContentValues contentValues;
@@ -118,14 +118,14 @@ public class PreparedPutContentValues extends PreparedPut<PutResult> {
 
     @NonNull
     @Override
-    public Object getData() {
+    public ContentValues getData() {
         return contentValues;
     }
 
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
             try {
                 final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
                 if (putResult.wasInserted() || putResult.wasUpdated()) {

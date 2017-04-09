@@ -25,7 +25,7 @@ import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
-public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>> {
+public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>, Collection<T>> {
 
     @NonNull
     private final Collection<T> objects;
@@ -128,14 +128,14 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
 
     @NonNull
     @Override
-    public Object getData() {
+    public Collection<T> getData() {
         return objects;
     }
 
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
             try {
                 final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 

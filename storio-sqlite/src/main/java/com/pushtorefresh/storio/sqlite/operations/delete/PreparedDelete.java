@@ -18,7 +18,7 @@ import static com.pushtorefresh.storio.sqlite.impl.ChainImpl.buildChain;
  *
  * @param <T> type of object to delete.
  */
-public abstract class PreparedDelete<T> implements PreparedWriteOperation<T> {
+public abstract class PreparedDelete<T, Data> implements PreparedWriteOperation<T, Data> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;

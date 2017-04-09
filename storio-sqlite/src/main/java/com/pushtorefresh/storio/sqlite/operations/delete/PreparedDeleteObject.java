@@ -21,7 +21,7 @@ import rx.Single;
  *
  * @param <T> type of object to delete.
  */
-public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
+public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult, T> {
 
     @NonNull
     private final T object;
@@ -119,10 +119,16 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
         return new RealCallInterceptor();
     }
 
+    @NonNull
+    @Override
+    public T getData() {
+        return object;
+    }
+
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
             try {
                 final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 
@@ -157,12 +163,7 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult> {
                 throw new StorIOException("Error has occurred during Delete operation. object = " + object, exception);
             }
         }
-    }
 
-    @NonNull
-    @Override
-    public Object getData() {
-        return object;
     }
 
     /**

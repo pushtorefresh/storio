@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
 import java.util.List;
 
 import rx.Completable;
@@ -176,7 +177,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedPut<PutResults<TestItem>> preparedPut = storIOContentResolver
+            final PreparedPut<PutResults<TestItem>, Collection<TestItem>> preparedPut = storIOContentResolver
                     .put()
                     .objects(items)
                     .prepare();

@@ -20,7 +20,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  * Prepared Delete Operation for
  * {@link com.pushtorefresh.storio.contentresolver.StorIOContentResolver}.
  */
-public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
+public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult, DeleteQuery> {
 
     @NonNull
     private final DeleteQuery deleteQuery;
@@ -134,7 +134,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     @NonNull
     @Override
-    public Object getData() {
+    public DeleteQuery getData() {
         return deleteQuery;
     }
 

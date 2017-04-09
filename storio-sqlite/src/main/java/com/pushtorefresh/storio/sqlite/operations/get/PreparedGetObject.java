@@ -158,7 +158,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
         @Nullable // TODO every other interceptor is NonNull, handle this case separately?
         @SuppressWarnings({"ConstantConditions", "NullableProblems"})
         @Override
-        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
             try {
                 final GetResolver<T> getResolver;
 

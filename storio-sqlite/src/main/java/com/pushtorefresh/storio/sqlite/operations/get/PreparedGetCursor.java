@@ -149,7 +149,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result> Result intercept(@NonNull PreparedOperation<Result> current, @NonNull Chain chain) {
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> current, @NonNull Chain chain) {
             try {
                 if (query != null) {
                     return (Result) getResolver.performGet(storIOSQLite, query);

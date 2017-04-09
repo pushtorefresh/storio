@@ -22,7 +22,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  * Prepared Put Operation to perform put multiple {@link ContentValues}
  * into {@link StorIOContentResolver}.
  */
-public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<ContentValues>> {
+public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<ContentValues>, Iterable<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValues;
@@ -143,7 +143,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
 
     @NonNull
     @Override
-    public Object getData() {
+    public Iterable<ContentValues> getData() {
         return contentValues;
     }
 

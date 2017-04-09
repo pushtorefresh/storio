@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -363,7 +364,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedDelete<DeleteResults<TestItem>> preparedDelete = storIOSQLite
+            final PreparedDelete<DeleteResults<TestItem>, Collection<TestItem>> preparedDelete = storIOSQLite
                     .delete()
                     .objects(items)
                     .useTransaction(false)
@@ -504,7 +505,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedDelete<DeleteResults<TestItem>> preparedDelete = storIOSQLite
+            final PreparedDelete<DeleteResults<TestItem>, Collection<TestItem>> preparedDelete = storIOSQLite
                     .delete()
                     .objects(items)
                     .useTransaction(true)

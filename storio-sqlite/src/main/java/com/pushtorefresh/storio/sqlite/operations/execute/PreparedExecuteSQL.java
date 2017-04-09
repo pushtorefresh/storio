@@ -23,7 +23,7 @@ import static com.pushtorefresh.storio.sqlite.impl.ChainImpl.buildChain;
 /**
  * Prepared Execute SQL Operation for {@link StorIOSQLite}.
  */
-public class PreparedExecuteSQL implements PreparedOperation<Object> {
+public class PreparedExecuteSQL implements PreparedOperation<Object, RawQuery> {
 
     @NonNull
     private final StorIOSQLite storIOSQLite;
@@ -126,7 +126,7 @@ public class PreparedExecuteSQL implements PreparedOperation<Object> {
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
             try {
                 final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
                 lowLevel.executeSQL(rawQuery);
@@ -147,7 +147,7 @@ public class PreparedExecuteSQL implements PreparedOperation<Object> {
 
     @NonNull
     @Override
-    public Object getData() {
+    public RawQuery getData() {
         return rawQuery;
     }
 

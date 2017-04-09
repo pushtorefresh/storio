@@ -151,7 +151,7 @@ public class PreparedPutObjectTest {
             when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
 
             final TestItem object = TestItem.newInstance();
-            final PreparedPut<PutResult> operation = storIOContentResolver
+            final PreparedPut<PutResult, TestItem> operation = storIOContentResolver
                     .put()
                     .object(object)
                     .prepare();
@@ -168,7 +168,7 @@ public class PreparedPutObjectTest {
 
             when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
 
-            final PreparedPut<PutResult> preparedPut = storIOContentResolver
+            final PreparedPut<PutResult, TestItem> preparedPut = storIOContentResolver
                     .put()
                     .object(TestItem.newInstance())
                     .prepare();

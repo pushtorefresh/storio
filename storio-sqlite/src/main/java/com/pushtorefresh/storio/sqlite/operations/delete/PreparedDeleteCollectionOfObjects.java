@@ -30,7 +30,7 @@ import rx.Single;
  *
  * @param <T> type of objects to delete.
  */
-public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteResults<T>> {
+public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteResults<T>, Collection<T>> {
 
     @NonNull
     private final Collection<T> objects;
@@ -135,7 +135,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
             try {
                 final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 
@@ -249,7 +249,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
 
     @NonNull
     @Override
-    public Object getData() {
+    public Collection<T> getData() {
         return objects;
     }
 

@@ -39,7 +39,7 @@ public class ChainImpl implements Interceptor.Chain {
 
     @Nullable // can be null on PreparedGetObject
     @Override
-    public <Result> Result proceed(@NonNull PreparedOperation<Result> operation) {
+    public <Result, Data> Result proceed(@NonNull PreparedOperation<Result, Data> operation) {
         if (!interceptors.hasNext()) {
             throw new IllegalStateException("proceed was called on empty iterator");
         }

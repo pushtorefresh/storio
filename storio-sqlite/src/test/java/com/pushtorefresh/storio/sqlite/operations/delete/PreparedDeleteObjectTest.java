@@ -189,7 +189,7 @@ public class PreparedDeleteObjectTest {
 
             when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
-            final PreparedDelete<DeleteResult> preparedDelete = storIOSQLite
+            final PreparedDelete<DeleteResult, TestItem> preparedDelete = storIOSQLite
                     .delete()
                     .object(TestItem.newInstance())
                     .prepare();

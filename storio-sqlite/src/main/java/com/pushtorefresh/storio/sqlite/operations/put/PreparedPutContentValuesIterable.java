@@ -22,7 +22,7 @@ import rx.Single;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 
-public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<ContentValues>> {
+public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<ContentValues>, Iterable<ContentValues>> {
 
     @NonNull
     private final Iterable<ContentValues> contentValuesIterable;
@@ -112,14 +112,14 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
 
     @NonNull
     @Override
-    public Object getData() {
+    public Iterable<ContentValues> getData() {
         return contentValuesIterable;
     }
 
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
             try {
                 final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 

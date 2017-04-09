@@ -286,7 +286,7 @@ public class PreparedPutObjectTest {
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
             final TestItem object = TestItem.newInstance();
-            final PreparedPut<PutResult> operation = storIOSQLite
+            final PreparedPut<PutResult, TestItem> operation = storIOSQLite
                     .put()
                     .object(object)
                     .prepare();

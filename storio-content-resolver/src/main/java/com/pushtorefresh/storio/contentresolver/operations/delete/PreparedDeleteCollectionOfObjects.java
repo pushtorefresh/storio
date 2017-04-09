@@ -26,7 +26,7 @@ import rx.Single;
  *
  * @param <T> type of objects to delete.
  */
-public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteResults<T>> {
+public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteResults<T>, Collection<T>> {
 
     @NonNull
     private final Collection<T> objects;
@@ -186,7 +186,7 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
 
     @NonNull
     @Override
-    public Object getData() {
+    public Collection<T> getData() {
         return objects;
     }
 

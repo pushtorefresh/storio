@@ -35,7 +35,7 @@ public class LoggingInterceptor implements Interceptor {
 
     @Nullable
     @Override
-    public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+    public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
         final long startMillis = SystemClock.elapsedRealtime();
 
         final Result result = chain.proceed(operation);

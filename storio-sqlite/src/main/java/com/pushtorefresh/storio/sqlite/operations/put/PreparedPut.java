@@ -18,7 +18,7 @@ import static com.pushtorefresh.storio.sqlite.impl.ChainImpl.buildChain;
  * Prepared Put Operation for {@link StorIOSQLite} which performs insert or update data
  * in {@link StorIOSQLite}.
  */
-public abstract class PreparedPut<Result> implements PreparedWriteOperation<Result> {
+public abstract class PreparedPut<Result, Data> implements PreparedWriteOperation<Result, Data> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;

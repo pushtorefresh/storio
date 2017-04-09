@@ -21,7 +21,7 @@ import rx.Single;
  *
  * @param <T> type of object to put.
  */
-public class PreparedPutObject<T> extends PreparedPut<PutResult> {
+public class PreparedPutObject<T> extends PreparedPut<PutResult, T> {
 
     @NonNull
     private final T object;
@@ -121,14 +121,14 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
 
     @NonNull
     @Override
-    public Object getData() {
+    public T getData() {
         return object;
     }
 
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
             try {
                 final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 

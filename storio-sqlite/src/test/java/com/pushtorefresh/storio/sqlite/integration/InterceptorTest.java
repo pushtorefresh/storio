@@ -268,7 +268,7 @@ public class InterceptorTest {
         return new Interceptor() {
             @Nullable
             @Override
-            public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+            public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
                 callCount.incrementAndGet();
                 return chain.proceed(operation);
             }

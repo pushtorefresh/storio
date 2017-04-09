@@ -151,7 +151,7 @@ public class PreparedDeleteObjectTest {
 
             when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
 
-            final PreparedDelete<DeleteResult> preparedDelete = storIOContentResolver
+            final PreparedDelete<DeleteResult, TestItem> preparedDelete = storIOContentResolver
                     .delete()
                     .object(TestItem.newInstance())
                     .prepare();

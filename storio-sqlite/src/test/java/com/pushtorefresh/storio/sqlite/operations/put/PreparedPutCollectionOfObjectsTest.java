@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -304,7 +305,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedPut<PutResults<TestItem>> preparedPut = storIOSQLite
+            final PreparedPut<PutResults<TestItem>, Collection<TestItem>> preparedPut = storIOSQLite
                     .put()
                     .objects(items)
                     .useTransaction(false)
@@ -449,7 +450,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedPut<PutResults<TestItem>> preparedPut = storIOSQLite
+            final PreparedPut<PutResults<TestItem>, Collection<TestItem>> preparedPut = storIOSQLite
                     .put()
                     .objects(items)
                     .useTransaction(true)

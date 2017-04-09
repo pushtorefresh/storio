@@ -19,7 +19,7 @@ import rx.Single;
 /**
  * Prepared Delete Operation for {@link StorIOSQLite}.
  */
-public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
+public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult, DeleteQuery> {
 
     @NonNull
     private final DeleteQuery deleteQuery;
@@ -116,14 +116,14 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
 
     @NonNull
     @Override
-    public Object getData() {
+    public DeleteQuery getData() {
         return deleteQuery;
     }
 
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result> Result intercept(@NonNull PreparedOperation<Result> operation, @NonNull Chain chain) {
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
             try {
                 final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
                 if (deleteResult.numberOfRowsDeleted() > 0) {
