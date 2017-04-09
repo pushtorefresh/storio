@@ -604,6 +604,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(stub.lowLevel).beginTransaction();
         verify(stub.lowLevel).endTransaction();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -640,6 +641,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(stub.lowLevel).beginTransaction();
         verify(stub.lowLevel).endTransaction();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -676,6 +678,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(stub.lowLevel).beginTransaction();
         verify(stub.lowLevel).endTransaction();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 

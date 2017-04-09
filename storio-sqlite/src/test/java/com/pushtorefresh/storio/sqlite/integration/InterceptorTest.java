@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.pushtorefresh.storio.sqlite.integration.TweetTableMeta.COLUMN_AUTHOR_ID;
 import static com.pushtorefresh.storio.sqlite.integration.TweetTableMeta.COLUMN_CONTENT_TEXT;
 import static com.pushtorefresh.storio.sqlite.integration.TweetTableMeta.COLUMN_ID;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)

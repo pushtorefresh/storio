@@ -608,7 +608,7 @@ public class DefaultStorIOSQLiteTest {
         private final Internal internal;
 
         TestDefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @NonNull TypeMappingFinder typeMappingFinder) {
-            super(sqLiteOpenHelper, typeMappingFinder, null);
+            super(sqLiteOpenHelper, typeMappingFinder, null, Collections.<Interceptor>emptyList());
             internal = new InternalImpl(typeMappingFinder);
         }
 

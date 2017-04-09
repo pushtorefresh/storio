@@ -22,8 +22,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class PreparedPutContentValuesTest {
 
     @Rule
@@ -153,6 +151,7 @@ public class PreparedPutContentValuesTest {
 
         verify(stub.storIOSQLite).put();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -188,6 +187,7 @@ public class PreparedPutContentValuesTest {
 
         verify(stub.storIOSQLite).put();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -223,6 +223,7 @@ public class PreparedPutContentValuesTest {
 
         verify(stub.storIOSQLite).put();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 

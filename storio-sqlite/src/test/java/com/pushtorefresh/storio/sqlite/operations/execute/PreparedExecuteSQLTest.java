@@ -211,6 +211,7 @@ public class PreparedExecuteSQLTest {
         verify(stub.storIOSQLite).defaultScheduler();
         verify(stub.storIOSQLite).lowLevel();
         verify(stub.lowLevel).executeSQL(stub.rawQuery);
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -244,6 +245,7 @@ public class PreparedExecuteSQLTest {
         verify(stub.storIOSQLite).defaultScheduler();
         verify(stub.storIOSQLite).lowLevel();
         verify(stub.lowLevel).executeSQL(stub.rawQuery);
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 

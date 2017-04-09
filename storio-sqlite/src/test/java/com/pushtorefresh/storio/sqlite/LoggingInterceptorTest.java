@@ -14,7 +14,7 @@ import org.robolectric.RobolectricTestRunner;
 import rx.Observable;
 import rx.Single;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 public class LoggingInterceptorTest {
