@@ -58,7 +58,11 @@ object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
             // otherwise -> if primitive and value from cursor null -> fail early
             if (isBoxed) builder.beginControlFlow("if (!cursor.isNull(\$L))", columnIndex)
 
-            builder.addStatement("object.\$L = cursor.\$L", columnMeta.elementName, getFromCursor)
+            if (columnMeta.needAccessors) {
+                builder.addStatement("object.\$L(cursor.\$L)", columnMeta.setter, getFromCursor)
+            } else {
+                builder.addStatement("object.\$L = cursor.\$L", columnMeta.elementName, getFromCursor)
+            }
 
             if (isBoxed) builder.endControlFlow()
         }
@@ -99,8 +103,7 @@ object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                 builder.addStatement("\$L = cursor.\$L", columnMeta.realElementName, getFromCursor)
                 builder.endControlFlow()
             } else {
-                builder.addStatement("\$T \$L = cursor.\$L", name, columnMeta.realElementName,
-                        getFromCursor)
+                builder.addStatement("\$T \$L = cursor.\$L", name, columnMeta.realElementName, getFromCursor)
             }
 
             if (!first) paramsBuilder.append(", ")

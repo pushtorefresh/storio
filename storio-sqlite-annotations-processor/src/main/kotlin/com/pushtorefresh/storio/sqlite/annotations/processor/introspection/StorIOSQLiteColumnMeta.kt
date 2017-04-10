@@ -10,10 +10,14 @@ class StorIOSQLiteColumnMeta(
         element: Element,
         fieldName: String,
         javaType: JavaType,
-        storIOColumn: StorIOSQLiteColumn)
+        storIOColumn: StorIOSQLiteColumn,
+        getter: String? = null,
+        setter: String? = null)
     : StorIOColumnMeta<StorIOSQLiteColumn>(
         enclosingElement,
         element,
         fieldName,
         javaType,
-        storIOColumn)
+        storIOColumn,
+        getter,
+        setter)
