@@ -16,8 +16,12 @@ import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorI
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteCreatorMeta
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta
 import javax.annotation.processing.RoundEnvironment
-import javax.lang.model.element.*
-import javax.lang.model.element.Modifier.*
+import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
+import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.Modifier.ABSTRACT
+import javax.lang.model.element.Modifier.PRIVATE
+import javax.lang.model.element.TypeElement
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic.Kind.WARNING
 
