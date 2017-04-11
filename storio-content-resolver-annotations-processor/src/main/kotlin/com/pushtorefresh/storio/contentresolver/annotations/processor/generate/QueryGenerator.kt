@@ -23,7 +23,7 @@ object QueryGenerator {
                     whereArgs
                             .append(varName)
                             .append(".")
-                            .append(columnMeta.elementName)
+                            .append(columnMeta.contextAwareName)
                 } else {
                     whereClause
                             .append(" AND ")
@@ -34,11 +34,8 @@ object QueryGenerator {
                             .append(", ")
                             .append(varName)
                             .append(".")
-                            .append(columnMeta.elementName)
+                            .append(columnMeta.contextAwareName)
                 }
-
-                if (columnMeta.isMethod) whereArgs.append("()")
-
                 i++
             }
         }

@@ -509,7 +509,7 @@ public class StorIOSQLiteAnnotationsProcessorTest {
 
     @Test
     public void shouldCompileIfAnnotatedFieldIsPrivateAndHasNameStartingWithIs() {
-        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithIsCornerCase.java");
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithNameStartingWithIs.java");
 
         assert_().about(javaSource())
                 .that(model)
@@ -552,7 +552,7 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingAccessprsAndMarkedAsIgnoreNull() {
+    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingAccessorsAndMarkedAsIgnoreNull() {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNull.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullSQLiteTypeMapping.java");

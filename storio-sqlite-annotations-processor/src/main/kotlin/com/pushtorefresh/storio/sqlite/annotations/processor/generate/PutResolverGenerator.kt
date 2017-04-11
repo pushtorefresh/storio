@@ -60,11 +60,11 @@ object PutResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
                 .addCode("""return UpdateQuery.builder()
-$INDENT.table(${"$"}S)
-$INDENT.where(${"$"}S)
-$INDENT.whereArgs(${"$"}L)
-$INDENT.build();
-""",
+                            $INDENT.table(${"$"}S)
+                            $INDENT.where(${"$"}S)
+                            $INDENT.whereArgs(${"$"}L)
+                            $INDENT.build();
+                         """.trimIndent(),
                         typeMeta.storIOType.table,
                         where[QueryGenerator.WHERE_CLAUSE],
                         where[QueryGenerator.WHERE_ARGS])

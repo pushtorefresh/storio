@@ -58,7 +58,11 @@ object GetResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
             // otherwise -> if primitive and value from cursor null -> fail early
             if (isBoxed) builder.beginControlFlow("if (!cursor.isNull(\$L))", columnIndex)
 
-            builder.addStatement("object.\$L = cursor.\$L", columnMeta.elementName, getFromCursor)
+            if (columnMeta.needAccessors) {
+                builder.addStatement("object.\$L(cursor.\$L)", columnMeta.setter, getFromCursor)
+            } else {
+                builder.addStatement("object.\$L = cursor.\$L", columnMeta.elementName, getFromCursor)
+            }
 
             if (isBoxed) builder.endControlFlow()
         }

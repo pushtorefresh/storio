@@ -1,12 +1,12 @@
-package com.pushtorefresh.storio.sqlite.annotations;
+package com.pushtorefresh.storio.contentresolver.annotations;
 
-@StorIOSQLiteType(table = "table")
-public class PrivateFieldWithIsCornerCase {
+@StorIOContentResolverType(uri = "content://uri")
+public class PrivateFieldWithNameStartingWithIs {
 
-    @StorIOSQLiteColumn(name = "id", key = true)
+    @StorIOContentResolverColumn(name = "id", key = true)
     private long id;
 
-    @StorIOSQLiteColumn(name = "is_flag")
+    @StorIOContentResolverColumn(name = "is_flag")
     private boolean isFlag;
 
     public long getId() {
