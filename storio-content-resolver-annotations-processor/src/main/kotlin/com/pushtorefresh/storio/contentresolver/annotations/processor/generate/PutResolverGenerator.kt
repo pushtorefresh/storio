@@ -67,11 +67,11 @@ object PutResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
                 .addCode("""return UpdateQuery.builder()
-$INDENT.uri(${"$"}S)
-$INDENT.where(${"$"}S)
-$INDENT.whereArgs(${"$"}L)
-$INDENT.build();
-""",
+                            $INDENT.uri(${"$"}S)
+                            $INDENT.where(${"$"}S)
+                            $INDENT.whereArgs(${"$"}L)
+                            $INDENT.build();
+                         """.trimIndent(),
                         updateUri,
                         where[QueryGenerator.WHERE_CLAUSE],
                         where[QueryGenerator.WHERE_ARGS])
@@ -88,19 +88,15 @@ $INDENT.build();
                 .addParameter(ParameterSpec.builder(className, "object")
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
-                .addStatement("ContentValues contentValues = new ContentValues(\$L)",
-                        typeMeta
-                                .columns.size)
+                .addStatement("ContentValues contentValues = new ContentValues(\$L)", typeMeta.columns.size)
                 .addCode("\n")
 
-        for (columnMeta in typeMeta
-                .columns.values) {
+        typeMeta.columns.values.forEach { columnMeta ->
             val ignoreNull = columnMeta.storIOColumn.ignoreNull
             if (ignoreNull) {
-                builder.beginControlFlow("if (object.\$L != null)", "${columnMeta.elementName}${if (columnMeta.isMethod) "()" else ""}")
+                builder.beginControlFlow("if (object.\$L != null)", columnMeta.contextAwareName)
             }
-            builder.addStatement("contentValues.put(\$S, object.\$L)", columnMeta.storIOColumn.name, "${columnMeta.elementName}${if (columnMeta.isMethod) "()" else ""}"
-            )
+            builder.addStatement("contentValues.put(\$S, object.\$L)", columnMeta.storIOColumn.name, columnMeta.contextAwareName)
             if (ignoreNull) builder.endControlFlow()
         }
 

@@ -16,7 +16,12 @@ import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorI
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteCreatorMeta
 import com.pushtorefresh.storio.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta
 import javax.annotation.processing.RoundEnvironment
-import javax.lang.model.element.*
+import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
+import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.Modifier.ABSTRACT
+import javax.lang.model.element.Modifier.PRIVATE
+import javax.lang.model.element.TypeElement
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic.Kind.WARNING
 
@@ -57,7 +62,7 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
         val simpleName = classElement.simpleName.toString()
         val packageName = elementUtils.getPackageOf(classElement).qualifiedName.toString()
 
-        return StorIOSQLiteTypeMeta(simpleName, packageName, storIOSQLiteType, Modifier.ABSTRACT in classElement.modifiers)
+        return StorIOSQLiteTypeMeta(simpleName, packageName, storIOSQLiteType, ABSTRACT in classElement.modifiers)
     }
 
     /**
@@ -131,6 +136,13 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
 
         if (column.name.isEmpty()) {
             throw ProcessingException(annotatedField, "Column name is empty: ${annotatedField.simpleName}")
+        }
+
+        if (PRIVATE in annotatedField.modifiers) {
+            // can't be null since we validated it before
+            val (getter, setter) = accessorsMap[annotatedField.simpleName.toString()]!!
+
+            return StorIOSQLiteColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column, getter, setter)
         }
 
         return StorIOSQLiteColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column)

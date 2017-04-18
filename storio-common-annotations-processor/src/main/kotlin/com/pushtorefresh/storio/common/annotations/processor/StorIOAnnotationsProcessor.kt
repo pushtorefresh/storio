@@ -7,6 +7,7 @@ import com.pushtorefresh.storio.common.annotations.processor.introspection.StorI
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ElementKind.*
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier.*
@@ -29,6 +30,10 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
     private lateinit var elementUtils: Elements
     private lateinit var typeUtils: Types
     protected lateinit var messager: Messager
+
+    // cashing getters and setters for private fields to avoid second pass since we already
+    // have result after the validation step
+    protected val accessorsMap = mutableMapOf<String, Pair<String, String>>()
 
     /**
      * Processes class annotations.
@@ -76,7 +81,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
     /**
      * Checks that element annotated with [StorIOColumnMeta] satisfies all required conditions.
      *
-     * @param annotatedElement an annotated field
+     * @param annotatedElement an annotated field or method
      */
     @Throws(SkipNotAnnotatedClassWithAnnotatedParentException::class)
     protected fun validateAnnotatedFieldOrMethod(annotatedElement: Element) {
@@ -99,7 +104,13 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
         }
 
         if (PRIVATE in annotatedElement.modifiers) {
-            throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to private field or method: ${annotatedElement.simpleName}")
+            if (annotatedElement.kind == FIELD) {
+                if (!findGetterAndSetterForPrivateField(annotatedElement)) {
+                    throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to private field without corresponding getter and setter or private method: ${annotatedElement.simpleName}")
+                }
+            } else {
+                throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to private field without corresponding getter and setter or private method: ${annotatedElement.simpleName}")
+            }
         }
 
         if (annotatedElement.kind == FIELD && FINAL in annotatedElement.modifiers) {
@@ -138,6 +149,53 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
 
         if (annotatedElement.kind == METHOD && annotatedElement.returnType != enclosingElement.asType()) {
             throw ProcessingException(annotatedElement, "${creatorAnnotationClass.simpleName} can not be applied to method with return type different from ${enclosingElement.simpleName}")
+        }
+    }
+
+    /**
+     * Checks that field is accessible via corresponding getter and setter.
+     * Cashes names of elements getter and setter into [accessorsMap].
+     *
+     * @param annotatedElement an annotated field
+     */
+    protected fun findGetterAndSetterForPrivateField(annotatedElement: Element): Boolean {
+        val name = annotatedElement.simpleName.toString()
+        var getter: String? = null
+        var setter: String? = null
+        annotatedElement.enclosingElement.enclosedElements.forEach { element ->
+            if (element.kind == ElementKind.METHOD) {
+                val method = element as ExecutableElement
+                val methodName = method.simpleName.toString()
+                // check if it is a valid getter
+                if ((methodName == String.format("get%s", name.capitalize())
+                        || methodName == String.format("is%s", name.capitalize())
+                        // Special case for properties which name starts with is.
+                        // Kotlin will generate getter with the same name instead of isIsProperty.
+                        || methodName == name && name.startsWithIs())
+                        && !method.modifiers.contains(PRIVATE)
+                        && !method.modifiers.contains(STATIC)
+                        && method.parameters.isEmpty()
+                        && method.returnType == annotatedElement.asType()) {
+                    getter = methodName
+                }
+                // check if it is a valid setter
+                if ((methodName == String.format("set%s", name.capitalize())
+                        // Special case for properties which name starts with is.
+                        // Kotlin will generate setter with setProperty name instead of setIsProperty.
+                        || name.startsWithIs() && methodName == String.format("set%s", name.substring(2, name.length)))
+                        && !method.modifiers.contains(PRIVATE)
+                        && !method.modifiers.contains(STATIC)
+                        && method.parameters.size == 1
+                        && method.parameters[0].asType() == annotatedElement.asType()) {
+                    setter = methodName
+                }
+            }
+        }
+        if (getter == null || setter == null) {
+            return false
+        } else {
+            accessorsMap += name to (getter!! to setter!!)
+            return true
         }
     }
 

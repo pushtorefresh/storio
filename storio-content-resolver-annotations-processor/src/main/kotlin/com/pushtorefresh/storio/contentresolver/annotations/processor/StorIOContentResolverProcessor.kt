@@ -16,10 +16,7 @@ import com.pushtorefresh.storio.contentresolver.annotations.processor.introspect
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverCreatorMeta
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta
 import javax.annotation.processing.RoundEnvironment
-import javax.lang.model.element.Element
-import javax.lang.model.element.ElementKind
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.TypeElement
+import javax.lang.model.element.*
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic.Kind.WARNING
 
@@ -170,6 +167,13 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
 
         if (column.name.isEmpty()) {
             throw ProcessingException(annotatedField, "Column name is empty: ${annotatedField.simpleName}")
+        }
+
+        if (Modifier.PRIVATE in annotatedField.modifiers) {
+            // can't be null since we validated it before
+            val (getter, setter) = accessorsMap[annotatedField.simpleName.toString()]!!
+
+            return StorIOContentResolverColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column, getter, setter)
         }
 
         return StorIOContentResolverColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column)

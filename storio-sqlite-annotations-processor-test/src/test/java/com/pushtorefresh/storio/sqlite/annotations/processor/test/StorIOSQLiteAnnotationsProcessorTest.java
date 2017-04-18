@@ -71,14 +71,25 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldNotCompileIfAnnotatedFieldIsPrivate() {
-        JavaFileObject model = JavaFileObjects.forResource("PrivateField.java");
+    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveAccessors() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutAccessors.java");
 
         assert_().about(javaSource())
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field or method: id");
+                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
+    }
+
+    @Test
+    public void shouldNotCompileIfAnnotatedMethodIsPrivate() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateMethod.java");
+
+        assert_().about(javaSource())
+            .that(model)
+            .processedWith(new StorIOSQLiteProcessor())
+            .failsToCompile()
+            .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
     }
 
     @Test
@@ -397,8 +408,7 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void
-    shouldCompileWithMethodsReturningBoxedTypesAndMarkedAsIgnoreNullAndConstructorAsCreator() {
+    public void shouldCompileWithMethodsReturningBoxedTypesAndMarkedAsIgnoreNullAndConstructorAsCreator() {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesMethodsConstructorIgnoreNull.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesMethodsConstructorIgnoreNullSQLiteTypeMapping.java");
@@ -449,8 +459,7 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void
-    shouldCompileWithMethodsReturningBoxedTypesAndMarkedAsIgnoreNullAndFactoryMethodAsCreator() {
+    public void shouldCompileWithMethodsReturningBoxedTypesAndMarkedAsIgnoreNullAndFactoryMethodAsCreator() {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodIgnoreNull.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesMethodsFactoryMethodIgnoreNullSQLiteTypeMapping.java");
@@ -466,4 +475,96 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .generatesSources(generatedTypeMapping, generatedDeleteResolver, generatedGetResolver, generatedPutResolver);
     }
 
+    @Test
+    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveSetter() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutSetter.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .failsToCompile()
+                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
+    }
+
+    @Test
+    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveGetter() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutGetter.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .failsToCompile()
+                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
+    }
+
+    @Test
+    public void shouldCompileIfAnnotatedFieldIsPrivateAndHasIsGetter() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithIsGetter.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError();
+    }
+
+    @Test
+    public void shouldCompileIfAnnotatedFieldIsPrivateAndHasNameStartingWithIs() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithNameStartingWithIs.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError();
+    }
+
+    @Test
+    public void shouldCompileWithPrivatePrimitiveFieldsWithCorrespondingAccessors() {
+        JavaFileObject model = JavaFileObjects.forResource("PrimitivePrivateFields.java");
+
+        JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("PrimitivePrivateFieldsSQLiteTypeMapping.java");
+        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource("PrimitivePrivateFieldsStorIOSQLiteDeleteResolver.java");
+        JavaFileObject generatedGetResolver = JavaFileObjects.forResource("PrimitivePrivateFieldsStorIOSQLiteGetResolver.java");
+        JavaFileObject generatedPutResolver = JavaFileObjects.forResource("PrimitivePrivateFieldsStorIOSQLitePutResolver.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError()
+                .and()
+                .generatesSources(generatedTypeMapping, generatedDeleteResolver, generatedGetResolver, generatedPutResolver);
+    }
+
+    @Test
+    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingAccessors() {
+        JavaFileObject model = JavaFileObjects.forResource("BoxedTypesPrivateFields.java");
+
+        JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesPrivateFieldsSQLiteTypeMapping.java");
+        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsStorIOSQLiteDeleteResolver.java");
+        JavaFileObject generatedGetResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsStorIOSQLiteGetResolver.java");
+        JavaFileObject generatedPutResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsStorIOSQLitePutResolver.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError()
+                .and()
+                .generatesSources(generatedTypeMapping, generatedDeleteResolver, generatedGetResolver, generatedPutResolver);
+    }
+
+    @Test
+    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingAccessorsAndMarkedAsIgnoreNull() {
+        JavaFileObject model = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNull.java");
+
+        JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullSQLiteTypeMapping.java");
+        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullStorIOSQLiteDeleteResolver.java");
+        JavaFileObject generatedGetResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullStorIOSQLiteGetResolver.java");
+        JavaFileObject generatedPutResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullStorIOSQLitePutResolver.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError()
+                .and()
+                .generatesSources(generatedTypeMapping, generatedDeleteResolver, generatedGetResolver, generatedPutResolver);
+    }
 }
