@@ -204,7 +204,7 @@ public abstract class Tweet {
     // Parameters order depends on declaration order.
     @StorIOSQLiteCreator
     static Tweet create(String author, String content) {
-        return new AutoValue_Tweet(author, content)
+        return new AutoValue_Tweet(author, content);
     }
 }
 ```
