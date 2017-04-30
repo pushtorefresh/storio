@@ -14,3 +14,5 @@ To build and test the project you need to execute:
 # from root project directory
 sh ci.sh
 ```
+
+Test CI
