@@ -1,6 +1,25 @@
 StorIO Change Log
 ==========
 
+## Version 1.13.0
+
+_2017_05_15_
+
+* Support for Kotlin properties!
+* Notification tags.
+* Annotation processors in Kotlin.
+* Robolectric 3.3.2.
+* AssertJ 3.6.2.
+* Fix markdown headers.
+
+**Changes:**
+
+* [PR 776](https://github.com/pushtorefresh/storio/pull/776): Support for Kotlin properties.
+* [PR 768](https://github.com/pushtorefresh/storio/pull/768): Notification tags.
+* [PR 775](https://github.com/pushtorefresh/storio/pull/775): Annotation processors in Kotlin.
+* [PR 774](https://github.com/pushtorefresh/storio/pull/774): Robolectric 3.3.2 and AssertJ 3.6.2.
+* [PR 772](https://github.com/pushtorefresh/storio/pull/772): Fix markdown headers.
+
 ## Version 1.12.3
 
 _2017_02_19_
