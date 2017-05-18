@@ -33,7 +33,7 @@ public class RxQueryTest extends BaseTest {
 
     private class EmissionChecker extends AbstractEmissionChecker<List<User>> {
 
-        public EmissionChecker(@NonNull Queue<List<User>> expected) {
+        EmissionChecker(@NonNull Queue<List<User>> expected) {
             super(expected);
         }
 
