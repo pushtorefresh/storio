@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public interface TypeMappingFinder {
     @Nullable
-    <T> TypeMapping<T> findTypeMapping(@NonNull final Class<T> type);
+    <T> TypeMapping<T> findTypeMapping(@NonNull Class<T> type);
 
     void directTypeMapping(@Nullable Map<Class<?>, ? extends TypeMapping<?>> directTypeMapping);
 

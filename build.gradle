@@ -3,7 +3,7 @@ import org.gradle.internal.jvm.Jvm
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.1.1'
+    ext.kotlin_version = '1.1.2'
     repositories {
         jcenter()
     }
@@ -38,10 +38,6 @@ allprojects {
     tasks.withType(JavaForkOptions) {
         jvmArgs '-Djava.awt.headless=true'
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
 }
 
 ext {
