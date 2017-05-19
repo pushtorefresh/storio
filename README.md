@@ -157,18 +157,18 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 `StorIOSQLite`:
 ```groovy
 dependencies {
-	compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
 
-	annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
 }
 ```
 
 `StorIOContentResolver`:
 ```groovy
 dependencies {
-	compile 'com.pushtorefresh.storio:content-resolver-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio:content-resolver-annotations:insert-latest-version-here'
 
-	annotationProcessor 'com.pushtorefresh.storio:content-resolver-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio:content-resolver-annotations-processor:insert-latest-version-here'
 }
 ```
 
@@ -176,15 +176,15 @@ dependencies {
 @StorIOSQLiteType(table = "tweets")
 public class Tweet {
 
-	// Annotated fields should have package-level visibility.
-	@StorIOSQLiteColumn(name = "author")
-	String author;
+  // Annotated fields should have package-level visibility.
+  @StorIOSQLiteColumn(name = "author")
+  String author;
 
-	@StorIOSQLiteColumn(name = "content")
-	String content;
+  @StorIOSQLiteColumn(name = "content")
+  String content;
 
-    // Please leave default constructor with package-level visibility.
-	Tweet() {}
+  // Please leave default constructor with package-level visibility.
+  Tweet() {}
 }
 ```
 
@@ -194,18 +194,18 @@ public class Tweet {
 @StorIOSQLiteType(table = "tweets")
 public abstract class Tweet {
 
-	// Annotated methods should have package-level or public visibility.
-	@StorIOSQLiteColumn(name = "author")
-	abstract String author();
+  // Annotated methods should have package-level or public visibility.
+  @StorIOSQLiteColumn(name = "author")
+  abstract String author();
 
-	@StorIOSQLiteColumn(name = "content")
-	abstract String content();
+  @StorIOSQLiteColumn(name = "content")
+  abstract String content();
 
-    // Parameters order depends on declaration order.
-    @StorIOSQLiteCreator
-    static Tweet create(String author, String content) {
-        return new AutoValue_Tweet(author, content)
-    }
+  // Parameters order depends on declaration order.
+  @StorIOSQLiteCreator
+  static Tweet create(String author, String content) {
+    return new AutoValue_Tweet(author, content);
+  }
 }
 ```
 
