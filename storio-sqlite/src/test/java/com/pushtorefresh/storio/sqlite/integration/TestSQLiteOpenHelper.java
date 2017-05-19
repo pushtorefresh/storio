@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 
 class TestSQLiteOpenHelper extends SQLiteOpenHelper {
 
-    public TestSQLiteOpenHelper(@NonNull Context context) {
+    TestSQLiteOpenHelper(@NonNull Context context) {
         super(context, "test_db", null, 1);
     }
 
