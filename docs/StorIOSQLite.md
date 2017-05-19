@@ -81,7 +81,7 @@ storIOSQLite
   .listOfObjects(Tweet.class)
   .withQuery(Query.builder()
     .table("tweets")
-    .observesTags("particular_change_tag") // Subscribe on some specific change
+    .observesTags("particular_change_tag") // Subscribe to changes with this particular tag(s).
     .build())
   .prepare()
   .asRxObservable();
@@ -91,7 +91,10 @@ Also you can handle changes of tags manually
 
 ```java
 storIOSQLite
-  .observeChangesOfTag("particular_change_tag");
+  .observeChangesOfTag("particular_change_tag")
+  .subscribe(changes -> {
+    // Just subscribe or apply Rx Operators such as Debounce, Filter, etc.
+  });
 ```
 
 ###### Get result via Rx only once and ignore further changes
