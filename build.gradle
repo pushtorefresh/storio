@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         // Android Gradle plugin
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.2'
 
         // Jacoco Test Coverage Plugin
         // (addition to standard Jacoco plugin, allows us fail the build if coverage is not enough)
@@ -42,11 +42,11 @@ allprojects {
 
 ext {
     buildToolsVersion = '25.0.2'
-    compileSdkVersion = 23
+    compileSdkVersion = 25
     minSdkVersion = 14
 }
 
-def supportLibsVersion = '23.4.0'
+def supportLibsVersion = '25.3.1'
 def daggerVersion = '2.4'
 
 ext.libraries = [
