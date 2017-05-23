@@ -1,20 +1,26 @@
-# Disabling sudo moves build to the Container Based Infrastructure on Travis CI
-sudo: false
+# We need sudo to install additional packages.
+sudo: required
 
-language: android
+language: java
 jdk: oraclejdk8
 
 before_install:
+  - sudo apt-get update -q
+  - sudo apt-get install -y curl unzip
   - pip install --user codecov
-
-android:
-  components:
-    - platform-tools
-    - tools
-    - android-23
-    - build-tools-25.0.2
-    - extra-android-m2repository
-    - extra-android-support
+  - export ANDROID_HOME="$HOME"/android-sdk
+  - mkdir -p "$ANDROID_HOME"
+  - export ANDROID_SDK_FILE_NAME=tools_r25.2.3-linux.zip
+  - curl https://dl.google.com/android/repository/$ANDROID_SDK_FILE_NAME --progress-bar --location --output $ANDROID_SDK_FILE_NAME
+  - unzip $ANDROID_SDK_FILE_NAME -d "$ANDROID_HOME"
+  - rm $ANDROID_SDK_FILE_NAME
+  - export ANDROID_SDK_INSTALL_COMPONENT="echo \"y\" | \"$ANDROID_HOME\"/tools/bin/sdkmanager --verbose"
+  - eval $ANDROID_SDK_INSTALL_COMPONENT '"tools"'
+  - eval $ANDROID_SDK_INSTALL_COMPONENT '"platform-tools"'
+  - eval $ANDROID_SDK_INSTALL_COMPONENT '"build-tools;25.0.2"'
+  - eval $ANDROID_SDK_INSTALL_COMPONENT '"platforms;android-25"'
+  - eval $ANDROID_SDK_INSTALL_COMPONENT '"extras;android;m2repository"'
+  - eval $ANDROID_SDK_INSTALL_COMPONENT '"extras;google;m2repository"'
 
 script:
   - sh ci.sh
