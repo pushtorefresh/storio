@@ -73,6 +73,30 @@ storIOSQLite
   });
 ```
 
+###### Third case: Observe changes of tags to have more fine-grained control over notifications
+
+```java
+storIOSQLite
+  .get()
+  .listOfObjects(Tweet.class)
+  .withQuery(Query.builder()
+    .table("tweets")
+    .observesTags("particular_change_tag") // Subscribe to changes with this particular tag(s).
+    .build())
+  .prepare()
+  .asRxObservable();
+```
+
+Also you can handle changes of tags manually
+
+```java
+storIOSQLite
+  .observeChangesOfTag("particular_change_tag")
+  .subscribe(changes -> {
+    // Just subscribe or apply Rx Operators such as Debounce, Filter, etc.
+  });
+```
+
 ###### Get result via Rx only once and ignore further changes
 
 ```java
@@ -173,6 +197,7 @@ PutResolver<SomeType> putResolver = new DefaultPutResolver<SomeType>() {
   @Override @NonNull public InsertQuery mapToInsertQuery(@NonNull SomeType object) {
     return InsertQuery.builder()
       .table("some_table")
+      .affectsTags("particular_change_tag") // optional: you can specify affected tags to notify Observers
       .build();
   }
   
@@ -181,6 +206,7 @@ PutResolver<SomeType> putResolver = new DefaultPutResolver<SomeType>() {
       .table("some_table")
       .where("some_column = ?")
       .whereArgs(object.someColumn())
+      .affectsTags("particular_change_tag") // optional: you can specify affected tags to notify Observers
       .build();
   }
   
@@ -231,6 +257,7 @@ DeleteResolver<SomeType> deleteResolver = new DefaultDeleteResolver<SomeType>() 
       .table("some_table")
       .where("some_column = ?")
       .whereArgs(object.someColumn())
+      .affectsTags("particular_change_tag") // optional: you can specify affected tags to notify Observers
       .build();
   }
 };
@@ -249,7 +276,8 @@ storIOSQLite
   .executeSQL()
   .withQuery(RawQuery.builder()
     .query("ALTER TABLE tweets ADD COLUMN number_of_retweets INTEGER")
-    .affectsTables("tweets") // optional: you can specify affected tables to notify Observers
+    .affectsTables("tweets")                // optional: you can specify affected by this query tables
+    .affectsTags("particular_change_tag")   // optional: and tags to notify Observers
     .build())
   .prepare()
   .executeAsBlocking(); // or asRxObservable()
@@ -257,7 +285,7 @@ storIOSQLite
 
 Several things about `ExecSql`:
 * Use it for non insert/update/query/delete operations
-* Notice that you can set list of tables that will be affected by `RawQuery` and `StorIOSQLite` will notify tables Observers
+* Notice that you can set list of tables and tags that will be affected by `RawQuery` and `StorIOSQLite` will notify Observers
 
 
 #### How object mapping works?
