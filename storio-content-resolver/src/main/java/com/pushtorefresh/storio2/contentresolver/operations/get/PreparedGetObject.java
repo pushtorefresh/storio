@@ -7,18 +7,20 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio2.StorIOException;
+import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
+import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
-import com.pushtorefresh.storio2.operations.internal.OnSubscribeExecuteAsBlocking;
 
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
-import static com.pushtorefresh.storio2.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio2.internal.Environment.throwExceptionIfRxJava2IsNotAvailable;
 
 /**
  * Represents Get Operation for {@link StorIOContentResolver}
@@ -96,7 +98,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
     }
 
     /**
-     * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
+     * Creates "Hot" {@link Flowable} which will be subscribed to changes of {@link #query} Uri
      * and will emit result each time change occurs.
      * <p>
      * First result will be emitted immediately after subscription,
@@ -104,27 +106,26 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
      * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOContentResolver#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOContentResolver#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      * <p>
-     * Please don't forget to unsubscribe from this {@link Observable}
+     * Please don't forget to unsubscribe from this {@link Flowable}
      * because it's "Hot" and endless.
      *
-     * @return non-null {@link Observable} which will emit single object
+     * @return non-null {@link Flowable} which will emit single object
      * (can be {@code null}, if no items are found)
      * with mapped results and will be subscribed to changes of tables from query
      */
     @NonNull
     @CheckResult
     @Override
-    public Observable<T> asRxObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
+    public Flowable<T> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
+        throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
 
-        final Observable<T> observable = storIOContentResolver
-                .observeChangesOfUri(query.uri()) // each change triggers executeAsBlocking
-                .map(MapSomethingToExecuteAsBlocking.newInstance(this))
-                .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
-                .onBackpressureLatest();
+        final Flowable<T> observable = storIOContentResolver
+                .observeChangesOfUri(query.uri(), backpressureStrategy) // each change triggers executeAsBlocking
+                .map(new MapSomethingToExecuteAsBlocking<Changes, T, Query>(this))
+                .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<T, Query>(this), backpressureStrategy)); // start stream with first query result
 
         return RxJavaUtils.subscribeOn(storIOContentResolver, observable);
     }
@@ -133,7 +134,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
      * Creates {@link Single} which will perform Get Operation lazily when somebody subscribes to it and send result to observer.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOContentResolver#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOContentResolver#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Single} which will perform Get Operation.

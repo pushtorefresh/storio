@@ -5,8 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 /**
  * Common API of all prepared operations
@@ -30,18 +31,16 @@ public interface PreparedOperation<Result, Data> {
     Result executeAsBlocking();
 
     /**
-     * Creates {@link rx.Observable} that emits result of Operation.
+     * Creates {@link io.reactivex.Flowable} that emits result of Operation.
      * <p>
-     * Observable may be "Hot" (usually "Warm") or "Cold", please read documentation of the concrete implementation.
-     *
-     * @return observable result of operation with only one {@link rx.Observer#onNext(Object)} call.
+     * Flowable may be "Hot" (usually "Warm") or "Cold", please read documentation of the concrete implementation.
      */
     @NonNull
     @CheckResult
-    Observable<Result> asRxObservable();
+    Flowable<Result> asRxFlowable(BackpressureStrategy backpressureStrategy);
 
     /**
-     * Creates {@link rx.Single} that emits result of Operation lazily when somebody subscribes to it.
+     * Creates {@link io.reactivex.Single} that emits result of Operation lazily when somebody subscribes to it.
      * <p>
      *
      * @return single result of operation.
@@ -52,4 +51,5 @@ public interface PreparedOperation<Result, Data> {
 
     @NonNull
     Data getData();
+
 }

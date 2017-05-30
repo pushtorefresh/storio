@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import rx.observers.TestSubscriber;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static java.util.Arrays.asList;
 
@@ -17,7 +17,7 @@ public class RxChangesBusTest {
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
 
         rxChangesBus
-                .asObservable()
+                .asFlowable()
                 .subscribe(testSubscriber);
 
         List<String> messages = asList("yo", ",", "wanna", "some", "messages?");
@@ -26,9 +26,7 @@ public class RxChangesBusTest {
             rxChangesBus.onNext(message);
         }
 
-        testSubscriber.assertReceivedOnNext(messages);
-
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertNoTerminalEvent();
+        testSubscriber.assertValueSequence(messages);
+        testSubscriber.assertNotTerminated();
     }
 }

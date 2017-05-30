@@ -7,13 +7,15 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio2.StorIOException;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
+import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
-import com.pushtorefresh.storio2.operations.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.Interceptor;
 import com.pushtorefresh.storio2.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.impl.ChangesFilter;
 import com.pushtorefresh.storio2.sqlite.operations.internal.RxJavaUtils;
+import com.pushtorefresh.storio2.sqlite.queries.GetQuery;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
 
@@ -22,11 +24,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
-import static com.pushtorefresh.storio2.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio2.internal.Environment.throwExceptionIfRxJava2IsNotAvailable;
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.unmodifiableList;
 
@@ -62,29 +65,29 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     }
 
     /**
-     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
+     * Creates "Hot" {@link Flowable} which will be subscribed to changes of tables from query
      * and will emit result each time change occurs.
      * <p>
      * First result will be emitted immediately after subscription,
      * other emissions will occur only if changes of tables from query will occur during lifetime of
-     * the {@link Observable}.
+     * the {@link Flowable}.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      * <p>
-     * Please don't forget to unsubscribe from this {@link Observable} because
+     * Please don't forget to unsubscribe from this {@link Flowable} because
      * it's "Hot" and endless.
      *
-     * @return non-null {@link Observable} which will emit non-null, immutable
+     * @return non-null {@link Flowable} which will emit non-null, immutable
      * {@link List} with mapped results and will be subscribed to changes of tables from query,
      * list can be empty.
      */
     @NonNull
     @CheckResult
     @Override
-    public Observable<List<T>> asRxObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
+    public Flowable<List<T>> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
+        throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
 
         final Set<String> tables;
         final Set<String> tags;
@@ -99,24 +102,24 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
             throw new IllegalStateException("Please specify query");
         }
 
-        final Observable<List<T>> observable;
+        final Flowable<List<T>> flowable;
+
         if (!tables.isEmpty() || !tags.isEmpty()) {
-            observable = ChangesFilter.applyForTablesAndTags(storIOSQLite.observeChanges(), tables, tags)
-                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))  // each change triggers executeAsBlocking
-                    .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
-                    .onBackpressureLatest();
+            flowable = ChangesFilter.applyForTablesAndTags(storIOSQLite.observeChanges(backpressureStrategy), tables, tags)
+                    .map(new MapSomethingToExecuteAsBlocking<Changes, List<T>, GetQuery>(this))  // each change triggers executeAsBlocking
+                    .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<List<T>, GetQuery>(this), backpressureStrategy)); // start stream with first query result
         } else {
-            observable = Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
+            flowable = Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<List<T>, GetQuery>(this), backpressureStrategy);
         }
 
-        return RxJavaUtils.subscribeOn(storIOSQLite, observable);
+        return RxJavaUtils.subscribeOn(storIOSQLite, flowable);
     }
 
     /**
      * Creates {@link Single} which will perform Get Operation lazily when somebody subscribes to it and send result to observer.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Single} which will perform Get Operation.

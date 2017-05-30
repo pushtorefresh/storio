@@ -16,9 +16,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
 
@@ -45,31 +46,31 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
     }
 
     /**
-     * Creates {@link Observable} which will perform Put Operation and send result to observer.
+     * Creates {@link Flowable} which will perform Put Operation and send result to observer.
      * <p>
-     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * Returned {@link Flowable} will be "Cold Flowable", which means that it performs
      * put only after subscribing to it. Also, it emits the result once.
      * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
-     * @return non-null {@link Observable} which will perform Put Operation.
+     * @return non-null {@link Flowable} which will perform Put Operation.
      * and send result to observer.
      */
     @NonNull
     @CheckResult
     @Override
-    public Observable<PutResults<ContentValues>> asRxObservable() {
-        return RxJavaUtils.createObservable(storIOSQLite, this);
+    public Flowable<PutResults<ContentValues>> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
+        return RxJavaUtils.createFlowable(storIOSQLite, this, backpressureStrategy);
     }
 
     /**
      * Creates {@link Single} which will perform Put Operation lazily when somebody subscribes to it and send result to observer.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Single} which will perform Put Operation.
@@ -81,6 +82,23 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
     public Single<PutResults<ContentValues>> asRxSingle() {
         return RxJavaUtils.createSingle(storIOSQLite, this);
     }
+
+    /**
+     * Creates {@link Completable} which will perform Put Operation lazily when somebody subscribes to it.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Completable} which will perform Put Operation.
+     */
+    @NonNull
+    @CheckResult
+    @Override
+    public Completable asRxCompletable() {
+        return RxJavaUtils.createCompletable(storIOSQLite, this);
+    }
+
 
     @NonNull
     @Override
@@ -158,22 +176,6 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
                 throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValuesIterable, exception);
             }
         }
-    }
-
-    /**
-     * Creates {@link Completable} which will perform Put Operation lazily when somebody subscribes to it.
-     * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
-     * </dl>
-     *
-     * @return non-null {@link Completable} which will perform Put Operation.
-     */
-    @NonNull
-    @CheckResult
-    @Override
-    public Completable asRxCompletable() {
-        return RxJavaUtils.createCompletable(storIOSQLite, this);
     }
 
     /**

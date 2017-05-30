@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio2.operations.PreparedOperation;
 import com.pushtorefresh.storio2.sqlite.operations.delete.PreparedDelete;
 import com.pushtorefresh.storio2.sqlite.operations.execute.PreparedExecuteSQL;
 import com.pushtorefresh.storio2.sqlite.operations.get.PreparedGet;
@@ -22,8 +23,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import rx.Observable;
-import rx.Scheduler;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotEmpty;
 
@@ -87,17 +89,17 @@ public abstract class StorIOSQLite implements Closeable {
      * on this instance of {@link StorIOSQLite}.
      * <p/>
      * Emission may happen on any thread that performed Put or Delete operation,
-     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
+     * so it's recommended to apply {@link Flowable#observeOn(io.reactivex.Scheduler)}
      * if you need to receive events on a special thread.
      * <p/>
-     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
      * that you should manually unsubscribe from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
-     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of all tables.
+     * @return {@link io.reactivex.Flowable} of {@link Changes} subscribed to changes of all tables.
      */
     @NonNull
-    public abstract Observable<Changes> observeChanges();
+    public abstract Flowable<Changes> observeChanges(@NonNull BackpressureStrategy backpressureStrategy);
 
     /**
      * Allows observe changes of required tables.
@@ -107,18 +109,18 @@ public abstract class StorIOSQLite implements Closeable {
      * on this instance of {@link StorIOSQLite}.
      * <p/>
      * Emission may happen on any thread that performed Put or Delete operation,
-     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
+     * so it's recommended to apply {@link Flowable#observeOn(io.reactivex.Scheduler)}
      * if you need to receive events on a special thread.
      * <p/>
-     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
      * that you should manually unsubscribe from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param tables set of table names that should be monitored.
-     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required tables.
+     * @return {@link io.reactivex.Flowable} of {@link Changes} subscribed to changes of required tables.
      */
     @NonNull
-    public abstract Observable<Changes> observeChangesInTables(@NonNull Set<String> tables);
+    public abstract Flowable<Changes> observeChangesInTables(@NonNull Set<String> tables, @NonNull BackpressureStrategy backpressureStrategy);
 
     /**
      * Allows observer changes of required table.
@@ -128,20 +130,20 @@ public abstract class StorIOSQLite implements Closeable {
      * on this instance of {@link StorIOSQLite}.
      * <p/>
      * Emission may happen on any thread that performed Put or Delete operation,
-     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
+     * so it's recommended to apply {@link Flowable#observeOn(io.reactivex.Scheduler)}
      * if you need to receive events on a special thread.
      * <p/>
-     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
      * that you should manually unsubscribe from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param table table name to monitor.
-     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required table.
+     * @return {@link io.reactivex.Flowable} of {@link Changes} subscribed to changes of required table.
      */
     @NonNull
-    public Observable<Changes> observeChangesInTable(@NonNull String table) {
+    public Flowable<Changes> observeChangesInTable(@NonNull String table, @NonNull BackpressureStrategy backpressureStrategy) {
         checkNotEmpty(table, "Table can not be null or empty");
-        return observeChangesInTables(Collections.singleton(table));
+        return observeChangesInTables(Collections.singleton(table), backpressureStrategy);
     }
 
     /**
@@ -155,18 +157,18 @@ public abstract class StorIOSQLite implements Closeable {
      * on this instance of {@link StorIOSQLite}.
      * <p/>
      * Emission may happen on any thread that performed Put or Delete operation,
-     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
+     * so it's recommended to apply {@link Flowable#observeOn(io.reactivex.Scheduler)}
      * if you need to receive events on a special thread.
      * <p/>
-     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
      * that you should manually unsubscribe from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param tags set of tags that should be monitored.
-     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required tags.
+     * @return {@link io.reactivex.Flowable} of {@link Changes} subscribed to changes of required tags.
      */
     @NonNull
-    public abstract Observable<Changes> observeChangesOfTags(@NonNull Set<String> tags);
+    public abstract Flowable<Changes> observeChangesOfTags(@NonNull Set<String> tags, @NonNull BackpressureStrategy backpressureStrategy);
 
     /**
      * Allows observer changes of required tag.
@@ -179,34 +181,34 @@ public abstract class StorIOSQLite implements Closeable {
      * on this instance of {@link StorIOSQLite}.
      * <p/>
      * Emission may happen on any thread that performed Put or Delete operation,
-     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
+     * so it's recommended to apply {@link Flowable#observeOn(io.reactivex.Scheduler)}
      * if you need to receive events on a special thread.
      * <p/>
-     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
      * that you should manually unsubscribe from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param tag tag to monitor.
-     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required tag.
+     * @return {@link io.reactivex.Flowable} of {@link Changes} subscribed to changes of required tag.
      */
     @NonNull
-    public Observable<Changes> observeChangesOfTag(@NonNull String tag) {
+    public Flowable<Changes> observeChangesOfTag(@NonNull String tag, @NonNull BackpressureStrategy backpressureStrategy) {
         checkNotEmpty(tag, "Tag can not be null or empty");
-        return observeChangesOfTags(Collections.singleton(tag));
+        return observeChangesOfTags(Collections.singleton(tag), backpressureStrategy);
     }
 
     /**
-     * Provides a scheduler on which {@link rx.Observable} / {@link rx.Single}
-     * or {@link rx.Completable} will be subscribed.
+     * Provides a scheduler on which {@link io.reactivex.Flowable} / {@link io.reactivex.Single}
+     * or {@link io.reactivex.Completable} will be subscribed.
      * <p/>
-     * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxObservable()
-     * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxSingle()
-     * @see com.pushtorefresh.storio2.operations.PreparedWriteOperation#asRxCompletable()
      *
      * @return the scheduler or {@code null} if it isn't needed to apply it.
+     * @see PreparedOperation#asRxFlowable(BackpressureStrategy)
+     * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxSingle()
+     * @see com.pushtorefresh.storio2.operations.PreparedWriteOperation#asRxCompletable()
      */
     @Nullable
-    public abstract Scheduler defaultScheduler();
+    public abstract Scheduler defaultRxScheduler();
 
     /**
      * An API for low level interaction with DB, it's part of public API, so feel free to use it,

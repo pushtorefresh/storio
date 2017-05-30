@@ -53,56 +53,60 @@ def daggerVersion = '2.4'
 
 ext.libraries = [
         // Core libraries
-        supportAnnotations             : 'com.android.support:support-annotations:' + supportLibsVersion,
-        rxJava                         : 'io.reactivex:rxjava:1.2.1',
-        kotlinStdLib                   : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
+        supportAnnotations                       : 'com.android.support:support-annotations:' + supportLibsVersion,
+
+        // TODO remove RxJava1 and Interop once RxJava2 migration will be complete.
+        rxJava                                   : 'io.reactivex:rxjava:1.2.1',
+        rxJavaInterop                            : 'com.github.akarnokd:rxjava2-interop:0.10.0',
+        rxJava2                                  : 'io.reactivex.rxjava2:rxjava:2.1.0',
+        kotlinStdLib                             : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
 
         // Parts of StorIO
-        storIOCommon                              : project(':storio-common'),
-        storIOSQLite                              : project(':storio-sqlite'),
-        storIOContentResolver                     : project(':storio-content-resolver'),
-        storIOSQLiteAnnotations                   : project(':storio-sqlite-annotations'),
-        storIOContentResolverAnnotations          : project(':storio-content-resolver-annotations'),
-        storIOCommonAnnotationsProcessor          : project(':storio-common-annotations-processor'),
-        storIOSQLiteAnnotationsProcessor          : project(':storio-sqlite-annotations-processor'),
-        storIOContentResolverAnnotationsProcessor : project(':storio-content-resolver-annotations-processor'),
-        storIOTestCommon                          : project(':storio-test-common'),
+        storIOCommon                             : project(':storio-common'),
+        storIOSQLite                             : project(':storio-sqlite'),
+        storIOContentResolver                    : project(':storio-content-resolver'),
+        storIOSQLiteAnnotations                  : project(':storio-sqlite-annotations'),
+        storIOContentResolverAnnotations         : project(':storio-content-resolver-annotations'),
+        storIOCommonAnnotationsProcessor         : project(':storio-common-annotations-processor'),
+        storIOSQLiteAnnotationsProcessor         : project(':storio-sqlite-annotations-processor'),
+        storIOContentResolverAnnotationsProcessor: project(':storio-content-resolver-annotations-processor'),
+        storIOTestCommon                         : project(':storio-test-common'),
 
         // Libraries for tests and sample app
-        junit                          : 'junit:junit:4.12',
-        assertJ                        : 'org.assertj:assertj-core:3.6.2',
-        assertJAndroid                 : 'com.squareup.assertj:assertj-android:1.1.1',
-        mockitoCore                    : 'org.mockito:mockito-core:2.7.19',
-        mockitoKotlin                  : 'com.nhaarman:mockito-kotlin:1.4.0',
+        junit                                    : 'junit:junit:4.12',
+        assertJ                                  : 'org.assertj:assertj-core:3.6.2',
+        assertJAndroid                           : 'com.squareup.assertj:assertj-android:1.1.1',
+        mockitoCore                              : 'org.mockito:mockito-core:2.7.19',
+        mockitoKotlin                            : 'com.nhaarman:mockito-kotlin:1.4.0',
 
-        equalsVerifier                 : 'nl.jqno.equalsverifier:equalsverifier:1.7.2',
-        privateConstructorChecker      : 'com.pushtorefresh.java-private-constructor-checker:checker:1.1.0',
-        guava                          : 'com.google.guava:guava:18.0',
-        robolectric                    : 'org.robolectric:robolectric:3.3.2',
-        googleTestingCompile           : 'com.google.testing.compile:compile-testing:0.11',
+        equalsVerifier                           : 'nl.jqno.equalsverifier:equalsverifier:1.7.2',
+        privateConstructorChecker                : 'com.pushtorefresh.java-private-constructor-checker:checker:1.1.0',
+        guava                                    : 'com.google.guava:guava:18.0',
+        robolectric                              : 'org.robolectric:robolectric:3.3.2',
+        googleTestingCompile                     : 'com.google.testing.compile:compile-testing:0.11',
 
-        dagger                         : 'com.google.dagger:dagger:' + daggerVersion,
-        daggerCompiler                 : 'com.google.dagger:dagger-compiler:' + daggerVersion,
+        dagger                                   : 'com.google.dagger:dagger:' + daggerVersion,
+        daggerCompiler                           : 'com.google.dagger:dagger-compiler:' + daggerVersion,
 
-        javaxInject                    : 'javax.inject:javax.inject:1',
-        javaxAnnotationApi             : 'javax.annotation:javax.annotation-api:1.2',
+        javaxInject                              : 'javax.inject:javax.inject:1',
+        javaxAnnotationApi                       : 'javax.annotation:javax.annotation-api:1.2',
 
-        butterKnife                    : 'com.jakewharton:butterknife:7.0.1',
-        appCompat                      : 'com.android.support:appcompat-v7:' + supportLibsVersion,
-        recyclerView                   : 'com.android.support:recyclerview-v7:' + supportLibsVersion,
-        rxAndroid                      : 'io.reactivex:rxandroid:1.0.1',
-        timber                         : 'com.jakewharton.timber:timber:3.0.1',
-        leakCanary                     : 'com.squareup.leakcanary:leakcanary-android:1.3.1',
-        leakCanaryNoOp                 : 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1',
+        butterKnife                              : 'com.jakewharton:butterknife:7.0.1',
+        appCompat                                : 'com.android.support:appcompat-v7:' + supportLibsVersion,
+        recyclerView                             : 'com.android.support:recyclerview-v7:' + supportLibsVersion,
+        rxAndroid                                : 'io.reactivex:rxandroid:1.0.1',
+        timber                                   : 'com.jakewharton.timber:timber:3.0.1',
+        leakCanary                               : 'com.squareup.leakcanary:leakcanary-android:1.3.1',
+        leakCanaryNoOp                           : 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1',
 
-        autoService                    : 'com.google.auto.service:auto-service:1.0-rc2',
-        javaPoet                       : 'com.squareup:javapoet:1.8.0',
-        intellijAnnotations            : 'com.intellij:annotations:12.0',
-        runtimeJar                     : files(getRuntimeJar()),
-        toolsJar                       : files(Jvm.current().getToolsJar()),
+        autoService                              : 'com.google.auto.service:auto-service:1.0-rc2',
+        javaPoet                                 : 'com.squareup:javapoet:1.8.0',
+        intellijAnnotations                      : 'com.intellij:annotations:12.0',
+        runtimeJar                               : files(getRuntimeJar()),
+        toolsJar                                 : files(Jvm.current().getToolsJar()),
 
-        autoParcel                     : 'com.github.frankiesardo:auto-parcel:0.3',
-        autoParcelProcessor            : 'com.github.frankiesardo:auto-parcel-processor:0.3'
+        autoParcel                               : 'com.github.frankiesardo:auto-parcel:0.3',
+        autoParcelProcessor                      : 'com.github.frankiesardo:auto-parcel-processor:0.3'
 
 
 ]

@@ -5,16 +5,17 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
-import com.pushtorefresh.storio2.operations.internal.OnSubscribeExecuteAsBlocking;
-import com.pushtorefresh.storio2.operations.internal.OnSubscribeExecuteAsBlockingCompletable;
-import com.pushtorefresh.storio2.operations.internal.OnSubscribeExecuteAsBlockingSingle;
+import com.pushtorefresh.storio2.operations.internal.CompletableOnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlocking;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Scheduler;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
+import io.reactivex.Single;
 
-import static com.pushtorefresh.storio2.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
+import static com.pushtorefresh.storio2.internal.Environment.throwExceptionIfRxJava2IsNotAvailable;
 
 public class RxJavaUtils {
 
@@ -24,17 +25,23 @@ public class RxJavaUtils {
 
     @CheckResult
     @NonNull
-    public static <T, Data> Observable<T> createObservable(
+    public static <T, Data> Flowable<T> createFlowable(
             @NonNull StorIOContentResolver storIOContentResolver,
-            @NonNull PreparedOperation<T, Data> operation
+            @NonNull PreparedOperation<T, Data> operation,
+            @NonNull BackpressureStrategy backpressureStrategy
     ) {
-        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
+        throwExceptionIfRxJava2IsNotAvailable("asRxObservable()");
 
-        final Observable<T> observable =
-                Observable.create(OnSubscribeExecuteAsBlocking.newInstance(operation));
-        
-        return subscribeOn(storIOContentResolver, observable);
+        final Flowable<T> flowable = Flowable.create(
+                new FlowableOnSubscribeExecuteAsBlocking<T, Data>(operation), backpressureStrategy
+        );
+
+        return subscribeOn(
+                storIOContentResolver,
+                flowable
+        );
     }
+
 
     @CheckResult
     @NonNull
@@ -42,12 +49,14 @@ public class RxJavaUtils {
             @NonNull StorIOContentResolver storIOContentResolver,
             @NonNull PreparedOperation<T, Data> operation
     ) {
-        throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
+        throwExceptionIfRxJava2IsNotAvailable("asRxSingle()");
 
-        final Single<T> single =
-                Single.create(OnSubscribeExecuteAsBlockingSingle.newInstance(operation));
+        final Single<T> single = Single.create(new SingleOnSubscribeExecuteAsBlocking<T, Data>(operation));
 
-        return subscribeOn(storIOContentResolver, single);
+        return subscribeOn(
+                storIOContentResolver,
+                single
+        );
     }
 
     @CheckResult
@@ -56,22 +65,24 @@ public class RxJavaUtils {
             @NonNull StorIOContentResolver storIOContentResolver,
             @NonNull PreparedOperation<T, Data> operation
     ) {
-        throwExceptionIfRxJavaIsNotAvailable("asRxCompletable()");
+        throwExceptionIfRxJava2IsNotAvailable("asRxCompletable()");
 
-        final Completable completable =
-                Completable.create(OnSubscribeExecuteAsBlockingCompletable.newInstance(operation));
+        final Completable completable = Completable.create(new CompletableOnSubscribeExecuteAsBlocking(operation));
 
-        return subscribeOn(storIOContentResolver, completable);
+        return subscribeOn(
+                storIOContentResolver,
+                completable
+        );
     }
 
     @CheckResult
     @NonNull
-    public static <T> Observable<T> subscribeOn(
+    public static <T> Flowable<T> subscribeOn(
             @NonNull StorIOContentResolver storIOContentResolver,
-            @NonNull Observable<T> observable
+            @NonNull Flowable<T> flowable
     ) {
-        final Scheduler scheduler = storIOContentResolver.defaultScheduler();
-        return scheduler != null ? observable.subscribeOn(scheduler) : observable;
+        final Scheduler scheduler = storIOContentResolver.defaultRxScheduler();
+        return scheduler != null ? flowable.subscribeOn(scheduler) : flowable;
     }
 
     @CheckResult
@@ -80,7 +91,7 @@ public class RxJavaUtils {
             @NonNull StorIOContentResolver storIOContentResolver,
             @NonNull Single<T> single
     ) {
-        final Scheduler scheduler = storIOContentResolver.defaultScheduler();
+        final Scheduler scheduler = storIOContentResolver.defaultRxScheduler();
         return scheduler != null ? single.subscribeOn(scheduler) : single;
     }
 
@@ -90,7 +101,7 @@ public class RxJavaUtils {
             @NonNull StorIOContentResolver storIOContentResolver,
             @NonNull Completable completable
     ) {
-        final Scheduler scheduler = storIOContentResolver.defaultScheduler();
+        final Scheduler scheduler = storIOContentResolver.defaultRxScheduler();
         return scheduler != null ? completable.subscribeOn(scheduler) : completable;
     }
 }

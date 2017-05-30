@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 
-import rx.functions.Func1;
+import io.reactivex.functions.Function;
 
 /**
  * Required to avoid problems with ClassLoader when RxJava is not in ClassPath
@@ -12,30 +12,17 @@ import rx.functions.Func1;
  * <p>
  * For internal usage only!
  */
-public final class MapSomethingToExecuteAsBlocking<Something, Result, Data> implements Func1<Something, Result> {
+public final class MapSomethingToExecuteAsBlocking<Something, Result, Data> implements Function<Something, Result> {
 
     @NonNull
     private final PreparedOperation<Result, Data> preparedOperation;
 
-    private MapSomethingToExecuteAsBlocking(@NonNull PreparedOperation<Result, Data> preparedOperation) {
+    public MapSomethingToExecuteAsBlocking(@NonNull PreparedOperation<Result, Data> preparedOperation) {
         this.preparedOperation = preparedOperation;
     }
 
-    /**
-     * Creates new instance of {@link MapSomethingToExecuteAsBlocking}
-     *
-     * @param preparedOperation non-null instance of {@link PreparedOperation} which will be used to react on calls to rx function
-     * @param <Something>       type of map argument
-     * @param <Result>          type of result of rx map function
-     * @return new instance of {@link MapSomethingToExecuteAsBlocking}
-     */
-    @NonNull
-    public static <Something, Result, Data> Func1<Something, Result> newInstance(@NonNull PreparedOperation<Result, Data> preparedOperation) {
-        return new MapSomethingToExecuteAsBlocking<Something, Result, Data>(preparedOperation);
-    }
-
     @Override
-    public Result call(Something changes) {
+    public Result apply(@io.reactivex.annotations.NonNull Something something) throws Exception {
         return preparedOperation.executeAsBlocking();
     }
 }

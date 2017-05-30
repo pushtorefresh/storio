@@ -12,9 +12,10 @@ import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio2.sqlite.queries.DeleteQuery;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 /**
  * Prepared Delete Operation for {@link StorIOSQLite}.
@@ -34,30 +35,30 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult, DeleteQu
     }
 
     /**
-     * Creates {@link Observable} which will perform Delete Operation and send result to observer.
+     * Creates {@link Flowable} which will perform Delete Operation and send result to observer.
      * <p>
-     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * Returned {@link Flowable} will be "Cold Flowable", which means that it performs
      * delete only after subscribing to it. Also, it emits the result once.
      * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
-     * @return non-null {@link Observable} which will perform Delete Operation.
+     * @return non-null {@link Flowable} which will perform Delete Operation.
      * and send result to observer.
      */
     @NonNull
     @Override
-    public Observable<DeleteResult> asRxObservable() {
-        return RxJavaUtils.createObservable(storIOSQLite, this);
+    public Flowable<DeleteResult> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
+        return RxJavaUtils.createFlowable(storIOSQLite, this, backpressureStrategy);
     }
 
     /**
      * Creates {@link Single} which will perform Delete Operation lazily when somebody subscribes to it and send result to observer.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Single} which will perform Delete Operation.
@@ -74,7 +75,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult, DeleteQu
      * Creates {@link Completable} which will perform Delete Operation lazily when somebody subscribes to it.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Completable} which will perform Delete Operation.

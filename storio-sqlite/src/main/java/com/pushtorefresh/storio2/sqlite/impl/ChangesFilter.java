@@ -7,8 +7,8 @@ import com.pushtorefresh.storio2.sqlite.Changes;
 
 import java.util.Set;
 
-import rx.Observable;
-import rx.functions.Func1;
+import io.reactivex.Flowable;
+import io.reactivex.functions.Predicate;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
 
@@ -17,7 +17,7 @@ import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
  * <p>
  * Hides RxJava from ClassLoader via separate class.
  */
-public final class ChangesFilter implements Func1<Changes, Boolean> {
+public final class ChangesFilter implements Predicate<Changes> {
 
     @Nullable
     private final Set<String> tables;
@@ -31,34 +31,33 @@ public final class ChangesFilter implements Func1<Changes, Boolean> {
     }
 
     @NonNull
-    public static Observable<Changes> applyForTables(@NonNull Observable<Changes> rxBus, @NonNull Set<String> tables) {
+    public static Flowable<Changes> applyForTables(@NonNull Flowable<Changes> changes, @NonNull Set<String> tables) {
         checkNotNull(tables, "Set of tables can not be null");
-        return rxBus
+        return changes
                 .filter(new ChangesFilter(tables, null));
     }
 
     @NonNull
-    public static Observable<Changes> applyForTags(@NonNull Observable<Changes> rxBus, @NonNull Set<String> tags) {
+    public static Flowable<Changes> applyForTags(@NonNull Flowable<Changes> changes, @NonNull Set<String> tags) {
         checkNotNull(tags, "Set of tags can not be null");
-        return rxBus
+        return changes
                 .filter(new ChangesFilter(null, tags));
     }
 
     @NonNull
-    public static Observable<Changes> applyForTablesAndTags(
-            @NonNull Observable<Changes> rxBus,
+    public static Flowable<Changes> applyForTablesAndTags(
+            @NonNull Flowable<Changes> changes,
             @NonNull Set<String> tables,
             @NonNull Set<String> tags
     ) {
         checkNotNull(tables, "Set of tables can not be null");
         checkNotNull(tags, "Set of tags can not be null");
-        return rxBus
+        return changes
                 .filter(new ChangesFilter(tables, tags));
     }
 
     @Override
-    @NonNull
-    public Boolean call(@NonNull Changes changes) {
+    public boolean test(@io.reactivex.annotations.NonNull Changes changes) throws Exception {
         if (tables != null) {
             // if one of changed tables found in tables for subscription -> notify observer
             for (String affectedTable : changes.affectedTables()) {

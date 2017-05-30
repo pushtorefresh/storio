@@ -416,7 +416,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
@@ -453,7 +453,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
@@ -490,7 +490,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
@@ -561,7 +561,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
@@ -598,7 +598,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
@@ -635,7 +635,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
@@ -740,7 +740,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(lowLevel).endTransaction();
 
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
@@ -784,7 +784,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(lowLevel).endTransaction();
 
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
@@ -828,7 +828,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(lowLevel).endTransaction();
 
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
@@ -913,7 +913,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(lowLevel, never()).endTransaction();
 
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
@@ -959,7 +959,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(lowLevel, never()).endTransaction();
 
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
@@ -1005,7 +1005,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(lowLevel, never()).endTransaction();
 
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);

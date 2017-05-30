@@ -11,15 +11,16 @@ import com.pushtorefresh.storio2.contentresolver.Changes;
 
 import java.util.Set;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Action0;
-import rx.subscriptions.Subscriptions;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.functions.Cancellable;
 
 /**
- * Hides RxJava from ClassLoader via separate class.
+ * Hides RxJava2 from ClassLoader via separate class.
  *
- * FOR INTERNAL USAGE ONLY.
+ * FOR INTERNAL USE ONLY.
  */
 final class RxChangesObserver {
 
@@ -28,13 +29,14 @@ final class RxChangesObserver {
     }
 
     @NonNull
-    static Observable<Changes> observeChanges(@NonNull final ContentResolver contentResolver,
-                                              @NonNull final Set<Uri> uris,
-                                              @NonNull final Handler handler,
-                                              final int sdkVersion) {
-        return Observable.create(new Observable.OnSubscribe<Changes>() {
+    static Flowable<Changes> observeChanges(@NonNull final ContentResolver contentResolver,
+                                            @NonNull final Set<Uri> uris,
+                                            @NonNull final Handler handler,
+                                            final int sdkVersion,
+                                            @NonNull BackpressureStrategy backpressureStrategy) {
+        return Flowable.create(new FlowableOnSubscribe<Changes>() {
             @Override
-            public void call(final Subscriber<? super Changes> subscriber) {
+            public void subscribe(@io.reactivex.annotations.NonNull final FlowableEmitter<Changes> emitter) throws Exception {
                 // Use one ContentObserver for all passed Uris on API >= 16
                 if (sdkVersion >= Build.VERSION_CODES.JELLY_BEAN) {
                     final ContentObserver contentObserver = new ContentObserver(handler) {
@@ -45,7 +47,7 @@ final class RxChangesObserver {
 
                         @Override
                         public void onChange(boolean selfChange, Uri uri) {
-                            subscriber.onNext(Changes.newInstance(uri));
+                            emitter.onNext(Changes.newInstance(uri));
                         }
                     };
 
@@ -57,13 +59,12 @@ final class RxChangesObserver {
                         );
                     }
 
-                    subscriber.add(Subscriptions.create(new Action0() {
+                    emitter.setCancellable(new Cancellable() {
                         @Override
-                        public void call() {
-                            // Prevent memory leak on unsubscribe from Observable
+                        public void cancel() throws Exception {
                             contentResolver.unregisterContentObserver(contentObserver);
                         }
-                    }));
+                    });
                 } else {
                     // Register separate ContentObserver for each uri on API < 16
                     for (final Uri uri : uris) {
@@ -75,21 +76,20 @@ final class RxChangesObserver {
 
                             @Override
                             public void onChange(boolean selfChange) {
-                                subscriber.onNext(Changes.newInstance(uri));
+                                emitter.onNext(Changes.newInstance(uri));
                             }
                         };
 
                         contentResolver.registerContentObserver(uri, true, contentObserver);
-                        subscriber.add(Subscriptions.create(new Action0() {
+                        emitter.setCancellable(new Cancellable() {
                             @Override
-                            public void call() {
-                                // Prevent memory leak on unsubscribe from Observable
+                            public void cancel() throws Exception {
                                 contentResolver.unregisterContentObserver(contentObserver);
                             }
-                        }));
+                        });
                     }
                 }
             }
-        });
+        }, backpressureStrategy);
     }
 }

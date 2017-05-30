@@ -24,7 +24,7 @@ android {
 
 dependencies {
     compile libraries.supportAnnotations
-    provided libraries.rxJava
+    provided libraries.rxJava2
 
     testCompile libraries.junit
     testCompile libraries.assertJ
