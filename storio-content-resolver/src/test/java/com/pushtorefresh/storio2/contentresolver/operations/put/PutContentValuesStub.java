@@ -5,17 +5,17 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -100,34 +100,34 @@ class PutContentValuesStub {
         }
     }
 
-    void verifyBehaviorForMultipleContentValues(@NonNull Observable<PutResults<ContentValues>> putResultsObservable) {
-        new ObservableBehaviorChecker<PutResults<ContentValues>>()
-                .observable(putResultsObservable)
+    void verifyBehaviorForMultipleContentValues(@NonNull Flowable<PutResults<ContentValues>> putResultsFlowable) {
+        new FlowableBehaviorChecker<PutResults<ContentValues>>()
+                .flowable(putResultsFlowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutResults<ContentValues>>() {
+                .testAction(new Consumer<PutResults<ContentValues>>() {
                     @Override
-                    public void call(PutResults<ContentValues> putResults) {
+                    public void accept(@io.reactivex.annotations.NonNull PutResults<ContentValues> putResults) throws Exception {
                         verifyBehaviorForMultipleContentValues(putResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForMultipleContentValues(@NonNull Single<PutResults<ContentValues>> putResultsSingle) {
-        new ObservableBehaviorChecker<PutResults<ContentValues>>()
-                .observable(putResultsSingle.toObservable())
+        new FlowableBehaviorChecker<PutResults<ContentValues>>()
+                .flowable(putResultsSingle.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutResults<ContentValues>>() {
+                .testAction(new Consumer<PutResults<ContentValues>>() {
                     @Override
-                    public void call(PutResults<ContentValues> putResults) {
+                    public void accept(@io.reactivex.annotations.NonNull PutResults<ContentValues> putResults) throws Exception {
                         verifyBehaviorForMultipleContentValues(putResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForMultipleContentValues(@NonNull Completable completable) {
-        verifyBehaviorForMultipleContentValues(completable.<PutResults<ContentValues>>toObservable());
+        verifyBehaviorForMultipleContentValues(completable.<PutResults<ContentValues>>toFlowable());
     }
 
     void verifyBehaviorForOneContentValues(@NonNull PutResult putResult) {
@@ -136,33 +136,33 @@ class PutContentValuesStub {
         verifyBehaviorForMultipleContentValues(PutResults.newInstance(putResultsMap));
     }
 
-    void verifyBehaviorForOneContentValues(@NonNull Observable<PutResult> putResultObservable) {
-        new ObservableBehaviorChecker<PutResult>()
-                .observable(putResultObservable)
+    void verifyBehaviorForOneContentValues(@NonNull Flowable<PutResult> putResultFlowable) {
+        new FlowableBehaviorChecker<PutResult>()
+                .flowable(putResultFlowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutResult>() {
+                .testAction(new Consumer<PutResult>() {
                     @Override
-                    public void call(PutResult putResult) {
+                    public void accept(@io.reactivex.annotations.NonNull PutResult putResult) throws Exception {
                         verifyBehaviorForOneContentValues(putResult);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForOneContentValues(@NonNull Single<PutResult> putResultSingle) {
-        new ObservableBehaviorChecker<PutResult>()
-                .observable(putResultSingle.toObservable())
+        new FlowableBehaviorChecker<PutResult>()
+                .flowable(putResultSingle.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutResult>() {
+                .testAction(new Consumer<PutResult>() {
                     @Override
-                    public void call(PutResult putResult) {
+                    public void accept(@io.reactivex.annotations.NonNull PutResult putResult) throws Exception {
                         verifyBehaviorForOneContentValues(putResult);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForOneContentValues(@NonNull Completable completable) {
-        verifyBehaviorForOneContentValues(completable.<PutResult>toObservable());
+        verifyBehaviorForOneContentValues(completable.<PutResult>toFlowable());
     }
 }

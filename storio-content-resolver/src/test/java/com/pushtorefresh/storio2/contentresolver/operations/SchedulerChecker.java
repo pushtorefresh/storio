@@ -8,12 +8,12 @@ import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
 
 import org.mockito.Mockito;
 
-import rx.schedulers.TestScheduler;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.schedulers.TestScheduler;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static rx.schedulers.Schedulers.test;
 
 public class SchedulerChecker {
 
@@ -25,8 +25,8 @@ public class SchedulerChecker {
 
     private SchedulerChecker(@NonNull StorIOContentResolver storIOContentResolver) {
         this.storIOContentResolver = storIOContentResolver;
-        scheduler = test();
-        Mockito.when(storIOContentResolver.defaultScheduler()).thenReturn(scheduler);
+        scheduler = new TestScheduler();
+        Mockito.when(storIOContentResolver.defaultRxScheduler()).thenReturn(scheduler);
     }
 
     @NonNull
@@ -34,8 +34,8 @@ public class SchedulerChecker {
         return new SchedulerChecker(storIOContentResolver);
     }
 
-    public void checkAsObservable(@NonNull PreparedOperation operation) {
-        operation.asRxObservable().subscribe();
+    public void checkAsFlowable(@NonNull PreparedOperation operation) {
+        operation.asRxFlowable(BackpressureStrategy.MISSING).subscribe();
         check(operation);
     }
 
@@ -52,9 +52,9 @@ public class SchedulerChecker {
     private void check(@NonNull PreparedOperation operation) {
         final PreparedOperation operationSpy = spy(operation);
 
-        verify(storIOContentResolver).defaultScheduler();
+        verify(storIOContentResolver).defaultRxScheduler();
 
-        operationSpy.asRxObservable().subscribe();
+        operationSpy.asRxFlowable(BackpressureStrategy.MISSING).subscribe();
 
         verify(operationSpy, never()).executeAsBlocking();
         scheduler.triggerActions();

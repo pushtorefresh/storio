@@ -7,11 +7,12 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.eq;
@@ -60,8 +61,8 @@ public class GetNumberOfResultsStub {
         when(storIOContentResolver.get())
                 .thenReturn(new PreparedGet.Builder(storIOContentResolver));
 
-        when(storIOContentResolver.observeChangesOfUri(eq(query.uri())))
-                .thenReturn(Observable.<Changes>empty());
+        when(storIOContentResolver.observeChangesOfUri(eq(query.uri()), eq(BackpressureStrategy.MISSING)))
+                .thenReturn(Flowable.<Changes>empty());
 
         when(getResolverForNumberOfResults.performGet(storIOContentResolver, query))
                 .thenReturn(cursor);
@@ -84,33 +85,33 @@ public class GetNumberOfResultsStub {
         verifyNoMoreInteractions(storIOContentResolver, lowLevel, cursor);
     }
 
-    void verifyQueryBehaviorForInteger(@NonNull Observable<Integer> observable) {
-        new ObservableBehaviorChecker<Integer>()
-                .observable(observable)
+    void verifyQueryBehaviorForInteger(@NonNull Flowable<Integer> flowable) {
+        new FlowableBehaviorChecker<Integer>()
+                .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Integer>() {
+                .testAction(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer numberOfResults) {
+                    public void accept(@io.reactivex.annotations.NonNull Integer integer) throws Exception {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOContentResolver).observeChangesOfUri(eq(query.uri()));
-                        verify(storIOContentResolver).defaultScheduler();
+                        verify(storIOContentResolver).observeChangesOfUri(eq(query.uri()), eq(BackpressureStrategy.MISSING));
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyQueryBehaviorForInteger(numberOfResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyQueryBehaviorForInteger(@NonNull Single<Integer> single) {
-        new ObservableBehaviorChecker<Integer>()
-                .observable(single.toObservable())
+        new FlowableBehaviorChecker<Integer>()
+                .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Integer>() {
+                .testAction(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer numberOfResults) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull Integer integer) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyQueryBehaviorForInteger(numberOfResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 }

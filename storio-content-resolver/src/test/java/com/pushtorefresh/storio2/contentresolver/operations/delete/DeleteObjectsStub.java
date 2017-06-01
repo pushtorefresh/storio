@@ -5,17 +5,17 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -139,36 +139,36 @@ class DeleteObjectsStub {
         verifyNoMoreInteractions(storIOContentResolver, lowLevel, typeMapping, deleteResolver);
     }
 
-    void verifyBehaviorForDeleteMultipleObjects(@NonNull Observable<DeleteResults<TestItem>> deleteResultsObservable) {
-        new ObservableBehaviorChecker<DeleteResults<TestItem>>()
-                .observable(deleteResultsObservable)
+    void verifyBehaviorForDeleteMultipleObjects(@NonNull Flowable<DeleteResults<TestItem>> deleteResultsFlowable) {
+        new FlowableBehaviorChecker<DeleteResults<TestItem>>()
+                .flowable(deleteResultsFlowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<DeleteResults<TestItem>>() {
+                .testAction(new Consumer<DeleteResults<TestItem>>() {
                     @Override
-                    public void call(DeleteResults<TestItem> deleteResults) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull DeleteResults<TestItem> deleteResults) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForDeleteMultipleObjects(deleteResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForDeleteMultipleObjects(@NonNull Single<DeleteResults<TestItem>> deleteResultsSingle) {
-        new ObservableBehaviorChecker<DeleteResults<TestItem>>()
-                .observable(deleteResultsSingle.toObservable())
+        new FlowableBehaviorChecker<DeleteResults<TestItem>>()
+                .flowable(deleteResultsSingle.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<DeleteResults<TestItem>>() {
+                .testAction(new Consumer<DeleteResults<TestItem>>() {
                     @Override
-                    public void call(DeleteResults<TestItem> deleteResults) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull DeleteResults<TestItem> deleteResults) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForDeleteMultipleObjects(deleteResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForDeleteMultipleObjects(@NonNull Completable completable) {
-        verifyBehaviorForDeleteOneObject(completable.<DeleteResult>toObservable());
+        verifyBehaviorForDeleteOneObject(completable.<DeleteResult>toFlowable());
     }
 
     void verifyBehaviorForDeleteOneObject(@NonNull DeleteResult deleteResult) {
@@ -177,35 +177,35 @@ class DeleteObjectsStub {
         verifyBehaviorForDeleteMultipleObjects(DeleteResults.newInstance(deleteResultsMap));
     }
 
-    void verifyBehaviorForDeleteOneObject(@NonNull Observable<DeleteResult> deleteResultObservable) {
-        new ObservableBehaviorChecker<DeleteResult>()
-                .observable(deleteResultObservable)
+    void verifyBehaviorForDeleteOneObject(@NonNull Flowable<DeleteResult> deleteResultFlowable) {
+        new FlowableBehaviorChecker<DeleteResult>()
+                .flowable(deleteResultFlowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<DeleteResult>() {
+                .testAction(new Consumer<DeleteResult>() {
                     @Override
-                    public void call(DeleteResult deleteResult) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull DeleteResult deleteResult) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForDeleteOneObject(deleteResult);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForDeleteOneObject(@NonNull Single<DeleteResult> deleteResultSingle) {
-        new ObservableBehaviorChecker<DeleteResult>()
-                .observable(deleteResultSingle.toObservable())
+        new FlowableBehaviorChecker<DeleteResult>()
+                .flowable(deleteResultSingle.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<DeleteResult>() {
+                .testAction(new Consumer<DeleteResult>() {
                     @Override
-                    public void call(DeleteResult deleteResult) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull DeleteResult deleteResult) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForDeleteOneObject(deleteResult);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForDeleteOneObject(@NonNull Completable completable) {
-        verifyBehaviorForDeleteOneObject(completable.<DeleteResult>toObservable());
+        verifyBehaviorForDeleteOneObject(completable.<DeleteResult>toFlowable());
     }
 }

@@ -8,7 +8,7 @@ import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -16,9 +16,10 @@ import org.mockito.stubbing.Answer;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 import static com.pushtorefresh.storio2.test.Asserts.assertThatListIsImmutable;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -94,8 +95,8 @@ class GetObjectsStub {
         when(getResolver.performGet(storIOContentResolver, query))
                 .thenReturn(cursor);
 
-        when(storIOContentResolver.observeChangesOfUri(query.uri()))
-                .thenReturn(Observable.<Changes>empty());
+        when(storIOContentResolver.observeChangesOfUri(query.uri(), BackpressureStrategy.MISSING))
+                .thenReturn(Flowable.<Changes>empty());
 
         when(getResolver.mapFromCursor(storIOContentResolver, cursor))
                 .thenAnswer(new Answer<TestItem>() {
@@ -166,40 +167,40 @@ class GetObjectsStub {
         verifyNoMoreInteractions(storIOContentResolver, lowLevel, getResolver, cursor);
     }
 
-    void verifyBehavior(@NonNull Observable<List<TestItem>> observable) {
-        when(storIOContentResolver.observeChangesOfUri(query.uri()))
-                .thenReturn(Observable.<Changes>empty());
+    void verifyBehavior(@NonNull Flowable<List<TestItem>> flowable) {
+        when(storIOContentResolver.observeChangesOfUri(query.uri(), BackpressureStrategy.MISSING))
+                .thenReturn(Flowable.<Changes>empty());
 
-        new ObservableBehaviorChecker<List<TestItem>>()
-                .observable(observable)
+        new FlowableBehaviorChecker<List<TestItem>>()
+                .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<List<TestItem>>() {
+                .testAction(new Consumer<List<TestItem>>() {
                     @Override
-                    public void call(List<TestItem> testItems) {
+                    public void accept(@io.reactivex.annotations.NonNull List<TestItem> testItems) throws Exception {
                         // Get Operation should be subscribed to changes of Uri!
-                        verify(storIOContentResolver).observeChangesOfUri(query.uri());
+                        verify(storIOContentResolver).observeChangesOfUri(query.uri(), BackpressureStrategy.MISSING);
 
-                        verify(storIOContentResolver).defaultScheduler();
+                        verify(storIOContentResolver).defaultRxScheduler();
 
                         verifyBehavior(testItems);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
 
     }
 
     void verifyBehavior(@NonNull Single<List<TestItem>> single) {
-        new ObservableBehaviorChecker<List<TestItem>>()
-                .observable(single.toObservable())
+        new FlowableBehaviorChecker<List<TestItem>>()
+                .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<List<TestItem>>() {
+                .testAction(new Consumer<List<TestItem>>() {
                     @Override
-                    public void call(List<TestItem> testItems) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull List<TestItem> testItems) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehavior(testItems);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
 
     }
 }

@@ -20,8 +20,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import rx.observers.TestSubscriber;
-import rx.singles.BlockingSingle;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -62,7 +62,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(1)
                 .subscribe(changesTestSubscriber);
 
@@ -96,7 +96,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(1)
                 .subscribe(changesTestSubscriber);
 
@@ -108,9 +108,8 @@ public class PutOperationTest extends IntegrationTest {
                 .contentValues(cv)
                 .withPutResolver(testItemContentValuesPutResolver)
                 .prepare()
-                .asRxObservable()
-                .toBlocking()
-                .first();
+                .asRxFlowable(BackpressureStrategy.MISSING)
+                .blockingFirst();
 
         assertThat(insertResult.wasInserted()).isTrue();
 
@@ -132,22 +131,22 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(1)
                 .subscribe(changesTestSubscriber);
 
         TestItem testItem = TestItem.create(null, "value");
         ContentValues cv = testItem.toContentValues();
 
-        BlockingSingle<PutResult> insertResult = storIOContentResolver
+        PutResult insertResult = storIOContentResolver
                 .put()
                 .contentValues(cv)
                 .withPutResolver(testItemContentValuesPutResolver)
                 .prepare()
                 .asRxSingle()
-                .toBlocking();
+                .blockingGet();
 
-        assertThat(insertResult.value().wasInserted()).isTrue();
+        assertThat(insertResult.wasInserted()).isTrue();
 
         Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
 
@@ -167,7 +166,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(1)
                 .subscribe(changesTestSubscriber);
 
@@ -180,9 +179,7 @@ public class PutOperationTest extends IntegrationTest {
                 .withPutResolver(testItemContentValuesPutResolver)
                 .prepare()
                 .asRxCompletable()
-                .toObservable()
-                .toBlocking()
-                .subscribe();
+                .blockingAwait(15, SECONDS);
 
         Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
 
@@ -202,7 +199,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -237,7 +234,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -250,9 +247,8 @@ public class PutOperationTest extends IntegrationTest {
                 .contentValues(testItem.toContentValues())
                 .withPutResolver(testItemContentValuesPutResolver)
                 .prepare()
-                .asRxObservable()
-                .toBlocking()
-                .first();
+                .asRxFlowable(BackpressureStrategy.MISSING)
+                .blockingFirst();
 
         assertThat(updateResult.wasUpdated()).isTrue();
 
@@ -274,7 +270,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -282,15 +278,15 @@ public class PutOperationTest extends IntegrationTest {
 
         TestItem testItem = TestItem.create(ContentUris.parseId(insertedUri), "value2");
 
-        BlockingSingle<PutResult> updateResult = storIOContentResolver
+        PutResult updateResult = storIOContentResolver
                 .put()
                 .contentValues(testItem.toContentValues())
                 .withPutResolver(testItemContentValuesPutResolver)
                 .prepare()
                 .asRxSingle()
-                .toBlocking();
+                .blockingGet();
 
-        assertThat(updateResult.value().wasUpdated()).isTrue();
+        assertThat(updateResult.wasUpdated()).isTrue();
 
         Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
 
@@ -310,7 +306,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -324,9 +320,7 @@ public class PutOperationTest extends IntegrationTest {
                 .withPutResolver(testItemContentValuesPutResolver)
                 .prepare()
                 .asRxCompletable()
-                .toObservable()
-                .toBlocking()
-                .subscribe();
+                .blockingAwait(15, SECONDS);
 
         Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
 
@@ -346,7 +340,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(1)
                 .subscribe(changesTestSubscriber);
 
@@ -380,7 +374,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(1)
                 .subscribe(changesTestSubscriber);
 
@@ -390,9 +384,8 @@ public class PutOperationTest extends IntegrationTest {
                 .put()
                 .object(testItem)
                 .prepare()
-                .asRxObservable()
-                .toBlocking()
-                .first();
+                .asRxFlowable(BackpressureStrategy.MISSING)
+                .blockingFirst();
 
         assertThat(insertResult.wasInserted()).isTrue();
 
@@ -416,20 +409,20 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(1)
                 .subscribe(changesTestSubscriber);
 
         TestItem testItem = TestItem.create(null, "value");
 
-        BlockingSingle<PutResult> insertResult = storIOContentResolver
+        PutResult insertResult = storIOContentResolver
                 .put()
                 .object(testItem)
                 .prepare()
                 .asRxSingle()
-                .toBlocking();
+                .blockingGet();
 
-        assertThat(insertResult.value().wasInserted()).isTrue();
+        assertThat(insertResult.wasInserted()).isTrue();
 
         Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
 
@@ -451,7 +444,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(1)
                 .subscribe(changesTestSubscriber);
 
@@ -462,9 +455,7 @@ public class PutOperationTest extends IntegrationTest {
                 .object(testItem)
                 .prepare()
                 .asRxCompletable()
-                .toObservable()
-                .toBlocking()
-                .subscribe();
+                .blockingAwait(15, SECONDS);
 
         Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
 
@@ -487,7 +478,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -521,7 +512,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -533,9 +524,8 @@ public class PutOperationTest extends IntegrationTest {
                 .put()
                 .object(testItem)
                 .prepare()
-                .asRxObservable()
-                .toBlocking()
-                .first();
+                .asRxFlowable(BackpressureStrategy.MISSING)
+                .blockingFirst();
 
         assertThat(updateResult.wasUpdated()).isTrue();
 
@@ -557,7 +547,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -565,14 +555,14 @@ public class PutOperationTest extends IntegrationTest {
 
         TestItem testItem = TestItem.create(ContentUris.parseId(insertedUri), "value2");
 
-        BlockingSingle<PutResult> updateResult = storIOContentResolver
+        PutResult updateResult = storIOContentResolver
                 .put()
                 .object(testItem)
                 .prepare()
                 .asRxSingle()
-                .toBlocking();
+                .blockingGet();
 
-        assertThat(updateResult.value().wasUpdated()).isTrue();
+        assertThat(updateResult.wasUpdated()).isTrue();
 
         Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
 
@@ -592,7 +582,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -605,9 +595,7 @@ public class PutOperationTest extends IntegrationTest {
                 .object(testItem)
                 .prepare()
                 .asRxCompletable()
-                .toObservable()
-                .toBlocking()
-                .subscribe();
+                .blockingAwait(15, SECONDS);
 
         Cursor cursor = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
 
@@ -627,7 +615,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(1)
                 .subscribe(changesTestSubscriber);
 
@@ -661,7 +649,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -696,7 +684,7 @@ public class PutOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 

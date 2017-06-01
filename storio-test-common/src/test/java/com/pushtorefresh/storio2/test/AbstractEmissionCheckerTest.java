@@ -8,17 +8,19 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.OnErrorNotImplementedException;
+import io.reactivex.functions.Consumer;
+import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class AbstractEmissionCheckerTest {
 
@@ -27,33 +29,32 @@ public class AbstractEmissionCheckerTest {
     public void verifySubscribeBehavior() {
         final AtomicBoolean onSubscribeWasCalled = new AtomicBoolean(false);
 
-        final Observable<String> observable = Observable.create(new Observable.OnSubscribe<String>() {
+        final Flowable<String> flowable = Flowable.create(new FlowableOnSubscribe<String>() {
             @Override
-            public void call(Subscriber<? super String> subscriber) {
+            public void subscribe(@io.reactivex.annotations.NonNull FlowableEmitter<String> emitter) throws Exception {
                 onSubscribeWasCalled.set(true);
-                subscriber.onNext("test_value");
-                subscriber.onCompleted();
+                emitter.onNext("test_value");
+                emitter.onComplete();
             }
-        });
+        }, BackpressureStrategy.MISSING);
 
         AbstractEmissionChecker<String> emissionChecker = new AbstractEmissionChecker<String>(new LinkedList<String>()) {
             @NonNull
             @Override
-            public Subscription subscribe() {
-                return observable
-                        .subscribe();
+            public Disposable subscribe() {
+                return flowable.subscribe();
             }
         };
 
         // Should not subscribe before manual call to subscribe
         assertThat(onSubscribeWasCalled.get()).isFalse();
 
-        Subscription subscription = emissionChecker.subscribe();
+        Disposable disposable = emissionChecker.subscribe();
 
-        // Should subscribe to observable
+        // Should subscribe to flowable
         assertThat(onSubscribeWasCalled.get()).isTrue();
 
-        subscription.unsubscribe();
+        disposable.dispose();
     }
 
     @Test
@@ -64,24 +65,24 @@ public class AbstractEmissionCheckerTest {
         AbstractEmissionChecker<String> emissionChecker = new AbstractEmissionChecker<String>(expectedValues) {
             @NonNull
             @Override
-            public Subscription subscribe() {
-                return Observable
+            public Disposable subscribe() {
+                return Flowable
                         .just("test_value")
-                        .subscribe(new Action1<String>() {
+                        .subscribe(new Consumer<String>() {
                             @Override
-                            public void call(String s) {
+                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
             }
         };
 
-        Subscription subscription = emissionChecker.subscribe();
+        Disposable disposable = emissionChecker.subscribe();
 
         // Should not throw exception
         emissionChecker.awaitNextExpectedValue();
 
-        subscription.unsubscribe();
+        disposable.dispose();
     }
 
     @Test
@@ -92,20 +93,20 @@ public class AbstractEmissionCheckerTest {
         AbstractEmissionChecker<String> emissionChecker = new AbstractEmissionChecker<String>(expectedValues) {
             @NonNull
             @Override
-            public Subscription subscribe() {
-                return Observable
+            public Disposable subscribe() {
+                return Flowable
                         .just("another_value")
                         .subscribeOn(Schedulers.computation())
-                        .subscribe(new Action1<String>() {
+                        .subscribe(new Consumer<String>() {
                             @Override
-                            public void call(String s) {
+                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
             }
         };
 
-        Subscription subscription = emissionChecker.subscribe();
+        Disposable disposable = emissionChecker.subscribe();
 
         try {
             emissionChecker.awaitNextExpectedValue();
@@ -113,7 +114,7 @@ public class AbstractEmissionCheckerTest {
         } catch (AssertionError expected) {
             // it's okay
         } finally {
-            subscription.unsubscribe();
+            disposable.dispose();
         }
     }
 
@@ -130,20 +131,20 @@ public class AbstractEmissionCheckerTest {
 
             @NonNull
             @Override
-            public Subscription subscribe() {
-                return Observable
+            public Disposable subscribe() {
+                return Flowable
                         .just("expected_value")
                         .delay(2, SECONDS) // ha!
-                        .subscribe(new Action1<String>() {
+                        .subscribe(new Consumer<String>() {
                             @Override
-                            public void call(String s) {
+                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
             }
         };
 
-        Subscription subscription = emissionChecker.subscribe();
+        Disposable disposable = emissionChecker.subscribe();
 
         try {
             emissionChecker.awaitNextExpectedValue();
@@ -151,7 +152,7 @@ public class AbstractEmissionCheckerTest {
         } catch (AssertionError expected) {
             // it's okay
         } finally {
-            subscription.unsubscribe();
+            disposable.dispose();
         }
     }
 
@@ -163,35 +164,35 @@ public class AbstractEmissionCheckerTest {
         expectedValues.add("2");
         expectedValues.add("3");
 
-        final PublishSubject<String> publishSubject = PublishSubject.create();
+        final PublishProcessor<String> publishProcessor = PublishProcessor.create();
 
         AbstractEmissionChecker<String> emissionChecker = new AbstractEmissionChecker<String>(expectedValues) {
             @NonNull
             @Override
-            public Subscription subscribe() {
-                return publishSubject
-                        .subscribe(new Action1<String>() {
+            public Disposable subscribe() {
+                return publishProcessor
+                        .subscribe(new Consumer<String>() {
                             @Override
-                            public void call(String s) {
+                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
             }
         };
 
-        Subscription subscription = emissionChecker.subscribe();
+        Disposable disposable = emissionChecker.subscribe();
 
-        publishSubject.onNext("1");
+        publishProcessor.onNext("1");
 
         // "1"
         emissionChecker.awaitNextExpectedValue();
 
-        publishSubject.onNext("2");
+        publishProcessor.onNext("2");
 
         // "2"
         emissionChecker.awaitNextExpectedValue();
 
-        publishSubject.onNext("3");
+        publishProcessor.onNext("3");
 
         // "3"
         emissionChecker.awaitNextExpectedValue();
@@ -199,7 +200,7 @@ public class AbstractEmissionCheckerTest {
         // Should not throw exception
         emissionChecker.assertThatNoExpectedValuesLeft();
 
-        subscription.unsubscribe();
+        disposable.dispose();
     }
 
     @Test
@@ -210,14 +211,14 @@ public class AbstractEmissionCheckerTest {
         AbstractEmissionChecker<String> emissionChecker = new AbstractEmissionChecker<String>(expectedValues) {
             @NonNull
             @Override
-            public Subscription subscribe() {
-                return Observable
+            public Disposable subscribe() {
+                return Flowable
                         .just("expected_value")
                         .subscribe(); // Don't pass value to emission checker
             }
         };
 
-        Subscription subscription = emissionChecker.subscribe();
+        Disposable disposable = emissionChecker.subscribe();
 
         try {
             emissionChecker.assertThatNoExpectedValuesLeft();
@@ -225,7 +226,7 @@ public class AbstractEmissionCheckerTest {
         } catch (AssertionError expected) {
             // it's okay, we didn't call emissionChecker.awaitNextExpectedValue()
         } finally {
-            subscription.unsubscribe();
+            disposable.dispose();
         }
     }
 
@@ -237,29 +238,29 @@ public class AbstractEmissionCheckerTest {
         expectedValues.add("2");
         expectedValues.add("3");
 
-        final PublishSubject<String> publishSubject = PublishSubject.create();
+        final PublishProcessor<String> publishProcessor = PublishProcessor.create();
 
         final AbstractEmissionChecker<String> emissionChecker = new AbstractEmissionChecker<String>(expectedValues) {
             @NonNull
             @Override
-            public Subscription subscribe() {
-                return publishSubject
-                        .subscribe(new Action1<String>() {
+            public Disposable subscribe() {
+                return publishProcessor
+                        .subscribe(new Consumer<String>() {
                             @Override
-                            public void call(String s) {
+                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
             }
         };
 
-        final Subscription subscription = emissionChecker.subscribe();
+        final Disposable disposable = emissionChecker.subscribe();
 
         // Notice: We emit several values before awaiting any of them
 
-        publishSubject.onNext("1");
-        publishSubject.onNext("2");
-        publishSubject.onNext("3");
+        publishProcessor.onNext("1");
+        publishProcessor.onNext("2");
+        publishProcessor.onNext("3");
 
         // Now we should successfully await all these items one by one
         emissionChecker.awaitNextExpectedValue();
@@ -268,38 +269,38 @@ public class AbstractEmissionCheckerTest {
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
-        subscription.unsubscribe();
+        disposable.dispose();
     }
 
     @Test
-    public void shouldThrowExcepionBecauseObservableEmittedUnexpectedItemAfterExpectedSequence() {
+    public void shouldThrowExcepionBecauseFlowableEmittedUnexpectedItemAfterExpectedSequence() {
         final Queue<String> expectedValues = new LinkedList<String>();
 
         expectedValues.add("1");
         expectedValues.add("2");
         expectedValues.add("3");
 
-        final PublishSubject<String> publishSubject = PublishSubject.create();
+        final PublishProcessor<String> publishProcessor = PublishProcessor.create();
 
         final AbstractEmissionChecker<String> emissionChecker = new AbstractEmissionChecker<String>(expectedValues) {
             @NonNull
             @Override
-            public Subscription subscribe() {
-                return publishSubject
-                        .subscribe(new Action1<String>() {
+            public Disposable subscribe() {
+                return publishProcessor
+                        .subscribe(new Consumer<String>() {
                             @Override
-                            public void call(String s) {
+                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
             }
         };
 
-        final Subscription subscription = emissionChecker.subscribe();
+        final Disposable disposable = emissionChecker.subscribe();
 
-        publishSubject.onNext("1");
-        publishSubject.onNext("2");
-        publishSubject.onNext("3");
+        publishProcessor.onNext("1");
+        publishProcessor.onNext("2");
+        publishProcessor.onNext("3");
 
         emissionChecker.awaitNextExpectedValue();
         emissionChecker.awaitNextExpectedValue();
@@ -308,13 +309,13 @@ public class AbstractEmissionCheckerTest {
         emissionChecker.assertThatNoExpectedValuesLeft();
 
         try {
-            publishSubject.onNext("4");
+            publishProcessor.onNext("4");
             failBecauseExceptionWasNotThrown(OnErrorNotImplementedException.class);
         } catch (OnErrorNotImplementedException expected) {
             assertThat(expected.getCause())
                     .hasMessage("Received emission, but no more emissions were expected: obtained 4, expectedValues = [], obtainedValues = []");
         } finally {
-            subscription.unsubscribe();
+            disposable.dispose();
         }
     }
 }

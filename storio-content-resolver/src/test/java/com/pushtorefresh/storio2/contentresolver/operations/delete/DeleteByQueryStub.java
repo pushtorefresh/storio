@@ -5,12 +5,12 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.queries.DeleteQuery;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -76,33 +76,33 @@ class DeleteByQueryStub {
         assertThat(actualDeleteResult).isEqualTo(deleteResult);
     }
 
-    void verifyBehavior(@NonNull Observable<DeleteResult> deleteResultObservable) {
-        new ObservableBehaviorChecker<DeleteResult>()
-                .observable(deleteResultObservable)
+    void verifyBehavior(@NonNull Flowable<DeleteResult> deleteResultFlowable) {
+        new FlowableBehaviorChecker<DeleteResult>()
+                .flowable(deleteResultFlowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<DeleteResult>() {
+                .testAction(new Consumer<DeleteResult>() {
                     @Override
-                    public void call(DeleteResult deleteResult) {
+                    public void accept(@io.reactivex.annotations.NonNull DeleteResult deleteResult) throws Exception {
                         verifyBehavior(deleteResult);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehavior(@NonNull Single<DeleteResult> deleteResultSingle) {
-        new ObservableBehaviorChecker<DeleteResult>()
-                .observable(deleteResultSingle.toObservable())
+        new FlowableBehaviorChecker<DeleteResult>()
+                .flowable(deleteResultSingle.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<DeleteResult>() {
+                .testAction(new Consumer<DeleteResult>() {
                     @Override
-                    public void call(DeleteResult deleteResult) {
+                    public void accept(@io.reactivex.annotations.NonNull DeleteResult deleteResult) throws Exception {
                         verifyBehavior(deleteResult);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehavior(@NonNull Completable completable) {
-        verifyBehavior(completable.<DeleteResult>toObservable());
+        verifyBehavior(completable.<DeleteResult>toFlowable());
     }
 }

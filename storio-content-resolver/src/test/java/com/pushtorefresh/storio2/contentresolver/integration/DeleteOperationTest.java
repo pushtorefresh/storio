@@ -14,8 +14,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import rx.observers.TestSubscriber;
-import rx.singles.BlockingSingle;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -30,7 +30,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -63,7 +63,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -79,9 +79,8 @@ public class DeleteOperationTest extends IntegrationTest {
                         .uri(TestItem.CONTENT_URI)
                         .build())
                 .prepare()
-                .asRxObservable()
-                .toBlocking()
-                .first();
+                .asRxFlowable(BackpressureStrategy.MISSING)
+                .blockingFirst();
 
         assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
 
@@ -98,7 +97,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -108,16 +107,16 @@ public class DeleteOperationTest extends IntegrationTest {
         Cursor firstDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
         Assertions.assertThat(firstDbState).hasCount(1);
 
-        BlockingSingle<DeleteResult> deleteResult = storIOContentResolver
+        DeleteResult deleteResult = storIOContentResolver
                 .delete()
                 .byQuery(DeleteQuery.builder()
                         .uri(TestItem.CONTENT_URI)
                         .build())
                 .prepare()
                 .asRxSingle()
-                .toBlocking();
+                .blockingGet();
 
-        assertThat(deleteResult.value().numberOfRowsDeleted()).isEqualTo(1);
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
 
         Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
         Assertions.assertThat(secondDbState).hasCount(0);
@@ -132,7 +131,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -149,9 +148,7 @@ public class DeleteOperationTest extends IntegrationTest {
                         .build())
                 .prepare()
                 .asRxCompletable()
-                .toObservable()
-                .toBlocking()
-                .subscribe();
+                .blockingAwait(15, SECONDS);
 
         Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
         Assertions.assertThat(secondDbState).hasCount(0);
@@ -166,7 +163,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -202,7 +199,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -221,9 +218,8 @@ public class DeleteOperationTest extends IntegrationTest {
                 .delete()
                 .object(testItem)
                 .prepare()
-                .asRxObservable()
-                .toBlocking()
-                .first();
+                .asRxFlowable(BackpressureStrategy.MISSING)
+                .blockingFirst();
 
         assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
 
@@ -240,7 +236,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -255,14 +251,14 @@ public class DeleteOperationTest extends IntegrationTest {
 
         TestItem testItem = TestItem.fromCursor(firstDbState);
 
-        BlockingSingle<DeleteResult> deleteResult = storIOContentResolver
+        DeleteResult deleteResult = storIOContentResolver
                 .delete()
                 .object(testItem)
                 .prepare()
                 .asRxSingle()
-                .toBlocking();
+                .blockingGet();
 
-        assertThat(deleteResult.value().numberOfRowsDeleted()).isEqualTo(1);
+        assertThat(deleteResult.numberOfRowsDeleted()).isEqualTo(1);
 
         Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
         Assertions.assertThat(secondDbState).hasCount(0);
@@ -277,7 +273,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -297,9 +293,7 @@ public class DeleteOperationTest extends IntegrationTest {
                 .object(testItem)
                 .prepare()
                 .asRxCompletable()
-                .toObservable()
-                .toBlocking()
-                .subscribe();
+                .blockingAwait(15, SECONDS);
 
         Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
         Assertions.assertThat(secondDbState).hasCount(0);
@@ -314,7 +308,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -350,7 +344,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -369,9 +363,8 @@ public class DeleteOperationTest extends IntegrationTest {
                 .delete()
                 .objects(singletonList(testItem))
                 .prepare()
-                .asRxObservable()
-                .toBlocking()
-                .first();
+                .asRxFlowable(BackpressureStrategy.MISSING)
+                .blockingFirst();
 
         assertThat(deleteResults.wasDeleted(testItem)).isTrue();
 
@@ -388,7 +381,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -403,14 +396,14 @@ public class DeleteOperationTest extends IntegrationTest {
 
         TestItem testItem = TestItem.fromCursor(firstDbState);
 
-        BlockingSingle<DeleteResults<TestItem>> deleteResults = storIOContentResolver
+        DeleteResults<TestItem> deleteResults = storIOContentResolver
                 .delete()
                 .objects(singletonList(testItem))
                 .prepare()
                 .asRxSingle()
-                .toBlocking();
+                .blockingGet();
 
-        assertThat(deleteResults.value().wasDeleted(testItem)).isTrue();
+        assertThat(deleteResults.wasDeleted(testItem)).isTrue();
 
         Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
         Assertions.assertThat(secondDbState).hasCount(0);
@@ -425,7 +418,7 @@ public class DeleteOperationTest extends IntegrationTest {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
-                .observeChangesOfUri(TestItem.CONTENT_URI)
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
                 .take(2)
                 .subscribe(changesTestSubscriber);
 
@@ -445,9 +438,7 @@ public class DeleteOperationTest extends IntegrationTest {
                 .objects(singletonList(testItem))
                 .prepare()
                 .asRxCompletable()
-                .toObservable()
-                .toBlocking()
-                .subscribe();
+                .blockingAwait(15, SECONDS);
 
         Cursor secondDbState = contentResolver.query(TestItem.CONTENT_URI, null, null, null, null);
         Assertions.assertThat(secondDbState).hasCount(0);

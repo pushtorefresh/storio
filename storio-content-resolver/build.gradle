@@ -23,7 +23,7 @@ android {
 
 dependencies {
     compile  libraries.storIOCommon
-    provided libraries.rxJava
+    provided libraries.rxJava2
 
     testCompile libraries.junit
     testCompile libraries.assertJ

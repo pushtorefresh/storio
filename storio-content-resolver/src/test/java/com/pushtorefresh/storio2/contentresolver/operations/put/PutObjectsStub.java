@@ -5,17 +5,17 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -141,36 +141,36 @@ class PutObjectsStub {
         verifyNoMoreInteractions(storIOContentResolver, lowLevel, typeMapping, putResolver);
     }
 
-    void verifyBehaviorForMultipleObjects(@NonNull Observable<PutResults<TestItem>> putResultsObservable) {
-        new ObservableBehaviorChecker<PutResults<TestItem>>()
-                .observable(putResultsObservable)
+    void verifyBehaviorForMultipleObjects(@NonNull Flowable<PutResults<TestItem>> putResultsFlowable) {
+        new FlowableBehaviorChecker<PutResults<TestItem>>()
+                .flowable(putResultsFlowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutResults<TestItem>>() {
+                .testAction(new Consumer<PutResults<TestItem>>() {
                     @Override
-                    public void call(PutResults<TestItem> putResults) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull PutResults<TestItem> putResults) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForMultipleObjects(putResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForMultipleObjects(@NonNull Single<PutResults<TestItem>> putResultsSingle) {
-        new ObservableBehaviorChecker<PutResults<TestItem>>()
-                .observable(putResultsSingle.toObservable())
+        new FlowableBehaviorChecker<PutResults<TestItem>>()
+                .flowable(putResultsSingle.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutResults<TestItem>>() {
+                .testAction(new Consumer<PutResults<TestItem>>() {
                     @Override
-                    public void call(PutResults<TestItem> putResults) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull PutResults<TestItem> putResults) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForMultipleObjects(putResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForMultipleObjects(@NonNull Completable completable) {
-        verifyBehaviorForMultipleObjects(completable.<PutResults<TestItem>>toObservable());
+        verifyBehaviorForMultipleObjects(completable.<PutResults<TestItem>>toFlowable());
     }
 
     void verifyBehaviorForOneObject(@NonNull PutResult putResult) {
@@ -179,35 +179,35 @@ class PutObjectsStub {
         verifyBehaviorForMultipleObjects(PutResults.newInstance(putResultsMap));
     }
 
-    void verifyBehaviorForOneObject(@NonNull Observable<PutResult> putResultObservable) {
-        new ObservableBehaviorChecker<PutResult>()
-                .observable(putResultObservable)
+    void verifyBehaviorForOneObject(@NonNull Flowable<PutResult> putResultFlowable) {
+        new FlowableBehaviorChecker<PutResult>()
+                .flowable(putResultFlowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutResult>() {
+                .testAction(new Consumer<PutResult>() {
                     @Override
-                    public void call(PutResult putResult) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull PutResult putResult) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForOneObject(putResult);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForOneObject(@NonNull Single<PutResult> putResultSingle) {
-        new ObservableBehaviorChecker<PutResult>()
-                .observable(putResultSingle.toObservable())
+        new FlowableBehaviorChecker<PutResult>()
+                .flowable(putResultSingle.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<PutResult>() {
+                .testAction(new Consumer<PutResult>() {
                     @Override
-                    public void call(PutResult putResult) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull PutResult putResult) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForOneObject(putResult);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForOneObject(@NonNull Completable completable) {
-        verifyBehaviorForOneObject(completable.<PutResult>toObservable());
+        verifyBehaviorForOneObject(completable.<PutResult>toFlowable());
     }
 }

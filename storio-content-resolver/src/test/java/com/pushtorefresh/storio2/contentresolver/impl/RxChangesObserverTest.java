@@ -24,9 +24,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.observers.TestSubscriber;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static com.pushtorefresh.storio2.test.Utils.MAX_SDK_VERSION;
 import static com.pushtorefresh.storio2.test.Utils.MIN_SDK_VERSION;
@@ -72,18 +73,18 @@ public class RxChangesObserverTest {
 
             Handler handler = mock(Handler.class);
 
-            Observable<Changes> observable = RxChangesObserver.observeChanges(contentResolver, singleton(uri), handler, sdkVersion);
+            Flowable<Changes> flowable = RxChangesObserver.observeChanges(contentResolver, singleton(uri), handler, sdkVersion, BackpressureStrategy.MISSING);
 
-            Subscription subscription = observable.subscribe();
+            Disposable disposable = flowable.subscribe();
 
             assertThat(contentObserver.get().deliverSelfNotifications()).isFalse();
 
-            subscription.unsubscribe();
+            disposable.dispose();
         }
     }
 
     @Test
-    public void shouldRegisterOnlyOneContentObserverAfterSubscribingToObservableOnSdkVersionGreaterThan15() {
+    public void shouldRegisterOnlyOneContentObserverAfterSubscribingToFlowableOnSdkVersionGreaterThan15() {
         for (int sdkVersion = 16; sdkVersion < MAX_SDK_VERSION; sdkVersion++) {
             ContentResolver contentResolver = mock(ContentResolver.class);
 
@@ -107,31 +108,32 @@ public class RxChangesObserverTest {
             uris.add(mock(Uri.class));
             uris.add(mock(Uri.class));
 
-            Observable<Changes> observable = RxChangesObserver
+            Flowable<Changes> flowable = RxChangesObserver
                     .observeChanges(
                             contentResolver,
                             uris,
                             mock(Handler.class),
-                            sdkVersion
+                            sdkVersion,
+                            BackpressureStrategy.MISSING
                     );
 
-            // Should not register ContentObserver before subscribing to Observable
+            // Should not register ContentObserver before subscribing to Flowable
             verify(contentResolver, times(0))
                     .registerContentObserver(any(Uri.class), anyBoolean(), any(ContentObserver.class));
 
-            Subscription subscription = observable.subscribe();
+            Disposable disposable = flowable.subscribe();
 
             for (Uri uri : uris) {
                 // Assert that same ContentObserver was registered for all uris
                 verify(contentResolver).registerContentObserver(same(uri), eq(true), same(contentObserver.get()));
             }
 
-            subscription.unsubscribe();
+            disposable.dispose();
         }
     }
 
     @Test
-    public void shouldRegisterObserverForEachPassedUriAfterSubscribingToObservableOnSdkVersionLowerThan15() {
+    public void shouldRegisterObserverForEachPassedUriAfterSubscribingToFlowableOnSdkVersionLowerThan15() {
         for (int sdkVersion = MIN_SDK_VERSION; sdkVersion < 16; sdkVersion++) {
             ContentResolver contentResolver = mock(ContentResolver.class);
             final Map<Uri, ContentObserver> contentObservers = new HashMap<Uri, ContentObserver>(3);
@@ -149,18 +151,19 @@ public class RxChangesObserverTest {
             uris.add(mock(Uri.class));
             uris.add(mock(Uri.class));
 
-            Observable<Changes> observable = RxChangesObserver.observeChanges(
+            Flowable<Changes> flowable = RxChangesObserver.observeChanges(
                     contentResolver,
                     uris,
                     mock(Handler.class),
-                    sdkVersion
+                    sdkVersion,
+                    BackpressureStrategy.MISSING
             );
 
-            // Should not register ContentObserver before subscribing to Observable
+            // Should not register ContentObserver before subscribing to Flowable
             verify(contentResolver, times(0))
                     .registerContentObserver(any(Uri.class), anyBoolean(), any(ContentObserver.class));
 
-            Subscription subscription = observable.subscribe();
+            Disposable disposable = flowable.subscribe();
 
             for (Uri uri : uris) {
                 // Assert that new ContentObserver was registered for each uri
@@ -169,12 +172,12 @@ public class RxChangesObserverTest {
 
             assertThat(contentObservers).hasSameSizeAs(uris);
 
-            subscription.unsubscribe();
+            disposable.dispose();
         }
     }
 
     @Test
-    public void shouldUnregisterContentObserverAfterUnsubscribingFromObservableOnSdkVersionGreaterThan15() {
+    public void shouldUnregisterContentObserverAfterUnsubscribingFromFlowableOnSdkVersionGreaterThan15() {
         for (int sdkVersion = 16; sdkVersion < MAX_SDK_VERSION; sdkVersion++) {
             ContentResolver contentResolver = mock(ContentResolver.class);
             Set<Uri> uris = new HashSet<Uri>(3);
@@ -182,26 +185,28 @@ public class RxChangesObserverTest {
             uris.add(mock(Uri.class));
             uris.add(mock(Uri.class));
 
-            Subscription subscription = RxChangesObserver
+            Disposable disposable = RxChangesObserver
                     .observeChanges(
                             contentResolver,
                             uris,
                             mock(Handler.class),
-                            sdkVersion)
+                            sdkVersion,
+                            BackpressureStrategy.MISSING
+                    )
                     .subscribe();
 
-            // Should not unregister before unsubscribe from Subscription
+            // Should not unregister before dispose from Disposable
             verify(contentResolver, times(0)).unregisterContentObserver(any(ContentObserver.class));
 
-            subscription.unsubscribe();
+            disposable.dispose();
 
-            // Should unregister ContentObserver after unsubscribing from Subscription
+            // Should unregister ContentObserver after unsubscribing from Disposable
             verify(contentResolver).unregisterContentObserver(any(ContentObserver.class));
         }
     }
 
     @Test
-    public void shouldUnregisterContentObserversForEachUriAfterUnsubscribingFromObservableOnSdkVersionLowerThan16() {
+    public void shouldUnregisterContentObserversForEachUriAfterUnsubscribingFromFlowableOnSdkVersionLowerThan16() {
         for (int sdkVersion = MIN_SDK_VERSION; sdkVersion < 16; sdkVersion++) {
             ContentResolver contentResolver = mock(ContentResolver.class);
             Set<Uri> uris = new HashSet<Uri>(3);
@@ -219,18 +224,20 @@ public class RxChangesObserverTest {
                 }
             }).when(contentResolver).registerContentObserver(any(Uri.class), eq(true), any(ContentObserver.class));
 
-            Subscription subscription = RxChangesObserver
+            Disposable disposable = RxChangesObserver
                     .observeChanges(
                             contentResolver,
                             uris,
                             mock(Handler.class),
-                            sdkVersion)
+                            sdkVersion,
+                            BackpressureStrategy.MISSING
+                    )
                     .subscribe();
 
-            // Should not unregister before unsubscribe from Subscription
+            // Should not unregister before dispose from Disposable
             verify(contentResolver, times(0)).unregisterContentObserver(any(ContentObserver.class));
 
-            subscription.unsubscribe();
+            disposable.dispose();
 
             for (Uri uri : uris) {
                 // Assert that ContentObserver for each uri was unregistered
@@ -272,23 +279,25 @@ public class RxChangesObserverTest {
                             contentResolver,
                             uris,
                             mock(Handler.class),
-                            sdkVersion)
+                            sdkVersion,
+                            BackpressureStrategy.MISSING
+                    )
                     .subscribe(testSubscriber);
 
-            testSubscriber.assertNoTerminalEvent();
+            testSubscriber.assertNotTerminated();
             testSubscriber.assertNoValues();
 
             // RxChangesObserver should ignore call to onChange() without Uri on sdkVersion >= 16
             contentObserver.get().onChange(false);
             testSubscriber.assertNoValues();
 
-            // Emulate change of Uris, Observable should react and emit Changes objects
+            // Emulate change of Uris, Flowable should react and emit Changes objects
             contentObserver.get().onChange(false, uri1);
             contentObserver.get().onChange(false, uri2);
 
             testSubscriber.assertValues(Changes.newInstance(uri1), Changes.newInstance(uri2));
 
-            testSubscriber.unsubscribe();
+            testSubscriber.dispose();
             testSubscriber.assertNoErrors();
         }
     }
@@ -321,18 +330,20 @@ public class RxChangesObserverTest {
                             contentResolver,
                             uris,
                             mock(Handler.class),
-                            sdkVersion)
+                            sdkVersion,
+                            BackpressureStrategy.MISSING
+                    )
                     .subscribe(testSubscriber);
 
-            testSubscriber.assertNoTerminalEvent();
+            testSubscriber.assertNotTerminated();
             testSubscriber.assertNoValues();
 
-            // Emulate change of Uris, Observable should react and emit Changes objects
+            // Emulate change of Uris, Flowable should react and emit Changes objects
             contentObservers.get(uri1).onChange(false);
             contentObservers.get(uri2).onChange(false);
             testSubscriber.assertValues(Changes.newInstance(uri1), Changes.newInstance(uri2));
 
-            testSubscriber.unsubscribe();
+            testSubscriber.dispose();
             testSubscriber.assertNoErrors();
         }
     }

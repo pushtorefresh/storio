@@ -53,16 +53,16 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     private final Handler contentObserverHandler;
 
     @Nullable
-    private final Scheduler defaultScheduler;
+    private final Scheduler defaultRxScheduler;
 
     protected DefaultStorIOContentResolver(@NonNull ContentResolver contentResolver,
                                            @NonNull Handler contentObserverHandler,
                                            @NonNull TypeMappingFinder typeMappingFinder,
-                                           @Nullable Scheduler defaultScheduler
+                                           @Nullable Scheduler defaultRxScheduler
     ) {
         this.contentResolver = contentResolver;
         this.contentObserverHandler = contentObserverHandler;
-        this.defaultScheduler = defaultScheduler;
+        this.defaultRxScheduler = defaultRxScheduler;
         lowLevel = new LowLevelImpl(typeMappingFinder);
     }
 
@@ -85,7 +85,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     */
     @Override
     public Scheduler defaultRxScheduler() {
-        return defaultScheduler;
+        return defaultRxScheduler;
     }
 
     /**
@@ -152,7 +152,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         @Nullable
         private TypeMappingFinder typeMappingFinder;
 
-        private Scheduler defaultScheduler = RX_JAVA_2_IS_IN_THE_CLASS_PATH ? Schedulers.io() : null;
+        private Scheduler defaultRxScheduler = RX_JAVA_2_IS_IN_THE_CLASS_PATH ? Schedulers.io() : null;
 
         CompleteBuilder(@NonNull ContentResolver contentResolver) {
             this.contentResolver = contentResolver;
@@ -205,8 +205,8 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         }
 
         /**
-         * Provides a scheduler on which {@link rx.Observable} / {@link rx.Single}
-         * or {@link rx.Completable} will be subscribed.
+         * Provides a scheduler on which {@link io.reactivex.Flowable} / {@link io.reactivex.Single}
+         * or {@link io.reactivex.Completable} will be subscribed.
          * <p/>
          * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxFlowable(BackpressureStrategy)
          * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxSingle()
@@ -215,8 +215,8 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
          * @return the scheduler or {@code null} if it isn't needed to apply it.
          */
         @NonNull
-        public CompleteBuilder defaultScheduler(@Nullable Scheduler defaultScheduler) {
-            this.defaultScheduler = defaultScheduler;
+        public CompleteBuilder defaultRxScheduler(@Nullable Scheduler defaultRxScheduler) {
+            this.defaultRxScheduler = defaultRxScheduler;
             return this;
         }
 
@@ -240,7 +240,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
                 typeMappingFinder.directTypeMapping(unmodifiableMap(typeMapping));
             }
 
-            return new DefaultStorIOContentResolver(contentResolver, contentObserverHandler, typeMappingFinder, defaultScheduler);
+            return new DefaultStorIOContentResolver(contentResolver, contentObserverHandler, typeMappingFinder, defaultRxScheduler);
         }
     }
 

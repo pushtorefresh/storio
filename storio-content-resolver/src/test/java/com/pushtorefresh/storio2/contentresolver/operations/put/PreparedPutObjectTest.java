@@ -12,13 +12,15 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -46,17 +48,17 @@ public class PreparedPutObjectTest {
         }
 
         @Test
-        public void shouldPutObjectWithoutTypeMappingAsObservable() {
+        public void shouldPutObjectWithoutTypeMappingAsFlowable() {
             final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
 
-            final Observable<PutResult> putResultObservable = putStub.storIOContentResolver
+            final Flowable<PutResult> putResultFlowable = putStub.storIOContentResolver
                     .put()
                     .object(putStub.items.get(0))
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(BackpressureStrategy.MISSING);
 
-            putStub.verifyBehaviorForOneObject(putResultObservable);
+            putStub.verifyBehaviorForOneObject(putResultFlowable);
         }
 
         @Test
@@ -104,16 +106,16 @@ public class PreparedPutObjectTest {
         }
 
         @Test
-        public void shouldPutObjectWithTypeMappingAsObservable() {
+        public void shouldPutObjectWithTypeMappingAsFlowable() {
             final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
 
-            final Observable<PutResult> putResultObservable = putStub.storIOContentResolver
+            final Flowable<PutResult> putResultFlowable = putStub.storIOContentResolver
                     .put()
                     .object(putStub.items.get(0))
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(BackpressureStrategy.MISSING);
 
-            putStub.verifyBehaviorForOneObject(putResultObservable);
+            putStub.verifyBehaviorForOneObject(putResultFlowable);
         }
 
         @Test
@@ -190,7 +192,7 @@ public class PreparedPutObjectTest {
         }
 
         @Test
-        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsObservable() {
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsFlowable() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
             final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
@@ -204,18 +206,18 @@ public class PreparedPutObjectTest {
                     .put()
                     .object(TestItem.newInstance())
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(BackpressureStrategy.MISSING)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            assertThat(testSubscriber.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
-            verify(storIOContentResolver).defaultScheduler();
+            verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -231,24 +233,24 @@ public class PreparedPutObjectTest {
 
             when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
 
-            final TestSubscriber<PutResult> testSubscriber = new TestSubscriber<PutResult>();
+            final TestObserver<PutResult> testObserver = new TestObserver<PutResult>();
 
             storIOContentResolver
                     .put()
                     .object(TestItem.newInstance())
                     .prepare()
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            assertThat(testObserver.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
-            verify(storIOContentResolver).defaultScheduler();
+            verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -264,24 +266,24 @@ public class PreparedPutObjectTest {
 
             when(storIOContentResolver.put()).thenReturn(new PreparedPut.Builder(storIOContentResolver));
 
-            final TestSubscriber<PutResult> testSubscriber = new TestSubscriber<PutResult>();
+            final TestObserver<PutResult> testObserver = new TestObserver<PutResult>();
 
             storIOContentResolver
                     .put()
                     .object(TestItem.newInstance())
                     .prepare()
                     .asRxCompletable()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            assertThat(testObserver.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
-            verify(storIOContentResolver).defaultScheduler();
+            verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -292,7 +294,7 @@ public class PreparedPutObjectTest {
     public static class OtherTests {
 
         @Test
-        public void putObjectObservableExecutesOnSpecifiedScheduler() {
+        public void putObjectFlowableExecutesOnSpecifiedScheduler() {
             final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
             final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOContentResolver);
 
@@ -302,7 +304,7 @@ public class PreparedPutObjectTest {
                     .withPutResolver(putStub.putResolver)
                     .prepare();
 
-            schedulerChecker.checkAsObservable(operation);
+            schedulerChecker.checkAsFlowable(operation);
         }
 
         @Test

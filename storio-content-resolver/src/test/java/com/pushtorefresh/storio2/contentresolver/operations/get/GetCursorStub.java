@@ -7,11 +7,12 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -58,8 +59,8 @@ class GetCursorStub {
         when(getResolver.performGet(storIOContentResolver, query))
                 .thenReturn(cursor);
 
-        when(storIOContentResolver.observeChangesOfUri(query.uri()))
-                .thenReturn(Observable.<Changes>empty());
+        when(storIOContentResolver.observeChangesOfUri(query.uri(), BackpressureStrategy.MISSING))
+                .thenReturn(Flowable.<Changes>empty());
 
         when(getResolver.mapFromCursor(storIOContentResolver, cursor))
                 .thenReturn(cursor);
@@ -78,35 +79,35 @@ class GetCursorStub {
         verifyNoMoreInteractions(storIOContentResolver, lowLevel, getResolver, cursor);
     }
 
-    void verifyQueryBehaviorForCursor(@NonNull Observable<Cursor> observable) {
-        new ObservableBehaviorChecker<Cursor>()
-                .observable(observable)
+    void verifyQueryBehaviorForCursor(@NonNull Flowable<Cursor> observable) {
+        new FlowableBehaviorChecker<Cursor>()
+                .flowable(observable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Cursor>() {
+                .testAction(new Consumer<Cursor>() {
                     @Override
-                    public void call(Cursor cursor) {
+                    public void accept(@io.reactivex.annotations.NonNull Cursor cursor) throws Exception {
                         // Get Operation should be subscribed to changes of Uri
-                        verify(storIOContentResolver).observeChangesOfUri(query.uri());
+                        verify(storIOContentResolver).observeChangesOfUri(query.uri(), BackpressureStrategy.MISSING);
 
-                        verify(storIOContentResolver).defaultScheduler();
+                        verify(storIOContentResolver).defaultRxScheduler();
 
                         verifyQueryBehaviorForCursor(cursor);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyQueryBehaviorForCursor(@NonNull Single<Cursor> single) {
-        new ObservableBehaviorChecker<Cursor>()
-                .observable(single.toObservable())
+        new FlowableBehaviorChecker<Cursor>()
+                .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Cursor>() {
+                .testAction(new Consumer<Cursor>() {
                     @Override
-                    public void call(Cursor cursor) {
-                        verify(storIOContentResolver).defaultScheduler();
+                    public void accept(@io.reactivex.annotations.NonNull Cursor cursor) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
                         verifyQueryBehaviorForCursor(cursor);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 }
