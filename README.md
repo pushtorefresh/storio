@@ -42,10 +42,10 @@ Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tes
 #### Download:
 ```groovy
 // If you need StorIO for SQLite
-compile 'com.pushtorefresh.storio:sqlite:1.12.3'
+compile 'com.pushtorefresh.storio:sqlite:1.13.0'
 
 // If you need StorIO for ContentResolver
-compile 'com.pushtorefresh.storio:content-resolver:1.12.3'
+compile 'com.pushtorefresh.storio:content-resolver:1.13.0'
 
 // IN StorIO 2.0 we will remove default Scheduling from Rx Operations!
 // You'll have to put subscribeOn() manually!
@@ -157,18 +157,18 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 `StorIOSQLite`:
 ```groovy
 dependencies {
-	compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
 
-	annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
 }
 ```
 
 `StorIOContentResolver`:
 ```groovy
 dependencies {
-	compile 'com.pushtorefresh.storio:content-resolver-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio:content-resolver-annotations:insert-latest-version-here'
 
-	annotationProcessor 'com.pushtorefresh.storio:content-resolver-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio:content-resolver-annotations-processor:insert-latest-version-here'
 }
 ```
 
@@ -176,15 +176,15 @@ dependencies {
 @StorIOSQLiteType(table = "tweets")
 public class Tweet {
 
-	// Annotated fields should have package-level visibility.
-	@StorIOSQLiteColumn(name = "author")
-	String author;
+  // Annotated fields should have package-level visibility.
+  @StorIOSQLiteColumn(name = "author")
+  String author;
 
-	@StorIOSQLiteColumn(name = "content")
-	String content;
+  @StorIOSQLiteColumn(name = "content")
+  String content;
 
-    // Please leave default constructor with package-level visibility.
-	Tweet() {}
+  // Please leave default constructor with package-level visibility.
+  Tweet() {}
 }
 ```
 
@@ -194,31 +194,19 @@ public class Tweet {
 @StorIOSQLiteType(table = "tweets")
 public abstract class Tweet {
 
-	// Annotated methods should have package-level or public visibility.
-	@StorIOSQLiteColumn(name = "author")
-	abstract String author();
+  // Annotated methods should have package-level or public visibility.
+  @StorIOSQLiteColumn(name = "author")
+  abstract String author();
 
-	@StorIOSQLiteColumn(name = "content")
-	abstract String content();
+  @StorIOSQLiteColumn(name = "content")
+  abstract String content();
 
-    // Parameters order depends on declaration order.
-    @StorIOSQLiteCreator
-    static Tweet create(String author, String content) {
-        return new AutoValue_Tweet(author, content)
-    }
+  // Parameters order depends on declaration order.
+  @StorIOSQLiteCreator
+  static Tweet create(String author, String content) {
+    return new AutoValue_Tweet(author, content);
+  }
 }
-```
-
-`Kotlin`:
-
-In order to make annotation processors work with Kotlin you need to add the following to your `build.gradle`:
-```groovy
-apply plugin: 'kotlin-kapt'
-```
-
-```kotlin
-@StorIOSQLiteType(table = "tweets") data class Tweet @StorIOSQLiteCreator constructor(@get:StorIOSQLiteColumn(name = "author") val author: String,
-                                                  @get:StorIOSQLiteColumn(name = "content") val content: String)
 ```
 
 Annotation Processor will generate three classes in same package as annotated class during compilation:

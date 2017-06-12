@@ -60,11 +60,11 @@ object PutResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
                 .addCode("""return UpdateQuery.builder()
-$INDENT.table(${"$"}S)
-$INDENT.where(${"$"}S)
-$INDENT.whereArgs(${"$"}L)
-$INDENT.build();
-""",
+                            $INDENT.table(${"$"}S)
+                            $INDENT.where(${"$"}S)
+                            $INDENT.whereArgs(${"$"}L)
+                            $INDENT.build();
+                         """.trimIndent(),
                         typeMeta.storIOType.table,
                         where[QueryGenerator.WHERE_CLAUSE],
                         where[QueryGenerator.WHERE_ARGS])
@@ -87,9 +87,9 @@ $INDENT.build();
         typeMeta.columns.values.forEach { columnMeta ->
             val ignoreNull = columnMeta.storIOColumn.ignoreNull
             if (ignoreNull) {
-                builder.beginControlFlow("if (object.\$L != null)", "${columnMeta.elementName}${if (columnMeta.isMethod) "()" else ""}")
+                builder.beginControlFlow("if (object.\$L != null)", columnMeta.contextAwareName)
             }
-            builder.addStatement("contentValues.put(\$S, object.\$L)", columnMeta.storIOColumn.name, "${columnMeta.elementName}${if (columnMeta.isMethod) "()" else ""}")
+            builder.addStatement("contentValues.put(\$S, object.\$L)", columnMeta.storIOColumn.name, columnMeta.contextAwareName)
             if (ignoreNull) builder.endControlFlow()
         }
 

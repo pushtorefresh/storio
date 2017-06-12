@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -32,14 +31,4 @@ dependencies {
     testCompile libraries.storIOTestCommon
 }
 
-task checkstyle(type: Checkstyle) {
-    description 'Analyzing project and creating report with bad things in the code'
-
-    ignoreFailures = false
-    configFile file('../checkstyle/checkstyle.xml')
-
-    source 'src'
-    include '**/*.java'
-
-    classpath = files()
-}
+apply from: '../gradle/checkstyle.gradle'

@@ -11,10 +11,14 @@ class StorIOContentResolverColumnMeta(
         element: Element,
         fieldName: String,
         javaType: JavaType,
-        storIOColumn: StorIOContentResolverColumn)
+        storIOColumn: StorIOContentResolverColumn,
+        getter: String? = null,
+        setter: String? = null)
     : StorIOColumnMeta<StorIOContentResolverColumn>(
         enclosingElement,
         element,
         fieldName,
         javaType,
-        storIOColumn)
+        storIOColumn,
+        getter,
+        setter)

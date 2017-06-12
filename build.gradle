@@ -3,14 +3,14 @@ import org.gradle.internal.jvm.Jvm
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.1.1'
+    ext.kotlin_version = '1.1.2'
     repositories {
         jcenter()
     }
 
     dependencies {
         // Android Gradle plugin
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:2.3.2'
 
         // Jacoco Test Coverage Plugin
         // (addition to standard Jacoco plugin, allows us fail the build if coverage is not enough)
@@ -19,6 +19,9 @@ buildscript {
 
         // Kotlin
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        // Automatic releases to Sonatype.
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.8.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -37,17 +40,13 @@ allprojects {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.9'
-}
-
 ext {
     buildToolsVersion = '25.0.2'
-    compileSdkVersion = 23
+    compileSdkVersion = 25
     minSdkVersion = 14
 }
 
-def supportLibsVersion = '23.4.0'
+def supportLibsVersion = '25.3.1'
 def daggerVersion = '2.4'
 
 ext.libraries = [
@@ -149,3 +148,8 @@ subprojects {
     }
 }
 
+apply plugin: 'io.codearte.nexus-staging'
+
+nexusStaging {
+    packageGroup = 'com.pushtorefresh'
+}
