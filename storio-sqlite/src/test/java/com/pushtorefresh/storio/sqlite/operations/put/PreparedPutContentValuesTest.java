@@ -248,4 +248,18 @@ public class PreparedPutContentValuesTest {
         //noinspection CheckResult
         verify(preparedOperation).asRxObservable();
     }
+
+    @Test
+    public void shouldNotNotifyIfWasNotInsertedAndUpdated() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValuesWithoutInsertsAndUpdates();
+
+        final PutResult putResult = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues.get(0))
+                .withPutResolver(putStub.putResolver)
+                .prepare()
+                .executeAsBlocking();
+
+        putStub.verifyBehaviorForOneContentValues(putResult);
+    }
 }

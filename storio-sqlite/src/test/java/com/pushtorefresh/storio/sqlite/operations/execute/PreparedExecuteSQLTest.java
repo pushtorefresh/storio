@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void shouldReturnRawQueryInGetData() {
-        final Stub stub = Stub.newInstanceWithoutNotification();
+        final Stub stub = Stub.newInstanceDoNotApplyAffectedTablesAndTags();
 
         final PreparedExecuteSQL operation =  stub.storIOSQLite
                 .executeSQL()
@@ -53,7 +54,21 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void executeSQLBlockingWithoutNotifications() {
-        final Stub stub = Stub.newInstanceWithoutNotification();
+        final Stub stub = Stub.newInstanceDoNotApplyAffectedTablesAndTags();
+
+        stub.storIOSQLite
+                .executeSQL()
+                .withQuery(stub.rawQuery)
+                .prepare()
+                .executeAsBlocking();
+
+        verify(stub.storIOSQLite, never()).defaultScheduler();
+        stub.verifyBehavior();
+    }
+
+    @Test
+    public void executeSQLBlockingWithEmptyAffectedTablesAndTags() {
+        final Stub stub = Stub.newInstanceApplyEmptyAffectedTablesAndTags();
 
         stub.storIOSQLite
                 .executeSQL()
@@ -67,7 +82,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void executeSQLBlockingWithNotification() {
-        final Stub stub = Stub.newInstanceWithNotification();
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
 
         stub.storIOSQLite
                 .executeSQL()
@@ -81,7 +96,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void executeSQLObservableWithoutNotifications() {
-        final Stub stub = Stub.newInstanceWithoutNotification();
+        final Stub stub = Stub.newInstanceDoNotApplyAffectedTablesAndTags();
 
         final Observable<Object> observable = stub.storIOSQLite
                 .executeSQL()
@@ -95,7 +110,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void executeSQLSingleWithNotification() {
-        final Stub stub = Stub.newInstanceWithNotification();
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
 
         final Single<Object> single = stub.storIOSQLite
                 .executeSQL()
@@ -109,7 +124,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void executeSQLSingleWithoutNotifications() {
-        final Stub stub = Stub.newInstanceWithoutNotification();
+        final Stub stub = Stub.newInstanceDoNotApplyAffectedTablesAndTags();
 
         final Single<Object> single = stub.storIOSQLite
                 .executeSQL()
@@ -123,7 +138,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void executeSQLObservableWithNotification() {
-        final Stub stub = Stub.newInstanceWithNotification();
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
 
         final Observable<Object> observable = stub.storIOSQLite
                 .executeSQL()
@@ -137,7 +152,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void executeSQLObservableExecutesOnSpecifiedScheduler() {
-        final Stub stub = Stub.newInstanceWithNotification();
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
         final SchedulerChecker schedulerChecker = SchedulerChecker.create(stub.storIOSQLite);
 
         final PreparedExecuteSQL operation = stub.storIOSQLite
@@ -150,7 +165,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void executeSQLSingleExecutesOnSpecifiedScheduler() {
-        final Stub stub = Stub.newInstanceWithNotification();
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
         final SchedulerChecker schedulerChecker = SchedulerChecker.create(stub.storIOSQLite);
 
         final PreparedExecuteSQL operation = stub.storIOSQLite
@@ -163,7 +178,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void shouldWrapExceptionIntoStorIOExceptionBlocking() {
-        final Stub stub = Stub.newInstanceWithNotification();
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
 
         IllegalStateException testException = new IllegalStateException("test exception");
         doThrow(testException).when(stub.lowLevel).executeSQL(stub.rawQuery);
@@ -183,7 +198,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void shouldWrapExceptionIntoStorIOExceptionObservable() {
-        final Stub stub = Stub.newInstanceWithNotification();
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
 
         IllegalStateException testException = new IllegalStateException("test exception");
         doThrow(testException).when(stub.lowLevel).executeSQL(stub.rawQuery);
@@ -217,7 +232,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void shouldWrapExceptionIntoStorIOExceptionSingle() {
-        final Stub stub = Stub.newInstanceWithNotification();
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
 
         IllegalStateException testException = new IllegalStateException("test exception");
         doThrow(testException).when(stub.lowLevel).executeSQL(stub.rawQuery);
@@ -251,7 +266,7 @@ public class PreparedExecuteSQLTest {
 
     @Test
     public void createObservableReturnsAsRxObservable() {
-        final Stub stub = Stub.newInstanceWithoutNotification();
+        final Stub stub = Stub.newInstanceDoNotApplyAffectedTablesAndTags();
 
         PreparedExecuteSQL preparedExecuteSQL = spy(stub.storIOSQLite
                 .executeSQL()
@@ -274,29 +289,48 @@ public class PreparedExecuteSQLTest {
         private final StorIOSQLite storIOSQLite;
         private final StorIOSQLite.LowLevel lowLevel;
         private final RawQuery rawQuery;
-        private final boolean queryWithNotification;
-
-        private final String[] affectedTables = {"test_table1", "test_table2"};
-
-        private final List<String> affectedTags = asList("test_tag1", "test_tag2");
+        private final boolean applyAffectedTablesAndTags;
 
         @NonNull
-        public static Stub newInstanceWithoutNotification() {
-            return new Stub(false);
+        private static final String[] DEFAULT_AFFECTED_TABLES = {"test_table1", "test_table2"};
+
+        @NonNull
+        private static final List<String> DEFAULT_AFFECTED_TAGS = asList("test_tag1", "test_tag2");
+
+        @NonNull
+        private final String[] affectedTables;
+
+        @NonNull
+        private final List<String> affectedTags;
+
+        @NonNull
+        public static Stub newInstanceDoNotApplyAffectedTablesAndTags() {
+            return new Stub(false, DEFAULT_AFFECTED_TABLES, DEFAULT_AFFECTED_TAGS);
         }
 
         @NonNull
-        public static Stub newInstanceWithNotification() {
-            return new Stub(true);
+        public static Stub newInstanceApplyEmptyAffectedTablesAndTags() {
+            return new Stub(false, new String[0], Collections.<String>emptyList());
         }
 
-        private Stub(boolean queryWithNotification) {
-            this.queryWithNotification = queryWithNotification;
+        @NonNull
+        public static Stub newInstanceApplyNotEmptyAffectedTablesAndTags() {
+            return new Stub(true, DEFAULT_AFFECTED_TABLES, DEFAULT_AFFECTED_TAGS);
+        }
+
+        private Stub(
+                boolean applyAffectedTablesAndTags,
+                @NonNull String[] affectedTables,
+                @NonNull List<String> affectedTags
+        ) {
+            this.applyAffectedTablesAndTags = applyAffectedTablesAndTags;
+            this.affectedTables = affectedTables;
+            this.affectedTags = affectedTags;
 
             storIOSQLite = mock(StorIOSQLite.class);
             lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            if (queryWithNotification) {
+            if (applyAffectedTablesAndTags) {
                 rawQuery = RawQuery.builder()
                         .query("DROP TABLE users!")
                         .affectsTables(affectedTables)
@@ -325,7 +359,7 @@ public class PreparedExecuteSQLTest {
             // storIOSQLite.lowLevel.executeSQL() should be called once for required RawQuery
             verify(lowLevel).executeSQL(rawQuery);
 
-            if (queryWithNotification) {
+            if (applyAffectedTablesAndTags && (affectedTables.length > 0 || !affectedTags.isEmpty())) {
                 final Changes changes = Changes.newInstance(
                         new HashSet<String>(asList(affectedTables)),
                         new HashSet<String>(affectedTags)

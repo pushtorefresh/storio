@@ -1,7 +1,6 @@
 package com.pushtorefresh.storio.sqlite.integration;
 
 import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -57,7 +56,6 @@ public class InterceptorTest {
     @Before
     public void setUp() throws Exception {
         final SQLiteOpenHelper sqLiteOpenHelper = new TestSQLiteOpenHelper(RuntimeEnvironment.application);
-        final SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
 
         callCount = new AtomicInteger(0);
         interceptor1 = createInterceptor();

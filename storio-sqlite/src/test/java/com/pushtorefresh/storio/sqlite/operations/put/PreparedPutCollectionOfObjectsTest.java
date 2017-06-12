@@ -167,6 +167,38 @@ public class PreparedPutCollectionOfObjectsTest {
 
             putStub.verifyBehaviorForMultipleObjects(completable);
         }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithoutTypeMappingWithoutTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithoutTypeMappingWithoutTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(false)
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithoutTypeMappingWithTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithoutTypeMappingWithTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(true)
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
     }
 
     public static class WithTypeMapping {
@@ -289,6 +321,36 @@ public class PreparedPutCollectionOfObjectsTest {
                     .asRxCompletable();
 
             putStub.verifyBehaviorForMultipleObjects(completable);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithTypeMappingWithoutTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithTypeMappingWithoutTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(false)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithTypeMappingWithTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithTypeMappingWithTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(true)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
         }
     }
 
@@ -1016,6 +1078,34 @@ public class PreparedPutCollectionOfObjectsTest {
 
             //noinspection CheckResult
             verify(preparedOperation).asRxObservable();
+        }
+
+        @Test
+        public void shouldNotNotifyIfCollectionEmptyWithoutTransaction() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForEmptyCollectionWithoutTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(false)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfCollectionEmptyWithTransaction() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForEmptyCollectionWithTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(true)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
         }
     }
 }

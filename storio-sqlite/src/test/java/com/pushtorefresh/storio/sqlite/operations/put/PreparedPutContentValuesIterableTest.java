@@ -705,4 +705,64 @@ public class PreparedPutContentValuesIterableTest {
         //noinspection CheckResult
         verify(preparedOperation).asRxObservable();
     }
+
+    @Test
+    public void shouldNotNotifyIfCollectionEmptyWithoutTransaction() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForEmptyCollectionWithoutTransaction();
+
+        final PutResults<ContentValues> putResults = putStub.storIOSQLite
+                .put()
+                .objects(putStub.contentValues)
+                .useTransaction(false)
+                .prepare()
+                .executeAsBlocking();
+
+        putStub.verifyBehaviorForMultipleContentValues(putResults);
+    }
+
+    @Test
+    public void shouldNotNotifyIfCollectionEmptyWithTransaction() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForEmptyCollectionWithTransaction();
+
+        final PutResults<ContentValues> putResults = putStub.storIOSQLite
+                .put()
+                .objects(putStub.contentValues)
+                .useTransaction(true)
+                .prepare()
+                .executeAsBlocking();
+
+        putStub.verifyBehaviorForMultipleContentValues(putResults);
+    }
+
+    @Test
+    public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithoutTransaction() {
+        final PutContentValuesStub putStub
+                = PutContentValuesStub.newPutStubForMultipleContentValuesWithoutInsertsAndUpdatesWithoutTransaction();
+
+        final PutResults<ContentValues> putResults = putStub.storIOSQLite
+                .put()
+                .objects(putStub.contentValues)
+                .useTransaction(false)
+                .withPutResolver(putStub.putResolver)
+                .prepare()
+                .executeAsBlocking();
+
+        putStub.verifyBehaviorForMultipleContentValues(putResults);
+    }
+
+    @Test
+    public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithTransaction() {
+        final PutContentValuesStub putStub
+                = PutContentValuesStub.newPutStubForMultipleContentValuesWithoutInsertsAndUpdatesWithTransaction();
+
+        final PutResults<ContentValues> putResults = putStub.storIOSQLite
+                .put()
+                .objects(putStub.contentValues)
+                .useTransaction(true)
+                .withPutResolver(putStub.putResolver)
+                .prepare()
+                .executeAsBlocking();
+
+        putStub.verifyBehaviorForMultipleContentValues(putResults);
+    }
 }

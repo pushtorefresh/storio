@@ -178,32 +178,32 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
                             final PutResult putResult = explicitPutResolver.performPut(storIOSQLite, object);
                             results.put(object, putResult);
 
-                        if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
-                            final Changes changes = Changes.newInstance(
-                                    putResult.affectedTables(),
-                                    putResult.affectedTags()
-                            );
-                            lowLevel.notifyAboutChanges(changes);
+                            if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
+                                final Changes changes = Changes.newInstance(
+                                        putResult.affectedTables(),
+                                        putResult.affectedTags()
+                                );
+                                lowLevel.notifyAboutChanges(changes);
+                            }
                         }
-                    }
-                } else {
-                    for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
-                        final T object = objectAndPutResolver.getKey();
-                        final PutResolver<T> putResolver = objectAndPutResolver.getValue();
+                    } else {
+                        for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
+                            final T object = objectAndPutResolver.getKey();
+                            final PutResolver<T> putResolver = objectAndPutResolver.getValue();
 
                             final PutResult putResult = putResolver.performPut(storIOSQLite, object);
 
                             results.put(object, putResult);
 
-                        if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
-                            final Changes changes = Changes.newInstance(
-                                    putResult.affectedTables(),
-                                    putResult.affectedTags()
-                            );
-                            lowLevel.notifyAboutChanges(changes);
+                            if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
+                                final Changes changes = Changes.newInstance(
+                                        putResult.affectedTables(),
+                                        putResult.affectedTags()
+                                );
+                                lowLevel.notifyAboutChanges(changes);
+                            }
                         }
                     }
-                }
 
                     if (useTransaction) {
                         lowLevel.setTransactionSuccessful();
@@ -213,27 +213,27 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
                     if (useTransaction) {
                         lowLevel.endTransaction();
 
-                    // if put was in transaction and it was successful -> notify about changes
-                    if (transactionSuccessful) {
-                        final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
-                        final Set<String> affectedTags = new HashSet<String>(1);
+                        // if put was in transaction and it was successful -> notify about changes
+                        if (transactionSuccessful) {
+                            final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+                            final Set<String> affectedTags = new HashSet<String>(1);
 
-                        for (final T object : results.keySet()) {
-                            final PutResult putResult = results.get(object);
-                            if (putResult.wasInserted() || putResult.wasUpdated()) {
-                                affectedTables.addAll(putResult.affectedTables());
-                                affectedTags.addAll(putResult.affectedTags());
+                            for (final T object : results.keySet()) {
+                                final PutResult putResult = results.get(object);
+                                if (putResult.wasInserted() || putResult.wasUpdated()) {
+                                    affectedTables.addAll(putResult.affectedTables());
+                                    affectedTags.addAll(putResult.affectedTags());
+                                }
                             }
-                        }
 
-                        // IMPORTANT: Notifying about change should be done after end of transaction
-                        // It'll reduce number of possible deadlock situations
-                        if (!affectedTables.isEmpty() || !affectedTags.isEmpty()) {
-                            lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
+                            // IMPORTANT: Notifying about change should be done after end of transaction
+                            // It'll reduce number of possible deadlock situations
+                            if (!affectedTables.isEmpty() || !affectedTags.isEmpty()) {
+                                lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
+                            }
                         }
                     }
                 }
-            }
 
                 //noinspection unchecked
                 return (Result) PutResults.newInstance(results);
