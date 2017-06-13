@@ -304,7 +304,19 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
                 .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with"
-                        + " StorIOSQLiteCreator annotation with the same amount of parameters as the number of columns: CreatorWithWrongNumberOfArguments");
+                        + " StorIOSQLiteCreator annotation with parameters matching CreatorWithWrongNumberOfArguments columns");
+    }
+
+    @Test
+    public void shouldNotCompileIfCreatorsParametersDoNotMatchWithColumns() {
+        JavaFileObject model = JavaFileObjects.forResource("CreatorWithNotMatchingArguments.java");
+
+        assert_().about(javaSource())
+            .that(model)
+            .processedWith(new StorIOSQLiteProcessor())
+            .failsToCompile()
+            .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with"
+                + " StorIOSQLiteCreator annotation with parameters matching CreatorWithNotMatchingArguments columns");
     }
 
     @Test

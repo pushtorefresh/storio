@@ -336,8 +336,21 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
                 .withErrorContaining("Class marked with StorIOContentResolverType annotation needs factory method or constructor marked with StorIOContentResolverCreator"
-                        + " annotation with the same amount of parameters as the number of columns: CreatorWithWrongNumberOfArguments");
+                        + " annotation with parameters matching CreatorWithWrongNumberOfArguments columns");
     }
+
+    @Test
+    public void shouldNotCompileIfCreatorsArgumentsDoNotMatchWithColumns() {
+        JavaFileObject model = JavaFileObjects.forResource("CreatorWithNotMatchingArguments.java");
+
+        assert_().about(javaSource())
+            .that(model)
+            .processedWith(new StorIOContentResolverProcessor())
+            .failsToCompile()
+            .withErrorContaining("Class marked with StorIOContentResolverType annotation needs factory method or constructor marked with StorIOContentResolverCreator"
+                + " annotation with parameters matching CreatorWithNotMatchingArguments columns");
+    }
+
 
     @Test
     public void shouldNotCompileIfNoArgConstructorIsAbsent() {

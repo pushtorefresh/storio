@@ -190,16 +190,20 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
                         " ${StorIOSQLiteColumn::class.java.simpleName} annotation: ${typeMeta.simpleName}")
             }
 
-            if (typeMeta.needCreator && typeMeta.creator == null) {
-                throw ProcessingException(key, "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation needs factory method or constructor marked with" +
-                        " ${StorIOSQLiteCreator::class.java.simpleName} annotation: ${typeMeta.simpleName}")
-            }
+            if (typeMeta.needCreator) {
+                if (typeMeta.creator == null) {
+                    throw ProcessingException(key, "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation needs factory method or constructor marked with" +
+                            " ${StorIOSQLiteCreator::class.java.simpleName} annotation: ${typeMeta.simpleName}")
+                }
 
-            // creator can't be null since we have checked it before
-            if (typeMeta.needCreator && typeMeta.creator!!.parameters.size != typeMeta.columns.size) {
-                throw ProcessingException(key, "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation needs factory method or constructor marked with" +
-                        " ${StorIOSQLiteCreator::class.java.simpleName} annotation with the same amount of parameters as the number of columns: ${typeMeta.simpleName}")
-            }
+                val params = typeMeta.creator!!.parameters.map { it.simpleName.toString() }
+                val resolvesParams = typeMeta.columns.values.all { it.realElementName in params }
+
+                if (params.size != typeMeta.columns.size || !resolvesParams) {
+                    throw ProcessingException(key, "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation needs factory method or constructor marked with" +
+                            " ${StorIOSQLiteCreator::class.java.simpleName} annotation with parameters matching ${typeMeta.simpleName} columns")
+                }
+             }
         }
     }
 
