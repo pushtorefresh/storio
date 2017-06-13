@@ -11,7 +11,7 @@ public class CreatorWithNotMatchingArguments {
     }
 
     @StorIOSQLiteCreator
-    public CreatorWithNotMatchingArguments(long it) {
-        this.id = it;
+    public CreatorWithNotMatchingArguments(long notMatchingName) {
+        this.id = notMatchingName;
     }
 }

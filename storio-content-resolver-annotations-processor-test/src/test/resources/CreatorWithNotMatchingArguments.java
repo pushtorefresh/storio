@@ -11,7 +11,7 @@ public class CreatorWithNotMatchingArguments {
     }
 
     @StorIOContentResolverCreator
-    public CreatorWithNotMatchingArguments(long it) {
-        this.id = it;
+    public CreatorWithNotMatchingArguments(long notMatchingName) {
+        this.id = notMatchingName;
     }
 }
