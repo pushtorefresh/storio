@@ -26,7 +26,7 @@ import rx.Single;
  *
  * @param <T> type of objects.
  */
-public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>> {
+public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>, Collection<T>> {
 
     @NonNull
     private final Collection<T> objects;
@@ -182,6 +182,12 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
     @Override
     public Completable asRxCompletable() {
         return RxJavaUtils.createCompletable(storIOContentResolver, this);
+    }
+
+    @NonNull
+    @Override
+    public Collection<T> getData() {
+        return objects;
     }
 
     /**

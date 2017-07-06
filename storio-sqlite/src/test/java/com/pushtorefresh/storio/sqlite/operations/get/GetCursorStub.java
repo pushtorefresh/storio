@@ -13,9 +13,7 @@ import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
 
-import static java.util.Collections.singleton;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.eq;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,15 +48,20 @@ class GetCursorStub {
         when(storIOSQLite.lowLevel())
                 .thenReturn(lowLevel);
 
+        String table = "test_table";
+        String tag = "test_tag";
+
         query = Query
                 .builder()
-                .table("test_table")
+                .table(table)
+                .observesTags(tag)
                 .build();
 
         rawQuery = RawQuery
                 .builder()
                 .query("select * from who_cares")
-                .observesTables("test_table")
+                .observesTables(table)
+                .observesTags(tag)
                 .build();
 
         getResolverForCursor = mock(GetResolver.class);
@@ -67,13 +70,9 @@ class GetCursorStub {
         when(storIOSQLite.get())
                 .thenReturn(new PreparedGet.Builder(storIOSQLite));
 
-        when(storIOSQLite.observeChangesInTables(eq(singleton(query.table()))))
-                .thenReturn(Observable.<Changes>empty());
+        when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
         assertThat(rawQuery.observesTables()).isNotNull();
-
-        when(storIOSQLite.observeChangesInTables(rawQuery.observesTables()))
-                .thenReturn(Observable.<Changes>empty());
 
         when(getResolverForCursor.performGet(storIOSQLite, query))
                 .thenReturn(cursor);
@@ -90,6 +89,7 @@ class GetCursorStub {
     void verifyQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
         assertThat(actualCursor).isNotNull();
         verify(storIOSQLite).get();
+        verify(storIOSQLite).interceptors();
         verify(getResolverForCursor).performGet(storIOSQLite, query);
         assertThat(actualCursor).isSameAs(cursor);
         verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
@@ -103,7 +103,7 @@ class GetCursorStub {
                     @Override
                     public void call(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOSQLite).observeChangesInTables(eq(singleton(query.table())));
+                        verify(storIOSQLite).observeChanges();
                         verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehaviorForCursor(cursor);
                     }
@@ -128,6 +128,7 @@ class GetCursorStub {
     void verifyRawQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
         assertThat(actualCursor).isNotNull();
         verify(storIOSQLite, times(1)).get();
+        verify(storIOSQLite).interceptors();
         verify(getResolverForCursor, times(1)).performGet(storIOSQLite, rawQuery);
         assertThat(actualCursor).isSameAs(cursor);
         verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
@@ -141,7 +142,7 @@ class GetCursorStub {
                     @Override
                     public void call(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
+                        verify(storIOSQLite).observeChanges();
                         verify(storIOSQLite).defaultScheduler();
                         verifyRawQueryBehaviorForCursor(cursor);
                     }

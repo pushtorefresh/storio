@@ -3,10 +3,11 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 import android.content.ContentValues;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
 
@@ -19,7 +20,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 /**
  * Prepared Put Operation for {@link StorIOSQLite}.
  */
-public class PreparedPutContentValues extends PreparedPut<PutResult> {
+public class PreparedPutContentValues extends PreparedPut<PutResult, ContentValues> {
 
     @NonNull
     private final ContentValues contentValues;
@@ -31,30 +32,6 @@ public class PreparedPutContentValues extends PreparedPut<PutResult> {
         super(storIOSQLite);
         this.contentValues = contentValues;
         this.putResolver = putResolver;
-    }
-
-    /**
-     * Executes Put Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null result of Put Operation.
-     */
-    @WorkerThread
-    @NonNull
-    @Override
-    public PutResult executeAsBlocking() {
-        try {
-            final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
-            if (putResult.wasInserted() || putResult.wasUpdated()) {
-                storIOSQLite.lowLevel().notifyAboutChanges(Changes.newInstance(putResult.affectedTables()));
-            }
-            return putResult;
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValues, exception);
-        }
     }
 
     /**
@@ -98,7 +75,7 @@ public class PreparedPutContentValues extends PreparedPut<PutResult> {
     @Override
     public Observable<PutResult> asRxObservable() {
         return RxJavaUtils.createObservable(storIOSQLite, this);
-   }
+    }
 
     /**
      * Creates {@link Single} which will perform Put Operation lazily when somebody subscribes to it and send result to observer.
@@ -115,7 +92,7 @@ public class PreparedPutContentValues extends PreparedPut<PutResult> {
     @Override
     public Single<PutResult> asRxSingle() {
         return RxJavaUtils.createSingle(storIOSQLite, this);
-   }
+    }
 
     /**
      * Creates {@link Completable} which will perform Put Operation lazily when somebody subscribes to it.
@@ -131,6 +108,35 @@ public class PreparedPutContentValues extends PreparedPut<PutResult> {
     @Override
     public Completable asRxCompletable() {
         return RxJavaUtils.createCompletable(storIOSQLite, this);
+    }
+
+    @NonNull
+    @Override
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
+
+    @NonNull
+    @Override
+    public ContentValues getData() {
+        return contentValues;
+    }
+
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+            try {
+                final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
+                if (putResult.wasInserted() || putResult.wasUpdated()) {
+                    final Changes changes = Changes.newInstance(putResult.affectedTables(), putResult.affectedTags());
+                    storIOSQLite.lowLevel().notifyAboutChanges(changes);
+                }
+                return (Result) putResult;
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValues, exception);
+            }
+        }
     }
 
     /**

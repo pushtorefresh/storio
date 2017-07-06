@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import rx.Completable;
@@ -18,13 +20,14 @@ import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -361,7 +364,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedDelete<DeleteResults<TestItem>> preparedDelete = storIOSQLite
+            final PreparedDelete<DeleteResults<TestItem>, Collection<TestItem>> preparedDelete = storIOSQLite
                     .delete()
                     .objects(items)
                     .useTransaction(false)
@@ -376,6 +379,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
             }
 
             verify(storIOSQLite).delete();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
@@ -410,6 +414,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).delete();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
@@ -445,6 +450,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).delete();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
@@ -480,6 +486,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).delete();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
@@ -498,7 +505,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedDelete<DeleteResults<TestItem>> preparedDelete = storIOSQLite
+            final PreparedDelete<DeleteResults<TestItem>, Collection<TestItem>> preparedDelete = storIOSQLite
                     .delete()
                     .objects(items)
                     .useTransaction(true)
@@ -513,6 +520,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
             }
 
             verify(storIOSQLite).delete();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).lowLevel();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
@@ -547,6 +555,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).delete();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
@@ -582,6 +591,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).delete();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
@@ -617,6 +627,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOSQLite).delete();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(internal).typeMapping(TestItem.class);
@@ -628,6 +639,21 @@ public class PreparedDeleteCollectionOfObjectsTest {
     public static class OtherTests {
 
         @Test
+        public void shouldReturnItemsInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            //noinspection unchecked
+            final DeleteResolver<Object> deleteResolver = mock(DeleteResolver.class);
+            final List<Object> items = singletonList(new Object());
+            final PreparedDeleteCollectionOfObjects<Object> operation =
+                    new PreparedDeleteCollectionOfObjects.Builder<Object>(storIOSQLite, items)
+                            .useTransaction(true)
+                            .withDeleteResolver(deleteResolver)
+                            .prepare();
+
+            assertThat(operation.getData()).isEqualTo(items);
+        }
+
+        @Test
         public void shouldFinishTransactionIfExceptionHasOccurredBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
@@ -637,7 +663,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
             //noinspection unchecked
             final DeleteResolver<Object> deleteResolver = mock(DeleteResolver.class);
 
-            when(deleteResolver.performDelete(same(storIOSQLite), anyObject()))
+            when(deleteResolver.performDelete(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             try {
@@ -657,7 +683,8 @@ public class PreparedDeleteCollectionOfObjectsTest {
                 verify(internal).endTransaction();
 
                 verify(storIOSQLite).lowLevel();
-                verify(deleteResolver).performDelete(same(storIOSQLite), anyObject());
+                verify(storIOSQLite).interceptors();
+                verify(deleteResolver).performDelete(same(storIOSQLite), any());
                 verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
             }
         }
@@ -672,7 +699,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
             //noinspection unchecked
             final DeleteResolver<Object> deleteResolver = mock(DeleteResolver.class);
 
-            when(deleteResolver.performDelete(same(storIOSQLite), anyObject()))
+            when(deleteResolver.performDelete(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final TestSubscriber<DeleteResults<Object>> testSubscriber = new TestSubscriber<DeleteResults<Object>>();
@@ -699,8 +726,9 @@ public class PreparedDeleteCollectionOfObjectsTest {
             verify(internal).endTransaction();
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).defaultScheduler();
-            verify(deleteResolver).performDelete(same(storIOSQLite), anyObject());
+            verify(deleteResolver).performDelete(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
         }
 
@@ -714,7 +742,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
             //noinspection unchecked
             final DeleteResolver<Object> deleteResolver = mock(DeleteResolver.class);
 
-            when(deleteResolver.performDelete(same(storIOSQLite), anyObject()))
+            when(deleteResolver.performDelete(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final TestSubscriber<DeleteResults<Object>> testSubscriber = new TestSubscriber<DeleteResults<Object>>();
@@ -741,8 +769,9 @@ public class PreparedDeleteCollectionOfObjectsTest {
             verify(internal).endTransaction();
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).defaultScheduler();
-            verify(deleteResolver).performDelete(same(storIOSQLite), anyObject());
+            verify(deleteResolver).performDelete(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
         }
 
@@ -756,7 +785,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
             //noinspection unchecked
             final DeleteResolver<Object> deleteResolver = mock(DeleteResolver.class);
 
-            when(deleteResolver.performDelete(same(storIOSQLite), anyObject()))
+            when(deleteResolver.performDelete(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final TestSubscriber<DeleteResults<Object>> testSubscriber = new TestSubscriber<DeleteResults<Object>>();
@@ -783,8 +812,9 @@ public class PreparedDeleteCollectionOfObjectsTest {
             verify(internal).endTransaction();
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(storIOSQLite).defaultScheduler();
-            verify(deleteResolver).performDelete(same(storIOSQLite), anyObject());
+            verify(deleteResolver).performDelete(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
         }
 
@@ -831,6 +861,29 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .prepare();
 
             schedulerChecker.checkAsCompletable(operation);
+        }
+
+        @Test
+        public void createObservableReturnsAsRxObservable() {
+            final DeleteStub deleteStub
+                    = DeleteStub.newStubForMultipleObjectsWithTypeMappingWithoutTransaction();
+
+            PreparedDeleteCollectionOfObjects<TestItem> preparedOperation = spy(deleteStub.storIOSQLite
+                    .delete()
+                    .objects(deleteStub.itemsRequestedForDelete)
+                    .prepare());
+
+            Observable<DeleteResults<Object>> observable =
+                    Observable.just(DeleteResults.newInstance(Collections.<Object, DeleteResult>emptyMap()));
+
+            //noinspection CheckResult
+            doReturn(observable).when(preparedOperation).asRxObservable();
+
+            //noinspection deprecation
+            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
+
+            //noinspection CheckResult
+            verify(preparedOperation).asRxObservable();
         }
     }
 }

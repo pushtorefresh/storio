@@ -14,7 +14,7 @@ import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -151,7 +151,7 @@ public class PreparedDeleteObjectTest {
 
             when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
 
-            final PreparedDelete<DeleteResult> preparedDelete = storIOContentResolver
+            final PreparedDelete<DeleteResult, TestItem> preparedDelete = storIOContentResolver
                     .delete()
                     .object(TestItem.newInstance())
                     .prepare();
@@ -271,7 +271,20 @@ public class PreparedDeleteObjectTest {
         }
     }
 
-    class OtherTests {
+    public static class OtherTests {
+
+        @Test
+        public void shouldReturnObjectInGetData() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObjectWithoutTypeMapping();
+
+            final PreparedDeleteObject<TestItem> operation = deleteStub.storIOContentResolver
+                    .delete()
+                    .object(deleteStub.items.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            assertThat(operation.getData()).isEqualTo(deleteStub.items.get(0));
+        }
 
         @Test
         public void deleteObjectObservableExecutesOnSpecifiedScheduler() {

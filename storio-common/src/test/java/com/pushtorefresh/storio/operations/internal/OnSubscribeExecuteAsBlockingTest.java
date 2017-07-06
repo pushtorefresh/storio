@@ -9,7 +9,7 @@ import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -23,7 +23,7 @@ public class OnSubscribeExecuteAsBlockingTest {
     @Test
     public void shouldExecuteAsBlockingAfterSubscription() {
         //noinspection unchecked
-        final PreparedOperation<String> preparedOperation = mock(PreparedOperation.class);
+        final PreparedOperation<String, Object> preparedOperation = mock(PreparedOperation.class);
 
         final String expectedResult = "expected_string";
 
@@ -45,7 +45,7 @@ public class OnSubscribeExecuteAsBlockingTest {
     @Test
     public void shouldNotNotifySubscriberIfItsAlreadyUnsubscribed() {
         //noinspection unchecked
-        PreparedOperation<Object> preparedOperation = mock(PreparedOperation.class);
+        PreparedOperation<Object, Object> preparedOperation = mock(PreparedOperation.class);
 
         //noinspection unchecked
         Subscriber<Object> subscriber = mock(Subscriber.class);
@@ -67,7 +67,7 @@ public class OnSubscribeExecuteAsBlockingTest {
     @Test
     public void shouldCallExecuteAsBlockingEvenIfSubscriberAlreadyUnsubscribed() {
         //noinspection unchecked
-        PreparedOperation<Object> preparedOperation = mock(PreparedOperation.class);
+        PreparedOperation<Object, Object> preparedOperation = mock(PreparedOperation.class);
 
         //noinspection unchecked
         Subscriber<Object> subscriber = mock(Subscriber.class);
@@ -88,7 +88,7 @@ public class OnSubscribeExecuteAsBlockingTest {
     public void shouldCallOnError() {
         Throwable throwable = new IllegalStateException("Test exception");
         //noinspection unchecked
-        PreparedOperation<String> preparedOperation = mock(PreparedOperation.class);
+        PreparedOperation<String, Object> preparedOperation = mock(PreparedOperation.class);
         when(preparedOperation.executeAsBlocking()).thenThrow(throwable);
 
         TestSubscriber<String> testSubscriber = TestSubscriber.create();
@@ -106,7 +106,7 @@ public class OnSubscribeExecuteAsBlockingTest {
         TestSubscriber<String> testSubscriber = TestSubscriber.create();
 
         //noinspection unchecked
-        PreparedOperation<String> preparedOperation = mock(PreparedOperation.class);
+        PreparedOperation<String, Object> preparedOperation = mock(PreparedOperation.class);
         when(preparedOperation.executeAsBlocking()).thenReturn("b");
 
         OnSubscribe<String> onSubscribe = OnSubscribeExecuteAsBlocking.newInstance(preparedOperation);

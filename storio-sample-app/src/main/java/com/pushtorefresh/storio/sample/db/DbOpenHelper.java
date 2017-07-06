@@ -7,6 +7,9 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio.sample.db.tables.TweetsTable;
 import com.pushtorefresh.storio.sample.db.tables.UsersTable;
+import com.pushtorefresh.storio.sample.many_to_many_sample.entities.CarTable;
+import com.pushtorefresh.storio.sample.many_to_many_sample.entities.PersonCarRelationTable;
+import com.pushtorefresh.storio.sample.many_to_many_sample.entities.PersonTable;
 
 public class DbOpenHelper extends SQLiteOpenHelper {
 
@@ -18,6 +21,10 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     public void onCreate(@NonNull SQLiteDatabase db) {
         db.execSQL(TweetsTable.getCreateTableQuery());
         db.execSQL(UsersTable.getCreateTableQuery());
+
+        db.execSQL(CarTable.getCreateTableQuery());
+        db.execSQL(PersonTable.getCreateTableQuery());
+        db.execSQL(PersonCarRelationTable.getCreateTableQuery());
     }
 
     @Override

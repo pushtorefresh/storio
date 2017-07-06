@@ -4,17 +4,19 @@ import android.database.Cursor;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.impl.ChangesFilter;
 import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 import rx.Observable;
@@ -36,40 +38,6 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
     PreparedGetNumberOfResults(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery, @NonNull GetResolver<Integer> getResolver) {
         super(storIOSQLite, rawQuery);
         this.getResolver = getResolver;
-    }
-
-    /**
-     * Executes Get Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null {@link Integer} with number of results of the query.
-     */
-    @WorkerThread
-    @NonNull
-    @Override
-    public Integer executeAsBlocking() {
-        final Cursor cursor;
-
-        try {
-            if (query != null) {
-                cursor = getResolver.performGet(storIOSQLite, query);
-            } else if (rawQuery != null) {
-                cursor = getResolver.performGet(storIOSQLite, rawQuery);
-            } else {
-                throw new IllegalStateException("Please specify query");
-            }
-
-            try {
-                return getResolver.mapFromCursor(cursor);
-            } finally {
-                cursor.close();
-            }
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Get operation. query = " + (query != null ? query : rawQuery), exception);
-        }
     }
 
     /**
@@ -122,21 +90,22 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
         throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         final Set<String> tables;
+        final Set<String> tags;
 
         if (query != null) {
-            tables = new HashSet<String>(1);
-            tables.add(query.table());
+            tables = Collections.singleton(query.table());
+            tags = query.observesTags();
         } else if (rawQuery != null) {
             tables = rawQuery.observesTables();
+            tags = rawQuery.observesTags();
         } else {
             throw new StorIOException("Please specify query");
         }
 
         final Observable<Integer> observable;
-        if (!tables.isEmpty()) {
-            observable = storIOSQLite
-                    .observeChangesInTables(tables) // each change triggers executeAsBlocking
-                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))
+        if (!tables.isEmpty() || !tags.isEmpty()) {
+            observable = ChangesFilter.applyForTablesAndTags(storIOSQLite.observeChanges(), tables, tags)
+                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))  // each change triggers executeAsBlocking
                     .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
                     .onBackpressureLatest();
         } else {
@@ -161,6 +130,39 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
     @Override
     public Single<Integer> asRxSingle() {
         return RxJavaUtils.createSingle(storIOSQLite, this);
+    }
+
+    @NonNull
+    @Override
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
+
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+            final Cursor cursor;
+
+            try {
+                if (query != null) {
+                    cursor = getResolver.performGet(storIOSQLite, query);
+                } else if (rawQuery != null) {
+                    cursor = getResolver.performGet(storIOSQLite, rawQuery);
+                } else {
+                    throw new IllegalStateException("Please specify query");
+                }
+
+                try {
+                    //noinspection unchecked
+                    return (Result) getResolver.mapFromCursor(cursor);
+                } finally {
+                    cursor.close();
+                }
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Get operation. query = " + (query != null ? query : rawQuery), exception);
+            }
+        }
     }
 
     /**

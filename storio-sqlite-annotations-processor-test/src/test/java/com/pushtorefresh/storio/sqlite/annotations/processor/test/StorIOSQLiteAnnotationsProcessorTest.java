@@ -10,6 +10,7 @@ import javax.tools.JavaFileObject;
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class StorIOSQLiteAnnotationsProcessorTest {
 
     @Test
@@ -53,13 +54,14 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Please apply StorIOSQLiteColumn only to members of class (fields or methods)" +
-                        " - not to members of AnnotatedFieldNotInsideClass");
+                .withErrorContaining("Please apply StorIOSQLiteColumn only to members of class (fields or methods) - not to members of"
+                        + " AnnotatedFieldNotInsideClass");
     }
 
     @Test
     public void shouldNotCompileIfAnnotatedFieldInsideNotAnnotatedClass() {
-        JavaFileObject model = JavaFileObjects.forResource("AnnotatedFieldInsideNotAnnotatedClass.java");
+        JavaFileObject model = JavaFileObjects.forResource(
+                "AnnotatedFieldInsideNotAnnotatedClass.java");
 
         assert_().about(javaSource())
                 .that(model)
@@ -69,14 +71,25 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldNotCompileIfAnnotatedFieldIsPrivate() {
-        JavaFileObject model = JavaFileObjects.forResource("PrivateField.java");
+    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveAccessors() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutAccessors.java");
 
         assert_().about(javaSource())
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field or method: id");
+                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
+    }
+
+    @Test
+    public void shouldNotCompileIfAnnotatedMethodIsPrivate() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateMethod.java");
+
+        assert_().about(javaSource())
+            .that(model)
+            .processedWith(new StorIOSQLiteProcessor())
+            .failsToCompile()
+            .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
     }
 
     @Test
@@ -163,8 +176,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("StorIOSQLiteCreator can not be applied to method with return type different " +
-                        "from CreatorMethodWithDifferentReturnType");
+                .withErrorContaining("StorIOSQLiteCreator can not be applied to method with return type different from"
+                        + " CreatorMethodWithDifferentReturnType");
     }
 
     @Test
@@ -209,8 +222,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Unsupported type of field or method for StorIOSQLiteColumn annotation," +
-                        " if you need to serialize/deserialize field of that type -> please write your own resolver");
+                .withErrorContaining("Unsupported type of field or method for StorIOSQLiteColumn annotation, if you need to serialize/deserialize"
+                        + " field of that type -> please write your own resolver");
     }
 
     @Test
@@ -254,8 +267,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOSQLiteType annotation should have at least one field or method marked with " +
-                        "StorIOSQLiteColumn annotation: EmptyClass");
+                .withErrorContaining("Class marked with StorIOSQLiteType annotation should have at least one field or method marked with"
+                        + " StorIOSQLiteColumn annotation: EmptyClass");
     }
 
     @Test
@@ -266,8 +279,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOSQLiteType annotation should have at least one KEY field or method marked with " +
-                        "StorIOSQLiteColumn annotation: NoKey");
+                .withErrorContaining("Class marked with StorIOSQLiteType annotation should have at least one KEY field or method marked with"
+                        + " StorIOSQLiteColumn annotation: NoKey");
     }
 
     @Test
@@ -278,8 +291,8 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with " +
-                        "StorIOSQLiteCreator annotation: NoCreator");
+                .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with"
+                        + " StorIOSQLiteCreator annotation: NoCreator");
     }
 
     @Test
@@ -290,9 +303,20 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with " +
-                        "StorIOSQLiteCreator annotation with the same amount of parameters as the number of columns: " +
-                        "CreatorWithWrongNumberOfArguments");
+                .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with"
+                        + " StorIOSQLiteCreator annotation with parameters matching CreatorWithWrongNumberOfArguments columns");
+    }
+
+    @Test
+    public void shouldNotCompileIfCreatorsParametersDoNotMatchWithColumns() {
+        JavaFileObject model = JavaFileObjects.forResource("CreatorWithNotMatchingArguments.java");
+
+        assert_().about(javaSource())
+            .that(model)
+            .processedWith(new StorIOSQLiteProcessor())
+            .failsToCompile()
+            .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with"
+                + " StorIOSQLiteCreator annotation with parameters matching CreatorWithNotMatchingArguments columns");
     }
 
     @Test
@@ -303,11 +327,11 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("constructor AbsenceOfNoArgConstructor in class " +
-                        "com.pushtorefresh.storio.sqlite.annotations.AbsenceOfNoArgConstructor cannot be applied to given types;\n" +
-                        "  required: long\n" +
-                        "  found: no arguments\n" +
-                        "  reason: actual and formal argument lists differ in length");
+                .withErrorContaining("constructor AbsenceOfNoArgConstructor in class com.pushtorefresh.storio.sqlite.annotations.AbsenceOfNoArgConstructor"
+                        + " cannot be applied to given types;\n"
+                        + "  required: long\n"
+                        + "  found: no arguments\n"
+                        + "  reason: actual and formal argument lists differ in length");
     }
 
     @Test
@@ -463,4 +487,96 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .generatesSources(generatedTypeMapping, generatedDeleteResolver, generatedGetResolver, generatedPutResolver);
     }
 
+    @Test
+    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveSetter() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutSetter.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .failsToCompile()
+                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
+    }
+
+    @Test
+    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveGetter() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutGetter.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .failsToCompile()
+                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
+    }
+
+    @Test
+    public void shouldCompileIfAnnotatedFieldIsPrivateAndHasIsGetter() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithIsGetter.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError();
+    }
+
+    @Test
+    public void shouldCompileIfAnnotatedFieldIsPrivateAndHasNameStartingWithIs() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithNameStartingWithIs.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError();
+    }
+
+    @Test
+    public void shouldCompileWithPrivatePrimitiveFieldsWithCorrespondingAccessors() {
+        JavaFileObject model = JavaFileObjects.forResource("PrimitivePrivateFields.java");
+
+        JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("PrimitivePrivateFieldsSQLiteTypeMapping.java");
+        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource("PrimitivePrivateFieldsStorIOSQLiteDeleteResolver.java");
+        JavaFileObject generatedGetResolver = JavaFileObjects.forResource("PrimitivePrivateFieldsStorIOSQLiteGetResolver.java");
+        JavaFileObject generatedPutResolver = JavaFileObjects.forResource("PrimitivePrivateFieldsStorIOSQLitePutResolver.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError()
+                .and()
+                .generatesSources(generatedTypeMapping, generatedDeleteResolver, generatedGetResolver, generatedPutResolver);
+    }
+
+    @Test
+    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingAccessors() {
+        JavaFileObject model = JavaFileObjects.forResource("BoxedTypesPrivateFields.java");
+
+        JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesPrivateFieldsSQLiteTypeMapping.java");
+        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsStorIOSQLiteDeleteResolver.java");
+        JavaFileObject generatedGetResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsStorIOSQLiteGetResolver.java");
+        JavaFileObject generatedPutResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsStorIOSQLitePutResolver.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError()
+                .and()
+                .generatesSources(generatedTypeMapping, generatedDeleteResolver, generatedGetResolver, generatedPutResolver);
+    }
+
+    @Test
+    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingAccessorsAndMarkedAsIgnoreNull() {
+        JavaFileObject model = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNull.java");
+
+        JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullSQLiteTypeMapping.java");
+        JavaFileObject generatedDeleteResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullStorIOSQLiteDeleteResolver.java");
+        JavaFileObject generatedGetResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullStorIOSQLiteGetResolver.java");
+        JavaFileObject generatedPutResolver = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullStorIOSQLitePutResolver.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError()
+                .and()
+                .generatesSources(generatedTypeMapping, generatedDeleteResolver, generatedGetResolver, generatedPutResolver);
+    }
 }

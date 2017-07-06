@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
 import java.util.List;
 
 import rx.Completable;
@@ -17,7 +18,7 @@ import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -156,7 +157,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedDelete<DeleteResults<TestItem>> preparedDelete = storIOContentResolver
+            final PreparedDelete<DeleteResults<TestItem>, Collection<TestItem>> preparedDelete = storIOContentResolver
                     .delete()
                     .objects(items)
                     .prepare();
@@ -291,7 +292,20 @@ public class PreparedDeleteCollectionOfObjectsTest {
         }
     }
 
-    class OtherTests {
+    public static class OtherTests {
+
+        @Test
+        public void shouldReturnItemsInGetData() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithoutTypeMapping();
+
+            final PreparedDeleteCollectionOfObjects<TestItem> operation = deleteStub.storIOContentResolver
+                    .delete()
+                    .objects(deleteStub.items)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            assertThat(operation.getData()).isEqualTo(deleteStub.items);
+        }
 
         @Test
         public void deleteCollectionOfObjectsObservableExecutesOnSpecifiedScheduler() {

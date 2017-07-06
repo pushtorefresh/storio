@@ -13,21 +13,18 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static java.util.Collections.singleton;
-import static java.util.Collections.unmodifiableSet;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -248,6 +245,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -257,19 +255,18 @@ public class PreparedGetObjectTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
-            when(storIOSQLite.observeChangesInTables(any(Set.class)))
-                    .thenReturn(Observable.empty());
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
+            when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
             final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
 
             storIOSQLite
                     .get()
                     .object(TestItem.class)
-                    .withQuery(Query.builder().table("test_table").build())
+                    .withQuery(Query.builder().table("test_table").observesTags("test_tag").build())
                     .prepare()
                     .asRxObservable()
                     .subscribe(testSubscriber);
@@ -281,7 +278,7 @@ public class PreparedGetObjectTest {
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit=''}");
+                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit='', observesTags='[test_tag]'}");
 
             assertThat(error.getCause())
                     .hasMessage("This type does not have type mapping: "
@@ -291,22 +288,21 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).query(any(Query.class));
-            verify(storIOSQLite).observeChangesInTables(unmodifiableSet(new HashSet<String>() {{
-                add("test_table");
-            }}));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(storIOSQLite).interceptors();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
+            verify(storIOSQLite).observeChanges();
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @SuppressWarnings("unchecked")
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsSingle() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
 
@@ -325,7 +321,7 @@ public class PreparedGetObjectTest {
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit=''}");
+                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit='', observesTags='[]'}");
 
             assertThat(error.getCause())
                     .hasMessage("This type does not have type mapping: "
@@ -335,9 +331,10 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).query(any(Query.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(storIOSQLite).interceptors();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
@@ -367,6 +364,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -397,7 +395,7 @@ public class PreparedGetObjectTest {
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessage("Error has occurred during Get operation. query = RawQuery{query='test query', args=[], affectsTables=[], observesTables=[]}");
+                    .hasMessage("Error has occurred during Get operation. query = RawQuery{query='test query', args=[], affectsTables=[], affectsTags=[], observesTables=[], observesTags=[]}");
 
             assertThat(error.getCause())
                     .hasMessage("This type does not have type mapping: "
@@ -407,6 +405,7 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -437,7 +436,7 @@ public class PreparedGetObjectTest {
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class)
-                    .hasMessage("Error has occurred during Get operation. query = RawQuery{query='test query', args=[], affectsTables=[], observesTables=[]}");
+                    .hasMessage("Error has occurred during Get operation. query = RawQuery{query='test query', args=[], affectsTables=[], affectsTags=[], observesTables=[], observesTags=[]}");
 
             assertThat(error.getCause())
                     .hasMessage("This type does not have type mapping: "
@@ -447,6 +446,7 @@ public class PreparedGetObjectTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -455,6 +455,44 @@ public class PreparedGetObjectTest {
 
     // Because we run tests on this class with Enclosed runner, we need to wrap other tests into class
     public static class OtherTests {
+
+        @Test
+        public void shouldReturnQueryInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final Query query = Query.builder().table("test_table").build();
+            final PreparedGetObject<Object> operation =
+                    new PreparedGetObject<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            query,
+                            getResolver
+                    );
+
+            assertThat(operation.getData()).isEqualTo(query);
+        }
+
+        @Test
+        public void shouldReturnRawQueryInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final RawQuery query = RawQuery.builder().query("test").build();
+            final PreparedGetObject<Object> operation =
+                    new PreparedGetObject<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            query,
+                            getResolver
+                    );
+
+            assertThat(operation.getData()).isEqualTo(query);
+        }
 
         @Test
         public void completeBuilderShouldThrowExceptionIfNoQueryWasSet() {
@@ -555,6 +593,7 @@ public class PreparedGetObjectTest {
                 verify(getResolver).mapFromCursor(cursor);
                 verify(cursor).getCount();
                 verify(cursor).moveToNext();
+                verify(storIOSQLite).interceptors();
 
                 verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
             }
@@ -564,8 +603,7 @@ public class PreparedGetObjectTest {
         public void cursorMustBeClosedInCaseOfExceptionForObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
 
-            when(storIOSQLite.observeChangesInTables(eq(singleton("test_table"))))
-                    .thenReturn(Observable.<Changes>empty());
+            when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
             //noinspection unchecked
             final GetResolver<Object> getResolver = mock(GetResolver.class);
@@ -586,7 +624,7 @@ public class PreparedGetObjectTest {
                     new PreparedGetObject<Object>(
                             storIOSQLite,
                             Object.class,
-                            Query.builder().table("test_table").build(),
+                            Query.builder().table("test_table").observesTags("test_tag").build(),
                             getResolver
                     );
 
@@ -609,14 +647,13 @@ public class PreparedGetObjectTest {
             // Cursor must be closed in case of exception
             verify(cursor).close();
 
-            verify(storIOSQLite).observeChangesInTables(unmodifiableSet(new HashSet<String>() {{
-                add("test_table");
-            }}));
+            verify(storIOSQLite).observeChanges();
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
             verify(getResolver).mapFromCursor(cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }
@@ -673,6 +710,7 @@ public class PreparedGetObjectTest {
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }
@@ -705,6 +743,28 @@ public class PreparedGetObjectTest {
                     .prepare();
 
             schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void createObservableReturnsAsRxObservable() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
+
+            PreparedGetObject<TestItem> preparedOperation = spy(getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare());
+
+            Observable<TestItem> observable = Observable.just(new TestItem());
+
+            //noinspection CheckResult
+            doReturn(observable).when(preparedOperation).asRxObservable();
+
+            //noinspection deprecation
+            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
+
+            //noinspection CheckResult
+            verify(preparedOperation).asRxObservable();
         }
     }
 }

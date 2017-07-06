@@ -13,9 +13,11 @@ import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -161,6 +163,7 @@ public class PreparedPutObjectTest {
                                 "db was not affected by this operation, please add type mapping for this type");
 
                 verify(storIOSQLite).lowLevel();
+                verify(storIOSQLite).interceptors();
                 verify(internal).typeMapping(Object.class);
                 verifyNoMoreInteractions(storIOSQLite, internal);
             }
@@ -197,6 +200,7 @@ public class PreparedPutObjectTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
@@ -232,6 +236,7 @@ public class PreparedPutObjectTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
@@ -267,12 +272,27 @@ public class PreparedPutObjectTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
     }
 
     public static class OtherTests {
+
+        @Test
+        public void shouldReturnObjectInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
+
+            final TestItem object = TestItem.newInstance();
+            final PreparedPut<PutResult, TestItem> operation = storIOSQLite
+                    .put()
+                    .object(object)
+                    .prepare();
+
+            assertThat(operation.getData()).isEqualTo(object);
+        }
 
         @Test
         public void putObjectObservableExecutesOnSpecifiedScheduler() {
@@ -311,6 +331,54 @@ public class PreparedPutObjectTest {
                     .prepare();
 
             schedulerChecker.checkAsCompletable(operation);
+        }
+
+        @Test
+        public void createObservableReturnsAsRxObservable() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
+
+            PreparedPutObject<TestItem> preparedOperation = spy(putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .prepare());
+
+            Observable<PutResult> observable = Observable.just(PutResult.newInsertResult(1, TestItem.TABLE));
+
+            //noinspection CheckResult
+            doReturn(observable).when(preparedOperation).asRxObservable();
+
+            //noinspection deprecation
+            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
+
+            //noinspection CheckResult
+            verify(preparedOperation).asRxObservable();
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithoutTypeMapping() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutInsertsAndUpdatesWithoutTypeMapping();
+
+            PutResult putResult = putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForOneObject(putResult);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithTypeMapping() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutInsertsAndUpdatesWithTypeMapping();
+
+            PutResult putResult = putStub.storIOSQLite
+                    .put()
+                    .object(putStub.items.get(0))
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForOneObject(putResult);
         }
     }
 }

@@ -12,12 +12,12 @@ import rx.functions.Func1;
  * <p>
  * For internal usage only!
  */
-public final class MapSomethingToExecuteAsBlocking<Something, Result> implements Func1<Something, Result> {
+public final class MapSomethingToExecuteAsBlocking<Something, Result, Data> implements Func1<Something, Result> {
 
     @NonNull
-    private final PreparedOperation<Result> preparedOperation;
+    private final PreparedOperation<Result, Data> preparedOperation;
 
-    private MapSomethingToExecuteAsBlocking(@NonNull PreparedOperation<Result> preparedOperation) {
+    private MapSomethingToExecuteAsBlocking(@NonNull PreparedOperation<Result, Data> preparedOperation) {
         this.preparedOperation = preparedOperation;
     }
 
@@ -30,8 +30,8 @@ public final class MapSomethingToExecuteAsBlocking<Something, Result> implements
      * @return new instance of {@link MapSomethingToExecuteAsBlocking}
      */
     @NonNull
-    public static <Something, Result> Func1<Something, Result> newInstance(@NonNull PreparedOperation<Result> preparedOperation) {
-        return new MapSomethingToExecuteAsBlocking<Something, Result>(preparedOperation);
+    public static <Something, Result, Data> Func1<Something, Result> newInstance(@NonNull PreparedOperation<Result, Data> preparedOperation) {
+        return new MapSomethingToExecuteAsBlocking<Something, Result, Data>(preparedOperation);
     }
 
     @Override

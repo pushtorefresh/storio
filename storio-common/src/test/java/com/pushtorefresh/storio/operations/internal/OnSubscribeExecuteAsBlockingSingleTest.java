@@ -21,7 +21,7 @@ public class OnSubscribeExecuteAsBlockingSingleTest {
     @Test
     public void shouldExecuteAsBlockingAfterSubscription() {
         //noinspection unchecked
-        final PreparedOperation<Object> preparedOperation = mock(PreparedOperation.class);
+        final PreparedOperation<Object, Object> preparedOperation = mock(PreparedOperation.class);
 
         TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
 
@@ -45,7 +45,7 @@ public class OnSubscribeExecuteAsBlockingSingleTest {
     @Test
     public void shouldCallOnErrorIfExceptionOccurred() {
         //noinspection unchecked
-        final PreparedOperation<Object> preparedOperation = mock(PreparedOperation.class);
+        final PreparedOperation<Object, Object> preparedOperation = mock(PreparedOperation.class);
 
         StorIOException expectedException = new StorIOException("test exception");
 
@@ -70,7 +70,7 @@ public class OnSubscribeExecuteAsBlockingSingleTest {
     @Test
     public void shouldCallExecuteAsBlockingEvenIfSubscriberAlreadyUnsubscribed() {
         //noinspection unchecked
-        PreparedOperation<Object> preparedOperation = mock(PreparedOperation.class);
+        PreparedOperation<Object, Object> preparedOperation = mock(PreparedOperation.class);
 
         //noinspection unchecked
         SingleSubscriber<Object> subscriber = new SingleSubscriber() {

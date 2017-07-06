@@ -1,18 +1,12 @@
-apply plugin: 'java'
-
-targetCompatibility = '1.6'
-sourceCompatibility = '1.6'
+apply plugin: 'kotlin'
 
 dependencies {
     compile libraries.storIOContentResolverAnnotations
     compile libraries.storIOCommonAnnotationsProcessor
-    compile libraries.intellijAnnotations
-    compile libraries.autoService
-    compile libraries.javaPoet
+}
 
-    testCompile libraries.junit
-    testCompile libraries.assertJ
-    testCompile libraries.mockitoCore
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
 }
 
 apply from: '../gradle/publish-java-lib.gradle'

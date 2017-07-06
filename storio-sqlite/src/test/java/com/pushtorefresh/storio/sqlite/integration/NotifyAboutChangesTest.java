@@ -18,12 +18,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -31,10 +30,10 @@ public class NotifyAboutChangesTest extends BaseTest {
 
     @Test
     public void notifyAboutChange() {
-        TestObserver<Changes> testObserver = new TestObserver<Changes>();
+        TestSubscriber<Changes> testObserver = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChangesInTable("test_table")
+                .observeChanges()
                 .subscribe(testObserver);
 
         storIOSQLite
@@ -67,7 +66,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         }
 
         storIOSQLite
-                .observeChangesInTables(tables)
+                .observeChanges()
                 .subscribe(testSubscriber);
 
         final CountDownLatch startAllThreadsLock = new CountDownLatch(1);
@@ -118,7 +117,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChangesInTable(table)
+                .observeChanges()
                 .subscribe(testSubscriber);
 
         storIOSQLite
@@ -150,7 +149,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChangesInTable(table)
+                .observeChanges()
                 .subscribe(testSubscriber);
 
         storIOSQLite
@@ -202,16 +201,12 @@ public class NotifyAboutChangesTest extends BaseTest {
         final String table1 = "test_table1";
         final String table2 = "test_table2";
 
-        final Set<String> tables = new HashSet<String>(2);
-        tables.add(table1);
-        tables.add(table2);
-
         final int numberOfThreads = 100;
 
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChangesInTables(tables)
+                .observeChanges()
                 .subscribe(testSubscriber);
 
         final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();

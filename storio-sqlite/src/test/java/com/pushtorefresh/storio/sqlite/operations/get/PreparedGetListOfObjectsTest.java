@@ -13,22 +13,21 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static java.util.Collections.singleton;
-import static java.util.Collections.unmodifiableSet;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -246,6 +245,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -275,6 +275,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -284,19 +285,18 @@ public class PreparedGetListOfObjectsTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
-            when(storIOSQLite.observeChangesInTables(any(Set.class)))
-                    .thenReturn(Observable.empty());
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
+            when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
             final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
 
             storIOSQLite
                     .get()
                     .listOfObjects(TestItem.class)
-                    .withQuery(Query.builder().table("test_table").build())
+                    .withQuery(Query.builder().table("test_table").observesTags("test_tag").build())
                     .prepare()
                     .asRxObservable()
                     .subscribe(testSubscriber);
@@ -310,12 +310,11 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).query(any(Query.class));
-            verify(storIOSQLite).observeChangesInTables(unmodifiableSet(new HashSet<String>() {{
-                add("test_table");
-            }}));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(storIOSQLite).interceptors();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
+            verify(storIOSQLite).observeChanges();
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
@@ -345,6 +344,7 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -378,6 +378,7 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -410,6 +411,7 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -418,6 +420,44 @@ public class PreparedGetListOfObjectsTest {
 
     // Because we run tests on this class with Enclosed runner, we need to wrap other tests into class
     public static class OtherTests {
+
+        @Test
+        public void shouldReturnQueryInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final Query query = Query.builder().table("test_table").build();
+            final PreparedGetListOfObjects<Object> operation =
+                    new PreparedGetListOfObjects<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            query,
+                            getResolver
+                    );
+
+            assertThat(operation.getData()).isEqualTo(query);
+        }
+
+        @Test
+        public void shouldReturnRawQueryInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final RawQuery query = RawQuery.builder().query("test").build();
+            final PreparedGetListOfObjects<Object> operation =
+                    new PreparedGetListOfObjects<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            query,
+                            getResolver
+                    );
+
+            assertThat(operation.getData()).isEqualTo(query);
+        }
 
         @Test
         public void completeBuilderShouldThrowExceptionIfNoQueryWasSet() {
@@ -515,6 +555,7 @@ public class PreparedGetListOfObjectsTest {
                 verify(getResolver).mapFromCursor(cursor);
                 verify(cursor).getCount();
                 verify(cursor).moveToNext();
+                verify(storIOSQLite).interceptors();
 
                 verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
             }
@@ -524,8 +565,7 @@ public class PreparedGetListOfObjectsTest {
         public void cursorMustBeClosedInCaseOfExceptionForObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
 
-            when(storIOSQLite.observeChangesInTables(eq(singleton("test_table"))))
-                    .thenReturn(Observable.<Changes>empty());
+            when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
             //noinspection unchecked
             final GetResolver<Object> getResolver = mock(GetResolver.class);
@@ -546,7 +586,7 @@ public class PreparedGetListOfObjectsTest {
                     new PreparedGetListOfObjects<Object>(
                             storIOSQLite,
                             Object.class,
-                            Query.builder().table("test_table").build(),
+                            Query.builder().table("test_table").observesTags("test_tag").build(),
                             getResolver
                     );
 
@@ -569,15 +609,14 @@ public class PreparedGetListOfObjectsTest {
             // Cursor must be closed in case of exception
             verify(cursor).close();
 
-            verify(storIOSQLite).observeChangesInTables(unmodifiableSet(new HashSet<String>() {{
-                add("test_table");
-            }}));
+            verify(storIOSQLite).observeChanges();
 
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
             verify(getResolver).mapFromCursor(cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }
@@ -634,6 +673,7 @@ public class PreparedGetListOfObjectsTest {
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }
@@ -666,6 +706,28 @@ public class PreparedGetListOfObjectsTest {
                     .prepare();
 
             schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void createObservableReturnsAsRxObservable() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithTypeMapping();
+
+            PreparedGetListOfObjects<TestItem> preparedOperation = spy(getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare());
+
+            Observable<List<TestItem>> observable = Observable.just(Collections.<TestItem>emptyList());
+
+            //noinspection CheckResult
+            doReturn(observable).when(preparedOperation).asRxObservable();
+
+            //noinspection deprecation
+            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
+
+            //noinspection CheckResult
+            verify(preparedOperation).asRxObservable();
         }
     }
 }

@@ -18,7 +18,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
 /**
  * Prepared Put Operation for {@link ContentValues}.
  */
-public class PreparedPutContentValues extends PreparedPut<PutResult> {
+public class PreparedPutContentValues extends PreparedPut<PutResult, ContentValues> {
 
     @NonNull
     private final ContentValues contentValues;
@@ -128,6 +128,12 @@ public class PreparedPutContentValues extends PreparedPut<PutResult> {
     @Override
     public Completable asRxCompletable() {
         return RxJavaUtils.createCompletable(storIOContentResolver, this);
+    }
+
+    @NonNull
+    @Override
+    public ContentValues getData() {
+        return contentValues;
     }
 
     /**

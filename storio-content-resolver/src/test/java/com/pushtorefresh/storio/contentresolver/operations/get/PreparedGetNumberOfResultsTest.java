@@ -16,7 +16,7 @@ import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Fail.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -24,6 +24,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PreparedGetNumberOfResultsTest {
+
+    @Test
+    public void shouldReturnQueryInGetData() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+
+        final PreparedGetNumberOfResults operation = getStub.storIOContentResolver
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(getStub.query);
+    }
+
     @Test
     public void shouldGetNumberOfResultsWithQueryBlocking() {
         final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();

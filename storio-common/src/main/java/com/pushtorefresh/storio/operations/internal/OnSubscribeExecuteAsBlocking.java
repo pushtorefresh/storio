@@ -15,12 +15,12 @@ import rx.internal.producers.SingleDelayedProducer;
  * <p>
  * For internal usage only!
  */
-public final class OnSubscribeExecuteAsBlocking<Result> implements Observable.OnSubscribe<Result> {
+public final class OnSubscribeExecuteAsBlocking<Result, Data> implements Observable.OnSubscribe<Result> {
 
     @NonNull
-    private final PreparedOperation<Result> preparedOperation;
+    private final PreparedOperation<Result, Data> preparedOperation;
 
-    private OnSubscribeExecuteAsBlocking(@NonNull PreparedOperation<Result> preparedOperation) {
+    private OnSubscribeExecuteAsBlocking(@NonNull PreparedOperation<Result, Data> preparedOperation) {
         this.preparedOperation = preparedOperation;
     }
 
@@ -32,8 +32,8 @@ public final class OnSubscribeExecuteAsBlocking<Result> implements Observable.On
      * @return new instance of {@link OnSubscribeExecuteAsBlocking}
      */
     @NonNull
-    public static <Result> Observable.OnSubscribe<Result> newInstance(@NonNull PreparedOperation<Result> preparedOperation) {
-        return new OnSubscribeExecuteAsBlocking<Result>(preparedOperation);
+    public static <Result, Data> Observable.OnSubscribe<Result> newInstance(@NonNull PreparedOperation<Result, Data> preparedOperation) {
+        return new OnSubscribeExecuteAsBlocking<Result, Data>(preparedOperation);
     }
 
     @Override

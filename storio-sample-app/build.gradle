@@ -68,11 +68,11 @@ dependencies {
     compile libraries.recyclerView
     compile libraries.timber
 
-    debugCompile   libraries.leakCanary
+    debugCompile libraries.leakCanary
     releaseCompile libraries.leakCanaryNoOp
 
-    testCompile  libraries.junit
-    testCompile  libraries.assertJ
-    testCompile  libraries.robolectric
+    testCompile libraries.junit
+    testCompile libraries.assertJ
+    testCompile libraries.robolectric
     testCompile libraries.leakCanaryNoOp
 }

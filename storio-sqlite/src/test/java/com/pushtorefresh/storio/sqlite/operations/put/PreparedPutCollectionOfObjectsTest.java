@@ -12,6 +12,8 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import rx.Completable;
@@ -21,13 +23,14 @@ import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -164,6 +167,38 @@ public class PreparedPutCollectionOfObjectsTest {
 
             putStub.verifyBehaviorForMultipleObjects(completable);
         }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithoutTypeMappingWithoutTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithoutTypeMappingWithoutTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(false)
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithoutTypeMappingWithTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithoutTypeMappingWithTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(true)
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
     }
 
     public static class WithTypeMapping {
@@ -287,6 +322,36 @@ public class PreparedPutCollectionOfObjectsTest {
 
             putStub.verifyBehaviorForMultipleObjects(completable);
         }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithTypeMappingWithoutTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithTypeMappingWithoutTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(false)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithTypeMappingWithTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithTypeMappingWithTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(true)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
     }
 
     public static class NoTypeMappingError {
@@ -302,7 +367,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedPut<PutResults<TestItem>> preparedPut = storIOSQLite
+            final PreparedPut<PutResults<TestItem>, Collection<TestItem>> preparedPut = storIOSQLite
                     .put()
                     .objects(items)
                     .useTransaction(false)
@@ -318,6 +383,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -354,6 +420,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -390,6 +457,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -426,6 +494,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -443,7 +512,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedPut<PutResults<TestItem>> preparedPut = storIOSQLite
+            final PreparedPut<PutResults<TestItem>, Collection<TestItem>> preparedPut = storIOSQLite
                     .put()
                     .objects(items)
                     .useTransaction(true)
@@ -459,6 +528,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -495,6 +565,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -531,6 +602,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -567,6 +639,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -577,16 +650,34 @@ public class PreparedPutCollectionOfObjectsTest {
     public static class OtherTests {
 
         @Test
+        public void shouldReturnItemsInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final PutResolver<TestItem> putResolver = mock(PutResolver.class);
+
+            final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
+
+            final PreparedPutCollectionOfObjects<TestItem> operation =
+                    new PreparedPutCollectionOfObjects.Builder<TestItem>(storIOSQLite, items)
+                            .useTransaction(true)
+                            .withPutResolver(putResolver)
+                            .prepare();
+
+            assertThat(operation.getData()).isEqualTo(items);
+        }
+
+        @Test
         public void shouldFinishTransactionIfExceptionHasOccurredBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
 
-            when(putResolver.performPut(same(storIOSQLite), anyObject()))
+            when(putResolver.performPut(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final List<Object> objects = singletonList(new Object());
@@ -603,27 +694,28 @@ public class PreparedPutCollectionOfObjectsTest {
                 IllegalStateException cause = (IllegalStateException) expected.getCause();
                 assertThat(cause).hasMessage("test exception");
 
-                verify(internal).beginTransaction();
-                verify(internal, never()).setTransactionSuccessful();
-                verify(internal).endTransaction();
+                verify(lowLevel).beginTransaction();
+                verify(lowLevel, never()).setTransactionSuccessful();
+                verify(lowLevel).endTransaction();
 
                 verify(storIOSQLite).lowLevel();
-                verify(putResolver).performPut(same(storIOSQLite), anyObject());
-                verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+                verify(storIOSQLite).interceptors();
+                verify(putResolver).performPut(same(storIOSQLite), any());
+                verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
             }
         }
 
         @Test
         public void shouldFinishTransactionIfExceptionHasOccurredObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
 
-            when(putResolver.performPut(same(storIOSQLite), anyObject()))
+            when(putResolver.performPut(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final List<Object> objects = singletonList(new Object());
@@ -646,27 +738,28 @@ public class PreparedPutCollectionOfObjectsTest {
             IllegalStateException cause = (IllegalStateException) expected.getCause();
             assertThat(cause).hasMessage("test exception");
 
-            verify(internal).beginTransaction();
-            verify(internal, never()).setTransactionSuccessful();
-            verify(internal).endTransaction();
+            verify(lowLevel).beginTransaction();
+            verify(lowLevel, never()).setTransactionSuccessful();
+            verify(lowLevel).endTransaction();
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(putResolver).performPut(same(storIOSQLite), anyObject());
-            verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+            verify(storIOSQLite).interceptors();
+            verify(putResolver).performPut(same(storIOSQLite), any());
+            verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
 
         @Test
         public void shouldFinishTransactionIfExceptionHasOccurredSingle() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
 
-            when(putResolver.performPut(same(storIOSQLite), anyObject()))
+            when(putResolver.performPut(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final List<Object> objects = singletonList(new Object());
@@ -689,27 +782,28 @@ public class PreparedPutCollectionOfObjectsTest {
             IllegalStateException cause = (IllegalStateException) expected.getCause();
             assertThat(cause).hasMessage("test exception");
 
-            verify(internal).beginTransaction();
-            verify(internal, never()).setTransactionSuccessful();
-            verify(internal).endTransaction();
+            verify(lowLevel).beginTransaction();
+            verify(lowLevel, never()).setTransactionSuccessful();
+            verify(lowLevel).endTransaction();
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(putResolver).performPut(same(storIOSQLite), anyObject());
-            verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+            verify(storIOSQLite).interceptors();
+            verify(putResolver).performPut(same(storIOSQLite), any());
+            verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
 
         @Test
         public void shouldFinishTransactionIfExceptionHasOccurredCompletable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
 
-            when(putResolver.performPut(same(storIOSQLite), anyObject()))
+            when(putResolver.performPut(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final List<Object> objects = singletonList(new Object());
@@ -732,27 +826,28 @@ public class PreparedPutCollectionOfObjectsTest {
             IllegalStateException cause = (IllegalStateException) expected.getCause();
             assertThat(cause).hasMessage("test exception");
 
-            verify(internal).beginTransaction();
-            verify(internal, never()).setTransactionSuccessful();
-            verify(internal).endTransaction();
+            verify(lowLevel).beginTransaction();
+            verify(lowLevel, never()).setTransactionSuccessful();
+            verify(lowLevel).endTransaction();
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(putResolver).performPut(same(storIOSQLite), anyObject());
-            verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+            verify(storIOSQLite).interceptors();
+            verify(putResolver).performPut(same(storIOSQLite), any());
+            verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
 
         @Test
         public void verifyBehaviorInCaseOfExceptionWithoutTransactionBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
 
-            when(putResolver.performPut(same(storIOSQLite), anyObject()))
+            when(putResolver.performPut(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final List<Object> objects = singletonList(new Object());
@@ -770,27 +865,28 @@ public class PreparedPutCollectionOfObjectsTest {
                 assertThat(cause).hasMessage("test exception");
 
                 // Main checks of this test
-                verify(internal, never()).beginTransaction();
-                verify(internal, never()).setTransactionSuccessful();
-                verify(internal, never()).endTransaction();
+                verify(lowLevel, never()).beginTransaction();
+                verify(lowLevel, never()).setTransactionSuccessful();
+                verify(lowLevel, never()).endTransaction();
 
                 verify(storIOSQLite).lowLevel();
-                verify(putResolver).performPut(same(storIOSQLite), anyObject());
-                verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+                verify(storIOSQLite).interceptors();
+                verify(putResolver).performPut(same(storIOSQLite), any());
+                verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
             }
         }
 
         @Test
         public void verifyBehaviorInCaseOfExceptionWithoutTransactionObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
 
-            when(putResolver.performPut(same(storIOSQLite), anyObject()))
+            when(putResolver.performPut(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final List<Object> objects = singletonList(new Object());
@@ -815,27 +911,28 @@ public class PreparedPutCollectionOfObjectsTest {
             assertThat(cause).hasMessage("test exception");
 
             // Main checks of this test
-            verify(internal, never()).beginTransaction();
-            verify(internal, never()).setTransactionSuccessful();
-            verify(internal, never()).endTransaction();
+            verify(lowLevel, never()).beginTransaction();
+            verify(lowLevel, never()).setTransactionSuccessful();
+            verify(lowLevel, never()).endTransaction();
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(putResolver).performPut(same(storIOSQLite), anyObject());
-            verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+            verify(storIOSQLite).interceptors();
+            verify(putResolver).performPut(same(storIOSQLite), any());
+            verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
 
         @Test
         public void verifyBehaviorInCaseOfExceptionWithoutTransactionSingle() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
 
-            when(putResolver.performPut(same(storIOSQLite), anyObject()))
+            when(putResolver.performPut(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final List<Object> objects = singletonList(new Object());
@@ -860,27 +957,28 @@ public class PreparedPutCollectionOfObjectsTest {
             assertThat(cause).hasMessage("test exception");
 
             // Main checks of this test
-            verify(internal, never()).beginTransaction();
-            verify(internal, never()).setTransactionSuccessful();
-            verify(internal, never()).endTransaction();
+            verify(lowLevel, never()).beginTransaction();
+            verify(lowLevel, never()).setTransactionSuccessful();
+            verify(lowLevel, never()).endTransaction();
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(putResolver).performPut(same(storIOSQLite), anyObject());
-            verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+            verify(storIOSQLite).interceptors();
+            verify(putResolver).performPut(same(storIOSQLite), any());
+            verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
 
         @Test
         public void verifyBehaviorInCaseOfExceptionWithoutTransactionCompletable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             //noinspection unchecked
             final PutResolver<Object> putResolver = mock(PutResolver.class);
 
-            when(putResolver.performPut(same(storIOSQLite), anyObject()))
+            when(putResolver.performPut(same(storIOSQLite), any()))
                     .thenThrow(new IllegalStateException("test exception"));
 
             final List<Object> objects = singletonList(new Object());
@@ -905,14 +1003,15 @@ public class PreparedPutCollectionOfObjectsTest {
             assertThat(cause).hasMessage("test exception");
 
             // Main checks of this test
-            verify(internal, never()).beginTransaction();
-            verify(internal, never()).setTransactionSuccessful();
-            verify(internal, never()).endTransaction();
+            verify(lowLevel, never()).beginTransaction();
+            verify(lowLevel, never()).setTransactionSuccessful();
+            verify(lowLevel, never()).endTransaction();
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
-            verify(putResolver).performPut(same(storIOSQLite), anyObject());
-            verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+            verify(storIOSQLite).interceptors();
+            verify(putResolver).performPut(same(storIOSQLite), any());
+            verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
 
         @Test
@@ -955,6 +1054,58 @@ public class PreparedPutCollectionOfObjectsTest {
                     .prepare();
 
             schedulerChecker.checkAsCompletable(operation);
+        }
+
+        @Test
+        public void createObservableReturnsAsRxObservable() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithTypeMappingWithTransaction();
+
+            PreparedPutCollectionOfObjects<TestItem> preparedOperation = spy(putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(true)
+                    .prepare());
+
+            Observable<PutResults<TestItem>> observable =
+                    Observable.just(PutResults.newInstance(Collections.<TestItem, PutResult>emptyMap()));
+
+            //noinspection CheckResult
+            doReturn(observable).when(preparedOperation).asRxObservable();
+
+            //noinspection deprecation
+            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
+
+            //noinspection CheckResult
+            verify(preparedOperation).asRxObservable();
+        }
+
+        @Test
+        public void shouldNotNotifyIfCollectionEmptyWithoutTransaction() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForEmptyCollectionWithoutTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(false)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfCollectionEmptyWithTransaction() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForEmptyCollectionWithTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(true)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
         }
     }
 }

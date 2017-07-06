@@ -21,9 +21,7 @@ import rx.Single;
 import rx.functions.Action1;
 
 import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
-import static java.util.Collections.singleton;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.eq;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -67,15 +65,20 @@ class GetObjectsStub {
         when(storIOSQLite.lowLevel())
                 .thenReturn(internal);
 
+        String table = "test_table";
+        String tag = "test_tag";
+
         query = Query
                 .builder()
-                .table("test_table")
+                .table(table)
+                .observesTags(tag)
                 .build();
 
         rawQuery = RawQuery
                 .builder()
                 .query("select * from who_cares")
-                .observesTables("test_table")
+                .observesTables(table)
+                .observesTags(tag)
                 .build();
 
         //noinspection unchecked
@@ -102,13 +105,9 @@ class GetObjectsStub {
         when(storIOSQLite.get())
                 .thenReturn(new PreparedGet.Builder(storIOSQLite));
 
-        when(storIOSQLite.observeChangesInTables(eq(singleton(query.table()))))
-                .thenReturn(Observable.<Changes>empty());
+        when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
         assertThat(rawQuery.observesTables()).isNotNull();
-
-        when(storIOSQLite.observeChangesInTables(rawQuery.observesTables()))
-                .thenReturn(Observable.<Changes>empty());
 
         when(getResolver.performGet(storIOSQLite, query))
                 .thenReturn(cursor);
@@ -150,6 +149,9 @@ class GetObjectsStub {
     void verifyQueryBehavior(@NonNull List<TestItem> actualList) {
         // should be called once
         verify(storIOSQLite).get();
+
+        // should be called once
+        verify(storIOSQLite).interceptors();
 
         // should be called only once
         verify(getResolver).performGet(storIOSQLite, query);
@@ -194,8 +196,7 @@ class GetObjectsStub {
                     @Override
                     public void call(List<TestItem> testItems) {
                         // Get Operation should be subscribed to changes of tables from query
-                        verify(storIOSQLite).observeChangesInTables(eq(singleton(query.table())));
-
+                        verify(storIOSQLite).observeChanges();
                         verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehavior(testItems);
                     }
@@ -219,10 +220,10 @@ class GetObjectsStub {
 
     void verifyRawQueryBehavior(@NonNull List<TestItem> actualList) {
         assertThat(actualList).isNotNull();
-        verify(storIOSQLite, times(1)).get();
-        verify(getResolver, times(1)).performGet(storIOSQLite, rawQuery);
+        verify(storIOSQLite).get();
+        verify(getResolver).performGet(storIOSQLite, rawQuery);
         verify(getResolver, times(items.size())).mapFromCursor(cursor);
-        verify(cursor, times(1)).close();
+        verify(cursor).close();
         assertThat(actualList).isEqualTo(items);
         assertThatListIsImmutable(actualList);
     }
@@ -235,8 +236,7 @@ class GetObjectsStub {
                     @Override
                     public void call(List<TestItem> testItems) {
                         // Get Operation should be subscribed to changes of tables from query
-                        verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
-
+                        verify(storIOSQLite).observeChanges();
                         verifyRawQueryBehavior(testItems);
                     }
                 })

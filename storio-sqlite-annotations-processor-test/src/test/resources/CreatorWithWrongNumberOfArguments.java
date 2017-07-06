@@ -9,7 +9,7 @@ public class CreatorWithWrongNumberOfArguments {
     }
 
     @StorIOSQLiteCreator
-    static CreatorWithWrongNumberOfArguments creator() {
+    static CreatorWithWrongNumberOfArguments creator(long id, String some) {
         return new CreatorWithWrongNumberOfArguments();
     }
 }

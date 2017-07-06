@@ -18,9 +18,7 @@ import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
 
-import static java.util.Collections.singleton;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.eq;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -63,15 +61,20 @@ class GetObjectStub {
         when(storIOSQLite.lowLevel())
                 .thenReturn(internal);
 
+        String table = "test_table";
+        String tag = "test_tag";
+
         query = Query
                 .builder()
-                .table("test_table")
+                .table(table)
+                .observesTags(tag)
                 .build();
 
         rawQuery = RawQuery
                 .builder()
                 .query("select * from who_cares")
-                .observesTables("test_table")
+                .observesTables(table)
+                .observesTags(tag)
                 .build();
 
         //noinspection unchecked
@@ -95,13 +98,9 @@ class GetObjectStub {
         when(storIOSQLite.get())
                 .thenReturn(new PreparedGet.Builder(storIOSQLite));
 
-        when(storIOSQLite.observeChangesInTables(eq(singleton(query.table()))))
-                .thenReturn(Observable.<Changes>empty());
+        when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
 
         assertThat(rawQuery.observesTables()).isNotNull();
-
-        when(storIOSQLite.observeChangesInTables(rawQuery.observesTables()))
-                .thenReturn(Observable.<Changes>empty());
 
         when(getResolver.performGet(storIOSQLite, query))
                 .thenReturn(cursor);
@@ -132,6 +131,9 @@ class GetObjectStub {
     }
 
     void verifyQueryBehavior(@Nullable TestItem actualItem) {
+        // should be called once
+        verify(storIOSQLite).interceptors();
+
         // should be called once
         verify(storIOSQLite).get();
 
@@ -175,8 +177,7 @@ class GetObjectStub {
                     @Override
                     public void call(TestItem testItem) {
                         // Get Operation should be subscribed to changes of tables from query
-                        verify(storIOSQLite).observeChangesInTables(eq(singleton(query.table())));
-
+                        verify(storIOSQLite).observeChanges();
                         verify(storIOSQLite).defaultScheduler();
                         verifyQueryBehavior(testItem);
                     }
@@ -214,8 +215,7 @@ class GetObjectStub {
                     @Override
                     public void call(TestItem testItem) {
                         // Get Operation should be subscribed to changes of tables from query
-                        verify(storIOSQLite).observeChangesInTables(rawQuery.observesTables());
-
+                        verify(storIOSQLite).observeChanges();
                         verifyRawQueryBehavior(testItem);
                     }
                 })

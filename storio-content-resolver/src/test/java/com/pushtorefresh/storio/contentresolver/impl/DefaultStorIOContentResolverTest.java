@@ -27,7 +27,7 @@ import java.lang.reflect.Field;
 
 import rx.Scheduler;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -244,7 +244,7 @@ public class DefaultStorIOContentResolverTest {
 
         private final Internal internal;
 
-        public TestDefaultStorIOContentResolver(
+        TestDefaultStorIOContentResolver(
                 @NonNull ContentResolver contentResolver,
                 @NonNull Handler contentObserverHandler,
                 @NonNull TypeMappingFinder typeMappingFinder
@@ -254,7 +254,7 @@ public class DefaultStorIOContentResolverTest {
         }
 
         @Nullable
-        public TypeMappingFinder typeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
+        TypeMappingFinder typeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
             Field field = DefaultStorIOContentResolver.LowLevelImpl.class.getDeclaredField("typeMappingFinder");
             field.setAccessible(true);
             return (TypeMappingFinder) field.get(internal);
