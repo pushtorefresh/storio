@@ -16,7 +16,11 @@ import com.pushtorefresh.storio.contentresolver.annotations.processor.introspect
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverCreatorMeta
 import com.pushtorefresh.storio.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta
 import javax.annotation.processing.RoundEnvironment
-import javax.lang.model.element.*
+import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
+import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.Modifier.ABSTRACT
+import javax.lang.model.element.TypeElement
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic.Kind.WARNING
 
@@ -61,7 +65,7 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
         val simpleName = classElement.simpleName.toString()
         val packageName = elementUtils.getPackageOf(classElement).qualifiedName.toString()
 
-        return StorIOContentResolverTypeMeta(simpleName, packageName, storIOContentResolverType)
+        return StorIOContentResolverTypeMeta(simpleName, packageName, storIOContentResolverType, ABSTRACT in classElement.modifiers)
     }
 
     /**
@@ -119,14 +123,14 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
                     }
 
                     // If field annotation applied to both fields and methods in a same class.
-                    if (typeMeta.needCreator && !columnMeta.isMethod || !typeMeta.needCreator && columnMeta.isMethod && typeMeta.columns.isNotEmpty()) {
+                    if (typeMeta.needsCreator && !columnMeta.needsCreator || !typeMeta.needsCreator && columnMeta.needsCreator && typeMeta.columns.isNotEmpty()) {
                         throw ProcessingException(element, "Can't apply ${StorIOContentResolverColumn::class.java.simpleName} annotation to both" +
                                 " fields and methods in a same class: ${typeMeta.simpleName}"
                         )
                     }
 
                     // If column needs creator then enclosing class needs it as well.
-                    if (!typeMeta.needCreator && columnMeta.isMethod) typeMeta.needCreator = true
+                    if (!typeMeta.needsCreator && columnMeta.needsCreator) typeMeta.needsCreator = true
 
                     // Put meta column info.
                     typeMeta.columns += columnMeta.storIOColumn.name to columnMeta
@@ -169,14 +173,9 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
             throw ProcessingException(annotatedField, "Column name is empty: ${annotatedField.simpleName}")
         }
 
-        if (Modifier.PRIVATE in annotatedField.modifiers) {
-            // can't be null since we validated it before
-            val (getter, setter) = accessorsMap[annotatedField.simpleName.toString()]!!
+        val getter = getters[annotatedField.simpleName.toString()]
 
-            return StorIOContentResolverColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column, getter, setter)
-        }
-
-        return StorIOContentResolverColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column)
+        return StorIOContentResolverColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column, getter)
     }
 
     /**
@@ -222,12 +221,12 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
                         " marked with ${StorIOContentResolverColumn::class.java.simpleName} annotation: ${typeMeta.simpleName}")
             }
 
-            if (typeMeta.needCreator && typeMeta.creator == null) {
+            if (typeMeta.needsCreator && typeMeta.creator == null) {
                 throw ProcessingException(key, "Class marked with ${StorIOContentResolverType::class.java.simpleName} annotation needs factory method or constructor" +
                         " marked with ${StorIOContentResolverCreator::class.java.simpleName} annotation: ${typeMeta.simpleName}")
             }
 
-            if (typeMeta.needCreator) {
+            if (typeMeta.needsCreator) {
                 if (typeMeta.creator == null) {
                     throw ProcessingException(key, "Class marked with ${StorIOContentResolverType::class.java.simpleName} annotation needs factory method or constructor marked with" +
                             " ${StorIOContentResolverCreator::class.java.simpleName} annotation: ${typeMeta.simpleName}")

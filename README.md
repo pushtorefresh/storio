@@ -188,6 +188,20 @@ public class Tweet {
 }
 ```
 
+-`Kotlin`:
+
+In order to make annotation processors work with Kotlin you need to add the following to your `build.gradle`:
+```groovy
+apply plugin: 'kotlin-kapt'
+```
+Then use `kapt` configuration instead of `annotationProcessor`.
+
+ ```kotlin
+ @StorIOSQLiteType(table = "tweets") data class Tweet @StorIOSQLiteCreator constructor(StorIOSQLiteColumn(name = "author") var author: String,
+                                                   StorIOSQLiteColumn(name = "content") var content: String)
+ ```
+
+
 [`AutoValue`](https://github.com/google/auto/blob/master/value/userguide/index.md):
 ```java
 @AutoValue

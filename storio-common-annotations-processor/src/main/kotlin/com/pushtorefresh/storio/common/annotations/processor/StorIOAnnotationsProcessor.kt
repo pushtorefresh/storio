@@ -31,9 +31,8 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
     private lateinit var typeUtils: Types
     protected lateinit var messager: Messager
 
-    // cashing getters and setters for private fields to avoid second pass since we already
-    // have result after the validation step
-    protected val accessorsMap = mutableMapOf<String, Pair<String, String>>()
+    // cashing getters for private fields to avoid second pass since we already have result after the validation step
+    protected val getters = mutableMapOf<String, String>()
 
     /**
      * Processes class annotations.
@@ -105,15 +104,15 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
 
         if (PRIVATE in annotatedElement.modifiers) {
             if (annotatedElement.kind == FIELD) {
-                if (!findGetterAndSetterForPrivateField(annotatedElement)) {
-                    throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to private field without corresponding getter and setter or private method: ${annotatedElement.simpleName}")
+                if (!findGetterForPrivateField(annotatedElement)) {
+                    throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to private field without corresponding getter: ${annotatedElement.simpleName}")
                 }
             } else {
-                throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to private field without corresponding getter and setter or private method: ${annotatedElement.simpleName}")
+                throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to private method: ${annotatedElement.simpleName}")
             }
         }
 
-        if (annotatedElement.kind == FIELD && FINAL in annotatedElement.modifiers) {
+        if (annotatedElement.kind == FIELD && FINAL in annotatedElement.modifiers && annotatedElement.simpleName.toString() !in getters) {
             throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to final field: ${annotatedElement.simpleName}")
         }
 
@@ -153,15 +152,14 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
     }
 
     /**
-     * Checks that field is accessible via corresponding getter and setter.
-     * Cashes names of elements getter and setter into [accessorsMap].
+     * Checks that field is accessible via corresponding getter.
+     * Cashes names of elements getters into [getters].
      *
      * @param annotatedElement an annotated field
      */
-    protected fun findGetterAndSetterForPrivateField(annotatedElement: Element): Boolean {
+    protected fun findGetterForPrivateField(annotatedElement: Element): Boolean {
         val name = annotatedElement.simpleName.toString()
         var getter: String? = null
-        var setter: String? = null
         annotatedElement.enclosingElement.enclosedElements.forEach { element ->
             if (element.kind == ElementKind.METHOD) {
                 val method = element as ExecutableElement
@@ -178,23 +176,12 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
                         && method.returnType == annotatedElement.asType()) {
                     getter = methodName
                 }
-                // check if it is a valid setter
-                if ((methodName == String.format("set%s", name.capitalize())
-                        // Special case for properties which name starts with is.
-                        // Kotlin will generate setter with setProperty name instead of setIsProperty.
-                        || name.startsWithIs() && methodName == String.format("set%s", name.substring(2, name.length)))
-                        && !method.modifiers.contains(PRIVATE)
-                        && !method.modifiers.contains(STATIC)
-                        && method.parameters.size == 1
-                        && method.parameters[0].asType() == annotatedElement.asType()) {
-                    setter = methodName
-                }
             }
         }
-        if (getter == null || setter == null) {
+        if (getter == null) {
             return false
         } else {
-            accessorsMap += name to (getter!! to setter!!)
+            getters += name to getter!!
             return true
         }
     }

@@ -1,12 +1,8 @@
 package com.pushtorefresh.storio.sqlite.annotations;
 
 @StorIOSQLiteType(table = "table")
-public class PrivateFieldWithoutSetter {
+public class FinalFieldWithoutCreator {
 
     @StorIOSQLiteColumn(name = "id", key = true)
-    private long id;
-
-    public long getId() {
-        return id;
-    }
+    final long id;
 }

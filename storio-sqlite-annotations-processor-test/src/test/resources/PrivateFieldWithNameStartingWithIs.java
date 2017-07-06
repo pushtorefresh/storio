@@ -9,19 +9,17 @@ public class PrivateFieldWithNameStartingWithIs {
     @StorIOSQLiteColumn(name = "is_flag")
     private boolean isFlag;
 
+    @StorIOSQLiteCreator
+    public PrivateFieldWithNameStartingWithIs(long id, boolean isFlag) {
+        this.id = id;
+        this.isFlag = isFlag;
+    }
+
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public boolean isFlag() {
         return isFlag;
-    }
-
-    public void setFlag(boolean flag) {
-        isFlag = flag;
     }
 }

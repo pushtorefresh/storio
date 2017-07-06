@@ -6,8 +6,10 @@ import com.pushtorefresh.storio.contentresolver.annotations.StorIOContentResolve
 class StorIOContentResolverTypeMeta(
         simpleName: String,
         packageName: String,
-        storIOType: StorIOContentResolverType)
+        storIOType: StorIOContentResolverType,
+        needsCreator: Boolean)
     : StorIOTypeMeta<StorIOContentResolverType, StorIOContentResolverColumnMeta>(
         simpleName,
         packageName,
-        storIOType)
+        storIOType,
+        needsCreator)

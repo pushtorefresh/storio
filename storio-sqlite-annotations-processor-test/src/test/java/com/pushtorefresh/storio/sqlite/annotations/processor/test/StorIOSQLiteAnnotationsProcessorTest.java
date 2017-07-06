@@ -71,14 +71,14 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveAccessors() {
-        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutAccessors.java");
+    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveGetter() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutGetter.java");
 
         assert_().about(javaSource())
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
-                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
+                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter: id");
     }
 
     @Test
@@ -89,18 +89,28 @@ public class StorIOSQLiteAnnotationsProcessorTest {
             .that(model)
             .processedWith(new StorIOSQLiteProcessor())
             .failsToCompile()
-            .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
+            .withErrorContaining("StorIOSQLiteColumn can not be applied to private method: id");
     }
 
     @Test
-    public void shouldNotCompileIfAnnotatedFieldIsFinal() {
-        JavaFileObject model = JavaFileObjects.forResource("FinalField.java");
+    public void shouldNotCompileWithFinalFieldAndWithoutCreator() {
+        JavaFileObject model = JavaFileObjects.forResource("FinalFieldWithoutCreator.java");
 
         assert_().about(javaSource())
                 .that(model)
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
                 .withErrorContaining("StorIOSQLiteColumn can not be applied to final field: id");
+    }
+
+    @Test
+    public void shouldCompileWithPrivateFinalFieldWithGetterAndCreator() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFinalFieldWithGetterAndCreator.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .compilesWithoutError();
     }
 
     @Test
@@ -488,28 +498,6 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveSetter() {
-        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutSetter.java");
-
-        assert_().about(javaSource())
-                .that(model)
-                .processedWith(new StorIOSQLiteProcessor())
-                .failsToCompile()
-                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
-    }
-
-    @Test
-    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveGetter() {
-        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutGetter.java");
-
-        assert_().about(javaSource())
-                .that(model)
-                .processedWith(new StorIOSQLiteProcessor())
-                .failsToCompile()
-                .withErrorContaining("StorIOSQLiteColumn can not be applied to private field without corresponding getter and setter or private method: id");
-    }
-
-    @Test
     public void shouldCompileIfAnnotatedFieldIsPrivateAndHasIsGetter() {
         JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithIsGetter.java");
 
@@ -530,7 +518,7 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldCompileWithPrivatePrimitiveFieldsWithCorrespondingAccessors() {
+    public void shouldCompileWithPrivatePrimitiveFieldsWithCorrespondingGetters() {
         JavaFileObject model = JavaFileObjects.forResource("PrimitivePrivateFields.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("PrimitivePrivateFieldsSQLiteTypeMapping.java");
@@ -547,7 +535,7 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingAccessors() {
+    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingGetters() {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesPrivateFields.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesPrivateFieldsSQLiteTypeMapping.java");
@@ -564,7 +552,7 @@ public class StorIOSQLiteAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingAccessorsAndMarkedAsIgnoreNull() {
+    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingGettersAndMarkedAsIgnoreNull() {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNull.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullSQLiteTypeMapping.java");
@@ -578,5 +566,16 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .compilesWithoutError()
                 .and()
                 .generatesSources(generatedTypeMapping, generatedDeleteResolver, generatedGetResolver, generatedPutResolver);
+    }
+
+    @Test
+    public void shouldNotCompileWithPrivateFieldsdWithoutCreator() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldsWithoutCreator.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOSQLiteProcessor())
+                .failsToCompile()
+                .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with StorIOSQLiteCreator annotation: PrivateFieldsWithoutCreator");
     }
 }

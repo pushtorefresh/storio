@@ -45,8 +45,8 @@ class StorIOColumnMetaTest {
     @Test
     fun toStringValidation() {
         // given
-        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "TEST", javaType, annotationMock, "getter", "setter")
-        val expectedString = "StorIOColumnMeta(enclosingElement=$elementMock, element=$elementMock, elementName='TEST', javaType=$javaType, storIOColumn=$annotationMock, getter='getter', setter='setter')"
+        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "TEST", javaType, annotationMock, "getter")
+        val expectedString = "StorIOColumnMeta(enclosingElement=$elementMock, element=$elementMock, elementName='TEST', javaType=$javaType, storIOColumn=$annotationMock, getter='getter')"
 
         // when
         val toString = columnMeta.toString()

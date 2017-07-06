@@ -26,7 +26,7 @@ class StorIOTypeMetaTest {
         assertThat(typeMeta.simpleName).isEqualTo("TEST")
         assertThat(typeMeta.packageName).isEqualTo("TEST")
         assertThat(typeMeta.storIOType).isEqualTo(annotationMock)
-        assertThat(typeMeta.needCreator).isEqualTo(true)
+        assertThat(typeMeta.needsCreator).isEqualTo(true)
     }
 
     @Test
@@ -42,7 +42,7 @@ class StorIOTypeMetaTest {
         // given
         val typeMeta = StorIOTestTypeMeta("TEST", "TEST", annotationMock, true)
         val expectedString = "StorIOTypeMeta(simpleName='TEST', packageName='TEST'," +
-                " storIOType=$annotationMock, needCreator=true, creator=null," +
+                " storIOType=$annotationMock, needsCreator=true, creator=null," +
                 " columns=${typeMeta.columns})"
 
         // when

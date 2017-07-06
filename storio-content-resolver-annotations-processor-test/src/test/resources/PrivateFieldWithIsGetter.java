@@ -9,19 +9,17 @@ public class PrivateFieldWithIsGetter {
     @StorIOContentResolverColumn(name = "flag")
     private boolean flag;
 
+    @StorIOContentResolverCreator
+    public PrivateFieldWithIsGetter(long id, boolean flag) {
+        this.id = id;
+        this.flag = flag;
+    }
+
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public boolean isFlag() {
         return flag;
-    }
-
-    public void setFlag(boolean flag) {
-        this.flag = flag;
     }
 }
