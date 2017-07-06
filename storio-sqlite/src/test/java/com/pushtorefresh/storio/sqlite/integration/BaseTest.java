@@ -15,15 +15,18 @@ import com.pushtorefresh.storio.sqlite.operations.put.PutResults;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import rx.Scheduler;
+import rx.schedulers.Schedulers;
 
-@RunWith(RobolectricGradleTestRunner.class)
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public abstract class BaseTest {
 
@@ -44,6 +47,7 @@ public abstract class BaseTest {
 
         storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(sqLiteOpenHelper)
+                .defaultScheduler(defaultScheduler())
                 .addTypeMapping(User.class, SQLiteTypeMapping.<User>builder()
                         .putResolver(UserTableMeta.PUT_RESOLVER)
                         .getResolver(UserTableMeta.GET_RESOLVER)
@@ -68,6 +72,11 @@ public abstract class BaseTest {
                 .byQuery(TweetTableMeta.DELETE_QUERY_ALL)
                 .prepare()
                 .executeAsBlocking();
+    }
+
+    @NonNull
+    protected Scheduler defaultScheduler() {
+        return Schedulers.io();
     }
 
     @NonNull

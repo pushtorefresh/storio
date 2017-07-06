@@ -13,7 +13,7 @@ import java.util.Collection;
  * in {@link android.content.ContentProvider}.
  *
  */
-public abstract class PreparedPut<Result> implements PreparedWriteOperation<Result> {
+public abstract class PreparedPut<Result, Data> implements PreparedWriteOperation<Result, Data> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;

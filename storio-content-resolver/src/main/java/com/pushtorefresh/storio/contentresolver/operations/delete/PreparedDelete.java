@@ -15,7 +15,7 @@ import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
  *
  * @param <Result> type of result of Delete Operation.
  */
-public abstract class PreparedDelete<Result> implements PreparedWriteOperation<Result> {
+public abstract class PreparedDelete<Result, Data> implements PreparedWriteOperation<Result, Data> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;

@@ -1,6 +1,6 @@
 #### StorIO — modern API for SQLiteDatabase and ContentResolver
 
-#####Overview:
+##### Overview:
 * Powerful & Simple set of Operations: `Put`, `Get`, `Delete`
 * API for Humans: Type Safety, Immutability & Thread-Safety
 * Convenient builders with compile-time guarantees for required params. Forget about 6-7 `null` in queries
@@ -16,7 +16,7 @@
 
 ----
 
-#####Why StorIO?
+##### Why StorIO?
 * Simple concept of just three main Operations: `Put`, `Get`, `Delete` -> less bugs
 * Almost everything is immutable and thread-safe -> less bugs
 * Builders for everything make code much, much more readable and obvious -> less bugs
@@ -27,7 +27,7 @@
 * `StorIO` has unit and integration tests [![codecov.io](https://codecov.io/github/pushtorefresh/storio/coverage.svg?branch=master)](https://codecov.io/github/pushtorefresh/storio?branch=master) -> less bugs
 * Less bugs -> less bugs
 
-####Documentation:
+#### Documentation:
 
 * [`Why we made StorIO`](https://engineering.pushtorefresh.com/2015/07/02/storio-modern-replacement-for-sqlitedatabase-and-contentresolver-apis/)
 * [`StorIO SQLite`](docs/StorIOSQLite.md)
@@ -39,13 +39,13 @@ Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tes
 * [Design tests for StorIO ContentResolver](storio-content-resolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
 * [Sample App](storio-sample-app)
 
-####Download:
+#### Download:
 ```groovy
 // If you need StorIO for SQLite
-compile 'com.pushtorefresh.storio:sqlite:1.11.0'
+compile 'com.pushtorefresh.storio:sqlite:1.13.0'
 
 // If you need StorIO for ContentResolver
-compile 'com.pushtorefresh.storio:content-resolver:1.11.0'
+compile 'com.pushtorefresh.storio:content-resolver:1.13.0'
 
 // IN StorIO 2.0 we will remove default Scheduling from Rx Operations!
 // You'll have to put subscribeOn() manually!
@@ -56,9 +56,9 @@ compile 'com.pushtorefresh.storio:content-resolver:1.11.0'
 
 You can find all releases on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.pushtorefresh.storio%22).
 
-####Some examples
+#### Some examples
 
-#####Get list of objects from SQLiteDatabase
+##### Get list of objects from SQLiteDatabase
 ```java
 List<Tweet> tweets = storIOSQLite
   .get()
@@ -73,7 +73,7 @@ List<Tweet> tweets = storIOSQLite
 
 ```
 
-#####Put something to SQLiteDatabase
+##### Put something to SQLiteDatabase
 ```java
 storIOSQLite
   .put() // Insert or Update
@@ -82,7 +82,7 @@ storIOSQLite
   .executeAsBlocking();
 ```
 
-#####Delete something from SQLiteDatabase
+##### Delete something from SQLiteDatabase
 ```java
 storIOSQLite
   .delete()
@@ -95,9 +95,9 @@ storIOSQLite
   .executeAsBlocking();
 ```
 
-####Reactive? Observable.just(true)!
+#### Reactive? Observable.just(true)!
 
-#####Get something as rx.Observable and receive updates!
+##### Get something as rx.Observable and receive updates!
 ```java
 storIOSQLite
   .get()
@@ -116,7 +116,7 @@ storIOSQLite
   );
 ```
 
-#####Want to work with plain Cursor, no problems
+##### Want to work with plain Cursor, no problems
 ```java
 Cursor cursor = storIOSQLite
   .get()
@@ -130,8 +130,8 @@ Cursor cursor = storIOSQLite
   .executeAsBlocking();
 ```
 
-####How object mapping works?
-#####You can set default type mappings when you build instance of `StorIOSQLite` or `StorIOContentResolver`
+#### How object mapping works?
+##### You can set default type mappings when you build instance of `StorIOSQLite` or `StorIOContentResolver`
 
 ```java
 StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
@@ -154,29 +154,58 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 
 *Notice that annotation processors are not part of the library core, you can work with StorIO without them, we just made them to save you from boilerplate*.
 
+`StorIOSQLite`:
 ```groovy
 dependencies {
-	// At the moment there is annotation processor only for StorIOSQLite 
-	compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
 
-	// We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
-	apt 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
+}
+```
+
+`StorIOContentResolver`:
+```groovy
+dependencies {
+  compile 'com.pushtorefresh.storio:content-resolver-annotations:insert-latest-version-here'
+
+  annotationProcessor 'com.pushtorefresh.storio:content-resolver-annotations-processor:insert-latest-version-here'
 }
 ```
 
 ```java
 @StorIOSQLiteType(table = "tweets")
 public class Tweet {
-	
-	// annotated fields should have package-level visibility
-	@StorIOSQLiteColumn(name = "author")
-	String author;
 
-	@StorIOSQLiteColumn(name = "content")
-	String content;
+  // Annotated fields should have package-level visibility.
+  @StorIOSQLiteColumn(name = "author")
+  String author;
 
-    // please leave default constructor with package-level visibility
-	Tweet() {}
+  @StorIOSQLiteColumn(name = "content")
+  String content;
+
+  // Please leave default constructor with package-level visibility.
+  Tweet() {}
+}
+```
+
+[`AutoValue`](https://github.com/google/auto/blob/master/value/userguide/index.md):
+```java
+@AutoValue
+@StorIOSQLiteType(table = "tweets")
+public abstract class Tweet {
+
+  // Annotated methods should have package-level or public visibility.
+  @StorIOSQLiteColumn(name = "author")
+  abstract String author();
+
+  @StorIOSQLiteColumn(name = "content")
+  abstract String content();
+
+  // Parameters order depends on declaration order.
+  @StorIOSQLiteCreator
+  static Tweet create(String author, String content) {
+    return new AutoValue_Tweet(author, content);
+  }
 }
 ```
 
@@ -213,7 +242,7 @@ API of `StorIOContentResolver` is same.
 
 ----
 
-####Documentation:
+#### Documentation:
 
 * [`Why we made StorIO`](https://engineering.pushtorefresh.com/2015/07/02/storio-modern-replacement-for-sqlitedatabase-and-contentresolver-apis/)
 * [`StorIO SQLite`](docs/StorIOSQLite.md)
@@ -227,7 +256,7 @@ Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample A
 
 ----
 
-####Versioning:
+#### Versioning:
 Because StorIO works with important things like User data and so on, we use Semantic Versioning 2.0.0 scheme for releases (http://semver.org).
 
 Short example:
@@ -239,14 +268,14 @@ Short example:
 
 Please read [`CHANGELOG`](CHANGELOG.md) and check what part of the version has changed, before switching to new version.
 
-####Architecture:
+#### Architecture:
 `StorIOSQLite` and `StorIOContentResolver` — are abstractions with default implementations: `DefaultStorIOSQLite` and `DefaultStorIOContentResolver`.
 
 It means, that you can have your own implementation of `StorIOSQLite` and `StorIOContentResolver` with custom behavior, such as memory caching, verbose logging and so on or mock implementation for unit testing (we are working on `MockStorIO`).
 
 One of the main goals of `StorIO` — clean API for Humans which will be easy to use and understand, that's why `StorIOSQLite` and `StorIOContentResolver` have just several methods, but we understand that sometimes you need to go under the hood and `StorIO` allows you to do it: `StorIOSQLite.Internal` and `StorIOContentResolver.Internal` encapsulates low-level methods, you can use them if you need, but please try to avoid it.
 
-####Queries
+#### Queries
 
 All `Query` objects are immutable, you can share them safely.
 
@@ -255,11 +284,11 @@ You may notice that each Operation (Get, Put, Delete) should be prepared with `p
 
 You can customize behavior of every Operation via `Resolvers`: `GetResolver`, `PutResolver`, `DeleteResolver`.
 
-####Rx Support Design
+#### Rx Support Design
 Every Operation can be executed as `rx.Observable`, `rx.Single` or `rx.Completable`. Get Operations will be automatically subscribed to the updates of the data.
 Every Observable runs on `Schedulers.io()`, in v2.0 we will remove default scheduling!
 
-####3rd party additions/integrations for StorIO
+#### 3rd party additions/integrations for StorIO
 
 * [CodeGenUnderStorIO](https://github.com/shivan42/CodeGenUnderStorIO) allows you generate Java classes for db entities from the db schema built in some visual editor.
 
@@ -267,4 +296,4 @@ Every Observable runs on `Schedulers.io()`, in v2.0 we will remove default sched
 Master branch build status: [![Master branch build status](https://travis-ci.org/pushtorefresh/storio.svg?branch=master)](https://travis-ci.org/pushtorefresh/storio)
 
 
-**Made with love** in [Pushtorefresh.com](https://pushtorefresh.com) by [@artem_zin](https://twitter.com/artem_zin) and [@nikitin-da](https://github.com/nikitin-da)
+**Made with love** in [Pushtorefresh.com](https://pushtorefresh.com) by [@artem_zin](https://twitter.com/artem_zin), [@nikitin-da](https://github.com/nikitin-da) and [@geralt-encore](https://github.com/geralt-encore)

@@ -1,0 +1,19 @@
+apply plugin: 'com.android.library'
+apply from: '../build.workaround-missing-resource.gradle'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+}
+
+dependencies {
+    testCompile libraries.storIOContentResolver
+    testCompile libraries.storIOContentResolverAnnotationsProcessor
+    testCompile libraries.googleTestingCompile
+    testCompile libraries.runtimeJar
+    testCompile libraries.toolsJar
+}

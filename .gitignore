@@ -18,6 +18,8 @@ target/
 
 # Local configuration file (sdk path, etc)
 local.properties
+.mainframer/
+mainframer.sh
 
 # Eclipse project files
 .classpath

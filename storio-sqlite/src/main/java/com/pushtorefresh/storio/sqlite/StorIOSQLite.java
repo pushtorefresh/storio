@@ -2,6 +2,7 @@ package com.pushtorefresh.storio.sqlite;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -18,6 +19,7 @@ import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import java.io.Closeable;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import rx.Observable;
@@ -143,6 +145,57 @@ public abstract class StorIOSQLite implements Closeable {
     }
 
     /**
+     * Allows observe changes of required tags.
+     * <p/>
+     * Tags are optional meta information that you can attach to Changes object
+     * to have more fine-grained control over observing changes in the database.
+     * <p/>
+     * Notice that {@link StorIOSQLite} knows only about changes
+     * that happened as a result of Put or Delete Operations executed
+     * on this instance of {@link StorIOSQLite}.
+     * <p/>
+     * Emission may happen on any thread that performed Put or Delete operation,
+     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
+     * if you need to receive events on a special thread.
+     * <p/>
+     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * that you should manually unsubscribe from it to prevent memory leak.
+     * Also, it can cause BackPressure problems.
+     *
+     * @param tags set of tags that should be monitored.
+     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required tags.
+     */
+    @NonNull
+    public abstract Observable<Changes> observeChangesOfTags(@NonNull Set<String> tags);
+
+    /**
+     * Allows observer changes of required tag.
+     * <p/>
+     * Tags are optional meta information that you can attach to Changes object
+     * to have more fine-grained control over observing changes in the database.
+     * <p/>
+     * Notice that {@link StorIOSQLite} knows only about changes
+     * that happened as a result of Put or Delete Operations executed
+     * on this instance of {@link StorIOSQLite}.
+     * <p/>
+     * Emission may happen on any thread that performed Put or Delete operation,
+     * so it's recommended to apply {@link Observable#observeOn(rx.Scheduler)}
+     * if you need to receive events on a special thread.
+     * <p/>
+     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * that you should manually unsubscribe from it to prevent memory leak.
+     * Also, it can cause BackPressure problems.
+     *
+     * @param tag tag to monitor.
+     * @return {@link rx.Observable} of {@link Changes} subscribed to changes of required tag.
+     */
+    @NonNull
+    public Observable<Changes> observeChangesOfTag(@NonNull String tag) {
+        checkNotEmpty(tag, "Tag can not be null or empty");
+        return observeChangesOfTags(Collections.singleton(tag));
+    }
+
+    /**
      * Provides a scheduler on which {@link rx.Observable} / {@link rx.Single}
      * or {@link rx.Completable} will be subscribed.
      * <p/>
@@ -175,6 +228,14 @@ public abstract class StorIOSQLite implements Closeable {
      */
     @NonNull
     public abstract LowLevel lowLevel();
+
+    /**
+     * Provides list of added interceptors.
+     *
+     * @return unmodified list of added {@link Interceptor} (can be empty).
+     */
+    @NonNull
+    public abstract List<Interceptor> interceptors();
 
     /**
      * API for low level operations with {@link StorIOSQLite}, we made it separate
@@ -329,6 +390,21 @@ public abstract class StorIOSQLite implements Closeable {
          * how to use this and when transactions are committed and rolled back.
          */
         public abstract void endTransaction();
+
+        /**
+         * Returns {@link SQLiteOpenHelper} for the direct access to underlining database.
+         * It can be used in cases when {@link StorIOSQLite} APIs are not enough.
+         * <p>
+         * Notice: Database changes through the direct access
+         * to the {@link SQLiteOpenHelper} will not trigger notifications.
+         * If it possible you should use {@link StorIOSQLite} methods instead
+         * or call {@link #notifyAboutChanges(Changes)} manually.
+         *
+         * @return {@link SQLiteOpenHelper}.
+         */
+        @NonNull
+        public abstract SQLiteOpenHelper sqliteOpenHelper();
+
     }
 
     /**

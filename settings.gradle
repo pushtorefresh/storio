@@ -8,7 +8,9 @@ include ':storio-content-resolver-annotations'
 
 include ':storio-common-annotations-processor'
 include ':storio-sqlite-annotations-processor'
+include ':storio-sqlite-annotations-processor-test'
 include ':storio-content-resolver-annotations-processor'
+include ':storio-content-resolver-annotations-processor-test'
 
 include ':storio-test-without-rxjava'
 

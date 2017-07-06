@@ -8,15 +8,17 @@ import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
 
 import org.junit.Test;
 
+import rx.Observable;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -40,12 +42,13 @@ public class PreparedDeleteByQueryTest {
                     .table("test_table")
                     .where("column1 = ?")
                     .whereArgs(1)
+                    .affectsTags("test_tag")
                     .build();
 
             //noinspection unchecked
             deleteResolver = mock(DeleteResolver.class);
 
-            expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table());
+            expectedDeleteResult = DeleteResult.newInstance(1, deleteQuery.table(), deleteQuery.affectsTags());
 
             when(deleteResolver.performDelete(same(storIOSQLite), same(deleteQuery)))
                     .thenReturn(expectedDeleteResult);
@@ -53,10 +56,20 @@ public class PreparedDeleteByQueryTest {
 
         void verifyBehaviour() {
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
-            verify(internal).notifyAboutChanges(eq(Changes.newInstance(deleteQuery.table())));
+            verify(internal).notifyAboutChanges(Changes.newInstance(deleteQuery.table(), deleteQuery.affectsTags()));
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
         }
+    }
+
+    @Test
+    public void shouldReturnQueryInGetData() {
+        final DeleteByQueryStub stub = new DeleteByQueryStub();
+        final PreparedDeleteByQuery prepared = new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
+                .withDeleteResolver(stub.deleteResolver)
+                .prepare();
+        assertThat(prepared.getData()).isEqualTo(stub.deleteQuery);
     }
 
     @Test
@@ -157,6 +170,7 @@ public class PreparedDeleteByQueryTest {
             assertThat(cause).hasMessage("test exception");
 
             verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
+            verify(storIOSQLite).interceptors();
             verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
         }
     }
@@ -194,6 +208,7 @@ public class PreparedDeleteByQueryTest {
 
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 
@@ -230,6 +245,7 @@ public class PreparedDeleteByQueryTest {
 
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 
@@ -266,6 +282,7 @@ public class PreparedDeleteByQueryTest {
 
         verify(storIOSQLite).defaultScheduler();
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
+        verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 
@@ -299,6 +316,7 @@ public class PreparedDeleteByQueryTest {
 
         verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
         verify(internal, never()).notifyAboutChanges(any(Changes.class));
+        verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
     }
 
@@ -336,5 +354,25 @@ public class PreparedDeleteByQueryTest {
                 .prepare();
 
         schedulerChecker.checkAsCompletable(operation);
+    }
+
+    @Test
+    public void createObservableReturnsAsRxObservable() {
+        final DeleteByQueryStub stub = new DeleteByQueryStub();
+
+        PreparedDeleteByQuery preparedOperation =
+                spy(new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
+                        .withDeleteResolver(stub.deleteResolver)
+                        .prepare());
+
+        Observable<DeleteResult> observable = Observable.just(DeleteResult.newInstance(1, TestItem.TABLE));
+        //noinspection CheckResult
+        doReturn(observable).when(preparedOperation).asRxObservable();
+
+        //noinspection deprecation
+        assertThat(preparedOperation.createObservable()).isEqualTo(observable);
+
+        //noinspection CheckResult
+        verify(preparedOperation).asRxObservable();
     }
 }

@@ -3,11 +3,15 @@ package com.pushtorefresh.storio.sqlite.queries;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.InternalQueries.nonNullSet;
 import static com.pushtorefresh.storio.internal.InternalQueries.nonNullString;
 import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullListOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullSet;
 
 /**
  * Update query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
@@ -25,14 +29,29 @@ public final class UpdateQuery {
     @NonNull
     private final List<String> whereArgs;
 
+    @NonNull
+    private final Set<String> affectsTags;
+
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.queries.UpdateQuery.Builder}
      * instead of constructor.
      */
-    private UpdateQuery(@NonNull String table, @Nullable String where, @Nullable List<String> whereArgs) {
+    private UpdateQuery(
+            @NonNull String table,
+            @Nullable String where,
+            @Nullable List<String> whereArgs,
+            @Nullable Set<String> affectsTags
+    ) {
+        if (affectsTags != null) {
+            for (String tag : affectsTags) {
+                checkNotEmpty(tag, "affectsTag must not be null or empty, affectsTags = " + affectsTags);
+            }
+        }
+
         this.table = table;
         this.where = nonNullString(where);
         this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
+        this.affectsTags = unmodifiableNonNullSet(affectsTags);
     }
 
     /**
@@ -72,6 +91,18 @@ public final class UpdateQuery {
     }
 
     /**
+     * Gets optional immutable set of tags which will be affected by this query.
+     * <p>
+     * They will be used to notify observers of that tags.
+     *
+     * @return non-null, immutable set of tags, affected by this query.
+     */
+    @NonNull
+    public Set<String> affectsTags() {
+        return affectsTags;
+    }
+
+    /**
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
@@ -91,7 +122,8 @@ public final class UpdateQuery {
 
         if (!table.equals(that.table)) return false;
         if (!where.equals(that.where)) return false;
-        return whereArgs.equals(that.whereArgs);
+        if (!whereArgs.equals(that.whereArgs)) return false;
+        return affectsTags.equals(that.affectsTags);
     }
 
     @Override
@@ -99,6 +131,7 @@ public final class UpdateQuery {
         int result = table.hashCode();
         result = 31 * result + where.hashCode();
         result = 31 * result + whereArgs.hashCode();
+        result = 31 * result + affectsTags.hashCode();
         return result;
     }
 
@@ -108,6 +141,7 @@ public final class UpdateQuery {
                 "table='" + table + '\'' +
                 ", where='" + where + '\'' +
                 ", whereArgs=" + whereArgs +
+                ", affectsTags='" + affectsTags + '\'' +
                 '}';
     }
 
@@ -158,6 +192,9 @@ public final class UpdateQuery {
 
         private List<String> whereArgs;
 
+        @Nullable
+        private Set<String> affectsTags;
+
         CompleteBuilder(@NonNull String table) {
             this.table = table;
         }
@@ -166,6 +203,7 @@ public final class UpdateQuery {
             this.table = updateQuery.table;
             this.where = updateQuery.where;
             this.whereArgs = updateQuery.whereArgs;
+            this.affectsTags = updateQuery.affectsTags;
         }
 
         /**
@@ -222,6 +260,37 @@ public final class UpdateQuery {
         }
 
         /**
+         * Optional: Specifies set of notification tags to provide detailed information
+         * about which particular change were occurred.
+         *
+         * @param tag the first required tag which will be affected by this query.
+         * @param tags optional set of tags which will be affected by this query
+         * @return builder.
+         * @see UpdateQuery#affectsTags()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder affectsTags(@NonNull String tag, @Nullable String... tags) {
+            affectsTags = nonNullSet(tag, tags);
+            return this;
+        }
+
+        /**
+         * Optional: Specifies set of notification tags to provide detailed information
+         * about which particular change were occurred.
+         *
+         * @param tags set of tags which will be affected by this query.
+         * @return builder.
+         * @see UpdateQuery#affectsTags()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder affectsTags(@Nullable Collection<String> tags) {
+            affectsTags = nonNullSet(tags);
+            return this;
+        }
+
+        /**
          * Builds immutable instance of {@link UpdateQuery}.
          *
          * @return immutable instance of {@link UpdateQuery}.
@@ -235,7 +304,8 @@ public final class UpdateQuery {
             return new UpdateQuery(
                     table,
                     where,
-                    whereArgs
+                    whereArgs,
+                    affectsTags
             );
         }
     }

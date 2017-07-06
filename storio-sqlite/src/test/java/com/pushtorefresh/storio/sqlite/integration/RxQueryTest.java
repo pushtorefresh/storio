@@ -9,7 +9,7 @@ import com.pushtorefresh.storio.test.AbstractEmissionChecker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
@@ -25,15 +25,15 @@ import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class RxQueryTest extends BaseTest {
 
     private class EmissionChecker extends AbstractEmissionChecker<List<User>> {
 
-        public EmissionChecker(@NonNull Queue<List<User>> expected) {
+        EmissionChecker(@NonNull Queue<List<User>> expected) {
             super(expected);
         }
 

@@ -8,9 +8,10 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.TypeMappingFinder;
-import com.pushtorefresh.storio.internal.TypeMappingFinderImpl;
 import com.pushtorefresh.storio.internal.ChangesBus;
+import com.pushtorefresh.storio.internal.TypeMappingFinderImpl;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
@@ -20,8 +21,10 @@ import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,6 +38,7 @@ import static com.pushtorefresh.storio.internal.Environment.RX_JAVA_IS_IN_THE_CL
 import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStrings;
 import static com.pushtorefresh.storio.internal.InternalQueries.nullableArrayOfStringsFromListOfStrings;
 import static com.pushtorefresh.storio.internal.InternalQueries.nullableString;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullList;
 import static java.util.Collections.unmodifiableMap;
 
 /**
@@ -53,6 +57,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @Nullable
     private final Scheduler defaultScheduler;
 
+    @NonNull
+    private final List<Interceptor> interceptors;
+
     /**
      * Implementation of {@link com.pushtorefresh.storio.sqlite.StorIOSQLite.LowLevel}.
      */
@@ -62,10 +69,11 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     protected DefaultStorIOSQLite(
             @NonNull SQLiteOpenHelper sqLiteOpenHelper,
             @NonNull TypeMappingFinder typeMappingFinder,
-            @Nullable Scheduler defaultScheduler
-    ) {
+            @Nullable Scheduler defaultScheduler,
+            @NonNull List<Interceptor> interceptors) {
         this.sqLiteOpenHelper = sqLiteOpenHelper;
         this.defaultScheduler = defaultScheduler;
+        this.interceptors = unmodifiableNonNullList(interceptors);
         lowLevel = new LowLevelImpl(typeMappingFinder);
     }
 
@@ -91,7 +99,17 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @NonNull
     public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
         // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
-        return ChangesFilter.apply(observeChanges(), tables);
+        return ChangesFilter.applyForTables(observeChanges(), tables);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @NonNull
+    public Observable<Changes> observeChangesOfTags(@NonNull final Set<String> tags) {
+        // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
+        return ChangesFilter.applyForTags(observeChanges(), tags);
     }
 
     /**
@@ -119,6 +137,15 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @Override
     public LowLevel lowLevel() {
         return lowLevel;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public List<Interceptor> interceptors() {
+        return interceptors;
     }
 
     /**
@@ -184,6 +211,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Nullable
         private Scheduler defaultScheduler = RX_JAVA_IS_IN_THE_CLASS_PATH ? Schedulers.io() : null;
 
+        @NonNull
+        private List<Interceptor> interceptors = new ArrayList<Interceptor>();
+
         CompleteBuilder(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
             this.sqLiteOpenHelper = sqLiteOpenHelper;
         }
@@ -226,18 +256,31 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * Provides a scheduler on which {@link rx.Observable} / {@link rx.Single}
+         * Optional: Specifies a scheduler on which {@link rx.Observable} / {@link rx.Single}
          * or {@link rx.Completable} will be subscribed.
          * <p/>
+         *
+         * @return builder.
          * @see com.pushtorefresh.storio.operations.PreparedOperation#asRxObservable()
          * @see com.pushtorefresh.storio.operations.PreparedOperation#asRxSingle()
          * @see com.pushtorefresh.storio.operations.PreparedWriteOperation#asRxCompletable()
-         *
-         * @return the scheduler or {@code null} if it isn't needed to apply it.
          */
         @NonNull
         public CompleteBuilder defaultScheduler(@Nullable Scheduler defaultScheduler) {
             this.defaultScheduler = defaultScheduler;
+            return this;
+        }
+
+        /**
+         * Optional: Adds {@link Interceptor} to all database operation.
+         * Multiple interceptors would be called in the order they were added.
+         *
+         * @param interceptor non-null custom implementation of {@link Interceptor}.
+         * @return builder.
+         */
+        @NonNull
+        public CompleteBuilder addInterceptor(@NonNull Interceptor interceptor) {
+            interceptors.add(interceptor);
             return this;
         }
 
@@ -256,7 +299,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                 typeMappingFinder.directTypeMapping(unmodifiableMap(typeMapping));
             }
 
-            return new DefaultStorIOSQLite(sqLiteOpenHelper, typeMappingFinder, defaultScheduler);
+            return new DefaultStorIOSQLite(sqLiteOpenHelper, typeMappingFinder, defaultScheduler, interceptors);
         }
     }
 
@@ -452,10 +495,15 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                 changesToSend = null;
             }
 
-            if (changesToSend != null) {
+            if (changesToSend != null && changesToSend.size() > 0) {
+                final Set<String> affectedTables = new HashSet<String>(3);
+                final Set<String> affectedTags = new HashSet<String>(3);
                 for (Changes changes : changesToSend) {
-                    changesBus.onNext(changes);
+                    // Merge all changes into one Changes object.
+                    affectedTables.addAll(changes.affectedTables());
+                    affectedTags.addAll(changes.affectedTags());
                 }
+                changesBus.onNext(Changes.newInstance(affectedTables, affectedTags));
             }
         }
 
@@ -492,6 +540,15 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
 
             numberOfRunningTransactions.decrementAndGet();
             notifyAboutPendingChangesIfNotInTransaction();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        @Override
+        public SQLiteOpenHelper sqliteOpenHelper() {
+            return sqLiteOpenHelper;
         }
     }
 

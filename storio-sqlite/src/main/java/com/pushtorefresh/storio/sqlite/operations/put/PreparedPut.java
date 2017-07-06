@@ -2,18 +2,23 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.operations.PreparedWriteOperation;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
 import java.util.Arrays;
 import java.util.Collection;
 
+import static com.pushtorefresh.storio.sqlite.impl.ChainImpl.buildChain;
+
 /**
  * Prepared Put Operation for {@link StorIOSQLite} which performs insert or update data
  * in {@link StorIOSQLite}.
  */
-public abstract class PreparedPut<Result> implements PreparedWriteOperation<Result> {
+public abstract class PreparedPut<Result, Data> implements PreparedWriteOperation<Result, Data> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;
@@ -21,6 +26,25 @@ public abstract class PreparedPut<Result> implements PreparedWriteOperation<Resu
     PreparedPut(@NonNull StorIOSQLite storIOSQLite) {
         this.storIOSQLite = storIOSQLite;
     }
+
+    /**
+     * Executes Put Operation immediately in current thread.
+     * <p>
+     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
+     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
+     * So please, call this method on some background thread. See {@link WorkerThread}.
+     *
+     * @return non-null results of Put Operation.
+     */
+    @WorkerThread
+    @Nullable
+    public final Result executeAsBlocking() {
+        return buildChain(storIOSQLite.interceptors(), getRealCallInterceptor())
+                .proceed(this);
+    }
+
+    @NonNull
+    protected abstract Interceptor getRealCallInterceptor();
 
     /**
      * Builder for {@link PreparedPut}.

@@ -1,8 +1,8 @@
-###StorIOContentResolver — API for Content Resolver
+### StorIOContentResolver — API for Content Resolver
 
 Important notice: All StorIO APIs looks same, if you know how to work with StorIOSQLite -> you know how to work with StorIOContentResolver!
 
-####0. Create an instance of StorIOContentResolver
+#### 0. Create an instance of StorIOContentResolver
 
 ```java
 StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
@@ -13,8 +13,8 @@ StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.build
 
 It's a good practice to use one instance of `StorIOContentResolver` per application, but it's not required.
 
-####1. Get Operation
-######Get list of objects with blocking call:
+#### 1. Get Operation
+###### Get list of objects with blocking call:
 
 ```java
 final List<Tweet> tweets = storIOContentResolver
@@ -29,7 +29,7 @@ final List<Tweet> tweets = storIOContentResolver
   .executeAsBlocking();
 ```
 
-######Get `Cursor` via blocking call:
+###### Get `Cursor` via blocking call:
 
 ```java
 final Cursor tweetsCursor = storIOContentResolver
@@ -46,9 +46,9 @@ final Cursor tweetsCursor = storIOContentResolver
 
 Things become much more interesting with `RxJava`!
 
-#####What if you want to observe changes in `StorIOContentResolver`?
+##### What if you want to observe changes in `StorIOContentResolver`?
 
-######First-case: Receive updates to `Observable` on each change of Uri from `Query`
+###### First-case: Receive updates to `Observable` on each change of Uri from `Query`
 
 ```java
 storIOContentResolver
@@ -70,7 +70,7 @@ storIOContentResolver
 // don't forget to manage Subscription and unsubscribe in lifecycle methods to prevent memory leaks
 ```
 
-######Second case: Handle changes manually
+###### Second case: Handle changes manually
 
 ```java
 storIOContentResolver
@@ -80,7 +80,7 @@ storIOContentResolver
   });
 ```
 
-######Get result via Rx only once and ignore further changes
+###### Get result via Rx only once and ignore further changes
 
 ```java
 storIOContentResolver
@@ -99,7 +99,7 @@ storIOContentResolver
   );
 ```
 
-######Customize behavior of `Get` Operation with `GetResolver`
+###### Customize behavior of `Get` Operation with `GetResolver`
 
 ```java
 GetResolver<Type> getResolver = new DefaultGetResolver()<Type> {
@@ -122,9 +122,9 @@ Several things about `Get` Operation:
 * As you can see, results of `Get` Operation computed even if you'll apply `RxJava` operators such as `Debounce`, if you want to avoid unneeded computations, please combine `StorIOContentResolver.observeChangesOfUri()` with `Get` Operation manually.
 * In next versions of `StorIO` we are going to add `Lazy<T>` to allow you skip unneeded computations
 
-####2. Put Operation
+#### 2. Put Operation
 
-######Put object of some type
+###### Put object of some type
 ```java
 Tweet tweet = getSomeTweet();
 
@@ -135,7 +135,7 @@ storIOContentResolver
   .executeAsBlocking(); // or asRxObservable()
 ```
 
-######Put multiple objects of some type
+###### Put multiple objects of some type
 ```java
 List<Tweet> tweets = getSomeTweets();
 
@@ -146,7 +146,7 @@ storIOContentResolver
   .executeAsBlocking(); // or asRxObservable()
 ```
 
-######Put `ContentValues`
+###### Put `ContentValues`
 ```java
 ContentValues contentValues = getSomeContentValues(); 
 
@@ -188,9 +188,9 @@ Several things about `Put` Operation:
 * `Put` Operation requires `PutResolver`
 * Result of `Put` Operation can be useful if you want to know what happened: insert (and insertedId) or update (and number of updated rows)
 
-####3. Delete Operation
+#### 3. Delete Operation
 
-######Delete object
+###### Delete object
 ```java
 Tweet tweet = getSomeTweet();
 
@@ -201,7 +201,7 @@ storIOContentResolver
   .executeAsBlocking(); // or asRxObservable()
 ``` 
 
-######Delete multiple objects
+###### Delete multiple objects
 ```java
 List<Tweet> tweets = getSomeTweets();
 
@@ -229,8 +229,8 @@ DeleteResolver<SomeType> deleteResolver = new DefaultDeleteResolver<SomeType>() 
 Several things about `Delete` Operation:
 * Result of `Delete` Operation can be useful if you want to know what happened
 
-####How object mapping works?
-#####You can set default type mappings when you build instance of `StorIOContentResolver`
+#### How object mapping works?
+##### You can set default type mappings when you build instance of `StorIOContentResolver`
 
 ```java
 StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()

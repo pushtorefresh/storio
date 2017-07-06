@@ -4,13 +4,15 @@ import android.database.Cursor;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio.operations.internal.OnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio.sqlite.impl.ChangesFilter;
 import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
@@ -33,79 +35,21 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
     private final GetResolver<T> explicitGetResolver;
 
     PreparedGetObject(@NonNull StorIOSQLite storIOSQLite,
-                             @NonNull Class<T> type,
-                             @NonNull Query query,
-                             @Nullable GetResolver<T> explicitGetResolver) {
+                      @NonNull Class<T> type,
+                      @NonNull Query query,
+                      @Nullable GetResolver<T> explicitGetResolver) {
         super(storIOSQLite, query);
         this.type = type;
         this.explicitGetResolver = explicitGetResolver;
     }
 
     PreparedGetObject(@NonNull StorIOSQLite storIOSQLite,
-                             @NonNull Class<T> type,
-                             @NonNull RawQuery rawQuery,
-                             @Nullable GetResolver<T> explicitGetResolver) {
+                      @NonNull Class<T> type,
+                      @NonNull RawQuery rawQuery,
+                      @Nullable GetResolver<T> explicitGetResolver) {
         super(storIOSQLite, rawQuery);
         this.type = type;
         this.explicitGetResolver = explicitGetResolver;
-    }
-
-    /**
-     * Executes Get Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return single instance of mapped result. Can be {@code null}, if no items are found.
-     */
-    @Nullable
-    @SuppressWarnings({"ConstantConditions", "NullableProblems"})
-    @WorkerThread
-    public T executeAsBlocking() {
-        try {
-            final GetResolver<T> getResolver;
-
-            if (explicitGetResolver != null) {
-                getResolver = explicitGetResolver;
-            } else {
-                final SQLiteTypeMapping<T> typeMapping = storIOSQLite.lowLevel().typeMapping(type);
-
-                if (typeMapping == null) {
-                    throw new IllegalStateException("This type does not have type mapping: " +
-                            "type = " + type + "," +
-                            "db was not touched by this operation, please add type mapping for this type");
-                }
-
-                getResolver = typeMapping.getResolver();
-            }
-
-            final Cursor cursor;
-
-            if (query != null) {
-                cursor = getResolver.performGet(storIOSQLite, query);
-            } else if (rawQuery != null) {
-                cursor = getResolver.performGet(storIOSQLite, rawQuery);
-            } else {
-                throw new IllegalStateException("Please specify query");
-            }
-
-            try {
-                final int count = cursor.getCount();
-
-                if (count == 0) {
-                    return null;
-                }
-
-                cursor.moveToNext();
-
-                return getResolver.mapFromCursor(cursor);
-            } finally {
-                cursor.close();
-            }
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Get operation. query = " + (query != null ? query : rawQuery), exception);
-        }
     }
 
     /**
@@ -161,20 +105,22 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
         throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
         final Set<String> tables;
+        final Set<String> tags;
 
         if (query != null) {
             tables = Collections.singleton(query.table());
+            tags = query.observesTags();
         } else if (rawQuery != null) {
             tables = rawQuery.observesTables();
+            tags = rawQuery.observesTags();
         } else {
             throw new IllegalStateException("Please specify query");
         }
 
         final Observable<T> observable;
-        if (!tables.isEmpty()) {
-            observable = storIOSQLite
-                    .observeChangesInTables(tables) // each change triggers executeAsBlocking
-                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))
+        if (!tables.isEmpty() || !tags.isEmpty()) {
+            observable = ChangesFilter.applyForTablesAndTags(storIOSQLite.observeChanges(), tables, tags)
+                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))  // each change triggers executeAsBlocking
                     .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
                     .onBackpressureLatest();
         } else {
@@ -199,6 +145,65 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
     @Override
     public Single<T> asRxSingle() {
         return RxJavaUtils.createSingle(storIOSQLite, this);
+    }
+
+
+    @NonNull
+    @Override
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
+
+    private class RealCallInterceptor implements Interceptor {
+        @Nullable // TODO every other interceptor is NonNull, handle this case separately?
+        @SuppressWarnings({"ConstantConditions", "NullableProblems"})
+        @Override
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+            try {
+                final GetResolver<T> getResolver;
+
+                if (explicitGetResolver != null) {
+                    getResolver = explicitGetResolver;
+                } else {
+                    final SQLiteTypeMapping<T> typeMapping = storIOSQLite.lowLevel().typeMapping(type);
+
+                    if (typeMapping == null) {
+                        throw new IllegalStateException("This type does not have type mapping: " +
+                                "type = " + type + "," +
+                                "db was not touched by this operation, please add type mapping for this type");
+                    }
+
+                    getResolver = typeMapping.getResolver();
+                }
+
+                final Cursor cursor;
+
+                if (query != null) {
+                    cursor = getResolver.performGet(storIOSQLite, query);
+                } else if (rawQuery != null) {
+                    cursor = getResolver.performGet(storIOSQLite, rawQuery);
+                } else {
+                    throw new IllegalStateException("Please specify query");
+                }
+
+                try {
+                    final int count = cursor.getCount();
+
+                    if (count == 0) {
+                        return null;
+                    }
+
+                    cursor.moveToNext();
+
+                    //noinspection unchecked
+                    return (Result) getResolver.mapFromCursor(cursor);
+                } finally {
+                    cursor.close();
+                }
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Get operation. query = " + (query != null ? query : rawQuery), exception);
+            }
+        }
     }
 
     /**

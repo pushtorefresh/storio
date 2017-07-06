@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,7 +15,7 @@ import static com.pushtorefresh.storio.test.Asserts.assertThatListIsImmutable;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class InternalQueriesTest {
 
@@ -293,4 +294,54 @@ public class InternalQueriesTest {
     }
 
     //endregion
+
+    //region Tests for Queries.nonNullSet()
+
+    @Test
+    public void nonNullSetFromNullAsCollection() {
+        assertThat(InternalQueries.nonNullSet((Collection<String>) null)).isSameAs(emptySet());
+    }
+
+    @Test
+    public void nonNullSetFromEmptyCollection() {
+        //noinspection ArraysAsListWithZeroOrOneArgument
+        assertThat(InternalQueries.nonNullSet(Arrays.<String>asList())).isSameAs(emptySet());
+    }
+
+    @Test
+    public void nonNullSetFromCollection() {
+        List<String> values = asList("one", "two");
+        assertThat(InternalQueries.nonNullSet(values)).isEqualTo(new HashSet<String>(values));
+    }
+
+    @Test
+    public void nonNullSetFromNullAsArray() {
+        assertThat(InternalQueries.nonNullSet((String[]) null)).isSameAs(emptySet());
+    }
+
+    @Test
+    public void nonNullSetFromEmptyArray() {
+        assertThat(InternalQueries.nonNullSet(new String[0])).isSameAs(emptySet());
+    }
+
+    @Test
+    public void nonNullSetFromArray() {
+        String[] values = {"one", "two"};
+        assertThat(InternalQueries.nonNullSet(values)).isEqualTo((new HashSet<String>(asList(values))));
+    }
+
+    @Test
+    public void nonNullSetWithFirstItemAndNullArray() {
+        assertThat(InternalQueries.nonNullSet("one", null)).isEqualTo((new HashSet<String>(asList("one"))));
+    }
+
+    @Test
+    public void nonNullSetWithFirstItemAndNotEmptyArray() {
+        String[] values = {"two"};
+        assertThat(InternalQueries.nonNullSet("one", values)).isEqualTo((new HashSet<String>() {{
+            add("one");
+            add("two");
+        }}));
+    }
+    //endregion}
 }

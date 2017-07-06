@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio.sqlite.operations.put;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
@@ -12,19 +13,23 @@ import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
 
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -37,7 +42,7 @@ class PutObjectsStub {
     final StorIOSQLite storIOSQLite;
 
     @NonNull
-    private final StorIOSQLite.Internal internal;
+    private final StorIOSQLite.LowLevel lowLevel;
 
     @NonNull
     final List<TestItem> items;
@@ -53,16 +58,41 @@ class PutObjectsStub {
 
     private final boolean withTypeMapping, useTransaction;
 
+    @NonNull
+    private final Map<Changes, Integer> expectedNotifications;
+
+    @NonNull
+    private static final PutResultCreator DEFAULT_PUT_RESULT_CREATOR = new PutResultCreator() {
+        @Override
+        @NonNull
+        public PutResult newPutResult(@NonNull TestItem testItem) {
+            return PutResult.newInsertResult(1, TestItem.TABLE, singleton("test_tag"));
+        }
+    };
+
+    @NonNull
+    private static final PutResultCreator MOCK_PUT_RESULT_CREATOR = new PutResultCreator() {
+        @Override
+        @NonNull
+        public PutResult newPutResult(@NonNull TestItem testItem) {
+            return mock(PutResult.class);
+        }
+    };
+
     @SuppressWarnings("unchecked")
-    private PutObjectsStub(boolean withTypeMapping, boolean useTransaction, int numberOfItems) {
+    private PutObjectsStub(
+            boolean withTypeMapping,
+            boolean useTransaction,
+            int numberOfItems,
+            @NonNull PutResultCreator putResultCreator
+    ) {
         this.withTypeMapping = withTypeMapping;
         this.useTransaction = useTransaction;
 
         storIOSQLite = mock(StorIOSQLite.class);
-        internal = mock(StorIOSQLite.Internal.class);
+        lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel())
-                .thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         when(storIOSQLite.put())
                 .thenReturn(new PreparedPut.Builder(storIOSQLite));
@@ -70,13 +100,32 @@ class PutObjectsStub {
         items = new ArrayList<TestItem>(numberOfItems);
         itemsToPutResultsMap = new HashMap<TestItem, PutResult>(numberOfItems);
 
+        expectedNotifications = new HashMap<Changes, Integer>(items.size());
+
         for (int i = 0; i < numberOfItems; i++) {
             final TestItem testItem = TestItem.newInstance();
             items.add(testItem);
 
-            final PutResult putResult = PutResult.newInsertResult(1, TestItem.TABLE);
-
+            final PutResult putResult = putResultCreator.newPutResult(testItem);
             itemsToPutResultsMap.put(testItem, putResult);
+
+            if (!useTransaction && (!putResult.affectedTables().isEmpty() || !putResult.affectedTags().isEmpty())) {
+                Changes changes = Changes.newInstance(putResult.affectedTables(), putResult.affectedTags());
+                Integer notificationsCount = expectedNotifications.get(changes);
+                expectedNotifications.put(changes, notificationsCount == null ? 1 : notificationsCount + 1);
+            }
+        }
+
+        if (useTransaction) {
+            Set<String> tables = new HashSet<String>();
+            Set<String> tags = new HashSet<String>();
+            for (PutResult putResult : itemsToPutResultsMap.values()) {
+                tables.addAll(putResult.affectedTables());
+                tags.addAll(putResult.affectedTags());
+            }
+            if (!tables.isEmpty() || !tags.isEmpty()) {
+                expectedNotifications.put(Changes.newInstance(tables, tags), 1);
+            }
         }
 
         putResolver = (PutResolver<TestItem>) mock(PutResolver.class);
@@ -93,54 +142,99 @@ class PutObjectsStub {
         typeMapping = mock(SQLiteTypeMapping.class);
 
         if (withTypeMapping) {
-            when(internal.typeMapping(TestItem.class)).thenReturn(typeMapping);
+            when(lowLevel.typeMapping(TestItem.class)).thenReturn(typeMapping);
             when(typeMapping.putResolver()).thenReturn(putResolver);
         }
     }
 
     @NonNull
+    static PutObjectsStub newPutStubForEmptyCollectionWithoutTransaction() {
+        return new PutObjectsStub(true, false, 0, DEFAULT_PUT_RESULT_CREATOR);
+    }
+
+    @NonNull
+    static PutObjectsStub newPutStubForEmptyCollectionWithTransaction() {
+        return new PutObjectsStub(true, true, 0, DEFAULT_PUT_RESULT_CREATOR);
+    }
+
+    @NonNull
     static PutObjectsStub newPutStubForOneObjectWithoutTypeMapping() {
-        return new PutObjectsStub(false, false, 1);
+        return new PutObjectsStub(false, false, 1, DEFAULT_PUT_RESULT_CREATOR);
     }
 
     @NonNull
     static PutObjectsStub newPutStubForOneObjectWithTypeMapping() {
-        return new PutObjectsStub(true, false, 1);
+        return new PutObjectsStub(true, false, 1, DEFAULT_PUT_RESULT_CREATOR);
+    }
+
+    @NonNull
+    static PutObjectsStub newPutStubForOneObjectWithoutInsertsAndUpdatesWithoutTypeMapping() {
+        return new PutObjectsStub(false, false, 1, MOCK_PUT_RESULT_CREATOR);
+    }
+
+    @NonNull
+    static PutObjectsStub newPutStubForOneObjectWithoutInsertsAndUpdatesWithTypeMapping() {
+        return new PutObjectsStub(true, false, 1, MOCK_PUT_RESULT_CREATOR);
     }
 
     @NonNull
     static PutObjectsStub newPutStubForMultipleObjectsWithoutTypeMappingWithTransaction() {
-        return new PutObjectsStub(false, true, 3);
+        return new PutObjectsStub(false, true, 3, DEFAULT_PUT_RESULT_CREATOR);
     }
 
     @NonNull
     static PutObjectsStub newPutStubForMultipleObjectsWithTypeMappingWithTransaction() {
-        return new PutObjectsStub(true, true, 3);
+        return new PutObjectsStub(true, true, 3, DEFAULT_PUT_RESULT_CREATOR);
     }
 
     @NonNull
     static PutObjectsStub newPutStubForMultipleObjectsWithoutTypeMappingWithoutTransaction() {
-        return new PutObjectsStub(false, false, 3);
+        return new PutObjectsStub(false, false, 3, DEFAULT_PUT_RESULT_CREATOR);
     }
 
     @NonNull
     static PutObjectsStub newPutStubForMultipleObjectsWithTypeMappingWithoutTransaction() {
-        return new PutObjectsStub(true, false, 3);
+        return new PutObjectsStub(true, false, 3, DEFAULT_PUT_RESULT_CREATOR);
     }
 
-    void verifyBehaviorForMultipleObjects(@NonNull PutResults<TestItem> putResults) {
+    @NonNull
+    static PutObjectsStub newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithTypeMappingWithTransaction() {
+        return new PutObjectsStub(true, true, 3, MOCK_PUT_RESULT_CREATOR);
+    }
+
+    @NonNull
+    static PutObjectsStub newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithoutTypeMappingWithTransaction() {
+        return new PutObjectsStub(false, true, 3, MOCK_PUT_RESULT_CREATOR);
+    }
+
+    @NonNull
+    static PutObjectsStub newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithTypeMappingWithoutTransaction() {
+        return new PutObjectsStub(true, false, 3, MOCK_PUT_RESULT_CREATOR);
+    }
+
+    @NonNull
+    static PutObjectsStub newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithoutTypeMappingWithoutTransaction() {
+        return new PutObjectsStub(false, false, 3, MOCK_PUT_RESULT_CREATOR);
+    }
+
+    void verifyBehaviorForMultipleObjects(@Nullable PutResults<TestItem> putResults) {
+        assertThat(putResults).isNotNull();
+
         // should be called once because of Performance!
         verify(storIOSQLite).lowLevel();
 
+        // should be called once
+        verify(storIOSQLite).interceptors();
+
         // only one call to storIOSQLite.put() should occur
-        verify(storIOSQLite, times(1)).put();
+        verify(storIOSQLite).put();
 
         // number of calls to putResolver's performPut() should be equal to number of objects
         verify(putResolver, times(items.size())).performPut(eq(storIOSQLite), any(TestItem.class));
 
         for (final TestItem testItem : items) {
             // put resolver should be invoked for each item
-            verify(putResolver, times(1)).performPut(storIOSQLite, testItem);
+            verify(putResolver).performPut(storIOSQLite, testItem);
 
             final PutResult expectedPutResult = itemsToPutResultsMap.get(testItem);
 
@@ -149,17 +243,17 @@ class PutObjectsStub {
 
         assertThat(putResults.results()).hasSize(itemsToPutResultsMap.size());
 
-        verifyTransactionBehavior();
+        verifyNotificationsAndTransactionBehavior();
 
         if (withTypeMapping) {
             // should be called for each item
-            verify(internal, times(items.size())).typeMapping(TestItem.class);
+            verify(lowLevel, times(items.size())).typeMapping(TestItem.class);
 
             // should be called for each item
             verify(typeMapping, times(items.size())).putResolver();
         }
 
-        verifyNoMoreInteractions(storIOSQLite, internal, typeMapping, putResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, typeMapping, putResolver);
     }
 
     void verifyBehaviorForMultipleObjects(@NonNull Observable<PutResults<TestItem>> putResultsObservable) {
@@ -194,7 +288,8 @@ class PutObjectsStub {
         verifyBehaviorForMultipleObjects(completable.<PutResults<TestItem>>toObservable());
     }
 
-    void verifyBehaviorForOneObject(@NonNull PutResult putResult) {
+    void verifyBehaviorForOneObject(@Nullable PutResult putResult) {
+        assertThat(putResult).isNotNull();
         verifyBehaviorForMultipleObjects(PutResults.newInstance(singletonMap(items.get(0), putResult)));
     }
 
@@ -230,24 +325,39 @@ class PutObjectsStub {
         verifyBehaviorForOneObject(completable.<PutResult>toObservable());
     }
 
-    private void verifyTransactionBehavior() {
+    private void verifyNotificationsAndTransactionBehavior() {
         if (useTransaction) {
-            verify(internal, times(1)).beginTransaction();
-            verify(internal, times(1)).setTransactionSuccessful();
-            verify(internal, times(1)).endTransaction();
+            verify(lowLevel).beginTransaction();
+            verify(lowLevel).setTransactionSuccessful();
+            verify(lowLevel).endTransaction();
 
-            // if put() operation used transaction, only one notification should be thrown
-            verify(internal, times(1))
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE)));
+            if (!expectedNotifications.isEmpty()) {
+                assertThat(expectedNotifications).hasSize(1);
+                final Map.Entry<Changes, Integer> expectedNotification = expectedNotifications.entrySet().iterator().next();
+                assertThat(expectedNotification.getValue()).isEqualTo(1);
+
+                // if put() operation used transaction, only one notification should be thrown
+                verify(lowLevel).notifyAboutChanges(expectedNotification.getKey());
+            } else {
+                verify(lowLevel, never()).notifyAboutChanges(any(Changes.class));
+            }
         } else {
-            verify(internal, times(0)).beginTransaction();
-            verify(internal, times(0)).setTransactionSuccessful();
-            verify(internal, times(0)).endTransaction();
+            verify(lowLevel, never()).beginTransaction();
+            verify(lowLevel, never()).setTransactionSuccessful();
+            verify(lowLevel, never()).endTransaction();
 
             // if put() operation didn't use transaction,
             // number of notifications should be equal to number of objects
-            verify(internal, times(items.size()))
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE)));
+            for (Map.Entry<Changes, Integer> expectedNotification : expectedNotifications.entrySet()) {
+                verify(lowLevel, times(expectedNotification.getValue())).notifyAboutChanges(expectedNotification.getKey());
+            }
         }
+    }
+
+
+    private interface PutResultCreator {
+
+        @NonNull
+        PutResult newPutResult(@NonNull TestItem testItem);
     }
 }

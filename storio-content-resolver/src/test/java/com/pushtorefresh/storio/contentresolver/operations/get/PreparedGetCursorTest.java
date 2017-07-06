@@ -12,13 +12,27 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Single;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class PreparedGetCursorTest {
+
+    @Test
+    public void shouldReturnQueryInGetData() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+
+        final PreparedGetCursor operation = getStub.storIOContentResolver
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolver)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(getStub.query);
+    }
 
     @Test
     public void getCursorBlocking() {

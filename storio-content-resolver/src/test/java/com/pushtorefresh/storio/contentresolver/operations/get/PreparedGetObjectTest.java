@@ -17,7 +17,7 @@ import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -234,6 +234,25 @@ public class PreparedGetObjectTest {
 
     // With Enclosed runner we can not have tests in root class
     public static class OtherTests {
+
+        @Test
+        public void shouldReturnQueryInGetData() {
+            final Query query = Query.builder()
+                    .uri(mock(Uri.class))
+                    .build();
+
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final PreparedGetObject<Object> operation =
+                    new PreparedGetObject.Builder<Object>(storIOContentResolver, Object.class)
+                            .withQuery(query)
+                            .withGetResolver(getResolver)
+                            .prepare();
+
+            assertThat(operation.getData()).isEqualTo(query);
+        }
 
         @Test
         public void shouldCloseCursorInCaseOfException() {

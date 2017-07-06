@@ -2,10 +2,12 @@ package com.pushtorefresh.storio.sqlite.design;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.delete.PreparedDelete;
@@ -19,6 +21,8 @@ import com.pushtorefresh.storio.sqlite.queries.RawQuery;
 import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import rx.Observable;
@@ -94,11 +98,25 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
         public void endTransaction() {
             // no impl
         }
+
+        @NonNull
+        @Override
+        public SQLiteOpenHelper sqliteOpenHelper() {
+            // not required in design test
+            // noinspection ConstantConditions
+            return null;
+        }
     };
 
     @NonNull
     @Override
     public Observable<Changes> observeChangesInTables(@NonNull Set<String> tables) {
+        return Observable.empty();
+    }
+
+    @NonNull
+    @Override
+    public Observable<Changes> observeChangesOfTags(@NonNull Set<String> tags) {
         return Observable.empty();
     }
 
@@ -148,6 +166,12 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
     @Override
     public LowLevel lowLevel() {
         return lowLevel;
+    }
+
+    @NonNull
+    @Override
+    public List<Interceptor> interceptors() {
+        return Collections.emptyList();
     }
 
     @Override

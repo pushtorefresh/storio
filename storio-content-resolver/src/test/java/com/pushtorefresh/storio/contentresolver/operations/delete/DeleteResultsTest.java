@@ -7,7 +7,7 @@ import com.pushtorefresh.storio.test.ToStringChecker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.HashMap;
@@ -15,10 +15,10 @@ import java.util.Map;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-@RunWith(RobolectricGradleTestRunner.class) // Required for correct Uri impl
+@RunWith(RobolectricTestRunner.class) // Required for correct Uri impl
 @Config(constants = BuildConfig.class, sdk = 21)
 public class DeleteResultsTest {
 

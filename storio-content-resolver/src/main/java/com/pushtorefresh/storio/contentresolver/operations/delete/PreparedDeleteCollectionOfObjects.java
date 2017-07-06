@@ -26,7 +26,7 @@ import rx.Single;
  *
  * @param <T> type of objects to delete.
  */
-public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteResults<T>> {
+public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteResults<T>, Collection<T>> {
 
     @NonNull
     private final Collection<T> objects;
@@ -182,6 +182,12 @@ public class PreparedDeleteCollectionOfObjects<T> extends PreparedDelete<DeleteR
     @Override
     public Completable asRxCompletable() {
         return RxJavaUtils.createCompletable(storIOContentResolver, this);
+    }
+
+    @NonNull
+    @Override
+    public Collection<T> getData() {
+        return objects;
     }
 
     /**

@@ -3,11 +3,17 @@ package com.pushtorefresh.storio.sqlite.queries;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio.internal.InternalQueries;
+
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotEmpty;
+import static com.pushtorefresh.storio.internal.InternalQueries.nonNullSet;
 import static com.pushtorefresh.storio.internal.InternalQueries.nonNullString;
 import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullListOfStrings;
+import static com.pushtorefresh.storio.internal.InternalQueries.unmodifiableNonNullSet;
 
 /**
  * Delete query for {@link com.pushtorefresh.storio.sqlite.StorIOSQLite}.
@@ -25,14 +31,29 @@ public final class DeleteQuery {
     @NonNull
     private final List<String> whereArgs;
 
+    @NonNull
+    private final Set<String> affectsTags;
+
     /**
      * Please use {@link com.pushtorefresh.storio.sqlite.queries.DeleteQuery.Builder}
      * instead of constructor.
      */
-    private DeleteQuery(@NonNull String table, @Nullable String where, @Nullable List<String> whereArgs) {
+    private DeleteQuery(
+            @NonNull String table,
+            @Nullable String where,
+            @Nullable List<String> whereArgs,
+            @Nullable Set<String> affectsTags
+    ) {
+        if (affectsTags != null) {
+            for (String tag : affectsTags) {
+                checkNotEmpty(tag, "affectsTag must not be null or empty, affectsTags = " + affectsTags);
+            }
+        }
+
         this.table = table;
         this.where = nonNullString(where);
         this.whereArgs = unmodifiableNonNullListOfStrings(whereArgs);
+        this.affectsTags = unmodifiableNonNullSet(affectsTags);
     }
 
     /**
@@ -72,6 +93,18 @@ public final class DeleteQuery {
     }
 
     /**
+     * Gets optional immutable set of tags which will be affected by this query.
+     * <p>
+     * They will be used to notify observers of that tags.
+     *
+     * @return non-null, immutable set of tags, affected by this query.
+     */
+    @NonNull
+    public Set<String> affectsTags() {
+        return affectsTags;
+    }
+
+    /**
      * Returns the new builder that has the same content as this query.
      * It can be used to create new queries.
      *
@@ -91,7 +124,9 @@ public final class DeleteQuery {
 
         if (!table.equals(that.table)) return false;
         if (!where.equals(that.where)) return false;
-        return whereArgs.equals(that.whereArgs);
+        if (!whereArgs.equals(that.whereArgs)) return false;
+        return affectsTags.equals(that.affectsTags);
+
     }
 
     @Override
@@ -99,6 +134,7 @@ public final class DeleteQuery {
         int result = table.hashCode();
         result = 31 * result + where.hashCode();
         result = 31 * result + whereArgs.hashCode();
+        result = 31 * result + affectsTags.hashCode();
         return result;
     }
 
@@ -108,6 +144,7 @@ public final class DeleteQuery {
                 "table='" + table + '\'' +
                 ", where='" + where + '\'' +
                 ", whereArgs=" + whereArgs +
+                ", affectsTags='" + affectsTags + '\'' +
                 '}';
     }
 
@@ -160,6 +197,9 @@ public final class DeleteQuery {
         @Nullable
         private List<String> whereArgs;
 
+        @Nullable
+        private Set<String> affectsTags;
+
         CompleteBuilder(@NonNull String table) {
             this.table = table;
         }
@@ -168,6 +208,7 @@ public final class DeleteQuery {
             this.table = deleteQuery.table;
             this.where = deleteQuery.where;
             this.whereArgs = deleteQuery.whereArgs;
+            this.affectsTags = deleteQuery.affectsTags;
         }
 
         /**
@@ -224,6 +265,37 @@ public final class DeleteQuery {
         }
 
         /**
+         * Optional: Specifies set of notification tags to provide detailed information
+         * about which particular change were occurred.
+         *
+         * @param tag the first required tag which will be affected by this query.
+         * @param tags optional set of tags which will be affected by this query.
+         * @return builder.
+         * @see DeleteQuery#affectsTags()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder affectsTags(@NonNull String tag, @Nullable String... tags) {
+            affectsTags = nonNullSet(tag, tags);
+            return this;
+        }
+
+        /**
+         * Optional: Specifies set of notification tags to provide detailed information
+         * about which particular change were occurred.
+         *
+         * @param tags set of tags which will be affected by this query.
+         * @return builder.
+         * @see DeleteQuery#affectsTags()
+         * @see com.pushtorefresh.storio.sqlite.StorIOSQLite##observeChangesOfTag(String)
+         */
+        @NonNull
+        public CompleteBuilder affectsTags(@Nullable Collection<String> tags) {
+            affectsTags = InternalQueries.nonNullSet(tags);
+            return this;
+        }
+
+        /**
          * Builds immutable instance of {@link DeleteQuery}.
          *
          * @return immutable instance of {@link DeleteQuery}.
@@ -237,7 +309,8 @@ public final class DeleteQuery {
             return new DeleteQuery(
                     table,
                     where,
-                    whereArgs
+                    whereArgs,
+                    affectsTags
             );
         }
     }

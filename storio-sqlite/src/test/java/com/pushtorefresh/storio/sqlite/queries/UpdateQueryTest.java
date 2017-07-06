@@ -2,41 +2,48 @@ package com.pushtorefresh.storio.sqlite.queries;
 
 import com.pushtorefresh.storio.test.ToStringChecker;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableSet;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.startsWith;
 
 public class UpdateQueryTest {
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Test
     public void shouldNotAllowNullTable() {
-        try {
-            //noinspection ConstantConditions
-            UpdateQuery.builder()
-                    .table(null);
-            failBecauseExceptionWasNotThrown(NullPointerException.class);
-        } catch (NullPointerException expected) {
-            assertThat(expected)
-                    .hasMessage("Table name is null or empty")
-                    .hasNoCause();
-        }
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(equalTo("Table name is null or empty"));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        UpdateQuery.builder().table(null);
     }
 
     @Test
     public void shouldNotAllowEmptyTable() {
-        try {
-            UpdateQuery.builder()
-                    .table("");
-            failBecauseExceptionWasNotThrown(IllegalStateException.class);
-        } catch (IllegalStateException expected) {
-            assertThat(expected)
-                    .hasMessage("Table name is null or empty")
-                    .hasNoCause();
-        }
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage(equalTo("Table name is null or empty"));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        UpdateQuery.builder().table("");
     }
 
     @Test
@@ -102,11 +109,13 @@ public class UpdateQueryTest {
         final String table = "test_table";
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+        final List<String> tags = singletonList("test_tag");
 
         final UpdateQuery firstQuery = UpdateQuery.builder()
                 .table(table)
                 .where(where)
                 .whereArgs(whereArgs)
+                .affectsTags(tags)
                 .build();
 
         final UpdateQuery secondQuery = firstQuery.toBuilder().build();
@@ -128,20 +137,58 @@ public class UpdateQueryTest {
     }
 
     @Test
+    public void affectsTagsCollectionShouldRewrite() {
+        UpdateQuery updateQuery = UpdateQuery.builder()
+                .table("table")
+                .affectsTags(new HashSet<String>((singletonList("first_call_collection"))))
+                .affectsTags(new HashSet<String>((singletonList("second_call_collection"))))
+                .build();
+
+        assertThat(updateQuery.affectsTags()).isEqualTo(singleton("second_call_collection"));
+    }
+
+    @Test
+    public void affectsTagsVarargShouldRewrite() {
+        UpdateQuery updateQuery = UpdateQuery.builder()
+                .table("table")
+                .affectsTags("first_call_vararg")
+                .affectsTags("second_call_vararg")
+                .build();
+
+        assertThat(updateQuery.affectsTags()).isEqualTo(singleton("second_call_vararg"));
+    }
+
+    @Test
+    public void affectsTagsCollectionAllowsNull() {
+        UpdateQuery updateQuery = UpdateQuery.builder()
+                .table("table")
+                .affectsTags(new HashSet<String>((singletonList("first_call_collection"))))
+                .affectsTags(null)
+                .build();
+
+        assertThat(updateQuery.affectsTags()).isEmpty();
+    }
+
+    @Test
     public void buildWithNormalValues() {
         final String table = "test_table";
         final String where = "test_where";
         final Object[] whereArgs = {"arg1", "arg2", "arg3"};
+        final Set<String> tags = unmodifiableSet(new HashSet<String>() {{
+            add("test_tag");
+        }});
 
         final UpdateQuery updateQuery = UpdateQuery.builder()
                 .table(table)
                 .where(where)
                 .whereArgs(whereArgs)
+                .affectsTags(tags)
                 .build();
 
         assertThat(updateQuery.table()).isEqualTo(table);
         assertThat(updateQuery.where()).isEqualTo(where);
         assertThat(updateQuery.whereArgs()).isEqualTo(asList(whereArgs));
+        assertThat(updateQuery.affectsTags()).isEqualTo(tags);
     }
 
     @Test
@@ -166,6 +213,32 @@ public class UpdateQueryTest {
                 .build();
 
         // We don't expect any exceptions here
+    }
+
+    @Test
+    public void shouldNotAllowNullTag() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage(startsWith("affectsTag must not be null or empty, affectsTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        UpdateQuery.builder()
+                .table("table")
+                .affectsTags((String) null)
+                .build();
+    }
+
+    @Test
+    public void shouldNotAllowEmptyTag() {
+        expectedException.expect(IllegalStateException.class);
+        expectedException.expectMessage(startsWith("affectsTag must not be null or empty, affectsTags = "));
+        expectedException.expectCause(nullValue(Throwable.class));
+
+        //noinspection ConstantConditions
+        UpdateQuery.builder()
+                .table("table")
+                .affectsTags("")
+                .build();
     }
 
     @Test

@@ -5,10 +5,11 @@ import android.os.SystemClock;
 
 import com.pushtorefresh.storio.sqlite.BuildConfig;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
@@ -17,23 +18,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class NotifyAboutChangesTest extends BaseTest {
 
     @Test
     public void notifyAboutChange() {
-        TestObserver<Changes> testObserver = new TestObserver<Changes>();
+        TestSubscriber<Changes> testObserver = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChangesInTable("test_table")
+                .observeChanges()
                 .subscribe(testObserver);
 
         storIOSQLite
@@ -66,7 +66,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         }
 
         storIOSQLite
-                .observeChangesInTables(tables)
+                .observeChanges()
                 .subscribe(testSubscriber);
 
         final CountDownLatch startAllThreadsLock = new CountDownLatch(1);
@@ -77,7 +77,7 @@ public class NotifyAboutChangesTest extends BaseTest {
                 @Override
                 public void run() {
                     try {
-                        // all threads should start simultaneously
+                        // All threads should start "simultaneously".
                         startAllThreadsLock.await();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
@@ -117,7 +117,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChangesInTable(table)
+                .observeChanges()
                 .subscribe(testSubscriber);
 
         storIOSQLite
@@ -130,7 +130,7 @@ public class NotifyAboutChangesTest extends BaseTest {
                     .notifyAboutChanges(Changes.newInstance(table));
         }
 
-        // While we in transaction, no changes should be sent
+        // While we in transaction, no changes should be sent.
         assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
 
         storIOSQLite
@@ -149,7 +149,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChangesInTable(table)
+                .observeChanges()
                 .subscribe(testSubscriber);
 
         storIOSQLite
@@ -164,7 +164,7 @@ public class NotifyAboutChangesTest extends BaseTest {
                 @Override
                 public void run() {
                     try {
-                        // all threads should start simultaneously
+                        // All threads should start "simultaneously".
                         startAllThreadsLock.await();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
@@ -185,7 +185,7 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         assertThat(allThreadsFinishedLock.await(20, SECONDS)).isTrue();
 
-        // While we in transaction, no changes should be sent
+        // While we in transaction, no changes should be sent.
         assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
 
         storIOSQLite
@@ -194,5 +194,108 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(singletonList(Changes.newInstance(table)));
+    }
+
+    @Test
+    public void shouldReceiveOneNotificationWithAllAffectedTablesInTransactionWithMultipleThreads() throws InterruptedException {
+        final String table1 = "test_table1";
+        final String table2 = "test_table2";
+
+        final int numberOfThreads = 100;
+
+        final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
+
+        storIOSQLite
+                .observeChanges()
+                .subscribe(testSubscriber);
+
+        final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
+
+        lowLevel.beginTransaction();
+
+        final CountDownLatch startAllThreadsLock = new CountDownLatch(1);
+        final CountDownLatch allThreadsFinishedLock = new CountDownLatch(numberOfThreads);
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // All threads should start "simultaneously".
+                        startAllThreadsLock.await();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    lowLevel.notifyAboutChanges(Changes.newInstance(table1));
+                    lowLevel.notifyAboutChanges(Changes.newInstance(table2));
+
+                    allThreadsFinishedLock.countDown();
+                }
+            }).start();
+        }
+
+        // Ready!
+        // Steady!
+        startAllThreadsLock.countDown(); // Go!
+
+        assertThat(allThreadsFinishedLock.await(20, SECONDS)).isTrue();
+
+        // While we in transaction, no changes should be sent.
+        assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
+
+        lowLevel.endTransaction();
+
+        testSubscriber.assertNoErrors();
+        List<Changes> actualChanges = testSubscriber.getOnNextEvents();
+        assertThat(actualChanges).hasSize(1);
+        assertThat(actualChanges.get(0).affectedTables()).containsOnly("test_table1", "test_table2");
+    }
+
+    @Test
+    public void shouldNotReceiveNotificationIfNoChangesAfterTransactionEnd() throws InterruptedException {
+        final int numberOfThreads = 100;
+
+        final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
+
+        storIOSQLite
+                .observeChanges()
+                .subscribe(testSubscriber);
+
+        final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
+
+        lowLevel.beginTransaction();
+
+        final CountDownLatch startAllThreadsLock = new CountDownLatch(1);
+        final CountDownLatch allThreadsFinishedLock = new CountDownLatch(numberOfThreads);
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // All threads should start "simultaneously".
+                        startAllThreadsLock.await();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    allThreadsFinishedLock.countDown();
+                }
+            }).start();
+        }
+
+        // Ready!
+        // Steady!
+        startAllThreadsLock.countDown(); // Go!
+
+        assertThat(allThreadsFinishedLock.await(20, SECONDS)).isTrue();
+
+        // While we in transaction, no changes should be sent.
+        assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
+
+        lowLevel.endTransaction();
+
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertNoValues();
     }
 }

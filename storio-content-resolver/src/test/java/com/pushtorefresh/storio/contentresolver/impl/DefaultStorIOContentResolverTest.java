@@ -20,14 +20,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.lang.reflect.Field;
 
 import rx.Scheduler;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static rx.schedulers.Schedulers.io;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class DefaultStorIOContentResolverTest {
 
@@ -244,7 +244,7 @@ public class DefaultStorIOContentResolverTest {
 
         private final Internal internal;
 
-        public TestDefaultStorIOContentResolver(
+        TestDefaultStorIOContentResolver(
                 @NonNull ContentResolver contentResolver,
                 @NonNull Handler contentObserverHandler,
                 @NonNull TypeMappingFinder typeMappingFinder
@@ -254,7 +254,7 @@ public class DefaultStorIOContentResolverTest {
         }
 
         @Nullable
-        public TypeMappingFinder typeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
+        TypeMappingFinder typeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
             Field field = DefaultStorIOContentResolver.LowLevelImpl.class.getDeclaredField("typeMappingFinder");
             field.setAccessible(true);
             return (TypeMappingFinder) field.get(internal);

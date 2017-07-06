@@ -1,6 +1,6 @@
-###StorIOSQLite — API for SQLite Database
+### StorIOSQLite — API for SQLite Database
 
-####0. Create an instance of StorIOSQLite
+#### 0. Create an instance of StorIOSQLite
 
 ```java
 StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
@@ -11,8 +11,8 @@ StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
 
 It's a good practice to use one instance of `StorIOSQLite` per database, otherwise you can have problems with notifications about changes in the db.
 
-####1. Get Operation
-######Get list of objects with blocking call:
+#### 1. Get Operation
+###### Get list of objects with blocking call:
 
 ```java
 final List<Tweet> tweets = storIOSQLite
@@ -25,7 +25,7 @@ final List<Tweet> tweets = storIOSQLite
   .executeAsBlocking();
 ```
 
-######Get `Cursor` via blocking call:
+###### Get `Cursor` via blocking call:
 
 ```java
 final Cursor tweetsCursor = storIOSQLite
@@ -40,9 +40,9 @@ final Cursor tweetsCursor = storIOSQLite
 
 Things become much more interesting with `RxJava`!
 
-#####What if you want to observe changes in `StorIOSQLite`?
+##### What if you want to observe changes in `StorIOSQLite`?
 
-######First-case: Receive updates to `Observable` on each change in tables from `Query` 
+###### First-case: Receive updates to `Observable` on each change in tables from `Query` 
 
 ```java
 storIOSQLite
@@ -63,7 +63,7 @@ storIOSQLite
 // don't forget to manage Subscription and unsubscribe in lifecycle methods to prevent memory leaks
 ```
 
-######Second case: Handle changes manually
+###### Second case: Handle changes manually
 
 ```java
 storIOSQLite
@@ -73,7 +73,31 @@ storIOSQLite
   });
 ```
 
-######Get result via Rx only once and ignore further changes
+###### Third case: Observe changes of tags to have more fine-grained control over notifications
+
+```java
+storIOSQLite
+  .get()
+  .listOfObjects(Tweet.class)
+  .withQuery(Query.builder()
+    .table("tweets")
+    .observesTags("particular_change_tag") // Subscribe to changes with this particular tag(s).
+    .build())
+  .prepare()
+  .asRxObservable();
+```
+
+Also you can handle changes of tags manually
+
+```java
+storIOSQLite
+  .observeChangesOfTag("particular_change_tag")
+  .subscribe(changes -> {
+    // Just subscribe or apply Rx Operators such as Debounce, Filter, etc.
+  });
+```
+
+###### Get result via Rx only once and ignore further changes
 
 ```java
 storIOSQLite
@@ -92,7 +116,7 @@ storIOSQLite
   );
 ```
 
-######Get result with RawQuery with joins and other SQL things
+###### Get result with RawQuery with joins and other SQL things
 
 ```java
 storIOSQLite
@@ -106,7 +130,7 @@ storIOSQLite
   .asRxObservable();
 ```
 
-######Customize behavior of `Get` Operation with `GetResolver`
+###### Customize behavior of `Get` Operation with `GetResolver`
 
 ```java
 GetResolver<Type> getResolver = new DefaultGetResolver()<Type> {
@@ -130,9 +154,9 @@ Several things about `Get` Operation:
 * In next versions of `StorIO` we are going to add `Lazy<T>` to allow you skip unneeded computations
 * If you want to `Put` multiple items into `StorIOSQLite`, better to do this in transaction to avoid multiple calls to the listeners (see docs about `Put` Operation)
 
-####2. Put Operation
+#### 2. Put Operation
 
-######Put object of some type
+###### Put object of some type
 ```java
 Tweet tweet = getSomeTweet();
 
@@ -143,7 +167,7 @@ storIOSQLite
   .executeAsBlocking(); // or asRxObservable()
 ```
 
-######Put multiple objects of some type
+###### Put multiple objects of some type
 ```java
 List<Tweet> tweets = getSomeTweets();
 
@@ -154,7 +178,7 @@ storIOSQLite
   .executeAsBlocking(); // or asRxObservable()
 ```
 
-######Put `ContentValues`
+###### Put `ContentValues`
 ```java
 ContentValues contentValues = getSomeContentValues(); 
 
@@ -173,6 +197,7 @@ PutResolver<SomeType> putResolver = new DefaultPutResolver<SomeType>() {
   @Override @NonNull public InsertQuery mapToInsertQuery(@NonNull SomeType object) {
     return InsertQuery.builder()
       .table("some_table")
+      .affectsTags("particular_change_tag") // optional: you can specify affected tags to notify Observers
       .build();
   }
   
@@ -181,6 +206,7 @@ PutResolver<SomeType> putResolver = new DefaultPutResolver<SomeType>() {
       .table("some_table")
       .where("some_column = ?")
       .whereArgs(object.someColumn())
+      .affectsTags("particular_change_tag") // optional: you can specify affected tags to notify Observers
       .build();
   }
   
@@ -198,9 +224,9 @@ Several things about `Put` Operation:
 * `Put` Operation in transaction will produce only one notification to `StorIOSQLite` observers
 * Result of `Put` Operation can be useful if you want to know what happened: insert (and insertedId) or update (and number of updated rows)
 
-####3. Delete Operation
+#### 3. Delete Operation
 
-######Delete object
+###### Delete object
 ```java
 Tweet tweet = getSomeTweet();
 
@@ -211,7 +237,7 @@ storIOSQLite
   .executeAsBlocking(); // or asRxObservable()
 ``` 
 
-######Delete multiple objects
+###### Delete multiple objects
 ```java
 List<Tweet> tweets = getSomeTweets();
 
@@ -231,6 +257,7 @@ DeleteResolver<SomeType> deleteResolver = new DefaultDeleteResolver<SomeType>() 
       .table("some_table")
       .where("some_column = ?")
       .whereArgs(object.someColumn())
+      .affectsTags("particular_change_tag") // optional: you can specify affected tags to notify Observers
       .build();
   }
 };
@@ -241,7 +268,7 @@ Several things about `Delete` Operation:
 * Same rules as for `Put` Operation about notifications for `StorIOSQLite` observers: transaction -> one notification, without transaction - multiple notifications
 * Result of `Delete` Operation can be useful if you want to know what happened
 
-####4. ExecSql Operation
+#### 4. ExecSql Operation
 Sometimes you need to execute raw sql, `StorIOSQLite` allows you to do it
 
 ```java
@@ -249,7 +276,8 @@ storIOSQLite
   .executeSQL()
   .withQuery(RawQuery.builder()
     .query("ALTER TABLE tweets ADD COLUMN number_of_retweets INTEGER")
-    .affectsTables("tweets") // optional: you can specify affected tables to notify Observers
+    .affectsTables("tweets")                // optional: you can specify affected by this query tables
+    .affectsTags("particular_change_tag")   // optional: and tags to notify Observers
     .build())
   .prepare()
   .executeAsBlocking(); // or asRxObservable()
@@ -257,11 +285,11 @@ storIOSQLite
 
 Several things about `ExecSql`:
 * Use it for non insert/update/query/delete operations
-* Notice that you can set list of tables that will be affected by `RawQuery` and `StorIOSQLite` will notify tables Observers
+* Notice that you can set list of tables and tags that will be affected by `RawQuery` and `StorIOSQLite` will notify Observers
 
 
-####How object mapping works?
-#####You can set default type mappings when you build instance of `StorIOSQLite` or `StorIOContentResolver`
+#### How object mapping works?
+##### You can set default type mappings when you build instance of `StorIOSQLite` or `StorIOContentResolver`
 
 ```java
 StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()

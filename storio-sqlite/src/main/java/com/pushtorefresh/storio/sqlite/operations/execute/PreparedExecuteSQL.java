@@ -7,6 +7,7 @@ import android.support.annotation.WorkerThread;
 import com.pushtorefresh.storio.StorIOException;
 import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio.sqlite.queries.RawQuery;
@@ -17,11 +18,12 @@ import rx.Observable;
 import rx.Single;
 
 import static com.pushtorefresh.storio.internal.Checks.checkNotNull;
+import static com.pushtorefresh.storio.sqlite.impl.ChainImpl.buildChain;
 
 /**
  * Prepared Execute SQL Operation for {@link StorIOSQLite}.
  */
-public class PreparedExecuteSQL implements PreparedOperation<Object> {
+public class PreparedExecuteSQL implements PreparedOperation<Object, RawQuery> {
 
     @NonNull
     private final StorIOSQLite storIOSQLite;
@@ -49,20 +51,8 @@ public class PreparedExecuteSQL implements PreparedOperation<Object> {
     @NonNull
     @Override
     public Object executeAsBlocking() {
-        try {
-            final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
-            lowLevel.executeSQL(rawQuery);
-
-            final Set<String> affectedTables = rawQuery.affectsTables();
-
-            if (affectedTables.size() > 0) {
-                lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables));
-            }
-
-            return new Object();
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during ExecuteSQL operation. query = " + rawQuery, exception);
-        }
+        return buildChain(storIOSQLite.interceptors(), new RealCallInterceptor())
+                .proceed(this);
     }
 
     /**
@@ -131,6 +121,34 @@ public class PreparedExecuteSQL implements PreparedOperation<Object> {
     @Override
     public Single<Object> asRxSingle() {
         return RxJavaUtils.createSingle(storIOSQLite, this);
+    }
+
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+            try {
+                final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
+                lowLevel.executeSQL(rawQuery);
+
+                final Set<String> affectedTables = rawQuery.affectsTables();
+                final Set<String> affectedTags = rawQuery.affectsTags();
+
+                if (!affectedTables.isEmpty() || !affectedTags.isEmpty()) {
+                    lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
+                }
+
+                return (Result) new Object();
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during ExecuteSQL operation. query = " + rawQuery, exception);
+            }
+        }
+    }
+
+    @NonNull
+    @Override
+    public RawQuery getData() {
+        return rawQuery;
     }
 
     /**

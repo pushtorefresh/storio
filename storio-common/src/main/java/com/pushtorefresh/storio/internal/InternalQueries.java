@@ -4,7 +4,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -179,5 +181,51 @@ public final class InternalQueries {
     @Nullable
     public static String nullableString(@Nullable String str) {
         return str == null || str.isEmpty() ? null : str;
+    }
+
+    /**
+     * Converts collection of something to non-null set.
+     *
+     * @param collection source collection to convert, can be {@code null}.
+     * @return non-null, set of something.
+     */
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public static Set<String> nonNullSet(@Nullable Collection<String> collection) {
+        return collection == null || collection.isEmpty()
+                ? Collections.<String>emptySet()
+                : new HashSet<String>(collection);
+    }
+
+    /**
+     * Converts array of something to non-null set.
+     *
+     * @param items source items to convert, can be {@code null}.
+     * @return non-null, set of something.
+     */
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public static Set<String> nonNullSet(@Nullable String[] items) {
+        return items == null || items.length == 0
+                ? Collections.<String>emptySet()
+                : new HashSet<String>(asList(items));
+    }
+
+    /**
+     * Converts array of something to non-null set.
+     *
+     * @param firstItem  the first required source item.
+     * @param otherItems other source items to convert, can be {@code null}.
+     * @return non-null, set of something.
+     */
+    @SuppressWarnings("unchecked")
+    @NonNull
+    public static Set<String> nonNullSet(@NonNull String firstItem, @Nullable String[] otherItems) {
+        final HashSet<String> set = new HashSet<String>();
+        set.add(firstItem);
+        if (otherItems != null) {
+            set.addAll(asList(otherItems));
+        }
+        return set;
     }
 }

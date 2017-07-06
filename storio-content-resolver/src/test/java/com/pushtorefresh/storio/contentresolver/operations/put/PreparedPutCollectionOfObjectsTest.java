@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
 import java.util.List;
 
 import rx.Completable;
@@ -20,7 +21,7 @@ import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -149,6 +150,23 @@ public class PreparedPutCollectionOfObjectsTest {
     public static class NoTypeMappingError {
 
         @Test
+        public void shouldReturnItemsInGetData() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+
+            //noinspection unchecked
+            final PutResolver<TestItem> putResolver = mock(PutResolver.class);
+
+            final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
+
+            final PreparedPutCollectionOfObjects<TestItem> operation =
+                    new PreparedPutCollectionOfObjects.Builder<TestItem>(storIOContentResolver, items)
+                            .withPutResolver(putResolver)
+                            .prepare();
+
+            assertThat(operation.getData()).isEqualTo(items);
+        }
+
+        @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderBlocking() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
             final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
@@ -159,7 +177,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedPut<PutResults<TestItem>> preparedPut = storIOContentResolver
+            final PreparedPut<PutResults<TestItem>, Collection<TestItem>> preparedPut = storIOContentResolver
                     .put()
                     .objects(items)
                     .prepare();
@@ -286,7 +304,7 @@ public class PreparedPutCollectionOfObjectsTest {
         }
     }
 
-    class OtherTests {
+    public static class OtherTests {
 
         @Test
         public void putCollectionOfObjectsObservableExecutesOnSpecifiedScheduler() {
