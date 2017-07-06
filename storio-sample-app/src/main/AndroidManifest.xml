@@ -26,6 +26,10 @@
             android:name=".ui.activity.db.TweetsSampleActivity"
             android:label="@string/tweets_db_sample_label" />
 
+        <activity
+            android:name=".many_to_many_sample.ManyToManyActivity"
+            android:label="@string/many_to_many" />
+
         <provider
             android:name=".provider.SampleContentProvider"
             android:authorities="com.pushtorefresh.storio.sample_provider"

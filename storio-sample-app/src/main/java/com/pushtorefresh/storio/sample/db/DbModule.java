@@ -12,6 +12,19 @@ import com.pushtorefresh.storio.sample.db.entities.UserSQLiteTypeMapping;
 import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserDeleteResolver;
 import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserGetResolver;
 import com.pushtorefresh.storio.sample.db.resolvers.TweetWithUserPutResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.entities.Car;
+import com.pushtorefresh.storio.sample.many_to_many_sample.entities.CarStorIOSQLiteGetResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.entities.CarStorIOSQLitePutResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.entities.Person;
+import com.pushtorefresh.storio.sample.many_to_many_sample.entities.PersonStorIOSQLiteGetResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.entities.PersonStorIOSQLitePutResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.resolvers.CarPersonRelationPutResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.resolvers.CarRelationsDeleteResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.resolvers.CarRelationsGetResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.resolvers.CarRelationsPutResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.resolvers.PersonRelationsDeleteResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.resolvers.PersonRelationsGetResolver;
+import com.pushtorefresh.storio.sample.many_to_many_sample.resolvers.PersonRelationsPutResolver;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.impl.DefaultStorIOSQLite;
@@ -33,6 +46,14 @@ public class DbModule {
     @NonNull
     @Singleton
     public StorIOSQLite provideStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
+        final CarStorIOSQLitePutResolver carStorIOSQLitePutResolver = new CarStorIOSQLitePutResolver();
+        final CarStorIOSQLiteGetResolver carStorIOSQLiteGetResolver = new CarStorIOSQLiteGetResolver();
+
+        final PersonStorIOSQLitePutResolver personStorIOSQLitePutResolver = new PersonStorIOSQLitePutResolver();
+        final PersonStorIOSQLiteGetResolver personStorIOSQLiteGetResolver = new PersonStorIOSQLiteGetResolver();
+
+        final CarPersonRelationPutResolver carPersonRelationPutResolver = new CarPersonRelationPutResolver();
+
         return DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(sqLiteOpenHelper)
                 .addTypeMapping(Tweet.class, new TweetSQLiteTypeMapping())
@@ -42,6 +63,19 @@ public class DbModule {
                         .getResolver(new TweetWithUserGetResolver())
                         .deleteResolver(new TweetWithUserDeleteResolver())
                         .build())
+
+                .addTypeMapping(Person.class, SQLiteTypeMapping.<Person>builder()
+                        .putResolver(new PersonRelationsPutResolver(carStorIOSQLitePutResolver, carPersonRelationPutResolver))
+                        .getResolver(new PersonRelationsGetResolver(carStorIOSQLiteGetResolver))
+                        .deleteResolver(new PersonRelationsDeleteResolver())
+                        .build())
+                .addTypeMapping(Car.class, SQLiteTypeMapping.<Car>builder()
+                        .putResolver(new CarRelationsPutResolver(personStorIOSQLitePutResolver, carPersonRelationPutResolver))
+                        .getResolver(new CarRelationsGetResolver(personStorIOSQLiteGetResolver))
+                        .deleteResolver(new CarRelationsDeleteResolver())
+
+                        .build()
+                )
                 .build();
     }
 
