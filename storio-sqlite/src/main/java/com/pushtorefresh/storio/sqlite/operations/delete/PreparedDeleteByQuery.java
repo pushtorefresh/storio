@@ -3,10 +3,11 @@ package com.pushtorefresh.storio.sqlite.operations.delete;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio.sqlite.queries.DeleteQuery;
@@ -18,7 +19,7 @@ import rx.Single;
 /**
  * Prepared Delete Operation for {@link StorIOSQLite}.
  */
-public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
+public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult, DeleteQuery> {
 
     @NonNull
     private final DeleteQuery deleteQuery;
@@ -30,34 +31,6 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
         super(storIOSQLite);
         this.deleteQuery = deleteQuery;
         this.deleteResolver = deleteResolver;
-    }
-
-    /**
-     * Executes Delete Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null result of Delete Operation.
-     */
-    @WorkerThread
-    @NonNull
-    @Override
-    public DeleteResult executeAsBlocking() {
-        try {
-            final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
-            if (deleteResult.numberOfRowsDeleted() > 0) {
-                final Changes changes = Changes.newInstance(
-                        deleteResult.affectedTables(),
-                        deleteResult.affectedTags()
-                );
-                storIOSQLite.lowLevel().notifyAboutChanges(changes);
-            }
-            return deleteResult;
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Delete operation. query = " + deleteQuery, exception);
-        }
     }
 
     /**
@@ -133,6 +106,38 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult> {
     @Override
     public Completable asRxCompletable() {
         return RxJavaUtils.createCompletable(storIOSQLite, this);
+    }
+
+    @NonNull
+    @Override
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
+
+    @NonNull
+    @Override
+    public DeleteQuery getData() {
+        return deleteQuery;
+    }
+
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+            try {
+                final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
+                if (deleteResult.numberOfRowsDeleted() > 0) {
+                    final Changes changes = Changes.newInstance(
+                            deleteResult.affectedTables(),
+                            deleteResult.affectedTags()
+                    );
+                    storIOSQLite.lowLevel().notifyAboutChanges(changes);
+                }
+                return (Result) deleteResult;
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Delete operation. query = " + deleteQuery, exception);
+            }
+        }
     }
 
     /**

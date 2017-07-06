@@ -150,6 +150,9 @@ class GetObjectsStub {
         // should be called once
         verify(storIOSQLite).get();
 
+        // should be called once
+        verify(storIOSQLite).interceptors();
+
         // should be called only once
         verify(getResolver).performGet(storIOSQLite, query);
 

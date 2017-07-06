@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -166,6 +167,38 @@ public class PreparedPutCollectionOfObjectsTest {
 
             putStub.verifyBehaviorForMultipleObjects(completable);
         }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithoutTypeMappingWithoutTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithoutTypeMappingWithoutTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(false)
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithoutTypeMappingWithTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithoutTypeMappingWithTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(true)
+                    .withPutResolver(putStub.putResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
     }
 
     public static class WithTypeMapping {
@@ -289,6 +322,36 @@ public class PreparedPutCollectionOfObjectsTest {
 
             putStub.verifyBehaviorForMultipleObjects(completable);
         }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithTypeMappingWithoutTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithTypeMappingWithoutTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(false)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithTypeMappingWithTransaction() {
+            final PutObjectsStub putStub
+                    = PutObjectsStub.newPutStubForMultipleObjectsWithoutInsertsAndUpdatesWithTypeMappingWithTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(true)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
     }
 
     public static class NoTypeMappingError {
@@ -304,7 +367,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedPut<PutResults<TestItem>> preparedPut = storIOSQLite
+            final PreparedPut<PutResults<TestItem>, Collection<TestItem>> preparedPut = storIOSQLite
                     .put()
                     .objects(items)
                     .useTransaction(false)
@@ -320,6 +383,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -356,6 +420,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -392,6 +457,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -428,6 +494,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -445,7 +512,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedPut<PutResults<TestItem>> preparedPut = storIOSQLite
+            final PreparedPut<PutResults<TestItem>, Collection<TestItem>> preparedPut = storIOSQLite
                     .put()
                     .objects(items)
                     .useTransaction(true)
@@ -461,6 +528,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -497,6 +565,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -533,6 +602,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -569,6 +639,7 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -577,6 +648,24 @@ public class PreparedPutCollectionOfObjectsTest {
     }
 
     public static class OtherTests {
+
+        @Test
+        public void shouldReturnItemsInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final PutResolver<TestItem> putResolver = mock(PutResolver.class);
+
+            final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
+
+            final PreparedPutCollectionOfObjects<TestItem> operation =
+                    new PreparedPutCollectionOfObjects.Builder<TestItem>(storIOSQLite, items)
+                            .useTransaction(true)
+                            .withPutResolver(putResolver)
+                            .prepare();
+
+            assertThat(operation.getData()).isEqualTo(items);
+        }
 
         @Test
         public void shouldFinishTransactionIfExceptionHasOccurredBlocking() {
@@ -610,6 +699,7 @@ public class PreparedPutCollectionOfObjectsTest {
                 verify(lowLevel).endTransaction();
 
                 verify(storIOSQLite).lowLevel();
+                verify(storIOSQLite).interceptors();
                 verify(putResolver).performPut(same(storIOSQLite), any());
                 verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
             }
@@ -654,6 +744,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
@@ -697,6 +788,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
@@ -740,6 +832,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
@@ -777,6 +870,7 @@ public class PreparedPutCollectionOfObjectsTest {
                 verify(lowLevel, never()).endTransaction();
 
                 verify(storIOSQLite).lowLevel();
+                verify(storIOSQLite).interceptors();
                 verify(putResolver).performPut(same(storIOSQLite), any());
                 verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
             }
@@ -823,6 +917,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
@@ -868,6 +963,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
@@ -913,6 +1009,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any());
             verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
@@ -981,6 +1078,34 @@ public class PreparedPutCollectionOfObjectsTest {
 
             //noinspection CheckResult
             verify(preparedOperation).asRxObservable();
+        }
+
+        @Test
+        public void shouldNotNotifyIfCollectionEmptyWithoutTransaction() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForEmptyCollectionWithoutTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(false)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
+        }
+
+        @Test
+        public void shouldNotNotifyIfCollectionEmptyWithTransaction() {
+            final PutObjectsStub putStub = PutObjectsStub.newPutStubForEmptyCollectionWithTransaction();
+
+            PutResults<TestItem> putResults = putStub.storIOSQLite
+                    .put()
+                    .objects(putStub.items)
+                    .useTransaction(true)
+                    .prepare()
+                    .executeAsBlocking();
+
+            putStub.verifyBehaviorForMultipleObjects(putResults);
         }
     }
 }

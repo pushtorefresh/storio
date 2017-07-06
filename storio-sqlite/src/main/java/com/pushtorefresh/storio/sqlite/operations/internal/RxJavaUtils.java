@@ -24,9 +24,9 @@ public final class RxJavaUtils {
 
     @CheckResult
     @NonNull
-    public static <T> Observable<T> createObservable(
+    public static <T, Data> Observable<T> createObservable(
             @NonNull StorIOSQLite storIOSQLite,
-            @NonNull PreparedOperation<T> operation
+            @NonNull PreparedOperation<T, Data> operation
     ) {
         throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
 
@@ -38,9 +38,9 @@ public final class RxJavaUtils {
 
     @CheckResult
     @NonNull
-    public static <T> Single<T> createSingle(
+    public static <T, Data> Single<T> createSingle(
             @NonNull StorIOSQLite storIOSQLite,
-            @NonNull PreparedOperation<T> operation
+            @NonNull PreparedOperation<T, Data> operation
     ) {
         throwExceptionIfRxJavaIsNotAvailable("asRxSingle()");
 
@@ -52,9 +52,9 @@ public final class RxJavaUtils {
 
     @CheckResult
     @NonNull
-    public static <T> Completable createCompletable(
+    public static <T, Data> Completable createCompletable(
             @NonNull StorIOSQLite storIOSQLite,
-            @NonNull PreparedOperation<T> operation
+            @NonNull PreparedOperation<T, Data> operation
     ) {
         throwExceptionIfRxJavaIsNotAvailable("asRxCompletable()");
 

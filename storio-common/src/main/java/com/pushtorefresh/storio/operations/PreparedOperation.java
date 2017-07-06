@@ -13,7 +13,7 @@ import rx.Single;
  *
  * @param <Result> type of result
  */
-public interface PreparedOperation<Result> {
+public interface PreparedOperation<Result, Data> {
 
     /**
      * Executes operation synchronously in current thread.
@@ -62,4 +62,7 @@ public interface PreparedOperation<Result> {
     @NonNull
     @CheckResult
     Single<Result> asRxSingle();
+
+    @NonNull
+    Data getData();
 }

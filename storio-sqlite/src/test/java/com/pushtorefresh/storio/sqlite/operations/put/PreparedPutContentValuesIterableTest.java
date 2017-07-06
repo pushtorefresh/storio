@@ -41,6 +41,19 @@ public class PreparedPutContentValuesIterableTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
+    public void shouldReturnContentValuesInGetData() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(false);
+
+        final PreparedPutContentValuesIterable operation = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues)
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(putStub.contentValues);
+    }
+
+    @Test
     public void putMultipleBlockingWithTransaction() {
         final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
 
@@ -193,6 +206,7 @@ public class PreparedPutContentValuesIterableTest {
 
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
             verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
         }
@@ -238,6 +252,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -282,6 +297,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -326,6 +342,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -359,6 +376,7 @@ public class PreparedPutContentValuesIterableTest {
             verify(internal, never()).endTransaction();
 
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
             verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
         }
@@ -401,6 +419,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -442,6 +461,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -483,6 +503,7 @@ public class PreparedPutContentValuesIterableTest {
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
     }
@@ -583,6 +604,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(stub.lowLevel).beginTransaction();
         verify(stub.lowLevel).endTransaction();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -619,6 +641,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(stub.lowLevel).beginTransaction();
         verify(stub.lowLevel).endTransaction();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -655,6 +678,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(stub.lowLevel).beginTransaction();
         verify(stub.lowLevel).endTransaction();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -680,5 +704,65 @@ public class PreparedPutContentValuesIterableTest {
 
         //noinspection CheckResult
         verify(preparedOperation).asRxObservable();
+    }
+
+    @Test
+    public void shouldNotNotifyIfCollectionEmptyWithoutTransaction() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForEmptyCollectionWithoutTransaction();
+
+        final PutResults<ContentValues> putResults = putStub.storIOSQLite
+                .put()
+                .objects(putStub.contentValues)
+                .useTransaction(false)
+                .prepare()
+                .executeAsBlocking();
+
+        putStub.verifyBehaviorForMultipleContentValues(putResults);
+    }
+
+    @Test
+    public void shouldNotNotifyIfCollectionEmptyWithTransaction() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForEmptyCollectionWithTransaction();
+
+        final PutResults<ContentValues> putResults = putStub.storIOSQLite
+                .put()
+                .objects(putStub.contentValues)
+                .useTransaction(true)
+                .prepare()
+                .executeAsBlocking();
+
+        putStub.verifyBehaviorForMultipleContentValues(putResults);
+    }
+
+    @Test
+    public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithoutTransaction() {
+        final PutContentValuesStub putStub
+                = PutContentValuesStub.newPutStubForMultipleContentValuesWithoutInsertsAndUpdatesWithoutTransaction();
+
+        final PutResults<ContentValues> putResults = putStub.storIOSQLite
+                .put()
+                .objects(putStub.contentValues)
+                .useTransaction(false)
+                .withPutResolver(putStub.putResolver)
+                .prepare()
+                .executeAsBlocking();
+
+        putStub.verifyBehaviorForMultipleContentValues(putResults);
+    }
+
+    @Test
+    public void shouldNotNotifyIfWasNotInsertedAndUpdatedWithTransaction() {
+        final PutContentValuesStub putStub
+                = PutContentValuesStub.newPutStubForMultipleContentValuesWithoutInsertsAndUpdatesWithTransaction();
+
+        final PutResults<ContentValues> putResults = putStub.storIOSQLite
+                .put()
+                .objects(putStub.contentValues)
+                .useTransaction(true)
+                .withPutResolver(putStub.putResolver)
+                .prepare()
+                .executeAsBlocking();
+
+        putStub.verifyBehaviorForMultipleContentValues(putResults);
     }
 }

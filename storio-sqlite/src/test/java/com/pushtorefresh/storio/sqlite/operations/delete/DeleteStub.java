@@ -35,7 +35,7 @@ class DeleteStub {
     final StorIOSQLite storIOSQLite;
 
     @NonNull
-    private final StorIOSQLite.Internal internal;
+    private final StorIOSQLite.LowLevel lowLevel;
 
     @NonNull
     final List<TestItem> itemsRequestedForDelete;
@@ -60,7 +60,7 @@ class DeleteStub {
         this.useTransaction = useTransaction;
 
         storIOSQLite = mock(StorIOSQLite.class);
-        internal = mock(StorIOSQLite.Internal.class);
+        lowLevel = mock(StorIOSQLite.LowLevel.class);
 
         itemsRequestedForDelete = new ArrayList<TestItem>(numberRequestedForDelete);
         itemsWillBeDeleted = new ArrayList<TestItem>(numberWillBeDeleted);
@@ -77,7 +77,7 @@ class DeleteStub {
 
         typeMapping = mock(SQLiteTypeMapping.class);
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
         when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
         when(deleteResolver.performDelete(eq(storIOSQLite), any(TestItem.class)))
                 .thenAnswer(new Answer<DeleteResult>() {
@@ -91,7 +91,7 @@ class DeleteStub {
                 });
 
         if (withTypeMapping) {
-            when(internal.typeMapping(TestItem.class)).thenReturn(typeMapping);
+            when(lowLevel.typeMapping(TestItem.class)).thenReturn(typeMapping);
             when(typeMapping.deleteResolver()).thenReturn(deleteResolver);
         }
     }
@@ -154,7 +154,9 @@ class DeleteStub {
     void verifyBehaviorForMultipleObjects(@NonNull DeleteResults<TestItem> deleteResults) {
         verify(storIOSQLite).delete(); // Only one call to delete should occur
 
-        verify(storIOSQLite).lowLevel(); // Only one call to internal should occur
+        verify(storIOSQLite).lowLevel(); // Only one call to lowLevel should occur
+
+        verify(storIOSQLite).interceptors(); // Only one call to interceptors should occur
 
         // Number of calls to perform deletion of objects should be equals to number of items
         verify(deleteResolver, times(itemsRequestedForDelete.size()))
@@ -167,12 +169,12 @@ class DeleteStub {
 
         if (withTypeMapping) {
             // Number of calls to receive delete resolver should be equal to number of items
-            verify(internal, times(itemsRequestedForDelete.size())).typeMapping(TestItem.class);
+            verify(lowLevel, times(itemsRequestedForDelete.size())).typeMapping(TestItem.class);
             verify(typeMapping, times(itemsRequestedForDelete.size())).deleteResolver();
         }
 
         verifyTransactionBehavior();
-        verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver, typeMapping);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver, typeMapping);
     }
 
     void verifyBehaviorForMultipleObjects(@NonNull Observable<DeleteResults<TestItem>> observable) {
@@ -245,20 +247,20 @@ class DeleteStub {
 
     private void verifyTransactionBehavior() {
         if (useTransaction) {
-            verify(internal).beginTransaction();
-            verify(internal).setTransactionSuccessful();
-            verify(internal).endTransaction();
+            verify(lowLevel).beginTransaction();
+            verify(lowLevel).setTransactionSuccessful();
+            verify(lowLevel).endTransaction();
 
             // No more than one notification should be thrown
-            verify(internal, times(Math.min(1, itemsWillBeDeleted.size())))
+            verify(lowLevel, times(Math.min(1, itemsWillBeDeleted.size())))
                     .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, TestItem.NOTIFICATION_TAG)));
         } else {
-            verify(internal, never()).beginTransaction();
-            verify(internal, never()).setTransactionSuccessful();
-            verify(internal, never()).endTransaction();
+            verify(lowLevel, never()).beginTransaction();
+            verify(lowLevel, never()).setTransactionSuccessful();
+            verify(lowLevel, never()).endTransaction();
 
             // Each delete should trigger notification
-            verify(internal, times(itemsWillBeDeleted.size()))
+            verify(lowLevel, times(itemsWillBeDeleted.size()))
                     .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, TestItem.NOTIFICATION_TAG)));
         }
     }

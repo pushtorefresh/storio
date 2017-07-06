@@ -21,6 +21,20 @@ import static org.mockito.Mockito.when;
 public class PreparedGetCursorTest {
 
     @Test
+    public void shouldReturnQueryInGetData() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+
+        final PreparedGetCursor operation = getStub.storIOContentResolver
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolver)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(getStub.query);
+    }
+
+    @Test
     public void getCursorBlocking() {
         final GetCursorStub getStub = GetCursorStub.newInstance();
 

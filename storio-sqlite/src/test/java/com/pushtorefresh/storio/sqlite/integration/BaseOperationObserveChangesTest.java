@@ -46,8 +46,8 @@ public abstract class BaseOperationObserveChangesTest extends BaseTest {
         tagChanges = Changes.newInstance("yet_another_table", UserTableMeta.NOTIFICATION_TAG);
     }
 
-    public <T> void verifyChangesReceived(
-            @NonNull PreparedOperation<T> operation,
+    public <T, Data> void verifyChangesReceived(
+            @NonNull PreparedOperation<T, Data> operation,
             @NonNull Changes changes,
             @NonNull T value
     ) {

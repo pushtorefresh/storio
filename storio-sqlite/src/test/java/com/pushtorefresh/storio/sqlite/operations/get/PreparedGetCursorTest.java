@@ -9,6 +9,7 @@ import com.pushtorefresh.storio.sqlite.operations.SchedulerChecker;
 import com.pushtorefresh.storio.sqlite.queries.Query;
 
 import org.junit.Test;
+import org.robolectric.util.ReflectionHelpers;
 
 import rx.Observable;
 import rx.Single;
@@ -27,6 +28,56 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PreparedGetCursorTest {
+
+    @Test
+    public void shouldThrowIfNoQueryOrRawQueryIsSet() {
+        try {
+            final GetCursorStub getStub = GetCursorStub.newInstance();
+
+            final PreparedGetCursor operation = getStub.storIOSQLite
+                    .get()
+                    .cursor()
+                    .withQuery(getStub.query) // will be removed
+                    .withGetResolver(getStub.getResolverForCursor)
+                    .prepare();
+
+            ReflectionHelpers.setField(operation, "query", null);
+            ReflectionHelpers.setField(operation, "rawQuery", null);
+            operation.getData();
+
+            failBecauseExceptionWasNotThrown(IllegalStateException.class);
+        } catch (IllegalStateException e) {
+            assertThat(e).hasMessage("Either rawQuery or query should be set!");
+        }
+    }
+
+    @Test
+    public void shouldReturnQueryInGetData() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+
+        final PreparedGetCursor operation =  getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(getStub.query);
+    }
+
+    @Test
+    public void shouldReturnRawQueryInGetData() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
+
+        final PreparedGetCursor operation =  getStub.storIOSQLite
+                .get()
+                .cursor()
+                .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolverForCursor)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(getStub.rawQuery);
+    }
 
     @Test
     public void shouldGetCursorWithQueryBlocking() {

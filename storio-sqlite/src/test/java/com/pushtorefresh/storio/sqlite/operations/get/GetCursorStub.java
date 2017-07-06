@@ -89,6 +89,7 @@ class GetCursorStub {
     void verifyQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
         assertThat(actualCursor).isNotNull();
         verify(storIOSQLite).get();
+        verify(storIOSQLite).interceptors();
         verify(getResolverForCursor).performGet(storIOSQLite, query);
         assertThat(actualCursor).isSameAs(cursor);
         verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
@@ -127,6 +128,7 @@ class GetCursorStub {
     void verifyRawQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
         assertThat(actualCursor).isNotNull();
         verify(storIOSQLite, times(1)).get();
+        verify(storIOSQLite).interceptors();
         verify(getResolverForCursor, times(1)).performGet(storIOSQLite, rawQuery);
         assertThat(actualCursor).isSameAs(cursor);
         verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);

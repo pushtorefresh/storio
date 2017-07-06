@@ -189,7 +189,7 @@ public class PreparedDeleteObjectTest {
 
             when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
-            final PreparedDelete<DeleteResult> preparedDelete = storIOSQLite
+            final PreparedDelete<DeleteResult, TestItem> preparedDelete = storIOSQLite
                     .delete()
                     .object(TestItem.newInstance())
                     .prepare();
@@ -204,6 +204,7 @@ public class PreparedDeleteObjectTest {
 
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -235,6 +236,7 @@ public class PreparedDeleteObjectTest {
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -266,6 +268,7 @@ public class PreparedDeleteObjectTest {
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -297,51 +300,68 @@ public class PreparedDeleteObjectTest {
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
         }
     }
 
-    @Test
-    public void deleteObjectObservableExecutesOnSpecifiedScheduler() {
-        final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
-        final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOSQLite);
+    public static class OtherTests {
 
-        final PreparedDeleteObject<TestItem> operation = deleteStub.storIOSQLite
-                .delete()
-                .object(deleteStub.itemsRequestedForDelete.get(0))
-                .withDeleteResolver(deleteStub.deleteResolver)
-                .prepare();
+        @Test
+        public void shouldReturnObjectInGetData() {
+            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
 
-        schedulerChecker.checkAsObservable(operation);
-    }
+            final PreparedDeleteObject<TestItem> operation = deleteStub.storIOSQLite
+                    .delete()
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
 
-    @Test
-    public void deleteObjectSingleExecutesOnSpecifiedScheduler() {
-        final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
-        final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOSQLite);
+            assertThat(operation.getData()).isEqualTo(deleteStub.itemsRequestedForDelete.get(0));
+        }
 
-        final PreparedDeleteObject<TestItem> operation = deleteStub.storIOSQLite
-                .delete()
-                .object(deleteStub.itemsRequestedForDelete.get(0))
-                .withDeleteResolver(deleteStub.deleteResolver)
-                .prepare();
+        @Test
+        public void deleteObjectObservableExecutesOnSpecifiedScheduler() {
+            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOSQLite);
 
-        schedulerChecker.checkAsSingle(operation);
-    }
+            final PreparedDeleteObject<TestItem> operation = deleteStub.storIOSQLite
+                    .delete()
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
 
-    @Test
-    public void deleteObjectCompletableExecutesOnSpecifiedScheduler() {
-        final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
-        final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOSQLite);
+            schedulerChecker.checkAsObservable(operation);
+        }
 
-        final PreparedDeleteObject<TestItem> operation = deleteStub.storIOSQLite
-                .delete()
-                .object(deleteStub.itemsRequestedForDelete.get(0))
-                .withDeleteResolver(deleteStub.deleteResolver)
-                .prepare();
+        @Test
+        public void deleteObjectSingleExecutesOnSpecifiedScheduler() {
+            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOSQLite);
 
-        schedulerChecker.checkAsCompletable(operation);
+            final PreparedDeleteObject<TestItem> operation = deleteStub.storIOSQLite
+                    .delete()
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void deleteObjectCompletableExecutesOnSpecifiedScheduler() {
+            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithoutTypeMapping();
+            final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOSQLite);
+
+            final PreparedDeleteObject<TestItem> operation = deleteStub.storIOSQLite
+                    .delete()
+                    .object(deleteStub.itemsRequestedForDelete.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            schedulerChecker.checkAsCompletable(operation);
+        }
     }
 }

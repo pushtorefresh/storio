@@ -3,10 +3,11 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
@@ -20,7 +21,7 @@ import rx.Single;
  *
  * @param <T> type of object to put.
  */
-public class PreparedPutObject<T> extends PreparedPut<PutResult> {
+public class PreparedPutObject<T> extends PreparedPut<PutResult, T> {
 
     @NonNull
     private final T object;
@@ -34,55 +35,6 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
         super(storIOSQLite);
         this.object = object;
         this.explicitPutResolver = explicitPutResolver;
-    }
-
-    /**
-     * Executes Put Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null result of Put Operation.
-     */
-    @SuppressWarnings("unchecked")
-    @WorkerThread
-    @NonNull
-    @Override
-    public PutResult executeAsBlocking() {
-        try {
-            final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
-
-            final PutResolver<T> putResolver;
-
-            if (explicitPutResolver != null) {
-                putResolver = explicitPutResolver;
-            } else {
-                final SQLiteTypeMapping<T> typeMapping = lowLevel.typeMapping((Class<T>) object.getClass());
-
-                if (typeMapping == null) {
-                    throw new IllegalStateException("Object does not have type mapping: " +
-                            "object = " + object + ", object.class = " + object.getClass() + ", " +
-                            "db was not affected by this operation, please add type mapping for this type");
-                }
-
-                putResolver = typeMapping.putResolver();
-            }
-
-            final PutResult putResult = putResolver.performPut(storIOSQLite, object);
-
-            if (putResult.wasInserted() || putResult.wasUpdated()) {
-                final Changes changes = Changes.newInstance(
-                        putResult.affectedTables(),
-                        putResult.affectedTags()
-                );
-                lowLevel.notifyAboutChanges(changes);
-            }
-
-            return putResult;
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Put operation. object = " + object, exception);
-        }
     }
 
     /**
@@ -160,6 +112,58 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
     public Completable asRxCompletable() {
         return RxJavaUtils.createCompletable(storIOSQLite, this);
    }
+
+    @NonNull
+    @Override
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
+
+    @NonNull
+    @Override
+    public T getData() {
+        return object;
+    }
+
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+            try {
+                final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
+
+                final PutResolver<T> putResolver;
+
+                if (explicitPutResolver != null) {
+                    putResolver = explicitPutResolver;
+                } else {
+                    final SQLiteTypeMapping<T> typeMapping = lowLevel.typeMapping((Class<T>) object.getClass());
+
+                    if (typeMapping == null) {
+                        throw new IllegalStateException("Object does not have type mapping: " +
+                                "object = " + object + ", object.class = " + object.getClass() + ", " +
+                                "db was not affected by this operation, please add type mapping for this type");
+                    }
+
+                    putResolver = typeMapping.putResolver();
+                }
+
+                final PutResult putResult = putResolver.performPut(storIOSQLite, object);
+
+                if (putResult.wasInserted() || putResult.wasUpdated()) {
+                    final Changes changes = Changes.newInstance(
+                            putResult.affectedTables(),
+                            putResult.affectedTags()
+                    );
+                    lowLevel.notifyAboutChanges(changes);
+                }
+
+                return (Result) putResult;
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Put operation. object = " + object, exception);
+            }
+        }
+    }
 
     /**
      * Builder for {@link PreparedPutObject}.

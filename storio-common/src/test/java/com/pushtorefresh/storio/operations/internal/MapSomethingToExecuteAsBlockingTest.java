@@ -17,7 +17,7 @@ public class MapSomethingToExecuteAsBlockingTest {
     @SuppressWarnings("unchecked")
     @Test
     public void verifyBehavior() {
-        final PreparedOperation<String> preparedOperation = mock(PreparedOperation.class);
+        final PreparedOperation<String, Object> preparedOperation = mock(PreparedOperation.class);
 
         final String expectedMapResult = "expected_string";
 

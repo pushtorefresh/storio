@@ -13,12 +13,12 @@ import rx.SingleSubscriber;
  * <p>
  * For internal usage only!
  */
-public final class OnSubscribeExecuteAsBlockingSingle<Result> implements Single.OnSubscribe<Result> {
+public final class OnSubscribeExecuteAsBlockingSingle<Result, Data> implements Single.OnSubscribe<Result> {
 
     @NonNull
-    private final PreparedOperation<Result> preparedOperation;
+    private final PreparedOperation<Result, Data> preparedOperation;
 
-    private OnSubscribeExecuteAsBlockingSingle(@NonNull PreparedOperation<Result> preparedOperation) {
+    private OnSubscribeExecuteAsBlockingSingle(@NonNull PreparedOperation<Result, Data> preparedOperation) {
         this.preparedOperation = preparedOperation;
     }
 
@@ -30,8 +30,8 @@ public final class OnSubscribeExecuteAsBlockingSingle<Result> implements Single.
      * @return new instance of {@link OnSubscribeExecuteAsBlockingSingle}
      */
     @NonNull
-    public static <Result> Single.OnSubscribe<Result> newInstance(@NonNull PreparedOperation<Result> preparedOperation) {
-        return new OnSubscribeExecuteAsBlockingSingle<Result>(preparedOperation);
+    public static <Result, Data> Single.OnSubscribe<Result> newInstance(@NonNull PreparedOperation<Result, Data> preparedOperation) {
+        return new OnSubscribeExecuteAsBlockingSingle<Result, Data>(preparedOperation);
     }
 
     @Override

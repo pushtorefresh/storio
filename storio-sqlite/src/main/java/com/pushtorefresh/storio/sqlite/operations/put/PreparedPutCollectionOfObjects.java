@@ -3,10 +3,11 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio.StorIOException;
+import com.pushtorefresh.storio.operations.PreparedOperation;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.internal.RxJavaUtils;
@@ -24,7 +25,7 @@ import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
-public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>> {
+public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>, Collection<T>> {
 
     @NonNull
     private final Collection<T> objects;
@@ -42,125 +43,6 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
         this.objects = objects;
         this.useTransaction = useTransaction;
         this.explicitPutResolver = explicitPutResolver;
-    }
-
-    /**
-     * Executes Put Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null results of Put Operation.
-     */
-    @SuppressWarnings("unchecked")
-    @WorkerThread
-    @NonNull
-    @Override
-    public PutResults<T> executeAsBlocking() {
-        try {
-            final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
-
-            // Nullable
-            final List<SimpleImmutableEntry<T, PutResolver<T>>> objectsAndPutResolvers;
-
-            if (explicitPutResolver != null) {
-                objectsAndPutResolvers = null;
-            } else {
-                objectsAndPutResolvers = new ArrayList<SimpleImmutableEntry<T, PutResolver<T>>>(objects.size());
-
-                for (final T object : objects) {
-                    final SQLiteTypeMapping<T> typeMapping
-                            = (SQLiteTypeMapping<T>) lowLevel.typeMapping(object.getClass());
-
-                    if (typeMapping == null) {
-                        throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
-                                "object = " + object + ", object.class = " + object.getClass() + "," +
-                                "db was not affected by this operation, please add type mapping for this type");
-                    }
-
-                    objectsAndPutResolvers.add(new SimpleImmutableEntry<T, PutResolver<T>>(
-                            object,
-                            typeMapping.putResolver()
-                    ));
-                }
-            }
-
-            if (useTransaction) {
-                lowLevel.beginTransaction();
-            }
-
-            final Map<T, PutResult> results = new HashMap<T, PutResult>(objects.size());
-            boolean transactionSuccessful = false;
-
-            try {
-                if (explicitPutResolver != null) {
-                    for (final T object : objects) {
-                        final PutResult putResult = explicitPutResolver.performPut(storIOSQLite, object);
-                        results.put(object, putResult);
-
-                        if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
-                            final Changes changes = Changes.newInstance(
-                                    putResult.affectedTables(),
-                                    putResult.affectedTags()
-                            );
-                            lowLevel.notifyAboutChanges(changes);
-                        }
-                    }
-                } else {
-                    for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
-                        final T object = objectAndPutResolver.getKey();
-                        final PutResolver<T> putResolver = objectAndPutResolver.getValue();
-
-                        final PutResult putResult = putResolver.performPut(storIOSQLite, object);
-
-                        results.put(object, putResult);
-
-                        if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
-                            final Changes changes = Changes.newInstance(
-                                    putResult.affectedTables(),
-                                    putResult.affectedTags()
-                            );
-                            lowLevel.notifyAboutChanges(changes);
-                        }
-                    }
-                }
-
-                if (useTransaction) {
-                    lowLevel.setTransactionSuccessful();
-                    transactionSuccessful = true;
-                }
-            } finally {
-                if (useTransaction) {
-                    lowLevel.endTransaction();
-
-                    // if put was in transaction and it was successful -> notify about changes
-                    if (transactionSuccessful) {
-                        final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
-                        final Set<String> affectedTags = new HashSet<String>(1);
-
-                        for (final T object : results.keySet()) {
-                            final PutResult putResult = results.get(object);
-                            if (putResult.wasInserted() || putResult.wasUpdated()) {
-                                affectedTables.addAll(putResult.affectedTables());
-                                affectedTags.addAll(putResult.affectedTags());
-                            }
-                        }
-
-                        // IMPORTANT: Notifying about change should be done after end of transaction
-                        // It'll reduce number of possible deadlock situations
-                        if (!affectedTables.isEmpty() || !affectedTags.isEmpty()) {
-                            lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
-                        }
-                    }
-                }
-            }
-
-            return PutResults.newInstance(results);
-
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Put operation. objects = " + objects, exception);
-        }
     }
 
     /**
@@ -236,6 +118,130 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
     @Override
     public Completable asRxCompletable() {
         return RxJavaUtils.createCompletable(storIOSQLite, this);
+    }
+
+    @NonNull
+    @Override
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
+
+    @NonNull
+    @Override
+    public Collection<T> getData() {
+        return objects;
+    }
+
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+            try {
+                final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
+
+                // Nullable
+                final List<SimpleImmutableEntry<T, PutResolver<T>>> objectsAndPutResolvers;
+
+                if (explicitPutResolver != null) {
+                    objectsAndPutResolvers = null;
+                } else {
+                    objectsAndPutResolvers = new ArrayList<SimpleImmutableEntry<T, PutResolver<T>>>(objects.size());
+
+                    for (final T object : objects) {
+                        //noinspection unchecked
+                        final SQLiteTypeMapping<T> typeMapping
+                                = (SQLiteTypeMapping<T>) lowLevel.typeMapping(object.getClass());
+
+                        if (typeMapping == null) {
+                            throw new IllegalStateException("One of the objects from the collection does not have type mapping: " +
+                                    "object = " + object + ", object.class = " + object.getClass() + "," +
+                                    "db was not affected by this operation, please add type mapping for this type");
+                        }
+
+                        objectsAndPutResolvers.add(new SimpleImmutableEntry<T, PutResolver<T>>(
+                                object,
+                                typeMapping.putResolver()
+                        ));
+                    }
+                }
+
+                if (useTransaction) {
+                    lowLevel.beginTransaction();
+                }
+
+                final Map<T, PutResult> results = new HashMap<T, PutResult>(objects.size());
+                boolean transactionSuccessful = false;
+
+                try {
+                    if (explicitPutResolver != null) {
+                        for (final T object : objects) {
+                            final PutResult putResult = explicitPutResolver.performPut(storIOSQLite, object);
+                            results.put(object, putResult);
+
+                            if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
+                                final Changes changes = Changes.newInstance(
+                                        putResult.affectedTables(),
+                                        putResult.affectedTags()
+                                );
+                                lowLevel.notifyAboutChanges(changes);
+                            }
+                        }
+                    } else {
+                        for (final SimpleImmutableEntry<T, PutResolver<T>> objectAndPutResolver : objectsAndPutResolvers) {
+                            final T object = objectAndPutResolver.getKey();
+                            final PutResolver<T> putResolver = objectAndPutResolver.getValue();
+
+                            final PutResult putResult = putResolver.performPut(storIOSQLite, object);
+
+                            results.put(object, putResult);
+
+                            if (!useTransaction && (putResult.wasInserted() || putResult.wasUpdated())) {
+                                final Changes changes = Changes.newInstance(
+                                        putResult.affectedTables(),
+                                        putResult.affectedTags()
+                                );
+                                lowLevel.notifyAboutChanges(changes);
+                            }
+                        }
+                    }
+
+                    if (useTransaction) {
+                        lowLevel.setTransactionSuccessful();
+                        transactionSuccessful = true;
+                    }
+                } finally {
+                    if (useTransaction) {
+                        lowLevel.endTransaction();
+
+                        // if put was in transaction and it was successful -> notify about changes
+                        if (transactionSuccessful) {
+                            final Set<String> affectedTables = new HashSet<String>(1); // in most cases it will be 1 table
+                            final Set<String> affectedTags = new HashSet<String>(1);
+
+                            for (final T object : results.keySet()) {
+                                final PutResult putResult = results.get(object);
+                                if (putResult.wasInserted() || putResult.wasUpdated()) {
+                                    affectedTables.addAll(putResult.affectedTables());
+                                    affectedTags.addAll(putResult.affectedTags());
+                                }
+                            }
+
+                            // IMPORTANT: Notifying about change should be done after end of transaction
+                            // It'll reduce number of possible deadlock situations
+                            if (!affectedTables.isEmpty() || !affectedTags.isEmpty()) {
+                                lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
+                            }
+                        }
+                    }
+                }
+
+                //noinspection unchecked
+                return (Result) PutResults.newInstance(results);
+
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Put operation. objects = " + objects, exception);
+            }
+        }
     }
 
     /**

@@ -2,13 +2,17 @@ package com.pushtorefresh.storio.sqlite.operations.put;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio.sqlite.Changes;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.test.ObservableBehaviorChecker;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import rx.Completable;
@@ -18,6 +22,7 @@ import rx.functions.Action1;
 
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -44,10 +49,28 @@ class PutContentValuesStub {
     private final boolean useTransaction;
 
     @NonNull
-    private final Set<String> affectedTags = singleton("test_tag");
+    private final Map<Changes, Integer> expectedNotifications;
+
+    @NonNull
+    private static final PutResultCreator DEFAULT_PUT_RESULT_CREATOR = new PutResultCreator() {
+        @Override
+        @NonNull
+        public PutResult newPutResult() {
+            return PutResult.newInsertResult(1, TestItem.TABLE, singleton("test_tag"));
+        }
+    };
+
+    @NonNull
+    private static final PutResultCreator MOCK_PUT_RESULT_CREATOR = new PutResultCreator() {
+        @NonNull
+        @Override
+        public PutResult newPutResult() {
+            return mock(PutResult.class);
+        }
+    };
 
     @SuppressWarnings("unchecked")
-    private PutContentValuesStub(boolean useTransaction, int numberOfItems) {
+    private PutContentValuesStub(boolean useTransaction, int numberOfItems, @NonNull PutResultCreator putResultCreator) {
         this.useTransaction = useTransaction;
 
         storIOSQLite = mock(StorIOSQLite.class);
@@ -60,27 +83,81 @@ class PutContentValuesStub {
 
         contentValues = new ArrayList<ContentValues>(numberOfItems);
 
-        for (int i = 0; i < numberOfItems; i++) {
-            contentValues.add(mock(ContentValues.class));
-        }
-
         putResolver = (PutResolver<ContentValues>) mock(PutResolver.class);
 
-        when(putResolver.performPut(eq(storIOSQLite), any(ContentValues.class)))
-                .thenReturn(PutResult.newInsertResult(1, TestItem.TABLE, affectedTags));
+        final List<PutResult> putResults = new ArrayList<PutResult>(contentValues.size());
+        expectedNotifications = new HashMap<Changes, Integer>(contentValues.size());
+
+        for (int i = 0; i < numberOfItems; i++) {
+            final ContentValues cv = mock(ContentValues.class);
+            this.contentValues.add(cv);
+
+            final PutResult putResult = putResultCreator.newPutResult();
+
+            putResults.add(putResult);
+
+            when(putResolver.performPut(storIOSQLite, cv)).thenReturn(putResult);
+
+            if (!useTransaction && (!putResult.affectedTables().isEmpty() || !putResult.affectedTags().isEmpty())) {
+                Changes changes = Changes.newInstance(putResult.affectedTables(), putResult.affectedTags());
+                Integer notificationsCount = expectedNotifications.get(changes);
+                expectedNotifications.put(changes, notificationsCount == null ? 1 : notificationsCount + 1);
+            }
+        }
+
+        if (useTransaction) {
+            final Set<String> tables = new HashSet<String>();
+            final Set<String> tags = new HashSet<String>();
+
+            for (PutResult putResult : putResults) {
+                tables.addAll(putResult.affectedTables());
+                tags.addAll(putResult.affectedTags());
+            }
+
+            if (!tables.isEmpty() || !tags.isEmpty()) {
+                expectedNotifications.put(Changes.newInstance(tables, tags), 1);
+            }
+        }
+    }
+
+    @NonNull
+    static PutContentValuesStub newPutStubForEmptyCollectionWithTransaction() {
+        return new PutContentValuesStub(true, 0, DEFAULT_PUT_RESULT_CREATOR);
+    }
+
+    @NonNull
+    static PutContentValuesStub newPutStubForEmptyCollectionWithoutTransaction() {
+        return new PutContentValuesStub(false, 0, DEFAULT_PUT_RESULT_CREATOR);
     }
 
     @NonNull
     static PutContentValuesStub newPutStubForOneContentValues() {
-        return new PutContentValuesStub(false, 1);
+        return new PutContentValuesStub(false, 1, DEFAULT_PUT_RESULT_CREATOR);
+    }
+
+    @NonNull
+    static PutContentValuesStub newPutStubForOneContentValuesWithoutInsertsAndUpdates() {
+        return new PutContentValuesStub(false, 1, MOCK_PUT_RESULT_CREATOR);
     }
 
     @NonNull
     static PutContentValuesStub newPutStubForMultipleContentValues(boolean useTransaction) {
-        return new PutContentValuesStub(useTransaction, 3);
+        return new PutContentValuesStub(useTransaction, 3, DEFAULT_PUT_RESULT_CREATOR);
     }
 
-    void verifyBehaviorForMultipleContentValues(@NonNull PutResults<ContentValues> putResults) {
+    @NonNull
+    static PutContentValuesStub newPutStubForMultipleContentValuesWithoutInsertsAndUpdatesWithTransaction() {
+        return new PutContentValuesStub(true, 3, MOCK_PUT_RESULT_CREATOR);
+    }
+
+    @NonNull
+    static PutContentValuesStub newPutStubForMultipleContentValuesWithoutInsertsAndUpdatesWithoutTransaction() {
+        return new PutContentValuesStub(false, 3, MOCK_PUT_RESULT_CREATOR);
+    }
+
+    void verifyBehaviorForMultipleContentValues(@Nullable PutResults<ContentValues> putResults) {
+        assertThat(putResults).isNotNull();
+
         // only one call to storIOSQLite.put() should occur
         verify(storIOSQLite).put();
 
@@ -92,7 +169,7 @@ class PutContentValuesStub {
             verify(putResolver).performPut(storIOSQLite, cv);
         }
 
-        verifyTransactionBehavior();
+        verifyNotificationsAndTransactionBehavior();
     }
 
     void verifyBehaviorForMultipleContentValues(@NonNull Observable<PutResults<ContentValues>> putResultsObservable) {
@@ -126,7 +203,8 @@ class PutContentValuesStub {
     }
 
 
-    void verifyBehaviorForOneContentValues(@NonNull PutResult putResult) {
+    void verifyBehaviorForOneContentValues(@Nullable PutResult putResult) {
+        assertThat(putResult).isNotNull();
         verifyBehaviorForMultipleContentValues(PutResults.newInstance(singletonMap(contentValues.get(0), putResult)));
     }
 
@@ -160,15 +238,22 @@ class PutContentValuesStub {
         verifyBehaviorForOneContentValues(completable.<PutResult>toObservable());
     }
 
-    private void verifyTransactionBehavior() {
+    private void verifyNotificationsAndTransactionBehavior() {
         if (useTransaction) {
             verify(lowLevel).beginTransaction();
             verify(lowLevel).setTransactionSuccessful();
             verify(lowLevel).endTransaction();
 
-            // if put() operation used transaction, only one notification should be thrown
-            verify(lowLevel)
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTags)));
+            if (!expectedNotifications.isEmpty()) {
+                assertThat(expectedNotifications).hasSize(1);
+                Map.Entry<Changes, Integer> expectedNotification = expectedNotifications.entrySet().iterator().next();
+                assertThat(expectedNotification.getValue()).isEqualTo(1);
+
+                // if put() operation used transaction, only one notification should be thrown
+                verify(lowLevel).notifyAboutChanges(expectedNotification.getKey());
+            } else {
+                verify(lowLevel, never()).notifyAboutChanges(any(Changes.class));
+            }
         } else {
             verify(lowLevel, never()).beginTransaction();
             verify(lowLevel, never()).setTransactionSuccessful();
@@ -176,8 +261,17 @@ class PutContentValuesStub {
 
             // if put() operation didn't use transaction,
             // number of notifications should be equal to number of objects
-            verify(lowLevel, times(contentValues.size()))
-                    .notifyAboutChanges(eq(Changes.newInstance(TestItem.TABLE, affectedTags)));
+            for (Map.Entry<Changes, Integer> expectedNotification : expectedNotifications.entrySet()) {
+                verify(lowLevel, times(expectedNotification.getValue()))
+                        .notifyAboutChanges(expectedNotification.getKey());
+            }
         }
+    }
+
+
+    private interface PutResultCreator {
+
+        @NonNull
+        PutResult newPutResult();
     }
 }

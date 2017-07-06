@@ -151,7 +151,7 @@ public class PreparedDeleteObjectTest {
 
             when(storIOContentResolver.delete()).thenReturn(new PreparedDelete.Builder(storIOContentResolver));
 
-            final PreparedDelete<DeleteResult> preparedDelete = storIOContentResolver
+            final PreparedDelete<DeleteResult, TestItem> preparedDelete = storIOContentResolver
                     .delete()
                     .object(TestItem.newInstance())
                     .prepare();
@@ -272,6 +272,19 @@ public class PreparedDeleteObjectTest {
     }
 
     public static class OtherTests {
+
+        @Test
+        public void shouldReturnObjectInGetData() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObjectWithoutTypeMapping();
+
+            final PreparedDeleteObject<TestItem> operation = deleteStub.storIOContentResolver
+                    .delete()
+                    .object(deleteStub.items.get(0))
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            assertThat(operation.getData()).isEqualTo(deleteStub.items.get(0));
+        }
 
         @Test
         public void deleteObjectObservableExecutesOnSpecifiedScheduler() {

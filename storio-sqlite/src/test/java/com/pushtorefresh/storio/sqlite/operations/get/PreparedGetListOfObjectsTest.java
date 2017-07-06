@@ -245,6 +245,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -274,6 +275,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -308,6 +310,7 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
             verify(storIOSQLite).observeChanges();
@@ -341,6 +344,7 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -374,6 +378,7 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -406,6 +411,7 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
             verify(internal).typeMapping(TestItem.class);
             verify(internal, never()).rawQuery(any(RawQuery.class));
             verifyNoMoreInteractions(storIOSQLite, internal);
@@ -414,6 +420,44 @@ public class PreparedGetListOfObjectsTest {
 
     // Because we run tests on this class with Enclosed runner, we need to wrap other tests into class
     public static class OtherTests {
+
+        @Test
+        public void shouldReturnQueryInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final Query query = Query.builder().table("test_table").build();
+            final PreparedGetListOfObjects<Object> operation =
+                    new PreparedGetListOfObjects<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            query,
+                            getResolver
+                    );
+
+            assertThat(operation.getData()).isEqualTo(query);
+        }
+
+        @Test
+        public void shouldReturnRawQueryInGetData() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final RawQuery query = RawQuery.builder().query("test").build();
+            final PreparedGetListOfObjects<Object> operation =
+                    new PreparedGetListOfObjects<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            query,
+                            getResolver
+                    );
+
+            assertThat(operation.getData()).isEqualTo(query);
+        }
 
         @Test
         public void completeBuilderShouldThrowExceptionIfNoQueryWasSet() {
@@ -511,6 +555,7 @@ public class PreparedGetListOfObjectsTest {
                 verify(getResolver).mapFromCursor(cursor);
                 verify(cursor).getCount();
                 verify(cursor).moveToNext();
+                verify(storIOSQLite).interceptors();
 
                 verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
             }
@@ -571,6 +616,7 @@ public class PreparedGetListOfObjectsTest {
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }
@@ -627,6 +673,7 @@ public class PreparedGetListOfObjectsTest {
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).interceptors();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }

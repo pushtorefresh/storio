@@ -20,7 +20,7 @@ import rx.Single;
  *
  * @param <T> type of the object.
  */
-public class PreparedPutObject<T> extends PreparedPut<PutResult> {
+public class PreparedPutObject<T> extends PreparedPut<PutResult, T> {
 
     @NonNull
     private final T object;
@@ -148,6 +148,12 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult> {
     @Override
     public Completable asRxCompletable() {
         return RxJavaUtils.createCompletable(storIOContentResolver, this);
+    }
+
+    @NonNull
+    @Override
+    public T getData() {
+        return object;
     }
 
     /**

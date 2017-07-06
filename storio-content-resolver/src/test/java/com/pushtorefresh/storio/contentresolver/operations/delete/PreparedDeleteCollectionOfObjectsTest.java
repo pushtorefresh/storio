@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
 import java.util.List;
 
 import rx.Completable;
@@ -156,7 +157,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final PreparedDelete<DeleteResults<TestItem>> preparedDelete = storIOContentResolver
+            final PreparedDelete<DeleteResults<TestItem>, Collection<TestItem>> preparedDelete = storIOContentResolver
                     .delete()
                     .objects(items)
                     .prepare();
@@ -292,6 +293,19 @@ public class PreparedDeleteCollectionOfObjectsTest {
     }
 
     public static class OtherTests {
+
+        @Test
+        public void shouldReturnItemsInGetData() {
+            final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithoutTypeMapping();
+
+            final PreparedDeleteCollectionOfObjects<TestItem> operation = deleteStub.storIOContentResolver
+                    .delete()
+                    .objects(deleteStub.items)
+                    .withDeleteResolver(deleteStub.deleteResolver)
+                    .prepare();
+
+            assertThat(operation.getData()).isEqualTo(deleteStub.items);
+        }
 
         @Test
         public void deleteCollectionOfObjectsObservableExecutesOnSpecifiedScheduler() {

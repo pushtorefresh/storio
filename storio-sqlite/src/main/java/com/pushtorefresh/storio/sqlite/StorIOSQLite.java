@@ -19,6 +19,7 @@ import com.pushtorefresh.storio.sqlite.queries.UpdateQuery;
 
 import java.io.Closeable;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import rx.Observable;
@@ -227,6 +228,14 @@ public abstract class StorIOSQLite implements Closeable {
      */
     @NonNull
     public abstract LowLevel lowLevel();
+
+    /**
+     * Provides list of added interceptors.
+     *
+     * @return unmodified list of added {@link Interceptor} (can be empty).
+     */
+    @NonNull
+    public abstract List<Interceptor> interceptors();
 
     /**
      * API for low level operations with {@link StorIOSQLite}, we made it separate

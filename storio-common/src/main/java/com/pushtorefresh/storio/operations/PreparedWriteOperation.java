@@ -10,7 +10,7 @@ import rx.Completable;
  *
  * @param <Result> type of result
  */
-public interface PreparedWriteOperation<Result> extends PreparedOperation<Result> {
+public interface PreparedWriteOperation<Result, Data> extends PreparedOperation<Result, Data> {
 
     @NonNull
     @CheckResult

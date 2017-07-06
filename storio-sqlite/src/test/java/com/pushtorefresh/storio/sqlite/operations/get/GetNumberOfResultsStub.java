@@ -96,6 +96,7 @@ class GetNumberOfResultsStub {
     void verifyQueryBehaviorForInteger(@NonNull Integer actualNumberOfResults) {
         assertThat(actualNumberOfResults).isNotNull();
         verify(storIOSQLite).get();
+        verify(storIOSQLite).interceptors();
         verify(getResolverForNumberOfResults).performGet(storIOSQLite, query);
         assertThat(actualNumberOfResults).isSameAs(numberOfResults);
         verify(cursor).close();
@@ -135,6 +136,7 @@ class GetNumberOfResultsStub {
     void verifyRawQueryBehaviorForInteger(@NonNull Integer actualNumberOfResults) {
         assertThat(actualNumberOfResults).isNotNull();
         verify(storIOSQLite).get();
+        verify(storIOSQLite).interceptors();
         verify(getResolverForNumberOfResults).performGet(storIOSQLite, rawQuery);
         assertThat(actualNumberOfResults).isSameAs(numberOfResults);
         verify(cursor).close();

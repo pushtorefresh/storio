@@ -28,6 +28,19 @@ public class PreparedPutContentValuesTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
+    public void shouldReturnContentValuesInGetData() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValues();
+
+        final PreparedPutContentValues operation = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues.get(0))
+                .withPutResolver(putStub.putResolver)
+                .prepare();
+
+        assertThat(operation.getData()).isEqualTo(putStub.contentValues.get(0));
+    }
+
+    @Test
     public void putContentValuesBlocking() {
         final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValues();
 
@@ -138,6 +151,7 @@ public class PreparedPutContentValuesTest {
 
         verify(stub.storIOSQLite).put();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -173,6 +187,7 @@ public class PreparedPutContentValuesTest {
 
         verify(stub.storIOSQLite).put();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -208,6 +223,7 @@ public class PreparedPutContentValuesTest {
 
         verify(stub.storIOSQLite).put();
         verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
 
@@ -231,5 +247,19 @@ public class PreparedPutContentValuesTest {
 
         //noinspection CheckResult
         verify(preparedOperation).asRxObservable();
+    }
+
+    @Test
+    public void shouldNotNotifyIfWasNotInsertedAndUpdated() {
+        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValuesWithoutInsertsAndUpdates();
+
+        final PutResult putResult = putStub.storIOSQLite
+                .put()
+                .contentValues(putStub.contentValues.get(0))
+                .withPutResolver(putStub.putResolver)
+                .prepare()
+                .executeAsBlocking();
+
+        putStub.verifyBehaviorForOneContentValues(putResult);
     }
 }

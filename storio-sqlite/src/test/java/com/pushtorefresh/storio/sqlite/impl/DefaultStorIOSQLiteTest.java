@@ -9,6 +9,7 @@ import com.pushtorefresh.storio.TypeMappingFinder;
 import com.pushtorefresh.storio.internal.ChangesBus;
 import com.pushtorefresh.storio.internal.TypeMappingFinderImpl;
 import com.pushtorefresh.storio.sqlite.Changes;
+import com.pushtorefresh.storio.sqlite.Interceptor;
 import com.pushtorefresh.storio.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResolver;
@@ -27,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -606,7 +608,7 @@ public class DefaultStorIOSQLiteTest {
         private final Internal internal;
 
         TestDefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @NonNull TypeMappingFinder typeMappingFinder) {
-            super(sqLiteOpenHelper, typeMappingFinder, null);
+            super(sqLiteOpenHelper, typeMappingFinder, null, Collections.<Interceptor>emptyList());
             internal = new InternalImpl(typeMappingFinder);
         }
 

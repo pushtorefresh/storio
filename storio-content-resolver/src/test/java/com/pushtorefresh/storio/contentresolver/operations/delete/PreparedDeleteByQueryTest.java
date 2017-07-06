@@ -8,7 +8,18 @@ import rx.Completable;
 import rx.Observable;
 import rx.Single;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 public class PreparedDeleteByQueryTest {
+
+    @Test
+    public void shouldReturnQueryInGetData() {
+        final DeleteByQueryStub stub = DeleteByQueryStub.newInstance();
+        final PreparedDeleteByQuery prepared = new PreparedDeleteByQuery.Builder(stub.storIOContentResolver, stub.deleteQuery)
+                .withDeleteResolver(stub.deleteResolver)
+                .prepare();
+        assertThat(prepared.getData()).isEqualTo(stub.deleteQuery);
+    }
 
     @Test
     public void shouldDeleteByQueryBlocking() {
