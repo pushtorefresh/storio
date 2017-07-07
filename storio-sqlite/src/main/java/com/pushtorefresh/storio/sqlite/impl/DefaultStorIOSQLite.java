@@ -347,7 +347,13 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * {@inheritDoc}
+         * Executes a single SQL statement that
+         * is NOT a SELECT/INSERT/UPDATE/DELETE on the database.
+         * <p>
+         * Notice: Direct call of this method will not trigger notification from {@link RawQuery#affectsTables()}.
+         * To send it use {@link DefaultStorIOSQLite#executeSQL()} instead.
+         *
+         * @param rawQuery sql query.
          */
         @WorkerThread
         @Override
@@ -367,7 +373,14 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * {@inheritDoc}
+         * Executes raw query on the database
+         * and returns {@link android.database.Cursor} over the result set.
+         * <p>
+         * Notice: Direct call of this method will not trigger notification from {@link RawQuery#affectsTables()}.
+         *
+         * @param rawQuery sql query
+         * @return A Cursor object, which is positioned before the first entry.
+         * Note that Cursors are not synchronized, see the documentation for more details.
          */
         @WorkerThread
         @NonNull
@@ -403,7 +416,16 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * {@inheritDoc}
+         * Inserts a row into the database.
+         * <p>
+         * Notice: Direct call of this method will not trigger notification,
+         * you should do it manually with {@link #notifyAboutChanges(Changes)}
+         * or use {@link DefaultStorIOSQLite#put()} instead.
+         *
+         * @param insertQuery   query.
+         * @param contentValues map that contains the initial column values for the row.
+         *                      The keys should be the column names and the values the column values.
+         * @return id of inserted row.
          */
         @WorkerThread
         @Override
@@ -418,7 +440,25 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * {@inheritDoc}
+         * Inserts a row into the database.
+         * <p>
+         * Notice: Direct call of this method will not trigger notification,
+         * you should do it manually with {@link #notifyAboutChanges(Changes)}
+         * or use {@link DefaultStorIOSQLite#put()} instead.
+         *
+         * @param insertQuery       query.
+         * @param contentValues     map that contains the initial column values for the row.
+         *                          The keys should be the column names and the values the column values.
+         * @param conflictAlgorithm for insert conflict resolver.
+         * @return the row ID of the newly inserted row OR the primary key of the existing row
+         * if the input param 'conflictAlgorithm' = {@link android.database.sqlite.SQLiteDatabase#CONFLICT_IGNORE}
+         * OR -1 if any error.
+         * @see android.database.sqlite.SQLiteDatabase#insertWithOnConflict(String, String, ContentValues, int)
+         * @see android.database.sqlite.SQLiteDatabase#CONFLICT_REPLACE
+         * @see android.database.sqlite.SQLiteDatabase#CONFLICT_ABORT
+         * @see android.database.sqlite.SQLiteDatabase#CONFLICT_FAIL
+         * @see android.database.sqlite.SQLiteDatabase#CONFLICT_ROLLBACK
+         * @see android.database.sqlite.SQLiteDatabase#CONFLICT_IGNORE
          */
         @WorkerThread
         @Override
@@ -434,7 +474,16 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * {@inheritDoc}
+         * Updates one or multiple rows in the database.
+         * <p>
+         * Notice: Direct call of this method will not trigger notification,
+         * you should do it manually with {@link #notifyAboutChanges(Changes)}
+         * or use {@link DefaultStorIOSQLite#put()} instead.
+         *
+         * @param updateQuery   query.
+         * @param contentValues a map from column names to new column values.
+         *                      {@code null} is a valid value that will be translated to {@code NULL}.
+         * @return the number of rows affected.
          */
         @WorkerThread
         @Override
@@ -450,7 +499,14 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * {@inheritDoc}
+         * Deletes one or multiple rows in the database.
+         * <p>
+         * Notice: Direct call of this method will not trigger notification,
+         * you should do it manually with {@link #notifyAboutChanges(Changes)}
+         * or use {@link DefaultStorIOSQLite#delete()} instead.
+         *
+         * @param deleteQuery query.
+         * @return the number of rows deleted.
          */
         @WorkerThread
         @Override
