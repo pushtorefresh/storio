@@ -1,8 +1,8 @@
 package com.pushtorefresh.storio.contentresolver.annotations;
 
 @StorIOContentResolverType(uri = "content://uri")
-public class PrivateFieldWithoutAccessors {
+public class FinalFieldWithoutCreator {
 
     @StorIOContentResolverColumn(name = "id", key = true)
-    private long id;
+    final long id;
 }

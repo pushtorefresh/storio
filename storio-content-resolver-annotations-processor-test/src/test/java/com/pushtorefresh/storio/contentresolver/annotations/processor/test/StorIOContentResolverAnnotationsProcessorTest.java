@@ -70,17 +70,6 @@ public class StorIOContentResolverAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveAccessors() {
-        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutAccessors.java");
-
-        assert_().about(javaSource())
-                .that(model)
-                .processedWith(new StorIOContentResolverProcessor())
-                .failsToCompile()
-                .withErrorContaining("StorIOContentResolverColumn can not be applied to private field without corresponding getter and setter or private method: id");
-    }
-
-    @Test
     public void shouldNotCompileIfAnnotatedMethodIsPrivate() {
         JavaFileObject model = JavaFileObjects.forResource("PrivateMethod.java");
 
@@ -88,18 +77,28 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("StorIOContentResolverColumn can not be applied to private field without corresponding getter and setter or private method: id");
+                .withErrorContaining("StorIOContentResolverColumn can not be applied to private method: id");
     }
 
     @Test
-    public void shouldNotCompileIfAnnotatedFieldIsFinal() {
-        JavaFileObject model = JavaFileObjects.forResource("FinalField.java");
+    public void shouldNotCompileWithFinalFieldAndWithoutCreator() {
+        JavaFileObject model = JavaFileObjects.forResource("FinalFieldWithoutCreator.java");
 
         assert_().about(javaSource())
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
                 .withErrorContaining("StorIOContentResolverColumn can not be applied to final field: id");
+    }
+
+    @Test
+    public void shouldCompileWithPrivateFinalFieldWithGetterAndCreator() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFinalFieldWithGetterAndCreator.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOContentResolverProcessor())
+                .compilesWithoutError();
     }
 
     @Test
@@ -521,17 +520,6 @@ public class StorIOContentResolverAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveSetter() {
-        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutSetter.java");
-
-        assert_().about(javaSource())
-                .that(model)
-                .processedWith(new StorIOContentResolverProcessor())
-                .failsToCompile()
-                .withErrorContaining("StorIOContentResolverColumn can not be applied to private field without corresponding getter and setter or private method: id");
-    }
-
-    @Test
     public void shouldNotCompileIfAnnotatedFieldIsPrivateAndDoesNotHaveGetter() {
         JavaFileObject model = JavaFileObjects.forResource("PrivateFieldWithoutGetter.java");
 
@@ -539,7 +527,7 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .that(model)
                 .processedWith(new StorIOContentResolverProcessor())
                 .failsToCompile()
-                .withErrorContaining("StorIOContentResolverColumn can not be applied to private field without corresponding getter and setter or private method: id");
+                .withErrorContaining("StorIOContentResolverColumn can not be applied to private field without corresponding getter: id");
     }
 
     @Test
@@ -563,7 +551,7 @@ public class StorIOContentResolverAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldCompileWithPrivatePrimitiveFieldsWithCorrepsondingAccessors() {
+    public void shouldCompileWithPrivatePrimitiveFieldsWithCorrepsondingGetters() {
         JavaFileObject model = JavaFileObjects.forResource("PrimitivePrivateFields.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("PrimitivePrivateFieldsContentResolverTypeMapping.java");
@@ -580,7 +568,7 @@ public class StorIOContentResolverAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingAccessors() {
+    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorrespondingGetters() {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesPrivateFields.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesPrivateFieldsContentResolverTypeMapping.java");
@@ -597,7 +585,7 @@ public class StorIOContentResolverAnnotationsProcessorTest {
     }
 
     @Test
-    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorresondingAccessorsAndMarkedAsIgnoreNull() {
+    public void shouldCompileWithPrivateBoxedTypesFieldsWithCorresondingGettersAndMarkedAsIgnoreNull() {
         JavaFileObject model = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNull.java");
 
         JavaFileObject generatedTypeMapping = JavaFileObjects.forResource("BoxedTypesPrivateFieldsIgnoreNullContentResolverTypeMapping.java");
@@ -611,5 +599,16 @@ public class StorIOContentResolverAnnotationsProcessorTest {
                 .compilesWithoutError()
                 .and()
                 .generatesSources(generatedTypeMapping, generatedDeleteResolver, generatedGetResolver, generatedPutResolver);
+    }
+
+    @Test
+    public void shouldNotCompileWithPrivateFieldsWithoutCreator() {
+        JavaFileObject model = JavaFileObjects.forResource("PrivateFieldsWithoutCreator.java");
+
+        assert_().about(javaSource())
+                .that(model)
+                .processedWith(new StorIOContentResolverProcessor())
+                .failsToCompile()
+                .withErrorContaining("Class marked with StorIOContentResolverType annotation needs factory method or constructor marked with StorIOContentResolverCreator annotation: PrivateFieldsWithoutCreator");
     }
 }

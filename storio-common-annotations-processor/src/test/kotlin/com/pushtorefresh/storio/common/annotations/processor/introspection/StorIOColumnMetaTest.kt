@@ -1,12 +1,14 @@
 package com.pushtorefresh.storio.common.annotations.processor.introspection
 
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.whenever
 import nl.jqno.equalsverifier.EqualsVerifier
 import nl.jqno.equalsverifier.Warning
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
 
 class StorIOColumnMetaTest {
 
@@ -45,8 +47,8 @@ class StorIOColumnMetaTest {
     @Test
     fun toStringValidation() {
         // given
-        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "TEST", javaType, annotationMock, "getter", "setter")
-        val expectedString = "StorIOColumnMeta(enclosingElement=$elementMock, element=$elementMock, elementName='TEST', javaType=$javaType, storIOColumn=$annotationMock, getter='getter', setter='setter')"
+        val columnMeta = StorIOColumnMeta(elementMock, elementMock, "TEST", javaType, annotationMock, "getter")
+        val expectedString = "StorIOColumnMeta(enclosingElement=$elementMock, element=$elementMock, elementName='TEST', javaType=$javaType, storIOColumn=$annotationMock, getter='getter')"
 
         // when
         val toString = columnMeta.toString()
@@ -66,6 +68,8 @@ class StorIOColumnMetaTest {
 
     @Test
     fun shouldReturnRealElementNameForElementWithGetPrefix() {
+        whenever(elementMock.kind).thenReturn(ElementKind.METHOD)
+
         val columnMeta = StorIOColumnMeta(elementMock, elementMock, "getProperty", javaType, annotationMock)
 
         val realName = columnMeta.realElementName
@@ -75,6 +79,8 @@ class StorIOColumnMetaTest {
 
     @Test
     fun shouldReturnRealElementNameForElementWithIsPrefix() {
+        whenever(elementMock.kind).thenReturn(ElementKind.METHOD)
+
         val columnMeta = StorIOColumnMeta(elementMock, elementMock, "isProperty", javaType, annotationMock)
 
         val realName = columnMeta.realElementName

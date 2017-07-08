@@ -22,7 +22,7 @@ object GetResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
                 .addModifiers(PUBLIC)
                 .superclass(ParameterizedTypeName.get(ClassName.get("com.pushtorefresh.storio.contentresolver.operations.get", "DefaultGetResolver"), className))
                 .addMethod(
-                        if (typeMeta.needCreator)
+                        if (typeMeta.needsCreator)
                             createMapFromCursorWithCreatorMethodSpec(typeMeta, className)
                         else
                             createMapFromCursorMethodSpec(typeMeta, className))
@@ -58,11 +58,7 @@ object GetResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
             // otherwise -> if primitive and value from cursor null -> fail early
             if (isBoxed) builder.beginControlFlow("if (!cursor.isNull(\$L))", columnIndex)
 
-            if (columnMeta.needAccessors) {
-                builder.addStatement("object.\$L(cursor.\$L)", columnMeta.setter, getFromCursor)
-            } else {
-                builder.addStatement("object.\$L = cursor.\$L", columnMeta.elementName, getFromCursor)
-            }
+            builder.addStatement("object.\$L = cursor.\$L", columnMeta.elementName, getFromCursor)
 
             if (isBoxed) builder.endControlFlow()
         }
@@ -94,7 +90,12 @@ object GetResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
 
             val getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex)
 
-            val name = TypeName.get((columnMeta.element as ExecutableElement).returnType)
+            val name = TypeName.get(
+                    if (columnMeta.element is ExecutableElement)
+                        columnMeta.element.returnType
+                    else
+                        columnMeta.element.asType()
+            )
 
             val isBoxed = javaType.isBoxedType
             if (isBoxed) { // otherwise -> if primitive and value from cursor null -> fail early

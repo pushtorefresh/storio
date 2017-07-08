@@ -20,7 +20,6 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier.ABSTRACT
-import javax.lang.model.element.Modifier.PRIVATE
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic.Kind.WARNING
@@ -89,13 +88,13 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
                     }
 
                     // If field annotation applied to both fields and methods in a same class.
-                    if (typeMeta.needCreator && !columnMeta.isMethod || !typeMeta.needCreator && columnMeta.isMethod && typeMeta.columns.isNotEmpty()) {
+                    if (typeMeta.needsCreator && !columnMeta.needsCreator || !typeMeta.needsCreator && columnMeta.needsCreator && typeMeta.columns.isNotEmpty()) {
                         throw ProcessingException(element, "Can't apply ${StorIOSQLiteColumn::class.java.simpleName} annotation to both fields and methods in a same class:" +
                                 " ${typeMeta.simpleName}")
                     }
 
                     // If column needs creator then enclosing class needs typeMeta as well.
-                    if (!typeMeta.needCreator && columnMeta.isMethod) typeMeta.needCreator = true
+                    if (!typeMeta.needsCreator && columnMeta.needsCreator) typeMeta.needsCreator = true
 
                     // Put meta column info.
                     typeMeta.columns += columnMeta.storIOColumn.name to columnMeta
@@ -138,14 +137,9 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
             throw ProcessingException(annotatedField, "Column name is empty: ${annotatedField.simpleName}")
         }
 
-        if (PRIVATE in annotatedField.modifiers) {
-            // can't be null since we validated it before
-            val (getter, setter) = accessorsMap[annotatedField.simpleName.toString()]!!
+        val getter = getters[annotatedField.simpleName.toString()]
 
-            return StorIOSQLiteColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column, getter, setter)
-        }
-
-        return StorIOSQLiteColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column)
+        return StorIOSQLiteColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column, getter)
     }
 
     /**
@@ -190,7 +184,7 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
                         " ${StorIOSQLiteColumn::class.java.simpleName} annotation: ${typeMeta.simpleName}")
             }
 
-            if (typeMeta.needCreator) {
+            if (typeMeta.needsCreator) {
                 if (typeMeta.creator == null) {
                     throw ProcessingException(key, "Class marked with ${StorIOSQLiteType::class.java.simpleName} annotation needs factory method or constructor marked with" +
                             " ${StorIOSQLiteCreator::class.java.simpleName} annotation: ${typeMeta.simpleName}")

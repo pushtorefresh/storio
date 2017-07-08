@@ -10,26 +10,28 @@ open class StorIOColumnMeta<out ColumnAnnotation : Annotation>(
         val elementName: String,
         val javaType: JavaType,
         val storIOColumn: ColumnAnnotation,
-        val getter: String? = null,
-        val setter: String? = null) {
+        val getter: String? = null) {
 
     val isMethod: Boolean
         get() = element.kind == ElementKind.METHOD
 
     val realElementName: String
         get() = when {
-            elementName.startsWith("get") && isUpperCase(elementName[3]) -> decapitalize(elementName.substring(3))
-            elementName.startsWith("is") && isUpperCase(elementName[2]) -> decapitalize(elementName.substring(2))
+            isMethod && elementName.startsWith("get") && isUpperCase(elementName[3]) -> decapitalize(elementName.substring(3))
+            isMethod && elementName.startsWith("is") && isUpperCase(elementName[2]) -> decapitalize(elementName.substring(2))
             else -> elementName
         }
 
-    val needAccessors: Boolean
-        get() = getter != null && setter != null
+    val needsGetter: Boolean
+        get() = getter != null
+
+    val needsCreator: Boolean
+        get() = isMethod || needsGetter
 
     val contextAwareName: String
         get() = when {
             isMethod -> "$elementName()"
-            needAccessors -> "$getter()"
+            needsGetter -> "$getter()"
             else -> elementName
         }
 
@@ -45,7 +47,6 @@ open class StorIOColumnMeta<out ColumnAnnotation : Annotation>(
         if (javaType != other.javaType) return false
         if (storIOColumn != other.storIOColumn) return false
         if (getter != other.getter) return false
-        if (setter != other.setter) return false
 
         return true
     }
@@ -57,11 +58,10 @@ open class StorIOColumnMeta<out ColumnAnnotation : Annotation>(
         result = 31 * result + javaType.hashCode()
         result = 31 * result + storIOColumn.hashCode()
         result = 31 * result + (getter?.hashCode() ?: 0)
-        result = 31 * result + (setter?.hashCode() ?: 0)
         return result
     }
 
-    override fun toString(): String = "StorIOColumnMeta(enclosingElement=$enclosingElement, element=$element, elementName='$elementName', javaType=$javaType, storIOColumn=$storIOColumn, getter='$getter', setter='$setter')"
+    override fun toString(): String = "StorIOColumnMeta(enclosingElement=$enclosingElement, element=$element, elementName='$elementName', javaType=$javaType, storIOColumn=$storIOColumn, getter='$getter')"
 
     private fun decapitalize(str: String) = when {
         str.length > 1 -> Character.toLowerCase(str[0]) + str.substring(1)

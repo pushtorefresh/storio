@@ -1,7 +1,7 @@
 package com.pushtorefresh.storio.contentresolver.annotations;
 
 @StorIOContentResolverType(uri = "content://uri")
-public class PrimitivePrivateFields {
+public class PrivateFieldsWithoutCreator {
 
     @StorIOContentResolverColumn(name = "field1")
     private boolean field1;
@@ -26,18 +26,6 @@ public class PrimitivePrivateFields {
 
     @StorIOContentResolverColumn(name = "field8")
     private byte[] field8;
-
-    @StorIOContentResolverCreator
-    public PrimitivePrivateFields(boolean field1, short field2, int field3, long field4, float field5, double field6, String field7, byte[] field8) {
-        this.field1 = field1;
-        this.field2 = field2;
-        this.field3 = field3;
-        this.field4 = field4;
-        this.field5 = field5;
-        this.field6 = field6;
-        this.field7 = field7;
-        this.field8 = field8;
-    }
 
     public boolean isField1() {
         return field1;

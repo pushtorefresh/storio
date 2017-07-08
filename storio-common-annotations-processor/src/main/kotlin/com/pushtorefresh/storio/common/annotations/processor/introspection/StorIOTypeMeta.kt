@@ -7,7 +7,7 @@ open class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOCo
         val simpleName: String,
         val packageName: String,
         val storIOType: TypeAnnotation,
-        var needCreator: Boolean = false) {
+        var needsCreator: Boolean = false) {
 
     var creator: ExecutableElement? = null
 
@@ -16,7 +16,7 @@ open class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOCo
 
     val orderedColumns: Collection<ColumnMeta>
         get() = when {
-            needCreator -> {
+            needsCreator -> {
                 val params = mutableListOf<String>()
                 creator?.let {
                     it.parameters.mapTo(params) { it.simpleName.toString() }
@@ -52,5 +52,5 @@ open class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOCo
         return result
     }
 
-    override fun toString() = "StorIOTypeMeta(simpleName='$simpleName', packageName='$packageName', storIOType=$storIOType, needCreator=$needCreator, creator=$creator, columns=$columns)"
+    override fun toString() = "StorIOTypeMeta(simpleName='$simpleName', packageName='$packageName', storIOType=$storIOType, needsCreator=$needsCreator, creator=$creator, columns=$columns)"
 }
