@@ -7,7 +7,7 @@ But, please first file an issue with feature request or bug report or contact us
 
 Also: GitHub issues are for feature requests and bug reports only, please ask usages question on StackOverflow.
 
-####Building project:
+#### Building project:
 
 To build and test the project you need to execute:
 ```bash
