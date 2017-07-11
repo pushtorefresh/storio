@@ -188,7 +188,7 @@ public class Tweet {
 }
 ```
 
--`Kotlin`:
+`Kotlin`:
 
 In order to make annotation processors work with Kotlin you need to add the following to your `build.gradle`:
 ```groovy
