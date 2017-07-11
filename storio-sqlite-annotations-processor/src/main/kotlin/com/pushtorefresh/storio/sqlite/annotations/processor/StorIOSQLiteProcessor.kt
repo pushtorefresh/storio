@@ -137,7 +137,7 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
             throw ProcessingException(annotatedField, "Column name is empty: ${annotatedField.simpleName}")
         }
 
-        val getter = getters[annotatedField.simpleName.toString()]
+        val getter = getters[annotatedField]
 
         return StorIOSQLiteColumnMeta(annotatedField.enclosingElement, annotatedField, annotatedField.simpleName.toString(), javaType, column, getter)
     }

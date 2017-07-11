@@ -32,7 +32,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
     protected lateinit var messager: Messager
 
     // cashing getters for private fields to avoid second pass since we already have result after the validation step
-    protected val getters = mutableMapOf<String, String>()
+    protected val getters = mutableMapOf<Element, String>()
 
     /**
      * Processes class annotations.
@@ -112,7 +112,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
             }
         }
 
-        if (annotatedElement.kind == FIELD && FINAL in annotatedElement.modifiers && annotatedElement.simpleName.toString() !in getters) {
+        if (annotatedElement.kind == FIELD && FINAL in annotatedElement.modifiers && annotatedElement !in getters) {
             throw ProcessingException(annotatedElement, "${columnAnnotationClass.simpleName} can not be applied to final field: ${annotatedElement.simpleName}")
         }
 
@@ -181,7 +181,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
         if (getter == null) {
             return false
         } else {
-            getters += name to getter!!
+            getters += annotatedElement to getter!!
             return true
         }
     }
