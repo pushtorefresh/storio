@@ -123,7 +123,6 @@ def getRuntimeJar() {
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')
 
 subprojects {
-
     project.plugins.whenPluginAdded { plugin ->
         if ('com.android.build.gradle.AppPlugin'.equals(plugin.class.name)
                 || 'com.android.build.gradle.LibraryPlugin'.equals(plugin.class.name)) {
@@ -148,8 +147,70 @@ subprojects {
     }
 }
 
+def gitTag() {
+    def tag = 'git tag --list --points-at HEAD'.execute((List) null, rootProject.projectDir).text.trim()
+
+    if (tag.split(System.lineSeparator()).length > 1) {
+        throw new IllegalStateException("gitTag is accessed but commit has multiple tags: $tag")
+    }
+
+    return tag
+}
+
+def projectVersion() {
+    def tag = gitTag()
+
+    if (tag.startsWith('v')) {
+        return tag.substring(1)
+    } else if (tag.isEmpty()) {
+        return 'development'
+    }
+
+    return tag
+}
+
+def validateTagAndVersion() {
+    if (gitTag().isEmpty()) {
+        throw new IllegalStateException('Publishing is not allowed because current commit has no tag')
+    }
+
+    if (projectVersion().isEmpty()) {
+        throw new IllegalStateException('Publishing is not allowed because current projectVersion is empty')
+    }
+}
+
+allprojects {
+    ext.'signing.password' = System.getenv('GPG_PASSPHRASE')
+}
+
+ext.VERSION_NAME = projectVersion()
+
+def isReleaseBuild() {
+    return !projectVersion().equals('development')
+}
+
+def getReleaseRepositoryUrl() {
+    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
+            : 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+}
+
+def getSnapshotRepositoryUrl() {
+    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
+            : 'https://oss.sonatype.org/content/repositories/snapshots/'
+}
+
+def getRepositoryUsername() {
+    return System.getenv('SONATYPE_USERNAME')
+}
+
+def getRepositoryPassword() {
+    return System.getenv('SONATYPE_PASSWORD')
+}
+
 apply plugin: 'io.codearte.nexus-staging'
 
 nexusStaging {
     packageGroup = 'com.pushtorefresh'
+    username = getRepositoryUsername()
+    password = getRepositoryPassword()
 }

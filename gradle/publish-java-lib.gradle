@@ -17,28 +17,6 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-def isReleaseBuild() {
-    return VERSION_NAME.contains('SNAPSHOT') == false
-}
-
-def getReleaseRepositoryUrl() {
-    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
-            : 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-}
-
-def getSnapshotRepositoryUrl() {
-    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
-            : 'https://oss.sonatype.org/content/repositories/snapshots/'
-}
-
-def getRepositoryUsername() {
-    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ''
-}
-
-def getRepositoryPassword() {
-    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ''
-}
-
 afterEvaluate { project ->
     uploadArchives {
         repositories {
@@ -114,4 +92,12 @@ afterEvaluate { project ->
         archives sourcesJar
         archives javadocJar
     }
+
+    task validatePublishing {
+        doLast {
+            validateTagAndVersion()
+        }
+    }
+
+    uploadArchives.dependsOn validatePublishing
 }
