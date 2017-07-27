@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.pushtorefresh.storio.sqlite.annotations.processor.test">
+    package="com.pushtorefresh.storio2.sqlite.annotations.processor.test">
 
     <application
         android:allowBackup="true"

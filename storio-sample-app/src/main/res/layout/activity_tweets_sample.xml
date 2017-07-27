@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/tweets_sample_tweets_fragment"
-        class="com.pushtorefresh.storio.sample.ui.fragment.TweetsFragment"
+        class="com.pushtorefresh.storio2.sample.ui.fragment.TweetsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

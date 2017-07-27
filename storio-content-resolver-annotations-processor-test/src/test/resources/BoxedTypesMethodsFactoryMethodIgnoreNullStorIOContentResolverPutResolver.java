@@ -1,10 +1,10 @@
-package com.pushtorefresh.storio.contentresolver.annotations;
+package com.pushtorefresh.storio2.contentresolver.annotations;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
-import com.pushtorefresh.storio.contentresolver.operations.put.DefaultPutResolver;
-import com.pushtorefresh.storio.contentresolver.queries.InsertQuery;
-import com.pushtorefresh.storio.contentresolver.queries.UpdateQuery;
+import com.pushtorefresh.storio2.contentresolver.operations.put.DefaultPutResolver;
+import com.pushtorefresh.storio2.contentresolver.queries.InsertQuery;
+import com.pushtorefresh.storio2.contentresolver.queries.UpdateQuery;
 import java.lang.Override;
 
 /**

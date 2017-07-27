@@ -1,8 +1,8 @@
-package com.pushtorefresh.storio.contentresolver.annotations;
+package com.pushtorefresh.storio2.contentresolver.annotations;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import com.pushtorefresh.storio.contentresolver.operations.get.DefaultGetResolver;
+import com.pushtorefresh.storio2.contentresolver.operations.get.DefaultGetResolver;
 import java.lang.Override;
 
 /**
