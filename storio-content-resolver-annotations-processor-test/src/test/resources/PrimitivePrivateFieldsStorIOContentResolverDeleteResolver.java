@@ -1,8 +1,8 @@
-package com.pushtorefresh.storio.contentresolver.annotations;
+package com.pushtorefresh.storio2.contentresolver.annotations;
 
 import android.support.annotation.NonNull;
-import com.pushtorefresh.storio.contentresolver.operations.delete.DefaultDeleteResolver;
-import com.pushtorefresh.storio.contentresolver.queries.DeleteQuery;
+import com.pushtorefresh.storio2.contentresolver.operations.delete.DefaultDeleteResolver;
+import com.pushtorefresh.storio2.contentresolver.queries.DeleteQuery;
 import java.lang.Override;
 
 /**

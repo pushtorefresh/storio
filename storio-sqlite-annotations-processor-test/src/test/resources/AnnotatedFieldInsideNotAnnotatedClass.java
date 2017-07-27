@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio.sqlite.annotations;
+package com.pushtorefresh.storio2.sqlite.annotations;
 
 public class AnnotatedFieldInsideNotAnnotatedClass {
 
