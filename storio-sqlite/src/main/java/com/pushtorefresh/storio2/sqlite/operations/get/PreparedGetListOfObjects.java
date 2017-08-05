@@ -79,33 +79,6 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
      * @return non-null {@link Observable} which will emit non-null, immutable
      * {@link List} with mapped results and will be subscribed to changes of tables from query,
      * list can be empty.
-     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
-     */
-    @NonNull
-    @CheckResult
-    @Override
-    public Observable<List<T>> createObservable() {
-        return asRxObservable();
-    }
-
-    /**
-     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
-     * and will emit result each time change occurs.
-     * <p>
-     * First result will be emitted immediately after subscription,
-     * other emissions will occur only if changes of tables from query will occur during lifetime of
-     * the {@link Observable}.
-     * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
-     * </dl>
-     * <p>
-     * Please don't forget to unsubscribe from this {@link Observable} because
-     * it's "Hot" and endless.
-     *
-     * @return non-null {@link Observable} which will emit non-null, immutable
-     * {@link List} with mapped results and will be subscribed to changes of tables from query,
-     * list can be empty.
      */
     @NonNull
     @CheckResult

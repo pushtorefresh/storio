@@ -30,7 +30,7 @@ class GetObjectStub {
     final StorIOSQLite storIOSQLite;
 
     @NonNull
-    private final StorIOSQLite.Internal internal;
+    private final StorIOSQLite.LowLevel lowLevel;
 
     @NonNull
     final Query query;
@@ -56,10 +56,10 @@ class GetObjectStub {
         this.withTypeMapping = withTypeMapping;
 
         storIOSQLite = mock(StorIOSQLite.class);
-        internal = mock(StorIOSQLite.Internal.class);
+        lowLevel = mock(StorIOSQLite.LowLevel.class);
 
         when(storIOSQLite.lowLevel())
-                .thenReturn(internal);
+                .thenReturn(lowLevel);
 
         String table = "test_table";
         String tag = "test_tag";
@@ -115,7 +115,7 @@ class GetObjectStub {
         typeMapping = mock(SQLiteTypeMapping.class);
 
         if (withTypeMapping) {
-            when(internal.typeMapping(TestItem.class)).thenReturn(typeMapping);
+            when(lowLevel.typeMapping(TestItem.class)).thenReturn(typeMapping);
             when(typeMapping.getResolver()).thenReturn(getResolver);
         }
     }
@@ -160,13 +160,13 @@ class GetObjectStub {
             verify(storIOSQLite).lowLevel();
 
             // should be called only once because of Performance!
-            verify(internal).typeMapping(TestItem.class);
+            verify(lowLevel).typeMapping(TestItem.class);
 
             // should be called only once because of Performance!
             verify(typeMapping).getResolver();
         }
 
-        verifyNoMoreInteractions(storIOSQLite, internal, cursor);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
     void verifyQueryBehavior(@NonNull Observable<TestItem> observable) {

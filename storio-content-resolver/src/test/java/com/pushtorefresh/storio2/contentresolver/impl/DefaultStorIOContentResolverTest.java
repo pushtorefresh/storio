@@ -242,7 +242,7 @@ public class DefaultStorIOContentResolverTest {
 
     class TestDefaultStorIOContentResolver extends DefaultStorIOContentResolver {
 
-        private final Internal internal;
+        private final LowLevel lowLevel;
 
         TestDefaultStorIOContentResolver(
                 @NonNull ContentResolver contentResolver,
@@ -250,14 +250,14 @@ public class DefaultStorIOContentResolverTest {
                 @NonNull TypeMappingFinder typeMappingFinder
         ) {
             super(contentResolver, contentObserverHandler, typeMappingFinder, null);
-            internal = new InternalImpl(typeMappingFinder);
+            lowLevel = new LowLevelImpl(typeMappingFinder);
         }
 
         @Nullable
         TypeMappingFinder typeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
             Field field = DefaultStorIOContentResolver.LowLevelImpl.class.getDeclaredField("typeMappingFinder");
             field.setAccessible(true);
-            return (TypeMappingFinder) field.get(internal);
+            return (TypeMappingFinder) field.get(lowLevel);
         }
     }
 

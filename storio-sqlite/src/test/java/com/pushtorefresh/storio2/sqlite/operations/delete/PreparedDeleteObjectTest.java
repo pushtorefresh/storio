@@ -14,13 +14,11 @@ import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -154,28 +152,6 @@ public class PreparedDeleteObjectTest {
 
             deleteStub.verifyBehaviorForOneObject(completable);
         }
-
-        @Test
-        public void createObservableReturnsAsRxObservable() {
-            final DeleteStub deleteStub = DeleteStub.newStubForOneObjectWithTypeMapping();
-
-            PreparedDeleteObject<TestItem> preparedOperation = spy(deleteStub.storIOSQLite
-                    .delete()
-                    .object(deleteStub.itemsRequestedForDelete.get(0))
-                    .prepare());
-
-            Observable<DeleteResult> observable =
-                    Observable.just(DeleteResult.newInstance(1, TestItem.TABLE));
-
-            //noinspection CheckResult
-            doReturn(observable).when(preparedOperation).asRxObservable();
-
-            //noinspection deprecation
-            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
-
-            //noinspection CheckResult
-            verify(preparedOperation).asRxObservable();
-        }
     }
 
     public static class NoTypeMappingError {
@@ -183,9 +159,9 @@ public class PreparedDeleteObjectTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
@@ -205,17 +181,17 @@ public class PreparedDeleteObjectTest {
             verify(storIOSQLite).delete();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).delete(any(DeleteQuery.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbAsObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
@@ -237,17 +213,17 @@ public class PreparedDeleteObjectTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).delete(any(DeleteQuery.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbAsSingle() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
@@ -269,17 +245,17 @@ public class PreparedDeleteObjectTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).delete(any(DeleteQuery.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbAsCompletable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.delete()).thenReturn(new PreparedDelete.Builder(storIOSQLite));
 
@@ -301,9 +277,9 @@ public class PreparedDeleteObjectTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).delete(any(DeleteQuery.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).delete(any(DeleteQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
     }
 

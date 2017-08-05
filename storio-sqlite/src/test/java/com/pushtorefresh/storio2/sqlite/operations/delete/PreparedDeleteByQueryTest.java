@@ -8,17 +8,14 @@ import com.pushtorefresh.storio2.sqlite.queries.DeleteQuery;
 
 import org.junit.Test;
 
-import rx.Observable;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -29,14 +26,14 @@ public class PreparedDeleteByQueryTest {
         final StorIOSQLite storIOSQLite;
         final DeleteQuery deleteQuery;
         final DeleteResolver<DeleteQuery> deleteResolver;
-        final StorIOSQLite.Internal internal;
+        final StorIOSQLite.LowLevel lowLevel;
         final DeleteResult expectedDeleteResult;
 
         private DeleteByQueryStub() {
             storIOSQLite = mock(StorIOSQLite.class);
-            internal = mock(StorIOSQLite.Internal.class);
+            lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             deleteQuery = DeleteQuery.builder()
                     .table("test_table")
@@ -58,8 +55,8 @@ public class PreparedDeleteByQueryTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).interceptors();
             verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
-            verify(internal).notifyAboutChanges(Changes.newInstance(deleteQuery.table(), deleteQuery.affectsTags()));
-            verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+            verify(lowLevel).notifyAboutChanges(Changes.newInstance(deleteQuery.table(), deleteQuery.affectsTags()));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver);
         }
     }
 
@@ -148,9 +145,9 @@ public class PreparedDeleteByQueryTest {
     @Test
     public void shouldWrapExceptionIntoStorIOExceptionBlocking() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         //noinspection unchecked
         final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
@@ -171,16 +168,16 @@ public class PreparedDeleteByQueryTest {
 
             verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
             verify(storIOSQLite).interceptors();
-            verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+            verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver);
         }
     }
 
     @Test
     public void shouldWrapExceptionIntoStorIOExceptionObservable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         //noinspection unchecked
         final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
@@ -209,15 +206,15 @@ public class PreparedDeleteByQueryTest {
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
         verify(storIOSQLite).defaultScheduler();
         verify(storIOSQLite).interceptors();
-        verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver);
     }
 
     @Test
     public void shouldWrapExceptionIntoStorIOExceptionSingle() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         //noinspection unchecked
         final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
@@ -246,15 +243,15 @@ public class PreparedDeleteByQueryTest {
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
         verify(storIOSQLite).defaultScheduler();
         verify(storIOSQLite).interceptors();
-        verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver);
     }
 
     @Test
     public void shouldWrapExceptionIntoStorIOExceptionCompletable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         //noinspection unchecked
         final DeleteResolver<DeleteQuery> deleteResolver = mock(DeleteResolver.class);
@@ -283,15 +280,15 @@ public class PreparedDeleteByQueryTest {
         verify(storIOSQLite).defaultScheduler();
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
         verify(storIOSQLite).interceptors();
-        verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver);
     }
 
     @Test
     public void shouldNotNotifyIfWasNotDeleted() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .table("test_table")
@@ -315,9 +312,9 @@ public class PreparedDeleteByQueryTest {
         assertThat(actualDeleteResult).isEqualTo(expectedDeleteResult);
 
         verify(deleteResolver).performDelete(same(storIOSQLite), same(deleteQuery));
-        verify(internal, never()).notifyAboutChanges(any(Changes.class));
+        verify(lowLevel, never()).notifyAboutChanges(any(Changes.class));
         verify(storIOSQLite).interceptors();
-        verifyNoMoreInteractions(storIOSQLite, internal, deleteResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver);
     }
 
     @Test
@@ -354,25 +351,5 @@ public class PreparedDeleteByQueryTest {
                 .prepare();
 
         schedulerChecker.checkAsCompletable(operation);
-    }
-
-    @Test
-    public void createObservableReturnsAsRxObservable() {
-        final DeleteByQueryStub stub = new DeleteByQueryStub();
-
-        PreparedDeleteByQuery preparedOperation =
-                spy(new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
-                        .withDeleteResolver(stub.deleteResolver)
-                        .prepare());
-
-        Observable<DeleteResult> observable = Observable.just(DeleteResult.newInstance(1, TestItem.TABLE));
-        //noinspection CheckResult
-        doReturn(observable).when(preparedOperation).asRxObservable();
-
-        //noinspection deprecation
-        assertThat(preparedOperation.createObservable()).isEqualTo(observable);
-
-        //noinspection CheckResult
-        verify(preparedOperation).asRxObservable();
     }
 }

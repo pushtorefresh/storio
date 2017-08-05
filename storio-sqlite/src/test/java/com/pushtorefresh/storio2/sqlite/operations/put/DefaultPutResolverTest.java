@@ -137,11 +137,11 @@ public class DefaultPutResolverTest {
     @Test
     public void update() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
         final TestItem testItem = new TestItem(null); // item with some id, should be updated
 
         when(storIOSQLite.lowLevel())
-                .thenReturn(internal);
+                .thenReturn(lowLevel);
 
         final Query expectedQuery = Query.builder()
                 .table(TestItem.TABLE)
@@ -151,7 +151,7 @@ public class DefaultPutResolverTest {
 
         final Cursor cursor = mock(Cursor.class);
 
-        when(internal.query(eq(expectedQuery)))
+        when(lowLevel.query(eq(expectedQuery)))
                 .thenReturn(cursor);
 
         when(cursor.getCount())
@@ -159,7 +159,7 @@ public class DefaultPutResolverTest {
 
         final Integer expectedNumberOfRowsUpdated = 1;
 
-        when(internal.update(any(UpdateQuery.class), any(ContentValues.class)))
+        when(lowLevel.update(any(UpdateQuery.class), any(ContentValues.class)))
                 .thenReturn(expectedNumberOfRowsUpdated);
 
         final Set<String> tags = singleton("test_tag");
@@ -197,27 +197,27 @@ public class DefaultPutResolverTest {
         // Performing Put that should "update"
         final PutResult putResult = putResolver.performPut(storIOSQLite, testItem);
 
-        verify(internal).beginTransaction();
-        verify(internal).setTransactionSuccessful();
-        verify(internal).endTransaction();
+        verify(lowLevel).beginTransaction();
+        verify(lowLevel).setTransactionSuccessful();
+        verify(lowLevel).endTransaction();
 
         // checks that it asks db for results
-        verify(internal).query(eq(expectedQuery));
+        verify(lowLevel).query(eq(expectedQuery));
 
         // checks that cursor was closed
         verify(cursor).close();
 
         // only one query should occur
-        verify(internal).query(any(Query.class));
+        verify(lowLevel).query(any(Query.class));
 
         // checks that required update was performed
-        verify(internal).update(eq(expectedUpdateQuery), eq(expectedContentValues));
+        verify(lowLevel).update(eq(expectedUpdateQuery), eq(expectedContentValues));
 
         // only one update should occur
-        verify(internal).update(any(UpdateQuery.class), any(ContentValues.class));
+        verify(lowLevel).update(any(UpdateQuery.class), any(ContentValues.class));
 
         // no inserts should occur
-        verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+        verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
 
         // put result checks
         assertThat(putResult.wasInserted()).isFalse();
