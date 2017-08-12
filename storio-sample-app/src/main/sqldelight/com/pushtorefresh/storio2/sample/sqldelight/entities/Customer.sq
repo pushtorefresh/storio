@@ -1,0 +1,16 @@
+import java.lang.Float;
+
+CREATE TABLE customer (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    surname TEXT NOT NULL,
+    city TEXT NOT NULL
+);
+
+select_all:
+SELECT * FROM customer;
+
+select_from_city:
+SELECT *
+FROM customer
+WHERE city == ?;
