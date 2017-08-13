@@ -3,6 +3,7 @@ package com.pushtorefresh.storio2.sample.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +23,7 @@ import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.put.PutResults;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -55,8 +57,9 @@ public class TweetsFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SampleApp.get(getActivity()).appComponent().inject(this);
-        tweetsAdapter = new TweetsAdapter();
+        final FragmentActivity activity = getActivity();
+        SampleApp.get(activity).appComponent().inject(this);
+        tweetsAdapter = new TweetsAdapter(LayoutInflater.from(activity));
         new Relations(storIOSQLite).getTweetWithUser();
     }
 
@@ -112,7 +115,7 @@ public class TweetsFragment extends BaseFragment {
                         // So you just need to check if it's empty or not
                         if (tweets.isEmpty()) {
                             uiStateController.setUiStateEmpty();
-                            tweetsAdapter.setTweets(null);
+                            tweetsAdapter.setTweets(Collections.<Tweet>emptyList());
                         } else {
                             uiStateController.setUiStateContent();
                             tweetsAdapter.setTweets(tweets);
@@ -125,7 +128,7 @@ public class TweetsFragment extends BaseFragment {
                         // You can prevent crash of the application via error handler
                         Timber.e(throwable, "reloadData()");
                         uiStateController.setUiStateError();
-                        tweetsAdapter.setTweets(null);
+                        tweetsAdapter.setTweets(Collections.<Tweet>emptyList());
                     }
                 });
 

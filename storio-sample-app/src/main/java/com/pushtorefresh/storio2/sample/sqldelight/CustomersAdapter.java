@@ -2,7 +2,6 @@ package com.pushtorefresh.storio2.sample.sqldelight;
 
 import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 import com.pushtorefresh.storio2.sample.R;
 import com.pushtorefresh.storio2.sample.sqldelight.entities.Customer;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -19,22 +19,30 @@ import butterknife.ButterKnife;
 
 public class CustomersAdapter extends RecyclerView.Adapter<CustomersAdapter.ViewHolder> {
 
-    private List<Customer> customers;
+    @NonNull
+    private final LayoutInflater layoutInflater;
 
-    public void setCustomers(@Nullable List<Customer> customers) {
+    @NonNull
+    private List<Customer> customers = Collections.emptyList();
+
+    public CustomersAdapter(@NonNull LayoutInflater layoutInflater) {
+        this.layoutInflater = layoutInflater;
+    }
+
+    public void setCustomers(@NonNull List<Customer> customers) {
         this.customers = customers;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return customers == null ? 0 : customers.size();
+        return customers.size();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_customer, parent, false));
+        View itemView = layoutInflater.inflate(R.layout.list_item_customer, parent, false);
+        return new ViewHolder(itemView);
     }
 
     @SuppressLint("SetTextI18n")

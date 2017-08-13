@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 
 import com.pushtorefresh.storio2.sample.R;
 import com.pushtorefresh.storio2.sample.SampleApp;
@@ -16,6 +17,7 @@ import com.pushtorefresh.storio2.sample.ui.activity.BaseActivity;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,7 +34,6 @@ import timber.log.Timber;
 import static com.pushtorefresh.storio2.sample.sqldelight.SQLUtils.makeReadQuery;
 import static com.pushtorefresh.storio2.sample.sqldelight.SQLUtils.mapFromCursor;
 import static com.pushtorefresh.storio2.sample.ui.Toasts.safeShowShortToast;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 public class SqlDelightActivity extends BaseActivity {
@@ -52,7 +53,7 @@ public class SqlDelightActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sqldelight);
         SampleApp.get(this).appComponent().inject(this);
-        customersAdapter = new CustomersAdapter();
+        customersAdapter = new CustomersAdapter(LayoutInflater.from(this));
 
         ButterKnife.bind(this);
 
@@ -90,14 +91,13 @@ public class SqlDelightActivity extends BaseActivity {
                         return mapFromCursor(cursor, Customer.CURSOR_MAPPER);
                     }
                 })
-                .delay(1, SECONDS)
                 .observeOn(mainThread())
                 .subscribe(new Action1<List<Customer>>() {
                     @Override
                     public void call(List<Customer> customers) {
                         if (customers.isEmpty()) {
                             uiStateController.setUiStateEmpty();
-                            customersAdapter.setCustomers(null);
+                            customersAdapter.setCustomers(Collections.<Customer>emptyList());
                         } else {
                             uiStateController.setUiStateContent();
                             customersAdapter.setCustomers(customers);
@@ -108,7 +108,7 @@ public class SqlDelightActivity extends BaseActivity {
                     public void call(Throwable throwable) {
                         Timber.e(throwable, "loadData()");
                         uiStateController.setUiStateError();
-                        customersAdapter.setCustomers(null);
+                        customersAdapter.setCustomers(Collections.<Customer>emptyList());
                     }
                 });
         unsubscribeOnStop(subscription);
@@ -118,7 +118,6 @@ public class SqlDelightActivity extends BaseActivity {
     void addContent() {
         final List<Customer> customers = new ArrayList<Customer>();
 
-        customers.add(Customer.builder().name("Artem").surname("Zinnatullin").city("SF").build());
         customers.add(Customer.builder().name("Elon").surname("Musk").city("Boring").build());
         customers.add(Customer.builder().name("Jake").surname("Wharton").city("Pittsburgh").build());
 

@@ -1,5 +1,3 @@
-import java.lang.Float;
-
 CREATE TABLE customer (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,

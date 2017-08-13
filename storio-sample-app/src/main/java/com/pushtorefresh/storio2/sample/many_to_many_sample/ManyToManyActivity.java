@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 
 import com.pushtorefresh.storio2.sample.R;
 import com.pushtorefresh.storio2.sample.SampleApp;
@@ -72,7 +73,7 @@ public class ManyToManyActivity extends BaseActivity implements PersonsAdapter.C
         SampleApp.get(this).appComponent().inject(this);
         ButterKnife.bind(this);
 
-        personsAdapter = new PersonsAdapter(this);
+        personsAdapter = new PersonsAdapter(LayoutInflater.from(this), this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(personsAdapter);
 

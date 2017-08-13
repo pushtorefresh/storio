@@ -2,7 +2,6 @@ package com.pushtorefresh.storio2.sample.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,24 +16,34 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static java.util.Collections.emptyList;
+
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
 
-    private List<Tweet> tweets;
+    @NonNull
+    private final LayoutInflater layoutInflater;
 
-    public void setTweets(@Nullable List<Tweet> tweets) {
+    @NonNull
+    private List<Tweet> tweets = emptyList();
+
+    public TweetsAdapter(@NonNull LayoutInflater layoutInflater) {
+        this.layoutInflater = layoutInflater;
+    }
+
+    public void setTweets(@NonNull List<Tweet> tweets) {
         this.tweets = tweets;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return tweets == null ? 0 : tweets.size();
+        return tweets.size();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_tweet, parent, false));
+        View itemView = layoutInflater.inflate(R.layout.list_item_tweet, parent, false);
+        return new ViewHolder(itemView);
     }
 
     @SuppressLint("SetTextI18n")
