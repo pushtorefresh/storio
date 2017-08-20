@@ -72,31 +72,6 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
      *
      * @return non-null {@link Observable} which will emit non-null
      * list with mapped results and will be subscribed to changes of {@link #query} Uri.
-     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
-     */
-    @NonNull
-    @CheckResult
-    @Override
-    public Observable<Cursor> createObservable() {
-        return asRxObservable();
-    }
-
-    /**
-     * Creates "Hot" {@link Observable} which will be subscribed to changes of {@link #query} Uri
-     * and will emit result each time change occurs.
-     * <p>
-     * First result will be emitted immediately after subscription,
-     * other emissions will occur only if changes of {@link #query} Uri will occur.
-     * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOContentResolver#defaultScheduler()} if not {@code null}.</dd>
-     * </dl>
-     * <p>
-     * Please don't forget to unsubscribe from this {@link Observable} because
-     * it's "Hot" and endless.
-     *
-     * @return non-null {@link Observable} which will emit non-null
-     * list with mapped results and will be subscribed to changes of {@link #query} Uri.
      */
     @NonNull
     @CheckResult

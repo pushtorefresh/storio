@@ -43,7 +43,7 @@ import static java.util.Collections.unmodifiableMap;
 public class DefaultStorIOContentResolver extends StorIOContentResolver {
 
     @NonNull
-    private final Internal lowLevel;
+    private final LowLevel lowLevel;
 
     @NonNull
     private final ContentResolver contentResolver;
@@ -85,15 +85,6 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     @Override
     public Scheduler defaultScheduler() {
         return defaultScheduler;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public Internal internal() {
-        return lowLevel;
     }
 
     /**
@@ -252,7 +243,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         }
     }
 
-    protected class LowLevelImpl extends Internal {
+    protected class LowLevelImpl extends LowLevel {
 
         @NonNull
         private final TypeMappingFinder typeMappingFinder;
@@ -350,17 +341,6 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         @Override
         public ContentResolver contentResolver() {
             return contentResolver;
-        }
-    }
-
-    /**
-     * Please use {@link LowLevelImpl} instead, this type will be remove in v2.0.
-     */
-    @Deprecated
-    protected class InternalImpl extends LowLevelImpl {
-
-        protected InternalImpl(@NonNull TypeMappingFinder typeMappingFinder) {
-            super(typeMappingFinder);
         }
     }
 }

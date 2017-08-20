@@ -32,19 +32,6 @@ public interface PreparedOperation<Result, Data> {
     /**
      * Creates {@link rx.Observable} that emits result of Operation.
      * <p>
-     * Observable may be "Hot" or "Cold", please read documentation of the concrete implementation.
-     *
-     * @return observable result of operation with only one {@link rx.Observer#onNext(Object)} call.
-     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
-     */
-    @NonNull
-    @CheckResult
-    @Deprecated
-    Observable<Result> createObservable();
-
-    /**
-     * Creates {@link rx.Observable} that emits result of Operation.
-     * <p>
      * Observable may be "Hot" (usually "Warm") or "Cold", please read documentation of the concrete implementation.
      *
      * @return observable result of operation with only one {@link rx.Observer#onNext(Object)} call.

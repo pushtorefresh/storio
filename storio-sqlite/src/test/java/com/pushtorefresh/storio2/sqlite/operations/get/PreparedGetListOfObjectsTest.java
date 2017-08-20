@@ -13,21 +13,18 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -224,10 +221,10 @@ public class PreparedGetListOfObjectsTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final PreparedGet<List<TestItem>> preparedGet = storIOSQLite
                     .get()
@@ -246,18 +243,18 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).query(any(Query.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithRawQueryBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final PreparedGet<List<TestItem>> preparedGet = storIOSQLite
                     .get()
@@ -276,9 +273,9 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).rawQuery(any(RawQuery.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).rawQuery(any(RawQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @SuppressWarnings("unchecked")
@@ -320,10 +317,10 @@ public class PreparedGetListOfObjectsTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithRawQueryAsObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
 
@@ -345,19 +342,19 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).rawQuery(any(RawQuery.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).rawQuery(any(RawQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @SuppressWarnings("unchecked")
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsSingle() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
 
@@ -379,18 +376,18 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).query(any(Query.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithRawQueryAsSingle() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final TestSubscriber<List<TestItem>> testSubscriber = new TestSubscriber<List<TestItem>>();
 
@@ -412,9 +409,9 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).rawQuery(any(RawQuery.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).rawQuery(any(RawQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
     }
 
@@ -706,28 +703,6 @@ public class PreparedGetListOfObjectsTest {
                     .prepare();
 
             schedulerChecker.checkAsSingle(operation);
-        }
-
-        @Test
-        public void createObservableReturnsAsRxObservable() {
-            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithTypeMapping();
-
-            PreparedGetListOfObjects<TestItem> preparedOperation = spy(getStub.storIOSQLite
-                    .get()
-                    .listOfObjects(TestItem.class)
-                    .withQuery(getStub.query)
-                    .prepare());
-
-            Observable<List<TestItem>> observable = Observable.just(Collections.<TestItem>emptyList());
-
-            //noinspection CheckResult
-            doReturn(observable).when(preparedOperation).asRxObservable();
-
-            //noinspection deprecation
-            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
-
-            //noinspection CheckResult
-            verify(preparedOperation).asRxObservable();
         }
     }
 }

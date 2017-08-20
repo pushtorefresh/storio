@@ -106,18 +106,6 @@ public abstract class StorIOContentResolver {
      * but please read documentation carefully!
      *
      * @return implementation of low level APIs for {@link StorIOContentResolver}.
-     * @deprecated please use {@link #lowLevel()}, this one will be removed in v2.0,
-     * basically, we just renamed it to LowLevel.
-     */
-    @Deprecated
-    @NonNull
-    public abstract Internal internal();
-
-    /**
-     * An API for low level interaction with {@link ContentResolver}, it's part of public API, so feel free to use it,
-     * but please read documentation carefully!
-     *
-     * @return implementation of low level APIs for {@link StorIOContentResolver}.
      */
     @NonNull
     public abstract LowLevel lowLevel();
@@ -188,14 +176,5 @@ public abstract class StorIOContentResolver {
          */
         @NonNull
         public abstract ContentResolver contentResolver();
-    }
-
-    /**
-     * @deprecated please use {@link LowLevel} instead, this type will be removed in v2.0,
-     * basically we're just giving this API a better name.
-     */
-    @Deprecated
-    public static abstract class Internal extends LowLevel {
-
     }
 }

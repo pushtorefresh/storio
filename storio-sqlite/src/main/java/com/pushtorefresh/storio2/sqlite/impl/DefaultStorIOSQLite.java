@@ -64,7 +64,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      * Implementation of {@link com.pushtorefresh.storio2.sqlite.StorIOSQLite.LowLevel}.
      */
     @NonNull
-    private final Internal lowLevel;
+    private final LowLevel lowLevel;
 
     protected DefaultStorIOSQLite(
             @NonNull SQLiteOpenHelper sqLiteOpenHelper,
@@ -118,16 +118,6 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     @Override
     public Scheduler defaultScheduler() {
         return defaultScheduler;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @NonNull
-    @Override
-    @Deprecated
-    public Internal internal() {
-        return lowLevel;
     }
 
     /**
@@ -306,7 +296,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     /**
      * {@inheritDoc}
      */
-    protected class LowLevelImpl extends Internal {
+    protected class LowLevelImpl extends LowLevel {
 
         @NonNull
         private final Object lock = new Object();
@@ -605,17 +595,6 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         @Override
         public SQLiteOpenHelper sqliteOpenHelper() {
             return sqLiteOpenHelper;
-        }
-    }
-
-    /**
-     * Please use {@link LowLevelImpl} instead, this type will be remove in v2.0.
-     */
-    @Deprecated
-    protected class InternalImpl extends LowLevelImpl {
-
-        protected InternalImpl(@NonNull TypeMappingFinder typeMappingFinder) {
-            super(typeMappingFinder);
         }
     }
 }

@@ -16,9 +16,7 @@ import rx.observers.TestSubscriber;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -225,28 +223,6 @@ public class PreparedPutContentValuesTest {
         verify(stub.storIOSQLite).defaultScheduler();
         verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
-    }
-
-    @Test
-    public void createObservableReturnsAsRxObservable() {
-        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValues();
-
-        PreparedPutContentValues preparedOperation = spy(putStub.storIOSQLite
-                .put()
-                .contentValues(putStub.contentValues.get(0))
-                .withPutResolver(putStub.putResolver)
-                .prepare());
-
-        Observable<PutResult> observable = Observable.just(PutResult.newInsertResult(1, TestItem.TABLE));
-
-        //noinspection CheckResult
-        doReturn(observable).when(preparedOperation).asRxObservable();
-
-        //noinspection deprecation
-        assertThat(preparedOperation.createObservable()).isEqualTo(observable);
-
-        //noinspection CheckResult
-        verify(preparedOperation).asRxObservable();
     }
 
     @Test

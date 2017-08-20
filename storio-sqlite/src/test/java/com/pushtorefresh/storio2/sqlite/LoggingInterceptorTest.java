@@ -123,12 +123,6 @@ public class LoggingInterceptorTest {
 
         @NonNull
         @Override
-        public Observable<String> createObservable() {
-            throw new NotImplementedException();
-        }
-
-        @NonNull
-        @Override
         public Observable<String> asRxObservable() {
             throw new NotImplementedException();
         }

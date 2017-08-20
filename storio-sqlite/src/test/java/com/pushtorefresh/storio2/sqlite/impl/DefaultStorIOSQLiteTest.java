@@ -548,11 +548,6 @@ public class DefaultStorIOSQLiteTest {
     }
 
     @Test
-    public void internalShouldReturnLowLevel() {
-        assertThat(storIOSQLite.internal()).isSameAs(storIOSQLite.lowLevel());
-    }
-
-    @Test
     public void defaultSchedulerReturnsIOSchedulerIfNotSpecified() {
         assertThat(storIOSQLite.defaultScheduler()).isSameAs(io());
     }
@@ -605,18 +600,18 @@ public class DefaultStorIOSQLiteTest {
     }
 
     class TestDefaultStorIOSQLite extends DefaultStorIOSQLite {
-        private final Internal internal;
+        private final LowLevel lowLevel;
 
         TestDefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @NonNull TypeMappingFinder typeMappingFinder) {
             super(sqLiteOpenHelper, typeMappingFinder, null, Collections.<Interceptor>emptyList());
-            internal = new InternalImpl(typeMappingFinder);
+            lowLevel = new LowLevelImpl(typeMappingFinder);
         }
 
         @Nullable
         TypeMappingFinder typeMappingFinder() throws NoSuchFieldException, IllegalAccessException {
             Field field = TestDefaultStorIOSQLite.LowLevelImpl.class.getDeclaredField("typeMappingFinder");
             field.setAccessible(true);
-            return (TypeMappingFinder) field.get(internal);
+            return (TypeMappingFinder) field.get(lowLevel);
         }
     }
 }

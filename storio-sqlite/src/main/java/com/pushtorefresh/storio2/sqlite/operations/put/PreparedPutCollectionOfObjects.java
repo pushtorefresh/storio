@@ -58,28 +58,6 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
      *
      * @return non-null {@link Observable} which will perform Put Operation.
      * and send result to observer.
-     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
-     */
-    @NonNull
-    @CheckResult
-    @Override
-    public Observable<PutResults<T>> createObservable() {
-        return asRxObservable();
-    }
-
-    /**
-     * Creates {@link Observable} which will perform Put Operation and send result to observer.
-     * <p>
-     * Returned {@link Observable} will be "Cold Observable", which means that it performs
-     * put only after subscribing to it. Also, it emits the result once.
-     * <p>
-     * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
-     * </dl>
-     *
-     * @return non-null {@link Observable} which will perform Put Operation.
-     * and send result to observer.
      */
     @NonNull
     @Override
