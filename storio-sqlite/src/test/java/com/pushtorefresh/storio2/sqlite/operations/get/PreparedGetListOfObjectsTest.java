@@ -25,6 +25,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -703,6 +704,36 @@ public class PreparedGetListOfObjectsTest {
                     .prepare();
 
             schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void shouldPassStorIOSQLiteToResolverOnQuery() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithoutTypeMapping();
+            getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            verify(getStub.getResolver, times(getStub.items.size()))
+                    .mapFromCursor(eq(getStub.storIOSQLite), any(Cursor.class));
+        }
+
+        @Test
+        public void shouldPassStorIOSQLiteToResolverOnRawQuery() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithoutTypeMapping();
+            getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            verify(getStub.getResolver, times(getStub.items.size()))
+                    .mapFromCursor(eq(getStub.storIOSQLite), any(Cursor.class));
         }
     }
 }
