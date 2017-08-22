@@ -84,7 +84,7 @@ class GetNumberOfResultsStub {
         when(getResolverForNumberOfResults.performGet(storIOSQLite, rawQuery))
                 .thenReturn(cursor);
 
-        when(getResolverForNumberOfResults.mapFromCursor(cursor))
+        when(getResolverForNumberOfResults.mapFromCursor(storIOSQLite, cursor))
                 .thenReturn(numberOfResults);
     }
 

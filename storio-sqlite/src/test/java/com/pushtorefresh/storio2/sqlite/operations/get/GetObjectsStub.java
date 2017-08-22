@@ -115,7 +115,7 @@ class GetObjectsStub {
         when(getResolver.performGet(storIOSQLite, rawQuery))
                 .thenReturn(cursor);
 
-        when(getResolver.mapFromCursor(cursor))
+        when(getResolver.mapFromCursor(storIOSQLite, cursor))
                 .thenAnswer(new Answer<TestItem>() {
                     int invocationsCount = 0;
 
@@ -157,7 +157,7 @@ class GetObjectsStub {
         verify(getResolver).performGet(storIOSQLite, query);
 
         // should be called same number of times as number of items
-        verify(getResolver, times(items.size())).mapFromCursor(cursor);
+        verify(getResolver, times(items.size())).mapFromCursor(storIOSQLite, cursor);
 
         // should be called only once because of Performance!
         verify(cursor).getCount();
@@ -222,7 +222,7 @@ class GetObjectsStub {
         assertThat(actualList).isNotNull();
         verify(storIOSQLite).get();
         verify(getResolver).performGet(storIOSQLite, rawQuery);
-        verify(getResolver, times(items.size())).mapFromCursor(cursor);
+        verify(getResolver, times(items.size())).mapFromCursor(storIOSQLite, cursor);
         verify(cursor).close();
         assertThat(actualList).isEqualTo(items);
         assertThatListIsImmutable(actualList);

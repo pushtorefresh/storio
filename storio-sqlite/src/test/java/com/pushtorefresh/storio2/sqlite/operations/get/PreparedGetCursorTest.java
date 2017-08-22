@@ -287,12 +287,13 @@ public class PreparedGetCursorTest {
 
     @Test
     public void verifyThatStandardGetResolverDoesNotModifyCursor() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
         final GetResolver<Cursor> standardGetResolver
                 = PreparedGetCursor.CompleteBuilder.STANDARD_GET_RESOLVER;
 
         final Cursor cursor = mock(Cursor.class);
 
-        assertThat(standardGetResolver.mapFromCursor(cursor)).isSameAs(cursor);
+        assertThat(standardGetResolver.mapFromCursor(getStub.storIOSQLite, cursor)).isSameAs(cursor);
     }
 
     @Test

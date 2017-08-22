@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.delete.DefaultDeleteResolver;
 import com.pushtorefresh.storio2.sqlite.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio2.sqlite.operations.get.DefaultGetResolver;
@@ -49,7 +50,7 @@ class UserTableMeta {
     static final GetResolver<User> GET_RESOLVER = new DefaultGetResolver<User>() {
         @NonNull
         @Override
-        public User mapFromCursor(@NonNull Cursor cursor) {
+        public User mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
             return mock(User.class);
         }
     };

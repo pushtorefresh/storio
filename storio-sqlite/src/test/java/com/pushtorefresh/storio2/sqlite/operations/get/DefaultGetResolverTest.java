@@ -38,7 +38,7 @@ public class DefaultGetResolverTest {
         final DefaultGetResolver<TestItem> defaultGetResolver = new DefaultGetResolver<TestItem>() {
             @NonNull
             @Override
-            public TestItem mapFromCursor(@NonNull Cursor cursor) {
+            public TestItem mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
                 return mock(TestItem.class);
             }
         };
@@ -74,7 +74,7 @@ public class DefaultGetResolverTest {
         final DefaultGetResolver<TestItem> defaultGetResolver = new DefaultGetResolver<TestItem>() {
             @NonNull
             @Override
-            public TestItem mapFromCursor(@NonNull Cursor cursor) {
+            public TestItem mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
                 return mock(TestItem.class);
             }
         };

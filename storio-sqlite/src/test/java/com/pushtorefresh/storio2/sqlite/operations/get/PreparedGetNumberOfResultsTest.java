@@ -275,6 +275,7 @@ public class PreparedGetNumberOfResultsTest {
 
     @Test
     public void verifyThatStandardGetResolverJustReturnsCursorGetCount() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
         final GetResolver<Integer> standardGetResolver
                 = PreparedGetNumberOfResults.CompleteBuilder.STANDARD_GET_RESOLVER;
 
@@ -282,7 +283,7 @@ public class PreparedGetNumberOfResultsTest {
 
         when(cursor.getCount()).thenReturn(12314);
 
-        assertThat(standardGetResolver.mapFromCursor(cursor)).isEqualTo(12314);
+        assertThat(standardGetResolver.mapFromCursor(getStub.storIOSQLite, cursor)).isEqualTo(12314);
     }
 
     @Test

@@ -22,7 +22,7 @@ public abstract class GetResolver<T> {
      * @return non-null object of required type with data parsed from passed {@link Cursor}.
      */
     @NonNull
-    public abstract T mapFromCursor(@NonNull Cursor cursor);
+    public abstract T mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor);
 
     /**
      * Performs get of results with passed query.
