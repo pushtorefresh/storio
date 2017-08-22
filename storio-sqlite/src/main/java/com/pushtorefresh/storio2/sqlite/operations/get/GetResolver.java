@@ -17,6 +17,7 @@ public abstract class GetResolver<T> {
     /**
      * Converts {@link Cursor} with already set position to object of required type.
      *
+     * @param storIOSQLite {@link StorIOSQLite} instance to perform get from.
      * @param cursor not closed {@link Cursor} with already set position
      *               that should be parsed and converted to object of required type.
      * @return non-null object of required type with data parsed from passed {@link Cursor}.
