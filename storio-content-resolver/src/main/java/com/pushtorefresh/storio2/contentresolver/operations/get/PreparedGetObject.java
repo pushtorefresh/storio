@@ -86,7 +86,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
 
                 cursor.moveToFirst();
 
-                return getResolver.mapFromCursor(cursor);
+                return getResolver.mapFromCursor(storIOContentResolver, cursor);
             } finally {
                 cursor.close();
             }

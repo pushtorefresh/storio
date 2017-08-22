@@ -78,7 +78,7 @@ class GetObjectStub {
         when(storIOContentResolver.observeChangesOfUri(query.uri()))
                 .thenReturn(Observable.<Changes>empty());
 
-        when(getResolver.mapFromCursor(cursor))
+        when(getResolver.mapFromCursor(storIOContentResolver, cursor))
                 .thenReturn(item);
 
         typeMapping = mock(ContentResolverTypeMapping.class);
@@ -113,7 +113,7 @@ class GetObjectStub {
         verify(cursor).moveToFirst();
 
         // should be called once
-        verify(getResolver).mapFromCursor(cursor);
+        verify(getResolver).mapFromCursor(storIOContentResolver, cursor);
 
         // cursor should be closed!
         verify(cursor).close();

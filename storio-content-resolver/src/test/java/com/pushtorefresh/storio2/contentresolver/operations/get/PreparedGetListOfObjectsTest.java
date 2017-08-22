@@ -19,11 +19,13 @@ import rx.Observable;
 import rx.Single;
 import rx.observers.TestSubscriber;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -276,7 +278,7 @@ public class PreparedGetListOfObjectsTest {
             when(getResolver.performGet(storIOContentResolver, query))
                     .thenReturn(cursor);
 
-            when(getResolver.mapFromCursor(cursor))
+            when(getResolver.mapFromCursor(storIOContentResolver, cursor))
                     .thenThrow(new IllegalStateException("Breaking execution"));
 
             when(cursor.getCount()).thenReturn(1);
@@ -334,6 +336,21 @@ public class PreparedGetListOfObjectsTest {
                     .prepare();
 
             schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void shouldPassStorIOContentResolverToGetResolver() {
+            final GetObjectsStub getStub = GetObjectsStub.newStubWithoutTypeMapping();
+            getStub.storIOContentResolver
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            verify(getStub.getResolver, times(getStub.items.size()))
+                    .mapFromCursor(eq(getStub.storIOContentResolver), any(Cursor.class));
         }
     }
 }

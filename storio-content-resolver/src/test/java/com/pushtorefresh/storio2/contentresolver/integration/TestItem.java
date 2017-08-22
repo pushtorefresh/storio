@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.delete.DefaultDeleteResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.get.DefaultGetResolver;
@@ -159,7 +160,10 @@ class TestItem {
     static final GetResolver<TestItem> GET_RESOLVER = new DefaultGetResolver<TestItem>() {
         @NonNull
         @Override
-        public TestItem mapFromCursor(@NonNull Cursor cursor) {
+        public TestItem mapFromCursor(
+                @NonNull StorIOContentResolver storIOContentResolver,
+                @NonNull Cursor cursor
+        ) {
             return fromCursor(cursor);
         }
     };

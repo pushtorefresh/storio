@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.delete.DefaultDeleteResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.get.DefaultGetResolver;
@@ -63,7 +64,10 @@ public class TweetMeta {
     public static final GetResolver<Tweet> GET_RESOLVER = new DefaultGetResolver<Tweet>() {
         @NonNull
         @Override
-        public Tweet mapFromCursor(@NonNull Cursor cursor) {
+        public Tweet mapFromCursor(
+                @NonNull StorIOContentResolver storIOContentResolver,
+                @NonNull Cursor cursor
+        ) {
             return Tweet.newTweet(
                     cursor.getLong(cursor.getColumnIndexOrThrow(TweetsTable.COLUMN_ID)),
                     cursor.getString(cursor.getColumnIndexOrThrow(TweetsTable.COLUMN_AUTHOR)),
