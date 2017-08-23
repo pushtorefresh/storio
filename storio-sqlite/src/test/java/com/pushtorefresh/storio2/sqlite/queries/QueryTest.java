@@ -6,9 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -16,8 +14,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -260,19 +258,6 @@ public class QueryTest {
                 .build();
 
         assertThat(query.whereArgs()).isEqualTo(asList(whereArgs));
-    }
-
-    @Test
-    public void shouldTakeListOfStringsAsWhereArgs() {
-        final List<String> whereArgs = Arrays.asList("arg1", "arg2", "arg3");
-
-        final Query query = Query.builder()
-                .table("test_table")
-                .where("test_where")
-                .whereArgs(whereArgs)
-                .build();
-
-        assertThat(query.whereArgs()).isEqualTo(whereArgs);
     }
 
     @Test
