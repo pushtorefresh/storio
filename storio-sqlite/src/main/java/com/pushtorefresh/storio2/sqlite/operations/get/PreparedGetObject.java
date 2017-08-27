@@ -169,7 +169,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
                     cursor.moveToNext();
 
                     //noinspection unchecked
-                    return (Result) getResolver.mapFromCursor(cursor);
+                    return (Result) getResolver.mapFromCursor(storIOSQLite, cursor);
                 } finally {
                     cursor.close();
                 }

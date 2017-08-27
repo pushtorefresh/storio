@@ -90,7 +90,7 @@ public class UserTableMeta {
     static final GetResolver<User> GET_RESOLVER = new DefaultGetResolver<User>() {
         @NonNull
         @Override
-        public User mapFromCursor(@NonNull Cursor cursor) {
+        public User mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
             return User.newInstance(
                     cursor.getLong(cursor.getColumnIndex(COLUMN_ID)),
                     cursor.getString(cursor.getColumnIndex(COLUMN_EMAIL)),

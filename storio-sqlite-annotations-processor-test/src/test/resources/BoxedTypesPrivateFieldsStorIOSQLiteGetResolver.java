@@ -2,6 +2,8 @@ package com.pushtorefresh.storio2.sqlite.annotations;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+
+import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.get.DefaultGetResolver;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -20,7 +22,7 @@ public class BoxedTypesPrivateFieldsStorIOSQLiteGetResolver extends DefaultGetRe
      */
     @Override
     @NonNull
-    public BoxedTypesPrivateFields mapFromCursor(@NonNull Cursor cursor) {
+    public BoxedTypesPrivateFields mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
 
         Boolean field1 = null;
         if (!cursor.isNull(cursor.getColumnIndex("field1"))) {

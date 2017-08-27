@@ -98,7 +98,7 @@ public class UpdateTest extends BaseTest {
 
         for (int i = 0; i < usersForUpdate.size(); i++) {
             assertThat(cursor.moveToNext()).isTrue();
-            assertThat(UserTableMeta.GET_RESOLVER.mapFromCursor(cursor)).isEqualTo(usersForUpdate.get(i));
+            assertThat(UserTableMeta.GET_RESOLVER.mapFromCursor(storIOSQLite, cursor)).isEqualTo(usersForUpdate.get(i));
         }
 
         cursor.close();
@@ -120,7 +120,7 @@ public class UpdateTest extends BaseTest {
         assertThat(cursor.getCount()).isEqualTo(1);
         assertThat(cursor.moveToFirst()).isTrue();
 
-        final User updatedUser = UserTableMeta.GET_RESOLVER.mapFromCursor(cursor);
+        final User updatedUser = UserTableMeta.GET_RESOLVER.mapFromCursor(storIOSQLite, cursor);
         assertThat(updatedUser).isEqualTo(user);
 
         cursor.close();

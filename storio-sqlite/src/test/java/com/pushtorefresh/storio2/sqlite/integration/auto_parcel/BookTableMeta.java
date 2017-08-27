@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.delete.DefaultDeleteResolver;
 import com.pushtorefresh.storio2.sqlite.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio2.sqlite.operations.get.DefaultGetResolver;
@@ -75,7 +76,7 @@ final class BookTableMeta {
     static final GetResolver<Book> GET_RESOLVER = new DefaultGetResolver<Book>() {
         @NonNull
         @Override
-        public Book mapFromCursor(@NonNull Cursor cursor) {
+        public Book mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
             return Book.builder()
                     .id(cursor.getInt(cursor.getColumnIndex(COLUMN_ID)))
                     .title(cursor.getString(cursor.getColumnIndex(COLUMN_TITLE)))

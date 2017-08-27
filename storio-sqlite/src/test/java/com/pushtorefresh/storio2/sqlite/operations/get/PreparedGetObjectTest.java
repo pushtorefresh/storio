@@ -566,7 +566,7 @@ public class PreparedGetObjectTest {
             when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
                     .thenReturn(cursor);
 
-            when(getResolver.mapFromCursor(cursor))
+            when(getResolver.mapFromCursor(storIOSQLite, cursor))
                     .thenThrow(new IllegalStateException("test exception"));
 
             PreparedGetObject<Object> preparedGetObject =
@@ -588,7 +588,7 @@ public class PreparedGetObjectTest {
                 verify(cursor).close();
 
                 verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
-                verify(getResolver).mapFromCursor(cursor);
+                verify(getResolver).mapFromCursor(storIOSQLite, cursor);
                 verify(cursor).getCount();
                 verify(cursor).moveToNext();
                 verify(storIOSQLite).interceptors();
@@ -615,7 +615,7 @@ public class PreparedGetObjectTest {
             when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
                     .thenReturn(cursor);
 
-            when(getResolver.mapFromCursor(cursor))
+            when(getResolver.mapFromCursor(storIOSQLite, cursor))
                     .thenThrow(new IllegalStateException("test exception"));
 
             PreparedGetObject<Object> preparedGetObject =
@@ -647,7 +647,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).observeChanges();
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
-            verify(getResolver).mapFromCursor(cursor);
+            verify(getResolver).mapFromCursor(storIOSQLite, cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
@@ -672,7 +672,7 @@ public class PreparedGetObjectTest {
             when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
                     .thenReturn(cursor);
 
-            when(getResolver.mapFromCursor(cursor))
+            when(getResolver.mapFromCursor(storIOSQLite, cursor))
                     .thenThrow(new IllegalStateException("test exception"));
 
             PreparedGetObject<Object> preparedGetObject =
@@ -704,7 +704,7 @@ public class PreparedGetObjectTest {
 
             //noinspection unchecked
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
-            verify(getResolver).mapFromCursor(cursor);
+            verify(getResolver).mapFromCursor(storIOSQLite, cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
@@ -741,6 +741,34 @@ public class PreparedGetObjectTest {
                     .prepare();
 
             schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void shouldPassStorIOSQLiteToResolverOnQuery() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
+
+            getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare()
+                    .executeAsBlocking();
+
+            verify(getStub.getResolver).mapFromCursor(eq(getStub.storIOSQLite), any(Cursor.class));
+        }
+
+        @Test
+        public void shouldPassStorIOSQLiteToResolverOnRawQuery() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
+
+            getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .prepare()
+                    .executeAsBlocking();
+
+            verify(getStub.getResolver).mapFromCursor(eq(getStub.storIOSQLite), any(Cursor.class));
         }
     }
 }
