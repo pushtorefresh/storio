@@ -72,32 +72,6 @@ public class PreparedExecuteSQL implements PreparedOperation<Object, RawQuery> {
      * actually Execute SQL should return {@code void},
      * but we can not return instance of {@link Void} so we just return {@link Object}
      * and you don't have to deal with {@code null}.
-     * @deprecated (will be removed in 2.0) please use {@link #asRxObservable()}.
-     */
-    @NonNull
-    @CheckResult
-    @Override
-    public Observable<Object> createObservable() {
-        return asRxObservable();
-    }
-
-    /**
-     * Creates {@link Observable} which will perform Execute SQL Operation
-     * and send result to observer.
-     * <p>
-     * Returned {@link Observable} will be "Cold Observable", which means that it performs
-     * execution of SQL only after subscribing to it. Also, it emits the result once.
-     * <p>
-     * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
-     * </dl>
-     *
-     * @return non-null {@link Observable} which will perform Delete Operation
-     * and send result to observer. Result: just a new instance of {@link Object},
-     * actually Execute SQL should return {@code void},
-     * but we can not return instance of {@link Void} so we just return {@link Object}
-     * and you don't have to deal with {@code null}.
      */
     @NonNull
     @CheckResult

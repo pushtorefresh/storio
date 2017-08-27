@@ -30,7 +30,7 @@ class GetObjectStub {
     final StorIOSQLite storIOSQLite;
 
     @NonNull
-    private final StorIOSQLite.Internal internal;
+    private final StorIOSQLite.LowLevel lowLevel;
 
     @NonNull
     final Query query;
@@ -56,10 +56,10 @@ class GetObjectStub {
         this.withTypeMapping = withTypeMapping;
 
         storIOSQLite = mock(StorIOSQLite.class);
-        internal = mock(StorIOSQLite.Internal.class);
+        lowLevel = mock(StorIOSQLite.LowLevel.class);
 
         when(storIOSQLite.lowLevel())
-                .thenReturn(internal);
+                .thenReturn(lowLevel);
 
         String table = "test_table";
         String tag = "test_tag";
@@ -108,14 +108,14 @@ class GetObjectStub {
         when(getResolver.performGet(storIOSQLite, rawQuery))
                 .thenReturn(cursor);
 
-        when(getResolver.mapFromCursor(cursor))
+        when(getResolver.mapFromCursor(storIOSQLite, cursor))
                 .thenReturn(item);
 
         //noinspection unchecked
         typeMapping = mock(SQLiteTypeMapping.class);
 
         if (withTypeMapping) {
-            when(internal.typeMapping(TestItem.class)).thenReturn(typeMapping);
+            when(lowLevel.typeMapping(TestItem.class)).thenReturn(typeMapping);
             when(typeMapping.getResolver()).thenReturn(getResolver);
         }
     }
@@ -141,7 +141,7 @@ class GetObjectStub {
         verify(getResolver).performGet(storIOSQLite, query);
 
         // should be called only once
-        verify(getResolver).mapFromCursor(cursor);
+        verify(getResolver).mapFromCursor(storIOSQLite, cursor);
 
         // should be called only once because of Performance!
         verify(cursor).getCount();
@@ -160,13 +160,13 @@ class GetObjectStub {
             verify(storIOSQLite).lowLevel();
 
             // should be called only once because of Performance!
-            verify(internal).typeMapping(TestItem.class);
+            verify(lowLevel).typeMapping(TestItem.class);
 
             // should be called only once because of Performance!
             verify(typeMapping).getResolver();
         }
 
-        verifyNoMoreInteractions(storIOSQLite, internal, cursor);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
     void verifyQueryBehavior(@NonNull Observable<TestItem> observable) {
@@ -202,7 +202,7 @@ class GetObjectStub {
     void verifyRawQueryBehavior(@Nullable TestItem actualItem) {
         verify(storIOSQLite).get();
         verify(getResolver).performGet(storIOSQLite, rawQuery);
-        verify(getResolver).mapFromCursor(cursor);
+        verify(getResolver).mapFromCursor(storIOSQLite, cursor);
         verify(cursor).close();
         assertThat(actualItem).isEqualTo(item);
     }

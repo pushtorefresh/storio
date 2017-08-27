@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 class DesignTestStorIOSQLite extends StorIOSQLite {
 
     @NonNull
-    private final Internal lowLevel = new Internal() {
+    private final LowLevel lowLevel = new LowLevel() {
 
         @Nullable
         @Override
@@ -154,12 +154,6 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
     @Override
     public PreparedDelete.Builder delete() {
         return new PreparedDelete.Builder(this);
-    }
-
-    @NonNull
-    @Override
-    public Internal internal() {
-        return lowLevel;
     }
 
     @NonNull

@@ -21,7 +21,7 @@ public class DefaultGetResolverTest {
     @Test
     public void rawQuery() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
         final RawQuery rawQuery = RawQuery.builder()
                 .query("test sql")
@@ -30,15 +30,15 @@ public class DefaultGetResolverTest {
         final Cursor expectedCursor = mock(Cursor.class);
 
         when(storIOSQLite.lowLevel())
-                .thenReturn(internal);
+                .thenReturn(lowLevel);
 
-        when(internal.rawQuery(rawQuery))
+        when(lowLevel.rawQuery(rawQuery))
                 .thenReturn(expectedCursor);
 
         final DefaultGetResolver<TestItem> defaultGetResolver = new DefaultGetResolver<TestItem>() {
             @NonNull
             @Override
-            public TestItem mapFromCursor(@NonNull Cursor cursor) {
+            public TestItem mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
                 return mock(TestItem.class);
             }
         };
@@ -46,10 +46,10 @@ public class DefaultGetResolverTest {
         final Cursor actualCursor = defaultGetResolver.performGet(storIOSQLite, rawQuery);
 
         // only one request should occur
-        verify(internal, times(1)).rawQuery(any(RawQuery.class));
+        verify(lowLevel, times(1)).rawQuery(any(RawQuery.class));
 
         // and this request should be equals to original
-        verify(internal, times(1)).rawQuery(rawQuery);
+        verify(lowLevel, times(1)).rawQuery(rawQuery);
 
         assertThat(actualCursor).isSameAs(expectedCursor);
     }
@@ -57,7 +57,7 @@ public class DefaultGetResolverTest {
     @Test
     public void query() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
         final Query query = Query.builder()
                 .table("test_table")
@@ -66,15 +66,15 @@ public class DefaultGetResolverTest {
         final Cursor expectedCursor = mock(Cursor.class);
 
         when(storIOSQLite.lowLevel())
-                .thenReturn(internal);
+                .thenReturn(lowLevel);
 
-        when(internal.query(query))
+        when(lowLevel.query(query))
                 .thenReturn(expectedCursor);
 
         final DefaultGetResolver<TestItem> defaultGetResolver = new DefaultGetResolver<TestItem>() {
             @NonNull
             @Override
-            public TestItem mapFromCursor(@NonNull Cursor cursor) {
+            public TestItem mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
                 return mock(TestItem.class);
             }
         };
@@ -82,10 +82,10 @@ public class DefaultGetResolverTest {
         final Cursor actualCursor = defaultGetResolver.performGet(storIOSQLite, query);
 
         // only one request should occur
-        verify(internal, times(1)).query(any(Query.class));
+        verify(lowLevel, times(1)).query(any(Query.class));
 
         // and this request should be equals to original
-        verify(internal, times(1)).query(query);
+        verify(lowLevel, times(1)).query(query);
 
         assertThat(actualCursor).isSameAs(expectedCursor);
     }

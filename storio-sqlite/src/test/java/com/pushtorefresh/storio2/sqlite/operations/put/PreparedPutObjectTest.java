@@ -15,9 +15,7 @@ import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -144,9 +142,9 @@ public class PreparedPutObjectTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final Object object = new Object();
 
@@ -164,17 +162,17 @@ public class PreparedPutObjectTest {
 
                 verify(storIOSQLite).lowLevel();
                 verify(storIOSQLite).interceptors();
-                verify(internal).typeMapping(Object.class);
-                verifyNoMoreInteractions(storIOSQLite, internal);
+                verify(lowLevel).typeMapping(Object.class);
+                verifyNoMoreInteractions(storIOSQLite, lowLevel);
             }
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final Object object = new Object();
 
@@ -201,16 +199,16 @@ public class PreparedPutObjectTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(Object.class);
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(Object.class);
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbSingle() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final Object object = new Object();
 
@@ -237,16 +235,16 @@ public class PreparedPutObjectTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(Object.class);
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(Object.class);
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbCompletable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             final Object object = new Object();
 
@@ -273,8 +271,8 @@ public class PreparedPutObjectTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(Object.class);
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(Object.class);
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
     }
 
@@ -331,27 +329,6 @@ public class PreparedPutObjectTest {
                     .prepare();
 
             schedulerChecker.checkAsCompletable(operation);
-        }
-
-        @Test
-        public void createObservableReturnsAsRxObservable() {
-            final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
-
-            PreparedPutObject<TestItem> preparedOperation = spy(putStub.storIOSQLite
-                    .put()
-                    .object(putStub.items.get(0))
-                    .prepare());
-
-            Observable<PutResult> observable = Observable.just(PutResult.newInsertResult(1, TestItem.TABLE));
-
-            //noinspection CheckResult
-            doReturn(observable).when(preparedOperation).asRxObservable();
-
-            //noinspection deprecation
-            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
-
-            //noinspection CheckResult
-            verify(preparedOperation).asRxObservable();
         }
 
         @Test

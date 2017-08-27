@@ -26,11 +26,9 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -262,26 +260,6 @@ public class PreparedExecuteSQLTest {
         verify(stub.lowLevel).executeSQL(stub.rawQuery);
         verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
-    }
-
-    @Test
-    public void createObservableReturnsAsRxObservable() {
-        final Stub stub = Stub.newInstanceDoNotApplyAffectedTablesAndTags();
-
-        PreparedExecuteSQL preparedExecuteSQL = spy(stub.storIOSQLite
-                .executeSQL()
-                .withQuery(stub.rawQuery)
-                .prepare());
-
-        Observable<Object> observable = Observable.just(new Object());
-        //noinspection CheckResult
-        doReturn(observable).when(preparedExecuteSQL).asRxObservable();
-
-        //noinspection deprecation
-        assertThat(preparedExecuteSQL.createObservable()).isEqualTo(observable);
-
-        //noinspection CheckResult
-        verify(preparedExecuteSQL).asRxObservable();
     }
 
     static class Stub {

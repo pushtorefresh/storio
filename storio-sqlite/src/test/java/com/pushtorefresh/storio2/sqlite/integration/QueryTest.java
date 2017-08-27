@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.sqlite.BuildConfig;
+import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.get.DefaultGetResolver;
 import com.pushtorefresh.storio2.sqlite.operations.get.GetResolver;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
@@ -236,7 +237,7 @@ public class QueryTest extends BaseTest {
                 .withGetResolver(new DefaultGetResolver<User>() {
                     @NonNull
                     @Override
-                    public User mapFromCursor(@NonNull Cursor cursor) {
+                    public User mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
                         return User.newInstance(null, cursor.getString(cursor.getColumnIndex(UserTableMeta.COLUMN_EMAIL)));
                     }
                 })
@@ -278,7 +279,7 @@ public class QueryTest extends BaseTest {
                 .withGetResolver(new DefaultGetResolver<User>() {
                     @NonNull
                     @Override
-                    public User mapFromCursor(@NonNull Cursor cursor) {
+                    public User mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
                         return User.newInstance(null, cursor.getString(cursor.getColumnIndex(UserTableMeta.COLUMN_EMAIL)));
                     }
                 })
@@ -302,7 +303,7 @@ public class QueryTest extends BaseTest {
         final GetResolver<User> customGetResolver = new DefaultGetResolver<User>() {
             @NonNull
             @Override
-            public User mapFromCursor(@NonNull Cursor cursor) {
+            public User mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
                 return User.newInstance(null, cursor.getString(cursor.getColumnIndex(UserTableMeta.COLUMN_EMAIL)));
             }
         };

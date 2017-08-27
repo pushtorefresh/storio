@@ -10,7 +10,6 @@ import com.pushtorefresh.storio2.sample.many_to_many_sample.entities.Person;
 import com.pushtorefresh.storio2.sample.many_to_many_sample.entities.PersonCarRelationTable;
 import com.pushtorefresh.storio2.sample.many_to_many_sample.entities.PersonStorIOSQLiteGetResolver;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
 
 import java.util.List;
@@ -20,37 +19,14 @@ public class PersonRelationsGetResolver extends PersonStorIOSQLiteGetResolver {
     @NonNull
     private final CarStorIOSQLiteGetResolver carStorIOSQLiteGetResolver;
 
-    // Sorry for this hack :(
-    // We will pass you an instance of StorIO
-    // into the mapFromCursor() in v2.0.0.
-    //
-    // At the moment, you can save this instance in performGet() and then null it at the end
-    @NonNull
-    private final ThreadLocal<StorIOSQLite> storIOSQLiteFromPerformGet = new ThreadLocal<StorIOSQLite>();
-
     public PersonRelationsGetResolver(@NonNull CarStorIOSQLiteGetResolver carStorIOSQLiteGetResolver) {
         this.carStorIOSQLiteGetResolver = carStorIOSQLiteGetResolver;
     }
 
-    @NonNull
-    @Override
-    public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
-        storIOSQLiteFromPerformGet.set(storIOSQLite);
-        return super.performGet(storIOSQLite, rawQuery);
-    }
-
-    @NonNull
-    @Override
-    public Cursor performGet(@NonNull StorIOSQLite storIOSQLite, @NonNull Query query) {
-        storIOSQLiteFromPerformGet.set(storIOSQLite);
-        return super.performGet(storIOSQLite, query);
-    }
-
     @Override
     @NonNull
-    public Person mapFromCursor(@NonNull Cursor cursor) {
-        final StorIOSQLite storIOSQLite = storIOSQLiteFromPerformGet.get();
-        final Person person = super.mapFromCursor(cursor);
+    public Person mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
+        final Person person = super.mapFromCursor(storIOSQLite, cursor);
 
         final List<Car> cars = storIOSQLite
                 .get()

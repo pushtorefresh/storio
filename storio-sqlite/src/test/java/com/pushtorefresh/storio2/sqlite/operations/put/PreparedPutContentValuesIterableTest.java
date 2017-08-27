@@ -10,7 +10,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Collections;
 import java.util.List;
 
 import rx.Completable;
@@ -19,18 +18,16 @@ import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -176,9 +173,9 @@ public class PreparedPutContentValuesIterableTest {
     @Test
     public void shouldFinishTransactionIfExceptionHasOccurredBlocking() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -200,24 +197,24 @@ public class PreparedPutContentValuesIterableTest {
             IllegalStateException cause = (IllegalStateException) expected.getCause();
             assertThat(cause).hasMessage("test exception");
 
-            verify(internal).beginTransaction();
-            verify(internal, never()).setTransactionSuccessful();
-            verify(internal).endTransaction();
+            verify(lowLevel).beginTransaction();
+            verify(lowLevel, never()).setTransactionSuccessful();
+            verify(lowLevel).endTransaction();
 
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+            verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
     }
 
     @Test
     public void shouldFinishTransactionIfExceptionHasOccurredObservable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -246,23 +243,23 @@ public class PreparedPutContentValuesIterableTest {
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
-        verify(internal).beginTransaction();
-        verify(internal, never()).setTransactionSuccessful();
-        verify(internal).endTransaction();
+        verify(lowLevel).beginTransaction();
+        verify(lowLevel, never()).setTransactionSuccessful();
+        verify(lowLevel).endTransaction();
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
-        verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
     }
 
     @Test
     public void shouldFinishTransactionIfExceptionHasOccurredSingle() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -291,23 +288,23 @@ public class PreparedPutContentValuesIterableTest {
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
-        verify(internal).beginTransaction();
-        verify(internal, never()).setTransactionSuccessful();
-        verify(internal).endTransaction();
+        verify(lowLevel).beginTransaction();
+        verify(lowLevel, never()).setTransactionSuccessful();
+        verify(lowLevel).endTransaction();
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
-        verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
     }
 
     @Test
     public void shouldFinishTransactionIfExceptionHasOccurredCompletable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-        when(storIOSQLite.lowLevel()).thenReturn(internal);
+        when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -336,21 +333,21 @@ public class PreparedPutContentValuesIterableTest {
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
-        verify(internal).beginTransaction();
-        verify(internal, never()).setTransactionSuccessful();
-        verify(internal).endTransaction();
+        verify(lowLevel).beginTransaction();
+        verify(lowLevel, never()).setTransactionSuccessful();
+        verify(lowLevel).endTransaction();
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
-        verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
     }
 
     @Test
     public void verifyBehaviorInCaseOfExceptionWithoutTransactionBlocking() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -373,19 +370,19 @@ public class PreparedPutContentValuesIterableTest {
             assertThat(cause).hasMessage("test exception");
 
             // Main check of this test
-            verify(internal, never()).endTransaction();
+            verify(lowLevel, never()).endTransaction();
 
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).interceptors();
             verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+            verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
         }
     }
 
     @Test
     public void verifyBehaviorInCaseOfExceptionWithoutTransactionObservable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -415,19 +412,19 @@ public class PreparedPutContentValuesIterableTest {
         assertThat(cause).hasMessage("test exception");
 
         // Main check of this test
-        verify(internal, never()).endTransaction();
+        verify(lowLevel, never()).endTransaction();
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
-        verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
     }
 
     @Test
     public void verifyBehaviorInCaseOfExceptionWithoutTransactionSingle() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -457,19 +454,19 @@ public class PreparedPutContentValuesIterableTest {
         assertThat(cause).hasMessage("test exception");
 
         // Main check of this test
-        verify(internal, never()).endTransaction();
+        verify(lowLevel, never()).endTransaction();
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
-        verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
     }
 
     @Test
     public void verifyBehaviorInCaseOfExceptionWithoutTransactionCompletable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-        final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+        final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
         //noinspection unchecked
         final PutResolver<ContentValues> putResolver = mock(PutResolver.class);
@@ -499,13 +496,13 @@ public class PreparedPutContentValuesIterableTest {
         assertThat(cause).hasMessage("test exception");
 
         // Main check of this test
-        verify(internal, never()).endTransaction();
+        verify(lowLevel, never()).endTransaction();
 
         verify(storIOSQLite).lowLevel();
         verify(storIOSQLite).defaultScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
-        verifyNoMoreInteractions(storIOSQLite, internal, putResolver);
+        verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
     }
 
     @Test
@@ -680,30 +677,6 @@ public class PreparedPutContentValuesIterableTest {
         verify(stub.storIOSQLite).defaultScheduler();
         verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
-    }
-
-    @Test
-    public void createObservableReturnsAsRxObservable() {
-        final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
-
-        PreparedPutContentValuesIterable preparedOperation = spy(putStub.storIOSQLite
-                .put()
-                .contentValues(putStub.contentValues)
-                .withPutResolver(putStub.putResolver)
-                .useTransaction(true)
-                .prepare());
-
-        Observable<PutResults<ContentValues>> observable =
-                Observable.just(PutResults.newInstance(Collections.<ContentValues, PutResult>emptyMap()));
-
-        //noinspection CheckResult
-        doReturn(observable).when(preparedOperation).asRxObservable();
-
-        //noinspection deprecation
-        assertThat(preparedOperation.createObservable()).isEqualTo(observable);
-
-        //noinspection CheckResult
-        verify(preparedOperation).asRxObservable();
     }
 
     @Test

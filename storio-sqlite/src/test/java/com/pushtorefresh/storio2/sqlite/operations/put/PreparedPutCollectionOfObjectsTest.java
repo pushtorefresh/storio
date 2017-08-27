@@ -13,7 +13,6 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import rx.Completable;
@@ -23,14 +22,12 @@ import rx.observers.TestSubscriber;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -359,9 +356,9 @@ public class PreparedPutCollectionOfObjectsTest {
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutTransactionWithoutAffectingDbBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -384,18 +381,18 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutTransactionWithoutAffectingDbAsObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -421,18 +418,18 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutTransactionWithoutAffectingDbAsSingle() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -458,18 +455,18 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutTransactionWithoutAffectingDbAsCompletable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -495,18 +492,18 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithTransactionWithoutAffectingDbBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -529,18 +526,18 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).put();
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithTransactionWithoutAffectingDbAsObservable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -566,18 +563,18 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithTransactionWithoutAffectingDbAsSingle() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -603,18 +600,18 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithTransactionWithoutAffectingDbAsCompletable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
-            final StorIOSQLite.Internal internal = mock(StorIOSQLite.Internal.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
-            when(storIOSQLite.lowLevel()).thenReturn(internal);
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
             when(storIOSQLite.put()).thenReturn(new PreparedPut.Builder(storIOSQLite));
 
@@ -640,10 +637,10 @@ public class PreparedPutCollectionOfObjectsTest {
             verify(storIOSQLite).lowLevel();
             verify(storIOSQLite).defaultScheduler();
             verify(storIOSQLite).interceptors();
-            verify(internal).typeMapping(TestItem.class);
-            verify(internal, never()).insert(any(InsertQuery.class), any(ContentValues.class));
-            verify(internal, never()).update(any(UpdateQuery.class), any(ContentValues.class));
-            verifyNoMoreInteractions(storIOSQLite, internal);
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
+            verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
     }
 
@@ -1054,30 +1051,6 @@ public class PreparedPutCollectionOfObjectsTest {
                     .prepare();
 
             schedulerChecker.checkAsCompletable(operation);
-        }
-
-        @Test
-        public void createObservableReturnsAsRxObservable() {
-            final PutObjectsStub putStub
-                    = PutObjectsStub.newPutStubForMultipleObjectsWithTypeMappingWithTransaction();
-
-            PreparedPutCollectionOfObjects<TestItem> preparedOperation = spy(putStub.storIOSQLite
-                    .put()
-                    .objects(putStub.items)
-                    .useTransaction(true)
-                    .prepare());
-
-            Observable<PutResults<TestItem>> observable =
-                    Observable.just(PutResults.newInstance(Collections.<TestItem, PutResult>emptyMap()));
-
-            //noinspection CheckResult
-            doReturn(observable).when(preparedOperation).asRxObservable();
-
-            //noinspection deprecation
-            assertThat(preparedOperation.createObservable()).isEqualTo(observable);
-
-            //noinspection CheckResult
-            verify(preparedOperation).asRxObservable();
         }
 
         @Test
