@@ -28,7 +28,7 @@ public class InsertTest extends BaseTest {
         assertThat(cursor.getCount()).isEqualTo(1);
         assertThat(cursor.moveToFirst()).isTrue();
 
-        final User insertedUser = UserTableMeta.GET_RESOLVER.mapFromCursor(cursor);
+        final User insertedUser = UserTableMeta.GET_RESOLVER.mapFromCursor(storIOSQLite, cursor);
 
         assertThat(insertedUser.id()).isNotNull();
         assertThat(user.equalsExceptId(insertedUser)).isTrue();
@@ -47,7 +47,7 @@ public class InsertTest extends BaseTest {
 
         for (int i = 0; i < users.size(); i++) {
             assertThat(cursor.moveToNext()).isTrue();
-            assertThat(UserTableMeta.GET_RESOLVER.mapFromCursor(cursor)).isEqualTo(users.get(i));
+            assertThat(UserTableMeta.GET_RESOLVER.mapFromCursor(storIOSQLite, cursor)).isEqualTo(users.get(i));
         }
 
         cursor.close();
@@ -88,7 +88,7 @@ public class InsertTest extends BaseTest {
         assertThat(cursor.getCount()).isEqualTo(1);
         assertThat(cursor.moveToFirst()).isTrue();
 
-        final User insertedUser = UserTableMeta.GET_RESOLVER.mapFromCursor(cursor);
+        final User insertedUser = UserTableMeta.GET_RESOLVER.mapFromCursor(storIOSQLite, cursor);
 
         assertThat(insertedUser.id()).isNotNull();
         assertThat(user.equalsExceptId(insertedUser)).isTrue();

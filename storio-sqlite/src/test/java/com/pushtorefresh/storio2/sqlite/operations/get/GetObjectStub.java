@@ -108,7 +108,7 @@ class GetObjectStub {
         when(getResolver.performGet(storIOSQLite, rawQuery))
                 .thenReturn(cursor);
 
-        when(getResolver.mapFromCursor(cursor))
+        when(getResolver.mapFromCursor(storIOSQLite, cursor))
                 .thenReturn(item);
 
         //noinspection unchecked
@@ -141,7 +141,7 @@ class GetObjectStub {
         verify(getResolver).performGet(storIOSQLite, query);
 
         // should be called only once
-        verify(getResolver).mapFromCursor(cursor);
+        verify(getResolver).mapFromCursor(storIOSQLite, cursor);
 
         // should be called only once because of Performance!
         verify(cursor).getCount();
@@ -202,7 +202,7 @@ class GetObjectStub {
     void verifyRawQueryBehavior(@Nullable TestItem actualItem) {
         verify(storIOSQLite).get();
         verify(getResolver).performGet(storIOSQLite, rawQuery);
-        verify(getResolver).mapFromCursor(cursor);
+        verify(getResolver).mapFromCursor(storIOSQLite, cursor);
         verify(cursor).close();
         assertThat(actualItem).isEqualTo(item);
     }

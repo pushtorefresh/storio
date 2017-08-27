@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PreparedGetNumberOfResultsTest {
@@ -275,6 +276,7 @@ public class PreparedGetNumberOfResultsTest {
 
     @Test
     public void verifyThatStandardGetResolverJustReturnsCursorGetCount() {
+        final GetCursorStub getStub = GetCursorStub.newInstance();
         final GetResolver<Integer> standardGetResolver
                 = PreparedGetNumberOfResults.CompleteBuilder.STANDARD_GET_RESOLVER;
 
@@ -282,7 +284,7 @@ public class PreparedGetNumberOfResultsTest {
 
         when(cursor.getCount()).thenReturn(12314);
 
-        assertThat(standardGetResolver.mapFromCursor(cursor)).isEqualTo(12314);
+        assertThat(standardGetResolver.mapFromCursor(getStub.storIOSQLite, cursor)).isEqualTo(12314);
     }
 
     @Test
@@ -313,5 +315,33 @@ public class PreparedGetNumberOfResultsTest {
                 .prepare();
 
         schedulerChecker.checkAsSingle(operation);
+    }
+
+    @Test
+    public void shouldPassStorIOSQLiteToResolverOnQuery() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+        getStub.storIOSQLite
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare()
+                .executeAsBlocking();
+
+        verify(getStub.getResolverForNumberOfResults).mapFromCursor(eq(getStub.storIOSQLite), any(Cursor.class));
+    }
+
+    @Test
+    public void shouldPassStorIOSQLiteToResolverOnRawQuery() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+        getStub.storIOSQLite
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.rawQuery)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare()
+                .executeAsBlocking();
+
+        verify(getStub.getResolverForNumberOfResults).mapFromCursor(eq(getStub.storIOSQLite), any(Cursor.class));
     }
 }

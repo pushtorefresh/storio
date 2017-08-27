@@ -2,6 +2,8 @@ package com.pushtorefresh.storio2.sqlite.annotations;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+
+import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.get.DefaultGetResolver;
 import java.lang.Override;
 import java.lang.String;
@@ -15,7 +17,7 @@ public class PrimitiveMethodsConstructorStorIOSQLiteGetResolver extends DefaultG
      */
     @Override
     @NonNull
-    public PrimitiveMethodsConstructor mapFromCursor(@NonNull Cursor cursor) {
+    public PrimitiveMethodsConstructor mapFromCursor(@NonNull StorIOSQLite storIOSQLite, @NonNull Cursor cursor) {
 
         boolean field1 = cursor.getInt(cursor.getColumnIndex("field1")) == 1;
         short field2 = cursor.getShort(cursor.getColumnIndex("field2"));

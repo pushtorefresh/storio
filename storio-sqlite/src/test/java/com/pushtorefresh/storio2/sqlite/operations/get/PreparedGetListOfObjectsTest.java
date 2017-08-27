@@ -25,6 +25,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -527,7 +528,7 @@ public class PreparedGetListOfObjectsTest {
             when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
                     .thenReturn(cursor);
 
-            when(getResolver.mapFromCursor(cursor))
+            when(getResolver.mapFromCursor(storIOSQLite, cursor))
                     .thenThrow(new IllegalStateException("test exception"));
 
             PreparedGetListOfObjects<Object> preparedGetListOfObjects =
@@ -549,7 +550,7 @@ public class PreparedGetListOfObjectsTest {
                 verify(cursor).close();
 
                 verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
-                verify(getResolver).mapFromCursor(cursor);
+                verify(getResolver).mapFromCursor(storIOSQLite, cursor);
                 verify(cursor).getCount();
                 verify(cursor).moveToNext();
                 verify(storIOSQLite).interceptors();
@@ -576,7 +577,7 @@ public class PreparedGetListOfObjectsTest {
             when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
                     .thenReturn(cursor);
 
-            when(getResolver.mapFromCursor(cursor))
+            when(getResolver.mapFromCursor(storIOSQLite, cursor))
                     .thenThrow(new IllegalStateException("test exception"));
 
             PreparedGetListOfObjects<Object> preparedGetListOfObjects =
@@ -609,7 +610,7 @@ public class PreparedGetListOfObjectsTest {
             verify(storIOSQLite).observeChanges();
 
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
-            verify(getResolver).mapFromCursor(cursor);
+            verify(getResolver).mapFromCursor(storIOSQLite, cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
@@ -634,7 +635,7 @@ public class PreparedGetListOfObjectsTest {
             when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
                     .thenReturn(cursor);
 
-            when(getResolver.mapFromCursor(cursor))
+            when(getResolver.mapFromCursor(storIOSQLite, cursor))
                     .thenThrow(new IllegalStateException("test exception"));
 
             PreparedGetListOfObjects<Object> preparedGetListOfObjects =
@@ -666,7 +667,7 @@ public class PreparedGetListOfObjectsTest {
 
             //noinspection unchecked
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
-            verify(getResolver).mapFromCursor(cursor);
+            verify(getResolver).mapFromCursor(storIOSQLite, cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
             verify(storIOSQLite).defaultScheduler();
@@ -703,6 +704,36 @@ public class PreparedGetListOfObjectsTest {
                     .prepare();
 
             schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void shouldPassStorIOSQLiteToResolverOnQuery() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithoutTypeMapping();
+            getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            verify(getStub.getResolver, times(getStub.items.size()))
+                    .mapFromCursor(eq(getStub.storIOSQLite), any(Cursor.class));
+        }
+
+        @Test
+        public void shouldPassStorIOSQLiteToResolverOnRawQuery() {
+            final GetObjectsStub getStub = GetObjectsStub.newInstanceWithoutTypeMapping();
+            getStub.storIOSQLite
+                    .get()
+                    .listOfObjects(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            verify(getStub.getResolver, times(getStub.items.size()))
+                    .mapFromCursor(eq(getStub.storIOSQLite), any(Cursor.class));
         }
     }
 }
