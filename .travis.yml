@@ -7,7 +7,7 @@ jdk: oraclejdk8
 before_install:
   - sudo apt-get update -q
   - sudo apt-get install -y curl unzip
-  - travis_wait 20 pip install --user codecov
+  - pip install --user codecov
   - export ANDROID_HOME="$HOME"/android-sdk
   - mkdir -p "$ANDROID_HOME"
   - export ANDROID_SDK_FILE_NAME=tools_r25.2.3-linux.zip
@@ -23,7 +23,7 @@ before_install:
   - eval $ANDROID_SDK_INSTALL_COMPONENT '"extras;google;m2repository"'
 
 script:
-  - sh ci.sh
+  - travis_wait 20 sh ci.sh
   
 after_success:
   - codecov
