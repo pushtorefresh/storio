@@ -3,25 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingBottom="8dp"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp"
-    android:paddingTop="8dp">
+    android:orientation="horizontal"
+    android:padding="8dp">
 
     <TextView
-        android:id="@+id/list_item_tweet_author"
+        android:id="@+id/list_item_customer_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/text_secondary"
-        tools:text="\@artem_zin" />
+        tools:text="Artem Zinnatullin" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <TextView
-        android:id="@+id/list_item_tweet_content"
+        android:id="@+id/list_item_customer_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textColor="@color/text_primary"
-        tools:text="StorIO — modern API for SQLiteDatabase and ContentResolver" />
+        tools:text="San Francisco" />
 
 </LinearLayout>

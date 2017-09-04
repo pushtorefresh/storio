@@ -20,12 +20,16 @@ import java.util.List;
 public class PersonsAdapter extends RecyclerView.Adapter<PersonsAdapter.ViewHolder> {
 
     @NonNull
+    private final LayoutInflater layoutInflater;
+
+    @NonNull
     private List<Person> persons = Collections.emptyList();
 
     @NonNull
     private final Callbacks callbacks;
 
-    public PersonsAdapter(@NonNull Callbacks callbacks) {
+    public PersonsAdapter(@NonNull LayoutInflater layoutInflater, @NonNull Callbacks callbacks) {
+        this.layoutInflater = layoutInflater;
         this.callbacks = callbacks;
     }
 
@@ -40,10 +44,10 @@ public class PersonsAdapter extends RecyclerView.Adapter<PersonsAdapter.ViewHold
     }
 
     @Override
-    public
     @NonNull
-    ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_person, parent, false), callbacks);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = layoutInflater.inflate(R.layout.list_item_person, parent, false);
+        return new ViewHolder(itemView, callbacks);
     }
 
     @Override
