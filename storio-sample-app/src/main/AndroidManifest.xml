@@ -30,6 +30,10 @@
             android:name="com.pushtorefresh.storio2.sample.many_to_many_sample.ManyToManyActivity"
             android:label="@string/many_to_many" />
 
+        <activity
+            android:name="com.pushtorefresh.storio2.sample.sqldelight.SqlDelightActivity"
+            android:label="@string/sqldelight" />
+
         <provider
             android:name="com.pushtorefresh.storio2.sample.provider.SampleContentProvider"
             android:authorities="com.pushtorefresh.storio2.sample_provider"

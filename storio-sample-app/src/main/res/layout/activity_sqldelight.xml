@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
 
     <LinearLayout
-        android:id="@+id/tweets_loading_ui"
+        android:id="@+id/customer_loading_ui"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -19,12 +22,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/tweets_loading" />
+            android:text="@string/common_loading" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/tweets_error_ui"
+        android:id="@+id/customers_error_ui"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -37,7 +40,7 @@
             android:text="@string/common_error" />
 
         <Button
-            android:id="@+id/tweets_error_ui_try_again_button"
+            android:id="@+id/customers_error_ui_try_again_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_vertical_margin"
@@ -46,7 +49,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/tweets_empty_ui"
+        android:id="@+id/customers_empty_ui"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -56,21 +59,21 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tweets_empty" />
+            android:text="@string/customers_empty" />
 
         <Button
-            android:id="@+id/tweets_empty_ui_add_tweets_button"
+            android:id="@+id/customers_empty_ui_add_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/tweets_add_tweets" />
+            android:text="@string/add_customers" />
 
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/tweets_recycler_view"
+        android:id="@+id/customers_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
 
-</FrameLayout>
+</LinearLayout>

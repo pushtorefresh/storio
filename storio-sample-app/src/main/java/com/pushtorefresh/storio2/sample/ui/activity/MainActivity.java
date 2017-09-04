@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import com.pushtorefresh.storio2.sample.R;
 import com.pushtorefresh.storio2.sample.many_to_many_sample.ManyToManyActivity;
+import com.pushtorefresh.storio2.sample.sqldelight.SqlDelightActivity;
 import com.pushtorefresh.storio2.sample.ui.Toasts;
 import com.pushtorefresh.storio2.sample.ui.activity.db.TweetsSampleActivity;
 
@@ -33,9 +34,13 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.many_to_many) {
-            startActivity(new Intent(this, ManyToManyActivity.class));
-            return true;
+        switch (item.getItemId()) {
+            case R.id.many_to_many:
+                startActivity(new Intent(this, ManyToManyActivity.class));
+                return true;
+            case R.id.sqldelight:
+                startActivity(new Intent(this, SqlDelightActivity.class));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
