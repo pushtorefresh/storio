@@ -2,7 +2,6 @@
     <string name="app_name">StorIO Sample</string>
 
     <string name="tweets_loading">Loading tweets…</string>
-    <string name="tweets_error">Unfortunately, error has occurred :(</string>
     <string name="button_try_again">Try again</string>
     <string name="tweets_empty">No tweets :(</string>
     <string name="tweets_add_tweets">Add tweets</string>
@@ -12,4 +11,9 @@
     <string name="main_content_provider_sample">Contacts — ContentResolver sample</string>
     <string name="tweets_db_sample_label">Tweets — Db Sample</string>
     <string name="many_to_many">Many to many</string>
+    <string name="sqldelight">SQLDelight</string>
+    <string name="common_loading">Loading…</string>
+    <string name="common_error">Unfortunately, error has occurred :(</string>
+    <string name="customers_empty">No customers :(</string>
+    <string name="add_customers">Add customers</string>
 </resources>

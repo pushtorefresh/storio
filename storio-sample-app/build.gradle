@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.squareup.sqldelight'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -67,6 +68,9 @@ dependencies {
     compile libraries.butterKnife
     compile libraries.recyclerView
     compile libraries.timber
+
+    provided libraries.autoParcel
+    annotationProcessor libraries.autoParcelProcessor
 
     debugCompile libraries.leakCanary
     releaseCompile libraries.leakCanaryNoOp

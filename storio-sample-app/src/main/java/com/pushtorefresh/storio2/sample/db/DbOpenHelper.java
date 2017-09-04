@@ -10,6 +10,7 @@ import com.pushtorefresh.storio2.sample.db.tables.UsersTable;
 import com.pushtorefresh.storio2.sample.many_to_many_sample.entities.CarTable;
 import com.pushtorefresh.storio2.sample.many_to_many_sample.entities.PersonCarRelationTable;
 import com.pushtorefresh.storio2.sample.many_to_many_sample.entities.PersonTable;
+import com.pushtorefresh.storio2.sample.sqldelight.entities.Customer;
 
 public class DbOpenHelper extends SQLiteOpenHelper {
 
@@ -25,6 +26,8 @@ public class DbOpenHelper extends SQLiteOpenHelper {
         db.execSQL(CarTable.getCreateTableQuery());
         db.execSQL(PersonTable.getCreateTableQuery());
         db.execSQL(PersonCarRelationTable.getCreateTableQuery());
+
+        db.execSQL(Customer.CREATE_TABLE);
     }
 
     @Override

@@ -5,4 +5,8 @@
         android:id="@+id/many_to_many"
         android:title="@string/many_to_many"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/sqldelight"
+        android:title="@string/sqldelight"
+        app:showAsAction="never" />
 </menu>
