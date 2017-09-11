@@ -97,7 +97,7 @@ class GetObjectsStub {
         when(storIOContentResolver.observeChangesOfUri(query.uri()))
                 .thenReturn(Observable.<Changes>empty());
 
-        when(getResolver.mapFromCursor(cursor))
+        when(getResolver.mapFromCursor(storIOContentResolver, cursor))
                 .thenAnswer(new Answer<TestItem>() {
                     int invocationsCount = 0;
 
@@ -141,7 +141,7 @@ class GetObjectsStub {
         verify(cursor, times(items.size() + 1)).moveToNext();
 
         // should be called same number of times as count of items in cursor
-        verify(getResolver, times(items.size())).mapFromCursor(cursor);
+        verify(getResolver, times(items.size())).mapFromCursor(storIOContentResolver, cursor);
 
         // cursor should be closed!
         verify(cursor).close();

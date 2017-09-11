@@ -2,6 +2,8 @@ package com.pushtorefresh.storio2.contentresolver.annotations;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+
+import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.get.DefaultGetResolver;
 import java.lang.Boolean;
 import java.lang.Double;
@@ -20,7 +22,7 @@ public class BoxedTypesMethodsConstructorStorIOContentResolverGetResolver extend
      */
     @Override
     @NonNull
-    public BoxedTypesMethodsConstructor mapFromCursor(@NonNull Cursor cursor) {
+    public BoxedTypesMethodsConstructor mapFromCursor(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Cursor cursor) {
 
         Boolean field1 = null;
         if (!cursor.isNull(cursor.getColumnIndex("field1"))) {

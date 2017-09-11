@@ -61,7 +61,7 @@ class GetCursorStub {
         when(storIOContentResolver.observeChangesOfUri(query.uri()))
                 .thenReturn(Observable.<Changes>empty());
 
-        when(getResolver.mapFromCursor(cursor))
+        when(getResolver.mapFromCursor(storIOContentResolver, cursor))
                 .thenReturn(cursor);
     }
 

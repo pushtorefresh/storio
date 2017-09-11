@@ -140,7 +140,10 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
         static final GetResolver<Cursor> STANDARD_GET_RESOLVER = new DefaultGetResolver<Cursor>() {
             @NonNull
             @Override
-            public Cursor mapFromCursor(@NonNull Cursor cursor) {
+            public Cursor mapFromCursor(
+                    @NonNull StorIOContentResolver storIOContentResolver,
+                    @NonNull Cursor cursor
+            ) {
                 return cursor; // easy
             }
         };

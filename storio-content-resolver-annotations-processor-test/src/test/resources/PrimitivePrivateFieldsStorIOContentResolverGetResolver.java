@@ -2,6 +2,8 @@ package com.pushtorefresh.storio2.contentresolver.annotations;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+
+import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.get.DefaultGetResolver;
 import java.lang.Override;
 import java.lang.String;
@@ -15,7 +17,7 @@ public class PrimitivePrivateFieldsStorIOContentResolverGetResolver extends Defa
      */
     @Override
     @NonNull
-    public PrimitivePrivateFields mapFromCursor(@NonNull Cursor cursor) {
+    public PrimitivePrivateFields mapFromCursor(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Cursor cursor) {
 
         boolean field1 = cursor.getInt(cursor.getColumnIndex("field1")) == 1;
         short field2 = cursor.getShort(cursor.getColumnIndex("field2"));
