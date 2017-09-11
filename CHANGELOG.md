@@ -5,7 +5,7 @@ StorIO Change Log
 
 _2017_09_12_
 
-* **Interceptors API! :tada::tada: Many thanks to [@rsinukov](https://github.com/rsinukov)**
+* **Interceptors API!** :tada::tada: Many thanks to [@rsinukov](https://github.com/rsinukov)
 * Logging via interceptors (just add `LoggingInterceptor`).
 * Remove deprecated `createObservable` and `internal`. You should use `asRxObservable` and `lowLevel` instead.
 * `mapFromCursor` receives `StorIOSqlite`/`StorIOContentResolver` as parameter.
