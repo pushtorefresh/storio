@@ -41,6 +41,11 @@ object GetResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
                 .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                 .addModifiers(PUBLIC)
                 .returns(className)
+                .addParameter(ParameterSpec.builder(
+                        ClassName.get("com.pushtorefresh.storio2.contentresolver", "StorIOContentResolver"),
+                        "storIOContentResolver")
+                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .build())
                 .addParameter(ParameterSpec.builder(ClassName.get("android.database", "Cursor"), "cursor")
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
@@ -76,6 +81,11 @@ object GetResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
                 .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                 .addModifiers(PUBLIC)
                 .returns(className)
+                .addParameter(ParameterSpec.builder(
+                        ClassName.get("com.pushtorefresh.storio2.contentresolver", "StorIOContentResolver"),
+                        "storIOContentResolver")
+                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .build())
                 .addParameter(ParameterSpec.builder(ClassName.get("android.database", "Cursor"), "cursor")
                         .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
                         .build())
