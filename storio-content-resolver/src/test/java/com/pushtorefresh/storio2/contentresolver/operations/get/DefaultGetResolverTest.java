@@ -38,7 +38,10 @@ public class DefaultGetResolverTest {
         final GetResolver<TestItem> defaultGetResolver = new DefaultGetResolver<TestItem>() {
             @NonNull
             @Override
-            public TestItem mapFromCursor(@NonNull Cursor cursor) {
+            public TestItem mapFromCursor(
+                    @NonNull StorIOContentResolver storIOContentResolver,
+                    @NonNull Cursor cursor
+            ) {
                 assertThat(cursor).isSameAs(expectedCursor);
                 return new TestItem();
             }

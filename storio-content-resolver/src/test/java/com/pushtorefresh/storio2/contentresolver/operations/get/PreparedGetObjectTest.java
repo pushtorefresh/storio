@@ -19,6 +19,7 @@ import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -270,7 +271,7 @@ public class PreparedGetObjectTest {
             when(getResolver.performGet(storIOContentResolver, query))
                     .thenReturn(cursor);
 
-            when(getResolver.mapFromCursor(cursor))
+            when(getResolver.mapFromCursor(storIOContentResolver, cursor))
                     .thenThrow(new IllegalStateException("Breaking execution"));
 
             when(cursor.getCount()).thenReturn(1);
@@ -329,6 +330,20 @@ public class PreparedGetObjectTest {
                     .prepare();
 
             schedulerChecker.checkAsSingle(operation);
+        }
+
+        @Test
+        public void shouldPassStorIOContentResolverToGetResolver() {
+            final GetObjectStub getStub = GetObjectStub.newStubWithoutTypeMapping();
+            getStub.storIOContentResolver
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .executeAsBlocking();
+
+            verify(getStub.getResolver).mapFromCursor(eq(getStub.storIOContentResolver), any(Cursor.class));
         }
     }
 }

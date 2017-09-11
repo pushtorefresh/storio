@@ -2,6 +2,8 @@ package com.pushtorefresh.storio2.contentresolver.annotations;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+
+import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.get.DefaultGetResolver;
 import java.lang.Override;
 
@@ -14,7 +16,7 @@ public class BoxedTypesFieldsIgnoreNullStorIOContentResolverGetResolver extends 
      */
     @Override
     @NonNull
-    public BoxedTypesFieldsIgnoreNull mapFromCursor(@NonNull Cursor cursor) {
+    public BoxedTypesFieldsIgnoreNull mapFromCursor(@NonNull StorIOContentResolver storIOContentResolver, @NonNull Cursor cursor) {
         BoxedTypesFieldsIgnoreNull object = new BoxedTypesFieldsIgnoreNull();
 
         if (!cursor.isNull(cursor.getColumnIndex("field1"))) {

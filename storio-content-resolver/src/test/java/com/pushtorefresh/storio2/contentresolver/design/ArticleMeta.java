@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.delete.DefaultDeleteResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.delete.DeleteResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.get.DefaultGetResolver;
@@ -51,7 +52,10 @@ public class ArticleMeta {
     static final GetResolver<Article> GET_RESOLVER = new DefaultGetResolver<Article>() {
         @NonNull
         @Override
-        public Article mapFromCursor(@NonNull Cursor cursor) {
+        public Article mapFromCursor(
+                @NonNull StorIOContentResolver storIOContentResolver,
+                @NonNull Cursor cursor
+        ) {
             return Article.newInstance(null, null); // in Design tests it does not matter
         }
     };

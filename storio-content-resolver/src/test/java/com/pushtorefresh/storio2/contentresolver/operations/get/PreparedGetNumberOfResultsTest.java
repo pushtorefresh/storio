@@ -16,11 +16,12 @@ import rx.Single;
 import rx.observers.TestSubscriber;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Fail.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PreparedGetNumberOfResultsTest {
@@ -177,6 +178,7 @@ public class PreparedGetNumberOfResultsTest {
 
     @Test
     public void verifyThatStandardGetResolverJustReturnsCursorGetCount() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
         final GetResolver<Integer> standardGetResolver
                 = PreparedGetNumberOfResults.CompleteBuilder.STANDARD_GET_RESOLVER;
 
@@ -184,7 +186,7 @@ public class PreparedGetNumberOfResultsTest {
 
         when(cursor.getCount()).thenReturn(12314);
 
-        assertThat(standardGetResolver.mapFromCursor(cursor)).isEqualTo(12314);
+        assertThat(standardGetResolver.mapFromCursor(getStub.storIOContentResolver, cursor)).isEqualTo(12314);
     }
 
     @Test
@@ -215,5 +217,19 @@ public class PreparedGetNumberOfResultsTest {
                 .prepare();
 
         schedulerChecker.checkAsSingle(operation);
+    }
+
+    @Test
+    public void shouldPassStorIOContentResolverToGetResolver() {
+        final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
+        getStub.storIOContentResolver
+                .get()
+                .numberOfResults()
+                .withQuery(getStub.query)
+                .withGetResolver(getStub.getResolverForNumberOfResults)
+                .prepare()
+                .executeAsBlocking();
+
+        verify(getStub.getResolverForNumberOfResults).mapFromCursor(eq(getStub.storIOContentResolver), any(Cursor.class));
     }
 }

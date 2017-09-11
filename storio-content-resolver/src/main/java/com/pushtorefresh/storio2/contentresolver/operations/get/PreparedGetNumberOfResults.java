@@ -47,7 +47,7 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
         try {
             cursor = getResolver.performGet(storIOContentResolver, query);
             try {
-                return getResolver.mapFromCursor(cursor);
+                return getResolver.mapFromCursor(storIOContentResolver, cursor);
             } finally {
                 cursor.close();
             }
@@ -142,7 +142,10 @@ public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
         static final GetResolver<Integer> STANDARD_GET_RESOLVER = new DefaultGetResolver<Integer>() {
             @NonNull
             @Override
-            public Integer mapFromCursor(@NonNull Cursor cursor) {
+            public Integer mapFromCursor(
+                    @NonNull StorIOContentResolver storIOContentResolver,
+                    @NonNull Cursor cursor
+            ) {
                 return cursor.getCount();
             }
         };

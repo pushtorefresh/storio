@@ -14,12 +14,16 @@ public abstract class GetResolver<T> {
     /**
      * Converts {@link Cursor} with already set position to object of required type.
      *
+     * @param storIOContentResolver non-null instance of {@link StorIOContentResolver}.
      * @param cursor not closed {@link Cursor} with already set position
      *               that should be parsed and converted to object of required type.
      * @return non-null object of required type with data parsed from passed {@link Cursor}.
      */
     @NonNull
-    public abstract T mapFromCursor(@NonNull Cursor cursor);
+    public abstract T mapFromCursor(
+            @NonNull StorIOContentResolver storIOContentResolver,
+            @NonNull Cursor cursor
+    );
 
     /**
      * Performs Get Operation
