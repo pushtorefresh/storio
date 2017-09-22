@@ -176,7 +176,7 @@ class GetObjectsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<List<TestItem>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull List<TestItem> testItems) throws Exception {
+                    public void accept(@NonNull List<TestItem> testItems) throws Exception {
                         // Get Operation should be subscribed to changes of Uri!
                         verify(storIOContentResolver).observeChangesOfUri(query.uri(), BackpressureStrategy.MISSING);
 
@@ -195,7 +195,7 @@ class GetObjectsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<List<TestItem>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull List<TestItem> testItems) throws Exception {
+                    public void accept(@NonNull List<TestItem> testItems) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehavior(testItems);
                     }

@@ -91,7 +91,7 @@ public class GetNumberOfResultsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<Integer>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull Integer integer) throws Exception {
+                    public void accept(@NonNull Integer integer) throws Exception {
                         // Get Operation should be subscribed to changes of tables from Query
                         verify(storIOContentResolver).observeChangesOfUri(eq(query.uri()), eq(BackpressureStrategy.MISSING));
                         verify(storIOContentResolver).defaultRxScheduler();
@@ -107,7 +107,7 @@ public class GetNumberOfResultsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<Integer>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull Integer integer) throws Exception {
+                    public void accept(@NonNull Integer integer) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyQueryBehaviorForInteger(numberOfResults);
                     }

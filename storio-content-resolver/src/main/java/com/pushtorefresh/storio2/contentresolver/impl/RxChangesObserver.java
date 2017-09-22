@@ -36,7 +36,7 @@ final class RxChangesObserver {
                                             @NonNull BackpressureStrategy backpressureStrategy) {
         return Flowable.create(new FlowableOnSubscribe<Changes>() {
             @Override
-            public void subscribe(@io.reactivex.annotations.NonNull final FlowableEmitter<Changes> emitter) throws Exception {
+            public void subscribe(@NonNull final FlowableEmitter<Changes> emitter) throws Exception {
                 // Use one ContentObserver for all passed Uris on API >= 16
                 if (sdkVersion >= Build.VERSION_CODES.JELLY_BEAN) {
                     final ContentObserver contentObserver = new ContentObserver(handler) {

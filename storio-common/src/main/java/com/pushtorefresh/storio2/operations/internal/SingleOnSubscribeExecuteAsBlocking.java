@@ -23,7 +23,7 @@ public final class SingleOnSubscribeExecuteAsBlocking<Result, Data> implements S
     }
 
     @Override
-    public void subscribe(@io.reactivex.annotations.NonNull SingleEmitter<Result> emitter) throws Exception {
+    public void subscribe(@NonNull SingleEmitter<Result> emitter) throws Exception {
         try {
             emitter.onSuccess(preparedOperation.executeAsBlocking());
         } catch (Exception e) {

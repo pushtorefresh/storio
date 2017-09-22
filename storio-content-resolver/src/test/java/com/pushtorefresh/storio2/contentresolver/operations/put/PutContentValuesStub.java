@@ -106,7 +106,7 @@ class PutContentValuesStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<PutResults<ContentValues>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull PutResults<ContentValues> putResults) throws Exception {
+                    public void accept(@NonNull PutResults<ContentValues> putResults) throws Exception {
                         verifyBehaviorForMultipleContentValues(putResults);
                     }
                 })
@@ -119,7 +119,7 @@ class PutContentValuesStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<PutResults<ContentValues>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull PutResults<ContentValues> putResults) throws Exception {
+                    public void accept(@NonNull PutResults<ContentValues> putResults) throws Exception {
                         verifyBehaviorForMultipleContentValues(putResults);
                     }
                 })
@@ -142,7 +142,7 @@ class PutContentValuesStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<PutResult>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull PutResult putResult) throws Exception {
+                    public void accept(@NonNull PutResult putResult) throws Exception {
                         verifyBehaviorForOneContentValues(putResult);
                     }
                 })
@@ -155,7 +155,7 @@ class PutContentValuesStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<PutResult>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull PutResult putResult) throws Exception {
+                    public void accept(@NonNull PutResult putResult) throws Exception {
                         verifyBehaviorForOneContentValues(putResult);
                     }
                 })

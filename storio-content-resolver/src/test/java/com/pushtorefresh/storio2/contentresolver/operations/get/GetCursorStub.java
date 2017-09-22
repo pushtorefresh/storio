@@ -85,7 +85,7 @@ class GetCursorStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<Cursor>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull Cursor cursor) throws Exception {
+                    public void accept(@NonNull Cursor cursor) throws Exception {
                         // Get Operation should be subscribed to changes of Uri
                         verify(storIOContentResolver).observeChangesOfUri(query.uri(), BackpressureStrategy.MISSING);
 
@@ -103,7 +103,7 @@ class GetCursorStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<Cursor>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull Cursor cursor) throws Exception {
+                    public void accept(@NonNull Cursor cursor) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyQueryBehaviorForCursor(cursor);
                     }

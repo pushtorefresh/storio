@@ -147,7 +147,7 @@ class PutObjectsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<PutResults<TestItem>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull PutResults<TestItem> putResults) throws Exception {
+                    public void accept(@NonNull PutResults<TestItem> putResults) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForMultipleObjects(putResults);
                     }
@@ -161,7 +161,7 @@ class PutObjectsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<PutResults<TestItem>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull PutResults<TestItem> putResults) throws Exception {
+                    public void accept(@NonNull PutResults<TestItem> putResults) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForMultipleObjects(putResults);
                     }
@@ -185,7 +185,7 @@ class PutObjectsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<PutResult>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull PutResult putResult) throws Exception {
+                    public void accept(@NonNull PutResult putResult) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForOneObject(putResult);
                     }
@@ -199,7 +199,7 @@ class PutObjectsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<PutResult>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull PutResult putResult) throws Exception {
+                    public void accept(@NonNull PutResult putResult) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForOneObject(putResult);
                     }

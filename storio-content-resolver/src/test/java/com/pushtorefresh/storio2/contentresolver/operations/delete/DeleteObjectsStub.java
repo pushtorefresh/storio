@@ -145,7 +145,7 @@ class DeleteObjectsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<DeleteResults<TestItem>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull DeleteResults<TestItem> deleteResults) throws Exception {
+                    public void accept(@NonNull DeleteResults<TestItem> deleteResults) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForDeleteMultipleObjects(deleteResults);
                     }
@@ -159,7 +159,7 @@ class DeleteObjectsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<DeleteResults<TestItem>>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull DeleteResults<TestItem> deleteResults) throws Exception {
+                    public void accept(@NonNull DeleteResults<TestItem> deleteResults) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForDeleteMultipleObjects(deleteResults);
                     }
@@ -183,7 +183,7 @@ class DeleteObjectsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<DeleteResult>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull DeleteResult deleteResult) throws Exception {
+                    public void accept(@NonNull DeleteResult deleteResult) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForDeleteOneObject(deleteResult);
                     }
@@ -197,7 +197,7 @@ class DeleteObjectsStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<DeleteResult>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull DeleteResult deleteResult) throws Exception {
+                    public void accept(@NonNull DeleteResult deleteResult) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehaviorForDeleteOneObject(deleteResult);
                     }

@@ -23,7 +23,7 @@ public final class FlowableOnSubscribeExecuteAsBlocking<Result, Data> implements
     }
 
     @Override
-    public void subscribe(@io.reactivex.annotations.NonNull FlowableEmitter<Result> emitter) throws Exception {
+    public void subscribe(@NonNull FlowableEmitter<Result> emitter) throws Exception {
         try {
             emitter.onNext(preparedOperation.executeAsBlocking());
         } catch (Exception e) {

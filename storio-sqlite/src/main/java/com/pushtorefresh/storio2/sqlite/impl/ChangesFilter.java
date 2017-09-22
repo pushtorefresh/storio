@@ -57,7 +57,7 @@ public final class ChangesFilter implements Predicate<Changes> {
     }
 
     @Override
-    public boolean test(@io.reactivex.annotations.NonNull Changes changes) throws Exception {
+    public boolean test(@NonNull Changes changes) throws Exception {
         if (tables != null) {
             // if one of changed tables found in tables for subscription -> notify observer
             for (String affectedTable : changes.affectedTables()) {

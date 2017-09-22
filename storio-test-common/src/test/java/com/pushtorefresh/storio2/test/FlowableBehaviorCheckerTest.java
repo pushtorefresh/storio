@@ -1,13 +1,12 @@
 package com.pushtorefresh.storio2.test;
 
-import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
+import android.support.annotation.NonNull;
 
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Flowable;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 
 import static org.assertj.core.api.Assertions.fail;

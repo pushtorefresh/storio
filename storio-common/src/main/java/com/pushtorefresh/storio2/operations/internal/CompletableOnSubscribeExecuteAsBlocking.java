@@ -23,7 +23,7 @@ public final class CompletableOnSubscribeExecuteAsBlocking implements Completabl
     }
 
     @Override
-    public void subscribe(@io.reactivex.annotations.NonNull CompletableEmitter emitter) throws Exception {
+    public void subscribe(@NonNull CompletableEmitter emitter) throws Exception {
         try {
             preparedOperation.executeAsBlocking();
             emitter.onComplete();

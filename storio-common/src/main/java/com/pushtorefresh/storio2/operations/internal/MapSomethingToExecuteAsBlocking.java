@@ -22,7 +22,7 @@ public final class MapSomethingToExecuteAsBlocking<Something, Result, Data> impl
     }
 
     @Override
-    public Result apply(@io.reactivex.annotations.NonNull Something something) throws Exception {
+    public Result apply(@NonNull Something something) throws Exception {
         return preparedOperation.executeAsBlocking();
     }
 }

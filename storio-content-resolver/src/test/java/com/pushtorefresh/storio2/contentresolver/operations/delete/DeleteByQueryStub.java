@@ -82,7 +82,7 @@ class DeleteByQueryStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<DeleteResult>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull DeleteResult deleteResult) throws Exception {
+                    public void accept(@NonNull DeleteResult deleteResult) throws Exception {
                         verifyBehavior(deleteResult);
                     }
                 })
@@ -95,7 +95,7 @@ class DeleteByQueryStub {
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<DeleteResult>() {
                     @Override
-                    public void accept(@io.reactivex.annotations.NonNull DeleteResult deleteResult) throws Exception {
+                    public void accept(@NonNull DeleteResult deleteResult) throws Exception {
                         verifyBehavior(deleteResult);
                     }
                 })

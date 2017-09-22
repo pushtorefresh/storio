@@ -31,7 +31,7 @@ public class AbstractEmissionCheckerTest {
 
         final Flowable<String> flowable = Flowable.create(new FlowableOnSubscribe<String>() {
             @Override
-            public void subscribe(@io.reactivex.annotations.NonNull FlowableEmitter<String> emitter) throws Exception {
+            public void subscribe(@NonNull FlowableEmitter<String> emitter) throws Exception {
                 onSubscribeWasCalled.set(true);
                 emitter.onNext("test_value");
                 emitter.onComplete();
@@ -70,7 +70,7 @@ public class AbstractEmissionCheckerTest {
                         .just("test_value")
                         .subscribe(new Consumer<String>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                            public void accept(@NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
@@ -99,7 +99,7 @@ public class AbstractEmissionCheckerTest {
                         .subscribeOn(Schedulers.computation())
                         .subscribe(new Consumer<String>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                            public void accept(@NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
@@ -137,7 +137,7 @@ public class AbstractEmissionCheckerTest {
                         .delay(2, SECONDS) // ha!
                         .subscribe(new Consumer<String>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                            public void accept(@NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
@@ -173,7 +173,7 @@ public class AbstractEmissionCheckerTest {
                 return publishProcessor
                         .subscribe(new Consumer<String>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                            public void accept(@NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
@@ -247,7 +247,7 @@ public class AbstractEmissionCheckerTest {
                 return publishProcessor
                         .subscribe(new Consumer<String>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                            public void accept(@NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
@@ -273,7 +273,7 @@ public class AbstractEmissionCheckerTest {
     }
 
     @Test
-    public void shouldThrowExcepionBecauseFlowableEmittedUnexpectedItemAfterExpectedSequence() {
+    public void shouldThrowExceptionBecauseFlowableEmittedUnexpectedItemAfterExpectedSequence() {
         final Queue<String> expectedValues = new LinkedList<String>();
 
         expectedValues.add("1");
@@ -289,7 +289,7 @@ public class AbstractEmissionCheckerTest {
                 return publishProcessor
                         .subscribe(new Consumer<String>() {
                             @Override
-                            public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                            public void accept(@NonNull String s) throws Exception {
                                 onNextObtained(s);
                             }
                         });
