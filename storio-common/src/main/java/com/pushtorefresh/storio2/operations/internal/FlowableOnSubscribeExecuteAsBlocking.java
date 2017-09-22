@@ -26,10 +26,9 @@ public final class FlowableOnSubscribeExecuteAsBlocking<Result, Data> implements
     public void subscribe(@NonNull FlowableEmitter<Result> emitter) throws Exception {
         try {
             emitter.onNext(preparedOperation.executeAsBlocking());
+            emitter.onComplete();
         } catch (Exception e) {
             emitter.onError(e);
         }
-
-        emitter.onComplete();
     }
 }
