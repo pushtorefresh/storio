@@ -1,6 +1,42 @@
 StorIO Change Log
 ==========
 
+## Version 2.0.0
+
+_2017_09_12_
+
+* **Interceptors API!** :tada::tada: Many thanks to [@rsinukov](https://github.com/rsinukov)
+* Logging via interceptors (just add `LoggingInterceptor`).
+* Remove deprecated `createObservable` and `internal`. You should use `asRxObservable` and `lowLevel` instead.
+* `mapFromCursor` receives `StorIOSqlite`/`StorIOContentResolver` as parameter.
+* Remove `Query.CompleteBuilder.whereArgs(list)`. Please use vararg overload instead.
+* Add ability to use vals instead of vars in classes for resolver generation.
+* Fix message in case creator parameters do not match columns.
+* Fix case with different classes having fields with the same names.
+* Add SQLDelight interaction example.
+* Gradle 3.5.
+* Checkstyle 7.7.
+* Kotlin 1.1.2.
+* Gradle plugin 2.3.3.
+* Support library 25.3.1.
+* Compile testing tool 0.11.
+
+**Changes:**
+
+* [PR 542](https://github.com/pushtorefresh/storio/pull/542): Interceptors API and `LoggingInterceptor`.
+* [PR 812](https://github.com/pushtorefresh/storio/pull/812): Remove deprecated `createObservable` and `internal`.
+* [PR 817](https://github.com/pushtorefresh/storio/pull/817): Add `storIOSqlite` parameter to get resolver.
+* [PR 818](https://github.com/pushtorefresh/storio/pull/818): Add `storIOContentResolver` parameter to get resolver.
+* [PR 819](https://github.com/pushtorefresh/storio/pull/819): Remove `Query.CompleteBuilder.whereArgs(list)`.
+* [PR 802](https://github.com/pushtorefresh/storio/pull/802): Add ability to use vals instead of vars in classes for resolver generation.
+* [PR 797](https://github.com/pushtorefresh/storio/pull/797): Fix message in case creator parameters do not match columns.
+* [PR 803](https://github.com/pushtorefresh/storio/pull/803): Gradle plugin 2.3.3. Fix case with different classes having fields with the same names.
+* [PR 814](https://github.com/pushtorefresh/storio/pull/814): Add SQLDelight interaction example.
+* [PR 790](https://github.com/pushtorefresh/storio/pull/790): Gradle 3.5, Checkstyle 7.7.
+* [PR 792](https://github.com/pushtorefresh/storio/pull/792): Kotlin 1.1.2.
+* [PR 794](https://github.com/pushtorefresh/storio/pull/794): Support library 25.3.1.
+* [PR 816](https://github.com/pushtorefresh/storio/pull/816): Compile testing tool 0.11.
+
 ## Version 1.13.0
 
 _2017_05_15_
