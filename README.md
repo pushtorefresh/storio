@@ -198,8 +198,8 @@ Then use `kapt` configuration instead of `annotationProcessor`.
  ```kotlin
  @StorIOSQLiteType(table = "tweets")
  data class Tweet @StorIOSQLiteCreator constructor(
-        StorIOSQLiteColumn(name = "author") var author: String,
-        StorIOSQLiteColumn(name = "content") var content: String)
+        StorIOSQLiteColumn(name = "author") val author: String,
+        StorIOSQLiteColumn(name = "content") val content: String)
  ```
 
 [`AutoValue`](https://github.com/google/auto/blob/master/value/userguide/index.md):
