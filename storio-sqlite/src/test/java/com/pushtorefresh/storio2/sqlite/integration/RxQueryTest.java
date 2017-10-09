@@ -7,7 +7,9 @@ import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.test.AbstractEmissionChecker;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -30,6 +32,9 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class RxQueryTest extends BaseTest {
+
+    @Rule
+    public Timeout timeout = Timeout.seconds(30);
 
     private class EmissionChecker extends AbstractEmissionChecker<List<User>> {
 
