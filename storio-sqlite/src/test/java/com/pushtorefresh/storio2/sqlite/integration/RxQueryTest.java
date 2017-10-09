@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio2.sqlite.integration;
 
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.sqlite.BuildConfig;
@@ -27,7 +28,6 @@ import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -191,9 +191,14 @@ public class RxQueryTest extends BaseTest {
         // Release the KRAKEN!
         countDownLatch.countDown();
 
-        testSubscriber.awaitTerminalEvent();
+        final long startTime = SystemClock.elapsedRealtime();
+
+        while (testSubscriber.getOnNextEvents().size() != numberOfParallelWorkers
+                && (SystemClock.elapsedRealtime() - startTime) < 20000) {
+            Thread.yield(); // let other threads work
+        }
+
         testSubscriber.assertNoErrors();
-        assertThat(testSubscriber.getOnNextEvents()).hasSize(numberOfParallelWorkers);
     }
 
     @Test
