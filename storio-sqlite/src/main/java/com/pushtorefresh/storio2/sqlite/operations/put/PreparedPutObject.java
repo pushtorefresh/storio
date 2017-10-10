@@ -128,11 +128,14 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult, T> {
 
                 final PutResult putResult = putResolver.performPut(storIOSQLite, object);
 
+                System.out.println("issue-826 putResult: " + putResult);
+
                 if (putResult.wasInserted() || putResult.wasUpdated()) {
                     final Changes changes = Changes.newInstance(
                             putResult.affectedTables(),
                             putResult.affectedTags()
                     );
+                    System.out.println("issue-826 notifyAboutChanges: " + changes);
                     lowLevel.notifyAboutChanges(changes);
                 }
 

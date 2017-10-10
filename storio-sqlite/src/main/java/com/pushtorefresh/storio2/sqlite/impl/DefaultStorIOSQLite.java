@@ -518,10 +518,14 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
             checkNotNull(changes, "Changes can not be null");
 
             // Fast path, no synchronization required
-            if (numberOfRunningTransactions.get() == 0) {
+            int number = numberOfRunningTransactions.get();
+            if (number == 0) {
+                System.out.println("issue-826 numberOfRunningTransactions = 0");
                 changesBus.onNext(changes);
             } else {
+                System.out.println("issue-826 numberOfRunningTransactions = " + number);
                 synchronized (lock) {
+                    System.out.println("issue-826 synchronized " + number);
                     pendingChanges.add(changes);
                 }
 
@@ -530,6 +534,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         private void notifyAboutPendingChangesIfNotInTransaction() {
+            System.out.println("issue-826 notifyAboutPendingChangesIfNotInTransaction");
             final Set<Changes> changesToSend;
 
             if (numberOfRunningTransactions.get() == 0) {
@@ -542,14 +547,15 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
             }
 
             if (changesToSend != null && changesToSend.size() > 0) {
-                final Set<String> affectedTables = new HashSet<String>(3);
-                final Set<String> affectedTags = new HashSet<String>(3);
+//                final Set<String> affectedTables = new HashSet<String>(3);
+//                final Set<String> affectedTags = new HashSet<String>(3);
                 for (Changes changes : changesToSend) {
                     // Merge all changes into one Changes object.
-                    affectedTables.addAll(changes.affectedTables());
-                    affectedTags.addAll(changes.affectedTags());
+//                    affectedTables.addAll(changes.affectedTables());
+//                    affectedTags.addAll(changes.affectedTags());
+                    changesBus.onNext(changes);
                 }
-                changesBus.onNext(Changes.newInstance(affectedTables, affectedTags));
+//                changesBus.onNext(Changes.newInstance(affectedTables, affectedTags));
             }
         }
 
