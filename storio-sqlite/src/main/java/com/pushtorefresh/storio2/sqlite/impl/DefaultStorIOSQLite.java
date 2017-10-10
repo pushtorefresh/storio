@@ -518,10 +518,14 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
             checkNotNull(changes, "Changes can not be null");
 
             // Fast path, no synchronization required
-            if (numberOfRunningTransactions.get() == 0) {
+            int number = numberOfRunningTransactions.get();
+            if (number == 0) {
+                System.out.println("issue-826 numberOfRunningTransactions = 0");
                 changesBus.onNext(changes);
             } else {
+                System.out.println("issue-826 numberOfRunningTransactions = " + number);
                 synchronized (lock) {
+                    System.out.println("issue-826 synchronized " + number);
                     pendingChanges.add(changes);
                 }
 
@@ -530,6 +534,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         private void notifyAboutPendingChangesIfNotInTransaction() {
+            System.out.println("issue-826 notifyAboutPendingChangesIfNotInTransaction");
             final Set<Changes> changesToSend;
 
             if (numberOfRunningTransactions.get() == 0) {

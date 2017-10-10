@@ -164,6 +164,16 @@ public class RxQueryTest extends BaseTest {
         storIOSQLite
                 .observeChangesInTable(TweetTableMeta.TABLE)
                 .take(numberOfParallelWorkers)
+                .subscribe(new Action1<Changes>() {
+                    @Override
+                    public void call(Changes changes) {
+                        System.out.println("issue-826 on next: " + changes);
+                    }
+                });
+
+        storIOSQLite
+                .observeChangesInTable(TweetTableMeta.TABLE)
+                .take(numberOfParallelWorkers)
                 .subscribe(testSubscriber);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -193,8 +203,18 @@ public class RxQueryTest extends BaseTest {
 
         final long startTime = SystemClock.elapsedRealtime();
 
-        while (testSubscriber.getOnNextEvents().size() != numberOfParallelWorkers
-                && (SystemClock.elapsedRealtime() - startTime) < 20000) {
+        int prevEvents = testSubscriber.getOnNextEvents().size();
+        int events;
+        while ((SystemClock.elapsedRealtime() - startTime) < 20000) {
+            events = testSubscriber.getOnNextEvents().size();
+            if (events != prevEvents) {
+                System.out.println("issue-826 received: " + events);
+                prevEvents = events;
+            }
+            if (events == numberOfParallelWorkers) {
+                break;
+            }
+
             Thread.yield(); // let other threads work
         }
 

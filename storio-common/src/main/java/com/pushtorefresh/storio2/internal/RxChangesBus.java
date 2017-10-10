@@ -15,6 +15,7 @@ class RxChangesBus<T> {
     private final Subject<T, T> rxBus = PublishSubject.<T>create().toSerialized();
 
     public void onNext(@NonNull T next) {
+        System.out.println("issue-826 RxChangesBus onNext: " + next);
         rxBus.onNext(next);
     }
 
