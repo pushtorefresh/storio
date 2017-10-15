@@ -23,7 +23,7 @@ before_install:
   - eval $ANDROID_SDK_INSTALL_COMPONENT '"extras;google;m2repository"'
 
 script:
-  - sh ci.sh
+  - travis_wait 20 sh ci.sh
   
 after_success:
   - codecov
