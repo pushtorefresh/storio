@@ -14,6 +14,8 @@ import com.pushtorefresh.storio2.sqlite.operations.put.PutResult;
 import com.pushtorefresh.storio2.sqlite.operations.put.PutResults;
 
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.Timeout;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
@@ -29,6 +31,9 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public abstract class BaseTest {
+
+    @Rule
+    public Timeout timeout = Timeout.seconds(30);
 
     @NonNull
     protected StorIOSQLite storIOSQLite;
