@@ -200,10 +200,6 @@ allprojects {
 
 ext.VERSION_NAME = projectVersion()
 
-def isReleaseBuild() {
-    return !projectVersion().equals('development')
-}
-
 def getReleaseRepositoryUrl() {
     return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
             : 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
