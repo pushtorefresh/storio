@@ -6,7 +6,10 @@ import com.pushtorefresh.storio2.sqlite.BuildConfig;
 import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.test.AbstractEmissionChecker;
+import com.pushtorefresh.storio2.test.Repeat;
+import com.pushtorefresh.storio2.test.RepeatRule;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -54,6 +57,9 @@ public class RxQueryTest extends BaseTest {
                     });
         }
     }
+
+    @Rule
+    public RepeatRule repeat = new RepeatRule();
 
     @Test
     public void insertEmission() {
@@ -151,19 +157,20 @@ public class RxQueryTest extends BaseTest {
     }
 
     @Test
-    public void parallelWritesWithoutTransaction() {
-        final int numberOfParallelWorkers = 50;
+    @Repeat(times = 20)
+    public void parallelPutWithoutGlobalTransaction() {
+        final int numberOfParallelPuts = 50;
 
         TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
                 .observeChangesInTable(TweetTableMeta.TABLE)
-                .take(numberOfParallelWorkers)
+                .take(numberOfParallelPuts)
                 .subscribe(testSubscriber);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        for (int i = 0; i < numberOfParallelWorkers; i++) {
+        for (int i = 0; i < numberOfParallelPuts; i++) {
             final int copyOfCurrentI = i;
             new Thread(new Runnable() {
                 @Override
@@ -188,7 +195,15 @@ public class RxQueryTest extends BaseTest {
 
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertNoErrors();
-        assertThat(testSubscriber.getOnNextEvents()).hasSize(numberOfParallelWorkers);
+
+        // Put operation creates short-term transaction which might result in merge of some notifications.
+        // So we have two extreme cases:
+        // - no merged notifications → isEqualTo(numberOfParallelPuts)
+        // - all notifications merged → isEqualTo(1)
+        // Obviously truth is somewhere between those (depends on CPU of machine that runs test).
+        assertThat(testSubscriber.getOnNextEvents().size())
+                .isLessThanOrEqualTo(numberOfParallelPuts)
+                .isGreaterThanOrEqualTo(1);
     }
 
     @Test

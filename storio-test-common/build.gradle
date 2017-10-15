@@ -23,6 +23,7 @@ dependencies {
     provided libraries.supportAnnotations
     provided libraries.rxJava
 
+    compile libraries.junit
     compile libraries.mockitoCore
 
     testCompile libraries.junit
