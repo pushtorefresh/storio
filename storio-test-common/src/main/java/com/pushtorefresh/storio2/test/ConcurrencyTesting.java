@@ -3,7 +3,7 @@ package com.pushtorefresh.storio2.test;
 public class ConcurrencyTesting {
 
     private ConcurrencyTesting() {
-        throw new IllegalStateException("No instances!");
+        throw new IllegalStateException("No instances please.");
     }
 
     public static int optimalTestThreadsCount() {
