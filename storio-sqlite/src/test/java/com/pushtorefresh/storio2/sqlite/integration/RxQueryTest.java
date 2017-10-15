@@ -6,6 +6,7 @@ import com.pushtorefresh.storio2.sqlite.BuildConfig;
 import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.test.AbstractEmissionChecker;
+import com.pushtorefresh.storio2.test.ConcurrencyTesting;
 import com.pushtorefresh.storio2.test.Repeat;
 import com.pushtorefresh.storio2.test.RepeatRule;
 
@@ -159,7 +160,7 @@ public class RxQueryTest extends BaseTest {
     @Test
     @Repeat(times = 20)
     public void parallelPutWithoutGlobalTransaction() {
-        final int numberOfParallelPuts = 50;
+        final int numberOfParallelPuts = ConcurrencyTesting.optimalTestThreadsCount();
 
         TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 

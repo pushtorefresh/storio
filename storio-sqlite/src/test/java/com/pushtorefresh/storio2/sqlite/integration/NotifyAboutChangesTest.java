@@ -6,6 +6,7 @@ import android.os.SystemClock;
 import com.pushtorefresh.storio2.sqlite.BuildConfig;
 import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio2.test.ConcurrencyTesting;
 import com.pushtorefresh.storio2.test.Repeat;
 import com.pushtorefresh.storio2.test.RepeatRule;
 
@@ -208,7 +209,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         final String table1 = "test_table1";
         final String table2 = "test_table2";
 
-        final int numberOfThreads = 50;
+        final int numberOfThreads = ConcurrencyTesting.optimalTestThreadsCount();
 
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
