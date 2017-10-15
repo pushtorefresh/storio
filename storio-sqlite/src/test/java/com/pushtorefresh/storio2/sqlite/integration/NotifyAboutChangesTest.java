@@ -6,7 +6,11 @@ import android.os.SystemClock;
 import com.pushtorefresh.storio2.sqlite.BuildConfig;
 import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio2.test.ConcurrencyTesting;
+import com.pushtorefresh.storio2.test.Repeat;
+import com.pushtorefresh.storio2.test.RepeatRule;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -27,6 +31,9 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class NotifyAboutChangesTest extends BaseTest {
+
+    @Rule
+    public RepeatRule repeat = new RepeatRule();
 
     @Test
     public void notifyAboutChange() {
@@ -197,11 +204,12 @@ public class NotifyAboutChangesTest extends BaseTest {
     }
 
     @Test
+    @Repeat(times = 20)
     public void shouldReceiveOneNotificationWithAllAffectedTablesInTransactionWithMultipleThreads() throws InterruptedException {
         final String table1 = "test_table1";
         final String table2 = "test_table2";
 
-        final int numberOfThreads = 100;
+        final int numberOfThreads = ConcurrencyTesting.optimalTestThreadsCount();
 
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
@@ -239,7 +247,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         // Steady!
         startAllThreadsLock.countDown(); // Go!
 
-        assertThat(allThreadsFinishedLock.await(20, SECONDS)).isTrue();
+        assertThat(allThreadsFinishedLock.await(25, SECONDS)).isTrue();
 
         // While we in transaction, no changes should be sent.
         assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
@@ -247,6 +255,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         lowLevel.endTransaction();
 
         testSubscriber.assertNoErrors();
+
         List<Changes> actualChanges = testSubscriber.getOnNextEvents();
         assertThat(actualChanges).hasSize(1);
         assertThat(actualChanges.get(0).affectedTables()).containsOnly("test_table1", "test_table2");
