@@ -159,42 +159,45 @@ public class RxQueryTest extends BaseTest {
 
     @Test
     @Repeat(times = 20)
-    public void parallelPutWithoutGlobalTransaction() {
-        final int numberOfParallelPuts = ConcurrencyTesting.optimalTestThreadsCount();
+    public void concurrentPutWithoutGlobalTransaction() throws InterruptedException {
+        final int numberOfConcurrentPuts = ConcurrencyTesting.optimalTestThreadsCount();
 
         TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
                 .observeChangesInTable(TweetTableMeta.TABLE)
-                .take(numberOfParallelPuts)
                 .subscribe(testSubscriber);
 
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        final CountDownLatch concurrentPutLatch = new CountDownLatch(1);
+        final CountDownLatch allPutsDoneLatch = new CountDownLatch(numberOfConcurrentPuts);
 
-        for (int i = 0; i < numberOfParallelPuts; i++) {
-            final int copyOfCurrentI = i;
+        for (int i = 0; i < numberOfConcurrentPuts; i++) {
+            final int iCopy = i;
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        countDownLatch.await();
+                        concurrentPutLatch.await();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
 
                     storIOSQLite
                             .put()
-                            .object(Tweet.newInstance(null, 1L, "Some text: " + copyOfCurrentI))
+                            .object(Tweet.newInstance(null, 1L, "Some text: " + iCopy))
                             .prepare()
                             .executeAsBlocking();
+
+                    allPutsDoneLatch.countDown();
                 }
             }).start();
         }
 
-        // Release the KRAKEN!
-        countDownLatch.countDown();
+        // Start concurrent Put operations.
+        concurrentPutLatch.countDown();
 
-        testSubscriber.awaitTerminalEvent();
+        assertThat(allPutsDoneLatch.await(25, SECONDS)).isTrue();
         testSubscriber.assertNoErrors();
 
         // Put operation creates short-term transaction which might result in merge of some notifications.
@@ -203,7 +206,7 @@ public class RxQueryTest extends BaseTest {
         // - all notifications merged → isEqualTo(1)
         // Obviously truth is somewhere between those (depends on CPU of machine that runs test).
         assertThat(testSubscriber.getOnNextEvents().size())
-                .isLessThanOrEqualTo(numberOfParallelPuts)
+                .isLessThanOrEqualTo(numberOfConcurrentPuts)
                 .isGreaterThanOrEqualTo(1);
     }
 

@@ -7,6 +7,6 @@ public class ConcurrencyTesting {
     }
 
     public static int optimalTestThreadsCount() {
-        return Runtime.getRuntime().availableProcessors() * 2;
+        return Math.max(Runtime.getRuntime().availableProcessors() * 2, 4);
     }
 }
