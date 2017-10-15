@@ -29,9 +29,9 @@ after_success:
   - codecov
 
 deploy:
-  skip_cleanup: true
   - provider: script
     script: ci.sh publish=true
+    skip_cleanup: true
     on:
       tags: true
 
