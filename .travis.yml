@@ -23,14 +23,14 @@ before_install:
   - eval $ANDROID_SDK_INSTALL_COMPONENT '"extras;google;m2repository"'
 
 script:
-  - ci.sh
+  - ./ci.sh
   
 after_success:
   - codecov
 
 deploy:
   - provider: script
-    script: ci.sh publish=true
+    script: ./ci.sh publish=true
     skip_cleanup: true
     on:
       tags: true
