@@ -1,7 +1,14 @@
 #!/bin/bash
 set -e
 
-# Please run it from root project directory
+# You can run it from any directory.
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_DIR="$DIR"
+
+pushd "$PROJECT_DIR"
+
+# Pass "publish=true" as first argument to initiate release process.
+SHOULD_PUBLISH_RELEASE="$1"
 
 # For some reason test for annotation processor are failing on a regular CI setup.
 # So we had to exclude test task for it from the main build process and execute it as a separate command.
@@ -9,8 +16,8 @@ set -e
 ./gradlew :storio-sqlite-annotations-processor-test:testDebugUnitTest
 ./gradlew :storio-content-resolver-annotations-processor-test:testDebugUnitTest
 
-if git describe --exact-match --tags $(git log -n1 --pretty='%h') ; then
-    echo "Git tag detected, launching release process..."
+if [ "$SHOULD_PUBLISH_RELEASE" == "publish=true" ]; then
+    echo "Launching release publishing process..."
 
     if [ -z "$GPG_SECRET_KEYS" ]; then
         echo "Put base64 encoded gpg secret key for signing into GPG_SECRET_KEYS env variable."
