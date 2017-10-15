@@ -74,7 +74,7 @@ afterEvaluate { project ->
     }
 
     signing {
-        required { isReleaseBuild() && gradle.taskGraph.hasTask('uploadArchives') }
+        required { isValidReleaseState() }
         sign configurations.archives
     }
 
