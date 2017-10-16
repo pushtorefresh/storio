@@ -190,6 +190,19 @@ def validateTagAndVersion() {
     if (projectVersion().isEmpty()) {
         throw new IllegalStateException('Publishing is not allowed because current projectVersion is empty')
     }
+
+    if ('development'.equals(projectVersion())) {
+        throw new IllegalStateException('Publishing is not allowed because current projectVersion is "development"')
+    }
+}
+
+def isValidReleaseState() {
+    try {
+        validateTagAndVersion()
+        return true
+    } catch (Exception e) {
+        return false
+    }
 }
 
 allprojects {
@@ -197,10 +210,6 @@ allprojects {
 }
 
 ext.VERSION_NAME = projectVersion()
-
-def isReleaseBuild() {
-    return !projectVersion().equals('development')
-}
 
 def getReleaseRepositoryUrl() {
     return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
