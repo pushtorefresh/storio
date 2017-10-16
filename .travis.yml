@@ -30,7 +30,7 @@ after_success:
 
 deploy:
   - provider: script
-    script: ./ci.sh publish=true
+    script: PUBLISH_RELEASE=true ./ci.sh
     skip_cleanup: true
     on:
       tags: true
