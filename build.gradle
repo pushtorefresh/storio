@@ -146,6 +146,17 @@ subprojects {
                 }
             }
         }
+
+        // Ignore 'debug' buildType for library projects
+        // Because we don't have debug-specific code and we don't need to build debug variants
+        // https://gist.github.com/artem-zinnatullin/ec3bce6dcb2cd524c435
+        if ('com.android.build.gradle.LibraryPlugin'.equals(plugin.class.name)) {
+            project.android.variantFilter {
+                if (it.buildType.name.equals('debug')) {
+                    it.ignore = true
+                }
+            }
+        }
     }
 }
 

@@ -14,7 +14,9 @@ jacoco {
 
 project.afterEvaluate {
     // Grab all build types and product flavors
-    def buildTypes = android.buildTypes.collect { type -> type.name }
+    def buildTypes = android.buildTypes
+            .collect { type -> type.name }
+            .findAll { buildTypeName -> 'debug'.equals(buildTypeName) == false  } // Ideally we should scan for non ignored build variants.
     def productFlavors = android.productFlavors.collect { flavor -> flavor.name }
 
     // When no product flavors defined, use empty
