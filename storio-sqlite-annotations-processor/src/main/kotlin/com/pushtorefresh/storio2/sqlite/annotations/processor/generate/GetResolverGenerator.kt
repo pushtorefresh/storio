@@ -55,7 +55,7 @@ object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
 
             val javaType = columnMeta.javaType
 
-            val getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex)
+            val getFromCursor = getFromCursorString(javaType, columnIndex)
 
             val isBoxed = javaType.isBoxedType
             // otherwise -> if primitive and value from cursor null -> fail early
@@ -94,7 +94,7 @@ object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
 
             val javaType = columnMeta.javaType
 
-            val getFromCursor = getFromCursorString(columnMeta, javaType, columnIndex)
+            val getFromCursor = getFromCursorString(javaType, columnIndex)
 
             val name = TypeName.get(
                     if (columnMeta.element is ExecutableElement)
