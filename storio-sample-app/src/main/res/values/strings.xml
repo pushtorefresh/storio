@@ -16,4 +16,5 @@
     <string name="common_error">Unfortunately, error has occurred :(</string>
     <string name="customers_empty">No customers :(</string>
     <string name="add_customers">Add customers</string>
+    <string name="update_tweet">update tweet\'s author with \'+\'</string>
 </resources>
