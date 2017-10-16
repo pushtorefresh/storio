@@ -186,6 +186,10 @@ def validateTagAndVersion() {
 }
 
 def isValidReleaseState() {
+    if ('true' != System.getenv('PUBLISH_RELEASE')) {
+        return false
+    }
+
     try {
         validateTagAndVersion()
         return true
