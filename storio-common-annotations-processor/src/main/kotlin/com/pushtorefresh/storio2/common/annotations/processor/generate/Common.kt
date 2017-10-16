@@ -1,9 +1,7 @@
 package com.pushtorefresh.storio2.common.annotations.processor.generate
 
-import com.pushtorefresh.storio2.common.annotations.processor.ProcessingException
 import com.pushtorefresh.storio2.common.annotations.processor.introspection.JavaType
 import com.pushtorefresh.storio2.common.annotations.processor.introspection.JavaType.*
-import com.pushtorefresh.storio2.common.annotations.processor.introspection.StorIOColumnMeta
 import com.squareup.javapoet.ClassName
 
 object Common {
@@ -12,7 +10,7 @@ object Common {
 
     val INDENT = "    " // 4 spaces
 
-    fun getFromCursorString(columnMeta: StorIOColumnMeta<*>, javaType: JavaType, columnIndex: String) = when (javaType) {
+    fun getFromCursorString(javaType: JavaType, columnIndex: String) = when (javaType) {
         BOOLEAN, BOOLEAN_OBJECT -> "getInt($columnIndex) == 1"
         SHORT, SHORT_OBJECT -> "getShort($columnIndex)"
         INTEGER, INTEGER_OBJECT -> "getInt($columnIndex)"
@@ -21,6 +19,5 @@ object Common {
         DOUBLE, DOUBLE_OBJECT -> "getDouble($columnIndex)"
         STRING -> "getString($columnIndex)"
         BYTE_ARRAY -> "getBlob($columnIndex)"
-        else -> throw ProcessingException(columnMeta.element, "Can not generate GetResolver for field")
     }
 }
