@@ -35,17 +35,17 @@
 
 Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tests` and `Sample App`:
 
-* [Design tests for StorIO SQLite](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
-* [Design tests for StorIO ContentResolver](storio-content-resolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
+* [Design tests for StorIO SQLite](storio-sqlite/src/test/java/com/pushtorefresh/storio2/sqlite/design)
+* [Design tests for StorIO ContentResolver](storio-content-resolver/src/test/java/com/pushtorefresh/storio2/contentresolver/design)
 * [Sample App](storio-sample-app)
 
 #### Download:
 ```groovy
 // If you need StorIO for SQLite
-compile 'com.pushtorefresh.storio:sqlite:1.13.0'
+compile 'com.pushtorefresh.storio2:sqlite:2.0.0'
 
 // If you need StorIO for ContentResolver
-compile 'com.pushtorefresh.storio:content-resolver:1.13.0'
+compile 'com.pushtorefresh.storio2:content-resolver:2.0.0'
 
 // IN StorIO 2.0 we will remove default Scheduling from Rx Operations!
 // You'll have to put subscribeOn() manually!
@@ -54,7 +54,7 @@ compile 'com.pushtorefresh.storio:content-resolver:1.13.0'
 // So if you need it -> please add it manually.
 ```
 
-You can find all releases on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.pushtorefresh.storio%22).
+You can find all releases on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.pushtorefresh.storio2%22).
 
 #### Some examples
 
@@ -157,18 +157,18 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 `StorIOSQLite`:
 ```groovy
 dependencies {
-  compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio2:sqlite-annotations:insert-latest-version-here'
 
-  annotationProcessor 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio2:sqlite-annotations-processor:insert-latest-version-here'
 }
 ```
 
 `StorIOContentResolver`:
 ```groovy
 dependencies {
-  compile 'com.pushtorefresh.storio:content-resolver-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio2:content-resolver-annotations:insert-latest-version-here'
 
-  annotationProcessor 'com.pushtorefresh.storio:content-resolver-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio2:content-resolver-annotations-processor:insert-latest-version-here'
 }
 ```
 
@@ -244,7 +244,7 @@ StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
   .build(); // This instance of StorIOSQLite will know how to work with Tweet objects
 ```
 
-BTW: [Here is a class](storio-sample-app/src/main/java/com/pushtorefresh/storio/sample/db/entities/AllSupportedTypes.java) with all types of fields, supported by StorIO SQLite Annotation Processor.
+BTW: [Here is a class](storio-sample-app/src/main/java/com/pushtorefresh/storio2/sample/db/entities/AllSupportedTypes.java) with all types of fields, supported by StorIO SQLite Annotation Processor.
 
 Few tips about Operation Resolvers:
 
@@ -253,20 +253,6 @@ Few tips about Operation Resolvers:
 * Via custom Operation Resolvers you can implement any Operation as you want -> store one object in multiple tables, use custom sql things and so on
 
 API of `StorIOContentResolver` is same.
-
-----
-
-#### Documentation:
-
-* [`Why we made StorIO`](https://engineering.pushtorefresh.com/2015/07/02/storio-modern-replacement-for-sqlitedatabase-and-contentresolver-apis/)
-* [`StorIO SQLite`](docs/StorIOSQLite.md)
-* [`StorIO ContentResolver`](docs/StorIOContentResolver.md)
-
-Easy ways to learn how to use `StorIO` -> check out `Design Tests` and `Sample App`:
-
-* [Design tests for StorIO SQLite](storio-sqlite/src/test/java/com/pushtorefresh/storio/sqlite/design)
-* [Design tests for StorIO ContentResolver](storio-content-resolver/src/test/java/com/pushtorefresh/storio/contentresolver/design)
-* [Sample App](storio-sample-app)
 
 ----
 
