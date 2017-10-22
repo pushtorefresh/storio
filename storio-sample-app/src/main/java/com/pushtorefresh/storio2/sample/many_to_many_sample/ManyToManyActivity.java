@@ -30,15 +30,16 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Completable;
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
+import static io.reactivex.BackpressureStrategy.LATEST;
 import static java.util.Arrays.asList;
 
 public class ManyToManyActivity extends BaseActivity implements PersonsAdapter.Callbacks {
@@ -77,22 +78,22 @@ public class ManyToManyActivity extends BaseActivity implements PersonsAdapter.C
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(personsAdapter);
 
-        unsubscribeOnStop(subscribeToPersonsAndCars());
+        disposeOnStop(subscribeToPersonsAndCars());
     }
 
     @NonNull
-    Subscription subscribeToPersonsAndCars() {
+    Disposable subscribeToPersonsAndCars() {
         Set<String> tables = new HashSet<String>(3);
         tables.add(PersonTable.NAME);
         tables.add(CarTable.NAME);
         tables.add(PersonCarRelationTable.TABLE);
-        return Observable.merge(
-                storIOSQLite.observeChangesInTables(tables),
-                Observable.just((Changes) null)
+        return Flowable.merge(
+                storIOSQLite.observeChangesInTables(tables, LATEST),
+                Flowable.just(Changes.newInstance(PersonCarRelationTable.TABLE))
         )
-                .map(new Func1<Changes, List<Person>>() {
+                .map(new Function<Changes, List<Person>>() {
                     @Override
-                    public List<Person> call(Changes changes) {
+                    public List<Person> apply(Changes changes) {
                         return storIOSQLite.get()
                                 .listOfObjects(Person.class)
                                 .withQuery(Query.builder().table(PersonTable.NAME).build())
@@ -102,9 +103,9 @@ public class ManyToManyActivity extends BaseActivity implements PersonsAdapter.C
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Person>>() {
+                .subscribe(new Consumer<List<Person>>() {
                     @Override
-                    public void call(List<Person> persons) {
+                    public void accept(List<Person> persons) {
                         if(persons.isEmpty()) {
                             addPersons();
                         } else {
@@ -146,9 +147,9 @@ public class ManyToManyActivity extends BaseActivity implements PersonsAdapter.C
     public void onRemoveCarClick(@NonNull final Person person) {
         final List<Car> cars = person.cars();
         if (cars != null && !cars.isEmpty()) {
-            Completable.fromAction(new Action0() {
+            Completable.fromAction(new Action() {
                 @Override
-                public void call() {
+                public void run() {
                     storIOSQLite.lowLevel().beginTransaction();
                     try {
                         final Car carToRemove = cars.get(cars.size() - 1);

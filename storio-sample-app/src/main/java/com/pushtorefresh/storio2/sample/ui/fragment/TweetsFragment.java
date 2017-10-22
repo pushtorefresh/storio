@@ -24,6 +24,8 @@ import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.put.PutResults;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 
+import org.reactivestreams.Subscription;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,16 +35,18 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.Observer;
-import rx.Single;
-import rx.Subscription;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import timber.log.Timber;
 
 import static com.pushtorefresh.storio2.sample.ui.Toasts.safeShowShortToast;
+import static io.reactivex.BackpressureStrategy.LATEST;
+import static io.reactivex.BackpressureStrategy.MISSING;
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpdateTweetListener {
 
@@ -100,17 +104,17 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
     void reloadData() {
         uiStateController.setUiStateLoading();
 
-        final Subscription subscription = storIOSQLite
+        final Disposable disposable = storIOSQLite
                 .get()
                 .listOfObjects(Tweet.class)
                 .withQuery(TweetsTable.QUERY_ALL)
                 .prepare()
-                .asRxObservable() // it will be subscribed to changes in tweets table!
+                .asRxFlowable(LATEST) // it will be subscribed to changes in tweets table!
                 .delay(1, SECONDS) // for better User Experience :) Actually, StorIO is so fast that we need to delay emissions (it's a joke, or not)
                 .observeOn(mainThread())
-                .subscribe(new Action1<List<Tweet>>() {
+                .subscribe(new Consumer<List<Tweet>>() {
                     @Override
-                    public void call(List<Tweet> tweets) {
+                    public void accept(List<Tweet> tweets) {
                         // Remember: subscriber will automatically receive updates
                         // Of tables from Query (tweets table in our case)
                         // This makes your code really Reactive and nice!
@@ -125,9 +129,9 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
                             tweetsAdapter.setTweets(tweets);
                         }
                     }
-                }, new Action1<Throwable>() {
+                }, new Consumer<Throwable>() {
                     @Override
-                    public void call(Throwable throwable) {
+                    public void accept(Throwable throwable) {
                         // In cases when you are not sure that query will be successful
                         // You can prevent crash of the application via error handler
                         Timber.e(throwable, "reloadData()");
@@ -141,7 +145,7 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
         // So please, PLEASE manage your subscriptions
         // We suggest same mechanism via storing all subscriptions that you want to unsubscribe
         // In something like CompositeSubscription and unsubscribe them in appropriate moment of component lifecycle
-        unsubscribeOnStop(subscription);
+        disposeOnStop(disposable);
     }
 
     @OnClick(R.id.tweets_empty_ui_add_tweets_button)
@@ -163,9 +167,14 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
                 .put()
                 .objects(tweets)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .observeOn(mainThread()) // The default scheduler is Schedulers.io(), all Observables in StorIO already subscribed on this scheduler, you just need to set observeOn()
-                .subscribe(new Observer<PutResults<Tweet>>() {
+                .subscribe(new FlowableSubscriber<PutResults<Tweet>>() {
+                    @Override
+                    public void onSubscribe(Subscription subscription) {
+                        // no impl required
+                    }
+
                     @Override
                     public void onError(Throwable e) {
                         safeShowShortToast(getActivity(), R.string.tweets_add_error_toast);
@@ -177,7 +186,7 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
                     }
 
                     @Override
-                    public void onCompleted() {
+                    public void onComplete() {
                         // no impl required
                     }
                 });
@@ -207,18 +216,18 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
                 .prepare()
                 .asRxSingle()
                 // 2.
-                .map(new Func1<Tweet, Tweet>() {
+                .map(new Function<Tweet, Tweet>() {
                     @Override
-                    public Tweet call(Tweet tweet) {
+                    public Tweet apply(Tweet tweet) {
                         // We can get NULL in parameter so we check it
                         return tweet == null ? tweet :
                                 Tweet.newTweet(tweetId, tweet.author() + "+", tweet.content());
                     }
                 })
                 // 3.
-                .flatMap(new Func1<Tweet, Single<?>>() {
+                .flatMap(new Function<Tweet, Single<?>>() {
                     @Override
-                    public Single<?> call(Tweet tweet) {
+                    public Single<?> apply(Tweet tweet) {
                         return storIOSQLite
                                 .put()
                                 .object(tweet)
@@ -228,14 +237,14 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
                 })
                 // Let Subscriber run in Main Thread e.g. for Toast
                 .observeOn(mainThread())
-                .subscribe(new Action1<Object>() {
+                .subscribe(new Consumer<Object>() {
                     @Override
-                    public void call(Object o) {
+                    public void accept(Object o) {
 
                     }
-                }, new Action1<Throwable>() {
+                }, new Consumer<Throwable>() {
                     @Override
-                    public void call(Throwable e) {
+                    public void accept(Throwable e) {
                         // Just for curiosity )
                         Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                     }

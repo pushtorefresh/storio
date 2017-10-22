@@ -25,16 +25,17 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import timber.log.Timber;
 
 import static com.pushtorefresh.storio2.sample.sqldelight.SQLUtils.makeReadQuery;
 import static com.pushtorefresh.storio2.sample.sqldelight.SQLUtils.mapFromCursor;
 import static com.pushtorefresh.storio2.sample.ui.Toasts.safeShowShortToast;
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
+import static io.reactivex.BackpressureStrategy.LATEST;
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
 public class SqlDelightActivity extends BaseActivity {
 
@@ -79,22 +80,22 @@ public class SqlDelightActivity extends BaseActivity {
     void loadData() {
         uiStateController.setUiStateLoading();
 
-        final Subscription subscription = storIOSQLite
+        final Disposable disposable = storIOSQLite
                 .get()
                 .cursor()
                 .withQuery(makeReadQuery(Customer.FACTORY.select_all()))
                 .prepare()
-                .asRxObservable()
-                .map(new Func1<Cursor, List<Customer>>() {
+                .asRxFlowable(LATEST)
+                .map(new Function<Cursor, List<Customer>>() {
                     @Override
-                    public List<Customer> call(Cursor cursor) {
+                    public List<Customer> apply(Cursor cursor) {
                         return mapFromCursor(cursor, Customer.CURSOR_MAPPER);
                     }
                 })
                 .observeOn(mainThread())
-                .subscribe(new Action1<List<Customer>>() {
+                .subscribe(new Consumer<List<Customer>>() {
                     @Override
-                    public void call(List<Customer> customers) {
+                    public void accept(List<Customer> customers) {
                         if (customers.isEmpty()) {
                             uiStateController.setUiStateEmpty();
                             customersAdapter.setCustomers(Collections.<Customer>emptyList());
@@ -103,15 +104,15 @@ public class SqlDelightActivity extends BaseActivity {
                             customersAdapter.setCustomers(customers);
                         }
                     }
-                }, new Action1<Throwable>() {
+                }, new Consumer<Throwable>() {
                     @Override
-                    public void call(Throwable throwable) {
+                    public void accept(Throwable throwable) {
                         Timber.e(throwable, "loadData()");
                         uiStateController.setUiStateError();
                         customersAdapter.setCustomers(Collections.<Customer>emptyList());
                     }
                 });
-        unsubscribeOnStop(subscription);
+        disposeOnStop(disposable);
     }
 
     @OnClick(R.id.customers_empty_ui_add_button)
@@ -134,15 +135,15 @@ public class SqlDelightActivity extends BaseActivity {
                 .asRxCompletable()
                 .observeOn(mainThread())
                 .subscribe(
-                        new Action0() {
+                        new Action() {
                             @Override
-                            public void call() {
+                            public void run() {
                                 // no impl required
                             }
                         },
-                        new Action1<Throwable>() {
+                        new Consumer<Throwable>() {
                             @Override
-                            public void call(Throwable throwable) {
+                            public void accept(Throwable throwable) {
                                 safeShowShortToast(SqlDelightActivity.this, R.string.common_error);
                             }
                         });
