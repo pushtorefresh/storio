@@ -8,11 +8,13 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
+import static io.reactivex.BackpressureStrategy.MISSING;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -40,17 +42,17 @@ public class PreparedPutObjectTest {
         }
 
         @Test
-        public void shouldPutObjectWithoutTypeMappingAsObservable() {
+        public void shouldPutObjectWithoutTypeMappingAsFlowable() {
             final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithoutTypeMapping();
 
-            final Observable<PutResult> putResultObservable = putStub.storIOSQLite
+            final Flowable<PutResult> putResultFlowable = putStub.storIOSQLite
                     .put()
                     .object(putStub.items.get(0))
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(MISSING);
 
-            putStub.verifyBehaviorForOneObject(putResultObservable);
+            putStub.verifyBehaviorForOneObject(putResultFlowable);
         }
 
         @Test
@@ -98,16 +100,16 @@ public class PreparedPutObjectTest {
         }
 
         @Test
-        public void shouldPutObjectWithTypeMappingAsObservable() {
+        public void shouldPutObjectWithTypeMappingAsFlowable() {
             final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
 
-            final Observable<PutResult> putResultObservable = putStub.storIOSQLite
+            final Flowable<PutResult> putResultFlowable = putStub.storIOSQLite
                     .put()
                     .object(putStub.items.get(0))
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(MISSING);
 
-            putStub.verifyBehaviorForOneObject(putResultObservable);
+            putStub.verifyBehaviorForOneObject(putResultFlowable);
         }
 
         @Test
@@ -168,7 +170,7 @@ public class PreparedPutObjectTest {
         }
 
         @Test
-        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbObservable() {
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingDbFlowable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
@@ -180,7 +182,7 @@ public class PreparedPutObjectTest {
 
             new PreparedPutObject.Builder<Object>(storIOSQLite, object)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(MISSING)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -188,7 +190,7 @@ public class PreparedPutObjectTest {
             testSubscriber.assertError(StorIOException.class);
 
             //noinspection ThrowableResultOfMethodCallIgnored
-            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException expected = (StorIOException) testSubscriber.errors().get(0);
 
             IllegalStateException cause = (IllegalStateException) expected.getCause();
 
@@ -197,7 +199,7 @@ public class PreparedPutObjectTest {
                             "db was not affected by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, lowLevel);
@@ -212,19 +214,19 @@ public class PreparedPutObjectTest {
 
             final Object object = new Object();
 
-            final TestSubscriber<PutResult> testSubscriber = new TestSubscriber<PutResult>();
+            final TestObserver<PutResult> testObserver = new TestObserver<PutResult>();
 
             new PreparedPutObject.Builder<Object>(storIOSQLite, object)
                     .prepare()
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            testSubscriber.assertError(StorIOException.class);
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            testObserver.assertError(StorIOException.class);
 
             //noinspection ThrowableResultOfMethodCallIgnored
-            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
             IllegalStateException cause = (IllegalStateException) expected.getCause();
 
@@ -233,7 +235,7 @@ public class PreparedPutObjectTest {
                     "db was not affected by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, lowLevel);
@@ -248,19 +250,19 @@ public class PreparedPutObjectTest {
 
             final Object object = new Object();
 
-            final TestSubscriber<PutResult> testSubscriber = new TestSubscriber<PutResult>();
+            final TestObserver<PutResult> testObserver = new TestObserver<PutResult>();
 
             new PreparedPutObject.Builder<Object>(storIOSQLite, object)
                     .prepare()
                     .asRxCompletable()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            testSubscriber.assertError(StorIOException.class);
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            testObserver.assertError(StorIOException.class);
 
             //noinspection ThrowableResultOfMethodCallIgnored
-            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
             IllegalStateException cause = (IllegalStateException) expected.getCause();
 
@@ -269,7 +271,7 @@ public class PreparedPutObjectTest {
                     "db was not affected by this operation, please add type mapping for this type");
 
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(Object.class);
             verifyNoMoreInteractions(storIOSQLite, lowLevel);
@@ -293,7 +295,7 @@ public class PreparedPutObjectTest {
         }
 
         @Test
-        public void putObjectObservableExecutesOnSpecifiedScheduler() {
+        public void putObjectFlowableExecutesOnSpecifiedScheduler() {
             final PutObjectsStub putStub = PutObjectsStub.newPutStubForOneObjectWithTypeMapping();
             final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOSQLite);
 
@@ -302,7 +304,7 @@ public class PreparedPutObjectTest {
                     .object(putStub.items.get(0))
                     .prepare();
 
-            schedulerChecker.checkAsObservable(operation);
+            schedulerChecker.checkAsFlowable(operation);
         }
 
         @Test

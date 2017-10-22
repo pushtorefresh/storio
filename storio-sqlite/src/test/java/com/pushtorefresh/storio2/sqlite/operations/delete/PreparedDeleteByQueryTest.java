@@ -8,8 +8,10 @@ import com.pushtorefresh.storio2.sqlite.queries.DeleteQuery;
 
 import org.junit.Test;
 
-import rx.observers.TestSubscriber;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
+import static io.reactivex.BackpressureStrategy.MISSING;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -83,7 +85,7 @@ public class PreparedDeleteByQueryTest {
     }
 
     @Test
-    public void shouldPerformDeletionByQueryObservable() {
+    public void shouldPerformDeletionByQueryFlowable() {
         final DeleteByQueryStub stub = new DeleteByQueryStub();
 
         final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
@@ -91,14 +93,14 @@ public class PreparedDeleteByQueryTest {
         new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
                 .withDeleteResolver(stub.deleteResolver)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertNoErrors();
         testSubscriber.assertValue(stub.expectedDeleteResult);
 
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         stub.verifyBehaviour();
     }
 
@@ -106,19 +108,19 @@ public class PreparedDeleteByQueryTest {
     public void shouldPerformDeletionByQuerySingle() {
         final DeleteByQueryStub stub = new DeleteByQueryStub();
 
-        final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
+        final TestObserver<DeleteResult> testObserver = new TestObserver<DeleteResult>();
 
         new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
                 .withDeleteResolver(stub.deleteResolver)
                 .prepare()
                 .asRxSingle()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertValue(stub.expectedDeleteResult);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoErrors();
+        testObserver.assertValue(stub.expectedDeleteResult);
 
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         stub.verifyBehaviour();
     }
 
@@ -126,19 +128,19 @@ public class PreparedDeleteByQueryTest {
     public void shouldPerformDeletionByQueryCompletable() {
         final DeleteByQueryStub stub = new DeleteByQueryStub();
 
-        final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
+        final TestObserver<DeleteResult> testObserver = new TestObserver<DeleteResult>();
 
         new PreparedDeleteByQuery.Builder(stub.storIOSQLite, stub.deleteQuery)
                 .withDeleteResolver(stub.deleteResolver)
                 .prepare()
                 .asRxCompletable()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoErrors();
-        testSubscriber.assertNoValues();
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoErrors();
+        testObserver.assertNoValues();
 
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         stub.verifyBehaviour();
     }
 
@@ -173,7 +175,7 @@ public class PreparedDeleteByQueryTest {
     }
 
     @Test
-    public void shouldWrapExceptionIntoStorIOExceptionObservable() {
+    public void shouldWrapExceptionIntoStorIOExceptionFlowable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
@@ -190,7 +192,7 @@ public class PreparedDeleteByQueryTest {
         new PreparedDeleteByQuery.Builder(storIOSQLite, DeleteQuery.builder().table("test_table").build())
                 .withDeleteResolver(deleteResolver)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
@@ -198,13 +200,13 @@ public class PreparedDeleteByQueryTest {
         testSubscriber.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testSubscriber.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).defaultRxScheduler();
         verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver);
     }
@@ -222,26 +224,26 @@ public class PreparedDeleteByQueryTest {
         when(deleteResolver.performDelete(same(storIOSQLite), any(DeleteQuery.class)))
                 .thenThrow(new IllegalStateException("test exception"));
 
-        final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
+        final TestObserver<DeleteResult> testObserver = new TestObserver<DeleteResult>();
 
         new PreparedDeleteByQuery.Builder(storIOSQLite, DeleteQuery.builder().table("test_table").build())
                 .withDeleteResolver(deleteResolver)
                 .prepare()
                 .asRxSingle()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).defaultRxScheduler();
         verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver);
     }
@@ -259,25 +261,25 @@ public class PreparedDeleteByQueryTest {
         when(deleteResolver.performDelete(same(storIOSQLite), any(DeleteQuery.class)))
                 .thenThrow(new IllegalStateException("test exception"));
 
-        final TestSubscriber<DeleteResult> testSubscriber = new TestSubscriber<DeleteResult>();
+        final TestObserver<DeleteResult> testObserver = new TestObserver<DeleteResult>();
 
         new PreparedDeleteByQuery.Builder(storIOSQLite, DeleteQuery.builder().table("test_table").build())
                 .withDeleteResolver(deleteResolver)
                 .prepare()
                 .asRxCompletable()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).defaultRxScheduler();
         verify(deleteResolver).performDelete(same(storIOSQLite), any(DeleteQuery.class));
         verify(storIOSQLite).interceptors();
         verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver);
@@ -318,7 +320,7 @@ public class PreparedDeleteByQueryTest {
     }
 
     @Test
-    public void deleteByQueryObservableExecutesOnSpecifiedScheduler() {
+    public void deleteByQueryFlowableExecutesOnSpecifiedScheduler() {
         final DeleteByQueryStub stub = new DeleteByQueryStub();
         final SchedulerChecker schedulerChecker = SchedulerChecker.create(stub.storIOSQLite);
 
@@ -326,7 +328,7 @@ public class PreparedDeleteByQueryTest {
                 .withDeleteResolver(stub.deleteResolver)
                 .prepare();
 
-        schedulerChecker.checkAsObservable(operation);
+        schedulerChecker.checkAsFlowable(operation);
     }
 
     @Test

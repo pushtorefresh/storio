@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-import rx.observers.TestSubscriber;
+import io.reactivex.subscribers.TestSubscriber;
 
-import static java.util.Collections.singletonList;
+import static io.reactivex.BackpressureStrategy.LATEST;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -40,7 +40,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         TestSubscriber<Changes> testObserver = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChanges()
+                .observeChanges(LATEST)
                 .subscribe(testObserver);
 
         storIOSQLite
@@ -49,12 +49,12 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         final long startTime = SystemClock.elapsedRealtime();
 
-        while (testObserver.getOnNextEvents().size() == 0
+        while (testObserver.valueCount() == 0
                 && SystemClock.elapsedRealtime() - startTime < 1000) {
             Thread.yield(); // let other threads work
         }
 
-        testObserver.assertReceivedOnNext(singletonList(Changes.newInstance("test_table")));
+        testObserver.assertValues(Changes.newInstance("test_table"));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         }
 
         storIOSQLite
-                .observeChanges()
+                .observeChanges(LATEST)
                 .subscribe(testSubscriber);
 
         final CountDownLatch startAllThreadsLock = new CountDownLatch(1);
@@ -103,7 +103,7 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         final long startTime = SystemClock.elapsedRealtime();
 
-        while (testSubscriber.getOnNextEvents().size() != tables.size()
+        while (testSubscriber.valueCount() != tables.size()
                 && (SystemClock.elapsedRealtime() - startTime) < 20000) {
             Thread.yield(); // let other threads work
         }
@@ -112,8 +112,8 @@ public class NotifyAboutChangesTest extends BaseTest {
 
         // notice, that order of received notification can be different
         // but in total, they should be equal
-        assertThat(testSubscriber.getOnNextEvents()).hasSize(expectedChanges.size());
-        assertThat(expectedChanges.containsAll(testSubscriber.getOnNextEvents())).isTrue();
+        testSubscriber.assertValueCount(expectedChanges.size());
+        assertThat(expectedChanges.containsAll(testSubscriber.values())).isTrue();
     }
 
     @Test
@@ -124,7 +124,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChanges()
+                .observeChanges(LATEST)
                 .subscribe(testSubscriber);
 
         storIOSQLite
@@ -138,14 +138,14 @@ public class NotifyAboutChangesTest extends BaseTest {
         }
 
         // While we in transaction, no changes should be sent.
-        assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
+        testSubscriber.assertValueCount(0);
 
         storIOSQLite
                 .lowLevel()
                 .endTransaction();
 
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(singletonList(Changes.newInstance(table)));
+        testSubscriber.assertValues(Changes.newInstance(table));
     }
 
     @Test
@@ -156,7 +156,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChanges()
+                .observeChanges(LATEST)
                 .subscribe(testSubscriber);
 
         storIOSQLite
@@ -193,14 +193,14 @@ public class NotifyAboutChangesTest extends BaseTest {
         assertThat(allThreadsFinishedLock.await(20, SECONDS)).isTrue();
 
         // While we in transaction, no changes should be sent.
-        assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
+        testSubscriber.assertValueCount(0);
 
         storIOSQLite
                 .lowLevel()
                 .endTransaction();
 
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(singletonList(Changes.newInstance(table)));
+        testSubscriber.assertValues(Changes.newInstance(table));
     }
 
     @Test
@@ -214,7 +214,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChanges()
+                .observeChanges(LATEST)
                 .subscribe(testSubscriber);
 
         final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
@@ -250,13 +250,13 @@ public class NotifyAboutChangesTest extends BaseTest {
         assertThat(allThreadsFinishedLock.await(25, SECONDS)).isTrue();
 
         // While we in transaction, no changes should be sent.
-        assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
+        testSubscriber.assertValueCount(0);
 
         lowLevel.endTransaction();
 
         testSubscriber.assertNoErrors();
 
-        List<Changes> actualChanges = testSubscriber.getOnNextEvents();
+        List<Changes> actualChanges = testSubscriber.values();
         assertThat(actualChanges).hasSize(1);
         assertThat(actualChanges.get(0).affectedTables()).containsOnly("test_table1", "test_table2");
     }
@@ -268,7 +268,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         final TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChanges()
+                .observeChanges(LATEST)
                 .subscribe(testSubscriber);
 
         final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
@@ -300,7 +300,7 @@ public class NotifyAboutChangesTest extends BaseTest {
         assertThat(allThreadsFinishedLock.await(20, SECONDS)).isTrue();
 
         // While we in transaction, no changes should be sent.
-        assertThat(testSubscriber.getOnNextEvents()).hasSize(0);
+        testSubscriber.assertValueCount(0);
 
         lowLevel.endTransaction();
 

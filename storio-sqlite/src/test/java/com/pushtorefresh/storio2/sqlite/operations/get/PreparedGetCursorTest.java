@@ -11,10 +11,13 @@ import com.pushtorefresh.storio2.sqlite.queries.Query;
 import org.junit.Test;
 import org.robolectric.util.ReflectionHelpers;
 
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
+import static io.reactivex.BackpressureStrategy.LATEST;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -89,7 +92,7 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(getStub.storIOSQLite, never()).defaultScheduler();
+        verify(getStub.storIOSQLite, never()).defaultRxScheduler();
         getStub.verifyQueryBehaviorForCursor(cursor);
     }
 
@@ -105,7 +108,7 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .asRxSingle();
 
-        verify(getStub.storIOSQLite).defaultScheduler();
+        verify(getStub.storIOSQLite).defaultRxScheduler();
         getStub.verifyQueryBehaviorForCursor(cursorSingle);
     }
 
@@ -121,25 +124,25 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(getStub.storIOSQLite, never()).defaultScheduler();
+        verify(getStub.storIOSQLite, never()).defaultRxScheduler();
         getStub.verifyRawQueryBehaviorForCursor(cursor);
     }
 
     @Test
-    public void shouldGetCursorWithRawQueryAsObservable() {
+    public void shouldGetCursorWithRawQueryAsFlowable() {
         final GetCursorStub getStub = GetCursorStub.newInstance();
 
-        final Observable<Cursor> cursorObservable = getStub.storIOSQLite
+        final Flowable<Cursor> cursorFlowable = getStub.storIOSQLite
                 .get()
                 .cursor()
                 .withQuery(getStub.rawQuery)
                 .withGetResolver(getStub.getResolverForCursor)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(LATEST)
                 .take(1);
 
-        verify(getStub.storIOSQLite).defaultScheduler();
-        getStub.verifyRawQueryBehaviorForCursor(cursorObservable);
+        verify(getStub.storIOSQLite).defaultRxScheduler();
+        getStub.verifyRawQueryBehaviorForCursor(cursorFlowable);
     }
 
     @Test
@@ -154,7 +157,7 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .asRxSingle();
 
-        verify(getStub.storIOSQLite).defaultScheduler();
+        verify(getStub.storIOSQLite).defaultRxScheduler();
         getStub.verifyRawQueryBehaviorForCursor(cursorSingle);
     }
 
@@ -183,10 +186,10 @@ public class PreparedGetCursorTest {
     }
 
     @Test
-    public void shouldWrapExceptionIntoStorIOExceptionForObservable() {
+    public void shouldWrapExceptionIntoStorIOExceptionForFlowable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
 
-        when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
+        when(storIOSQLite.observeChanges(any(BackpressureStrategy.class))).thenReturn(Flowable.<Changes>empty());
 
         //noinspection unchecked
         final GetResolver<Cursor> getResolver = mock(GetResolver.class);
@@ -200,17 +203,17 @@ public class PreparedGetCursorTest {
                 .withQuery(Query.builder().table("test_table").observesTags("test_tag").build())
                 .withGetResolver(getResolver)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(LATEST)
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(60, SECONDS);
         testSubscriber.assertError(StorIOException.class);
 
-        StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException storIOException = (StorIOException) testSubscriber.errors().get(0);
         IllegalStateException cause = (IllegalStateException) storIOException.getCause();
         assertThat(cause).hasMessage("test exception");
 
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -223,19 +226,19 @@ public class PreparedGetCursorTest {
         when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
                 .thenThrow(new IllegalStateException("test exception"));
 
-        final TestSubscriber<Cursor> testSubscriber = new TestSubscriber<Cursor>();
+        final TestObserver<Cursor> testObserver = new TestObserver<Cursor>();
 
         new PreparedGetCursor.Builder(storIOSQLite)
                 .withQuery(Query.builder().table("test_table").build())
                 .withGetResolver(getResolver)
                 .prepare()
                 .asRxSingle()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent(60, SECONDS);
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent(60, SECONDS);
+        testObserver.assertError(StorIOException.class);
 
-        StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException storIOException = (StorIOException) testObserver.errors().get(0);
         IllegalStateException cause = (IllegalStateException) storIOException.getCause();
         assertThat(cause).hasMessage("test exception");
     }
@@ -271,14 +274,14 @@ public class PreparedGetCursorTest {
     }
 
     @Test
-    public void asRxObservableShouldThrowExceptionIfNoQueryWasSet() {
+    public void asRxFlowableShouldThrowExceptionIfNoQueryWasSet() {
         //noinspection unchecked,ConstantConditions
         PreparedGetCursor preparedGetCursor
                 = new PreparedGetCursor(mock(StorIOSQLite.class), (Query) null, (GetResolver<Cursor>) mock(GetResolver.class));
 
         try {
             //noinspection ResourceType
-            preparedGetCursor.asRxObservable();
+            preparedGetCursor.asRxFlowable(LATEST);
             failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
             assertThat(expected).hasMessage("Please specify query");
@@ -297,7 +300,7 @@ public class PreparedGetCursorTest {
     }
 
     @Test
-    public void getCursorObservableExecutesOnSpecifiedScheduler() {
+    public void getCursorFlowableExecutesOnSpecifiedScheduler() {
         final GetCursorStub getStub = GetCursorStub.newInstance();
         final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
 
@@ -308,7 +311,7 @@ public class PreparedGetCursorTest {
                 .withGetResolver(getStub.getResolverForCursor)
                 .prepare();
 
-        schedulerChecker.checkAsObservable(operation);
+        schedulerChecker.checkAsFlowable(operation);
     }
 
     @Test

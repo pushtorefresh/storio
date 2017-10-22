@@ -7,7 +7,7 @@ import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.SchedulerChecker;
 import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,11 +17,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
-import rx.observers.TestSubscriber;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
+import static io.reactivex.BackpressureStrategy.MISSING;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -60,7 +62,7 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(stub.storIOSQLite, never()).defaultScheduler();
+        verify(stub.storIOSQLite, never()).defaultRxScheduler();
         stub.verifyBehavior();
     }
 
@@ -74,7 +76,7 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(stub.storIOSQLite, never()).defaultScheduler();
+        verify(stub.storIOSQLite, never()).defaultRxScheduler();
         stub.verifyBehavior();
     }
 
@@ -88,22 +90,22 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .executeAsBlocking();
 
-        verify(stub.storIOSQLite, never()).defaultScheduler();
+        verify(stub.storIOSQLite, never()).defaultRxScheduler();
         stub.verifyBehavior();
     }
 
     @Test
-    public void executeSQLObservableWithoutNotifications() {
+    public void executeSQLFlowableWithoutNotifications() {
         final Stub stub = Stub.newInstanceDoNotApplyAffectedTablesAndTags();
 
-        final Observable<Object> observable = stub.storIOSQLite
+        final Flowable<Object> flowable = stub.storIOSQLite
                 .executeSQL()
                 .withQuery(stub.rawQuery)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(MISSING);
 
-        verify(stub.storIOSQLite).defaultScheduler();
-        stub.verifyBehavior(observable);
+        verify(stub.storIOSQLite).defaultRxScheduler();
+        stub.verifyBehavior(flowable);
     }
 
     @Test
@@ -116,7 +118,7 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .asRxSingle();
 
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         stub.verifyBehavior(single);
     }
 
@@ -130,26 +132,26 @@ public class PreparedExecuteSQLTest {
                 .prepare()
                 .asRxSingle();
 
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         stub.verifyBehavior(single);
     }
 
     @Test
-    public void executeSQLObservableWithNotification() {
+    public void executeSQLFlowableWithNotification() {
         final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
 
-        final Observable<Object> observable = stub.storIOSQLite
+        final Flowable<Object> flowable = stub.storIOSQLite
                 .executeSQL()
                 .withQuery(stub.rawQuery)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(MISSING);
 
-        verify(stub.storIOSQLite).defaultScheduler();
-        stub.verifyBehavior(observable);
+        verify(stub.storIOSQLite).defaultRxScheduler();
+        stub.verifyBehavior(flowable);
     }
 
     @Test
-    public void executeSQLObservableExecutesOnSpecifiedScheduler() {
+    public void executeSQLFlowableExecutesOnSpecifiedScheduler() {
         final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
         final SchedulerChecker schedulerChecker = SchedulerChecker.create(stub.storIOSQLite);
 
@@ -158,7 +160,7 @@ public class PreparedExecuteSQLTest {
                 .withQuery(stub.rawQuery)
                 .prepare();
 
-        schedulerChecker.checkAsObservable(operation);
+        schedulerChecker.checkAsFlowable(operation);
     }
 
     @Test
@@ -195,7 +197,7 @@ public class PreparedExecuteSQLTest {
     }
 
     @Test
-    public void shouldWrapExceptionIntoStorIOExceptionObservable() {
+    public void shouldWrapExceptionIntoStorIOExceptionFlowable() {
         final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
 
         IllegalStateException testException = new IllegalStateException("test exception");
@@ -207,7 +209,7 @@ public class PreparedExecuteSQLTest {
                 .executeSQL()
                 .withQuery(stub.rawQuery)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
@@ -215,13 +217,13 @@ public class PreparedExecuteSQLTest {
         testSubscriber.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testSubscriber.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
         verify(stub.storIOSQLite).executeSQL();
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         verify(stub.storIOSQLite).lowLevel();
         verify(stub.lowLevel).executeSQL(stub.rawQuery);
         verify(stub.storIOSQLite).interceptors();
@@ -235,27 +237,27 @@ public class PreparedExecuteSQLTest {
         IllegalStateException testException = new IllegalStateException("test exception");
         doThrow(testException).when(stub.lowLevel).executeSQL(stub.rawQuery);
 
-        final TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+        final TestObserver<Object> testObserver = new TestObserver<Object>();
 
         stub.storIOSQLite
                 .executeSQL()
                 .withQuery(stub.rawQuery)
                 .prepare()
                 .asRxSingle()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
         verify(stub.storIOSQLite).executeSQL();
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         verify(stub.storIOSQLite).lowLevel();
         verify(stub.lowLevel).executeSQL(stub.rawQuery);
         verify(stub.storIOSQLite).interceptors();
@@ -348,30 +350,30 @@ public class PreparedExecuteSQLTest {
             }
         }
 
-        void verifyBehavior(@NonNull Observable<Object> observable) {
-            new ObservableBehaviorChecker<Object>()
-                    .observable(observable)
+        void verifyBehavior(@NonNull Flowable<Object> flowable) {
+            new FlowableBehaviorChecker<Object>()
+                    .flowable(flowable)
                     .expectedNumberOfEmissions(1)
-                    .testAction(new Action1<Object>() {
+                    .testAction(new Consumer<Object>() {
                         @Override
-                        public void call(Object anObject) {
+                        public void accept(Object anObject) {
                             verifyBehavior();
                         }
                     })
-                    .checkBehaviorOfObservable();
+                    .checkBehaviorOfFlowable();
         }
 
         void verifyBehavior(@NonNull Single<Object> single) {
-            new ObservableBehaviorChecker<Object>()
-                    .observable(single.toObservable())
+            new FlowableBehaviorChecker<Object>()
+                    .flowable(single.toFlowable())
                     .expectedNumberOfEmissions(1)
-                    .testAction(new Action1<Object>() {
+                    .testAction(new Consumer<Object>() {
                         @Override
-                        public void call(Object anObject) {
+                        public void accept(Object anObject) {
                             verifyBehavior();
                         }
                     })
-                    .checkBehaviorOfObservable();
+                    .checkBehaviorOfFlowable();
         }
     }
 }

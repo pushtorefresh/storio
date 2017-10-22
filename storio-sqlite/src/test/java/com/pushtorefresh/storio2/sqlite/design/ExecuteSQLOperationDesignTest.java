@@ -4,7 +4,9 @@ import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
 
 import org.junit.Test;
 
-import rx.Observable;
+import io.reactivex.Flowable;
+
+import static io.reactivex.BackpressureStrategy.MISSING;
 
 public class ExecuteSQLOperationDesignTest extends OperationDesignTest {
 
@@ -21,12 +23,12 @@ public class ExecuteSQLOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void execSqlObservable() {
-        Observable<Object> observable = storIOSQLite()
+        Flowable<Object> observable = storIOSQLite()
                 .executeSQL()
                 .withQuery(RawQuery.builder()
                         .query("DROP TABLE users")
                         .build())
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(MISSING);
     }
 }

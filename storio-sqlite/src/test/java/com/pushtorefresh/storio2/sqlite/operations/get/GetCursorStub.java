@@ -7,13 +7,17 @@ import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
+import static io.reactivex.BackpressureStrategy.LATEST;
+import static io.reactivex.BackpressureStrategy.MISSING;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -70,7 +74,7 @@ class GetCursorStub {
         when(storIOSQLite.get())
                 .thenReturn(new PreparedGet.Builder(storIOSQLite));
 
-        when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
+        when(storIOSQLite.observeChanges(any(BackpressureStrategy.class))).thenReturn(Flowable.<Changes>empty());
 
         assertThat(rawQuery.observesTables()).isNotNull();
 
@@ -95,34 +99,34 @@ class GetCursorStub {
         verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
-    void verifyQueryBehaviorForCursor(@NonNull Observable<Cursor> observable) {
-        new ObservableBehaviorChecker<Cursor>()
-                .observable(observable)
+    void verifyQueryBehaviorForCursor(@NonNull Flowable<Cursor> flowable) {
+        new FlowableBehaviorChecker<Cursor>()
+                .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Cursor>() {
+                .testAction(new Consumer<Cursor>() {
                     @Override
-                    public void call(Cursor cursor) {
+                    public void accept(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOSQLite).observeChanges();
-                        verify(storIOSQLite).defaultScheduler();
+                        verify(storIOSQLite).observeChanges(MISSING);
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyQueryBehaviorForCursor(cursor);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyQueryBehaviorForCursor(@NonNull Single<Cursor> single) {
-        new ObservableBehaviorChecker<Cursor>()
-                .observable(single.toObservable())
+        new FlowableBehaviorChecker<Cursor>()
+                .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Cursor>() {
+                .testAction(new Consumer<Cursor>() {
                     @Override
-                    public void call(Cursor cursor) {
-                        verify(storIOSQLite).defaultScheduler();
+                    public void accept(Cursor cursor) {
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyQueryBehaviorForCursor(cursor);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyRawQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
@@ -134,36 +138,36 @@ class GetCursorStub {
         verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
-    void verifyRawQueryBehaviorForCursor(@NonNull Observable<Cursor> observable) {
-        new ObservableBehaviorChecker<Cursor>()
-                .observable(observable)
+    void verifyRawQueryBehaviorForCursor(@NonNull Flowable<Cursor> flowable) {
+        new FlowableBehaviorChecker<Cursor>()
+                .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Cursor>() {
+                .testAction(new Consumer<Cursor>() {
                     @Override
-                    public void call(Cursor cursor) {
+                    public void accept(Cursor cursor) {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOSQLite).observeChanges();
-                        verify(storIOSQLite).defaultScheduler();
+                        verify(storIOSQLite).observeChanges(LATEST);
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyRawQueryBehaviorForCursor(cursor);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
 
         assertThat(rawQuery.observesTables()).isNotNull();
     }
 
     void verifyRawQueryBehaviorForCursor(@NonNull Single<Cursor> single) {
-        new ObservableBehaviorChecker<Cursor>()
-                .observable(single.toObservable())
+        new FlowableBehaviorChecker<Cursor>()
+                .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Cursor>() {
+                .testAction(new Consumer<Cursor>() {
                     @Override
-                    public void call(Cursor cursor) {
-                        verify(storIOSQLite).defaultScheduler();
+                    public void accept(Cursor cursor) {
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyRawQueryBehaviorForCursor(cursor);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
 
         assertThat(rawQuery.observesTables()).isNotNull();
     }

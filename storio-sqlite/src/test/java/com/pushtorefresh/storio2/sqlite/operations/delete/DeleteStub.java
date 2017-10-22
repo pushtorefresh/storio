@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -13,10 +13,10 @@ import org.mockito.stubbing.Answer;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 import static java.util.Collections.singletonMap;
 import static org.mockito.Matchers.any;
@@ -177,72 +177,72 @@ class DeleteStub {
         verifyNoMoreInteractions(storIOSQLite, lowLevel, deleteResolver, typeMapping);
     }
 
-    void verifyBehaviorForMultipleObjects(@NonNull Observable<DeleteResults<TestItem>> observable) {
-        new ObservableBehaviorChecker<DeleteResults<TestItem>>()
-                .observable(observable)
+    void verifyBehaviorForMultipleObjects(@NonNull Flowable<DeleteResults<TestItem>> flowable) {
+        new FlowableBehaviorChecker<DeleteResults<TestItem>>()
+                .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<DeleteResults<TestItem>>() {
+                .testAction(new Consumer<DeleteResults<TestItem>>() {
                     @Override
-                    public void call(DeleteResults<TestItem> deleteResults) {
-                        verify(storIOSQLite).defaultScheduler();
+                    public void accept(DeleteResults<TestItem> deleteResults) {
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyBehaviorForMultipleObjects(deleteResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForMultipleObjects(@NonNull Single<DeleteResults<TestItem>> single) {
-        new ObservableBehaviorChecker<DeleteResults<TestItem>>()
-                .observable(single.toObservable())
+        new FlowableBehaviorChecker<DeleteResults<TestItem>>()
+                .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<DeleteResults<TestItem>>() {
+                .testAction(new Consumer<DeleteResults<TestItem>>() {
                     @Override
-                    public void call(DeleteResults<TestItem> deleteResults) {
-                        verify(storIOSQLite).defaultScheduler();
+                    public void accept(DeleteResults<TestItem> deleteResults) {
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyBehaviorForMultipleObjects(deleteResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForMultipleObjects(@NonNull Completable completable) {
-        verifyBehaviorForMultipleObjects(completable.<DeleteResults<TestItem>>toObservable());
+        verifyBehaviorForMultipleObjects(completable.<DeleteResults<TestItem>>toFlowable());
     }
 
     void verifyBehaviorForOneObject(@NonNull DeleteResult deleteResult) {
         verifyBehaviorForMultipleObjects(DeleteResults.newInstance(singletonMap(itemsRequestedForDelete.get(0), deleteResult)));
     }
 
-    void verifyBehaviorForOneObject(@NonNull Observable<DeleteResult> observable) {
-        new ObservableBehaviorChecker<DeleteResult>()
-                .observable(observable)
+    void verifyBehaviorForOneObject(@NonNull Flowable<DeleteResult> flowable) {
+        new FlowableBehaviorChecker<DeleteResult>()
+                .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<DeleteResult>() {
+                .testAction(new Consumer<DeleteResult>() {
                     @Override
-                    public void call(DeleteResult deleteResult) {
-                        verify(storIOSQLite).defaultScheduler();
+                    public void accept(DeleteResult deleteResult) {
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyBehaviorForOneObject(deleteResult);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyBehaviorForOneObject(@NonNull Completable completable) {
-        verifyBehaviorForOneObject(completable.<DeleteResult>toObservable());
+        verifyBehaviorForOneObject(completable.<DeleteResult>toFlowable());
     }
 
     void verifyBehaviorForOneObject(@NonNull Single<DeleteResult> single) {
-        new ObservableBehaviorChecker<DeleteResult>()
-                .observable(single.toObservable())
+        new FlowableBehaviorChecker<DeleteResult>()
+                .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<DeleteResult>() {
+                .testAction(new Consumer<DeleteResult>() {
                     @Override
-                    public void call(DeleteResult deleteResult) {
-                        verify(storIOSQLite).defaultScheduler();
+                    public void accept(DeleteResult deleteResult) {
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyBehaviorForOneObject(deleteResult);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     private void verifyTransactionBehavior() {

@@ -15,11 +15,13 @@ import org.junit.runner.RunWith;
 import java.util.Collection;
 import java.util.List;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
+import static io.reactivex.BackpressureStrategy.MISSING;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -70,35 +72,35 @@ public class PreparedPutCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldPutObjectsWithoutTypeMappingWithoutTransactionAsObservable() {
+        public void shouldPutObjectsWithoutTypeMappingWithoutTransactionAsFlowable() {
             final PutObjectsStub putStub
                     = PutObjectsStub.newPutStubForMultipleObjectsWithoutTypeMappingWithoutTransaction();
 
-            final Observable<PutResults<TestItem>> observable = putStub.storIOSQLite
+            final Flowable<PutResults<TestItem>> flowable = putStub.storIOSQLite
                     .put()
                     .objects(putStub.items)
                     .useTransaction(false)
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(MISSING);
 
-            putStub.verifyBehaviorForMultipleObjects(observable);
+            putStub.verifyBehaviorForMultipleObjects(flowable);
         }
 
         @Test
-        public void shouldPutObjectsWithoutTypeMappingWithTransactionAsObservable() {
+        public void shouldPutObjectsWithoutTypeMappingWithTransactionAsFlowable() {
             final PutObjectsStub putStub
                     = PutObjectsStub.newPutStubForMultipleObjectsWithoutTypeMappingWithTransaction();
 
-            final Observable<PutResults<TestItem>> observable = putStub.storIOSQLite
+            final Flowable<PutResults<TestItem>> flowable = putStub.storIOSQLite
                     .put()
                     .objects(putStub.items)
                     .useTransaction(true)
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(MISSING);
 
-            putStub.verifyBehaviorForMultipleObjects(observable);
+            putStub.verifyBehaviorForMultipleObjects(flowable);
         }
 
         @Test
@@ -231,33 +233,33 @@ public class PreparedPutCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldPutObjectsWithTypeMappingWithoutTransactionAsObservable() {
+        public void shouldPutObjectsWithTypeMappingWithoutTransactionAsFlowable() {
             final PutObjectsStub putStub
                     = PutObjectsStub.newPutStubForMultipleObjectsWithTypeMappingWithoutTransaction();
 
-            final Observable<PutResults<TestItem>> observable = putStub.storIOSQLite
+            final Flowable<PutResults<TestItem>> flowable = putStub.storIOSQLite
                     .put()
                     .objects(putStub.items)
                     .useTransaction(false)
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(MISSING);
 
-            putStub.verifyBehaviorForMultipleObjects(observable);
+            putStub.verifyBehaviorForMultipleObjects(flowable);
         }
 
         @Test
-        public void shouldPutObjectsWithTypeMappingWithTransactionAsObservable() {
+        public void shouldPutObjectsWithTypeMappingWithTransactionAsFlowable() {
             final PutObjectsStub putStub
                     = PutObjectsStub.newPutStubForMultipleObjectsWithTypeMappingWithTransaction();
 
-            final Observable<PutResults<TestItem>> observable = putStub.storIOSQLite
+            final Flowable<PutResults<TestItem>> flowable = putStub.storIOSQLite
                     .put()
                     .objects(putStub.items)
                     .useTransaction(true)
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(MISSING);
 
-            putStub.verifyBehaviorForMultipleObjects(observable);
+            putStub.verifyBehaviorForMultipleObjects(flowable);
         }
 
         @Test
@@ -388,7 +390,7 @@ public class PreparedPutCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutTransactionWithoutAffectingDbAsObservable() {
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutTransactionWithoutAffectingDbAsFlowable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
@@ -405,12 +407,12 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(items)
                     .useTransaction(false)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(MISSING)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            assertThat(testSubscriber.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
@@ -435,7 +437,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final TestSubscriber<PutResults<TestItem>> testSubscriber = new TestSubscriber<PutResults<TestItem>>();
+            final TestObserver<PutResults<TestItem>> testObserver = new TestObserver<PutResults<TestItem>>();
 
             storIOSQLite
                     .put()
@@ -443,11 +445,11 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(false)
                     .prepare()
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            assertThat(testObserver.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
@@ -472,7 +474,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final TestSubscriber<PutResults<TestItem>> testSubscriber = new TestSubscriber<PutResults<TestItem>>();
+            final TestObserver<PutResults<TestItem>> testObserver = new TestObserver<PutResults<TestItem>>();
 
             storIOSQLite
                     .put()
@@ -480,11 +482,11 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(false)
                     .prepare()
                     .asRxCompletable()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            assertThat(testObserver.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
@@ -533,7 +535,7 @@ public class PreparedPutCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithTransactionWithoutAffectingDbAsObservable() {
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithTransactionWithoutAffectingDbAsFlowable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
@@ -550,12 +552,12 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(items)
                     .useTransaction(true)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(MISSING)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            assertThat(testSubscriber.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
@@ -580,7 +582,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final TestSubscriber<PutResults<TestItem>> testSubscriber = new TestSubscriber<PutResults<TestItem>>();
+            final TestObserver<PutResults<TestItem>> testObserver = new TestObserver<PutResults<TestItem>>();
 
             storIOSQLite
                     .put()
@@ -588,11 +590,11 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(true)
                     .prepare()
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            assertThat(testObserver.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
@@ -617,7 +619,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final TestSubscriber<PutResults<TestItem>> testSubscriber = new TestSubscriber<PutResults<TestItem>>();
+            final TestObserver<PutResults<TestItem>> testObserver = new TestObserver<PutResults<TestItem>>();
 
             storIOSQLite
                     .put()
@@ -625,11 +627,11 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(true)
                     .prepare()
                     .asRxCompletable()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            assertThat(testObserver.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
@@ -703,7 +705,7 @@ public class PreparedPutCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldFinishTransactionIfExceptionHasOccurredObservable() {
+        public void shouldFinishTransactionIfExceptionHasOccurredFlowable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
@@ -723,7 +725,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(true)
                     .withPutResolver(putResolver)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(MISSING)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -731,7 +733,7 @@ public class PreparedPutCollectionOfObjectsTest {
             testSubscriber.assertError(StorIOException.class);
 
             //noinspection ThrowableResultOfMethodCallIgnored
-            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException expected = (StorIOException) testSubscriber.errors().get(0);
             IllegalStateException cause = (IllegalStateException) expected.getCause();
             assertThat(cause).hasMessage("test exception");
 
@@ -761,21 +763,21 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<Object> objects = singletonList(new Object());
 
-            final TestSubscriber<PutResults<Object>> testSubscriber = new TestSubscriber<PutResults<Object>>();
+            final TestObserver<PutResults<Object>> testObserver = new TestObserver<PutResults<Object>>();
 
             new PreparedPutCollectionOfObjects.Builder<Object>(storIOSQLite, objects)
                     .useTransaction(true)
                     .withPutResolver(putResolver)
                     .prepare()
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            testSubscriber.assertError(StorIOException.class);
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            testObserver.assertError(StorIOException.class);
 
             //noinspection ThrowableResultOfMethodCallIgnored
-            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException expected = (StorIOException) testObserver.errors().get(0);
             IllegalStateException cause = (IllegalStateException) expected.getCause();
             assertThat(cause).hasMessage("test exception");
 
@@ -805,21 +807,21 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<Object> objects = singletonList(new Object());
 
-            final TestSubscriber<PutResults<Object>> testSubscriber = new TestSubscriber<PutResults<Object>>();
+            final TestObserver<PutResults<Object>> testObserver = new TestObserver<PutResults<Object>>();
 
             new PreparedPutCollectionOfObjects.Builder<Object>(storIOSQLite, objects)
                     .useTransaction(true)
                     .withPutResolver(putResolver)
                     .prepare()
                     .asRxCompletable()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            testSubscriber.assertError(StorIOException.class);
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            testObserver.assertError(StorIOException.class);
 
             //noinspection ThrowableResultOfMethodCallIgnored
-            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException expected = (StorIOException) testObserver.errors().get(0);
             IllegalStateException cause = (IllegalStateException) expected.getCause();
             assertThat(cause).hasMessage("test exception");
 
@@ -874,7 +876,7 @@ public class PreparedPutCollectionOfObjectsTest {
         }
 
         @Test
-        public void verifyBehaviorInCaseOfExceptionWithoutTransactionObservable() {
+        public void verifyBehaviorInCaseOfExceptionWithoutTransactionFlowable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
@@ -894,7 +896,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .useTransaction(false)
                     .withPutResolver(putResolver)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(MISSING)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -902,7 +904,7 @@ public class PreparedPutCollectionOfObjectsTest {
             testSubscriber.assertError(StorIOException.class);
 
             //noinspection ThrowableResultOfMethodCallIgnored
-            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException expected = (StorIOException) testSubscriber.errors().get(0);
 
             IllegalStateException cause = (IllegalStateException) expected.getCause();
             assertThat(cause).hasMessage("test exception");
@@ -934,21 +936,21 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<Object> objects = singletonList(new Object());
 
-            final TestSubscriber<PutResults<Object>> testSubscriber = new TestSubscriber<PutResults<Object>>();
+            final TestObserver<PutResults<Object>> testObserver = new TestObserver<PutResults<Object>>();
 
             new PreparedPutCollectionOfObjects.Builder<Object>(storIOSQLite, objects)
                     .useTransaction(false)
                     .withPutResolver(putResolver)
                     .prepare()
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            testSubscriber.assertError(StorIOException.class);
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            testObserver.assertError(StorIOException.class);
 
             //noinspection ThrowableResultOfMethodCallIgnored
-            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
             IllegalStateException cause = (IllegalStateException) expected.getCause();
             assertThat(cause).hasMessage("test exception");
@@ -980,21 +982,21 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<Object> objects = singletonList(new Object());
 
-            final TestSubscriber<PutResults<Object>> testSubscriber = new TestSubscriber<PutResults<Object>>();
+            final TestObserver<PutResults<Object>> testObserver = new TestObserver<PutResults<Object>>();
 
             new PreparedPutCollectionOfObjects.Builder<Object>(storIOSQLite, objects)
                     .useTransaction(false)
                     .withPutResolver(putResolver)
                     .prepare()
                     .asRxCompletable()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            testSubscriber.assertError(StorIOException.class);
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            testObserver.assertError(StorIOException.class);
 
             //noinspection ThrowableResultOfMethodCallIgnored
-            StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
             IllegalStateException cause = (IllegalStateException) expected.getCause();
             assertThat(cause).hasMessage("test exception");
@@ -1012,7 +1014,7 @@ public class PreparedPutCollectionOfObjectsTest {
         }
 
         @Test
-        public void putCollectionOfObjectsObservableExecutesOnSpecifiedScheduler() {
+        public void putCollectionOfObjectsFlowableExecutesOnSpecifiedScheduler() {
             final PutObjectsStub putStub
                     = PutObjectsStub.newPutStubForMultipleObjectsWithTypeMappingWithTransaction();
             final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOSQLite);
@@ -1022,7 +1024,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .objects(putStub.items)
                     .prepare();
 
-            schedulerChecker.checkAsObservable(operation);
+            schedulerChecker.checkAsFlowable(operation);
         }
 
         @Test

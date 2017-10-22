@@ -16,8 +16,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import rx.Subscription;
-import rx.functions.Action1;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+
+import static io.reactivex.BackpressureStrategy.LATEST;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
@@ -31,12 +33,12 @@ public class ObserveChangesInTableTest extends BaseTest {
 
         @Override
         @NonNull
-        public Subscription subscribe() {
+        public Disposable subscribe() {
             return storIOSQLite
-                    .observeChangesInTable(UserTableMeta.TABLE)
-                    .subscribe(new Action1<Changes>() {
+                    .observeChangesInTable(UserTableMeta.TABLE, LATEST)
+                    .subscribe(new Consumer<Changes>() {
                         @Override
-                        public void call(Changes changes) {
+                        public void accept(@NonNull Changes changes) {
                             onNextObtained(changes);
                         }
                     });
@@ -51,7 +53,7 @@ public class ObserveChangesInTableTest extends BaseTest {
         expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE, UserTableMeta.NOTIFICATION_TAG));
 
         final EmissionChecker emissionChecker = new EmissionChecker(expectedChanges);
-        final Subscription subscription = emissionChecker.subscribe();
+        final Disposable disposable = emissionChecker.subscribe();
 
         putUsersBlocking(users);
 
@@ -60,7 +62,7 @@ public class ObserveChangesInTableTest extends BaseTest {
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
-        subscription.unsubscribe();
+        disposable.dispose();
     }
 
     @Test
@@ -76,7 +78,7 @@ public class ObserveChangesInTableTest extends BaseTest {
         expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE, UserTableMeta.NOTIFICATION_TAG));
 
         final EmissionChecker emissionChecker = new EmissionChecker(expectedChanges);
-        final Subscription subscription = emissionChecker.subscribe();
+        final Disposable disposable = emissionChecker.subscribe();
 
         storIOSQLite
                 .put()
@@ -89,7 +91,7 @@ public class ObserveChangesInTableTest extends BaseTest {
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
-        subscription.unsubscribe();
+        disposable.dispose();
     }
 
     @Test
@@ -100,7 +102,7 @@ public class ObserveChangesInTableTest extends BaseTest {
         expectedChanges.add(Changes.newInstance(UserTableMeta.TABLE, UserTableMeta.NOTIFICATION_TAG));
 
         final EmissionChecker emissionChecker = new EmissionChecker(expectedChanges);
-        final Subscription subscription = emissionChecker.subscribe();
+        final Disposable disposable = emissionChecker.subscribe();
 
         deleteUsersBlocking(users);
 
@@ -109,6 +111,6 @@ public class ObserveChangesInTableTest extends BaseTest {
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
-        subscription.unsubscribe();
+        disposable.dispose();
     }
 }

@@ -58,7 +58,7 @@ ext.libraries = [
         // TODO remove RxJava1 and Interop once RxJava2 migration will be complete.
         rxJava                                   : 'io.reactivex:rxjava:1.2.1',
         rxJavaInterop                            : 'com.github.akarnokd:rxjava2-interop:0.10.0',
-        rxJava2                                  : 'io.reactivex.rxjava2:rxjava:2.1.0',
+        rxJava2                                  : 'io.reactivex.rxjava2:rxjava:2.1.4',
         kotlinStdLib                             : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
 
         // Parts of StorIO

@@ -29,12 +29,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
-import static com.pushtorefresh.storio2.internal.Environment.RX_JAVA_IS_IN_THE_CLASS_PATH;
+import static com.pushtorefresh.storio2.internal.Environment.RX_JAVA_2_IS_IN_THE_CLASS_PATH;
 import static com.pushtorefresh.storio2.internal.InternalQueries.nullableArrayOfStrings;
 import static com.pushtorefresh.storio2.internal.InternalQueries.nullableArrayOfStringsFromListOfStrings;
 import static com.pushtorefresh.storio2.internal.InternalQueries.nullableString;
@@ -52,10 +53,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     private final SQLiteOpenHelper sqLiteOpenHelper;
 
     @NonNull
-    private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>(RX_JAVA_IS_IN_THE_CLASS_PATH);
+    private final ChangesBus<Changes> changesBus = new ChangesBus<Changes>(RX_JAVA_2_IS_IN_THE_CLASS_PATH);
 
     @Nullable
-    private final Scheduler defaultScheduler;
+    private final Scheduler defaultRxScheduler;
 
     @NonNull
     private final List<Interceptor> interceptors;
@@ -69,10 +70,10 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
     protected DefaultStorIOSQLite(
             @NonNull SQLiteOpenHelper sqLiteOpenHelper,
             @NonNull TypeMappingFinder typeMappingFinder,
-            @Nullable Scheduler defaultScheduler,
+            @Nullable Scheduler defaultRxScheduler,
             @NonNull List<Interceptor> interceptors) {
         this.sqLiteOpenHelper = sqLiteOpenHelper;
-        this.defaultScheduler = defaultScheduler;
+        this.defaultRxScheduler = defaultRxScheduler;
         this.interceptors = unmodifiableNonNullList(interceptors);
         lowLevel = new LowLevelImpl(typeMappingFinder);
     }
@@ -82,8 +83,8 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      */
     @NonNull
     @Override
-    public Observable<Changes> observeChanges() {
-        final Observable<Changes> rxBus = changesBus.asObservable();
+    public Flowable<Changes> observeChanges(@NonNull BackpressureStrategy backpressureStrategy) {
+        final Flowable<Changes> rxBus = changesBus.asFlowable();
 
         if (rxBus == null) {
             throw new IllegalStateException("Observing changes in StorIOSQLite requires RxJava");
@@ -97,9 +98,9 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      */
     @Override
     @NonNull
-    public Observable<Changes> observeChangesInTables(@NonNull final Set<String> tables) {
+    public Flowable<Changes> observeChangesInTables(@NonNull final Set<String> tables, @NonNull BackpressureStrategy backpressureStrategy) {
         // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
-        return ChangesFilter.applyForTables(observeChanges(), tables);
+        return ChangesFilter.applyForTables(observeChanges(backpressureStrategy), tables);
     }
 
     /**
@@ -107,17 +108,17 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
      */
     @Override
     @NonNull
-    public Observable<Changes> observeChangesOfTags(@NonNull final Set<String> tags) {
+    public Flowable<Changes> observeChangesOfTags(@NonNull final Set<String> tags, @NonNull BackpressureStrategy backpressureStrategy) {
         // indirect usage of RxJava filter() required to avoid problems with ClassLoader when RxJava is not in ClassPath
-        return ChangesFilter.applyForTags(observeChanges(), tags);
+        return ChangesFilter.applyForTags(observeChanges(backpressureStrategy), tags);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Scheduler defaultScheduler() {
-        return defaultScheduler;
+    public Scheduler defaultRxScheduler() {
+        return defaultRxScheduler;
     }
 
     /**
@@ -199,7 +200,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         private TypeMappingFinder typeMappingFinder;
 
         @Nullable
-        private Scheduler defaultScheduler = RX_JAVA_IS_IN_THE_CLASS_PATH ? Schedulers.io() : null;
+        private Scheduler defaultRxScheduler = RX_JAVA_2_IS_IN_THE_CLASS_PATH ? Schedulers.io() : null;
 
         @NonNull
         private List<Interceptor> interceptors = new ArrayList<Interceptor>();
@@ -246,18 +247,18 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
         }
 
         /**
-         * Optional: Specifies a scheduler on which {@link rx.Observable} / {@link rx.Single}
-         * or {@link rx.Completable} will be subscribed.
+         * Optional: Specifies a scheduler on which {@link Flowable} / {@link io.reactivex.Single}
+         * or {@link Comparable} will be subscribed.
          * <p/>
          *
          * @return builder.
-         * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxObservable()
+         * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxFlowable(BackpressureStrategy)
          * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxSingle()
          * @see com.pushtorefresh.storio2.operations.PreparedWriteOperation#asRxCompletable()
          */
         @NonNull
-        public CompleteBuilder defaultScheduler(@Nullable Scheduler defaultScheduler) {
-            this.defaultScheduler = defaultScheduler;
+        public CompleteBuilder defaultRxScheduler(@Nullable Scheduler defaultRxScheduler) {
+            this.defaultRxScheduler = defaultRxScheduler;
             return this;
         }
 
@@ -289,7 +290,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
                 typeMappingFinder.directTypeMapping(unmodifiableMap(typeMapping));
             }
 
-            return new DefaultStorIOSQLite(sqLiteOpenHelper, typeMappingFinder, defaultScheduler, interceptors);
+            return new DefaultStorIOSQLite(sqLiteOpenHelper, typeMappingFinder, defaultRxScheduler, interceptors);
         }
     }
 

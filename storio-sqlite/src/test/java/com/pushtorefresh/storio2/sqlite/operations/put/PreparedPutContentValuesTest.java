@@ -8,11 +8,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
+import static io.reactivex.BackpressureStrategy.MISSING;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -53,17 +55,17 @@ public class PreparedPutContentValuesTest {
     }
 
     @Test
-    public void putContentValuesObservable() {
+    public void putContentValuesFlowable() {
         final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForOneContentValues();
 
-        final Observable<PutResult> putResultObservable = putStub.storIOSQLite
+        final Flowable<PutResult> putResultFlowable = putStub.storIOSQLite
                 .put()
                 .contentValues(putStub.contentValues.get(0))
                 .withPutResolver(putStub.putResolver)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(MISSING);
 
-        putStub.verifyBehaviorForOneContentValues(putResultObservable);
+        putStub.verifyBehaviorForOneContentValues(putResultFlowable);
     }
 
     @Test
@@ -118,7 +120,7 @@ public class PreparedPutContentValuesTest {
     }
 
     @Test
-    public void shouldWrapExceptionIntoStorIOExceptionObservable() {
+    public void shouldWrapExceptionIntoStorIOExceptionFlowable() {
         final PutContentValuesStub stub = PutContentValuesStub.newPutStubForOneContentValues();
 
         ContentValues contentValues = stub.contentValues.get(0);
@@ -133,7 +135,7 @@ public class PreparedPutContentValuesTest {
                 .contentValues(contentValues)
                 .withPutResolver(stub.putResolver)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
@@ -141,14 +143,14 @@ public class PreparedPutContentValuesTest {
         testSubscriber.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testSubscriber.errors().get(0);
 
         assertThat(expected).hasMessageStartingWith("Error has occurred during Put operation. contentValues =");
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
         verify(stub.storIOSQLite).put();
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
@@ -162,7 +164,7 @@ public class PreparedPutContentValuesTest {
         IllegalStateException testException = new IllegalStateException("test exception");
         doThrow(testException).when(stub.putResolver).performPut(stub.storIOSQLite, contentValues);
 
-        final TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+        final TestObserver<Object> testObserver = new TestObserver<Object>();
 
         stub.storIOSQLite
                 .put()
@@ -170,21 +172,21 @@ public class PreparedPutContentValuesTest {
                 .withPutResolver(stub.putResolver)
                 .prepare()
                 .asRxSingle()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         assertThat(expected).hasMessageStartingWith("Error has occurred during Put operation. contentValues =");
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
         verify(stub.storIOSQLite).put();
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
@@ -198,7 +200,7 @@ public class PreparedPutContentValuesTest {
         IllegalStateException testException = new IllegalStateException("test exception");
         doThrow(testException).when(stub.putResolver).performPut(stub.storIOSQLite, contentValues);
 
-        final TestSubscriber testSubscriber = new TestSubscriber();
+        final TestObserver testObserver = new TestObserver();
 
         stub.storIOSQLite
                 .put()
@@ -206,21 +208,21 @@ public class PreparedPutContentValuesTest {
                 .withPutResolver(stub.putResolver)
                 .prepare()
                 .asRxCompletable()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         assertThat(expected).hasMessageStartingWith("Error has occurred during Put operation. contentValues =");
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
 
         verify(stub.storIOSQLite).put();
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }

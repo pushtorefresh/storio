@@ -9,8 +9,10 @@ import org.junit.Test;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.Single;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+
+import static io.reactivex.BackpressureStrategy.LATEST;
 
 public class GetOperationDesignTest extends OperationDesignTest {
 
@@ -44,8 +46,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void getCursorObservable() {
-        Observable<Cursor> observableCursor = storIOSQLite()
+    public void getCursorFlowable() {
+        Flowable<Cursor> flowableCursor = storIOSQLite()
                 .get()
                 .cursor()
                 .withQuery(Query.builder()
@@ -54,12 +56,12 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(LATEST);
     }
 
     @Test
-    public void getListOfObjectsObservable() {
-        Observable<List<User>> observableUsers = storIOSQLite()
+    public void getListOfObjectsFlowable() {
+        Flowable<List<User>> flowableUsers = storIOSQLite()
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(Query.builder()
@@ -69,7 +71,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(LATEST);
     }
 
     @Test
@@ -86,8 +88,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void getCursorWithRawQueryObservable() {
-        Observable<Cursor> cursorObservable = storIOSQLite()
+    public void getCursorWithRawQueryFlowable() {
+        Flowable<Cursor> cursorFlowable = storIOSQLite()
                 .get()
                 .cursor()
                 .withQuery(RawQuery.builder()
@@ -95,7 +97,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .args("arg1", "arg2")
                         .build())
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(LATEST);
     }
 
     @Test
@@ -113,8 +115,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void getListOfObjectsWithRawQueryObservable() {
-        Observable<List<User>> usersObservable = storIOSQLite()
+    public void getListOfObjectsWithRawQueryFlowable() {
+        Flowable<List<User>> usersFlowable = storIOSQLite()
                 .get()
                 .listOfObjects(User.class)
                 .withQuery(RawQuery.builder()
@@ -123,7 +125,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(LATEST);
     }
 
     @Test
@@ -156,8 +158,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void getObjectObservable() {
-        Observable<User> userObservable = storIOSQLite()
+    public void getObjectFlowable() {
+        Flowable<User> userFlowable = storIOSQLite()
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -167,12 +169,12 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(LATEST);
     }
 
     @Test
-    public void getObjectWithRawQueryObservable() {
-        Observable<User> userObservable = storIOSQLite()
+    public void getObjectWithRawQueryFlowable() {
+        Flowable<User> userFlowable = storIOSQLite()
                 .get()
                 .object(User.class)
                 .withQuery(RawQuery.builder()
@@ -181,7 +183,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(UserTableMeta.GET_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(LATEST);
     }
 
     @Test

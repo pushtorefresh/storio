@@ -10,9 +10,11 @@ import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
 
 import org.junit.Before;
 
-import rx.Scheduler;
-import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.TestSubscriber;
+
+import static io.reactivex.BackpressureStrategy.MISSING;
 
 public abstract class BaseOperationObserveChangesTest extends BaseTest {
 
@@ -54,7 +56,7 @@ public abstract class BaseOperationObserveChangesTest extends BaseTest {
         TestSubscriber<T> testSubscriber = new TestSubscriber<T>();
 
         operation
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.assertValues(value);
@@ -66,7 +68,7 @@ public abstract class BaseOperationObserveChangesTest extends BaseTest {
 
     @Override
     @NonNull
-    protected Scheduler defaultScheduler() {
-        return Schedulers.immediate();
+    protected Scheduler defaultRxScheduler() {
+        return Schedulers.trampoline();
     }
 }

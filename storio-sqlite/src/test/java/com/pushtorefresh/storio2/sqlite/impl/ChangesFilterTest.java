@@ -9,8 +9,8 @@ import org.junit.rules.ExpectedException;
 import java.util.Collections;
 import java.util.HashSet;
 
-import rx.Observable;
-import rx.observers.TestSubscriber;
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static java.util.Collections.singleton;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -28,7 +28,7 @@ public class ChangesFilterTest {
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
-        ChangesFilter.applyForTables(Observable.<Changes>empty(), null);
+        ChangesFilter.applyForTables(Flowable.<Changes>empty(), null);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class ChangesFilterTest {
 
         ChangesFilter
                 .applyForTables(
-                        Observable.just(Changes.newInstance("table1"),
+                        Flowable.just(Changes.newInstance("table1"),
                                 Changes.newInstance("table2"),
                                 Changes.newInstance("table3")),
                         singleton("table2"))
@@ -46,7 +46,7 @@ public class ChangesFilterTest {
         // All other tables should be filtered
         testSubscriber.assertValue(Changes.newInstance("table2"));
 
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -55,7 +55,7 @@ public class ChangesFilterTest {
 
         ChangesFilter
                 .applyForTables(
-                        Observable.just(Changes.newInstance("table1"),
+                        Flowable.just(Changes.newInstance("table1"),
                                 Changes.newInstance(new HashSet<String>() {
                                     {
                                         add("table1");
@@ -77,7 +77,7 @@ public class ChangesFilterTest {
             }
         }));
 
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ChangesFilterTest {
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
-        ChangesFilter.applyForTags(Observable.<Changes>empty(), null);
+        ChangesFilter.applyForTags(Flowable.<Changes>empty(), null);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class ChangesFilterTest {
 
         ChangesFilter
                 .applyForTags(
-                        Observable.just(
+                        Flowable.just(
                                 Changes.newInstance("table1", "tag1"),
                                 Changes.newInstance("table2", "tag2"),
                                 Changes.newInstance("table3")),
@@ -106,7 +106,7 @@ public class ChangesFilterTest {
         // All other tags should be filtered
         testSubscriber.assertValue(Changes.newInstance("table1", "tag1"));
 
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -125,7 +125,7 @@ public class ChangesFilterTest {
 
         ChangesFilter
                 .applyForTags(
-                        Observable.just(
+                        Flowable.just(
                                 changes,
                                 Changes.newInstance("table3", "tag3"),
                                 Changes.newInstance("table4")),
@@ -135,7 +135,7 @@ public class ChangesFilterTest {
         // All other tags should be filtered
         testSubscriber.assertValue(changes);
 
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -145,7 +145,7 @@ public class ChangesFilterTest {
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
-        ChangesFilter.applyForTablesAndTags(Observable.<Changes>empty(), null, Collections.<String>emptySet());
+        ChangesFilter.applyForTablesAndTags(Flowable.<Changes>empty(), null, Collections.<String>emptySet());
     }
 
     @Test
@@ -155,7 +155,7 @@ public class ChangesFilterTest {
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
-        ChangesFilter.applyForTablesAndTags(Observable.<Changes>empty(), Collections.<String>emptySet(), null);
+        ChangesFilter.applyForTablesAndTags(Flowable.<Changes>empty(), Collections.<String>emptySet(), null);
     }
 
     @Test
@@ -164,7 +164,7 @@ public class ChangesFilterTest {
 
         ChangesFilter
                 .applyForTablesAndTags(
-                        Observable.just(Changes.newInstance("table1", "another_tag"),
+                        Flowable.just(Changes.newInstance("table1", "another_tag"),
                                 Changes.newInstance("table2", "tag2"),
                                 Changes.newInstance("table3")),
                         singleton("table1"),
@@ -174,7 +174,7 @@ public class ChangesFilterTest {
         // All other Changes should be filtered
         testSubscriber.assertValue(Changes.newInstance("table1", "another_tag"));
 
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -183,7 +183,7 @@ public class ChangesFilterTest {
 
         ChangesFilter
                 .applyForTablesAndTags(
-                        Observable.just(Changes.newInstance("another_table", "tag1"),
+                        Flowable.just(Changes.newInstance("another_table", "tag1"),
                                 Changes.newInstance("table2", "tag2"),
                                 Changes.newInstance("table3")),
                         singleton("table1"),
@@ -193,7 +193,7 @@ public class ChangesFilterTest {
         // All other Changes should be filtered
         testSubscriber.assertValue(Changes.newInstance("another_table", "tag1"));
 
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -202,7 +202,7 @@ public class ChangesFilterTest {
 
         ChangesFilter
                 .applyForTablesAndTags(
-                        Observable.just(Changes.newInstance("target_table", "target_tag")),
+                        Flowable.just(Changes.newInstance("target_table", "target_tag")),
                         singleton("target_table"),
                         singleton("target_tag"))
                 .subscribe(testSubscriber);
@@ -210,6 +210,6 @@ public class ChangesFilterTest {
         testSubscriber.assertValueCount(1);
         testSubscriber.assertValue(Changes.newInstance("target_table", "target_tag"));
 
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 }

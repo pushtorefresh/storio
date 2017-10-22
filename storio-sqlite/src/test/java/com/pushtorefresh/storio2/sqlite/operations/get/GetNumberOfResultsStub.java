@@ -7,13 +7,16 @@ import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
-import com.pushtorefresh.storio2.test.ObservableBehaviorChecker;
+import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
-import rx.Observable;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
+import static io.reactivex.BackpressureStrategy.LATEST;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -74,7 +77,7 @@ class GetNumberOfResultsStub {
         when(storIOSQLite.get())
                 .thenReturn(new PreparedGet.Builder(storIOSQLite));
 
-        when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
+        when(storIOSQLite.observeChanges(any(BackpressureStrategy.class))).thenReturn(Flowable.<Changes>empty());
 
         assertThat(rawQuery.observesTables()).isNotNull();
 
@@ -103,34 +106,34 @@ class GetNumberOfResultsStub {
         verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
-    void verifyQueryBehaviorForInteger(@NonNull Observable<Integer> observable) {
-        new ObservableBehaviorChecker<Integer>()
-                .observable(observable)
+    void verifyQueryBehaviorForInteger(@NonNull Flowable<Integer> flowable) {
+        new FlowableBehaviorChecker<Integer>()
+                .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Integer>() {
+                .testAction(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer numberOfResults) {
+                    public void accept(Integer numberOfResults) {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOSQLite).observeChanges();
-                        verify(storIOSQLite).defaultScheduler();
+                        verify(storIOSQLite).observeChanges(LATEST);
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyQueryBehaviorForInteger(numberOfResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyQueryBehaviorForInteger(@NonNull Single<Integer> single) {
-        new ObservableBehaviorChecker<Integer>()
-                .observable(single.toObservable())
+        new FlowableBehaviorChecker<Integer>()
+                .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Integer>() {
+                .testAction(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer numberOfResults) {
-                        verify(storIOSQLite).defaultScheduler();
+                    public void accept(Integer numberOfResults) {
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyQueryBehaviorForInteger(numberOfResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
     }
 
     void verifyRawQueryBehaviorForInteger(@NonNull Integer actualNumberOfResults) {
@@ -143,36 +146,36 @@ class GetNumberOfResultsStub {
         verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
-    void verifyRawQueryBehaviorForInteger(@NonNull Observable<Integer> observable) {
-        new ObservableBehaviorChecker<Integer>()
-                .observable(observable)
+    void verifyRawQueryBehaviorForInteger(@NonNull Flowable<Integer> flowable) {
+        new FlowableBehaviorChecker<Integer>()
+                .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Integer>() {
+                .testAction(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer numberOfResults) {
+                    public void accept(Integer numberOfResults) {
                         // Get Operation should be subscribed to changes of tables from Query
-                        verify(storIOSQLite).observeChanges();
-                        verify(storIOSQLite).defaultScheduler();
+                        verify(storIOSQLite).observeChanges(LATEST);
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyRawQueryBehaviorForInteger(numberOfResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
 
         assertThat(rawQuery.observesTables()).isNotNull();
     }
 
     void verifyRawQueryBehaviorForInteger(@NonNull Single<Integer> single) {
-        new ObservableBehaviorChecker<Integer>()
-                .observable(single.toObservable())
+        new FlowableBehaviorChecker<Integer>()
+                .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Action1<Integer>() {
+                .testAction(new Consumer<Integer>() {
                     @Override
-                    public void call(Integer numberOfResults) {
-                        verify(storIOSQLite).defaultScheduler();
+                    public void accept(Integer numberOfResults) {
+                        verify(storIOSQLite).defaultRxScheduler();
                         verifyRawQueryBehaviorForInteger(numberOfResults);
                     }
                 })
-                .checkBehaviorOfObservable();
+                .checkBehaviorOfFlowable();
 
         assertThat(rawQuery.observesTables()).isNotNull();
     }

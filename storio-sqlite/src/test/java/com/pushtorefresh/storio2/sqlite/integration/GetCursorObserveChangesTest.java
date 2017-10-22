@@ -5,7 +5,9 @@ import android.database.Cursor;
 
 import org.junit.Test;
 
-import rx.observers.TestSubscriber;
+import io.reactivex.subscribers.TestSubscriber;
+
+import static io.reactivex.BackpressureStrategy.MISSING;
 
 public class GetCursorObserveChangesTest extends BaseOperationObserveChangesTest {
 
@@ -19,7 +21,7 @@ public class GetCursorObserveChangesTest extends BaseOperationObserveChangesTest
                 .cursor()
                 .withQuery(query)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.assertValueCount(1);
@@ -39,7 +41,7 @@ public class GetCursorObserveChangesTest extends BaseOperationObserveChangesTest
                 .cursor()
                 .withQuery(rawQuery)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.assertValueCount(1);
@@ -59,7 +61,7 @@ public class GetCursorObserveChangesTest extends BaseOperationObserveChangesTest
                 .cursor()
                 .withQuery(query)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.assertValueCount(1);
@@ -79,7 +81,7 @@ public class GetCursorObserveChangesTest extends BaseOperationObserveChangesTest
                 .cursor()
                 .withQuery(rawQuery)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.assertValueCount(1);

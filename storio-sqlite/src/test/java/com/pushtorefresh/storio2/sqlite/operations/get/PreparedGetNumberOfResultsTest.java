@@ -10,10 +10,13 @@ import com.pushtorefresh.storio2.sqlite.queries.Query;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
+import static io.reactivex.BackpressureStrategy.LATEST;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -69,19 +72,19 @@ public class PreparedGetNumberOfResultsTest {
     }
 
     @Test
-    public void shouldGetNumberOfResultsWithQueryAsObservable() {
+    public void shouldGetNumberOfResultsWithQueryAsFlowable() {
         final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
 
-        final Observable<Integer> numberOfResultsObservable = getStub.storIOSQLite
+        final Flowable<Integer> numberOfResultsFlowable = getStub.storIOSQLite
                 .get()
                 .numberOfResults()
                 .withQuery(getStub.query)
                 .withGetResolver(getStub.getResolverForNumberOfResults)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(LATEST)
                 .take(1);
 
-        getStub.verifyQueryBehaviorForInteger(numberOfResultsObservable);
+        getStub.verifyQueryBehaviorForInteger(numberOfResultsFlowable);
     }
 
     @Test
@@ -115,19 +118,19 @@ public class PreparedGetNumberOfResultsTest {
     }
 
     @Test
-    public void shouldGetNumberOfResultsWithRawQueryAsObservable() {
+    public void shouldGetNumberOfResultsWithRawQueryAsFlowable() {
         final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
 
-        final Observable<Integer> numberOfResultsObservable = getStub.storIOSQLite
+        final Flowable<Integer> numberOfResultsFlowable = getStub.storIOSQLite
                 .get()
                 .numberOfResults()
                 .withQuery(getStub.rawQuery)
                 .withGetResolver(getStub.getResolverForNumberOfResults)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(LATEST)
                 .take(1);
 
-        getStub.verifyRawQueryBehaviorForInteger(numberOfResultsObservable);
+        getStub.verifyRawQueryBehaviorForInteger(numberOfResultsFlowable);
     }
 
     @Test
@@ -170,10 +173,10 @@ public class PreparedGetNumberOfResultsTest {
     }
 
     @Test
-    public void shouldWrapExceptionIntoStorIOExceptionForObservable() {
+    public void shouldWrapExceptionIntoStorIOExceptionForFlowable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
 
-        when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
+        when(storIOSQLite.observeChanges(any(BackpressureStrategy.class))).thenReturn(Flowable.<Changes>empty());
 
         //noinspection unchecked
         final GetResolver<Integer> getResolver = mock(GetResolver.class);
@@ -187,18 +190,18 @@ public class PreparedGetNumberOfResultsTest {
                 .withQuery(Query.builder().table("test_table").observesTags("test_tag").build())
                 .withGetResolver(getResolver)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(LATEST)
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(60, SECONDS);
         testSubscriber.assertError(StorIOException.class);
 
-        assertThat(testSubscriber.getOnErrorEvents()).hasSize(1);
-        StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        assertThat(testSubscriber.errorCount()).isEqualTo(1);
+        StorIOException storIOException = (StorIOException) testSubscriber.errors().get(0);
         IllegalStateException cause = (IllegalStateException) storIOException.getCause();
         assertThat(cause).hasMessage("test exception");
 
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -211,20 +214,20 @@ public class PreparedGetNumberOfResultsTest {
         when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
                 .thenThrow(new IllegalStateException("test exception"));
 
-        final TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
+        final TestObserver<Integer> testObserver = new TestObserver<Integer>();
 
         new PreparedGetNumberOfResults.Builder(storIOSQLite)
                 .withQuery(Query.builder().table("test_table").build())
                 .withGetResolver(getResolver)
                 .prepare()
                 .asRxSingle()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent(60, SECONDS);
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent(60, SECONDS);
+        testObserver.assertError(StorIOException.class);
 
-        assertThat(testSubscriber.getOnErrorEvents()).hasSize(1);
-        StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        assertThat(testObserver.errorCount()).isEqualTo(1);
+        StorIOException storIOException = (StorIOException) testObserver.errors().get(0);
         IllegalStateException cause = (IllegalStateException) storIOException.getCause();
         assertThat(cause).hasMessage("test exception");
     }
@@ -260,14 +263,14 @@ public class PreparedGetNumberOfResultsTest {
     }
 
     @Test
-    public void asRxObservableShouldThrowExceptionIfNoQueryWasSet() {
+    public void asRxFlowableShouldThrowExceptionIfNoQueryWasSet() {
         //noinspection unchecked,ConstantConditions
         PreparedGetNumberOfResults preparedGetNumberOfResults
                 = new PreparedGetNumberOfResults(mock(StorIOSQLite.class), (Query) null, (GetResolver<Integer>) mock(GetResolver.class));
 
         try {
             //noinspection CheckResult
-            preparedGetNumberOfResults.asRxObservable();
+            preparedGetNumberOfResults.asRxFlowable(LATEST);
             failBecauseExceptionWasNotThrown(StorIOException.class);
         } catch (StorIOException expected) {
             assertThat(expected).hasMessage("Please specify query");
@@ -288,7 +291,7 @@ public class PreparedGetNumberOfResultsTest {
     }
 
     @Test
-    public void getNumberOfResultsObservableExecutesOnSpecifiedScheduler() {
+    public void getNumberOfResultsFlowableExecutesOnSpecifiedScheduler() {
         final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
         final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
 
@@ -299,7 +302,7 @@ public class PreparedGetNumberOfResultsTest {
                 .withGetResolver(getStub.getResolverForNumberOfResults)
                 .prepare();
 
-        schedulerChecker.checkAsObservable(operation);
+        schedulerChecker.checkAsFlowable(operation);
     }
 
     @Test

@@ -37,7 +37,7 @@ public interface PreparedOperation<Result, Data> {
      */
     @NonNull
     @CheckResult
-    Flowable<Result> asRxFlowable(BackpressureStrategy backpressureStrategy);
+    Flowable<Result> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy);
 
     /**
      * Creates {@link io.reactivex.Single} that emits result of Operation lazily when somebody subscribes to it.

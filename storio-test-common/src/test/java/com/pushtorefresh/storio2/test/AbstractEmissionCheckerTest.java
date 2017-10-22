@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import org.junit.Test;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -13,7 +14,6 @@ import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -274,6 +274,8 @@ public class AbstractEmissionCheckerTest {
 
     @Test
     public void shouldThrowExceptionBecauseFlowableEmittedUnexpectedItemAfterExpectedSequence() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+
         final Queue<String> expectedValues = new LinkedList<String>();
 
         expectedValues.add("1");
@@ -308,14 +310,14 @@ public class AbstractEmissionCheckerTest {
 
         emissionChecker.assertThatNoExpectedValuesLeft();
 
-        try {
-            publishProcessor.onNext("4");
-            failBecauseExceptionWasNotThrown(OnErrorNotImplementedException.class);
-        } catch (OnErrorNotImplementedException expected) {
-            assertThat(expected.getCause())
-                    .hasMessage("Received emission, but no more emissions were expected: obtained 4, expectedValues = [], obtainedValues = []");
-        } finally {
-            disposable.dispose();
-        }
+        assertThat(errors).isEmpty();
+
+        publishProcessor.onNext("4");
+
+        assertThat(errors).hasSize(1);
+        assertThat(errors.get(0).getCause())
+                .hasMessage("Received emission, but no more emissions were expected: obtained 4, expectedValues = [], obtainedValues = []");
+
+        disposable.dispose();
     }
 }

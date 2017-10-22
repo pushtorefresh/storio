@@ -15,8 +15,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -123,7 +124,7 @@ public class LoggingInterceptorTest {
 
         @NonNull
         @Override
-        public Observable<String> asRxObservable() {
+        public Flowable<String> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
             throw new NotImplementedException();
         }
 
