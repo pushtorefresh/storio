@@ -8,10 +8,7 @@ import com.pushtorefresh.storio2.common.annotations.processor.introspection.Java
 import com.pushtorefresh.storio2.sqlite.annotations.StorIOSQLiteColumn
 import com.pushtorefresh.storio2.sqlite.annotations.StorIOSQLiteCreator
 import com.pushtorefresh.storio2.sqlite.annotations.StorIOSQLiteType
-import com.pushtorefresh.storio2.sqlite.annotations.processor.generate.DeleteResolverGenerator
-import com.pushtorefresh.storio2.sqlite.annotations.processor.generate.GetResolverGenerator
-import com.pushtorefresh.storio2.sqlite.annotations.processor.generate.MappingGenerator
-import com.pushtorefresh.storio2.sqlite.annotations.processor.generate.PutResolverGenerator
+import com.pushtorefresh.storio2.sqlite.annotations.processor.generate.*
 import com.pushtorefresh.storio2.sqlite.annotations.processor.introspection.StorIOSQLiteColumnMeta
 import com.pushtorefresh.storio2.sqlite.annotations.processor.introspection.StorIOSQLiteCreatorMeta
 import com.pushtorefresh.storio2.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta
@@ -217,4 +214,6 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
     override fun createDeleteResolver(): Generator<StorIOSQLiteTypeMeta> = DeleteResolverGenerator
 
     override fun createMapping(): Generator<StorIOSQLiteTypeMeta> = MappingGenerator
+
+    override fun createTableGenerator(): Generator<StorIOSQLiteTypeMeta> = TableGenerator
 }

@@ -259,4 +259,6 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
     override fun createDeleteResolver(): Generator<StorIOContentResolverTypeMeta> = DeleteResolverGenerator
 
     override fun createMapping(): Generator<StorIOContentResolverTypeMeta> = MappingGenerator
+
+    override fun createTableGenerator(): Generator<StorIOContentResolverTypeMeta>? = null
 }

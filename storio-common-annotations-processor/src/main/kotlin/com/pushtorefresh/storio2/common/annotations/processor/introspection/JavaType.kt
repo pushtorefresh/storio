@@ -51,4 +51,22 @@ enum class JavaType {
             }
         }
     }
+
+    val sqliteType: String
+        get() = when (this) {
+            BOOLEAN,
+            BOOLEAN_OBJECT,
+            SHORT,
+            SHORT_OBJECT,
+            INTEGER,
+            INTEGER_OBJECT,
+            LONG,
+            LONG_OBJECT -> "INTEGER"
+            FLOAT,
+            FLOAT_OBJECT,
+            DOUBLE,
+            DOUBLE_OBJECT -> "REAL"
+            STRING -> "TEXT"
+            BYTE_ARRAY -> "BLOB"
+        }
 }

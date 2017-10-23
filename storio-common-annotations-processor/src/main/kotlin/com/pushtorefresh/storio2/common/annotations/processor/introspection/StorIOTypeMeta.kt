@@ -2,7 +2,7 @@ package com.pushtorefresh.storio2.common.annotations.processor.introspection
 
 import javax.lang.model.element.ExecutableElement
 
-open class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOColumnMeta<*>>
+abstract class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOColumnMeta<*>>
 @JvmOverloads constructor(
         val simpleName: String,
         val packageName: String,
@@ -22,7 +22,7 @@ open class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOCo
                     it.parameters.mapTo(params) { it.simpleName.toString() }
                 }
                 val orderedColumns = mutableListOf<ColumnMeta?>().apply {
-                    (0..columns.size - 1).forEach { add(null) }
+                    (0 until columns.size).forEach { add(null) }
                 }
                 columns.values.forEach { orderedColumns[params.indexOf(it.realElementName)] = it }
                 orderedColumns.map { it as ColumnMeta }
@@ -43,6 +43,8 @@ open class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOCo
 
         return true
     }
+
+    abstract val generateTableClass: Boolean
 
     override fun hashCode(): Int {
         var result = simpleName.hashCode()
