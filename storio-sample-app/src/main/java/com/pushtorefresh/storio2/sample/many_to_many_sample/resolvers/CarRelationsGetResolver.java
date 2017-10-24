@@ -33,10 +33,10 @@ public class CarRelationsGetResolver  extends CarStorIOSQLiteGetResolver {
                 .listOfObjects(Person.class)
                 .withQuery(RawQuery.builder()
                         .query("SELECT "
-                                + PersonTable.TABLE + ".*"
-                                + " FROM " + PersonTable.TABLE
+                                + PersonTable.NAME + ".*"
+                                + " FROM " + PersonTable.NAME
                                 + " JOIN " + PersonCarRelationTable.TABLE
-                                + " ON " + PersonTable.COLUMN_ID + " = " + PersonCarRelationTable.COLUMN_PERSON_ID
+                                + " ON " + PersonTable.ID_COLUMN + " = " + PersonCarRelationTable.COLUMN_PERSON_ID
                                 + " AND " + PersonCarRelationTable.COLUMN_CAR_ID + " = ?")
                         .args(car.id())
                         .build())

@@ -2,7 +2,7 @@ package com.pushtorefresh.storio2.sqlite.annotations.processor.generate
 
 import com.pushtorefresh.storio2.common.annotations.processor.generate.Common.INDENT
 import com.pushtorefresh.storio2.common.annotations.processor.generate.Generator
-import com.pushtorefresh.storio2.common.annotations.processor.toUpperCaseSnakeCase
+import com.pushtorefresh.storio2.common.annotations.processor.toUpperSnakeCase
 import com.pushtorefresh.storio2.sqlite.annotations.processor.introspection.StorIOSQLiteColumnMeta
 import com.pushtorefresh.storio2.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta
 import com.squareup.javapoet.*
@@ -39,7 +39,7 @@ object TableGenerator : Generator<StorIOSQLiteTypeMeta> {
                 .build()
 
         columns.forEach { column ->
-            list += FieldSpec.builder(String::class.java, "${column.elementName.toUpperCaseSnakeCase()}_COLUMN")
+            list += FieldSpec.builder(String::class.java, "${column.elementName.toUpperSnakeCase()}_COLUMN")
                     .initializer("\$S", column.storIOColumn.name)
                     .addModifiers(PUBLIC, STATIC, FINAL)
                     .build()
@@ -57,7 +57,7 @@ object TableGenerator : Generator<StorIOSQLiteTypeMeta> {
             builder.append("${column.storIOColumn.name} ${column.javaType.sqliteType}")
             if (column.isNotNull()) builder.append(" NOT NULL")
             if (column.storIOColumn.key) builder.append(" PRIMARY KEY")
-            if (index != columns.size - 1) builder.append(".\n")
+            if (index != columns.size - 1) builder.append(",\n")
         }
 
         builder.append(");")
@@ -81,7 +81,7 @@ object TableGenerator : Generator<StorIOSQLiteTypeMeta> {
 
         columnsToUpdate.forEach { column ->
             builder.beginControlFlow("if ($OLD_VERSION_PARAM < ${column.storIOColumn.version})")
-            builder.addCode("$DB_PARAM.execSQL(ALTER TABLE $table ADD COLUMN ${column.storIOColumn.name} ${column.javaType.sqliteType}) ${if (column.isNotNull()) "NOT NULL" else ""});")
+            builder.addCode("$DB_PARAM.execSQL(\$S);\n", "ALTER TABLE $table ADD COLUMN ${column.storIOColumn.name} ${column.javaType.sqliteType}${if (column.isNotNull()) " NOT NULL" else ""}")
             builder.endControlFlow()
         }
 

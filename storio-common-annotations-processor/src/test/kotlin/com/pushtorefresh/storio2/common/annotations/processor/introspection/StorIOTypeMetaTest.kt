@@ -74,4 +74,8 @@ class StorIOTestTypeMeta(simpleName: String,
         simpleName,
         packageName,
         storIOType,
-        needCreator)
+        needCreator) {
+
+    override val generateTableClass: Boolean
+        get() = false
+}

@@ -13,11 +13,11 @@ public class DbOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(@NonNull SQLiteDatabase db) {
-        db.execSQL(TweetsTable.getCreateTableQuery());
+        TweetTable.createTable(db);
     }
 
     @Override
     public void onUpgrade(@NonNull SQLiteDatabase db, int oldVersion, int newVersion) {
-        // no impl
+        TweetTable.updateTable(db, oldVersion);
     }
 }
