@@ -221,12 +221,14 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
             val getResolverGenerator = createGetResolver()
             val deleteResolverGenerator = createDeleteResolver()
             val mappingGenerator = createMapping()
+            val tableGenerator = createTableGenerator()
 
             annotatedClasses.values.forEach {
                 putResolverGenerator.generateJavaFile(it).writeTo(filer)
                 getResolverGenerator.generateJavaFile(it).writeTo(filer)
                 deleteResolverGenerator.generateJavaFile(it).writeTo(filer)
                 mappingGenerator.generateJavaFile(it).writeTo(filer)
+                if (it.generateTableClass) tableGenerator?.generateJavaFile(it)?.writeTo(filer)
             }
         } catch (e: ProcessingException) {
             messager.printMessage(ERROR, e.message, e.element)
@@ -290,4 +292,6 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
     protected abstract fun createDeleteResolver(): Generator<TypeMeta>
 
     protected abstract fun createMapping(): Generator<TypeMeta>
+
+    protected abstract fun createTableGenerator(): Generator<TypeMeta>?
 }

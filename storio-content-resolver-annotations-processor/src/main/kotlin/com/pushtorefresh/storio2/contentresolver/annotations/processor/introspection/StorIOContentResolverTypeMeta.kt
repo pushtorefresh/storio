@@ -12,4 +12,8 @@ class StorIOContentResolverTypeMeta(
         simpleName,
         packageName,
         storIOType,
-        needsCreator)
+        needsCreator) {
+
+    override val generateTableClass: Boolean
+        get() = false
+}

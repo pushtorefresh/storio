@@ -1,14 +1,14 @@
 package com.pushtorefresh.storio2.sqlite.annotations.processor.test;
 
-import com.google.testing.compile.JavaFileObjects;
-import com.pushtorefresh.storio2.sqlite.annotations.processor.StorIOSQLiteProcessor;
-
-import org.junit.Test;
-
-import javax.tools.JavaFileObject;
-
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
+import static javax.tools.StandardLocation.SOURCE_OUTPUT;
+import static javax.tools.StandardLocation.SOURCE_PATH;
+
+import com.google.testing.compile.JavaFileObjects;
+import com.pushtorefresh.storio2.sqlite.annotations.processor.StorIOSQLiteProcessor;
+import javax.tools.JavaFileObject;
+import org.junit.Test;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class StorIOSQLiteAnnotationsProcessorTest {
@@ -577,5 +577,32 @@ public class StorIOSQLiteAnnotationsProcessorTest {
                 .processedWith(new StorIOSQLiteProcessor())
                 .failsToCompile()
                 .withErrorContaining("Class marked with StorIOSQLiteType annotation needs factory method or constructor marked with StorIOSQLiteCreator annotation: PrivateFieldsWithoutCreator");
+    }
+
+    @Test
+    public void shouldGenerateTableClass() {
+        JavaFileObject model = JavaFileObjects.forResource("WithGeneratedTable.java");
+
+        JavaFileObject generatedTableClass = JavaFileObjects.forResource("WithGeneratedTableTable.java");
+
+        assert_().about(javaSource())
+            .that(model)
+            .processedWith(new StorIOSQLiteProcessor())
+            .compilesWithoutError()
+            .and()
+            .generatesSources(generatedTableClass);
+    }
+
+    // ¯\_(ツ)_/¯
+    @Test(expected = AssertionError.class)
+    public void shouldNotGenerateTableClassIfDisabled() {
+        JavaFileObject model = JavaFileObjects.forResource("WithoutGeneratedTable.java");
+
+        assert_().about(javaSource())
+            .that(model)
+            .processedWith(new StorIOSQLiteProcessor())
+            .compilesWithoutError()
+            .and()
+            .generatesFileNamed(SOURCE_OUTPUT, "com.pushtorefresh.storio2.sqlite.annotations", "WithoutGeneratedTableTable.java");
     }
 }

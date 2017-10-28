@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             List<Tweet> receivedTweets = storIOSQLite
                 .get()
                 .listOfObjects(Tweet.class)
-                .withQuery(TweetsTable.QUERY_ALL)
+                .withQuery(TweetQueries.QUERY_ALL)
                 .prepare()
                 .executeAsBlocking();
 

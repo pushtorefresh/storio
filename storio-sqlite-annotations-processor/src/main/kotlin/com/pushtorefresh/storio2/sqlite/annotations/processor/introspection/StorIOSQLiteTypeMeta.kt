@@ -12,4 +12,8 @@ class StorIOSQLiteTypeMeta(
         simpleName,
         packageName,
         storIOType,
-        needsCreator)
+        needsCreator) {
+
+    override val generateTableClass: Boolean
+        get() = storIOType.generateTableClass
+}

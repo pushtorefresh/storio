@@ -10,7 +10,7 @@ import com.pushtorefresh.storio2.sqlite.annotations.StorIOSQLiteType;
 // This annotation will trigger annotation processor
 // Which will generate type mapping code in compile time,
 // You just need to link it in your code.
-@StorIOSQLiteType(table = UsersTable.TABLE)
+@StorIOSQLiteType(table = UsersTable.TABLE, generateTableClass = false)
 public class User {
 
     /**

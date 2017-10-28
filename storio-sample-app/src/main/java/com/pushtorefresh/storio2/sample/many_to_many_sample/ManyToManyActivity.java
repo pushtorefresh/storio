@@ -83,8 +83,8 @@ public class ManyToManyActivity extends BaseActivity implements PersonsAdapter.C
     @NonNull
     Subscription subscribeToPersonsAndCars() {
         Set<String> tables = new HashSet<String>(3);
-        tables.add(PersonTable.TABLE);
-        tables.add(CarTable.TABLE);
+        tables.add(PersonTable.NAME);
+        tables.add(CarTable.NAME);
         tables.add(PersonCarRelationTable.TABLE);
         return Observable.merge(
                 storIOSQLite.observeChangesInTables(tables),
@@ -95,7 +95,7 @@ public class ManyToManyActivity extends BaseActivity implements PersonsAdapter.C
                     public List<Person> call(Changes changes) {
                         return storIOSQLite.get()
                                 .listOfObjects(Person.class)
-                                .withQuery(Query.builder().table(PersonTable.TABLE).build())
+                                .withQuery(Query.builder().table(PersonTable.NAME).build())
                                 .prepare()
                                 .executeAsBlocking();
                     }

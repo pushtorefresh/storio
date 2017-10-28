@@ -16,7 +16,7 @@ import com.pushtorefresh.storio2.sqlite.annotations.StorIOSQLiteType;
 // This annotation will trigger annotation processor
 // Which will generate type mapping code in compile time,
 // You just need to link it in your code.
-@StorIOSQLiteType(table = TweetsTable.TABLE)
+@StorIOSQLiteType(table = TweetsTable.TABLE, generateTableClass = false)
 @StorIOContentResolverType(uri = TweetMeta.URI_STRING)
 public class Tweet {
 

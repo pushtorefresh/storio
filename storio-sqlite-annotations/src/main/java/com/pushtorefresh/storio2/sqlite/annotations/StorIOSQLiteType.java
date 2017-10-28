@@ -13,10 +13,17 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME) // we allow users to write reflection based code to work with annotation
 public @interface StorIOSQLiteType {
 
-    /**
-     * Required: Specifies table name
-     *
-     * @return table name
-     */
-    String table();
+  /**
+   * Required: Specifies table name
+   *
+   * @return table name
+   */
+  String table();
+
+  /**
+   * Flag to opt out from generating table class based on field annotations.
+   *
+   * @return flag that shows if table class should be generated or not.
+   */
+  boolean generateTableClass() default true;
 }

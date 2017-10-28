@@ -8,14 +8,14 @@ import com.pushtorefresh.storio2.sqlite.annotations.StorIOSQLiteType;
 
 import java.util.List;
 
-@StorIOSQLiteType(table = PersonTable.TABLE)
+@StorIOSQLiteType(table = "persons")
 public class Person {
 
-    @StorIOSQLiteColumn(key = true, name = PersonTable.COLUMN_ID)
+    @StorIOSQLiteColumn(key = true, name = "_person_id")
     @Nullable
     Long id;
 
-    @StorIOSQLiteColumn(name = PersonTable.COLUMN_NAME)
+    @StorIOSQLiteColumn(name = "name")
     @NonNull
     String name;
 
