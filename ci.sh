@@ -56,5 +56,5 @@ else
     echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust;
     echo 'GPG ownertrust imported successfully.'
 
-    ./gradlew clean uploadArchives getStagingProfile --info -Psigning.keyId="$GPG_KEY_ID" -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile="$HOME/.gnupg/secring.gpg"
+    ./gradlew clean uploadArchives closeAndReleaseRepository -Psigning.keyId="$GPG_KEY_ID" -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile="$HOME/.gnupg/secring.gpg"
 fi
