@@ -29,8 +29,32 @@ else
         exit 1
     fi
 
-    echo $GPG_SECRET_KEYS | base64 --decode | gpg --import;
-    echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust;
+    if [ -z "$GPG_KEY_ID" ]; then
+        echo "Put GPG key id into GPG_KEY_ID env variable."
+        exit 1
+    fi
 
-    ./gradlew clean uploadArchives closeAndReleaseRepository --info
+    if [ -z "$GPG_PASSPHRASE" ]; then
+        echo "Put GPG passphrase into GPG_PASSPHRASE env variable."
+        exit 1
+    fi
+
+    set +e
+    echo "$GPG_SECRET_KEYS" | base64 --decode | gpg --import
+    gpg_import_result=$?
+    set -e
+
+    # Code '2' means that keys were already in local keychain.
+    if [ "$gpg_import_result" == "0" ] || [ "$gpg_import_result" == "2" ]; then
+        echo "GPG keys imported successfully."
+    else
+        echo "Failed to import GPG keys."
+        exit 1
+    fi
+
+    echo 'Importing GPG ownertrust...'
+    echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust;
+    echo 'GPG ownertrust imported successfully.'
+
+    ./gradlew clean uploadArchives getStagingProfile --info -Psigning.keyId="$GPG_KEY_ID" -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile="$HOME/.gnupg/secring.gpg"
 fi
