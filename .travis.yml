@@ -10,7 +10,7 @@ before_install:
   - pip install --user codecov
   - export ANDROID_HOME="$HOME"/android-sdk
   - mkdir -p "$ANDROID_HOME"
-  - export ANDROID_SDK_FILE_NAME=sdk-tools-darwin-3859397.zip
+  - export ANDROID_SDK_FILE_NAME=sdk-tools-linux-3859397.zip
   - curl --fail https://dl.google.com/android/repository/$ANDROID_SDK_FILE_NAME --silent --location --output $ANDROID_SDK_FILE_NAME
   - unzip -qq $ANDROID_SDK_FILE_NAME -d "$ANDROID_HOME"
   - rm $ANDROID_SDK_FILE_NAME
