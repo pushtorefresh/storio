@@ -209,10 +209,6 @@ def isValidReleaseState() {
     }
 }
 
-allprojects {
-    ext.'signing.password' = System.getenv('GPG_PASSPHRASE')
-}
-
 ext.VERSION_NAME = projectVersion()
 
 def getReleaseRepositoryUrl() {
