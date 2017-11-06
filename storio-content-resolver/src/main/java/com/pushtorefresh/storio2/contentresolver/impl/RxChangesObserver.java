@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.contentresolver.Changes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
@@ -66,6 +68,8 @@ final class RxChangesObserver {
                         }
                     });
                 } else {
+                    final List<ContentObserver> contentObservers = new ArrayList<ContentObserver>(uris.size());
+
                     // Register separate ContentObserver for each uri on API < 16
                     for (final Uri uri : uris) {
                         final ContentObserver contentObserver = new ContentObserver(handler) {
@@ -81,13 +85,20 @@ final class RxChangesObserver {
                         };
 
                         contentResolver.registerContentObserver(uri, true, contentObserver);
+                        contentObservers.add(contentObserver);
+                    }
+
+                    if (!contentObservers.isEmpty()) {
                         emitter.setCancellable(new Cancellable() {
                             @Override
                             public void cancel() throws Exception {
-                                contentResolver.unregisterContentObserver(contentObserver);
+                                for (ContentObserver contentObserver : contentObservers) {
+                                    contentResolver.unregisterContentObserver(contentObserver);
+                                }
                             }
                         });
                     }
+
                 }
             }
         }, backpressureStrategy);

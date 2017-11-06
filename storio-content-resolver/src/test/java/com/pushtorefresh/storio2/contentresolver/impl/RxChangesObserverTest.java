@@ -11,7 +11,6 @@ import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker;
 import com.pushtorefresh.storio2.contentresolver.BuildConfig;
 import com.pushtorefresh.storio2.contentresolver.Changes;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -40,6 +39,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -206,7 +206,6 @@ public class RxChangesObserverTest {
         }
     }
 
-    @Ignore("TODO: fixme")
     @Test
     public void shouldUnregisterContentObserversForEachUriAfterUnsubscribingFromFlowableOnSdkVersionLowerThan16() {
         for (int sdkVersion = MIN_SDK_VERSION; sdkVersion < 16; sdkVersion++) {
@@ -237,7 +236,7 @@ public class RxChangesObserverTest {
                     .subscribe();
 
             // Should not unregister before dispose from Disposable
-            verify(contentResolver, times(0)).unregisterContentObserver(any(ContentObserver.class));
+            verify(contentResolver, never()).unregisterContentObserver(any(ContentObserver.class));
 
             disposable.dispose();
 
