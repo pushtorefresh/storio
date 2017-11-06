@@ -2,12 +2,22 @@ package com.pushtorefresh.storio2.sqlite.operations.internal;
 
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 import com.pushtorefresh.storio2.operations.internal.CompletableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
+import com.pushtorefresh.storio2.sqlite.impl.ChangesFilter;
+import com.pushtorefresh.storio2.sqlite.queries.GetQuery;
+import com.pushtorefresh.storio2.sqlite.queries.Query;
+import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
+
+import java.util.Collections;
+import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Completable;
@@ -36,6 +46,43 @@ public final class RxJavaUtils {
                 storIOSQLite,
                 Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<T, Data>(operation), backpressureStrategy)
         );
+    }
+
+    @CheckResult
+    @NonNull
+    public static <T> Flowable<T> createGetFlowable(
+            @NonNull StorIOSQLite storIOSQLite,
+            @NonNull PreparedOperation<T, GetQuery> operation,
+            @Nullable Query query,
+            @Nullable RawQuery rawQuery,
+            @NonNull BackpressureStrategy backpressureStrategy
+    ) {
+        throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
+
+        final Set<String> tables;
+        final Set<String> tags;
+
+        if (query != null) {
+            tables = Collections.singleton(query.table());
+            tags = query.observesTags();
+        } else if (rawQuery != null) {
+            tables = rawQuery.observesTables();
+            tags = rawQuery.observesTags();
+        } else {
+            throw new IllegalStateException("Please specify query");
+        }
+
+        final Flowable<T> flowable;
+
+        if (!tables.isEmpty() || !tags.isEmpty()) {
+            flowable = ChangesFilter.applyForTablesAndTags(storIOSQLite.observeChanges(backpressureStrategy), tables, tags)
+                    .map(new MapSomethingToExecuteAsBlocking<Changes, T, GetQuery>(operation))  // each change triggers executeAsBlocking
+                    .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<T, GetQuery>(operation), backpressureStrategy)); // start stream with first query result
+        } else {
+            flowable = Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<T, GetQuery>(operation), backpressureStrategy);
+        }
+
+        return RxJavaUtils.subscribeOn(storIOSQLite, flowable);
     }
 
     @CheckResult

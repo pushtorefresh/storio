@@ -272,7 +272,7 @@ public class PreparedGetNumberOfResultsTest {
             //noinspection CheckResult
             preparedGetNumberOfResults.asRxFlowable(LATEST);
             failBecauseExceptionWasNotThrown(StorIOException.class);
-        } catch (StorIOException expected) {
+        } catch (IllegalStateException expected) {
             assertThat(expected).hasMessage("Please specify query");
         }
     }

@@ -9,12 +9,12 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 public class EnvironmentTest {
 
     @Test
-    public void noRxJavaInClassPath() {
-        assertThat(Environment.RX_JAVA_IS_IN_THE_CLASS_PATH).isFalse();
+    public void noRxJava2InClassPath() {
+        assertThat(Environment.RX_JAVA_2_IS_IN_THE_CLASS_PATH).isFalse();
     }
 
     @Test(expected = ClassNotFoundException.class)
-    public void rxJavaIsReallyNotInClassPath() throws ClassNotFoundException {
-        Class.forName("rx.Observable");
+    public void rxJava2IsReallyNotInClassPath() throws ClassNotFoundException {
+        Class.forName("io.reactivex.Observable");
     }
 }

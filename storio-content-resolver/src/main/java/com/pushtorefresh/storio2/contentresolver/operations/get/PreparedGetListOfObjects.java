@@ -7,13 +7,10 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio2.StorIOException;
-import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
-import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
-import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +20,6 @@ import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
-import static com.pushtorefresh.storio2.internal.Environment.throwExceptionIfRxJava2IsNotAvailable;
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.unmodifiableList;
 
@@ -129,14 +125,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
     @CheckResult
     @Override
     public Flowable<List<T>> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
-        throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
-
-        final Flowable<List<T>> observable = storIOContentResolver
-                .observeChangesOfUri(query.uri(), backpressureStrategy) // each change triggers executeAsBlocking
-                .map(new MapSomethingToExecuteAsBlocking<Changes, List<T>, Query>(this))
-                .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<List<T>, Query>(this), backpressureStrategy)); // start stream with first query result
-
-        return RxJavaUtils.subscribeOn(storIOContentResolver, observable);
+        return RxJavaUtils.createGetFlowable(storIOContentResolver, this, query, backpressureStrategy);
     }
 
     /**

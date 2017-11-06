@@ -283,7 +283,7 @@ public class PreparedGetCursorTest {
             //noinspection ResourceType
             preparedGetCursor.asRxFlowable(LATEST);
             failBecauseExceptionWasNotThrown(StorIOException.class);
-        } catch (StorIOException expected) {
+        } catch (IllegalStateException expected) {
             assertThat(expected).hasMessage("Please specify query");
         }
     }

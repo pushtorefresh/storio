@@ -7,26 +7,17 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio2.StorIOException;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
-import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
-import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
-import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.Interceptor;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio2.sqlite.impl.ChangesFilter;
 import com.pushtorefresh.storio2.sqlite.operations.internal.RxJavaUtils;
-import com.pushtorefresh.storio2.sqlite.queries.GetQuery;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
-
-import java.util.Collections;
-import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
-import static com.pushtorefresh.storio2.internal.Environment.throwExceptionIfRxJava2IsNotAvailable;
 
 /**
  * Prepared Get Operation for {@link StorIOSQLite}.
@@ -72,32 +63,7 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     @CheckResult
     @Override
     public Flowable<Cursor> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
-        throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
-
-        final Set<String> tables;
-        final Set<String> tags;
-
-        if (query != null) {
-            tables = Collections.singleton(query.table());
-            tags = query.observesTags();
-        } else if (rawQuery != null) {
-            tables = rawQuery.observesTables();
-            tags = rawQuery.observesTags();
-        } else {
-            throw new StorIOException("Please specify query");
-        }
-
-        final Flowable<Cursor> flowable;
-
-        if (!tables.isEmpty() || !tags.isEmpty()) {
-            flowable = ChangesFilter.applyForTablesAndTags(storIOSQLite.observeChanges(backpressureStrategy), tables, tags)
-                    .map(new MapSomethingToExecuteAsBlocking<Changes, Cursor, GetQuery>(this))  // each change triggers executeAsBlocking
-                    .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<Cursor, GetQuery>(this), backpressureStrategy)); // start stream with first query result
-        } else {
-            flowable = Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<Cursor, GetQuery>(this), backpressureStrategy);
-        }
-
-        return RxJavaUtils.subscribeOn(storIOSQLite, flowable);
+        return RxJavaUtils.createGetFlowable(storIOSQLite, this, query, rawQuery, backpressureStrategy);
     }
 
     /**

@@ -3,10 +3,13 @@ package com.pushtorefresh.storio2.contentresolver.operations.internal;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio2.contentresolver.queries.Query;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 import com.pushtorefresh.storio2.operations.internal.CompletableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlocking;
 
 import io.reactivex.BackpressureStrategy;
@@ -42,6 +45,26 @@ public class RxJavaUtils {
         );
     }
 
+    @CheckResult
+    @NonNull
+    public static <T> Flowable<T> createGetFlowable(
+            @NonNull StorIOContentResolver storIOContentResolver,
+            @NonNull PreparedOperation<T, Query> operation,
+            @NonNull Query query,
+            @NonNull BackpressureStrategy backpressureStrategy
+    ) {
+        throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
+
+        final Flowable<T> flowable = storIOContentResolver
+                .observeChangesOfUri(query.uri(), backpressureStrategy) // each change triggers executeAsBlocking
+                .map(new MapSomethingToExecuteAsBlocking<Changes, T, Query>(operation))
+                .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<T, Query>(operation), backpressureStrategy)); // start stream with first query result
+
+        return subscribeOn(
+                storIOContentResolver,
+                flowable
+        );
+    }
 
     @CheckResult
     @NonNull
