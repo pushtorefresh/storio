@@ -388,12 +388,12 @@ public class RxQueryTest extends BaseTest {
                 .prepare()
                 .asRxSingle();
 
-        TestObserver<Integer> TestObserver = new TestObserver<Integer>();
-        usersSingle.subscribe(TestObserver);
+        TestObserver<Integer> testObserver = new TestObserver<Integer>();
+        usersSingle.subscribe(testObserver);
 
-        TestObserver.awaitTerminalEvent(5, SECONDS);
-        TestObserver.assertNoErrors();
-        TestObserver.assertValue(users.size());
-        TestObserver.assertComplete();
+        testObserver.awaitTerminalEvent(5, SECONDS);
+        testObserver.assertNoErrors();
+        testObserver.assertValue(users.size());
+        testObserver.assertComplete();
     }
 }
