@@ -227,7 +227,7 @@ public final class InsertQuery {
          * @param tags optional set of tags which will be affected by this query.
          * @return builder.
          * @see InsertQuery#affectsTags()
-         * @see com.pushtorefresh.storio2.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         * @see com.pushtorefresh.storio2.sqlite.StorIOSQLite#observeChangesOfTag(String, io.reactivex.BackpressureStrategy)
          */
         @NonNull
         public CompleteBuilder affectsTags(@NonNull String tag, @Nullable String... tags) {
@@ -242,7 +242,7 @@ public final class InsertQuery {
          * @param tags set of tags which will be affected by this query.
          * @return builder.
          * @see InsertQuery#affectsTags()
-         * @see com.pushtorefresh.storio2.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         * @see com.pushtorefresh.storio2.sqlite.StorIOSQLite#observeChangesOfTag(String, io.reactivex.BackpressureStrategy)
          */
         @NonNull
         public CompleteBuilder affectsTags(@Nullable Collection<String> tags) {
