@@ -39,8 +39,12 @@ final class RxChangesObserver {
         return Flowable.create(new FlowableOnSubscribe<Changes>() {
             @Override
             public void subscribe(@NonNull final FlowableEmitter<Changes> emitter) throws Exception {
-                // Use one ContentObserver for all passed Uris on API >= 16
+                if (uris.isEmpty()) {
+                    return;
+                }
+                    // Use one ContentObserver for all passed Uris on API >= 16
                 if (sdkVersion >= Build.VERSION_CODES.JELLY_BEAN) {
+
                     final ContentObserver contentObserver = new ContentObserver(handler) {
                         @Override
                         public boolean deliverSelfNotifications() {
@@ -88,17 +92,14 @@ final class RxChangesObserver {
                         contentObservers.add(contentObserver);
                     }
 
-                    if (!contentObservers.isEmpty()) {
-                        emitter.setCancellable(new Cancellable() {
-                            @Override
-                            public void cancel() throws Exception {
-                                for (ContentObserver contentObserver : contentObservers) {
-                                    contentResolver.unregisterContentObserver(contentObserver);
-                                }
+                    emitter.setCancellable(new Cancellable() {
+                        @Override
+                        public void cancel() throws Exception {
+                            for (ContentObserver contentObserver : contentObservers) {
+                                contentResolver.unregisterContentObserver(contentObserver);
                             }
-                        });
-                    }
-
+                        }
+                    });
                 }
             }
         }, backpressureStrategy);

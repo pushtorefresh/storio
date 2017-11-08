@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio2.contentresolver.impl;
 
 import android.content.ContentResolver;
+import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -20,18 +21,24 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.util.ReflectionHelpers;
 
 import java.lang.reflect.Field;
 
 import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static io.reactivex.BackpressureStrategy.LATEST;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -289,5 +296,29 @@ public class DefaultStorIOContentResolverTest {
                 .build();
 
         assertThat(storIOContentResolver.defaultRxScheduler()).isNull();
+    }
+
+    @Test
+    public void shouldUseCustomHandlerForContentObservers() {
+        ContentResolver contentResolver = mock(ContentResolver.class);
+        ArgumentCaptor<ContentObserver> observerArgumentCaptor = ArgumentCaptor.forClass(ContentObserver.class);
+        doNothing().when(contentResolver)
+                .registerContentObserver(any(Uri.class), anyBoolean(), observerArgumentCaptor.capture());
+        Handler handler = mock(Handler.class);
+
+        StorIOContentResolver storIOContentResolver = DefaultStorIOContentResolver.builder()
+                .contentResolver(contentResolver)
+                .contentObserverHandler(handler)
+                .defaultRxScheduler(null)
+                .build();
+
+        Disposable disposable = storIOContentResolver.observeChangesOfUri(mock(Uri.class), LATEST).subscribe();
+
+        assertThat(observerArgumentCaptor.getAllValues()).hasSize(1);
+        ContentObserver contentObserver = observerArgumentCaptor.getValue();
+        Object actualHandler = ReflectionHelpers.getField(contentObserver, "mHandler");
+        assertThat(actualHandler).isEqualTo(handler);
+
+        disposable.dispose();
     }
 }

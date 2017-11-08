@@ -18,6 +18,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -346,6 +347,27 @@ public class RxChangesObserverTest {
 
             testSubscriber.dispose();
             testSubscriber.assertNoErrors();
+        }
+    }
+
+    @Test
+    public void shouldDoNothingIfUriListEmpty() {
+        for (int sdkVersion = MIN_SDK_VERSION; sdkVersion < MAX_SDK_VERSION; sdkVersion++) {
+            ContentResolver contentResolver = mock(ContentResolver.class);
+            Disposable disposable = RxChangesObserver
+                    .observeChanges(
+                            contentResolver,
+                            Collections.<Uri>emptySet(),
+                            mock(Handler.class),
+                            sdkVersion,
+                            BackpressureStrategy.MISSING
+                    )
+                    .subscribe();
+
+            disposable.dispose();
+
+            verify(contentResolver, never()).registerContentObserver(any(Uri.class), anyBoolean(), any(ContentObserver.class));
+            verify(contentResolver, never()).unregisterContentObserver(any(ContentObserver.class));
         }
     }
 }
