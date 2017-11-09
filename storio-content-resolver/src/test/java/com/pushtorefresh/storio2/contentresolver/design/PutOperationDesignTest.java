@@ -17,9 +17,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static org.mockito.Mockito.mock;
 
@@ -62,15 +63,15 @@ public class PutOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void putObjectObservable() {
+    public void putObjectFlowable() {
         Article article = Article.newInstance(null, "test");
 
-        Observable<PutResult> putResultObservable = storIOContentResolver()
+        Flowable<PutResult> putResultFlowable = storIOContentResolver()
                 .put()
                 .object(article)
                 .withPutResolver(ArticleMeta.PUT_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(BackpressureStrategy.MISSING);
     }
 
     @Test
@@ -110,15 +111,15 @@ public class PutOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void putCollectionOfObjectsObservable() {
+    public void putCollectionOfObjectsFlowable() {
         Collection<Article> articles = new ArrayList<Article>();
 
-        Observable<PutResults<Article>> putResultsObservable = storIOContentResolver()
+        Flowable<PutResults<Article>> putResultsFlowable = storIOContentResolver()
                 .put()
                 .objects(articles)
                 .withPutResolver(ArticleMeta.PUT_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(BackpressureStrategy.MISSING);
     }
 
     @Test
@@ -158,15 +159,15 @@ public class PutOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void putContentValuesObservable() {
+    public void putContentValuesFlowable() {
         ContentValues contentValues = mock(ContentValues.class);
 
-        Observable<PutResult> putResultObservable = storIOContentResolver()
+        Flowable<PutResult> putResultFlowable = storIOContentResolver()
                 .put()
                 .contentValues(contentValues)
                 .withPutResolver(putResolverForContentValues)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(BackpressureStrategy.MISSING);
     }
 
     @Test
@@ -206,15 +207,15 @@ public class PutOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void putContentValuesIterableObservable() {
+    public void putContentValuesIterableFlowable() {
         List<ContentValues> contentValuesList = new ArrayList<ContentValues>();
 
-        Observable<PutResults<ContentValues>> putResultsObservable = storIOContentResolver()
+        Flowable<PutResults<ContentValues>> putResultsFlowable = storIOContentResolver()
                 .put()
                 .contentValues(contentValuesList)
                 .withPutResolver(putResolverForContentValues)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(BackpressureStrategy.MISSING);
     }
 
     @Test

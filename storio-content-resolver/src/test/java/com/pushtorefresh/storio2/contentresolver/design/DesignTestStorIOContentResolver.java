@@ -17,8 +17,9 @@ import com.pushtorefresh.storio2.contentresolver.queries.UpdateQuery;
 
 import java.util.Set;
 
-import rx.Observable;
-import rx.Scheduler;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 
 import static org.mockito.Mockito.mock;
 
@@ -29,13 +30,13 @@ class DesignTestStorIOContentResolver extends StorIOContentResolver {
 
     @NonNull
     @Override
-    public Observable<Changes> observeChangesOfUris(@NonNull Set<Uri> uris) {
-        return Observable.empty();
+    public Flowable<Changes> observeChangesOfUris(@NonNull Set<Uri> uris, @NonNull BackpressureStrategy backpressureStrategy) {
+        return Flowable.empty();
     }
 
     @Nullable
     @Override
-    public Scheduler defaultScheduler() {
+    public Scheduler defaultRxScheduler() {
         return null;
     }
 

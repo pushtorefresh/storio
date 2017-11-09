@@ -2,9 +2,9 @@ package com.pushtorefresh.storio2.internal;
 
 import android.support.annotation.NonNull;
 
-import rx.Observable;
-import rx.subjects.PublishSubject;
-import rx.subjects.Subject;
+import io.reactivex.Flowable;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
 
 /**
  * Hides RxJava from ClassLoader...
@@ -12,14 +12,14 @@ import rx.subjects.Subject;
 class RxChangesBus<T> {
 
     @NonNull
-    private final Subject<T, T> rxBus = PublishSubject.<T>create().toSerialized();
+    private final FlowableProcessor<T> rxBus = PublishProcessor.<T>create().toSerialized();
 
     public void onNext(@NonNull T next) {
         rxBus.onNext(next);
     }
 
     @NonNull
-    public Observable<T> asObservable() {
+    public Flowable<T> asFlowable() {
         return rxBus;
     }
 }

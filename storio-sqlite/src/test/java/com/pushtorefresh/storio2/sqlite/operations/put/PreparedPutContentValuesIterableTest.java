@@ -12,11 +12,13 @@ import org.junit.rules.ExpectedException;
 
 import java.util.List;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
+import static io.reactivex.BackpressureStrategy.MISSING;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -66,18 +68,18 @@ public class PreparedPutContentValuesIterableTest {
     }
 
     @Test
-    public void putMultipleObservableWithTransaction() {
+    public void putMultipleFlowableWithTransaction() {
         final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
 
-        final Observable<PutResults<ContentValues>> putResultsObservable = putStub.storIOSQLite
+        final Flowable<PutResults<ContentValues>> putResultsFlowable = putStub.storIOSQLite
                 .put()
                 .contentValues(putStub.contentValues)
                 .withPutResolver(putStub.putResolver)
                 .useTransaction(true)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(MISSING);
 
-        putStub.verifyBehaviorForMultipleContentValues(putResultsObservable);
+        putStub.verifyBehaviorForMultipleContentValues(putResultsFlowable);
     }
 
     @Test
@@ -126,18 +128,18 @@ public class PreparedPutContentValuesIterableTest {
     }
 
     @Test
-    public void putMultipleObservableWithoutTransaction() {
+    public void putMultipleFlowableWithoutTransaction() {
         final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(false);
 
-        final Observable<PutResults<ContentValues>> putResultsObservable = putStub.storIOSQLite
+        final Flowable<PutResults<ContentValues>> putResultsFlowable = putStub.storIOSQLite
                 .put()
                 .contentValues(putStub.contentValues)
                 .withPutResolver(putStub.putResolver)
                 .useTransaction(false)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(MISSING);
 
-        putStub.verifyBehaviorForMultipleContentValues(putResultsObservable);
+        putStub.verifyBehaviorForMultipleContentValues(putResultsFlowable);
     }
 
     @Test
@@ -210,7 +212,7 @@ public class PreparedPutContentValuesIterableTest {
     }
 
     @Test
-    public void shouldFinishTransactionIfExceptionHasOccurredObservable() {
+    public void shouldFinishTransactionIfExceptionHasOccurredFlowable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
@@ -230,7 +232,7 @@ public class PreparedPutContentValuesIterableTest {
                 .withPutResolver(putResolver)
                 .useTransaction(true)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
@@ -238,7 +240,7 @@ public class PreparedPutContentValuesIterableTest {
         testSubscriber.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testSubscriber.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
@@ -248,7 +250,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(lowLevel).endTransaction();
 
         verify(storIOSQLite).lowLevel();
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).defaultRxScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
@@ -269,21 +271,21 @@ public class PreparedPutContentValuesIterableTest {
         when(putResolver.performPut(same(storIOSQLite), any(ContentValues.class)))
                 .thenThrow(new IllegalStateException("test exception"));
 
-        final TestSubscriber<PutResults<ContentValues>> testSubscriber = new TestSubscriber<PutResults<ContentValues>>();
+        final TestObserver<PutResults<ContentValues>> testObserver = new TestObserver<PutResults<ContentValues>>();
 
         new PreparedPutContentValuesIterable.Builder(storIOSQLite, contentValues)
                 .withPutResolver(putResolver)
                 .useTransaction(true)
                 .prepare()
                 .asRxSingle()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
@@ -293,7 +295,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(lowLevel).endTransaction();
 
         verify(storIOSQLite).lowLevel();
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).defaultRxScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
@@ -314,21 +316,21 @@ public class PreparedPutContentValuesIterableTest {
         when(putResolver.performPut(same(storIOSQLite), any(ContentValues.class)))
                 .thenThrow(new IllegalStateException("test exception"));
 
-        final TestSubscriber<PutResults<ContentValues>> testSubscriber = new TestSubscriber<PutResults<ContentValues>>();
+        final TestObserver<PutResults<ContentValues>> testObserver = new TestObserver<PutResults<ContentValues>>();
 
         new PreparedPutContentValuesIterable.Builder(storIOSQLite, contentValues)
                 .withPutResolver(putResolver)
                 .useTransaction(true)
                 .prepare()
                 .asRxCompletable()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
@@ -338,7 +340,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(lowLevel).endTransaction();
 
         verify(storIOSQLite).lowLevel();
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).defaultRxScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
@@ -380,7 +382,7 @@ public class PreparedPutContentValuesIterableTest {
     }
 
     @Test
-    public void verifyBehaviorInCaseOfExceptionWithoutTransactionObservable() {
+    public void verifyBehaviorInCaseOfExceptionWithoutTransactionFlowable() {
         final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
         final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
@@ -398,7 +400,7 @@ public class PreparedPutContentValuesIterableTest {
                 .withPutResolver(putResolver)
                 .useTransaction(false)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
@@ -406,7 +408,7 @@ public class PreparedPutContentValuesIterableTest {
         testSubscriber.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testSubscriber.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
@@ -415,7 +417,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(lowLevel, never()).endTransaction();
 
         verify(storIOSQLite).lowLevel();
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).defaultRxScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
@@ -434,21 +436,21 @@ public class PreparedPutContentValuesIterableTest {
         when(putResolver.performPut(same(storIOSQLite), any(ContentValues.class)))
                 .thenThrow(new IllegalStateException("test exception"));
 
-        final TestSubscriber<PutResults<ContentValues>> testSubscriber = new TestSubscriber<PutResults<ContentValues>>();
+        final TestObserver<PutResults<ContentValues>> testObserver = new TestObserver<PutResults<ContentValues>>();
 
         new PreparedPutContentValuesIterable.Builder(storIOSQLite, contentValues)
                 .withPutResolver(putResolver)
                 .useTransaction(false)
                 .prepare()
                 .asRxSingle()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
@@ -457,7 +459,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(lowLevel, never()).endTransaction();
 
         verify(storIOSQLite).lowLevel();
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).defaultRxScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
@@ -476,21 +478,21 @@ public class PreparedPutContentValuesIterableTest {
         when(putResolver.performPut(same(storIOSQLite), any(ContentValues.class)))
                 .thenThrow(new IllegalStateException("test exception"));
 
-        final TestSubscriber<PutResults<ContentValues>> testSubscriber = new TestSubscriber<PutResults<ContentValues>>();
+        final TestObserver<PutResults<ContentValues>> testObserver = new TestObserver<PutResults<ContentValues>>();
 
         new PreparedPutContentValuesIterable.Builder(storIOSQLite, contentValues)
                 .withPutResolver(putResolver)
                 .useTransaction(false)
                 .prepare()
                 .asRxCompletable()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         IllegalStateException cause = (IllegalStateException) expected.getCause();
         assertThat(cause).hasMessage("test exception");
@@ -499,14 +501,14 @@ public class PreparedPutContentValuesIterableTest {
         verify(lowLevel, never()).endTransaction();
 
         verify(storIOSQLite).lowLevel();
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).defaultRxScheduler();
         verify(storIOSQLite).interceptors();
         verify(putResolver).performPut(same(storIOSQLite), any(ContentValues.class));
         verifyNoMoreInteractions(storIOSQLite, lowLevel, putResolver);
     }
 
     @Test
-    public void putMultipleObservableExecutesOnSpecifiedScheduler() {
+    public void putMultipleFlowableExecutesOnSpecifiedScheduler() {
         final PutContentValuesStub putStub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
         final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOSQLite);
 
@@ -516,7 +518,7 @@ public class PreparedPutContentValuesIterableTest {
                 .withPutResolver(putStub.putResolver)
                 .prepare();
 
-        schedulerChecker.checkAsObservable(operation);
+        schedulerChecker.checkAsFlowable(operation);
     }
 
     @Test
@@ -569,7 +571,7 @@ public class PreparedPutContentValuesIterableTest {
     }
 
     @Test
-    public void shouldWrapExceptionIntoStorIOExceptionObservable() {
+    public void shouldWrapExceptionIntoStorIOExceptionFlowable() {
         final PutContentValuesStub stub = PutContentValuesStub.newPutStubForMultipleContentValues(true);
 
         IllegalStateException testException = new IllegalStateException("test exception");
@@ -582,7 +584,7 @@ public class PreparedPutContentValuesIterableTest {
                 .contentValues(stub.contentValues)
                 .withPutResolver(stub.putResolver)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
@@ -590,7 +592,7 @@ public class PreparedPutContentValuesIterableTest {
         testSubscriber.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testSubscriber.errors().get(0);
 
         assertThat(expected).hasMessageStartingWith("Error has occurred during Put operation. contentValues =");
         IllegalStateException cause = (IllegalStateException) expected.getCause();
@@ -600,7 +602,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(stub.storIOSQLite).lowLevel();
         verify(stub.lowLevel).beginTransaction();
         verify(stub.lowLevel).endTransaction();
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
@@ -612,7 +614,7 @@ public class PreparedPutContentValuesIterableTest {
         IllegalStateException testException = new IllegalStateException("test exception");
         doThrow(testException).when(stub.putResolver).performPut(eq(stub.storIOSQLite), any(ContentValues.class));
 
-        final TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+        final TestObserver<Object> testObserver = new TestObserver<Object>();
 
         stub.storIOSQLite
                 .put()
@@ -620,14 +622,14 @@ public class PreparedPutContentValuesIterableTest {
                 .withPutResolver(stub.putResolver)
                 .prepare()
                 .asRxSingle()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         assertThat(expected).hasMessageStartingWith("Error has occurred during Put operation. contentValues =");
         IllegalStateException cause = (IllegalStateException) expected.getCause();
@@ -637,7 +639,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(stub.storIOSQLite).lowLevel();
         verify(stub.lowLevel).beginTransaction();
         verify(stub.lowLevel).endTransaction();
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }
@@ -649,7 +651,7 @@ public class PreparedPutContentValuesIterableTest {
         IllegalStateException testException = new IllegalStateException("test exception");
         doThrow(testException).when(stub.putResolver).performPut(eq(stub.storIOSQLite), any(ContentValues.class));
 
-        final TestSubscriber testSubscriber = new TestSubscriber();
+        final TestObserver testObserver = new TestObserver();
 
         stub.storIOSQLite
                 .put()
@@ -657,14 +659,14 @@ public class PreparedPutContentValuesIterableTest {
                 .withPutResolver(stub.putResolver)
                 .prepare()
                 .asRxCompletable()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertNoValues();
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
 
         //noinspection ThrowableResultOfMethodCallIgnored
-        StorIOException expected = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
 
         assertThat(expected).hasMessageStartingWith("Error has occurred during Put operation. contentValues =");
         IllegalStateException cause = (IllegalStateException) expected.getCause();
@@ -674,7 +676,7 @@ public class PreparedPutContentValuesIterableTest {
         verify(stub.storIOSQLite).lowLevel();
         verify(stub.lowLevel).beginTransaction();
         verify(stub.lowLevel).endTransaction();
-        verify(stub.storIOSQLite).defaultScheduler();
+        verify(stub.storIOSQLite).defaultRxScheduler();
         verify(stub.storIOSQLite).interceptors();
         verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
     }

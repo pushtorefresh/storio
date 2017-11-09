@@ -21,9 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>, Collection<T>> {
 
@@ -46,30 +47,30 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
     }
 
     /**
-     * Creates {@link Observable} which will perform Put Operation and send result to observer.
+     * Creates {@link Flowable} which will perform Put Operation and send result to observer.
      * <p>
-     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * Returned {@link Flowable} will be "Cold Flowable", which means that it performs
      * put only after subscribing to it. Also, it emits the result once.
      * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
-     * @return non-null {@link Observable} which will perform Put Operation.
+     * @return non-null {@link Flowable} which will perform Put Operation.
      * and send result to observer.
      */
     @NonNull
     @Override
-    public Observable<PutResults<T>> asRxObservable() {
-        return RxJavaUtils.createObservable(storIOSQLite, this);
+    public Flowable<PutResults<T>> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
+        return RxJavaUtils.createFlowable(storIOSQLite, this, backpressureStrategy);
     }
 
     /**
      * Creates {@link Single} which will perform Put Operation lazily when somebody subscribes to it and send result to observer.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Single} which will perform Put Operation.
@@ -86,7 +87,7 @@ public class PreparedPutCollectionOfObjects<T> extends PreparedPut<PutResults<T>
      * Creates {@link Completable} which will perform Put Operation lazily when somebody subscribes to it.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Completable} which will perform Put Operation.

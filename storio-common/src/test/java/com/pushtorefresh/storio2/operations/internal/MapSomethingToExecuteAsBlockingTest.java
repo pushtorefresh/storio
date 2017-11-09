@@ -4,9 +4,9 @@ import com.pushtorefresh.storio2.operations.PreparedOperation;
 
 import org.junit.Test;
 
-import rx.Observable;
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,14 +24,17 @@ public class MapSomethingToExecuteAsBlockingTest {
         when(preparedOperation.executeAsBlocking())
                 .thenReturn(expectedMapResult);
 
-        final String actualMapResult = Observable.just(1)
-                .map(MapSomethingToExecuteAsBlocking.newInstance(preparedOperation))
-                .toBlocking()
-                .first();
+        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+        Flowable
+                .just(1)
+                .map(new MapSomethingToExecuteAsBlocking<Integer, String, Object>(preparedOperation))
+                .subscribe(testSubscriber);
 
         verify(preparedOperation, times(1)).executeAsBlocking();
-        verify(preparedOperation, times(0)).asRxObservable();
 
-        assertThat(actualMapResult).isEqualTo(expectedMapResult);
+        testSubscriber.assertValue(expectedMapResult);
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertComplete();
     }
 }

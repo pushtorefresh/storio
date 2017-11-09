@@ -62,8 +62,8 @@ dependencies {
     compile libraries.javaxInject
     compile libraries.javaxAnnotationApi
 
-    compile libraries.rxJava
-    compile libraries.rxAndroid
+    compile libraries.rxJava2
+    compile libraries.rxAndroid2
     compile libraries.appCompat
     compile libraries.butterKnife
     compile libraries.recyclerView

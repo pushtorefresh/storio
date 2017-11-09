@@ -19,8 +19,9 @@ import com.pushtorefresh.storio2.contentresolver.queries.UpdateQuery;
 import java.util.Collections;
 import java.util.Set;
 
-import rx.Observable;
-import rx.Scheduler;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 
 /**
  * Powerful abstraction over {@link android.content.ContentResolver}.
@@ -63,43 +64,43 @@ public abstract class StorIOContentResolver {
     /**
      * Allows observe changes of required set of {@link Uri}.
      * <p/>
-     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
      * that you should manually unsubscribe from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param uris set of {@link Uri} that should be monitored.
-     * @return {@link Observable} of {@link Changes} subscribed to changes of required Uris.
+     * @return {@link Flowable} of {@link Changes} subscribed to changes of required Uris.
      */
     @NonNull
-    public abstract Observable<Changes> observeChangesOfUris(@NonNull Set<Uri> uris);
+    public abstract Flowable<Changes> observeChangesOfUris(@NonNull Set<Uri> uris, @NonNull BackpressureStrategy backpressureStrategy);
 
     /**
      * Allows observe changes of required {@link Uri}.
      * <p/>
-     * Notice, that returned {@link Observable} is "Hot Observable", it never ends, which means,
+     * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
      * that you should manually unsubscribe from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param uri {@link Uri} that should be monitored.
-     * @return {@link Observable} of {@link Changes} subscribed to changes of required Uri.
+     * @return {@link Flowable} of {@link Changes} subscribed to changes of required Uri.
      */
     @NonNull
-    public Observable<Changes> observeChangesOfUri(@NonNull Uri uri) {
-        return observeChangesOfUris(Collections.singleton(uri));
+    public Flowable<Changes> observeChangesOfUri(@NonNull Uri uri, @NonNull BackpressureStrategy backpressureStrategy) {
+        return observeChangesOfUris(Collections.singleton(uri), backpressureStrategy);
     }
 
     /**
-     * Provides a scheduler on which {@link rx.Observable} / {@link rx.Single}
-     * or {@link rx.Completable} will be subscribed.
+     * Provides a scheduler on which {@link Flowable} / {@link io.reactivex.Single}
+     * or {@link io.reactivex.Completable} will be subscribed.
      * <p/>
-     * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxObservable()
-     * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxSingle()
-     * @see com.pushtorefresh.storio2.operations.PreparedWriteOperation#asRxCompletable()
      *
      * @return the scheduler or {@code null} if it isn't needed to apply it.
+     * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxFlowable(BackpressureStrategy)
+     * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxSingle()
+     * @see com.pushtorefresh.storio2.operations.PreparedWriteOperation#asRxCompletable()
      */
     @Nullable
-    public abstract Scheduler defaultScheduler();
+    public abstract Scheduler defaultRxScheduler();
 
     /**
      * An API for low level interaction with {@link ContentResolver}, it's part of public API, so feel free to use it,

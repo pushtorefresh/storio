@@ -6,13 +6,13 @@ import com.pushtorefresh.storio2.operations.PreparedOperation;
 import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 
-import rx.schedulers.TestScheduler;
+import io.reactivex.schedulers.TestScheduler;
 
+import static io.reactivex.BackpressureStrategy.MISSING;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static rx.schedulers.Schedulers.test;
 
 public class SchedulerChecker {
 
@@ -24,8 +24,8 @@ public class SchedulerChecker {
 
     private SchedulerChecker(@NonNull StorIOSQLite storIOSQLite) {
         this.storIOSQLite = storIOSQLite;
-        scheduler = test();
-        when(storIOSQLite.defaultScheduler()).thenReturn(scheduler);
+        scheduler = new TestScheduler();
+        when(storIOSQLite.defaultRxScheduler()).thenReturn(scheduler);
     }
 
     @NonNull
@@ -33,8 +33,8 @@ public class SchedulerChecker {
         return new SchedulerChecker(storIOSQLite);
     }
 
-    public void checkAsObservable(@NonNull PreparedOperation operation) {
-        operation.asRxObservable().subscribe();
+    public void checkAsFlowable(@NonNull PreparedOperation operation) {
+        operation.asRxFlowable(MISSING).subscribe();
         check(operation);
     }
 
@@ -51,9 +51,9 @@ public class SchedulerChecker {
     private void check(@NonNull PreparedOperation operation) {
         final PreparedOperation operationSpy = spy(operation);
 
-        verify(storIOSQLite).defaultScheduler();
+        verify(storIOSQLite).defaultRxScheduler();
 
-        operationSpy.asRxObservable().subscribe();
+        operationSpy.asRxFlowable(MISSING).subscribe();
 
         verify(operationSpy, never()).executeAsBlocking();
         scheduler.triggerActions();

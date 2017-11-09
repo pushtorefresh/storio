@@ -10,9 +10,10 @@ import com.pushtorefresh.storio2.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.internal.RxJavaUtils;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 /**
  * Prepared Put Operation to perform put object
@@ -75,31 +76,31 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult, T> {
     }
 
     /**
-     * Creates {@link Observable} which will perform Put Operation and send result to observer.
+     * Creates {@link Flowable} which will perform Put Operation and send result to observer.
      * <p>
-     * Returned {@link Observable} will be "Cold Observable", which means that it performs
+     * Returned {@link Flowable} will be "Cold Flowable", which means that it performs
      * put only after subscribing to it. Also, it emits the result once.
      * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOContentResolver#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOContentResolver#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
-     * @return non-null {@link Observable} which will perform Put Operation.
+     * @return non-null {@link Flowable} which will perform Put Operation.
      * and send result to observer.
      */
     @NonNull
     @CheckResult
     @Override
-    public Observable<PutResult> asRxObservable() {
-        return RxJavaUtils.createObservable(storIOContentResolver, this);
+    public Flowable<PutResult> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
+        return RxJavaUtils.createFlowable(storIOContentResolver, this, backpressureStrategy);
     }
 
     /**
      * Creates {@link Single} which will perform Put Operation lazily when somebody subscribes to it and send result to observer.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOContentResolver#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOContentResolver#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Single} which will perform Put Operation.
@@ -116,7 +117,7 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult, T> {
      * Creates {@link Completable} which will perform Put Operation lazily when somebody subscribes to it.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOContentResolver#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOContentResolver#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Completable} which will perform Put Operation.

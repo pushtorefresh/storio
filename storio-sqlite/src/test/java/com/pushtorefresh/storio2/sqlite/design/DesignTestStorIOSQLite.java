@@ -25,8 +25,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import rx.Observable;
-import rx.Scheduler;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 
 import static org.mockito.Mockito.mock;
 
@@ -110,26 +111,32 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
 
     @NonNull
     @Override
-    public Observable<Changes> observeChangesInTables(@NonNull Set<String> tables) {
-        return Observable.empty();
+    public Flowable<Changes> observeChangesInTables(
+            @NonNull Set<String> tables,
+            @NonNull BackpressureStrategy backpressureStrategy
+    ) {
+        return Flowable.empty();
     }
 
     @NonNull
     @Override
-    public Observable<Changes> observeChangesOfTags(@NonNull Set<String> tags) {
-        return Observable.empty();
+    public Flowable<Changes> observeChangesOfTags(
+            @NonNull Set<String> tags,
+            @NonNull BackpressureStrategy backpressureStrategy
+    ) {
+        return Flowable.empty();
     }
 
     @Nullable
     @Override
-    public Scheduler defaultScheduler() {
+    public Scheduler defaultRxScheduler() {
         return null;
     }
 
     @NonNull
     @Override
-    public Observable<Changes> observeChanges() {
-        return Observable.empty();
+    public Flowable<Changes> observeChanges(@NonNull BackpressureStrategy backpressureStrategy) {
+        return Flowable.empty();
     }
 
     @NonNull

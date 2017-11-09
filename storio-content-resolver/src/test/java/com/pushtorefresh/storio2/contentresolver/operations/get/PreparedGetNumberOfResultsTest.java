@@ -11,9 +11,11 @@ import com.pushtorefresh.storio2.contentresolver.queries.Query;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Fail.failBecauseExceptionWasNotThrown;
@@ -56,19 +58,19 @@ public class PreparedGetNumberOfResultsTest {
     }
 
     @Test
-    public void shouldGetNumberOfResultsWithQueryAsObservable() {
+    public void shouldGetNumberOfResultsWithQueryAsFlowable() {
         final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
 
-        final Observable<Integer> numberOfResultsObservable = getStub.storIOContentResolver
+        final Flowable<Integer> numberOfResultsFlowable = getStub.storIOContentResolver
                 .get()
                 .numberOfResults()
                 .withQuery(getStub.query)
                 .withGetResolver(getStub.getResolverForNumberOfResults)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(BackpressureStrategy.MISSING)
                 .take(1);
 
-        getStub.verifyQueryBehaviorForInteger(numberOfResultsObservable);
+        getStub.verifyQueryBehaviorForInteger(numberOfResultsFlowable);
     }
 
     @Test
@@ -111,12 +113,12 @@ public class PreparedGetNumberOfResultsTest {
     }
 
     @Test
-    public void shouldWrapExceptionIntoStorIOExceptionForObservable() {
+    public void shouldWrapExceptionIntoStorIOExceptionForFlowable() {
         final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
 
         Uri testUri = mock(Uri.class);
-        when(storIOContentResolver.observeChangesOfUri(eq(testUri)))
-                .thenReturn(Observable.<Changes>empty());
+        when(storIOContentResolver.observeChangesOfUri(eq(testUri), eq(BackpressureStrategy.MISSING)))
+                .thenReturn(Flowable.<Changes>empty());
 
         //noinspection unchecked
         final GetResolver<Integer> getResolver = mock(GetResolver.class);
@@ -130,18 +132,18 @@ public class PreparedGetNumberOfResultsTest {
                 .withQuery(Query.builder().uri(testUri).build())
                 .withGetResolver(getResolver)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(BackpressureStrategy.MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(60, SECONDS);
         testSubscriber.assertError(StorIOException.class);
 
-        assertThat(testSubscriber.getOnErrorEvents()).hasSize(1);
-        StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        assertThat(testSubscriber.errors()).hasSize(1);
+        StorIOException storIOException = (StorIOException) testSubscriber.errors().get(0);
         IllegalStateException cause = (IllegalStateException) storIOException.getCause();
         assertThat(cause).hasMessage("test exception");
 
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -156,24 +158,24 @@ public class PreparedGetNumberOfResultsTest {
         when(getResolver.performGet(eq(storIOContentResolver), any(Query.class)))
                 .thenThrow(new IllegalStateException("test exception"));
 
-        final TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
+        final TestObserver<Integer> testObserver = new TestObserver<Integer>();
 
         new PreparedGetNumberOfResults.Builder(storIOContentResolver)
                 .withQuery(Query.builder().uri(testUri).build())
                 .withGetResolver(getResolver)
                 .prepare()
                 .asRxSingle()
-                .subscribe(testSubscriber);
+                .subscribe(testObserver);
 
-        testSubscriber.awaitTerminalEvent(60, SECONDS);
-        testSubscriber.assertError(StorIOException.class);
+        testObserver.awaitTerminalEvent(60, SECONDS);
+        testObserver.assertError(StorIOException.class);
 
-        assertThat(testSubscriber.getOnErrorEvents()).hasSize(1);
-        StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+        assertThat(testObserver.errors()).hasSize(1);
+        StorIOException storIOException = (StorIOException) testObserver.errors().get(0);
         IllegalStateException cause = (IllegalStateException) storIOException.getCause();
         assertThat(cause).hasMessage("test exception");
 
-        testSubscriber.unsubscribe();
+        testObserver.dispose();
     }
 
     @Test
@@ -190,7 +192,7 @@ public class PreparedGetNumberOfResultsTest {
     }
 
     @Test
-    public void getNumberOfResultsObservableExecutesOnSpecifiedScheduler() {
+    public void getNumberOfResultsFlowableExecutesOnSpecifiedScheduler() {
         final GetNumberOfResultsStub getStub = GetNumberOfResultsStub.newInstance();
         final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOContentResolver);
 
@@ -201,7 +203,7 @@ public class PreparedGetNumberOfResultsTest {
                 .withGetResolver(getStub.getResolverForNumberOfResults)
                 .prepare();
 
-        schedulerChecker.checkAsObservable(operation);
+        schedulerChecker.checkAsFlowable(operation);
     }
 
     @Test

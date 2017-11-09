@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import rx.Subscription;
+import io.reactivex.disposables.Disposable;
 
 public abstract class AbstractEmissionChecker<T> {
 
@@ -102,5 +102,5 @@ public abstract class AbstractEmissionChecker<T> {
     }
 
     @NonNull
-    public abstract Subscription subscribe();
+    public abstract Disposable subscribe();
 }

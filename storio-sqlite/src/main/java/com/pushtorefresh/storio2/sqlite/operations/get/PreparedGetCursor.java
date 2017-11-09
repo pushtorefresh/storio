@@ -7,23 +7,17 @@ import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio2.StorIOException;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
-import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
-import com.pushtorefresh.storio2.operations.internal.OnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.sqlite.Interceptor;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio2.sqlite.impl.ChangesFilter;
 import com.pushtorefresh.storio2.sqlite.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
 
-import java.util.Collections;
-import java.util.Set;
-
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
-import static com.pushtorefresh.storio2.internal.Environment.throwExceptionIfRxJavaIsNotAvailable;
 
 /**
  * Prepared Get Operation for {@link StorIOSQLite}.
@@ -48,60 +42,35 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     }
 
     /**
-     * Creates "Hot" {@link Observable} which will be subscribed to changes of tables from query
+     * Creates "Hot" {@link Flowable} which will be subscribed to changes of tables from query
      * and will emit result each time change occurs.
      * <p>
      * First result will be emitted immediately after subscription,
      * other emissions will occur only if changes of tables from query will occur during lifetime of
-     * the {@link Observable}.
+     * the {@link Flowable}.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      * <p>
-     * Please don't forget to unsubscribe from this {@link Observable} because
+     * Please don't forget to unsubscribe from this {@link Flowable} because
      * it's "Hot" and endless.
      *
-     * @return non-null {@link Observable} which will emit non-null
+     * @return non-null {@link Flowable} which will emit non-null
      * list with mapped results and will be subscribed to changes of tables from query.
      */
     @NonNull
     @CheckResult
     @Override
-    public Observable<Cursor> asRxObservable() {
-        throwExceptionIfRxJavaIsNotAvailable("asRxObservable()");
-
-        final Set<String> tables;
-        final Set<String> tags;
-
-        if (query != null) {
-            tables = Collections.singleton(query.table());
-            tags = query.observesTags();
-        } else if (rawQuery != null) {
-            tables = rawQuery.observesTables();
-            tags = rawQuery.observesTags();
-        } else {
-            throw new StorIOException("Please specify query");
-        }
-
-        final Observable<Cursor> observable;
-        if (!tables.isEmpty() || !tags.isEmpty()) {
-            observable = ChangesFilter.applyForTablesAndTags(storIOSQLite.observeChanges(), tables, tags)
-                    .map(MapSomethingToExecuteAsBlocking.newInstance(this))  // each change triggers executeAsBlocking
-                    .startWith(Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this))) // start stream with first query result
-                    .onBackpressureLatest();
-        } else {
-            observable = Observable.create(OnSubscribeExecuteAsBlocking.newInstance(this));
-        }
-
-        return RxJavaUtils.subscribeOn(storIOSQLite, observable);
+    public Flowable<Cursor> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
+        return RxJavaUtils.createGetFlowable(storIOSQLite, this, query, rawQuery, backpressureStrategy);
     }
 
     /**
      * Creates {@link Single} which will perform Get Operation lazily when somebody subscribes to it and send result to observer.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>Operates on {@link StorIOSQLite#defaultScheduler()} if not {@code null}.</dd>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      *
      * @return non-null {@link Single} which will perform Get Operation.

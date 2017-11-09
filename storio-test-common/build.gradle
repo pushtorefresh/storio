@@ -21,7 +21,7 @@ android {
 
 dependencies {
     provided libraries.supportAnnotations
-    provided libraries.rxJava
+    provided libraries.rxJava2
 
     compile libraries.junit
     compile libraries.mockitoCore

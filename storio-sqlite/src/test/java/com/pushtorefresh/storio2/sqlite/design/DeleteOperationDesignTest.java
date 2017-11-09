@@ -9,9 +9,11 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+
+import static io.reactivex.BackpressureStrategy.MISSING;
 
 public class DeleteOperationDesignTest extends OperationDesignTest {
 
@@ -31,12 +33,12 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     public void deleteObjectObservable() {
         User user = newUser();
 
-        Observable<DeleteResult> deleteResultObservable = storIOSQLite()
+        Flowable<DeleteResult> deleteResultObservable = storIOSQLite()
                 .delete()
                 .object(user)
                 .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(MISSING);
     }
 
     @Test
@@ -55,12 +57,12 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     public void deleteCollectionOfObjectsObservable() {
         List<User> users = new ArrayList<User>();
 
-        Observable<DeleteResults<User>> deleteResultObservable = storIOSQLite()
+        Flowable<DeleteResults<User>> deleteResultObservable = storIOSQLite()
                 .delete()
                 .objects(users)
                 .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(MISSING);
     }
 
     @Test
@@ -78,7 +80,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void deleteByQueryObservable() {
-        Observable<DeleteResult> deleteResultObservable = storIOSQLite()
+        Flowable<DeleteResult> deleteResultObservable = storIOSQLite()
                 .delete()
                 .byQuery(DeleteQuery.builder()
                         .table("users")
@@ -86,7 +88,7 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
                         .whereArgs("artem.zinnatullin@gmail.com")
                         .build())
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(MISSING);
     }
 
     @Test

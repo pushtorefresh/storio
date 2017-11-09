@@ -12,14 +12,16 @@ import org.junit.runner.RunWith;
 import java.util.Collection;
 import java.util.List;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -47,15 +49,15 @@ public class PreparedDeleteCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldDeleteObjectsWithoutTypeMappingAsObservable() {
+        public void shouldDeleteObjectsWithoutTypeMappingAsFlowable() {
             final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithoutTypeMapping();
 
-            final Observable<DeleteResults<TestItem>> observable = deleteStub.storIOContentResolver
+            final Flowable<DeleteResults<TestItem>> observable = deleteStub.storIOContentResolver
                     .delete()
                     .objects(deleteStub.items)
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(BackpressureStrategy.MISSING);
 
             deleteStub.verifyBehaviorForDeleteMultipleObjects(observable);
         }
@@ -105,14 +107,14 @@ public class PreparedDeleteCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldDeleteObjectsWithTypeMappingAsObservable() {
+        public void shouldDeleteObjectsWithTypeMappingAsFlowable() {
             final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithTypeMapping();
 
-            final Observable<DeleteResults<TestItem>> observable = deleteStub.storIOContentResolver
+            final Flowable<DeleteResults<TestItem>> observable = deleteStub.storIOContentResolver
                     .delete()
                     .objects(deleteStub.items)
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(BackpressureStrategy.MISSING);
 
             deleteStub.verifyBehaviorForDeleteMultipleObjects(observable);
         }
@@ -178,7 +180,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsObservable() {
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsFlowable() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
             final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
@@ -194,18 +196,18 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .delete()
                     .objects(items)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(BackpressureStrategy.MISSING)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            assertThat(testSubscriber.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
-            verify(storIOContentResolver).defaultScheduler();
+            verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOContentResolver, lowLevel);
@@ -222,19 +224,19 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance("test item 1"), TestItem.newInstance("test item 2"));
 
-            final TestSubscriber<DeleteResults<TestItem>> testSubscriber = new TestSubscriber<DeleteResults<TestItem>>();
+            final TestObserver<DeleteResults<TestItem>> testObserver = new TestObserver<DeleteResults<TestItem>>();
 
             storIOContentResolver
                     .delete()
                     .objects(items)
                     .prepare()
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
+            testObserver.awaitTerminalEvent();
 
-            testSubscriber.assertNoValues();
-            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+            testObserver.assertNoValues();
+            Throwable error = testObserver.errors().get(0);
 
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
@@ -245,7 +247,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
-            verify(storIOContentResolver).defaultScheduler();
+            verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOContentResolver, lowLevel);
@@ -262,19 +264,19 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance("test item 1"), TestItem.newInstance("test item 2"));
 
-            final TestSubscriber<DeleteResults<TestItem>> testSubscriber = new TestSubscriber<DeleteResults<TestItem>>();
+            final TestObserver<DeleteResults<TestItem>> testObserver = new TestObserver<DeleteResults<TestItem>>();
 
             storIOContentResolver
                     .delete()
                     .objects(items)
                     .prepare()
                     .asRxCompletable()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
+            testObserver.awaitTerminalEvent();
 
-            testSubscriber.assertNoValues();
-            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+            testObserver.assertNoValues();
+            Throwable error = testObserver.errors().get(0);
 
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
@@ -285,7 +287,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
-            verify(storIOContentResolver).defaultScheduler();
+            verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOContentResolver, lowLevel);
@@ -308,7 +310,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
         }
 
         @Test
-        public void deleteCollectionOfObjectsObservableExecutesOnSpecifiedScheduler() {
+        public void deleteCollectionOfObjectsFlowableExecutesOnSpecifiedScheduler() {
             final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteMultipleObjectsWithoutTypeMapping();
             final SchedulerChecker schedulerChecker = SchedulerChecker.create(deleteStub.storIOContentResolver);
 
@@ -318,7 +320,7 @@ public class PreparedDeleteCollectionOfObjectsTest {
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare();
 
-            schedulerChecker.checkAsObservable(operation);
+            schedulerChecker.checkAsFlowable(operation);
         }
 
         @Test

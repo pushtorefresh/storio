@@ -591,7 +591,7 @@ public final class Query implements GetQuery {
          * @param tags optional set of tags which will be observed by this query.
          * @return builder.
          * @see Query#observesTags()
-         * @see com.pushtorefresh.storio2.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         * @see com.pushtorefresh.storio2.sqlite.StorIOSQLite#observeChangesOfTag(String, io.reactivex.BackpressureStrategy)
          */
         @NonNull
         public CompleteBuilder observesTags(@NonNull String tag, @Nullable String... tags) {
@@ -607,7 +607,7 @@ public final class Query implements GetQuery {
          * @param tags set of tags which will be observed by this query.
          * @return builder.
          * @see Query#observesTags()
-         * @see com.pushtorefresh.storio2.sqlite.StorIOSQLite#observeChangesOfTag(String)
+         * @see com.pushtorefresh.storio2.sqlite.StorIOSQLite#observeChangesOfTag(String, io.reactivex.BackpressureStrategy)
          */
         @NonNull
         public CompleteBuilder observesTags(@Nullable Collection<String> tags) {

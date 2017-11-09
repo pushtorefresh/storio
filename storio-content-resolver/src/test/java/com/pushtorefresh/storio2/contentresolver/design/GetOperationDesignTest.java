@@ -10,8 +10,9 @@ import org.junit.Test;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static org.mockito.Mockito.mock;
 
@@ -58,8 +59,8 @@ public class GetOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void getCursorAsObservable() {
-        Observable<Cursor> observable = storIOContentResolver()
+    public void getCursorAsFlowable() {
+        Flowable<Cursor> flowable = storIOContentResolver()
                 .get()
                 .cursor()
                 .withQuery(Query.builder()
@@ -67,12 +68,12 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(mock(GetResolver.class))
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(BackpressureStrategy.LATEST);
     }
 
     @Test
-    public void getListOfObjectsAsObservable() {
-        Observable<List<Article>> observable = storIOContentResolver()
+    public void getListOfObjectsAsFlowable() {
+        Flowable<List<Article>> flowable = storIOContentResolver()
                 .get()
                 .listOfObjects(Article.class)
                 .withQuery(Query.builder()
@@ -80,12 +81,12 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(ArticleMeta.GET_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(BackpressureStrategy.LATEST);
     }
 
     @Test
-    public void getObjectAsObservable() {
-        Observable<Article> observable = storIOContentResolver()
+    public void getObjectAsFlowable() {
+        Flowable<Article> flowable = storIOContentResolver()
                 .get()
                 .object(Article.class)
                 .withQuery(Query.builder()
@@ -93,7 +94,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .withGetResolver(ArticleMeta.GET_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(BackpressureStrategy.LATEST);
     }
 
     @Test

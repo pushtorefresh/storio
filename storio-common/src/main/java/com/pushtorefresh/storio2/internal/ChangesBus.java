@@ -3,10 +3,10 @@ package com.pushtorefresh.storio2.internal;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import rx.Observable;
+import io.reactivex.Flowable;
 
 /**
- * FOR INTERNAL USAGE ONLY.
+ * FOR INTERNAL USE ONLY.
  * <p>
  * Thread-safe changes bus.
  */
@@ -28,9 +28,9 @@ public final class ChangesBus<T> {
     }
 
     @Nullable
-    public Observable<T> asObservable() {
+    public Flowable<T> asFlowable() {
         return rxChangesBus != null
-                ? rxChangesBus.asObservable()
+                ? rxChangesBus.asFlowable()
                 : null;
     }
 }

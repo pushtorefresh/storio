@@ -9,8 +9,9 @@ import com.pushtorefresh.storio2.contentresolver.queries.Query;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -51,26 +52,26 @@ public class PreparedGetCursorTest {
 
 
     @Test
-    public void getCursorObservable() {
+    public void getCursorFlowable() {
         final GetCursorStub getStub = GetCursorStub.newInstance();
 
-        final Observable<Cursor> cursorObservable = getStub.storIOContentResolver
+        final Flowable<Cursor> cursorFlowable = getStub.storIOContentResolver
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
                 .withGetResolver(getStub.getResolver)
                 .prepare()
-                .asRxObservable()
+                .asRxFlowable(BackpressureStrategy.MISSING)
                 .take(1);
 
-        getStub.verifyQueryBehaviorForCursor(cursorObservable);
+        getStub.verifyQueryBehaviorForCursor(cursorFlowable);
     }
 
     @Test
     public void getCursorSingle() {
         final GetCursorStub getStub = GetCursorStub.newInstance();
 
-        final Single<Cursor> cursorObservable = getStub.storIOContentResolver
+        final Single<Cursor> cursorFlowable = getStub.storIOContentResolver
                 .get()
                 .cursor()
                 .withQuery(getStub.query)
@@ -78,7 +79,7 @@ public class PreparedGetCursorTest {
                 .prepare()
                 .asRxSingle();
 
-        getStub.verifyQueryBehaviorForCursor(cursorObservable);
+        getStub.verifyQueryBehaviorForCursor(cursorFlowable);
     }
 
     @Test
@@ -118,7 +119,7 @@ public class PreparedGetCursorTest {
     }
 
     @Test
-    public void getCursorObservableExecutesOnSpecifiedScheduler() {
+    public void getCursorFlowableExecutesOnSpecifiedScheduler() {
         final GetCursorStub getStub = GetCursorStub.newInstance();
         final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOContentResolver);
 
@@ -129,7 +130,7 @@ public class PreparedGetCursorTest {
                 .withGetResolver(getStub.getResolver)
                 .prepare();
 
-        schedulerChecker.checkAsObservable(operation);
+        schedulerChecker.checkAsFlowable(operation);
     }
 
     @Test

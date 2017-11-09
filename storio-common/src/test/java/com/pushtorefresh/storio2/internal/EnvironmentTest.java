@@ -23,12 +23,12 @@ public class EnvironmentTest {
 
     @Test
     public void rxJavaShouldBeInClassPath() {
-        assertThat(Environment.RX_JAVA_IS_IN_THE_CLASS_PATH).isTrue();
+        assertThat(Environment.RX_JAVA_2_IS_IN_THE_CLASS_PATH).isTrue();
     }
 
     @Test
     public void shouldThrowExceptionIfRxJavaIsNotInTheClassPath() throws NoSuchFieldException, IllegalAccessException {
-        Field field = Environment.class.getDeclaredField("RX_JAVA_IS_IN_THE_CLASS_PATH");
+        Field field = Environment.class.getDeclaredField("RX_JAVA_2_IS_IN_THE_CLASS_PATH");
 
         field.setAccessible(true);
 
@@ -42,7 +42,7 @@ public class EnvironmentTest {
         field.set(null, false); // No Environment will think that RxJava is not in the ClassPath
 
         try {
-            Environment.throwExceptionIfRxJavaIsNotAvailable("yolo");
+            Environment.throwExceptionIfRxJava2IsNotAvailable("yolo");
             failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException expected) {
             assertThat(expected).hasMessage("yolo requires RxJava in classpath," +
@@ -59,6 +59,6 @@ public class EnvironmentTest {
     @Test
     public void shouldNotThrowExceptionIfRxJavaIsInTheClassPath() {
         // Because RxJava should be in the ClassPath for tests
-        Environment.throwExceptionIfRxJavaIsNotAvailable("no exceptions please");
+        Environment.throwExceptionIfRxJava2IsNotAvailable("no exceptions please");
     }
 }

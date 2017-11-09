@@ -5,21 +5,21 @@ import android.support.v4.app.Fragment;
 
 import com.pushtorefresh.storio2.sample.SampleApp;
 
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public abstract class BaseFragment extends Fragment {
 
     @NonNull
-    private final CompositeSubscription compositeSubscriptionForOnStop = new CompositeSubscription();
+    private final CompositeDisposable compositeDisposableForOnStop = new CompositeDisposable();
 
-    protected void unsubscribeOnStop(@NonNull Subscription subscription) {
-        compositeSubscriptionForOnStop.add(subscription);
+    protected void disposeOnStop(@NonNull Disposable disposable) {
+        compositeDisposableForOnStop.add(disposable);
     }
 
     @Override
     public void onStop() {
-        compositeSubscriptionForOnStop.clear();
+        compositeDisposableForOnStop.clear();
         super.onStop();
     }
 

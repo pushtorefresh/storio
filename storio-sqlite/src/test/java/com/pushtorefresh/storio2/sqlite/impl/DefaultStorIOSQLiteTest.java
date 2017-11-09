@@ -34,9 +34,11 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import rx.Scheduler;
-import rx.observers.TestSubscriber;
+import io.reactivex.Scheduler;
+import io.reactivex.subscribers.TestSubscriber;
 
+import static io.reactivex.BackpressureStrategy.LATEST;
+import static io.reactivex.schedulers.Schedulers.io;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.Matchers.eq;
@@ -46,7 +48,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static rx.schedulers.Schedulers.io;
 
 public class DefaultStorIOSQLiteTest {
 
@@ -327,7 +328,7 @@ public class DefaultStorIOSQLiteTest {
         TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChanges()
+                .observeChanges(LATEST)
                 .subscribe(testSubscriber);
 
         testSubscriber.assertNoValues();
@@ -340,7 +341,7 @@ public class DefaultStorIOSQLiteTest {
 
         testSubscriber.assertValue(changes);
         testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -353,7 +354,7 @@ public class DefaultStorIOSQLiteTest {
         expectedException.expectMessage("Observing changes in StorIOSQLite requires RxJava");
         expectedException.expectCause(nullValue(Throwable.class));
 
-        storIOSQLite.observeChanges();
+        storIOSQLite.observeChanges(LATEST);
     }
 
     @Test
@@ -363,7 +364,7 @@ public class DefaultStorIOSQLiteTest {
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
-        storIOSQLite.observeChangesInTables(null);
+        storIOSQLite.observeChangesInTables(null, LATEST);
     }
 
     @Test
@@ -373,7 +374,7 @@ public class DefaultStorIOSQLiteTest {
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
-        storIOSQLite.observeChangesOfTags(null);
+        storIOSQLite.observeChangesOfTags(null, LATEST);
     }
 
     @Test
@@ -385,7 +386,7 @@ public class DefaultStorIOSQLiteTest {
         tables.add("table2");
 
         storIOSQLite
-                .observeChangesInTables(tables)
+                .observeChangesInTables(tables, LATEST)
                 .subscribe(testSubscriber);
 
         testSubscriber.assertNoValues();
@@ -398,7 +399,7 @@ public class DefaultStorIOSQLiteTest {
 
         testSubscriber.assertValues(changes);
         testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -410,7 +411,7 @@ public class DefaultStorIOSQLiteTest {
         tables.add("table2");
 
         storIOSQLite
-                .observeChangesInTables(tables)
+                .observeChangesInTables(tables, LATEST)
                 .subscribe(testSubscriber);
 
         storIOSQLite
@@ -419,7 +420,7 @@ public class DefaultStorIOSQLiteTest {
 
         testSubscriber.assertNoValues();
         testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -433,7 +434,7 @@ public class DefaultStorIOSQLiteTest {
         tags.add(tag2);
 
         storIOSQLite
-                .observeChangesOfTags(tags)
+                .observeChangesOfTags(tags, LATEST)
                 .subscribe(testSubscriber);
 
         testSubscriber.assertNoValues();
@@ -446,7 +447,7 @@ public class DefaultStorIOSQLiteTest {
 
         testSubscriber.assertValues(changes);
         testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -458,7 +459,7 @@ public class DefaultStorIOSQLiteTest {
         tags.add("tag2");
 
         storIOSQLite
-                .observeChangesOfTags(tags)
+                .observeChangesOfTags(tags, LATEST)
                 .subscribe(testSubscriber);
 
         storIOSQLite
@@ -467,7 +468,7 @@ public class DefaultStorIOSQLiteTest {
 
         testSubscriber.assertNoValues();
         testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -477,7 +478,7 @@ public class DefaultStorIOSQLiteTest {
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
-        storIOSQLite.observeChangesInTable(null);
+        storIOSQLite.observeChangesInTable(null, LATEST);
     }
 
     @Test
@@ -487,7 +488,7 @@ public class DefaultStorIOSQLiteTest {
         expectedException.expectCause(nullValue(Throwable.class));
 
         //noinspection ConstantConditions
-        storIOSQLite.observeChangesOfTag(null);
+        storIOSQLite.observeChangesOfTag(null, LATEST);
     }
 
     @Test
@@ -496,7 +497,7 @@ public class DefaultStorIOSQLiteTest {
         expectedException.expectMessage("Tag can not be null or empty");
         expectedException.expectCause(nullValue(Throwable.class));
 
-        storIOSQLite.observeChangesOfTag("");
+        storIOSQLite.observeChangesOfTag("", LATEST);
     }
 
     @Test
@@ -504,7 +505,7 @@ public class DefaultStorIOSQLiteTest {
         TestSubscriber<Changes> testSubscriber = new TestSubscriber<Changes>();
 
         storIOSQLite
-                .observeChangesInTable("table1")
+                .observeChangesInTable("table1", LATEST)
                 .subscribe(testSubscriber);
 
         testSubscriber.assertNoValues();
@@ -534,7 +535,7 @@ public class DefaultStorIOSQLiteTest {
         // Subscriber should not see changes of table2 and table3
         testSubscriber.assertValue(changes2);
         testSubscriber.assertNoErrors();
-        testSubscriber.unsubscribe();
+        testSubscriber.dispose();
     }
 
     @Test
@@ -549,7 +550,7 @@ public class DefaultStorIOSQLiteTest {
 
     @Test
     public void defaultSchedulerReturnsIOSchedulerIfNotSpecified() {
-        assertThat(storIOSQLite.defaultScheduler()).isSameAs(io());
+        assertThat(storIOSQLite.defaultRxScheduler()).isSameAs(io());
     }
 
     @Test
@@ -557,20 +558,20 @@ public class DefaultStorIOSQLiteTest {
         Scheduler scheduler = mock(Scheduler.class);
         StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(sqLiteOpenHelper)
-                .defaultScheduler(scheduler)
+                .defaultRxScheduler(scheduler)
                 .build();
 
-        assertThat(storIOSQLite.defaultScheduler()).isSameAs(scheduler);
+        assertThat(storIOSQLite.defaultRxScheduler()).isSameAs(scheduler);
     }
 
     @Test
     public void defaultSchedulerReturnsNullIfSpecifiedSchedulerNull() {
         StorIOSQLite storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(sqLiteOpenHelper)
-                .defaultScheduler(null)
+                .defaultRxScheduler(null)
                 .build();
 
-        assertThat(storIOSQLite.defaultScheduler()).isNull();
+        assertThat(storIOSQLite.defaultRxScheduler()).isNull();
     }
 
     static class ClassEntity {

@@ -15,14 +15,16 @@ import org.junit.runner.RunWith;
 import java.util.Collection;
 import java.util.List;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -50,17 +52,17 @@ public class PreparedPutCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldPutObjectsWithoutTypeMappingAsObservable() {
+        public void shouldPutObjectsWithoutTypeMappingAsFlowable() {
             final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithoutTypeMapping();
 
-            final Observable<PutResults<TestItem>> observable = putStub.storIOContentResolver
+            final Flowable<PutResults<TestItem>> flowable = putStub.storIOContentResolver
                     .put()
                     .objects(putStub.items)
                     .withPutResolver(putStub.putResolver)
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(BackpressureStrategy.MISSING);
 
-            putStub.verifyBehaviorForMultipleObjects(observable);
+            putStub.verifyBehaviorForMultipleObjects(flowable);
         }
 
         @Test
@@ -108,16 +110,16 @@ public class PreparedPutCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldPutObjectsWithTypeMappingAsObservable() {
+        public void shouldPutObjectsWithTypeMappingAsFlowable() {
             final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithTypeMapping();
 
-            final Observable<PutResults<TestItem>> observable = putStub.storIOContentResolver
+            final Flowable<PutResults<TestItem>> flowable = putStub.storIOContentResolver
                     .put()
                     .objects(putStub.items)
                     .prepare()
-                    .asRxObservable();
+                    .asRxFlowable(BackpressureStrategy.MISSING);
 
-            putStub.verifyBehaviorForMultipleObjects(observable);
+            putStub.verifyBehaviorForMultipleObjects(flowable);
         }
 
         @Test
@@ -199,7 +201,7 @@ public class PreparedPutCollectionOfObjectsTest {
         }
 
         @Test
-        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsObservable() {
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAffectingContentProviderAsFlowable() {
             final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
             final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
 
@@ -215,18 +217,18 @@ public class PreparedPutCollectionOfObjectsTest {
                     .put()
                     .objects(items)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(BackpressureStrategy.MISSING)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            assertThat(testSubscriber.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
-            verify(storIOContentResolver).defaultScheduler();
+            verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -244,24 +246,24 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final TestSubscriber<PutResults<TestItem>> testSubscriber = new TestSubscriber<PutResults<TestItem>>();
+            final TestObserver<PutResults<TestItem>> testObserver = new TestObserver<PutResults<TestItem>>();
 
             storIOContentResolver
                     .put()
                     .objects(items)
                     .prepare()
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            assertThat(testObserver.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
-            verify(storIOContentResolver).defaultScheduler();
+            verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -279,24 +281,24 @@ public class PreparedPutCollectionOfObjectsTest {
 
             final List<TestItem> items = asList(TestItem.newInstance(), TestItem.newInstance());
 
-            final TestSubscriber<PutResults<TestItem>> testSubscriber = new TestSubscriber<PutResults<TestItem>>();
+            final TestObserver<PutResults<TestItem>> testObserver = new TestObserver<PutResults<TestItem>>();
 
             storIOContentResolver
                     .put()
                     .objects(items)
                     .prepare()
                     .asRxCompletable()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            assertThat(testSubscriber.getOnErrorEvents().get(0))
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            assertThat(testObserver.errors().get(0))
                     .isInstanceOf(StorIOException.class)
                     .hasCauseInstanceOf(IllegalStateException.class);
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
-            verify(storIOContentResolver).defaultScheduler();
+            verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -307,7 +309,7 @@ public class PreparedPutCollectionOfObjectsTest {
     public static class OtherTests {
 
         @Test
-        public void putCollectionOfObjectsObservableExecutesOnSpecifiedScheduler() {
+        public void putCollectionOfObjectsFlowableExecutesOnSpecifiedScheduler() {
             final PutObjectsStub putStub = PutObjectsStub.newPutStubForMultipleObjectsWithoutTypeMapping();
             final SchedulerChecker schedulerChecker = SchedulerChecker.create(putStub.storIOContentResolver);
 
@@ -317,7 +319,7 @@ public class PreparedPutCollectionOfObjectsTest {
                     .withPutResolver(putStub.putResolver)
                     .prepare();
 
-            schedulerChecker.checkAsObservable(operation);
+            schedulerChecker.checkAsFlowable(operation);
         }
 
         @Test

@@ -13,10 +13,13 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.subscribers.TestSubscriber;
 
+import static io.reactivex.BackpressureStrategy.LATEST;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -48,19 +51,19 @@ public class PreparedGetObjectTest {
         }
 
         @Test
-        public void shouldGetObjectByQueryWithoutTypeMappingAsObservable() {
+        public void shouldGetObjectByQueryWithoutTypeMappingAsFlowable() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
-            final Observable<TestItem> testItemObservable = getStub.storIOSQLite
+            final Flowable<TestItem> testItemFlowable = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
                     .withGetResolver(getStub.getResolver)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(LATEST)
                     .take(1);
 
-            getStub.verifyQueryBehavior(testItemObservable);
+            getStub.verifyQueryBehavior(testItemFlowable);
         }
 
         @Test
@@ -94,19 +97,19 @@ public class PreparedGetObjectTest {
         }
 
         @Test
-        public void shouldGetObjectByRawQueryWithoutTypeMappingAsObservable() {
+        public void shouldGetObjectByRawQueryWithoutTypeMappingAsFlowable() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
-            final Observable<TestItem> testItemObservable = getStub.storIOSQLite
+            final Flowable<TestItem> testItemFlowable = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.rawQuery)
                     .withGetResolver(getStub.getResolver)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(LATEST)
                     .take(1);
 
-            getStub.verifyRawQueryBehavior(testItemObservable);
+            getStub.verifyRawQueryBehavior(testItemFlowable);
         }
 
         @Test
@@ -142,18 +145,18 @@ public class PreparedGetObjectTest {
         }
 
         @Test
-        public void shouldGetObjectByQueryWithTypeMappingAsObservable() {
+        public void shouldGetObjectByQueryWithTypeMappingAsFlowable() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
 
-            final Observable<TestItem> testItemObservable = getStub.storIOSQLite
+            final Flowable<TestItem> testItemFlowable = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(LATEST)
                     .take(1);
 
-            getStub.verifyQueryBehavior(testItemObservable);
+            getStub.verifyQueryBehavior(testItemFlowable);
         }
 
         @Test
@@ -185,18 +188,18 @@ public class PreparedGetObjectTest {
         }
 
         @Test
-        public void shouldGetObjectByRawQueryWithTypeMappingAsObservable() {
+        public void shouldGetObjectByRawQueryWithTypeMappingAsFlowable() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
 
-            final Observable<TestItem> testItemObservable = getStub.storIOSQLite
+            final Flowable<TestItem> testItemFlowable = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.rawQuery)
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(LATEST)
                     .take(1);
 
-            getStub.verifyRawQueryBehavior(testItemObservable);
+            getStub.verifyRawQueryBehavior(testItemFlowable);
         }
 
         @Test
@@ -251,13 +254,13 @@ public class PreparedGetObjectTest {
 
         @SuppressWarnings("unchecked")
         @Test
-        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsObservable() {
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsFlowable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
-            when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
+            when(storIOSQLite.observeChanges(any(BackpressureStrategy.class))).thenReturn(Flowable.<Changes>empty());
 
             final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
 
@@ -266,12 +269,12 @@ public class PreparedGetObjectTest {
                     .object(TestItem.class)
                     .withQuery(Query.builder().table("test_table").observesTags("test_tag").build())
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(LATEST)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+            Throwable error = testSubscriber.errors().get(0);
 
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
@@ -285,11 +288,11 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
-            verify(storIOSQLite).observeChanges();
+            verify(storIOSQLite).observeChanges(LATEST);
             verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
@@ -302,7 +305,7 @@ public class PreparedGetObjectTest {
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
-            final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+            final TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
 
             storIOSQLite
                     .get()
@@ -310,11 +313,11 @@ public class PreparedGetObjectTest {
                     .withQuery(Query.builder().table("test_table").build())
                     .prepare()
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            Throwable error = testObserver.errors().get(0);
 
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
@@ -328,7 +331,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
@@ -369,7 +372,7 @@ public class PreparedGetObjectTest {
         }
 
         @Test
-        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithRawQueryAsObservable() {
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithRawQueryAsFlowable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
             final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
 
@@ -383,12 +386,12 @@ public class PreparedGetObjectTest {
                     .object(TestItem.class)
                     .withQuery(RawQuery.builder().query("test query").build())
                     .prepare()
-                    .asRxObservable()
+                    .asRxFlowable(LATEST)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
             testSubscriber.assertNoValues();
-            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+            Throwable error = testSubscriber.errors().get(0);
 
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
@@ -402,7 +405,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).rawQuery(any(RawQuery.class));
@@ -417,7 +420,7 @@ public class PreparedGetObjectTest {
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
-            final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+            final TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
 
             storIOSQLite
                     .get()
@@ -425,11 +428,11 @@ public class PreparedGetObjectTest {
                     .withQuery(RawQuery.builder().query("test query").build())
                     .prepare()
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
-            testSubscriber.assertNoValues();
-            Throwable error = testSubscriber.getOnErrorEvents().get(0);
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            Throwable error = testObserver.errors().get(0);
 
             assertThat(error)
                     .isInstanceOf(StorIOException.class)
@@ -443,7 +446,7 @@ public class PreparedGetObjectTest {
 
             verify(storIOSQLite).get();
             verify(storIOSQLite).lowLevel();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).rawQuery(any(RawQuery.class));
@@ -529,7 +532,7 @@ public class PreparedGetObjectTest {
         }
 
         @Test
-        public void asRxObservableShouldThrowExceptionIfNoQueryWasSet() {
+        public void asRxFlowableShouldThrowExceptionIfNoQueryWasSet() {
             //noinspection unchecked,ConstantConditions
             PreparedGetObject<Object> preparedGetOfObject
                     = new PreparedGetObject<Object>(
@@ -541,7 +544,7 @@ public class PreparedGetObjectTest {
 
             try {
                 //noinspection ResourceType
-                preparedGetOfObject.asRxObservable();
+                preparedGetOfObject.asRxFlowable(LATEST);
                 failBecauseExceptionWasNotThrown(IllegalStateException.class);
             } catch (IllegalStateException expected) {
                 assertThat(expected)
@@ -598,10 +601,10 @@ public class PreparedGetObjectTest {
         }
 
         @Test
-        public void cursorMustBeClosedInCaseOfExceptionForObservable() {
+        public void cursorMustBeClosedInCaseOfExceptionForFlowable() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
 
-            when(storIOSQLite.observeChanges()).thenReturn(Observable.<Changes>empty());
+            when(storIOSQLite.observeChanges(any(BackpressureStrategy.class))).thenReturn(Flowable.<Changes>empty());
 
             //noinspection unchecked
             final GetResolver<Object> getResolver = mock(GetResolver.class);
@@ -629,7 +632,7 @@ public class PreparedGetObjectTest {
             final TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
 
             preparedGetObject
-                    .asRxObservable()
+                    .asRxFlowable(LATEST)
                     .subscribe(testSubscriber);
 
             testSubscriber.awaitTerminalEvent();
@@ -637,7 +640,7 @@ public class PreparedGetObjectTest {
             testSubscriber.assertNoValues();
             testSubscriber.assertError(StorIOException.class);
 
-            StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException storIOException = (StorIOException) testSubscriber.errors().get(0);
 
             IllegalStateException cause = (IllegalStateException) storIOException.getCause();
             assertThat(cause).hasMessage("test exception");
@@ -645,12 +648,12 @@ public class PreparedGetObjectTest {
             // Cursor must be closed in case of exception
             verify(cursor).close();
 
-            verify(storIOSQLite).observeChanges();
+            verify(storIOSQLite).observeChanges(LATEST);
             verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
             verify(getResolver).mapFromCursor(storIOSQLite, cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
@@ -683,18 +686,18 @@ public class PreparedGetObjectTest {
                             getResolver
                     );
 
-            final TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+            final TestObserver<Object> testObserver = new TestObserver<Object>();
 
             preparedGetObject
                     .asRxSingle()
-                    .subscribe(testSubscriber);
+                    .subscribe(testObserver);
 
-            testSubscriber.awaitTerminalEvent();
+            testObserver.awaitTerminalEvent();
 
-            testSubscriber.assertNoValues();
-            testSubscriber.assertError(StorIOException.class);
+            testObserver.assertNoValues();
+            testObserver.assertError(StorIOException.class);
 
-            StorIOException storIOException = (StorIOException) testSubscriber.getOnErrorEvents().get(0);
+            StorIOException storIOException = (StorIOException) testObserver.errors().get(0);
 
             IllegalStateException cause = (IllegalStateException) storIOException.getCause();
             assertThat(cause).hasMessage("test exception");
@@ -707,14 +710,14 @@ public class PreparedGetObjectTest {
             verify(getResolver).mapFromCursor(storIOSQLite, cursor);
             verify(cursor).getCount();
             verify(cursor).moveToNext();
-            verify(storIOSQLite).defaultScheduler();
+            verify(storIOSQLite).defaultRxScheduler();
             verify(storIOSQLite).interceptors();
 
             verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
         }
 
         @Test
-        public void getObjectByQueryObservableExecutesOnSpecifiedScheduler() {
+        public void getObjectByQueryFlowableExecutesOnSpecifiedScheduler() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
             final SchedulerChecker schedulerChecker = SchedulerChecker.create(getStub.storIOSQLite);
 
@@ -725,7 +728,7 @@ public class PreparedGetObjectTest {
                     .withGetResolver(getStub.getResolver)
                     .prepare();
 
-            schedulerChecker.checkAsObservable(operation);
+            schedulerChecker.checkAsFlowable(operation);
         }
 
         @Test

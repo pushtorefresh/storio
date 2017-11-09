@@ -11,9 +11,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 import static org.mockito.Mockito.mock;
 
@@ -35,18 +36,18 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void deleteByQueryObservable() {
+    public void deleteByQueryFlowable() {
         final DeleteQuery deleteQuery = DeleteQuery.builder()
                 .uri(mock(Uri.class))
                 .where("some_field = ?")
                 .whereArgs("someValue")
                 .build();
 
-        Observable<DeleteResult> deleteResultObservable = storIOContentResolver()
+        Flowable<DeleteResult> deleteResultFlowable = storIOContentResolver()
                 .delete()
                 .byQuery(deleteQuery)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(BackpressureStrategy.MISSING);
     }
 
     @Test
@@ -92,15 +93,15 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void deleteObjectsObservable() {
+    public void deleteObjectsFlowable() {
         final List<Article> articles = new ArrayList<Article>();
 
-        Observable<DeleteResults<Article>> deleteResultsObservable = storIOContentResolver()
+        Flowable<DeleteResults<Article>> deleteResultsFlowable = storIOContentResolver()
                 .delete()
                 .objects(articles)
                 .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(BackpressureStrategy.MISSING);
     }
 
     @Test
@@ -140,15 +141,15 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void deleteObjectObservable() {
+    public void deleteObjectFlowable() {
         Article article = mock(Article.class);
 
-        Observable<DeleteResult> deleteResultObservable = storIOContentResolver()
+        Flowable<DeleteResult> deleteResultFlowable = storIOContentResolver()
                 .delete()
                 .object(article)
                 .withDeleteResolver(ArticleMeta.DELETE_RESOLVER)
                 .prepare()
-                .asRxObservable();
+                .asRxFlowable(BackpressureStrategy.MISSING);
     }
 
     @Test

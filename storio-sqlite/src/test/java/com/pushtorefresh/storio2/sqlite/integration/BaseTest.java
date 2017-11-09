@@ -23,8 +23,8 @@ import org.robolectric.annotation.Config;
 
 import java.util.List;
 
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -52,7 +52,7 @@ public abstract class BaseTest {
 
         storIOSQLite = DefaultStorIOSQLite.builder()
                 .sqliteOpenHelper(sqLiteOpenHelper)
-                .defaultScheduler(defaultScheduler())
+                .defaultRxScheduler(defaultRxScheduler())
                 .addTypeMapping(User.class, SQLiteTypeMapping.<User>builder()
                         .putResolver(UserTableMeta.PUT_RESOLVER)
                         .getResolver(UserTableMeta.GET_RESOLVER)
@@ -80,7 +80,7 @@ public abstract class BaseTest {
     }
 
     @NonNull
-    protected Scheduler defaultScheduler() {
+    protected Scheduler defaultRxScheduler() {
         return Schedulers.io();
     }
 

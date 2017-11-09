@@ -4,25 +4,25 @@ import org.junit.Test;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.observers.TestSubscriber;
+import io.reactivex.Flowable;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class ChangesBusTest {
 
     @Test
     public void asObservableShouldNotReturnNullIfRxJavaInClassPath() {
         ChangesBus<String> changesBus = new ChangesBus<String>(true);
-        assertThat(changesBus.asObservable()).isNotNull();
+        assertThat(changesBus.asFlowable()).isNotNull();
     }
 
     @Test
     public void asObservableShouldReturnNullIfRxJavaIsNotInTheClassPath() {
         ChangesBus<String> changesBus = new ChangesBus<String>(false);
-        assertThat(changesBus.asObservable()).isNull();
+        assertThat(changesBus.asFlowable()).isNull();
     }
 
     @Test
@@ -42,11 +42,11 @@ public class ChangesBusTest {
 
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
 
-        Observable<String> observable = changesBus.asObservable();
-        assertThat(observable).isNotNull();
+        Flowable<String> flowable = changesBus.asFlowable();
+        assertThat(flowable).isNotNull();
 
         //noinspection ConstantConditions
-        observable.subscribe(testSubscriber);
+        flowable.subscribe(testSubscriber);
 
         List<String> messages = asList("My", "life", "my", "rules", "please?");
 
@@ -54,7 +54,7 @@ public class ChangesBusTest {
             changesBus.onNext(message);
         }
 
-        testSubscriber.assertReceivedOnNext(messages);
-        testSubscriber.assertNoTerminalEvent();
+        testSubscriber.assertValueSequence(messages);
+        testSubscriber.assertNotTerminated();
     }
 }

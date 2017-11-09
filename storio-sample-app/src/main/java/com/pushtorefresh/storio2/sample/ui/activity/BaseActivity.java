@@ -9,8 +9,8 @@ import android.view.MenuItem;
 
 import com.pushtorefresh.storio2.sample.R;
 
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public abstract class BaseActivity extends ActionBarActivity {
 
@@ -18,7 +18,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     private Toolbar toolbar;
 
     @NonNull
-    private final CompositeSubscription compositeSubscriptionForOnStop = new CompositeSubscription();
+    private final CompositeDisposable compositeDisposableForOnStop = new CompositeDisposable();
 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
@@ -34,13 +34,13 @@ public abstract class BaseActivity extends ActionBarActivity {
         }
     }
 
-    protected void unsubscribeOnStop(@NonNull Subscription subscription) {
-        compositeSubscriptionForOnStop.add(subscription);
+    protected void disposeOnStop(@NonNull Disposable disposable) {
+        compositeDisposableForOnStop.add(disposable);
     }
 
     @Override
     public void onStop() {
-        compositeSubscriptionForOnStop.clear();
+        compositeDisposableForOnStop.clear();
         super.onStop();
     }
 
