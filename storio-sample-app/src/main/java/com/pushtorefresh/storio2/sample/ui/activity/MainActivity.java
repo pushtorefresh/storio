@@ -10,8 +10,6 @@ import android.view.MenuItem;
 import com.pushtorefresh.storio2.sample.R;
 import com.pushtorefresh.storio2.sample.many_to_many_sample.ManyToManyActivity;
 import com.pushtorefresh.storio2.sample.sqldelight.SqlDelightActivity;
-import com.pushtorefresh.storio2.sample.ui.Toasts;
-import com.pushtorefresh.storio2.sample.ui.activity.db.TweetsSampleActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -47,11 +45,11 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.main_db_sample)
     void openDbSample() {
-        startActivity(new Intent(this, TweetsSampleActivity.class));
+        startActivity(new Intent(this, TweetsSQLiteSampleActivity.class));
     }
 
     @OnClick(R.id.main_content_resolver_sample)
     void openContentResolverSample() {
-        Toasts.safeShowShortToast(this, "Not implemented yet :(");
+        startActivity(new Intent(this, TweetsContentResolverSampleActivity.class));
     }
 }

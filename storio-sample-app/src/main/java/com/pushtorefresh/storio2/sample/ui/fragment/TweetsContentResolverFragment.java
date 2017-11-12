@@ -14,16 +14,16 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.pushtorefresh.storio2.Optional;
+import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio2.contentresolver.operations.put.PutResults;
+import com.pushtorefresh.storio2.contentresolver.queries.Query;
 import com.pushtorefresh.storio2.sample.R;
 import com.pushtorefresh.storio2.sample.SampleApp;
 import com.pushtorefresh.storio2.sample.db.entities.Tweet;
 import com.pushtorefresh.storio2.sample.db.tables.TweetsTable;
-import com.pushtorefresh.storio2.sample.sample_code.Relations;
+import com.pushtorefresh.storio2.sample.provider.meta.TweetMeta;
 import com.pushtorefresh.storio2.sample.ui.UiStateController;
 import com.pushtorefresh.storio2.sample.ui.adapter.TweetsAdapter;
-import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
-import com.pushtorefresh.storio2.sqlite.operations.put.PutResults;
-import com.pushtorefresh.storio2.sqlite.queries.Query;
 
 import org.reactivestreams.Subscription;
 
@@ -43,18 +43,18 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import timber.log.Timber;
 
+import static com.pushtorefresh.storio2.sample.provider.ContentProviderQueries.QUERY_ALL;
 import static com.pushtorefresh.storio2.sample.ui.Toasts.safeShowShortToast;
 import static io.reactivex.BackpressureStrategy.LATEST;
 import static io.reactivex.BackpressureStrategy.MISSING;
 import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
-public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpdateTweetListener {
+public class TweetsContentResolverFragment extends BaseFragment implements TweetsAdapter.OnUpdateTweetListener {
 
     // In this sample app we use dependency injection (DI) to keep the code clean
-    // Just remember that it's already configured instance of StorIOSQLite from DbModule
+    // Just remember that it's already configured instance of StorIOContentResolver from ContentResolverModule
     @Inject
-    StorIOSQLite storIOSQLite;
+    StorIOContentResolver storIOContentResolver;
 
     UiStateController uiStateController;
 
@@ -69,7 +69,6 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
         final FragmentActivity activity = getActivity();
         SampleApp.get(activity).appComponent().inject(this);
         tweetsAdapter = new TweetsAdapter(LayoutInflater.from(activity), this);
-        new Relations(storIOSQLite).getTweetWithUser();
     }
 
     @Override
@@ -105,13 +104,12 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
     void reloadData() {
         uiStateController.setUiStateLoading();
 
-        final Disposable disposable = storIOSQLite
+        final Disposable disposable = storIOContentResolver
                 .get()
                 .listOfObjects(Tweet.class)
-                .withQuery(TweetsTable.QUERY_ALL)
+                .withQuery(QUERY_ALL)
                 .prepare()
                 .asRxFlowable(LATEST) // it will be subscribed to changes in tweets table!
-                .delay(1, SECONDS) // for better User Experience :) Actually, StorIO is so fast that we need to delay emissions (it's a joke, or not)
                 .observeOn(mainThread())
                 .subscribe(new Consumer<List<Tweet>>() {
                     @Override
@@ -164,7 +162,7 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
         tweets.add(Tweet.newTweet("Apple", "Yosemite update: fixes for Wifi issues, yosemite-wifi-patch#142"));
 
         // Looks/reads nice, isn't it?
-        storIOSQLite
+        storIOContentResolver
                 .put()
                 .objects(tweets)
                 .prepare()
@@ -194,7 +192,7 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
     }
 
     /**
-     * This method from {@link com.pushtorefresh.storio2.sample.ui.adapter.TweetsAdapter.OnUpdateTweetListener}
+     * This method from {@link TweetsAdapter.OnUpdateTweetListener}
      * interface.
      * It updates specific tweet by adding '+' to the end of tweet author
      * every time when is called.
@@ -206,11 +204,11 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
     @Override
     public void onUpdateTweet(@NonNull final Long tweetId) {
         // 1.
-        storIOSQLite
+        storIOContentResolver
                 .get()
                 .object(Tweet.class)
                 .withQuery(Query.builder()
-                        .table(TweetsTable.TABLE)
+                        .uri(TweetMeta.CONTENT_URI)
                         .where(TweetsTable.COLUMN_ID + " = ?")
                         .whereArgs(tweetId)
                         .build())
@@ -232,7 +230,7 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
                     @Override
                     @NonNull
                     public Single<?> apply(Optional<Tweet> tweet) {
-                        return storIOSQLite
+                        return storIOContentResolver
                                 .put()
                                 .object(tweet.get())
                                 .prepare()

@@ -10,6 +10,7 @@
     <string name="main_tweets_sample">Tweets — Db sample</string>
     <string name="main_content_provider_sample">Contacts — ContentResolver sample</string>
     <string name="tweets_db_sample_label">Tweets — Db Sample</string>
+    <string name="tweets_content_resolver_sample_label">Tweets — ContentResolver Sample</string>
     <string name="many_to_many">Many to many</string>
     <string name="sqldelight">SQLDelight</string>
     <string name="common_loading">Loading…</string>
