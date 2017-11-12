@@ -3,6 +3,7 @@ package com.pushtorefresh.storio2.sqlite.integration;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.sqlite.BuildConfig;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.get.DefaultGetResolver;
@@ -450,7 +451,7 @@ public class QueryTest extends BaseTest {
         final List<User> users = putUsersBlocking(3);
         final User user = users.get(0);
 
-        final User userFromQuery = storIOSQLite
+        final Optional<User> userFromQuery = storIOSQLite
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -462,14 +463,14 @@ public class QueryTest extends BaseTest {
                 .executeAsBlocking();
 
         assertThat(userFromQuery).isNotNull();
-        assertThat(userFromQuery).isEqualTo(user);
+        assertThat(userFromQuery.orNull()).isEqualTo(user);
     }
 
     @Test
     public void queryOneNonExistedObject() {
         putUsersBlocking(3);
 
-        final User userFromQuery = storIOSQLite
+        final Optional<User> userFromQuery = storIOSQLite
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -480,6 +481,6 @@ public class QueryTest extends BaseTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertThat(userFromQuery).isNull();
+        assertThat(userFromQuery.isPresent()).isFalse();
     }
 }

@@ -1,7 +1,6 @@
 package com.pushtorefresh.storio2.sqlite.impl;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 import com.pushtorefresh.storio2.sqlite.Interceptor;
@@ -37,7 +36,7 @@ public class ChainImpl implements Interceptor.Chain {
         this.interceptors = interceptors;
     }
 
-    @Nullable // can be null on PreparedGetObject
+    @NonNull
     @Override
     public <Result, Data> Result proceed(@NonNull PreparedOperation<Result, Data> operation) {
         if (!interceptors.hasNext()) {
@@ -55,8 +54,7 @@ public class ChainImpl implements Interceptor.Chain {
         // Call the nextChain nextInterceptor in the chain.
         final Interceptor nextInterceptor = interceptors.next();
         final ChainImpl nextChain = new ChainImpl(interceptors);
-        final Result result = nextInterceptor.intercept(operation, nextChain);
 
-        return result;
+        return nextInterceptor.intercept(operation, nextChain);
     }
 }

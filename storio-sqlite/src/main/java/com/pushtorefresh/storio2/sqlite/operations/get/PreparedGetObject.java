@@ -5,6 +5,7 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.StorIOException;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 import com.pushtorefresh.storio2.sqlite.Interceptor;
@@ -20,7 +21,7 @@ import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
 
-public class PreparedGetObject<T> extends PreparedGet<T> {
+public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
 
     @NonNull
     private final Class<T> type;
@@ -68,7 +69,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
     @NonNull
     @CheckResult
     @Override
-    public Flowable<T> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
+    public Flowable<Optional<T>> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
         return RxJavaUtils.createGetFlowable(storIOSQLite, this, query, rawQuery, backpressureStrategy);
     }
 
@@ -85,20 +86,19 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
     @NonNull
     @CheckResult
     @Override
-    public Single<T> asRxSingle() {
+    public Single<Optional<T>> asRxSingle() {
         return RxJavaUtils.createSingle(storIOSQLite, this);
     }
-
 
     @NonNull
     @Override
     protected Interceptor getRealCallInterceptor() {
-        return new RealCallInterceptor();
+        return new RealCallInterceptor<T>();
     }
 
-    private class RealCallInterceptor implements Interceptor {
-        @Nullable // TODO every other interceptor is NonNull, handle this case separately?
-        @SuppressWarnings({"ConstantConditions", "NullableProblems"})
+    private class RealCallInterceptor<UnwrappedResult> implements Interceptor {
+        @NonNull
+        @SuppressWarnings("ConstantConditions")
         @Override
         public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
             try {
@@ -131,14 +131,16 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
                 try {
                     final int count = cursor.getCount();
 
+                    final UnwrappedResult result;
                     if (count == 0) {
-                        return null;
+                        result = null;
+                    } else {
+                        cursor.moveToNext();
+                        //noinspection unchecked
+                        result = (UnwrappedResult) getResolver.mapFromCursor(storIOSQLite, cursor);
                     }
-
-                    cursor.moveToNext();
-
                     //noinspection unchecked
-                    return (Result) getResolver.mapFromCursor(storIOSQLite, cursor);
+                    return (Result) Optional.of(result);
                 } finally {
                     cursor.close();
                 }

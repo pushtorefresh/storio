@@ -51,7 +51,7 @@ public abstract class PreparedGet<Result> implements PreparedOperation<Result, G
      * @return result of an operation. Can be null in get(Object).
      */
     @WorkerThread
-    @Nullable
+    @NonNull
     public final Result executeAsBlocking() {
         return buildChain(storIOSQLite.interceptors(), getRealCallInterceptor())
                 .proceed(this);

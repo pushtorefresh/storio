@@ -2,6 +2,7 @@ package com.pushtorefresh.storio2.sqlite.operations.get;
 
 import android.database.Cursor;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.StorIOException;
 import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
@@ -39,7 +40,7 @@ public class PreparedGetObjectTest {
         public void shouldGetByQueryWithoutTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
-            final TestItem testItem = getStub.storIOSQLite
+            final Optional<TestItem> testItem = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -54,7 +55,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByQueryWithoutTypeMappingAsFlowable() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
-            final Flowable<TestItem> testItemFlowable = getStub.storIOSQLite
+            final Flowable<Optional<TestItem>> testItemFlowable = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -70,7 +71,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByQueryWithoutTypeMappingAsSingle() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
-            final Single<TestItem> testItemSingle = getStub.storIOSQLite
+            final Single<Optional<TestItem>> testItemSingle = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -85,7 +86,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByRawQueryWithoutTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
-            final TestItem testItem = getStub.storIOSQLite
+            final Optional<TestItem> testItem = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.rawQuery)
@@ -100,7 +101,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByRawQueryWithoutTypeMappingAsFlowable() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
-            final Flowable<TestItem> testItemFlowable = getStub.storIOSQLite
+            final Flowable<Optional<TestItem>> testItemFlowable = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.rawQuery)
@@ -116,7 +117,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByRawQueryWithoutTypeMappingAsSingle() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
-            final Single<TestItem> testItemSingle = getStub.storIOSQLite
+            final Single<Optional<TestItem>> testItemSingle = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.rawQuery)
@@ -134,7 +135,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByQueryWithTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
 
-            final TestItem testItem = getStub.storIOSQLite
+            final Optional<TestItem> testItem = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -148,7 +149,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByQueryWithTypeMappingAsFlowable() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
 
-            final Flowable<TestItem> testItemFlowable = getStub.storIOSQLite
+            final Flowable<Optional<TestItem>> testItemFlowable = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -163,7 +164,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByQueryWithTypeMappingAsSingle() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
 
-            final Single<TestItem> testItemSingle = getStub.storIOSQLite
+            final Single<Optional<TestItem>> testItemSingle = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -177,7 +178,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByRawQueryWithTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
 
-            final TestItem testItem = getStub.storIOSQLite
+            final Optional<TestItem> testItem = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.rawQuery)
@@ -191,7 +192,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByRawQueryWithTypeMappingAsFlowable() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
 
-            final Flowable<TestItem> testItemFlowable = getStub.storIOSQLite
+            final Flowable<Optional<TestItem>> testItemFlowable = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.rawQuery)
@@ -206,7 +207,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectByRawQueryWithTypeMappingAsSingle() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
 
-            final Single<TestItem> testItemSingle = getStub.storIOSQLite
+            final Single<Optional<TestItem>> testItemSingle = getStub.storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.rawQuery)
@@ -227,7 +228,7 @@ public class PreparedGetObjectTest {
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
-            final PreparedGet<TestItem> preparedGet = storIOSQLite
+            final PreparedGet<Optional<TestItem>> preparedGet = storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(Query.builder().table("test_table").build())
@@ -262,7 +263,7 @@ public class PreparedGetObjectTest {
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
             when(storIOSQLite.observeChanges(any(BackpressureStrategy.class))).thenReturn(Flowable.<Changes>empty());
 
-            final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+            final TestSubscriber<Optional<TestItem>> testSubscriber = new TestSubscriber<Optional<TestItem>>();
 
             storIOSQLite
                     .get()
@@ -305,7 +306,7 @@ public class PreparedGetObjectTest {
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
-            final TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
+            final TestObserver<Optional<TestItem>> testObserver = new TestObserver<Optional<TestItem>>();
 
             storIOSQLite
                     .get()
@@ -346,7 +347,7 @@ public class PreparedGetObjectTest {
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
-            final PreparedGet<TestItem> preparedGet = storIOSQLite
+            final PreparedGet<Optional<TestItem>> preparedGet = storIOSQLite
                     .get()
                     .object(TestItem.class)
                     .withQuery(RawQuery.builder().query("test query").build())
@@ -379,7 +380,7 @@ public class PreparedGetObjectTest {
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
-            final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+            final TestSubscriber<Optional<TestItem>> testSubscriber = new TestSubscriber<Optional<TestItem>>();
 
             storIOSQLite
                     .get()
@@ -420,7 +421,7 @@ public class PreparedGetObjectTest {
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
-            final TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
+            final TestObserver<Optional<TestItem>> testObserver = new TestObserver<Optional<TestItem>>();
 
             storIOSQLite
                     .get()

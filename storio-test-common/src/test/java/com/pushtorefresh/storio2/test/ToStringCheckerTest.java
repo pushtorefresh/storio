@@ -3,6 +3,7 @@ package com.pushtorefresh.storio2.test;
 import android.net.Uri;
 
 import org.junit.Test;
+import org.mockito.internal.util.MockUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -11,8 +12,8 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class ToStringCheckerTest {
 
@@ -137,5 +138,14 @@ public class ToStringCheckerTest {
 
         // We can not check equality of Uri instance here…
         assertThat(sample).isInstanceOf(Uri.class);
+    }
+
+    @Test
+    public void shouldCreateSampleValueOfAnyObject() {
+        Object sample = new ToStringChecker<Object>(Object.class)
+                .createSampleValueOfType(Object.class);
+
+        MockUtil.isMock(sample);
+        assertThat(sample.getClass().getSuperclass()).isEqualTo(Object.class);
     }
 }

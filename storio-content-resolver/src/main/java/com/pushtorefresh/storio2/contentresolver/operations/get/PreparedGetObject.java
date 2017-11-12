@@ -53,7 +53,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
      */
     @SuppressWarnings({"ConstantConditions", "NullableProblems"})
     @WorkerThread
-    @Nullable
+    @NonNull
     @Override
     public T executeAsBlocking() {
         try {

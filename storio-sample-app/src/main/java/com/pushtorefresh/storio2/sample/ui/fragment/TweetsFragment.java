@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.sample.R;
 import com.pushtorefresh.storio2.sample.SampleApp;
 import com.pushtorefresh.storio2.sample.db.entities.Tweet;
@@ -216,18 +217,21 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
                 .prepare()
                 .asRxSingle()
                 // 2.
-                .map(new Function<Tweet, Tweet>() {
+                .map(new Function<Optional<Tweet>, Optional<Tweet>>() {
                     @Override
-                    public Tweet apply(Tweet tweet) {
+                    @NonNull
+                    public Optional<Tweet> apply(@NonNull Optional<Tweet> tweet) {
                         // We can get NULL in parameter so we check it
-                        return tweet == null ? tweet :
-                                Tweet.newTweet(tweetId, tweet.author() + "+", tweet.content());
+                        return tweet.isPresent()
+                                ? Optional.of(Tweet.newTweet(tweetId, tweet.get().author() + "+", tweet.get().content()))
+                                : tweet;
                     }
                 })
                 // 3.
-                .flatMap(new Function<Tweet, Single<?>>() {
+                .flatMap(new Function<Optional<Tweet>, Single<?>>() {
                     @Override
-                    public Single<?> apply(Tweet tweet) {
+                    @NonNull
+                    public Single<?> apply(Optional<Tweet> tweet) {
                         return storIOSQLite
                                 .put()
                                 .object(tweet)
@@ -239,7 +243,7 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
                 .observeOn(mainThread())
                 .subscribe(new Consumer<Object>() {
                     @Override
-                    public void accept(Object o) {
+                    public void accept(@NonNull Object o) {
 
                     }
                 }, new Consumer<Throwable>() {

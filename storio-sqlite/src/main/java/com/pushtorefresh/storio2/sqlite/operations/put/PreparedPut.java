@@ -2,7 +2,6 @@ package com.pushtorefresh.storio2.sqlite.operations.put;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
@@ -37,7 +36,7 @@ public abstract class PreparedPut<Result, Data> implements PreparedWriteOperatio
      * @return non-null results of Put Operation.
      */
     @WorkerThread
-    @Nullable
+    @NonNull
     public final Result executeAsBlocking() {
         return buildChain(storIOSQLite.interceptors(), getRealCallInterceptor())
                 .proceed(this);

@@ -2,6 +2,7 @@ package com.pushtorefresh.storio2.sqlite.design;
 
 import android.database.Cursor;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
 
@@ -130,7 +131,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectBlocking() {
-        User user = storIOSQLite()
+        Optional<User> user = storIOSQLite()
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -145,7 +146,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectBlockingWithRawQueryBlocking() {
-        User user = storIOSQLite()
+        Optional<User> user = storIOSQLite()
                 .get()
                 .object(User.class)
                 .withQuery(RawQuery.builder()
@@ -159,7 +160,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectFlowable() {
-        Flowable<User> userFlowable = storIOSQLite()
+        Flowable<Optional<User>> userFlowable = storIOSQLite()
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -174,7 +175,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectWithRawQueryFlowable() {
-        Flowable<User> userFlowable = storIOSQLite()
+        Flowable<Optional<User>> userFlowable = storIOSQLite()
                 .get()
                 .object(User.class)
                 .withQuery(RawQuery.builder()
@@ -217,7 +218,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectSingle() {
-        Single<User> singleUser = storIOSQLite()
+        Single<Optional<User>> singleUser = storIOSQLite()
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -232,7 +233,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectWithRawQuerySingle() {
-        Single<User> singleUsers = storIOSQLite()
+        Single<Optional<User>> singleUsers = storIOSQLite()
                 .get()
                 .object(User.class)
                 .withQuery(RawQuery.builder()

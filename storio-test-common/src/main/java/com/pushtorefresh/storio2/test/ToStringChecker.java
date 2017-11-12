@@ -1,6 +1,5 @@
 package com.pushtorefresh.storio2.test;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.lang.reflect.Constructor;
@@ -140,10 +139,8 @@ public class ToStringChecker<T> {
             return singletonMap("map_key", "map_value");
         } else if (type.equals(Set.class)) {
             return singleton("set_item");
-        } else if (type.equals(Uri.class)) {
-            return mock(Uri.class);
         } else {
-            throw new IllegalStateException("Can not set sample value to the field of type " + type);
+            return mock(type);
         }
     }
 

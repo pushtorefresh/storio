@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio2.sqlite.integration;
 
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.sqlite.operations.get.PreparedGetObject;
 
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class GetObjectObserveChangesTest extends BaseOperationObserveChangesTest
                 .withQuery(query)
                 .prepare();
 
-        verifyChangesReceived(operation, tableChanges, user);
+        verifyChangesReceived(operation, tableChanges, Optional.of(user));
     }
 
     @Test
@@ -30,7 +31,7 @@ public class GetObjectObserveChangesTest extends BaseOperationObserveChangesTest
                 .withQuery(query)
                 .prepare();
 
-        verifyChangesReceived(operation, tableChanges, user);
+        verifyChangesReceived(operation, tableChanges, Optional.of(user));
     }
 
     @Test
@@ -43,7 +44,7 @@ public class GetObjectObserveChangesTest extends BaseOperationObserveChangesTest
                 .withQuery(query)
                 .prepare();
 
-        verifyChangesReceived(operation, tagChanges, user);
+        verifyChangesReceived(operation, tagChanges, Optional.of(user));
     }
 
     @Test
@@ -56,6 +57,6 @@ public class GetObjectObserveChangesTest extends BaseOperationObserveChangesTest
                 .withQuery(query)
                 .prepare();
 
-        verifyChangesReceived(operation, tagChanges, user);
+        verifyChangesReceived(operation, tagChanges, Optional.of(user));
     }
 }

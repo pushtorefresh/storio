@@ -112,6 +112,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult, DeleteQu
                     );
                     storIOSQLite.lowLevel().notifyAboutChanges(changes);
                 }
+                //noinspection unchecked
                 return (Result) deleteResult;
             } catch (Exception exception) {
                 throw new StorIOException("Error has occurred during Delete operation. query = " + deleteQuery, exception);
