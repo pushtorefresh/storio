@@ -3,12 +3,12 @@ package com.pushtorefresh.storio2.contentresolver.integration;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.contentresolver.BuildConfig;
 import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
 
 import org.assertj.android.api.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -303,7 +303,7 @@ public class GetOperationTest extends IntegrationTest {
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
 
-        TestItem testItem = storIOContentResolver
+        Optional<TestItem> testItem = storIOContentResolver
                 .get()
                 .object(TestItem.class)
                 .withQuery(Query.builder()
@@ -314,9 +314,9 @@ public class GetOperationTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertThat(testItem).isNotNull();
+        assertThat(testItem.isPresent()).isTrue();
 
-        assertThat(testItemToInsert.equalsWithoutId(testItem)).isTrue();
+        assertThat(testItemToInsert.equalsWithoutId(testItem.get())).isTrue();
 
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
         changesTestSubscriber.assertNoErrors();
@@ -335,7 +335,7 @@ public class GetOperationTest extends IntegrationTest {
         TestItem testItemToInsert = TestItem.create(null, "value");
         contentResolver.insert(TestItem.CONTENT_URI, testItemToInsert.toContentValues());
 
-        TestItem testItem = storIOContentResolver
+        Optional<TestItem> testItem = storIOContentResolver
                 .get()
                 .object(TestItem.class)
                 .withQuery(Query.builder()
@@ -346,7 +346,7 @@ public class GetOperationTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertThat(testItem).isNull();
+        assertThat(testItem.isPresent()).isFalse();
 
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
         changesTestSubscriber.assertNoErrors();
@@ -367,7 +367,7 @@ public class GetOperationTest extends IntegrationTest {
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
 
-        Flowable<TestItem> testItemFlowable = storIOContentResolver
+        Flowable<Optional<TestItem>> testItemFlowable = storIOContentResolver
                 .get()
                 .object(TestItem.class)
                 .withQuery(Query.builder()
@@ -379,22 +379,21 @@ public class GetOperationTest extends IntegrationTest {
                 .asRxFlowable(BackpressureStrategy.MISSING)
                 .take(1);
 
-        TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+        TestSubscriber<Optional<TestItem>> testSubscriber = new TestSubscriber<Optional<TestItem>>();
         testItemFlowable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertNoErrors();
 
-        List<TestItem> emmitedItems = testSubscriber.values();
+        List<Optional<TestItem>> emmitedItems = testSubscriber.values();
         assertThat(emmitedItems.size()).isEqualTo(1);
-        assertThat(expectedItem.equalsWithoutId(emmitedItems.get(0))).isTrue();
+        assertThat(expectedItem.equalsWithoutId(emmitedItems.get(0).get())).isTrue();
 
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
         changesTestSubscriber.assertNoErrors();
         changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
     }
 
-    @Ignore("TODO: fixme")
     @Test
     public void getNonExistedObjectExecuteAsFlowable() {
         final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
@@ -406,7 +405,7 @@ public class GetOperationTest extends IntegrationTest {
 
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value").toContentValues());
 
-        Flowable<TestItem> testItemFlowable = storIOContentResolver
+        Flowable<Optional<TestItem>> testItemFlowable = storIOContentResolver
                 .get()
                 .object(TestItem.class)
                 .withQuery(Query.builder()
@@ -418,11 +417,11 @@ public class GetOperationTest extends IntegrationTest {
                 .asRxFlowable(BackpressureStrategy.MISSING)
                 .take(1);
 
-        TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+        TestSubscriber<Optional<TestItem>> testSubscriber = new TestSubscriber<Optional<TestItem>>();
         testItemFlowable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
-        testSubscriber.assertValue((TestItem) null);
+        testSubscriber.assertValue(Optional.<TestItem>empty());
         testSubscriber.assertNoErrors();
 
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
@@ -444,7 +443,7 @@ public class GetOperationTest extends IntegrationTest {
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
 
-        Single<TestItem> testItemSingle = storIOContentResolver
+        Single<Optional<TestItem>> testItemSingle = storIOContentResolver
                 .get()
                 .object(TestItem.class)
                 .withQuery(Query.builder()
@@ -455,22 +454,21 @@ public class GetOperationTest extends IntegrationTest {
                 .prepare()
                 .asRxSingle();
 
-        TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
+        TestObserver<Optional<TestItem>> testObserver = new TestObserver<Optional<TestItem>>();
         testItemSingle.subscribe(testObserver);
 
         testObserver.awaitTerminalEvent(5, SECONDS);
         testObserver.assertNoErrors();
 
-        List<TestItem> emmitedItems = testObserver.values();
+        List<Optional<TestItem>> emmitedItems = testObserver.values();
         assertThat(emmitedItems.size()).isEqualTo(1);
-        assertThat(expectedItem.equalsWithoutId(emmitedItems.get(0))).isTrue();
+        assertThat(expectedItem.equalsWithoutId(emmitedItems.get(0).get())).isTrue();
 
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
         changesTestSubscriber.assertNoErrors();
         changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
     }
 
-    @Ignore("TODO: fixme")
     @Test
     public void getNonExistedObjectExecuteAsSingle() {
         final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
@@ -482,7 +480,7 @@ public class GetOperationTest extends IntegrationTest {
 
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value").toContentValues());
 
-        Single<TestItem> testItemSingle = storIOContentResolver
+        Single<Optional<TestItem>> testItemSingle = storIOContentResolver
                 .get()
                 .object(TestItem.class)
                 .withQuery(Query.builder()
@@ -493,11 +491,11 @@ public class GetOperationTest extends IntegrationTest {
                 .prepare()
                 .asRxSingle();
 
-        TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
+        TestObserver<Optional<TestItem>> testObserver = new TestObserver<Optional<TestItem>>();
         testItemSingle.subscribe(testObserver);
 
         testObserver.awaitTerminalEvent(5, SECONDS);
-        testObserver.assertValue((TestItem) null);
+        testObserver.assertValue(Optional.<TestItem>empty());
         testObserver.assertNoErrors();
 
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
@@ -505,7 +503,6 @@ public class GetOperationTest extends IntegrationTest {
         changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
     }
 
-    @Ignore("TODO: fixme")
     @Test
     public void getOneExistedObjectTableUpdate() {
         TestItem expectedItem = TestItem.create(null, "value");
@@ -514,7 +511,7 @@ public class GetOperationTest extends IntegrationTest {
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value3").toContentValues());
 
-        Flowable<TestItem> testItemFlowable = storIOContentResolver
+        Flowable<Optional<TestItem>> testItemFlowable = storIOContentResolver
                 .get()
                 .object(TestItem.class)
                 .withQuery(Query.builder()
@@ -526,11 +523,11 @@ public class GetOperationTest extends IntegrationTest {
                 .asRxFlowable(BackpressureStrategy.MISSING)
                 .take(2);
 
-        TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+        TestSubscriber<Optional<TestItem>> testSubscriber = new TestSubscriber<Optional<TestItem>>();
         testItemFlowable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
-        testSubscriber.assertValue((TestItem) null);
+        testSubscriber.assertValue(Optional.<TestItem>empty());
         testSubscriber.assertNoErrors();
 
         contentResolver.insert(TestItem.CONTENT_URI, expectedItem.toContentValues());
@@ -538,20 +535,19 @@ public class GetOperationTest extends IntegrationTest {
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertNoErrors();
 
-        List<TestItem> emmitedItems = testSubscriber.values();
-        assertThat(emmitedItems.size()).isEqualTo(2);
-        assertThat(emmitedItems.get(0)).isNull();
-        assertThat(expectedItem.equalsWithoutId(emmitedItems.get(1))).isTrue();
+        List<Optional<TestItem>> emittedItems = testSubscriber.values();
+        assertThat(emittedItems.size()).isEqualTo(2);
+        assertThat(emittedItems.get(0).isPresent()).isFalse();
+        assertThat(expectedItem.equalsWithoutId(emittedItems.get(1).get())).isTrue();
     }
 
-    @Ignore("TODO: fixme")
     @Test
     public void getOneNonexistedObjectTableUpdate() {
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value3").toContentValues());
 
-        Flowable<TestItem> testItemFlowable = storIOContentResolver
+        Flowable<Optional<TestItem>> testItemFlowable = storIOContentResolver
                 .get()
                 .object(TestItem.class)
                 .withQuery(Query.builder()
@@ -563,17 +559,17 @@ public class GetOperationTest extends IntegrationTest {
                 .asRxFlowable(BackpressureStrategy.MISSING)
                 .take(2);
 
-        TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+        TestSubscriber<Optional<TestItem>> testSubscriber = new TestSubscriber<Optional<TestItem>>();
         testItemFlowable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
-        testSubscriber.assertValue((TestItem) null);
+        testSubscriber.assertValue(Optional.<TestItem>empty());
         testSubscriber.assertNoErrors();
 
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value4").toContentValues());
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
-        testSubscriber.assertValues(null, null);
+        testSubscriber.assertValues(Optional.<TestItem>empty(), Optional.<TestItem>empty());
         testSubscriber.assertNoErrors();
     }
 }
