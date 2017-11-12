@@ -234,7 +234,7 @@ public class TweetsFragment extends BaseFragment implements TweetsAdapter.OnUpda
                     public Single<?> apply(Optional<Tweet> tweet) {
                         return storIOSQLite
                                 .put()
-                                .object(tweet)
+                                .object(tweet.get())
                                 .prepare()
                                 .asRxSingle();
                     }
