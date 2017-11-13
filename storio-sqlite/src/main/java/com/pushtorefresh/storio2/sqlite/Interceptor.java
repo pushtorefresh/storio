@@ -1,7 +1,6 @@
 package com.pushtorefresh.storio2.sqlite;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 
@@ -12,7 +11,7 @@ import com.pushtorefresh.storio2.operations.PreparedOperation;
  */
 public interface Interceptor {
 
-    @Nullable
+    @NonNull
     <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain);
 
     /**
@@ -20,7 +19,7 @@ public interface Interceptor {
      */
     interface Chain {
 
-        @Nullable
+        @NonNull
         <Result, Data> Result proceed(@NonNull PreparedOperation<Result, Data> operation);
     }
 }

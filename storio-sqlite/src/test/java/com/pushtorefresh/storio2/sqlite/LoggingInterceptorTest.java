@@ -1,7 +1,6 @@
 package com.pushtorefresh.storio2.sqlite;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.pushtorefresh.storio2.operations.PreparedOperation;
@@ -100,7 +99,7 @@ public class LoggingInterceptorTest {
             this.result = result;
         }
 
-        @Nullable
+        @NonNull
         @Override
         public <Result, Data> Result proceed(@NonNull PreparedOperation<Result, Data> operation) {
             return (Result) result;
@@ -116,7 +115,7 @@ public class LoggingInterceptorTest {
             this.data = data;
         }
 
-        @Nullable
+        @NonNull
         @Override
         public String executeAsBlocking() {
             throw new NotImplementedException();

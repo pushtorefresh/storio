@@ -2,6 +2,7 @@ package com.pushtorefresh.storio2.sqlite.integration;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.sqlite.BuildConfig;
 import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
@@ -10,7 +11,6 @@ import com.pushtorefresh.storio2.test.ConcurrencyTesting;
 import com.pushtorefresh.storio2.test.Repeat;
 import com.pushtorefresh.storio2.test.RepeatRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -231,7 +231,7 @@ public class RxQueryTest extends BaseTest {
         final List<User> users = putUsersBlocking(3);
         final User expectedUser = users.get(0);
 
-        final Flowable<User> userFlowable = storIOSQLite
+        final Flowable<Optional<User>> userFlowable = storIOSQLite
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -243,20 +243,19 @@ public class RxQueryTest extends BaseTest {
                 .asRxFlowable(LATEST)
                 .take(1);
 
-        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        TestSubscriber<Optional<User>> testSubscriber = new TestSubscriber<Optional<User>>();
         userFlowable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertNoErrors();
-        testSubscriber.assertValue(expectedUser);
+        testSubscriber.assertValue(Optional.of(expectedUser));
     }
 
-    @Ignore("TODO: fixme")
     @Test
     public void queryOneNonExistedObjectFlowable() {
         putUsersBlocking(3);
 
-        final Flowable<User> userFlowable = storIOSQLite
+        final Flowable<Optional<User>> userFlowable = storIOSQLite
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -268,21 +267,20 @@ public class RxQueryTest extends BaseTest {
                 .asRxFlowable(LATEST)
                 .take(1);
 
-        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        TestSubscriber<Optional<User>> testSubscriber = new TestSubscriber<Optional<User>>();
         userFlowable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertNoErrors();
-        testSubscriber.assertValue((User) null);
+        testSubscriber.assertValue(Optional.<User>empty());
     }
 
-    @Ignore("TODO: fixme")
     @Test
     public void queryOneExistedObjectTableUpdate() {
         User expectedUser = User.newInstance(null, "such@email.com");
         putUsersBlocking(3);
 
-        final Flowable<User> userFlowable = storIOSQLite
+        final Flowable<Optional<User>> userFlowable = storIOSQLite
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -294,24 +292,23 @@ public class RxQueryTest extends BaseTest {
                 .asRxFlowable(LATEST)
                 .take(2);
 
-        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        TestSubscriber<Optional<User>> testSubscriber = new TestSubscriber<Optional<User>>();
         userFlowable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertNoErrors();
-        testSubscriber.assertValue((User) null);
+        testSubscriber.assertValue(Optional.<User>empty());
 
         putUserBlocking(expectedUser);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertNoErrors();
-        testSubscriber.assertValues(null, expectedUser);
+        testSubscriber.assertValues(Optional.<User>empty(), Optional.of(expectedUser));
     }
 
-    @Ignore("TODO: fixme")
     @Test
     public void queryOneNonexistedObjectTableUpdate() {
-        final Flowable<User> userFlowable = storIOSQLite
+        final Flowable<Optional<User>> userFlowable = storIOSQLite
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -323,18 +320,18 @@ public class RxQueryTest extends BaseTest {
                 .asRxFlowable(LATEST)
                 .take(2);
 
-        TestSubscriber<User> testSubscriber = new TestSubscriber<User>();
+        TestSubscriber<Optional<User>> testSubscriber = new TestSubscriber<Optional<User>>();
         userFlowable.subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertNoErrors();
-        testSubscriber.assertValue((User) null);
+        testSubscriber.assertValue(Optional.<User>empty());
 
         putUserBlocking();
 
         testSubscriber.awaitTerminalEvent(5, SECONDS);
         testSubscriber.assertNoErrors();
-        testSubscriber.assertValues(null, null);
+        testSubscriber.assertValues(Optional.<User>empty(), Optional.<User>empty());
     }
 
     @Test
@@ -361,19 +358,19 @@ public class RxQueryTest extends BaseTest {
     public void queryObjectAsSingle() {
         final List<User> users = putUsersBlocking(3);
 
-        final Single<User> usersSingle = storIOSQLite
+        final Single<Optional<User>> usersSingle = storIOSQLite
                 .get()
                 .object(User.class)
                 .withQuery(UserTableMeta.QUERY_ALL)
                 .prepare()
                 .asRxSingle();
 
-        TestObserver<User> testObserver = new TestObserver<User>();
+        TestObserver<Optional<User>> testObserver = new TestObserver<Optional<User>>();
         usersSingle.subscribe(testObserver);
 
         testObserver.awaitTerminalEvent(5, SECONDS);
         testObserver.assertNoErrors();
-        testObserver.assertValues(users.get(0));
+        testObserver.assertValue(Optional.of(users.get(0)));
         testObserver.assertComplete();
     }
 

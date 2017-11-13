@@ -2,8 +2,8 @@ package com.pushtorefresh.storio2.sqlite.operations.get;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
@@ -133,7 +133,7 @@ class GetObjectStub {
         return new GetObjectStub(true);
     }
 
-    void verifyQueryBehavior(@Nullable TestItem actualItem) {
+    void verifyQueryBehavior(@NonNull Optional<TestItem> actualItem) {
         // should be called once
         verify(storIOSQLite).interceptors();
 
@@ -156,7 +156,7 @@ class GetObjectStub {
         verify(cursor).close();
 
         // actual item should be equals to expected
-        assertThat(actualItem).isEqualTo(item);
+        assertThat(actualItem.orNull()).isEqualTo(item);
 
         if (withTypeMapping) {
             // should be called only once because of Performance!
@@ -172,13 +172,13 @@ class GetObjectStub {
         verifyNoMoreInteractions(storIOSQLite, lowLevel, cursor);
     }
 
-    void verifyQueryBehavior(@NonNull Flowable<TestItem> flowable) {
-        new FlowableBehaviorChecker<TestItem>()
+    void verifyQueryBehavior(@NonNull Flowable<Optional<TestItem>> flowable) {
+        new FlowableBehaviorChecker<Optional<TestItem>>()
                 .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Consumer<TestItem>() {
+                .testAction(new Consumer<Optional<TestItem>>() {
                     @Override
-                    public void accept(TestItem testItem) {
+                    public void accept(Optional<TestItem> testItem) {
                         // Get Operation should be subscribed to changes of tables from query
                         verify(storIOSQLite).observeChanges(LATEST);
                         verify(storIOSQLite).defaultRxScheduler();
@@ -188,13 +188,13 @@ class GetObjectStub {
                 .checkBehaviorOfFlowable();
     }
 
-    void verifyQueryBehavior(@NonNull Single<TestItem> single) {
-        new FlowableBehaviorChecker<TestItem>()
+    void verifyQueryBehavior(@NonNull Single<Optional<TestItem>> single) {
+        new FlowableBehaviorChecker<Optional<TestItem>>()
                 .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Consumer<TestItem>() {
+                .testAction(new Consumer<Optional<TestItem>>() {
                     @Override
-                    public void accept(TestItem testItem) {
+                    public void accept(@NonNull Optional<TestItem> testItem) {
                         verify(storIOSQLite).defaultRxScheduler();
                         verifyQueryBehavior(testItem);
                     }
@@ -202,21 +202,21 @@ class GetObjectStub {
                 .checkBehaviorOfFlowable();
     }
 
-    void verifyRawQueryBehavior(@Nullable TestItem actualItem) {
+    void verifyRawQueryBehavior(@NonNull Optional<TestItem> actualItem) {
         verify(storIOSQLite).get();
         verify(getResolver).performGet(storIOSQLite, rawQuery);
         verify(getResolver).mapFromCursor(storIOSQLite, cursor);
         verify(cursor).close();
-        assertThat(actualItem).isEqualTo(item);
+        assertThat(actualItem.orNull()).isEqualTo(item);
     }
 
-    void verifyRawQueryBehavior(@NonNull Flowable<TestItem> flowable) {
-        new FlowableBehaviorChecker<TestItem>()
+    void verifyRawQueryBehavior(@NonNull Flowable<Optional<TestItem>> flowable) {
+        new FlowableBehaviorChecker<Optional<TestItem>>()
                 .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Consumer<TestItem>() {
+                .testAction(new Consumer<Optional<TestItem>>() {
                     @Override
-                    public void accept(TestItem testItem) {
+                    public void accept(@NonNull Optional<TestItem> testItem) {
                         // Get Operation should be subscribed to changes of tables from query
                         verify(storIOSQLite).observeChanges(LATEST);
                         verifyRawQueryBehavior(testItem);
@@ -227,13 +227,13 @@ class GetObjectStub {
         assertThat(rawQuery.observesTables()).isNotNull();
     }
 
-    void verifyRawQueryBehavior(@NonNull Single<TestItem> single) {
-        new FlowableBehaviorChecker<TestItem>()
+    void verifyRawQueryBehavior(@NonNull Single<Optional<TestItem>> single) {
+        new FlowableBehaviorChecker<Optional<TestItem>>()
                 .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Consumer<TestItem>() {
+                .testAction(new Consumer<Optional<TestItem>>() {
                     @Override
-                    public void accept(TestItem testItem) {
+                    public void accept(@NonNull Optional<TestItem> testItem) {
                        verifyRawQueryBehavior(testItem);
                     }
                 })
