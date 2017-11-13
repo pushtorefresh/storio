@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
@@ -100,7 +101,7 @@ class GetObjectStub {
         return new GetObjectStub(true);
     }
 
-    void verifyBehavior(@NonNull TestItem actualItem) {
+    void verifyBehavior(@NonNull Optional<TestItem> actualItem) {
         // should be called once
         verify(storIOContentResolver).get();
 
@@ -120,7 +121,7 @@ class GetObjectStub {
         verify(cursor).close();
 
         // checks that items are okay
-        assertThat(actualItem).isEqualTo(item);
+        assertThat(actualItem.get()).isEqualTo(item);
 
         if (withTypeMapping) {
             // should be called only once because of Performance!
@@ -136,16 +137,16 @@ class GetObjectStub {
         verifyNoMoreInteractions(storIOContentResolver, lowLevel, getResolver, cursor);
     }
 
-    void verifyBehavior(@NonNull Flowable<TestItem> flowable) {
+    void verifyBehavior(@NonNull Flowable<Optional<TestItem>> flowable) {
         when(storIOContentResolver.observeChangesOfUri(query.uri(), BackpressureStrategy.MISSING))
                 .thenReturn(Flowable.<Changes>empty());
 
-        new FlowableBehaviorChecker<TestItem>()
+        new FlowableBehaviorChecker<Optional<TestItem>>()
                 .flowable(flowable)
                 .expectedNumberOfEmissions(1)
-                .testAction(new Consumer<TestItem>() {
+                .testAction(new Consumer<Optional<TestItem>>() {
                     @Override
-                    public void accept(@NonNull TestItem testItem) throws Exception {
+                    public void accept(@NonNull Optional<TestItem> testItem) throws Exception {
                         // Get Operation should be subscribed to changes of Uri!
                         verify(storIOContentResolver).observeChangesOfUri(query.uri(), BackpressureStrategy.MISSING);
 
@@ -158,13 +159,13 @@ class GetObjectStub {
 
     }
 
-    void verifyBehavior(@NonNull Single<TestItem> single) {
-        new FlowableBehaviorChecker<TestItem>()
+    void verifyBehavior(@NonNull Single<Optional<TestItem>> single) {
+        new FlowableBehaviorChecker<Optional<TestItem>>()
                 .flowable(single.toFlowable())
                 .expectedNumberOfEmissions(1)
-                .testAction(new Consumer<TestItem>() {
+                .testAction(new Consumer<Optional<TestItem>>() {
                     @Override
-                    public void accept(@NonNull TestItem testItem) throws Exception {
+                    public void accept(@NonNull Optional<TestItem> testItem) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehavior(testItem);
                     }

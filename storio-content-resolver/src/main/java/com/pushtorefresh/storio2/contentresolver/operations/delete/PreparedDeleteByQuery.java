@@ -74,7 +74,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult, DeleteQu
     @NonNull
     @CheckResult
     @Override
-    public Flowable<DeleteResult> asRxFlowable(BackpressureStrategy backpressureStrategy) {
+    public Flowable<DeleteResult> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
         return RxJavaUtils.createFlowable(storIOContentResolver, this, backpressureStrategy);
     }
 

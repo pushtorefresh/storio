@@ -3,6 +3,7 @@ package com.pushtorefresh.storio2.contentresolver.operations.get;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.StorIOException;
 import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
@@ -38,7 +39,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectWithoutTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newStubWithoutTypeMapping();
 
-            final TestItem testItem = getStub.storIOContentResolver
+            final Optional<TestItem> testItem = getStub.storIOContentResolver
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -53,7 +54,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectWithoutTypeMappingAsFlowable() {
             final GetObjectStub getStub = GetObjectStub.newStubWithoutTypeMapping();
 
-            final Flowable<TestItem> testItemFlowable = getStub.storIOContentResolver
+            final Flowable<Optional<TestItem>> testItemFlowable = getStub.storIOContentResolver
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -69,7 +70,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectWithoutTypeMappingAsSingle() {
             final GetObjectStub getStub = GetObjectStub.newStubWithoutTypeMapping();
 
-            final Single<TestItem> testItemSingle = getStub.storIOContentResolver
+            final Single<Optional<TestItem>> testItemSingle = getStub.storIOContentResolver
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -87,7 +88,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectWithTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newStubWithTypeMapping();
 
-            final TestItem testItem = getStub.storIOContentResolver
+            final Optional<TestItem> testItem = getStub.storIOContentResolver
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -101,7 +102,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectWithTypeMappingAsFlowable() {
             final GetObjectStub getStub = GetObjectStub.newStubWithTypeMapping();
 
-            final Flowable<TestItem> testItemFlowable = getStub.storIOContentResolver
+            final Flowable<Optional<TestItem>> testItemFlowable = getStub.storIOContentResolver
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -116,7 +117,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectWithTypeMappingAsSingle() {
             final GetObjectStub getStub = GetObjectStub.newStubWithTypeMapping();
 
-            final Single<TestItem> testItemSingle = getStub.storIOContentResolver
+            final Single<Optional<TestItem>> testItemSingle = getStub.storIOContentResolver
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -138,7 +139,7 @@ public class PreparedGetObjectTest {
 
             when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
 
-            final PreparedGet<TestItem> preparedGet = storIOContentResolver
+            final PreparedGet<Optional<TestItem>> preparedGet = storIOContentResolver
                     .get()
                     .object(TestItem.class)
                     .withQuery(Query.builder().uri(mock(Uri.class)).build())
@@ -174,7 +175,7 @@ public class PreparedGetObjectTest {
             when(storIOContentResolver.observeChangesOfUri(any(Uri.class), eq(BackpressureStrategy.MISSING)))
                     .thenReturn(Flowable.<Changes>empty());
 
-            final TestSubscriber<TestItem> testSubscriber = new TestSubscriber<TestItem>();
+            final TestSubscriber<Optional<TestItem>> testSubscriber = new TestSubscriber<Optional<TestItem>>();
 
             storIOContentResolver
                     .get()
@@ -209,7 +210,7 @@ public class PreparedGetObjectTest {
 
             when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
 
-            final TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
+            final TestObserver<Optional<TestItem>> testObserver = new TestObserver<Optional<TestItem>>();
 
             storIOContentResolver
                     .get()

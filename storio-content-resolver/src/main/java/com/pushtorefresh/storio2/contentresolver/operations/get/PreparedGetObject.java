@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.StorIOException;
 import com.pushtorefresh.storio2.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
@@ -25,7 +26,7 @@ import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
  *
  * @param <T> type of result.
  */
-public class PreparedGetObject<T> extends PreparedGet<T> {
+public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
 
     @NonNull
     private final Class<T> type;
@@ -55,7 +56,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
     @WorkerThread
     @NonNull
     @Override
-    public T executeAsBlocking() {
+    public Optional<T> executeAsBlocking() {
         try {
             final GetResolver<T> getResolver;
 
@@ -78,13 +79,15 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
             try {
                 final int count = cursor.getCount();
 
+                final T object;
                 if (count == 0) {
-                    return null;
+                    object = null;
+                } else {
+                    cursor.moveToFirst();
+                    object = getResolver.mapFromCursor(storIOContentResolver, cursor);
                 }
+                return Optional.of(object);
 
-                cursor.moveToFirst();
-
-                return getResolver.mapFromCursor(storIOContentResolver, cursor);
             } finally {
                 cursor.close();
             }
@@ -115,7 +118,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
     @NonNull
     @CheckResult
     @Override
-    public Flowable<T> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
+    public Flowable<Optional<T>> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
         return RxJavaUtils.createGetFlowable(storIOContentResolver, this, query, backpressureStrategy);
     }
 
@@ -132,7 +135,7 @@ public class PreparedGetObject<T> extends PreparedGet<T> {
     @NonNull
     @CheckResult
     @Override
-    public Single<T> asRxSingle() {
+    public Single<Optional<T>> asRxSingle() {
         return RxJavaUtils.createSingle(storIOContentResolver, this);
     }
 

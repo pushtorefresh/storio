@@ -3,6 +3,7 @@ package com.pushtorefresh.storio2.contentresolver.design;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.contentresolver.operations.get.GetResolver;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
 
@@ -47,7 +48,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectBlocking() {
-        Article article = storIOContentResolver()
+        Optional<Article> article = storIOContentResolver()
                 .get()
                 .object(Article.class)
                 .withQuery(Query.builder()
@@ -86,7 +87,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectAsFlowable() {
-        Flowable<Article> flowable = storIOContentResolver()
+        Flowable<Optional<Article>> flowable = storIOContentResolver()
                 .get()
                 .object(Article.class)
                 .withQuery(Query.builder()
@@ -125,7 +126,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectAsSingle() {
-        Single<Article> single = storIOContentResolver()
+        Single<Optional<Article>> single = storIOContentResolver()
                 .get()
                 .object(Article.class)
                 .withQuery(Query.builder()
