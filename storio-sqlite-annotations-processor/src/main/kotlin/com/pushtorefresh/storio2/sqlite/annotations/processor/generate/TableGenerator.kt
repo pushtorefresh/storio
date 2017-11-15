@@ -53,11 +53,22 @@ object TableGenerator : Generator<StorIOSQLiteTypeMeta> {
 
         builder.append("CREATE TABLE $table (")
 
+        val primaryKeys = columns.filter { it.storIOColumn.key }.toList()
+
         columns.forEachIndexed { index, column ->
             builder.append("${column.storIOColumn.name} ${column.javaType.sqliteType}")
             if (column.isNotNull()) builder.append(" NOT NULL")
-            if (column.storIOColumn.key) builder.append(" PRIMARY KEY")
+            if (column.storIOColumn.key && primaryKeys.size == 1) builder.append(" PRIMARY KEY")
             if (index != columns.size - 1) builder.append(",\n")
+        }
+
+        if (primaryKeys.size > 1) {
+            builder.append(",\nPRIMARY KEY(")
+            primaryKeys.forEachIndexed { index, key ->
+                builder.append(key.storIOColumn.name)
+                if (index != primaryKeys.size - 1) builder.append(", ")
+            }
+            builder.append(")")
         }
 
         builder.append(");")
