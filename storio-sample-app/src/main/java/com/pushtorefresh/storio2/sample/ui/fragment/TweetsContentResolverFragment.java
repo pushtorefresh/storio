@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio2.contentresolver.operations.put.PutResults;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
 import com.pushtorefresh.storio2.sample.R;
 import com.pushtorefresh.storio2.sample.SampleApp;
@@ -24,8 +23,6 @@ import com.pushtorefresh.storio2.sample.db.tables.TweetsTable;
 import com.pushtorefresh.storio2.sample.provider.meta.TweetMeta;
 import com.pushtorefresh.storio2.sample.ui.UiStateController;
 import com.pushtorefresh.storio2.sample.ui.adapter.TweetsAdapter;
-
-import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,9 +33,9 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.FlowableSubscriber;
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import timber.log.Timber;
@@ -46,7 +43,6 @@ import timber.log.Timber;
 import static com.pushtorefresh.storio2.sample.provider.ContentProviderQueries.QUERY_ALL;
 import static com.pushtorefresh.storio2.sample.ui.Toasts.safeShowShortToast;
 import static io.reactivex.BackpressureStrategy.LATEST;
-import static io.reactivex.BackpressureStrategy.MISSING;
 import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
 public class TweetsContentResolverFragment extends BaseFragment implements TweetsAdapter.OnUpdateTweetListener {
@@ -166,29 +162,22 @@ public class TweetsContentResolverFragment extends BaseFragment implements Tweet
                 .put()
                 .objects(tweets)
                 .prepare()
-                .asRxFlowable(MISSING)
+                .asRxCompletable()
                 .observeOn(mainThread()) // The default scheduler is Schedulers.io(), all Observables in StorIO already subscribed on this scheduler, you just need to set observeOn()
-                .subscribe(new FlowableSubscriber<PutResults<Tweet>>() {
-                    @Override
-                    public void onSubscribe(Subscription subscription) {
-                        // no impl required
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        safeShowShortToast(getActivity(), R.string.tweets_add_error_toast);
-                    }
-
-                    @Override
-                    public void onNext(PutResults<Tweet> putResults) {
-                        // After successful Put Operation our subscriber in reloadData() will receive update!
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        // no impl required
-                    }
-                });
+                .subscribe(
+                        new Action() {
+                            @Override
+                            public void run() throws Exception {
+                                // no impl required
+                            }
+                        },
+                        new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                safeShowShortToast(getActivity(), R.string.tweets_add_error_toast);
+                            }
+                        }
+                );
     }
 
     /**
@@ -219,7 +208,7 @@ public class TweetsContentResolverFragment extends BaseFragment implements Tweet
                     @Override
                     @NonNull
                     public Optional<Tweet> apply(@NonNull Optional<Tweet> tweet) {
-                        // We can get NULL in parameter so we check it
+                        // We can get empty optional in parameter so we check it
                         return tweet.isPresent()
                                 ? Optional.of(Tweet.newTweet(tweetId, tweet.get().author() + "+", tweet.get().content()))
                                 : tweet;
@@ -229,7 +218,7 @@ public class TweetsContentResolverFragment extends BaseFragment implements Tweet
                 .flatMap(new Function<Optional<Tweet>, Single<?>>() {
                     @Override
                     @NonNull
-                    public Single<?> apply(Optional<Tweet> tweet) {
+                    public Single<?> apply(@NonNull Optional<Tweet> tweet) {
                         return storIOContentResolver
                                 .put()
                                 .object(tweet.get())
