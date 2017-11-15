@@ -17,7 +17,7 @@ import javax.inject.Inject;
 public class SampleContentProvider extends ContentProvider {
 
     @NonNull
-    public static final String AUTHORITY = "com.pushtorefresh.storio.sample_provider";
+    public static final String AUTHORITY = "com.pushtorefresh.storio2.sample_provider";
 
     private static final String PATH_TWEETS = "tweets";
     private static final int URI_MATCHER_CODE_TWEETS = 1;

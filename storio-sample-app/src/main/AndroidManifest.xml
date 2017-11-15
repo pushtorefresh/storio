@@ -23,8 +23,12 @@
         </activity>
 
         <activity
-            android:name="com.pushtorefresh.storio2.sample.ui.activity.db.TweetsSampleActivity"
+            android:name="com.pushtorefresh.storio2.sample.ui.activity.TweetsSQLiteSampleActivity"
             android:label="@string/tweets_db_sample_label" />
+
+        <activity
+            android:name="com.pushtorefresh.storio2.sample.ui.activity.TweetsContentResolverSampleActivity"
+            android:label="@string/tweets_content_resolver_sample_label" />
 
         <activity
             android:name="com.pushtorefresh.storio2.sample.many_to_many_sample.ManyToManyActivity"
