@@ -141,7 +141,7 @@ public class PreparedGetListOfObjectsTest {
 
             when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
 
-            final PreparedGet<List<TestItem>> preparedGet = storIOContentResolver
+            final PreparedGetListOfObjects<TestItem> preparedGet = storIOContentResolver
                     .get()
                     .listOfObjects(TestItem.class)
                     .withQuery(Query.builder().uri(mock(Uri.class)).build())

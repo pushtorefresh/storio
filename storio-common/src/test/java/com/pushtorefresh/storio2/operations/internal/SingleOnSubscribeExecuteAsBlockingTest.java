@@ -19,7 +19,7 @@ public class SingleOnSubscribeExecuteAsBlockingTest {
     @Test
     public void shouldExecuteAsBlockingAfterSubscription() {
         //noinspection unchecked
-        final PreparedOperation<String, String> preparedOperation = mock(PreparedOperation.class);
+        final PreparedOperation<String, String, String> preparedOperation = mock(PreparedOperation.class);
         String expectedResult = "test";
         when(preparedOperation.executeAsBlocking()).thenReturn(expectedResult);
 
@@ -27,7 +27,7 @@ public class SingleOnSubscribeExecuteAsBlockingTest {
 
         verifyZeroInteractions(preparedOperation);
 
-        Single<String> single = Single.create(new SingleOnSubscribeExecuteAsBlocking<String, String>(preparedOperation));
+        Single<String> single = Single.create(new SingleOnSubscribeExecuteAsBlocking<String, String, String>(preparedOperation));
 
         verifyZeroInteractions(preparedOperation);
 
@@ -44,7 +44,7 @@ public class SingleOnSubscribeExecuteAsBlockingTest {
     @Test
     public void shouldCallOnErrorIfExceptionOccurred() {
         //noinspection unchecked
-        final PreparedOperation<Object, Object> preparedOperation = mock(PreparedOperation.class);
+        final PreparedOperation<Object, Object, Object> preparedOperation = mock(PreparedOperation.class);
 
         StorIOException expectedException = new StorIOException("test exception");
 
@@ -52,7 +52,7 @@ public class SingleOnSubscribeExecuteAsBlockingTest {
 
         TestObserver<Object> testObserver = new TestObserver<Object>();
 
-        Single<Object> single = Single.create(new SingleOnSubscribeExecuteAsBlocking<Object, Object>(preparedOperation));
+        Single<Object> single = Single.create(new SingleOnSubscribeExecuteAsBlocking<Object, Object, Object>(preparedOperation));
 
         verifyZeroInteractions(preparedOperation);
 

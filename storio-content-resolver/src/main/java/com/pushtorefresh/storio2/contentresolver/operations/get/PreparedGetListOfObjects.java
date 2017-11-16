@@ -30,7 +30,7 @@ import static java.util.Collections.unmodifiableList;
  *
  * @param <T> type of result.
  */
-public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
+public class PreparedGetListOfObjects<T> extends PreparedGetMandatoryResult<List<T>> {
 
     @NonNull
     private final Class<T> type;

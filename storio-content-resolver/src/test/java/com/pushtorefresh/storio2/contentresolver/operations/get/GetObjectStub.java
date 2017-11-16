@@ -3,6 +3,7 @@ package com.pushtorefresh.storio2.contentresolver.operations.get;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.contentresolver.Changes;
@@ -102,6 +103,10 @@ class GetObjectStub {
     }
 
     void verifyBehavior(@NonNull Optional<TestItem> actualItem) {
+        verifyBehavior(actualItem.orNull());
+    }
+
+    void verifyBehavior(@Nullable TestItem actualItem) {
         // should be called once
         verify(storIOContentResolver).get();
 
@@ -121,7 +126,7 @@ class GetObjectStub {
         verify(cursor).close();
 
         // checks that items are okay
-        assertThat(actualItem.get()).isEqualTo(item);
+        assertThat(actualItem).isEqualTo(item);
 
         if (withTypeMapping) {
             // should be called only once because of Performance!

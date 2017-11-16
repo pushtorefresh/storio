@@ -18,7 +18,7 @@ public class FlowableOnSubscribeExecuteAsBlockingTest {
     @Test
     public void shouldExecuteAsBlockingAfterSubscription() {
         //noinspection unchecked
-        final PreparedOperation<String, String> preparedOperation = mock(PreparedOperation.class);
+        final PreparedOperation<String, String, String> preparedOperation = mock(PreparedOperation.class);
 
         final String expectedResult = "expected_string";
         when(preparedOperation.executeAsBlocking()).thenReturn(expectedResult);
@@ -26,7 +26,7 @@ public class FlowableOnSubscribeExecuteAsBlockingTest {
         TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
 
         Flowable
-                .create(new FlowableOnSubscribeExecuteAsBlocking<String, String>(preparedOperation), BackpressureStrategy.MISSING)
+                .create(new FlowableOnSubscribeExecuteAsBlocking<String, String, String>(preparedOperation), BackpressureStrategy.MISSING)
                 .subscribe(testSubscriber);
 
         verify(preparedOperation).executeAsBlocking();
@@ -40,13 +40,13 @@ public class FlowableOnSubscribeExecuteAsBlockingTest {
     public void shouldCallOnError() {
         Throwable throwable = new IllegalStateException("Test exception");
         //noinspection unchecked
-        PreparedOperation<String, String> preparedOperation = mock(PreparedOperation.class);
+        PreparedOperation<String, String, String> preparedOperation = mock(PreparedOperation.class);
         when(preparedOperation.executeAsBlocking()).thenThrow(throwable);
 
         TestSubscriber<String> testSubscriber = TestSubscriber.create();
 
         Flowable
-                .create(new FlowableOnSubscribeExecuteAsBlocking<String, String>(preparedOperation), BackpressureStrategy.MISSING)
+                .create(new FlowableOnSubscribeExecuteAsBlocking<String, String, String>(preparedOperation), BackpressureStrategy.MISSING)
                 .subscribe(testSubscriber);
 
         testSubscriber.assertError(throwable);

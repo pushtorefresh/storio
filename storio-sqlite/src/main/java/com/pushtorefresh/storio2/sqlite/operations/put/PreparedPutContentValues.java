@@ -104,13 +104,14 @@ public class PreparedPutContentValues extends PreparedPut<PutResult, ContentValu
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
             try {
                 final PutResult putResult = putResolver.performPut(storIOSQLite, contentValues);
                 if (putResult.wasInserted() || putResult.wasUpdated()) {
                     final Changes changes = Changes.newInstance(putResult.affectedTables(), putResult.affectedTags());
                     storIOSQLite.lowLevel().notifyAboutChanges(changes);
                 }
+                //noinspection unchecked
                 return (Result) putResult;
             } catch (Exception exception) {
                 throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValues, exception);

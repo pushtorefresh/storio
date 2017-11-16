@@ -2,6 +2,7 @@ package com.pushtorefresh.storio2.sqlite.operations.get;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.sqlite.Changes;
@@ -134,6 +135,10 @@ class GetObjectStub {
     }
 
     void verifyQueryBehavior(@NonNull Optional<TestItem> actualItem) {
+        verifyQueryBehavior(actualItem.orNull());
+    }
+
+    void verifyQueryBehavior(@Nullable TestItem actualItem) {
         // should be called once
         verify(storIOSQLite).interceptors();
 
@@ -156,7 +161,7 @@ class GetObjectStub {
         verify(cursor).close();
 
         // actual item should be equals to expected
-        assertThat(actualItem.orNull()).isEqualTo(item);
+        assertThat(actualItem).isEqualTo(item);
 
         if (withTypeMapping) {
             // should be called only once because of Performance!
@@ -203,11 +208,15 @@ class GetObjectStub {
     }
 
     void verifyRawQueryBehavior(@NonNull Optional<TestItem> actualItem) {
+        verifyRawQueryBehavior(actualItem.orNull());
+    }
+
+    void verifyRawQueryBehavior(@Nullable TestItem actualItem) {
         verify(storIOSQLite).get();
         verify(getResolver).performGet(storIOSQLite, rawQuery);
         verify(getResolver).mapFromCursor(storIOSQLite, cursor);
         verify(cursor).close();
-        assertThat(actualItem.orNull()).isEqualTo(item);
+        assertThat(actualItem).isEqualTo(item);
     }
 
     void verifyRawQueryBehavior(@NonNull Flowable<Optional<TestItem>> flowable) {

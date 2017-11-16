@@ -17,7 +17,7 @@ public class MapSomethingToExecuteAsBlockingTest {
     @SuppressWarnings("unchecked")
     @Test
     public void verifyBehavior() {
-        final PreparedOperation<String, Object> preparedOperation = mock(PreparedOperation.class);
+        final PreparedOperation<String, String, Object> preparedOperation = mock(PreparedOperation.class);
 
         final String expectedMapResult = "expected_string";
 
@@ -28,7 +28,7 @@ public class MapSomethingToExecuteAsBlockingTest {
 
         Flowable
                 .just(1)
-                .map(new MapSomethingToExecuteAsBlocking<Integer, String, Object>(preparedOperation))
+                .map(new MapSomethingToExecuteAsBlocking<Integer, String, String, Object>(preparedOperation))
                 .subscribe(testSubscriber);
 
         verify(preparedOperation, times(1)).executeAsBlocking();

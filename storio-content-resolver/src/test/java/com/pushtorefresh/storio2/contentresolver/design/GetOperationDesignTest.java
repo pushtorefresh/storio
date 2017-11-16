@@ -48,7 +48,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectBlocking() {
-        Optional<Article> article = storIOContentResolver()
+        Article article = storIOContentResolver()
                 .get()
                 .object(Article.class)
                 .withQuery(Query.builder()

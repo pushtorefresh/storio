@@ -18,7 +18,7 @@ import static com.pushtorefresh.storio2.sqlite.impl.ChainImpl.buildChain;
  *
  * @param <Result> type of result.
  */
-public abstract class PreparedGet<Result> implements PreparedOperation<Result, GetQuery> {
+public abstract class PreparedGet<Result, WrappedResult> implements PreparedOperation<Result, WrappedResult, GetQuery> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;

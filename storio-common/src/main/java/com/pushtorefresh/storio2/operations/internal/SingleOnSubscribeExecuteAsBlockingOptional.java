@@ -2,6 +2,7 @@ package com.pushtorefresh.storio2.operations.internal;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 
 import io.reactivex.SingleEmitter;
@@ -13,20 +14,20 @@ import io.reactivex.SingleOnSubscribe;
  * <p>
  * For internal usage only!
  */
-public final class SingleOnSubscribeExecuteAsBlocking<Result, WrappedResult, Data> implements SingleOnSubscribe<Result> {
+public final class SingleOnSubscribeExecuteAsBlockingOptional<Result, Data> implements SingleOnSubscribe<Optional<Result>> {
 
     @NonNull
-    private final PreparedOperation<Result, WrappedResult, Data> preparedOperation;
+    private final PreparedOperation<Result, Optional<Result>, Data> preparedOperation;
 
-    public SingleOnSubscribeExecuteAsBlocking(@NonNull PreparedOperation<Result, WrappedResult, Data> preparedOperation) {
+    public SingleOnSubscribeExecuteAsBlockingOptional(@NonNull PreparedOperation<Result, Optional<Result>, Data> preparedOperation) {
         this.preparedOperation = preparedOperation;
     }
 
     @Override
-    public void subscribe(@NonNull SingleEmitter<Result> emitter) throws Exception {
+    public void subscribe(@NonNull SingleEmitter<Optional<Result>> emitter) throws Exception {
         try {
             final Result value = preparedOperation.executeAsBlocking();
-            emitter.onSuccess(value);
+            emitter.onSuccess(Optional.of(value));
         } catch (Exception e) {
             emitter.onError(e);
         }

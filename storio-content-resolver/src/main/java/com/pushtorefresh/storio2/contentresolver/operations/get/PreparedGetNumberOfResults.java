@@ -17,7 +17,7 @@ import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
 
-public class PreparedGetNumberOfResults extends PreparedGet<Integer> {
+public class PreparedGetNumberOfResults extends PreparedGetMandatoryResult<Integer> {
 
     @NonNull
     private final GetResolver<Integer> getResolver;

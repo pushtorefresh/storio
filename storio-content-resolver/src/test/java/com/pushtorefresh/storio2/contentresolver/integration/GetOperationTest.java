@@ -303,7 +303,7 @@ public class GetOperationTest extends IntegrationTest {
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
         contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
 
-        Optional<TestItem> testItem = storIOContentResolver
+        TestItem testItem = storIOContentResolver
                 .get()
                 .object(TestItem.class)
                 .withQuery(Query.builder()
@@ -314,9 +314,9 @@ public class GetOperationTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertThat(testItem.isPresent()).isTrue();
+        assertThat(testItem).isNotNull();
 
-        assertThat(testItemToInsert.equalsWithoutId(testItem.get())).isTrue();
+        assertThat(testItemToInsert.equalsWithoutId(testItem)).isTrue();
 
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
         changesTestSubscriber.assertNoErrors();
@@ -335,7 +335,7 @@ public class GetOperationTest extends IntegrationTest {
         TestItem testItemToInsert = TestItem.create(null, "value");
         contentResolver.insert(TestItem.CONTENT_URI, testItemToInsert.toContentValues());
 
-        Optional<TestItem> testItem = storIOContentResolver
+        TestItem testItem = storIOContentResolver
                 .get()
                 .object(TestItem.class)
                 .withQuery(Query.builder()
@@ -346,7 +346,7 @@ public class GetOperationTest extends IntegrationTest {
                 .prepare()
                 .executeAsBlocking();
 
-        assertThat(testItem.isPresent()).isFalse();
+        assertThat(testItem).isNull();
 
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
         changesTestSubscriber.assertNoErrors();

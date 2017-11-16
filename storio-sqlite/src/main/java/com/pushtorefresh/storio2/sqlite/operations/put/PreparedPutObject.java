@@ -107,7 +107,7 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult, T> {
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
             try {
                 final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 
@@ -137,6 +137,7 @@ public class PreparedPutObject<T> extends PreparedPut<PutResult, T> {
                     lowLevel.notifyAboutChanges(changes);
                 }
 
+                //noinspection unchecked
                 return (Result) putResult;
             } catch (Exception exception) {
                 throw new StorIOException("Error has occurred during Put operation. object = " + object, exception);

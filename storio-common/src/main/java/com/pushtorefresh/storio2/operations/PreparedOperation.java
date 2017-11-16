@@ -11,9 +11,12 @@ import io.reactivex.Single;
 /**
  * Common API of all prepared operations
  *
- * @param <Result> type of result
+ * @param <Result>        type of result
+ * @param <WrappedResult> type of result in cases
+ *                        when nullable value doesn't supported {@link #asRxFlowable(BackpressureStrategy)}, {@link #asRxSingle()}
+ * @param <Data>          object that describes this operation inside interceptor for example
  */
-public interface PreparedOperation<Result, Data> {
+public interface PreparedOperation<Result, WrappedResult, Data> {
 
     /**
      * Executes operation synchronously in current thread.
@@ -36,7 +39,7 @@ public interface PreparedOperation<Result, Data> {
      */
     @NonNull
     @CheckResult
-    Flowable<Result> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy);
+    Flowable<WrappedResult> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy);
 
     /**
      * Creates {@link io.reactivex.Single} that emits result of Operation lazily when somebody subscribes to it.
@@ -46,9 +49,8 @@ public interface PreparedOperation<Result, Data> {
      */
     @NonNull
     @CheckResult
-    Single<Result> asRxSingle();
+    Single<WrappedResult> asRxSingle();
 
     @NonNull
     Data getData();
-
 }

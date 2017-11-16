@@ -12,7 +12,7 @@ import com.pushtorefresh.storio2.operations.PreparedOperation;
 public interface Interceptor {
 
     @NonNull
-    <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain);
+    <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain);
 
     /**
      * Encapsulates logic of proceeding from one interceptor to another.
@@ -20,6 +20,6 @@ public interface Interceptor {
     interface Chain {
 
         @NonNull
-        <Result, Data> Result proceed(@NonNull PreparedOperation<Result, Data> operation);
+        <Result, WrappedResult, Data> Result proceed(@NonNull PreparedOperation<Result, WrappedResult, Data> operation);
     }
 }

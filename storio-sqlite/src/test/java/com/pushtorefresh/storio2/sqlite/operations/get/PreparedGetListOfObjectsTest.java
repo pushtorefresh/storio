@@ -230,7 +230,7 @@ public class PreparedGetListOfObjectsTest {
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
-            final PreparedGet<List<TestItem>> preparedGet = storIOSQLite
+            final PreparedGetListOfObjects<TestItem> preparedGet = storIOSQLite
                     .get()
                     .listOfObjects(TestItem.class)
                     .withQuery(Query.builder().table("test_table").build())
@@ -260,7 +260,7 @@ public class PreparedGetListOfObjectsTest {
             when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
             when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
 
-            final PreparedGet<List<TestItem>> preparedGet = storIOSQLite
+            final PreparedGetListOfObjects<TestItem> preparedGet = storIOSQLite
                     .get()
                     .listOfObjects(TestItem.class)
                     .withQuery(RawQuery.builder().query("test query").build())

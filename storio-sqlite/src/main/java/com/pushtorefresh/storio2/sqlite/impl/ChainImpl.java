@@ -38,7 +38,7 @@ public class ChainImpl implements Interceptor.Chain {
 
     @NonNull
     @Override
-    public <Result, Data> Result proceed(@NonNull PreparedOperation<Result, Data> operation) {
+    public <Result, WrappedResult, Data> Result proceed(@NonNull PreparedOperation<Result, WrappedResult, Data> operation) {
         if (!interceptors.hasNext()) {
             throw new IllegalStateException("proceed was called on empty iterator");
         }

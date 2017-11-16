@@ -101,12 +101,13 @@ public class LoggingInterceptorTest {
 
         @NonNull
         @Override
-        public <Result, Data> Result proceed(@NonNull PreparedOperation<Result, Data> operation) {
+        public <Result, WrappedResult, Data> Result proceed(@NonNull PreparedOperation<Result, WrappedResult, Data> operation) {
+            //noinspection unchecked
             return (Result) result;
         }
     }
 
-    private static class TestOperation implements PreparedOperation<String, String> {
+    private static class TestOperation implements PreparedOperation<String, String, String> {
 
         @NonNull
         private final String data;
