@@ -97,7 +97,7 @@ public class PreparedGetObject<T> extends PreparedGet<T, Optional<T>> {
     }
 
     private class RealCallInterceptor implements Interceptor {
-        @NonNull
+        @Nullable
         @SuppressWarnings("ConstantConditions")
         @Override
         public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {

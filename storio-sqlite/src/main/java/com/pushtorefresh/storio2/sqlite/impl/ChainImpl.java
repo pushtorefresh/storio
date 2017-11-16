@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio2.sqlite.impl;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 import com.pushtorefresh.storio2.sqlite.Interceptor;
@@ -36,7 +37,7 @@ public class ChainImpl implements Interceptor.Chain {
         this.interceptors = interceptors;
     }
 
-    @NonNull
+    @Nullable // can be null on PreparedGetObject
     @Override
     public <Result, WrappedResult, Data> Result proceed(@NonNull PreparedOperation<Result, WrappedResult, Data> operation) {
         if (!interceptors.hasNext()) {

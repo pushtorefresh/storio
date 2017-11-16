@@ -2,6 +2,7 @@ package com.pushtorefresh.storio2.sqlite;
 
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.pushtorefresh.storio2.operations.PreparedOperation;
@@ -32,7 +33,7 @@ public class LoggingInterceptor implements Interceptor {
         this.logger = logger;
     }
 
-    @NonNull
+    @Nullable
     @Override
     public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
         final long startMillis = SystemClock.elapsedRealtime();

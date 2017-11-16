@@ -3,6 +3,7 @@ package com.pushtorefresh.storio2.sqlite.integration;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 import com.pushtorefresh.storio2.sqlite.BuildConfig;
@@ -263,7 +264,7 @@ public class InterceptorTest {
     @NonNull
     private Interceptor createInterceptor() {
         return new Interceptor() {
-            @NonNull
+            @Nullable
             @Override
             public <Result, WrappedData, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedData, Data> operation, @NonNull Chain chain) {
                 callCount.incrementAndGet();
