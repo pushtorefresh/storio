@@ -3,6 +3,7 @@ package com.pushtorefresh.storio2.sqlite.operations.internal;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
@@ -179,8 +180,9 @@ public final class RxJavaUtils {
         return scheduler != null ? completable.subscribeOn(scheduler) : completable;
     }
 
+    @VisibleForTesting
     @NonNull
-    private static Set<String> extractTables(
+    static Set<String> extractTables(
             @Nullable Query query,
             @Nullable RawQuery rawQuery
     ) {
@@ -193,8 +195,9 @@ public final class RxJavaUtils {
         }
     }
 
+    @VisibleForTesting
     @NonNull
-    private static Set<String> extractTags(
+    static Set<String> extractTags(
             @Nullable Query query,
             @Nullable RawQuery rawQuery
     ) {
