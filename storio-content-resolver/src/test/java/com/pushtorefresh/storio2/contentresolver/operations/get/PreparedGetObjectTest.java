@@ -39,7 +39,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectWithoutTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newStubWithoutTypeMapping();
 
-            final Optional<TestItem> testItem = getStub.storIOContentResolver
+            final TestItem testItem = getStub.storIOContentResolver
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -88,7 +88,7 @@ public class PreparedGetObjectTest {
         public void shouldGetObjectWithTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newStubWithTypeMapping();
 
-            final Optional<TestItem> testItem = getStub.storIOContentResolver
+            final TestItem testItem = getStub.storIOContentResolver
                     .get()
                     .object(TestItem.class)
                     .withQuery(getStub.query)
@@ -139,7 +139,7 @@ public class PreparedGetObjectTest {
 
             when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
 
-            final PreparedGet<Optional<TestItem>> preparedGet = storIOContentResolver
+            final PreparedGetObject<TestItem> preparedGet = storIOContentResolver
                     .get()
                     .object(TestItem.class)
                     .withQuery(Query.builder().uri(mock(Uri.class)).build())

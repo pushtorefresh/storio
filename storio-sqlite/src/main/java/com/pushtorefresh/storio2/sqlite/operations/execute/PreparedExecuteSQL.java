@@ -24,7 +24,7 @@ import static com.pushtorefresh.storio2.sqlite.impl.ChainImpl.buildChain;
 /**
  * Prepared Execute SQL Operation for {@link StorIOSQLite}.
  */
-public class PreparedExecuteSQL implements PreparedOperation<Object, RawQuery> {
+public class PreparedExecuteSQL implements PreparedOperation<Object, Object, RawQuery> {
 
     @NonNull
     private final StorIOSQLite storIOSQLite;
@@ -101,7 +101,7 @@ public class PreparedExecuteSQL implements PreparedOperation<Object, RawQuery> {
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
             try {
                 final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
                 lowLevel.executeSQL(rawQuery);
@@ -113,6 +113,7 @@ public class PreparedExecuteSQL implements PreparedOperation<Object, RawQuery> {
                     lowLevel.notifyAboutChanges(Changes.newInstance(affectedTables, affectedTags));
                 }
 
+                //noinspection unchecked
                 return (Result) new Object();
             } catch (Exception exception) {
                 throw new StorIOException("Error has occurred during ExecuteSQL operation. query = " + rawQuery, exception);

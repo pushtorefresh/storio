@@ -131,7 +131,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectBlocking() {
-        Optional<User> user = storIOSQLite()
+        User user = storIOSQLite()
                 .get()
                 .object(User.class)
                 .withQuery(Query.builder()
@@ -146,7 +146,7 @@ public class GetOperationDesignTest extends OperationDesignTest {
 
     @Test
     public void getObjectBlockingWithRawQueryBlocking() {
-        Optional<User> user = storIOSQLite()
+        User user = storIOSQLite()
                 .get()
                 .object(User.class)
                 .withQuery(RawQuery.builder()

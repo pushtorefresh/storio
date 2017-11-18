@@ -21,7 +21,7 @@ import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
 
-public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
+public class PreparedGetObject<T> extends PreparedGet<T, Optional<T>> {
 
     @NonNull
     private final Class<T> type;
@@ -70,7 +70,7 @@ public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
     @CheckResult
     @Override
     public Flowable<Optional<T>> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
-        return RxJavaUtils.createGetFlowable(storIOSQLite, this, query, rawQuery, backpressureStrategy);
+        return RxJavaUtils.createGetFlowableOptional(storIOSQLite, this, query, rawQuery, backpressureStrategy);
     }
 
     /**
@@ -87,20 +87,20 @@ public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
     @CheckResult
     @Override
     public Single<Optional<T>> asRxSingle() {
-        return RxJavaUtils.createSingle(storIOSQLite, this);
+        return RxJavaUtils.createSingleOptional(storIOSQLite, this);
     }
 
     @NonNull
     @Override
     protected Interceptor getRealCallInterceptor() {
-        return new RealCallInterceptor<T>();
+        return new RealCallInterceptor();
     }
 
-    private class RealCallInterceptor<UnwrappedResult> implements Interceptor {
-        @NonNull
+    private class RealCallInterceptor implements Interceptor {
+        @Nullable
         @SuppressWarnings("ConstantConditions")
         @Override
-        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
             try {
                 final GetResolver<T> getResolver;
 
@@ -131,16 +131,13 @@ public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
                 try {
                     final int count = cursor.getCount();
 
-                    final UnwrappedResult result;
                     if (count == 0) {
-                        result = null;
+                        return null;
                     } else {
                         cursor.moveToNext();
                         //noinspection unchecked
-                        result = (UnwrappedResult) getResolver.mapFromCursor(storIOSQLite, cursor);
+                        return (Result) getResolver.mapFromCursor(storIOSQLite, cursor);
                     }
-                    //noinspection unchecked
-                    return (Result) Optional.of(result);
                 } finally {
                     cursor.close();
                 }

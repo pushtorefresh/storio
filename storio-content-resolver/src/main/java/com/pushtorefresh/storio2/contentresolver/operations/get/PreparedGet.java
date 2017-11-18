@@ -11,7 +11,7 @@ import com.pushtorefresh.storio2.operations.PreparedOperation;
  *
  * @param <Result> type of result.
  */
-public abstract class PreparedGet<Result> implements PreparedOperation<Result, Query> {
+public abstract class PreparedGet<Result, WrappedResult> implements PreparedOperation<Result, WrappedResult, Query> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;

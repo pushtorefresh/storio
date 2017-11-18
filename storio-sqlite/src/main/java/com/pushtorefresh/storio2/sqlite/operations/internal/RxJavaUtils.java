@@ -3,12 +3,18 @@ package com.pushtorefresh.storio2.sqlite.operations.internal;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
+import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
 import com.pushtorefresh.storio2.operations.internal.CompletableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlockingOptional;
 import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
+import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlockingOptional;
 import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlockingOptional;
 import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.impl.ChangesFilter;
@@ -35,51 +41,41 @@ public final class RxJavaUtils {
 
     @CheckResult
     @NonNull
-    public static <T, Data> Flowable<T> createFlowable(
+    public static <Result, WrappedResult, Data> Flowable<Result> createFlowable(
             @NonNull StorIOSQLite storIOSQLite,
-            @NonNull PreparedOperation<T, Data> operation,
+            @NonNull PreparedOperation<Result, WrappedResult, Data> operation,
             @NonNull BackpressureStrategy backpressureStrategy
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxObservable()");
 
         return subscribeOn(
                 storIOSQLite,
-                Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<T, Data>(operation), backpressureStrategy)
+                Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<Result, WrappedResult, Data>(operation), backpressureStrategy)
         );
     }
 
     @CheckResult
     @NonNull
-    public static <T> Flowable<T> createGetFlowable(
+    public static <Result, WrappedResult> Flowable<Result> createGetFlowable(
             @NonNull StorIOSQLite storIOSQLite,
-            @NonNull PreparedOperation<T, GetQuery> operation,
+            @NonNull PreparedOperation<Result, WrappedResult, GetQuery> operation,
             @Nullable Query query,
             @Nullable RawQuery rawQuery,
             @NonNull BackpressureStrategy backpressureStrategy
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
 
-        final Set<String> tables;
-        final Set<String> tags;
+        final Set<String> tables = extractTables(query, rawQuery);
+        final Set<String> tags = extractTags(query, rawQuery);
 
-        if (query != null) {
-            tables = Collections.singleton(query.table());
-            tags = query.observesTags();
-        } else if (rawQuery != null) {
-            tables = rawQuery.observesTables();
-            tags = rawQuery.observesTags();
-        } else {
-            throw new IllegalStateException("Please specify query");
-        }
-
-        final Flowable<T> flowable;
+        final Flowable<Result> flowable;
 
         if (!tables.isEmpty() || !tags.isEmpty()) {
             flowable = ChangesFilter.applyForTablesAndTags(storIOSQLite.observeChanges(backpressureStrategy), tables, tags)
-                    .map(new MapSomethingToExecuteAsBlocking<Changes, T, GetQuery>(operation))  // each change triggers executeAsBlocking
-                    .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<T, GetQuery>(operation), backpressureStrategy)); // start stream with first query result
+                    .map(new MapSomethingToExecuteAsBlocking<Changes, Result, WrappedResult, GetQuery>(operation))  // each change triggers executeAsBlocking
+                    .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<Result, WrappedResult, GetQuery>(operation), backpressureStrategy)); // start stream with first query result
         } else {
-            flowable = Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<T, GetQuery>(operation), backpressureStrategy);
+            flowable = Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<Result, WrappedResult, GetQuery>(operation), backpressureStrategy);
         }
 
         return RxJavaUtils.subscribeOn(storIOSQLite, flowable);
@@ -87,14 +83,55 @@ public final class RxJavaUtils {
 
     @CheckResult
     @NonNull
-    public static <T, Data> Single<T> createSingle(
+    public static <Result> Flowable<Optional<Result>> createGetFlowableOptional(
             @NonNull StorIOSQLite storIOSQLite,
-            @NonNull PreparedOperation<T, Data> operation
+            @NonNull PreparedOperation<Result, Optional<Result>, GetQuery> operation,
+            @Nullable Query query,
+            @Nullable RawQuery rawQuery,
+            @NonNull BackpressureStrategy backpressureStrategy
+    ) {
+        throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
+
+        final Set<String> tables = extractTables(query, rawQuery);
+        final Set<String> tags = extractTags(query, rawQuery);
+
+        final Flowable<Optional<Result>> flowable;
+
+        if (!tables.isEmpty() || !tags.isEmpty()) {
+            flowable = ChangesFilter.applyForTablesAndTags(storIOSQLite.observeChanges(backpressureStrategy), tables, tags)
+                    .map(new MapSomethingToExecuteAsBlockingOptional<Changes, Result, GetQuery>(operation))  // each change triggers executeAsBlocking
+                    .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlockingOptional<Result, GetQuery>(operation), backpressureStrategy)); // start stream with first query result
+        } else {
+            flowable = Flowable.create(new FlowableOnSubscribeExecuteAsBlockingOptional<Result, GetQuery>(operation), backpressureStrategy);
+        }
+
+        return RxJavaUtils.subscribeOn(storIOSQLite, flowable);
+    }
+
+    @CheckResult
+    @NonNull
+    public static <Result, WrappedResult, Data> Single<Result> createSingle(
+            @NonNull StorIOSQLite storIOSQLite,
+            @NonNull PreparedOperation<Result, WrappedResult, Data> operation
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxSingle()");
 
-        final Single<T> single =
-                Single.create(new SingleOnSubscribeExecuteAsBlocking<T, Data>(operation));
+        final Single<Result> single =
+                Single.create(new SingleOnSubscribeExecuteAsBlocking<Result, WrappedResult, Data>(operation));
+
+        return subscribeOn(storIOSQLite, single);
+    }
+
+    @CheckResult
+    @NonNull
+    public static <Result, Data> Single<Optional<Result>> createSingleOptional(
+            @NonNull StorIOSQLite storIOSQLite,
+            @NonNull PreparedOperation<Result, Optional<Result>, Data> operation
+    ) {
+        throwExceptionIfRxJava2IsNotAvailable("asRxSingle()");
+
+        final Single<Optional<Result>> single =
+                Single.create(new SingleOnSubscribeExecuteAsBlockingOptional<Result, Data>(operation));
 
         return subscribeOn(storIOSQLite, single);
     }
@@ -103,7 +140,7 @@ public final class RxJavaUtils {
     @NonNull
     public static <T, Data> Completable createCompletable(
             @NonNull StorIOSQLite storIOSQLite,
-            @NonNull PreparedOperation<T, Data> operation
+            @NonNull PreparedWriteOperation<T, Data> operation
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxCompletable()");
 
@@ -141,5 +178,35 @@ public final class RxJavaUtils {
     ) {
         final Scheduler scheduler = storIOSQLite.defaultRxScheduler();
         return scheduler != null ? completable.subscribeOn(scheduler) : completable;
+    }
+
+    @VisibleForTesting
+    @NonNull
+    static Set<String> extractTables(
+            @Nullable Query query,
+            @Nullable RawQuery rawQuery
+    ) {
+        if (query != null) {
+            return Collections.singleton(query.table());
+        } else if (rawQuery != null) {
+            return rawQuery.observesTables();
+        } else {
+            throw new IllegalStateException("Please specify query");
+        }
+    }
+
+    @VisibleForTesting
+    @NonNull
+    static Set<String> extractTags(
+            @Nullable Query query,
+            @Nullable RawQuery rawQuery
+    ) {
+        if (query != null) {
+            return query.observesTags();
+        } else if (rawQuery != null) {
+            return rawQuery.observesTags();
+        } else {
+            throw new IllegalStateException("Please specify query");
+        }
     }
 }

@@ -12,12 +12,12 @@ import io.reactivex.functions.Function;
  * <p>
  * For internal usage only!
  */
-public final class MapSomethingToExecuteAsBlocking<Something, Result, Data> implements Function<Something, Result> {
+public final class MapSomethingToExecuteAsBlocking<Something, Result, WrappedResult, Data> implements Function<Something, Result> {
 
     @NonNull
-    private final PreparedOperation<Result, Data> preparedOperation;
+    private final PreparedOperation<Result, WrappedResult, Data> preparedOperation;
 
-    public MapSomethingToExecuteAsBlocking(@NonNull PreparedOperation<Result, Data> preparedOperation) {
+    public MapSomethingToExecuteAsBlocking(@NonNull PreparedOperation<Result, WrappedResult, Data> preparedOperation) {
         this.preparedOperation = preparedOperation;
     }
 

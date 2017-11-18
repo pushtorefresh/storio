@@ -2,6 +2,7 @@ package com.pushtorefresh.storio2.operations.internal;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 
 import io.reactivex.FlowableEmitter;
@@ -13,19 +14,20 @@ import io.reactivex.FlowableOnSubscribe;
  * <p>
  * For internal usage only!
  */
-public final class FlowableOnSubscribeExecuteAsBlocking<Result, WrappedResult, Data> implements FlowableOnSubscribe<Result> {
+public final class FlowableOnSubscribeExecuteAsBlockingOptional<Result, Data> implements FlowableOnSubscribe<Optional<Result>> {
 
     @NonNull
-    private final PreparedOperation<Result, WrappedResult, Data> preparedOperation;
+    private final PreparedOperation<Result, Optional<Result>, Data> preparedOperation;
 
-    public FlowableOnSubscribeExecuteAsBlocking(@NonNull PreparedOperation<Result, WrappedResult, Data> preparedOperation) {
+    public FlowableOnSubscribeExecuteAsBlockingOptional(@NonNull PreparedOperation<Result, Optional<Result>, Data> preparedOperation) {
         this.preparedOperation = preparedOperation;
     }
 
     @Override
-    public void subscribe(@NonNull FlowableEmitter<Result> emitter) throws Exception {
+    public void subscribe(@NonNull FlowableEmitter<Optional<Result>> emitter) throws Exception {
         try {
-            emitter.onNext(preparedOperation.executeAsBlocking());
+            final Result value = preparedOperation.executeAsBlocking();
+            emitter.onNext(Optional.of(value));
             emitter.onComplete();
         } catch (Exception e) {
             emitter.onError(e);

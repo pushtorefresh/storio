@@ -102,7 +102,7 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult, DeleteQu
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
             try {
                 final DeleteResult deleteResult = deleteResolver.performDelete(storIOSQLite, deleteQuery);
                 if (deleteResult.numberOfRowsDeleted() > 0) {

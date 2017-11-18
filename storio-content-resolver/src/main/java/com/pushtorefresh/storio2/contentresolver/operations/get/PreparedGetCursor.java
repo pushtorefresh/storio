@@ -22,7 +22,7 @@ import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
  * which performs query that retrieves data as {@link Cursor}.
  * from {@link android.content.ContentProvider}.
  */
-public class PreparedGetCursor extends PreparedGet<Cursor> {
+public class PreparedGetCursor extends PreparedGetMandatoryResult<Cursor> {
 
     @NonNull
     private final GetResolver<Cursor> getResolver;

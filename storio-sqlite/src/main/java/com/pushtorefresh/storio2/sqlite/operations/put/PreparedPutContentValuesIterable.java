@@ -115,7 +115,7 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
             try {
                 final StorIOSQLite.LowLevel lowLevel = storIOSQLite.lowLevel();
 

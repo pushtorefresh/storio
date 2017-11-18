@@ -3,14 +3,19 @@ package com.pushtorefresh.storio2.contentresolver.operations.internal;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
+import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
 import com.pushtorefresh.storio2.operations.internal.CompletableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlockingOptional;
 import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
+import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlockingOptional;
 import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlocking;
+import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlockingOptional;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Completable;
@@ -28,15 +33,15 @@ public class RxJavaUtils {
 
     @CheckResult
     @NonNull
-    public static <T, Data> Flowable<T> createFlowable(
+    public static <Result, WrappedResult, Data> Flowable<Result> createFlowable(
             @NonNull StorIOContentResolver storIOContentResolver,
-            @NonNull PreparedOperation<T, Data> operation,
+            @NonNull PreparedOperation<Result, WrappedResult, Data> operation,
             @NonNull BackpressureStrategy backpressureStrategy
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxObservable()");
 
-        final Flowable<T> flowable = Flowable.create(
-                new FlowableOnSubscribeExecuteAsBlocking<T, Data>(operation), backpressureStrategy
+        final Flowable<Result> flowable = Flowable.create(
+                new FlowableOnSubscribeExecuteAsBlocking<Result, WrappedResult, Data>(operation), backpressureStrategy
         );
 
         return subscribeOn(
@@ -47,18 +52,18 @@ public class RxJavaUtils {
 
     @CheckResult
     @NonNull
-    public static <T> Flowable<T> createGetFlowable(
+    public static <Result, WrappedResult> Flowable<Result> createGetFlowable(
             @NonNull StorIOContentResolver storIOContentResolver,
-            @NonNull PreparedOperation<T, Query> operation,
+            @NonNull PreparedOperation<Result, WrappedResult, Query> operation,
             @NonNull Query query,
             @NonNull BackpressureStrategy backpressureStrategy
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
 
-        final Flowable<T> flowable = storIOContentResolver
+        final Flowable<Result> flowable = storIOContentResolver
                 .observeChangesOfUri(query.uri(), backpressureStrategy) // each change triggers executeAsBlocking
-                .map(new MapSomethingToExecuteAsBlocking<Changes, T, Query>(operation))
-                .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<T, Query>(operation), backpressureStrategy)); // start stream with first query result
+                .map(new MapSomethingToExecuteAsBlocking<Changes, Result, WrappedResult, Query>(operation))
+                .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlocking<Result, WrappedResult, Query>(operation), backpressureStrategy)); // start stream with first query result
 
         return subscribeOn(
                 storIOContentResolver,
@@ -68,13 +73,34 @@ public class RxJavaUtils {
 
     @CheckResult
     @NonNull
-    public static <T, Data> Single<T> createSingle(
+    public static <Result> Flowable<Optional<Result>> createGetFlowableOptional(
             @NonNull StorIOContentResolver storIOContentResolver,
-            @NonNull PreparedOperation<T, Data> operation
+            @NonNull PreparedOperation<Result, Optional<Result>, Query> operation,
+            @NonNull Query query,
+            @NonNull BackpressureStrategy backpressureStrategy
+    ) {
+        throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
+
+        final Flowable<Optional<Result>> flowable = storIOContentResolver
+                .observeChangesOfUri(query.uri(), backpressureStrategy) // each change triggers executeAsBlocking
+                .map(new MapSomethingToExecuteAsBlockingOptional<Changes, Result, Query>(operation))
+                .startWith(Flowable.create(new FlowableOnSubscribeExecuteAsBlockingOptional<Result, Query>(operation), backpressureStrategy)); // start stream with first query result
+
+        return subscribeOn(
+                storIOContentResolver,
+                flowable
+        );
+    }
+
+    @CheckResult
+    @NonNull
+    public static <Result, WrappedResult, Data> Single<Result> createSingle(
+            @NonNull StorIOContentResolver storIOContentResolver,
+            @NonNull PreparedOperation<Result, WrappedResult, Data> operation
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxSingle()");
 
-        final Single<T> single = Single.create(new SingleOnSubscribeExecuteAsBlocking<T, Data>(operation));
+        final Single<Result> single = Single.create(new SingleOnSubscribeExecuteAsBlocking<Result, WrappedResult, Data>(operation));
 
         return subscribeOn(
                 storIOContentResolver,
@@ -84,9 +110,25 @@ public class RxJavaUtils {
 
     @CheckResult
     @NonNull
-    public static <T, Data> Completable createCompletable(
+    public static <Result, Data> Single<Optional<Result>> createSingleOptional(
             @NonNull StorIOContentResolver storIOContentResolver,
-            @NonNull PreparedOperation<T, Data> operation
+            @NonNull PreparedOperation<Result, Optional<Result>, Data> operation
+    ) {
+        throwExceptionIfRxJava2IsNotAvailable("asRxSingle()");
+
+        final Single<Optional<Result>> single = Single.create(new SingleOnSubscribeExecuteAsBlockingOptional<Result, Data>(operation));
+
+        return subscribeOn(
+                storIOContentResolver,
+                single
+        );
+    }
+
+    @CheckResult
+    @NonNull
+    public static <Result, Data> Completable createCompletable(
+            @NonNull StorIOContentResolver storIOContentResolver,
+            @NonNull PreparedWriteOperation<Result, Data> operation
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxCompletable()");
 

@@ -30,7 +30,7 @@ import static java.util.Collections.unmodifiableList;
  *
  * @param <T> type of results.
  */
-public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
+public class PreparedGetListOfObjects<T> extends PreparedGetMandatoryResult<List<T>> {
 
     @NonNull
     private final Class<T> type;
@@ -110,7 +110,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGet<List<T>> {
         // Min SDK :( unchecked for empty list
         @NonNull
         @Override
-        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> operation, @NonNull Chain chain) {
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
             try {
                 final GetResolver<T> getResolver;
 

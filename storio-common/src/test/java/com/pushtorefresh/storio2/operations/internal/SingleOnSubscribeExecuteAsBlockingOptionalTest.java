@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio2.operations.internal;
 
+import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.StorIOException;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 
@@ -13,27 +14,28 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-public class SingleOnSubscribeExecuteAsBlockingTest {
+public class SingleOnSubscribeExecuteAsBlockingOptionalTest {
 
     @SuppressWarnings("CheckResult")
     @Test
     public void shouldExecuteAsBlockingAfterSubscription() {
         //noinspection unchecked
-        final PreparedOperation<String, String, String> preparedOperation = mock(PreparedOperation.class);
+        final PreparedOperation<String, Optional<String>, String> preparedOperation = mock(PreparedOperation.class);
         String expectedResult = "test";
         when(preparedOperation.executeAsBlocking()).thenReturn(expectedResult);
 
-        TestObserver<String> testObserver = new TestObserver<String>();
+        TestObserver<Optional<String>> testObserver = new TestObserver<Optional<String>>();
 
         verifyZeroInteractions(preparedOperation);
 
-        Single<String> single = Single.create(new SingleOnSubscribeExecuteAsBlocking<String, String, String>(preparedOperation));
+        Single<Optional<String>> single =
+                Single.create(new SingleOnSubscribeExecuteAsBlockingOptional<String, String>(preparedOperation));
 
         verifyZeroInteractions(preparedOperation);
 
         single.subscribe(testObserver);
 
-        testObserver.assertValue(expectedResult);
+        testObserver.assertValue(Optional.of(expectedResult));
         testObserver.assertNoErrors();
         testObserver.assertComplete();
 
@@ -44,15 +46,16 @@ public class SingleOnSubscribeExecuteAsBlockingTest {
     @Test
     public void shouldCallOnErrorIfExceptionOccurred() {
         //noinspection unchecked
-        final PreparedOperation<Object, Object, Object> preparedOperation = mock(PreparedOperation.class);
+        final PreparedOperation<Object, Optional<Object>, Object> preparedOperation = mock(PreparedOperation.class);
 
         StorIOException expectedException = new StorIOException("test exception");
 
         when(preparedOperation.executeAsBlocking()).thenThrow(expectedException);
 
-        TestObserver<Object> testObserver = new TestObserver<Object>();
+        TestObserver<Optional<Object>> testObserver = new TestObserver<Optional<Object>>();
 
-        Single<Object> single = Single.create(new SingleOnSubscribeExecuteAsBlocking<Object, Object, Object>(preparedOperation));
+        Single<Optional<Object>> single =
+                Single.create(new SingleOnSubscribeExecuteAsBlockingOptional<Object, Object>(preparedOperation));
 
         verifyZeroInteractions(preparedOperation);
 

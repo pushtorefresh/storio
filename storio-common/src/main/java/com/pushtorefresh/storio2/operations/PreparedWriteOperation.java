@@ -10,7 +10,7 @@ import io.reactivex.Completable;
  *
  * @param <Result> type of result
  */
-public interface PreparedWriteOperation<Result, Data> extends PreparedOperation<Result, Data> {
+public interface PreparedWriteOperation<Result, Data> extends PreparedOperation<Result, Result, Data> {
 
     @NonNull
     @CheckResult

@@ -26,7 +26,7 @@ import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
  *
  * @param <T> type of result.
  */
-public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
+public class PreparedGetObject<T> extends PreparedGet<T, Optional<T>> {
 
     @NonNull
     private final Class<T> type;
@@ -54,9 +54,9 @@ public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
      */
     @SuppressWarnings({"ConstantConditions", "NullableProblems"})
     @WorkerThread
-    @NonNull
+    @Nullable
     @Override
-    public Optional<T> executeAsBlocking() {
+    public T executeAsBlocking() {
         try {
             final GetResolver<T> getResolver;
 
@@ -79,14 +79,12 @@ public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
             try {
                 final int count = cursor.getCount();
 
-                final T object;
                 if (count == 0) {
-                    object = null;
+                    return null;
                 } else {
                     cursor.moveToFirst();
-                    object = getResolver.mapFromCursor(storIOContentResolver, cursor);
+                    return getResolver.mapFromCursor(storIOContentResolver, cursor);
                 }
-                return Optional.of(object);
 
             } finally {
                 cursor.close();
@@ -119,7 +117,7 @@ public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
     @CheckResult
     @Override
     public Flowable<Optional<T>> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
-        return RxJavaUtils.createGetFlowable(storIOContentResolver, this, query, backpressureStrategy);
+        return RxJavaUtils.createGetFlowableOptional(storIOContentResolver, this, query, backpressureStrategy);
     }
 
     /**
@@ -136,7 +134,7 @@ public class PreparedGetObject<T> extends PreparedGet<Optional<T>> {
     @CheckResult
     @Override
     public Single<Optional<T>> asRxSingle() {
-        return RxJavaUtils.createSingle(storIOContentResolver, this);
+        return RxJavaUtils.createSingleOptional(storIOContentResolver, this);
     }
 
     /**

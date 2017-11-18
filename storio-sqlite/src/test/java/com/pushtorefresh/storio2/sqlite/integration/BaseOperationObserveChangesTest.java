@@ -48,12 +48,12 @@ public abstract class BaseOperationObserveChangesTest extends BaseTest {
         tagChanges = Changes.newInstance("yet_another_table", UserTableMeta.NOTIFICATION_TAG);
     }
 
-    public <T, Data> void verifyChangesReceived(
-            @NonNull PreparedOperation<T, Data> operation,
+    public <Result, WrappedResult, Data> void verifyChangesReceived(
+            @NonNull PreparedOperation<Result, WrappedResult, Data> operation,
             @NonNull Changes changes,
-            @NonNull T value
+            @NonNull WrappedResult value
     ) {
-        TestSubscriber<T> testSubscriber = new TestSubscriber<T>();
+        TestSubscriber<WrappedResult> testSubscriber = new TestSubscriber<WrappedResult>();
 
         operation
                 .asRxFlowable(MISSING)

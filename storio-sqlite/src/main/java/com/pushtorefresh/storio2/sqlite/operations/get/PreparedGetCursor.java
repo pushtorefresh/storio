@@ -22,7 +22,7 @@ import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
 /**
  * Prepared Get Operation for {@link StorIOSQLite}.
  */
-public class PreparedGetCursor extends PreparedGet<Cursor> {
+public class PreparedGetCursor extends PreparedGetMandatoryResult<Cursor> {
 
     @NonNull
     private final GetResolver<Cursor> getResolver;
@@ -92,11 +92,13 @@ public class PreparedGetCursor extends PreparedGet<Cursor> {
     private class RealCallInterceptor implements Interceptor {
         @NonNull
         @Override
-        public <Result, Data> Result intercept(@NonNull PreparedOperation<Result, Data> current, @NonNull Chain chain) {
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
             try {
                 if (query != null) {
+                    //noinspection unchecked
                     return (Result) getResolver.performGet(storIOSQLite, query);
                 } else if (rawQuery != null) {
+                    //noinspection unchecked
                     return (Result) getResolver.performGet(storIOSQLite, rawQuery);
                 } else {
                     throw new IllegalStateException("Please specify query");

@@ -20,10 +20,10 @@ import com.pushtorefresh.storio2.sqlite.queries.UpdateQuery;
 public class UserTableMeta {
 
     // they are open just for test purposes
-    static final String TABLE = "users";
-    static final String COLUMN_ID = "_id";
-    static final String COLUMN_EMAIL = "email";
-    static final String COLUMN_PHONE = "phone";
+    public static final String TABLE = "users";
+    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_EMAIL = "email";
+    public static final String COLUMN_PHONE = "phone";
     static final String NOTIFICATION_TAG = "tag";
 
     // We all will be very old when Java will support string interpolation :(
