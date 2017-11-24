@@ -1,7 +1,7 @@
 package com.pushtorefresh.storio2.operations.internal;
 
 import com.pushtorefresh.storio2.StorIOException;
-import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
 
 import org.junit.Test;
 
@@ -21,7 +21,7 @@ public class CompletableOnSubscribeExecuteAsBlockingTest {
     @SuppressWarnings("ResourceType")
     @Test
     public void shouldExecuteAsBlockingAfterSubscription() {
-        final PreparedWriteOperation preparedOperation = mock(PreparedWriteOperation.class);
+        final PreparedCompletableOperation preparedOperation = mock(PreparedCompletableOperation.class);
 
         TestObserver testObserver = new TestObserver();
 
@@ -45,7 +45,7 @@ public class CompletableOnSubscribeExecuteAsBlockingTest {
     @SuppressWarnings({"ThrowableInstanceNeverThrown", "ResourceType"})
     @Test
     public void shouldCallOnErrorIfExceptionOccurred() {
-        final PreparedWriteOperation preparedOperation = mock(PreparedWriteOperation.class);
+        final PreparedCompletableOperation preparedOperation = mock(PreparedCompletableOperation.class);
 
         StorIOException expectedException = new StorIOException("test exception");
 

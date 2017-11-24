@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
-import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
 import com.pushtorefresh.storio2.sqlite.Interceptor;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 
@@ -17,7 +17,8 @@ import static com.pushtorefresh.storio2.sqlite.impl.ChainImpl.buildChain;
  * Prepared Put Operation for {@link StorIOSQLite} which performs insert or update data
  * in {@link StorIOSQLite}.
  */
-public abstract class PreparedPut<Result, Data> implements PreparedWriteOperation<Result, Data> {
+public abstract class PreparedPut<Result, Data> implements
+    PreparedCompletableOperation<Result, Data> {
 
     @NonNull
     protected final StorIOSQLite storIOSQLite;

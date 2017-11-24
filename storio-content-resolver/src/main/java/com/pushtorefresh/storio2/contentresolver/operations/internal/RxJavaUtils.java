@@ -8,7 +8,7 @@ import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
-import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
 import com.pushtorefresh.storio2.operations.internal.CompletableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlockingOptional;
@@ -128,7 +128,7 @@ public class RxJavaUtils {
     @NonNull
     public static <Result, Data> Completable createCompletable(
             @NonNull StorIOContentResolver storIOContentResolver,
-            @NonNull PreparedWriteOperation<Result, Data> operation
+            @NonNull PreparedCompletableOperation<Result, Data> operation
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxCompletable()");
 

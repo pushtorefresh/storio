@@ -3,7 +3,7 @@ package com.pushtorefresh.storio2.sqlite.operations;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.operations.PreparedOperation;
-import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 
 import io.reactivex.schedulers.TestScheduler;
@@ -43,7 +43,7 @@ public class SchedulerChecker {
         check(operation);
     }
 
-    public void checkAsCompletable(@NonNull PreparedWriteOperation operation) {
+    public void checkAsCompletable(@NonNull PreparedCompletableOperation operation) {
         operation.asRxCompletable().subscribe();
         check(operation);
     }

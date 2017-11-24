@@ -10,6 +10,7 @@ import android.support.annotation.WorkerThread;
 import com.pushtorefresh.storio2.TypeMappingFinder;
 import com.pushtorefresh.storio2.internal.ChangesBus;
 import com.pushtorefresh.storio2.internal.TypeMappingFinderImpl;
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
 import com.pushtorefresh.storio2.sqlite.Changes;
 import com.pushtorefresh.storio2.sqlite.Interceptor;
 import com.pushtorefresh.storio2.sqlite.SQLiteTypeMapping;
@@ -254,7 +255,7 @@ public class DefaultStorIOSQLite extends StorIOSQLite {
          * @return builder.
          * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxFlowable(BackpressureStrategy)
          * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxSingle()
-         * @see com.pushtorefresh.storio2.operations.PreparedWriteOperation#asRxCompletable()
+         * @see PreparedCompletableOperation#asRxCompletable()
          */
         @NonNull
         public CompleteBuilder defaultRxScheduler(@Nullable Scheduler defaultRxScheduler) {
