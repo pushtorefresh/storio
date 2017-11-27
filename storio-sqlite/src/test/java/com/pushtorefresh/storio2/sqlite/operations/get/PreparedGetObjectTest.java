@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subscribers.TestSubscriber;
@@ -83,6 +84,22 @@ public class PreparedGetObjectTest {
         }
 
         @Test
+        public void shouldGetObjectByQueryWithoutTypeMappingAsMaybe() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
+
+            final Maybe<TestItem> testItemMaybe = getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .asRxMaybe();
+
+            getStub.verifyQueryBehavior(testItemMaybe);
+        }
+
+
+        @Test
         public void shouldGetObjectByRawQueryWithoutTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
 
@@ -126,6 +143,21 @@ public class PreparedGetObjectTest {
                     .asRxSingle();
 
             getStub.verifyRawQueryBehavior(testItemSingle);
+        }
+
+        @Test
+        public void shouldGetObjectByRawQueryWithoutTypeMappingAsMaybe() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithoutTypeMapping();
+
+            final Maybe<TestItem> testItemMaybe = getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .asRxMaybe();
+
+            getStub.verifyRawQueryBehavior(testItemMaybe);
         }
     }
 
@@ -175,6 +207,20 @@ public class PreparedGetObjectTest {
         }
 
         @Test
+        public void shouldGetObjectByQueryWithTypeMappingAsMaybe() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
+
+            final Maybe<TestItem> testItemMaybe = getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare()
+                    .asRxMaybe();
+
+            getStub.verifyQueryBehavior(testItemMaybe);
+        }
+
+        @Test
         public void shouldGetObjectByRawQueryWithTypeMappingBlocking() {
             final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
 
@@ -215,6 +261,20 @@ public class PreparedGetObjectTest {
                     .asRxSingle();
 
             getStub.verifyRawQueryBehavior(testItemSingle);
+        }
+
+        @Test
+        public void shouldGetObjectByRawQueryWithTypeMappingAsMaybe() {
+            final GetObjectStub getStub = GetObjectStub.newInstanceWithTypeMapping();
+
+            final Maybe<TestItem> testItemMaybe = getStub.storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.rawQuery)
+                    .prepare()
+                    .asRxMaybe();
+
+            getStub.verifyRawQueryBehavior(testItemMaybe);
         }
     }
 
@@ -339,6 +399,48 @@ public class PreparedGetObjectTest {
             verifyNoMoreInteractions(storIOSQLite, lowLevel);
         }
 
+        @SuppressWarnings("unchecked")
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithQueryAsMaybe() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
+
+            when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
+
+            final TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
+
+            storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(Query.builder().table("test_table").build())
+                    .prepare()
+                    .asRxMaybe()
+                    .subscribe(testObserver);
+
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            Throwable error = testObserver.errors().get(0);
+
+            assertThat(error)
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessage("Error has occurred during Get operation. query = Query{distinct=false, table='test_table', columns=[], where='', whereArgs=[], groupBy='', having='', orderBy='', limit='', observesTags='[]'}");
+
+            assertThat(error.getCause())
+                    .hasMessage("This type does not have type mapping: "
+                            + "type = " + TestItem.class + "," +
+                            "db was not touched by this operation, please add type mapping for this type");
+
+            verify(storIOSQLite).get();
+            verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultRxScheduler();
+            verify(storIOSQLite).interceptors();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
+        }
+
         @Test
         public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithRawQueryBlocking() {
             final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
@@ -429,6 +531,47 @@ public class PreparedGetObjectTest {
                     .withQuery(RawQuery.builder().query("test query").build())
                     .prepare()
                     .asRxSingle()
+                    .subscribe(testObserver);
+
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            Throwable error = testObserver.errors().get(0);
+
+            assertThat(error)
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class)
+                    .hasMessage("Error has occurred during Get operation. query = RawQuery{query='test query', args=[], affectsTables=[], affectsTags=[], observesTables=[], observesTags=[]}");
+
+            assertThat(error.getCause())
+                    .hasMessage("This type does not have type mapping: "
+                            + "type = " + TestItem.class + "," +
+                            "db was not touched by this operation, please add type mapping for this type");
+
+            verify(storIOSQLite).get();
+            verify(storIOSQLite).lowLevel();
+            verify(storIOSQLite).defaultRxScheduler();
+            verify(storIOSQLite).interceptors();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).rawQuery(any(RawQuery.class));
+            verifyNoMoreInteractions(storIOSQLite, lowLevel);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingDbWithRawQueryAsMaybe() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+            final StorIOSQLite.LowLevel lowLevel = mock(StorIOSQLite.LowLevel.class);
+
+            when(storIOSQLite.get()).thenReturn(new PreparedGet.Builder(storIOSQLite));
+            when(storIOSQLite.lowLevel()).thenReturn(lowLevel);
+
+            final TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
+
+            storIOSQLite
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(RawQuery.builder().query("test query").build())
+                    .prepare()
+                    .asRxMaybe()
                     .subscribe(testObserver);
 
             testObserver.awaitTerminalEvent();
@@ -691,6 +834,63 @@ public class PreparedGetObjectTest {
 
             preparedGetObject
                     .asRxSingle()
+                    .subscribe(testObserver);
+
+            testObserver.awaitTerminalEvent();
+
+            testObserver.assertNoValues();
+            testObserver.assertError(StorIOException.class);
+
+            StorIOException storIOException = (StorIOException) testObserver.errors().get(0);
+
+            IllegalStateException cause = (IllegalStateException) storIOException.getCause();
+            assertThat(cause).hasMessage("test exception");
+
+            // Cursor must be closed in case of exception
+            verify(cursor).close();
+
+            //noinspection unchecked
+            verify(getResolver).performGet(eq(storIOSQLite), any(Query.class));
+            verify(getResolver).mapFromCursor(storIOSQLite, cursor);
+            verify(cursor).getCount();
+            verify(cursor).moveToNext();
+            verify(storIOSQLite).defaultRxScheduler();
+            verify(storIOSQLite).interceptors();
+
+            verifyNoMoreInteractions(storIOSQLite, getResolver, cursor);
+        }
+
+        @Test
+        public void cursorMustBeClosedInCaseOfExceptionForMaybe() {
+            final StorIOSQLite storIOSQLite = mock(StorIOSQLite.class);
+
+            //noinspection unchecked
+            final GetResolver<Object> getResolver = mock(GetResolver.class);
+
+            final Cursor cursor = mock(Cursor.class);
+
+            when(cursor.getCount()).thenReturn(10);
+
+            when(cursor.moveToNext()).thenReturn(true);
+
+            when(getResolver.performGet(eq(storIOSQLite), any(Query.class)))
+                    .thenReturn(cursor);
+
+            when(getResolver.mapFromCursor(storIOSQLite, cursor))
+                    .thenThrow(new IllegalStateException("test exception"));
+
+            PreparedGetObject<Object> preparedGetObject =
+                    new PreparedGetObject<Object>(
+                            storIOSQLite,
+                            Object.class,
+                            Query.builder().table("test_table").build(),
+                            getResolver
+                    );
+
+            final TestObserver<Object> testObserver = new TestObserver<Object>();
+
+            preparedGetObject
+                    .asRxMaybe()
                     .subscribe(testObserver);
 
             testObserver.awaitTerminalEvent();
