@@ -18,6 +18,7 @@ import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subscribers.TestSubscriber;
@@ -470,6 +471,46 @@ public class GetOperationTest extends IntegrationTest {
     }
 
     @Test
+    public void getExistedObjectExecuteAsMaybe() {
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
+        TestItem expectedItem = TestItem.create(null, "value");
+        contentResolver.insert(TestItem.CONTENT_URI, expectedItem.toContentValues());
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value1").toContentValues());
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value2").toContentValues());
+
+        Maybe<TestItem> testItemMaybe = storIOContentResolver
+                .get()
+                .object(TestItem.class)
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .where(TestItem.COLUMN_VALUE + "=?")
+                        .whereArgs("value")
+                        .build())
+                .prepare()
+                .asRxMaybe();
+
+        TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
+        testItemMaybe.subscribe(testObserver);
+
+        testObserver.awaitTerminalEvent(5, SECONDS);
+        testObserver.assertNoErrors();
+
+        List<TestItem> emmitedItems = testObserver.values();
+        assertThat(emmitedItems.size()).isEqualTo(1);
+        assertThat(expectedItem.equalsWithoutId(emmitedItems.get(0))).isTrue();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
     public void getNonExistedObjectExecuteAsSingle() {
         final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
@@ -496,6 +537,40 @@ public class GetOperationTest extends IntegrationTest {
 
         testObserver.awaitTerminalEvent(5, SECONDS);
         testObserver.assertValue(Optional.<TestItem>empty());
+        testObserver.assertNoErrors();
+
+        changesTestSubscriber.awaitTerminalEvent(60, SECONDS);
+        changesTestSubscriber.assertNoErrors();
+        changesTestSubscriber.assertValue(Changes.newInstance(TestItem.CONTENT_URI));
+    }
+
+    @Test
+    public void getNonExistedObjectExecuteAsMaybe() {
+        final TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
+
+        storIOContentResolver
+                .observeChangesOfUri(TestItem.CONTENT_URI, BackpressureStrategy.MISSING)
+                .take(1)
+                .subscribe(changesTestSubscriber);
+
+        contentResolver.insert(TestItem.CONTENT_URI, TestItem.create(null, "value").toContentValues());
+
+        Maybe<TestItem> testItemMaybe = storIOContentResolver
+                .get()
+                .object(TestItem.class)
+                .withQuery(Query.builder()
+                        .uri(TestItem.CONTENT_URI)
+                        .where(TestItem.COLUMN_VALUE + "=?")
+                        .whereArgs("some value")
+                        .build())
+                .prepare()
+                .asRxMaybe();
+
+        TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
+        testItemMaybe.subscribe(testObserver);
+
+        testObserver.awaitTerminalEvent(5, SECONDS);
+        testObserver.assertNoValues();
         testObserver.assertNoErrors();
 
         changesTestSubscriber.awaitTerminalEvent(60, SECONDS);

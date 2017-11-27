@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subscribers.TestSubscriber;
@@ -80,6 +81,21 @@ public class PreparedGetObjectTest {
 
             getStub.verifyBehavior(testItemSingle);
         }
+
+        @Test
+        public void shouldGetObjectWithoutTypeMappingAsMaybe() {
+            final GetObjectStub getStub = GetObjectStub.newStubWithoutTypeMapping();
+
+            final Maybe<TestItem> testItemMaybe = getStub.storIOContentResolver
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .withGetResolver(getStub.getResolver)
+                    .prepare()
+                    .asRxMaybe();
+
+            getStub.verifyBehavior(testItemMaybe);
+        }
     }
 
     public static class WithTypeMapping {
@@ -125,6 +141,20 @@ public class PreparedGetObjectTest {
                     .asRxSingle();
 
             getStub.verifyBehavior(testItemSingle);
+        }
+
+        @Test
+        public void shouldGetObjectWithTypeMappingAsMaybe() {
+            final GetObjectStub getStub = GetObjectStub.newStubWithTypeMapping();
+
+            final Maybe<TestItem> testItemMaybe = getStub.storIOContentResolver
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(getStub.query)
+                    .prepare()
+                    .asRxMaybe();
+
+            getStub.verifyBehavior(testItemMaybe);
         }
     }
 
@@ -218,6 +248,40 @@ public class PreparedGetObjectTest {
                     .withQuery(Query.builder().uri(mock(Uri.class)).build())
                     .prepare()
                     .asRxSingle()
+                    .subscribe(testObserver);
+
+            testObserver.awaitTerminalEvent();
+            testObserver.assertNoValues();
+            assertThat(testObserver.errors().get(0))
+                    .isInstanceOf(StorIOException.class)
+                    .hasCauseInstanceOf(IllegalStateException.class);
+
+            verify(storIOContentResolver).get();
+            verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).defaultRxScheduler();
+            verify(lowLevel).typeMapping(TestItem.class);
+            verify(lowLevel, never()).query(any(Query.class));
+
+            verifyNoMoreInteractions(storIOContentResolver, lowLevel);
+        }
+
+        @Test
+        public void shouldThrowExceptionIfNoTypeMappingWasFoundWithoutAccessingContentProviderAsMaybe() {
+            final StorIOContentResolver storIOContentResolver = mock(StorIOContentResolver.class);
+            final StorIOContentResolver.LowLevel lowLevel = mock(StorIOContentResolver.LowLevel.class);
+
+            when(storIOContentResolver.lowLevel()).thenReturn(lowLevel);
+
+            when(storIOContentResolver.get()).thenReturn(new PreparedGet.Builder(storIOContentResolver));
+
+            final TestObserver<TestItem> testObserver = new TestObserver<TestItem>();
+
+            storIOContentResolver
+                    .get()
+                    .object(TestItem.class)
+                    .withQuery(Query.builder().uri(mock(Uri.class)).build())
+                    .prepare()
+                    .asRxMaybe()
                     .subscribe(testObserver);
 
             testObserver.awaitTerminalEvent();

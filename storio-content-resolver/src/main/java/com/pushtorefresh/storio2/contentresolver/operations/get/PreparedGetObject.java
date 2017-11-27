@@ -12,9 +12,11 @@ import com.pushtorefresh.storio2.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
+import com.pushtorefresh.storio2.operations.PreparedMaybeOperation;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
@@ -26,7 +28,8 @@ import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
  *
  * @param <T> type of result.
  */
-public class PreparedGetObject<T> extends PreparedGet<T, Optional<T>> {
+public class PreparedGetObject<T> extends PreparedGet<T, Optional<T>> implements
+        PreparedMaybeOperation<T, Optional<T>, Query> {
 
     @NonNull
     private final Class<T> type;
@@ -135,6 +138,12 @@ public class PreparedGetObject<T> extends PreparedGet<T, Optional<T>> {
     @Override
     public Single<Optional<T>> asRxSingle() {
         return RxJavaUtils.createSingleOptional(storIOContentResolver, this);
+    }
+
+    @NonNull
+    @Override
+    public Maybe<T> asRxMaybe() {
+        return RxJavaUtils.createMaybe(storIOContentResolver, this);
     }
 
     /**

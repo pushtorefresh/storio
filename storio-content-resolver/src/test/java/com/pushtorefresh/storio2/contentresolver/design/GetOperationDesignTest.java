@@ -13,6 +13,7 @@ import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 import static org.mockito.Mockito.mock;
@@ -135,5 +136,18 @@ public class GetOperationDesignTest extends OperationDesignTest {
                 .withGetResolver(ArticleMeta.GET_RESOLVER)
                 .prepare()
                 .asRxSingle();
+    }
+
+    @Test
+    public void getObjectAsMaybe() {
+        Maybe<Article> maybe = storIOContentResolver()
+                .get()
+                .object(Article.class)
+                .withQuery(Query.builder()
+                        .uri(mock(Uri.class))
+                        .build())
+                .withGetResolver(ArticleMeta.GET_RESOLVER)
+                .prepare()
+                .asRxMaybe();
     }
 }
