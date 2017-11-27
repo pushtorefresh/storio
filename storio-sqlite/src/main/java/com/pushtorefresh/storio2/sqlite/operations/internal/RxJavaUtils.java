@@ -7,12 +7,14 @@ import android.support.annotation.VisibleForTesting;
 
 import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
-import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
+import com.pushtorefresh.storio2.operations.PreparedMaybeOperation;
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
 import com.pushtorefresh.storio2.operations.internal.CompletableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlockingOptional;
 import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlockingOptional;
+import com.pushtorefresh.storio2.operations.internal.MaybeOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlockingOptional;
 import com.pushtorefresh.storio2.sqlite.Changes;
@@ -22,6 +24,7 @@ import com.pushtorefresh.storio2.sqlite.queries.GetQuery;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
 
+import io.reactivex.Maybe;
 import java.util.Collections;
 import java.util.Set;
 
@@ -140,7 +143,7 @@ public final class RxJavaUtils {
     @NonNull
     public static <T, Data> Completable createCompletable(
             @NonNull StorIOSQLite storIOSQLite,
-            @NonNull PreparedWriteOperation<T, Data> operation
+            @NonNull PreparedCompletableOperation<T, Data> operation
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxCompletable()");
 
@@ -148,6 +151,20 @@ public final class RxJavaUtils {
                 Completable.create(new CompletableOnSubscribeExecuteAsBlocking(operation));
 
         return subscribeOn(storIOSQLite, completable);
+    }
+
+    @CheckResult
+    @NonNull
+    public static <Result, WrappedResult, Data> Maybe<Result> createMaybe(
+        @NonNull StorIOSQLite storIOSQLite,
+        @NonNull PreparedMaybeOperation<Result, WrappedResult, Data> operation
+    ) {
+        throwExceptionIfRxJava2IsNotAvailable("asRxMaybe()");
+
+        final Maybe<Result> maybe =
+            Maybe.create(new MaybeOnSubscribeExecuteAsBlocking<Result, WrappedResult, Data>(operation));
+
+        return subscribeOn(storIOSQLite, maybe);
     }
 
     @CheckResult
@@ -178,6 +195,16 @@ public final class RxJavaUtils {
     ) {
         final Scheduler scheduler = storIOSQLite.defaultRxScheduler();
         return scheduler != null ? completable.subscribeOn(scheduler) : completable;
+    }
+
+    @CheckResult
+    @NonNull
+    public static <T> Maybe<T> subscribeOn(
+        @NonNull StorIOSQLite storIOSQLite,
+        @NonNull Maybe<T> maybe
+    ) {
+        final Scheduler scheduler = storIOSQLite.defaultRxScheduler();
+        return scheduler != null ? maybe.subscribeOn(scheduler) : maybe;
     }
 
     @VisibleForTesting

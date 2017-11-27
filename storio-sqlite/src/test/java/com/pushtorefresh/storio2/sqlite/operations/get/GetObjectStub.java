@@ -17,6 +17,7 @@ import org.mockito.stubbing.Answer;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
@@ -193,6 +194,20 @@ class GetObjectStub {
                 .checkBehaviorOfFlowable();
     }
 
+    void verifyQueryBehavior(@NonNull Maybe<TestItem> maybe) {
+        new FlowableBehaviorChecker<TestItem>()
+                .flowable(maybe.toFlowable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Consumer<TestItem>() {
+                    @Override
+                    public void accept(@NonNull TestItem testItem) {
+                        verify(storIOSQLite).defaultRxScheduler();
+                        verifyQueryBehavior(testItem);
+                    }
+                })
+                .checkBehaviorOfFlowable();
+    }
+
     void verifyQueryBehavior(@NonNull Single<Optional<TestItem>> single) {
         new FlowableBehaviorChecker<Optional<TestItem>>()
                 .flowable(single.toFlowable())
@@ -244,6 +259,21 @@ class GetObjectStub {
                     @Override
                     public void accept(@NonNull Optional<TestItem> testItem) {
                        verifyRawQueryBehavior(testItem);
+                    }
+                })
+                .checkBehaviorOfFlowable();
+
+        assertThat(rawQuery.observesTables()).isNotNull();
+    }
+
+    void verifyRawQueryBehavior(@NonNull Maybe<TestItem> maybe) {
+        new FlowableBehaviorChecker<TestItem>()
+                .flowable(maybe.toFlowable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Consumer<TestItem>() {
+                    @Override
+                    public void accept(@NonNull TestItem testItem) {
+                        verifyRawQueryBehavior(testItem);
                     }
                 })
                 .checkBehaviorOfFlowable();

@@ -14,6 +14,7 @@ import com.pushtorefresh.storio2.test.FlowableBehaviorChecker;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
@@ -171,6 +172,21 @@ class GetObjectStub {
                 .testAction(new Consumer<Optional<TestItem>>() {
                     @Override
                     public void accept(@NonNull Optional<TestItem> testItem) throws Exception {
+                        verify(storIOContentResolver).defaultRxScheduler();
+                        verifyBehavior(testItem);
+                    }
+                })
+                .checkBehaviorOfFlowable();
+
+    }
+
+    void verifyBehavior(@NonNull Maybe<TestItem> maybe) {
+        new FlowableBehaviorChecker<TestItem>()
+                .flowable(maybe.toFlowable())
+                .expectedNumberOfEmissions(1)
+                .testAction(new Consumer<TestItem>() {
+                    @Override
+                    public void accept(@NonNull TestItem testItem) throws Exception {
                         verify(storIOContentResolver).defaultRxScheduler();
                         verifyBehavior(testItem);
                     }

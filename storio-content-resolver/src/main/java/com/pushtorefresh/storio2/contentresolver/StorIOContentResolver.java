@@ -16,6 +16,7 @@ import com.pushtorefresh.storio2.contentresolver.queries.InsertQuery;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
 import com.pushtorefresh.storio2.contentresolver.queries.UpdateQuery;
 
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
 import java.util.Collections;
 import java.util.Set;
 
@@ -97,7 +98,7 @@ public abstract class StorIOContentResolver {
      * @return the scheduler or {@code null} if it isn't needed to apply it.
      * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxFlowable(BackpressureStrategy)
      * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxSingle()
-     * @see com.pushtorefresh.storio2.operations.PreparedWriteOperation#asRxCompletable()
+     * @see PreparedCompletableOperation#asRxCompletable()
      */
     @Nullable
     public abstract Scheduler defaultRxScheduler();

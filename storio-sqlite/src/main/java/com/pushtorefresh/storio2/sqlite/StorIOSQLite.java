@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
 import com.pushtorefresh.storio2.sqlite.operations.delete.PreparedDelete;
 import com.pushtorefresh.storio2.sqlite.operations.execute.PreparedExecuteSQL;
@@ -205,7 +206,7 @@ public abstract class StorIOSQLite implements Closeable {
      * @return the scheduler or {@code null} if it isn't needed to apply it.
      * @see PreparedOperation#asRxFlowable(BackpressureStrategy)
      * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxSingle()
-     * @see com.pushtorefresh.storio2.operations.PreparedWriteOperation#asRxCompletable()
+     * @see PreparedCompletableOperation#asRxCompletable()
      */
     @Nullable
     public abstract Scheduler defaultRxScheduler();

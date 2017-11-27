@@ -22,6 +22,7 @@ import com.pushtorefresh.storio2.contentresolver.queries.Query;
 import com.pushtorefresh.storio2.contentresolver.queries.UpdateQuery;
 import com.pushtorefresh.storio2.internal.TypeMappingFinderImpl;
 
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -210,7 +211,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
          * <p/>
          * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxFlowable(BackpressureStrategy)
          * @see com.pushtorefresh.storio2.operations.PreparedOperation#asRxSingle()
-         * @see com.pushtorefresh.storio2.operations.PreparedWriteOperation#asRxCompletable()
+         * @see PreparedCompletableOperation#asRxCompletable()
          *
          * @return the scheduler or {@code null} if it isn't needed to apply it.
          */

@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 import static io.reactivex.BackpressureStrategy.LATEST;
@@ -257,5 +258,34 @@ public class GetOperationDesignTest extends OperationDesignTest {
                         .build())
                 .prepare()
                 .asRxSingle();
+    }
+
+    @Test
+    public void getObjectMaybe() {
+        Maybe<User> maybeUser = storIOSQLite()
+                .get()
+                .object(User.class)
+                .withQuery(Query.builder()
+                        .table("users")
+                        .where("email = ?")
+                        .whereArgs("artem.zinnatullin@gmail.com")
+                        .build())
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
+                .prepare()
+                .asRxMaybe();
+    }
+
+    @Test
+    public void getObjectWithRawQueryMaybe() {
+        Maybe<User> maybeUser = storIOSQLite()
+                .get()
+                .object(User.class)
+                .withQuery(RawQuery.builder()
+                        .query("SELECT FROM bla_bla join on bla_bla_bla WHERE x = ?")
+                        .args("arg1", "arg2")
+                        .build())
+                .withGetResolver(UserTableMeta.GET_RESOLVER)
+                .prepare()
+                .asRxMaybe();
     }
 }

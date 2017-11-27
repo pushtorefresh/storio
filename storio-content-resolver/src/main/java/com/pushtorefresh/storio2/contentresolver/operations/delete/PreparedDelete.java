@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.queries.DeleteQuery;
-import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
 
 import java.util.Collection;
 
@@ -15,7 +15,8 @@ import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
  *
  * @param <Result> type of result of Delete Operation.
  */
-public abstract class PreparedDelete<Result, Data> implements PreparedWriteOperation<Result, Data> {
+public abstract class PreparedDelete<Result, Data> implements
+    PreparedCompletableOperation<Result, Data> {
 
     @NonNull
     protected final StorIOContentResolver storIOContentResolver;

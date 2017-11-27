@@ -8,20 +8,24 @@ import android.support.annotation.Nullable;
 import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.StorIOException;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
+import com.pushtorefresh.storio2.operations.PreparedMaybeOperation;
 import com.pushtorefresh.storio2.sqlite.Interceptor;
 import com.pushtorefresh.storio2.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio2.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio2.sqlite.operations.internal.RxJavaUtils;
+import com.pushtorefresh.storio2.sqlite.queries.GetQuery;
 import com.pushtorefresh.storio2.sqlite.queries.Query;
 import com.pushtorefresh.storio2.sqlite.queries.RawQuery;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 import static com.pushtorefresh.storio2.internal.Checks.checkNotNull;
 
-public class PreparedGetObject<T> extends PreparedGet<T, Optional<T>> {
+public class PreparedGetObject<T> extends PreparedGet<T, Optional<T>> implements
+    PreparedMaybeOperation<T, Optional<T>, GetQuery> {
 
     @NonNull
     private final Class<T> type;
@@ -88,6 +92,22 @@ public class PreparedGetObject<T> extends PreparedGet<T, Optional<T>> {
     @Override
     public Single<Optional<T>> asRxSingle() {
         return RxJavaUtils.createSingleOptional(storIOSQLite, this);
+    }
+
+    /**
+     * Creates {@link Maybe} which will perform Get Operation lazily when somebody subscribes to it and send result to observer.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Maybe} which will perform Get Operation.
+     * And send result to observer.
+     */
+    @NonNull
+    @Override
+    public Maybe<T> asRxMaybe() {
+        return RxJavaUtils.createMaybe(storIOSQLite, this);
     }
 
     @NonNull

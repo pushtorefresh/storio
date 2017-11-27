@@ -7,19 +7,22 @@ import com.pushtorefresh.storio2.Optional;
 import com.pushtorefresh.storio2.contentresolver.Changes;
 import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio2.contentresolver.queries.Query;
+import com.pushtorefresh.storio2.operations.PreparedCompletableOperation;
+import com.pushtorefresh.storio2.operations.PreparedMaybeOperation;
 import com.pushtorefresh.storio2.operations.PreparedOperation;
-import com.pushtorefresh.storio2.operations.PreparedWriteOperation;
 import com.pushtorefresh.storio2.operations.internal.CompletableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.FlowableOnSubscribeExecuteAsBlockingOptional;
 import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.MapSomethingToExecuteAsBlockingOptional;
+import com.pushtorefresh.storio2.operations.internal.MaybeOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlocking;
 import com.pushtorefresh.storio2.operations.internal.SingleOnSubscribeExecuteAsBlockingOptional;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 
@@ -128,7 +131,7 @@ public class RxJavaUtils {
     @NonNull
     public static <Result, Data> Completable createCompletable(
             @NonNull StorIOContentResolver storIOContentResolver,
-            @NonNull PreparedWriteOperation<Result, Data> operation
+            @NonNull PreparedCompletableOperation<Result, Data> operation
     ) {
         throwExceptionIfRxJava2IsNotAvailable("asRxCompletable()");
 
@@ -138,6 +141,20 @@ public class RxJavaUtils {
                 storIOContentResolver,
                 completable
         );
+    }
+
+    @CheckResult
+    @NonNull
+    public static <Result, WrappedResult, Data> Maybe<Result> createMaybe(
+            @NonNull StorIOContentResolver storIOContentResolver,
+            @NonNull PreparedMaybeOperation<Result, WrappedResult, Data> operation
+    ) {
+        throwExceptionIfRxJava2IsNotAvailable("asRxMaybe()");
+
+        final Maybe<Result> maybe =
+                Maybe.create(new MaybeOnSubscribeExecuteAsBlocking<Result, WrappedResult, Data>(operation));
+
+        return subscribeOn(storIOContentResolver, maybe);
     }
 
     @CheckResult
@@ -168,5 +185,15 @@ public class RxJavaUtils {
     ) {
         final Scheduler scheduler = storIOContentResolver.defaultRxScheduler();
         return scheduler != null ? completable.subscribeOn(scheduler) : completable;
+    }
+
+    @CheckResult
+    @NonNull
+    public static <T> Maybe<T> subscribeOn(
+            @NonNull StorIOContentResolver storIOContentResolver,
+            @NonNull Maybe<T> maybe
+    ) {
+        final Scheduler scheduler = storIOContentResolver.defaultRxScheduler();
+        return scheduler != null ? maybe.subscribeOn(scheduler) : maybe;
     }
 }

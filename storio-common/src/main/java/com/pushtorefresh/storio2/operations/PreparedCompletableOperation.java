@@ -6,11 +6,11 @@ import android.support.annotation.NonNull;
 import io.reactivex.Completable;
 
 /**
- * Common API of prepared write operations
+ * Common API of prepared operations with {@link Completable} support
  *
  * @param <Result> type of result
  */
-public interface PreparedWriteOperation<Result, Data> extends PreparedOperation<Result, Result, Data> {
+public interface PreparedCompletableOperation<Result, Data> extends PreparedOperation<Result, Result, Data> {
 
     @NonNull
     @CheckResult
