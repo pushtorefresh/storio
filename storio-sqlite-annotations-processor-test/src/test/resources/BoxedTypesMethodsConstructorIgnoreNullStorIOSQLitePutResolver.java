@@ -1,10 +1,10 @@
-package com.pushtorefresh.storio2.sqlite.annotations;
+package com.pushtorefresh.storio3.sqlite.annotations;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
-import com.pushtorefresh.storio2.sqlite.operations.put.DefaultPutResolver;
-import com.pushtorefresh.storio2.sqlite.queries.InsertQuery;
-import com.pushtorefresh.storio2.sqlite.queries.UpdateQuery;
+import com.pushtorefresh.storio3.sqlite.operations.put.DefaultPutResolver;
+import com.pushtorefresh.storio3.sqlite.queries.InsertQuery;
+import com.pushtorefresh.storio3.sqlite.queries.UpdateQuery;
 import java.lang.Override;
 
 /**

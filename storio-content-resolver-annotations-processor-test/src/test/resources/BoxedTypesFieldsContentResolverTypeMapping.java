@@ -1,6 +1,6 @@
-package com.pushtorefresh.storio2.contentresolver.annotations;
+package com.pushtorefresh.storio3.contentresolver.annotations;
 
-import com.pushtorefresh.storio2.contentresolver.ContentResolverTypeMapping;
+import com.pushtorefresh.storio3.contentresolver.ContentResolverTypeMapping;
 
 /**
  * Generated mapping with collection of resolvers.

@@ -1,6 +1,4 @@
-package com.pushtorefresh.storio2.sqlite.annotations;
-
-import android.support.annotation.NonNull;
+package com.pushtorefresh.storio3.sqlite.annotations;
 
 @StorIOSQLiteType(table = "table", generateTableClass = false)
 public class WithoutGeneratedTable {

@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio2.sqlite.annotations;
+package com.pushtorefresh.storio3.sqlite.annotations;
 
 import android.database.sqlite.SQLiteDatabase;
 import java.lang.String;
