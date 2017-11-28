@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio2.contentresolver.annotations;
+package com.pushtorefresh.storio3.contentresolver.annotations;
 
 @StorIOContentResolverType(uri = "content://uri")
 public class UnsupportedType {

@@ -1,10 +1,10 @@
-package com.pushtorefresh.storio2.contentresolver.annotations;
+package com.pushtorefresh.storio3.contentresolver.annotations;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio2.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio2.contentresolver.operations.get.DefaultGetResolver;
+import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
+import com.pushtorefresh.storio3.contentresolver.operations.get.DefaultGetResolver;
 import java.lang.Boolean;
 import java.lang.Double;
 import java.lang.Float;

@@ -1,6 +1,6 @@
-package com.pushtorefresh.storio2.sqlite.annotations;
+package com.pushtorefresh.storio3.sqlite.annotations;
 
-import com.pushtorefresh.storio2.sqlite.SQLiteTypeMapping;
+import com.pushtorefresh.storio3.sqlite.SQLiteTypeMapping;
 
 /**
  * Generated mapping with collection of resolvers.

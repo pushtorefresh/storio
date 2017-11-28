@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio2.contentresolver.annotations;
+package com.pushtorefresh.storio3.contentresolver.annotations;
 
 @StorIOContentResolverType(insertUri = "content://insertUri",
         updateUri = "content://updateUri")
