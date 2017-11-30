@@ -42,10 +42,10 @@ Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tes
 #### Download:
 ```groovy
 // If you need StorIO for SQLite
-compile 'com.pushtorefresh.storio3:sqlite:2.1.0'
+compile 'com.pushtorefresh.storio2:sqlite:2.1.0'
 
 // If you need StorIO for ContentResolver
-compile 'com.pushtorefresh.storio3:content-resolver:2.1.0'
+compile 'com.pushtorefresh.storio2:content-resolver:2.1.0'
 
 // IN StorIO 2.0 we will remove default Scheduling from Rx Operations!
 // You'll have to put subscribeOn() manually!
