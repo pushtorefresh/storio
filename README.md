@@ -54,7 +54,7 @@ compile 'com.pushtorefresh.storio2:content-resolver:2.1.0'
 // So if you need it -> please add it manually.
 ```
 
-You can find all releases on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ccom.pushtorefresh.storio3).
+You can find all releases on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ccom.pushtorefresh.storio2).
 
 
 #### Some examples
@@ -158,18 +158,18 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 `StorIOSQLite`:
 ```groovy
 dependencies {
-  compile 'com.pushtorefresh.storio3:sqlite-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio2:sqlite-annotations:insert-latest-version-here'
 
-  annotationProcessor 'com.pushtorefresh.storio3:sqlite-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio2:sqlite-annotations-processor:insert-latest-version-here'
 }
 ```
 
 `StorIOContentResolver`:
 ```groovy
 dependencies {
-  compile 'com.pushtorefresh.storio3:content-resolver-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio2:content-resolver-annotations:insert-latest-version-here'
 
-  annotationProcessor 'com.pushtorefresh.storio3:content-resolver-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio2:content-resolver-annotations-processor:insert-latest-version-here'
 }
 ```
 
