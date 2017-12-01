@@ -42,10 +42,10 @@ Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tes
 #### Download:
 ```groovy
 // If you need StorIO for SQLite
-compile 'com.pushtorefresh.storio3:sqlite:2.0.0'
+compile 'com.pushtorefresh.storio2:sqlite:2.1.0'
 
 // If you need StorIO for ContentResolver
-compile 'com.pushtorefresh.storio3:content-resolver:2.0.0'
+compile 'com.pushtorefresh.storio2:content-resolver:2.1.0'
 
 // IN StorIO 2.0 we will remove default Scheduling from Rx Operations!
 // You'll have to put subscribeOn() manually!
@@ -54,7 +54,8 @@ compile 'com.pushtorefresh.storio3:content-resolver:2.0.0'
 // So if you need it -> please add it manually.
 ```
 
-You can find all releases on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.pushtorefresh.storio3%22).
+You can find all releases on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ccom.pushtorefresh.storio2).
+
 
 #### Some examples
 
@@ -157,18 +158,18 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 `StorIOSQLite`:
 ```groovy
 dependencies {
-  compile 'com.pushtorefresh.storio3:sqlite-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio2:sqlite-annotations:insert-latest-version-here'
 
-  annotationProcessor 'com.pushtorefresh.storio3:sqlite-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio2:sqlite-annotations-processor:insert-latest-version-here'
 }
 ```
 
 `StorIOContentResolver`:
 ```groovy
 dependencies {
-  compile 'com.pushtorefresh.storio3:content-resolver-annotations:insert-latest-version-here'
+  compile 'com.pushtorefresh.storio2:content-resolver-annotations:insert-latest-version-here'
 
-  annotationProcessor 'com.pushtorefresh.storio3:content-resolver-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio2:content-resolver-annotations-processor:insert-latest-version-here'
 }
 ```
 
