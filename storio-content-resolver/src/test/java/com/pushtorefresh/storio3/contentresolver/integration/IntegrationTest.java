@@ -11,7 +11,7 @@ import com.pushtorefresh.storio3.contentresolver.impl.DefaultStorIOContentResolv
 import org.junit.Before;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.util.ContentProviderController;
+import org.robolectric.android.controller.ContentProviderController;
 
 public abstract class IntegrationTest {
 

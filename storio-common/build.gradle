@@ -3,7 +3,6 @@ apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         versionName VERSION_NAME
@@ -23,15 +22,17 @@ android {
 }
 
 dependencies {
-    compile libraries.supportAnnotations
-    provided libraries.rxJava2
+    api libraries.supportAnnotations
 
-    testCompile libraries.junit
-    testCompile libraries.assertJ
-    testCompile libraries.mockitoCore
-    testCompile libraries.equalsVerifier
-    testCompile libraries.privateConstructorChecker
-    testCompile libraries.storIOTestCommon
+    compileOnly libraries.rxJava2
+    testImplementation libraries.rxJava2
+
+    testImplementation libraries.junit
+    testImplementation libraries.assertJ
+    testImplementation libraries.mockitoCore
+    testImplementation libraries.equalsVerifier
+    testImplementation libraries.privateConstructorChecker
+    testImplementation libraries.storIOTestCommon
 }
 
 apply from: '../gradle/checkstyle.gradle'
