@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId 'com.pushtorefresh.storio.basic_sample'
@@ -14,6 +13,11 @@ android {
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
+    buildTypes {
+        debug { matchingFallbacks = ['release'] }
+        release {}
+    }
+
     lintOptions {
         disable 'GoogleAppIndexingWarning'
     }
@@ -21,13 +25,13 @@ android {
 
 // libraries declared in root build.gradle
 dependencies {
-    compile libraries.appCompat
-    compile libraries.recyclerView
+    implementation libraries.appCompat
+    implementation libraries.recyclerView
 
-    compile libraries.storIOSQLite
+    implementation libraries.storIOSQLite
 
-    compile libraries.storIOSQLiteAnnotations
+    implementation libraries.storIOSQLiteAnnotations
     annotationProcessor libraries.storIOSQLiteAnnotationsProcessor
 
-    testCompile  libraries.junit
+    testImplementation libraries.junit
 }

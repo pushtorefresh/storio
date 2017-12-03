@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio3.TypeMappingFinder;
 import com.pushtorefresh.storio3.internal.ChangesBus;
@@ -31,8 +32,6 @@ import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 import io.reactivex.Scheduler;
 import io.reactivex.subscribers.TestSubscriber;

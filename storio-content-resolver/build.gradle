@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         versionName VERSION_NAME
@@ -22,17 +21,19 @@ android {
 }
 
 dependencies {
-    compile  libraries.storIOCommon
-    provided libraries.rxJava2
+    api libraries.storIOCommon
 
-    testCompile libraries.junit
-    testCompile libraries.assertJ
-    testCompile libraries.assertJAndroid
-    testCompile libraries.mockitoCore
-    testCompile libraries.equalsVerifier
-    testCompile libraries.privateConstructorChecker
-    testCompile libraries.storIOTestCommon
-    testCompile libraries.robolectric
+    compileOnly libraries.rxJava2
+    testImplementation libraries.rxJava2
+
+    testImplementation libraries.junit
+    testImplementation libraries.assertJ
+    testImplementation libraries.assertJAndroid
+    testImplementation libraries.mockitoCore
+    testImplementation libraries.equalsVerifier
+    testImplementation libraries.privateConstructorChecker
+    testImplementation libraries.storIOTestCommon
+    testImplementation libraries.robolectric
 }
 
 apply from: '../gradle/checkstyle.gradle'

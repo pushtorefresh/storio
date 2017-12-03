@@ -3,7 +3,6 @@ apply from: '../build.workaround-missing-resource.gradle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -11,9 +10,9 @@ android {
 }
 
 dependencies {
-    testCompile libraries.storIOSQLite
-    testCompile libraries.storIOSQLiteAnnotationsProcessor
-    testCompile libraries.googleTestingCompile
-    testCompile libraries.runtimeJar
-    testCompile libraries.toolsJar
+    testImplementation libraries.storIOSQLite
+    testImplementation libraries.storIOSQLiteAnnotationsProcessor
+    testImplementation libraries.googleTestingCompile
+    testImplementation libraries.runtimeJar
+    testImplementation libraries.toolsJar
 }

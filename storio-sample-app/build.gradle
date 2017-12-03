@@ -3,7 +3,6 @@ apply plugin: 'com.squareup.sqldelight'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId 'com.pushtorefresh.storio.sample'
@@ -27,6 +26,7 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.sample
+            matchingFallbacks = ['release']
         }
 
         release {
@@ -46,37 +46,49 @@ android {
     }
 }
 
-dependencies {
-    compile libraries.storIOSQLite
-    compile libraries.storIOContentResolver
+// Ensure the no-op dependency is always used in JVM tests.
+configurations.all { config ->
+    if (config.name.contains('UnitTest')) {
+        config.resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'com.squareup.leakcanary' && details.requested.name == 'leakcanary-android') {
+                details.useTarget(group: details.requested.group, name: 'leakcanary-android-no-op', version: details.requested.version)
+            }
+        }
+    }
+}
 
-    compile libraries.storIOSQLiteAnnotations
+dependencies {
+    implementation libraries.storIOSQLite
+    implementation libraries.storIOContentResolver
+
+    implementation libraries.storIOSQLiteAnnotations
     annotationProcessor libraries.storIOSQLiteAnnotationsProcessor
 
-    compile libraries.storIOContentResolverAnnotations
+    implementation libraries.storIOContentResolverAnnotations
     annotationProcessor libraries.storIOContentResolverAnnotationsProcessor
 
-    compile libraries.dagger
+    implementation libraries.dagger
     annotationProcessor libraries.daggerCompiler
 
-    compile libraries.javaxInject
-    compile libraries.javaxAnnotationApi
+    implementation libraries.javaxInject
+    implementation libraries.javaxAnnotationApi
 
-    compile libraries.rxJava2
-    compile libraries.rxAndroid2
-    compile libraries.appCompat
-    compile libraries.butterKnife
-    compile libraries.recyclerView
-    compile libraries.timber
+    implementation libraries.rxJava2
+    implementation libraries.rxAndroid2
+    implementation libraries.appCompat
+    implementation libraries.recyclerView
+    implementation libraries.timber
+    implementation libraries.butterKnife
+    annotationProcessor libraries.butterKnife
 
-    provided libraries.autoParcel
+    compileOnly libraries.autoParcel
     annotationProcessor libraries.autoParcelProcessor
 
-    debugCompile libraries.leakCanary
-    releaseCompile libraries.leakCanaryNoOp
+    debugImplementation libraries.leakCanary
+    releaseImplementation libraries.leakCanaryNoOp
 
-    testCompile libraries.junit
-    testCompile libraries.assertJ
-    testCompile libraries.robolectric
-    testCompile libraries.leakCanaryNoOp
+    testImplementation libraries.junit
+    testImplementation libraries.assertJ
+    testImplementation libraries.robolectric
+    testImplementation libraries.leakCanaryNoOp
 }

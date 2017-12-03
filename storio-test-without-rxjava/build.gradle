@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -20,15 +19,15 @@ android {
 }
 
 dependencies {
-    compile libraries.storIOSQLite
-    compile libraries.storIOContentResolver
+    implementation libraries.storIOSQLite
+    implementation libraries.storIOContentResolver
 
-    provided libraries.supportAnnotations
+    compileOnly libraries.supportAnnotations
 
-    testCompile libraries.junit
-    testCompile libraries.assertJ
-    testCompile libraries.mockitoCore
-    testCompile libraries.storIOTestCommon
+    testImplementation libraries.junit
+    testImplementation libraries.assertJ
+    testImplementation libraries.mockitoCore
+    testImplementation libraries.storIOTestCommon
 }
 
 apply from: '../gradle/checkstyle.gradle'

@@ -2,13 +2,13 @@ package com.pushtorefresh.storio3.sample.sample_code;
 
 import com.pushtorefresh.storio3.contentresolver.BuildConfig;
 import com.pushtorefresh.storio3.sample.SampleApp;
+import com.pushtorefresh.storio3.sample.SampleRobolectricTestRunner;
 import com.pushtorefresh.storio3.sample.db.entities.Tweet;
 import com.pushtorefresh.storio3.sample.db.entities.TweetWithUser;
 import com.pushtorefresh.storio3.sample.db.entities.User;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -17,7 +17,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(SampleRobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class RelationsTest {
 

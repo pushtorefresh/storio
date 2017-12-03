@@ -6,12 +6,11 @@ dependencies {
     compile libraries.javaPoet
     compile libraries.kotlinStdLib
 
-    testCompile libraries.junit
-    testCompile libraries.assertJ
-    testCompile libraries.mockitoKotlin
-    testCompile libraries.equalsVerifier
+    testImplementation libraries.junit
+    testImplementation libraries.assertJ
+    testImplementation libraries.mockitoKotlin
+    testImplementation libraries.equalsVerifier
 }
-
 
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
