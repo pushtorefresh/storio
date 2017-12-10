@@ -7,7 +7,7 @@ import android.support.annotation.WorkerThread;
 import com.pushtorefresh.storio3.StorIOException;
 import com.pushtorefresh.storio3.operations.PreparedOperation;
 import com.pushtorefresh.storio3.sqlite.Changes;
-import com.pushtorefresh.storio3.sqlite.Interceptor;
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio3.sqlite.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio3.sqlite.queries.RawQuery;
@@ -19,7 +19,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 import static com.pushtorefresh.storio3.internal.Checks.checkNotNull;
-import static com.pushtorefresh.storio3.sqlite.impl.ChainImpl.buildChain;
+import static com.pushtorefresh.storio3.impl.ChainImpl.buildChain;
 
 /**
  * Prepared Execute SQL Operation for {@link StorIOSQLite}.

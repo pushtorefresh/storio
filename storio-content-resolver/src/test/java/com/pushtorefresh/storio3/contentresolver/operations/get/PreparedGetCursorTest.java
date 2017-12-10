@@ -100,6 +100,7 @@ public class PreparedGetCursorTest {
                 .executeAsBlocking();
 
         verify(storIOContentResolver).lowLevel();
+        verify(storIOContentResolver).interceptors();
         verify(lowLevel).query(query);
 
         verifyNoMoreInteractions(storIOContentResolver, lowLevel);

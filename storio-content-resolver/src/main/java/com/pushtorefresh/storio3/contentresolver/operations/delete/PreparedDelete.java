@@ -1,13 +1,16 @@
 package com.pushtorefresh.storio3.contentresolver.operations.delete;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.queries.DeleteQuery;
 import com.pushtorefresh.storio3.operations.PreparedCompletableOperation;
 
 import java.util.Collection;
 
+import static com.pushtorefresh.storio3.impl.ChainImpl.buildChain;
 import static com.pushtorefresh.storio3.internal.Checks.checkNotNull;
 
 /**
@@ -24,6 +27,26 @@ public abstract class PreparedDelete<Result, Data> implements
     PreparedDelete(@NonNull StorIOContentResolver storIOContentResolver) {
         this.storIOContentResolver = storIOContentResolver;
     }
+
+    /**
+     * Executes Delete Operation immediately in current thread.
+     * <p>
+     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
+     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
+     * So please, call this method on some background thread. See {@link WorkerThread}.
+     *
+     * @return non-null result of Delete Operation.
+     */
+    @WorkerThread
+    @NonNull
+    @Override
+    public Result executeAsBlocking() {
+        return buildChain(storIOContentResolver.interceptors(), getRealCallInterceptor())
+                .proceed(this);
+    }
+
+    @NonNull
+    protected abstract Interceptor getRealCallInterceptor();
 
     /**
      * Builder for {@link PreparedDelete}.

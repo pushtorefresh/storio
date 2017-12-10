@@ -157,6 +157,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOContentResolver).get();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
             verifyNoMoreInteractions(storIOContentResolver, lowLevel);
@@ -192,6 +193,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOContentResolver).get();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
@@ -234,6 +236,7 @@ public class PreparedGetListOfObjectsTest {
 
             verify(storIOContentResolver).get();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).query(any(Query.class));
@@ -305,6 +308,8 @@ public class PreparedGetListOfObjectsTest {
 
                 verify(cursor).getCount();
                 verify(cursor).moveToNext();
+
+                verify(storIOContentResolver).interceptors();
 
                 verifyNoMoreInteractions(storIOContentResolver, cursor);
             }

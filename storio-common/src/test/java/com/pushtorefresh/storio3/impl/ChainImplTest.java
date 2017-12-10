@@ -1,8 +1,8 @@
-package com.pushtorefresh.storio3.sqlite.impl;
+package com.pushtorefresh.storio3.impl;
 
+import com.pushtorefresh.storio3.Interceptor;
+import com.pushtorefresh.storio3.Interceptor.Chain;
 import com.pushtorefresh.storio3.operations.PreparedOperation;
-import com.pushtorefresh.storio3.sqlite.Interceptor;
-import com.pushtorefresh.storio3.sqlite.Interceptor.Chain;
 
 import org.junit.Test;
 

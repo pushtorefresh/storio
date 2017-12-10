@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.TypeMappingFinder;
 import com.pushtorefresh.storio3.contentresolver.BuildConfig;
 import com.pushtorefresh.storio3.contentresolver.ContentResolverTypeMapping;
@@ -27,6 +28,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.util.ReflectionHelpers;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
@@ -256,7 +258,7 @@ public class DefaultStorIOContentResolverTest {
                 @NonNull Handler contentObserverHandler,
                 @NonNull TypeMappingFinder typeMappingFinder
         ) {
-            super(contentResolver, contentObserverHandler, typeMappingFinder, null);
+            super(contentResolver, contentObserverHandler, typeMappingFinder, null, Collections.<Interceptor>emptyList());
             lowLevel = new LowLevelImpl(typeMappingFinder);
         }
 

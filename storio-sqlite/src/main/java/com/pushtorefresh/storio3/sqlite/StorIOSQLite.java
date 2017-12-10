@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.operations.PreparedCompletableOperation;
 import com.pushtorefresh.storio3.operations.PreparedOperation;
 import com.pushtorefresh.storio3.sqlite.operations.delete.PreparedDelete;

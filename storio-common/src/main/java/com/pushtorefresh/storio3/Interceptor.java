@@ -1,4 +1,4 @@
-package com.pushtorefresh.storio3.sqlite;
+package com.pushtorefresh.storio3;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
