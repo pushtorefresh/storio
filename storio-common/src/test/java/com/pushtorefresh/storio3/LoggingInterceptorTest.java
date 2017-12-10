@@ -1,14 +1,11 @@
-package com.pushtorefresh.storio3.sqlite;
+package com.pushtorefresh.storio3;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.pushtorefresh.storio3.Interceptor;
-import com.pushtorefresh.storio3.LoggingInterceptor;
 import com.pushtorefresh.storio3.operations.PreparedOperation;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -122,19 +119,19 @@ public class LoggingInterceptorTest {
         @Nullable
         @Override
         public String executeAsBlocking() {
-            throw new NotImplementedException();
+            throw new IllegalStateException("Not implemented yet");
         }
 
         @NonNull
         @Override
         public Flowable<String> asRxFlowable(@NonNull BackpressureStrategy backpressureStrategy) {
-            throw new NotImplementedException();
+            throw new IllegalStateException("Not implemented yet");
         }
 
         @NonNull
         @Override
         public Single<String> asRxSingle() {
-            throw new NotImplementedException();
+            throw new IllegalStateException("Not implemented yet");
         }
 
         @NonNull

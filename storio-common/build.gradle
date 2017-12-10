@@ -32,6 +32,7 @@ dependencies {
     testImplementation libraries.mockitoCore
     testImplementation libraries.equalsVerifier
     testImplementation libraries.privateConstructorChecker
+    testImplementation libraries.robolectric
     testImplementation libraries.storIOTestCommon
 }
 
