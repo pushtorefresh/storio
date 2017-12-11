@@ -26,6 +26,8 @@ buildscript {
 
         classpath 'com.squareup.sqldelight:gradle-plugin:0.6.1'
 
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -125,6 +127,8 @@ def getRuntimeJar() {
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')
 
 subprojects {
+    apply plugin: 'com.github.ben-manes.versions'
+
     project.plugins.whenPluginAdded { plugin ->
         if ('com.android.build.gradle.AppPlugin'.equals(plugin.class.name)
                 || 'com.android.build.gradle.LibraryPlugin'.equals(plugin.class.name)) {
