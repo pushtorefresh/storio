@@ -25,6 +25,12 @@ public class ChainImpl implements Interceptor.Chain {
         interceptors.addAll(registeredInterceptors);
         interceptors.add(realInterceptor);
 
+        for (Interceptor interceptor : interceptors) {
+            if (interceptor == null) {
+                throw new IllegalArgumentException("Interceptor should not be null");
+            }
+        }
+
         return new ChainImpl(interceptors.listIterator());
     }
 
@@ -33,7 +39,7 @@ public class ChainImpl implements Interceptor.Chain {
 
     private int calls;
 
-    public ChainImpl(@NonNull ListIterator<Interceptor> interceptors) {
+    ChainImpl(@NonNull ListIterator<Interceptor> interceptors) {
         this.interceptors = interceptors;
     }
 
