@@ -15,7 +15,6 @@ import io.reactivex.functions.Consumer;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,11 +65,12 @@ class DeleteByQueryStub {
     }
 
     void verifyBehavior(@NonNull DeleteResult actualDeleteResult) {
+        verify(storIOContentResolver).interceptors();
         // checks that required delete was performed
-        verify(deleteResolver, times(1)).performDelete(storIOContentResolver, deleteQuery);
+        verify(deleteResolver).performDelete(storIOContentResolver, deleteQuery);
 
         // only one call to DeleteResolver.performDelete() should occur
-        verify(deleteResolver, times(1)).performDelete(any(StorIOContentResolver.class), any(DeleteQuery.class));
+        verify(deleteResolver).performDelete(any(StorIOContentResolver.class), any(DeleteQuery.class));
 
         // checks that actual delete result equals to expected
         assertThat(actualDeleteResult).isEqualTo(deleteResult);

@@ -3,12 +3,13 @@ package com.pushtorefresh.storio3.contentresolver.operations.delete;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.StorIOException;
 import com.pushtorefresh.storio3.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.operations.internal.RxJavaUtils;
+import com.pushtorefresh.storio3.operations.PreparedOperation;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Completable;
@@ -37,42 +38,40 @@ public class PreparedDeleteObject<T> extends PreparedDelete<DeleteResult, T> {
         this.explicitDeleteResolver = explicitDeleteResolver;
     }
 
-    /**
-     * Executes Delete Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null result of Delete Operation.
-     */
-    @SuppressWarnings("unchecked")
-    @WorkerThread
     @NonNull
     @Override
-    public DeleteResult executeAsBlocking() {
-        try {
-            final DeleteResolver<T> deleteResolver;
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
 
-            if (explicitDeleteResolver != null) {
-                deleteResolver = explicitDeleteResolver;
-            } else {
-                final ContentResolverTypeMapping<T> typeMapping
-                        = storIOContentResolver.lowLevel().typeMapping((Class<T>) object.getClass());
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
+            try {
+                final DeleteResolver<T> deleteResolver;
 
-                if (typeMapping == null) {
-                    throw new IllegalStateException("Object does not have type mapping: " +
-                            "object = " + object + ", object.class = " + object.getClass() + ", " +
-                            "ContentProvider was not affected by this operation, please add type mapping for this type");
+                if (explicitDeleteResolver != null) {
+                    deleteResolver = explicitDeleteResolver;
+                } else {
+                    final ContentResolverTypeMapping<T> typeMapping
+                            = storIOContentResolver.lowLevel().typeMapping((Class<T>) object.getClass());
+
+                    if (typeMapping == null) {
+                        throw new IllegalStateException("Object does not have type mapping: " +
+                                "object = " + object + ", object.class = " + object.getClass() + ", " +
+                                "ContentProvider was not affected by this operation, please add type mapping for this type");
+                    }
+
+                    deleteResolver = typeMapping.deleteResolver();
                 }
 
-                deleteResolver = typeMapping.deleteResolver();
+                //noinspection unchecked
+                return (Result) deleteResolver.performDelete(storIOContentResolver, object);
+
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Delete operation. object = " + object, exception);
             }
-
-            return deleteResolver.performDelete(storIOContentResolver, object);
-
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Delete operation. object = " + object, exception);
         }
     }
 

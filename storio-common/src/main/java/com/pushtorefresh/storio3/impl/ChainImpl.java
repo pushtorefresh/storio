@@ -1,10 +1,10 @@
-package com.pushtorefresh.storio3.sqlite.impl;
+package com.pushtorefresh.storio3.impl;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pushtorefresh.storio3.operations.PreparedOperation;
-import com.pushtorefresh.storio3.sqlite.Interceptor;
+import com.pushtorefresh.storio3.Interceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.ListIterator;
 
 /**
  * A concrete interceptor chain that carries the entire interceptor chain:
- * all user interceptors and finally the database caller.
+ * all user interceptors and finally the database/content resolver caller.
  */
 public class ChainImpl implements Interceptor.Chain {
 
@@ -25,6 +25,12 @@ public class ChainImpl implements Interceptor.Chain {
         interceptors.addAll(registeredInterceptors);
         interceptors.add(realInterceptor);
 
+        for (Interceptor interceptor : interceptors) {
+            if (interceptor == null) {
+                throw new IllegalArgumentException("Interceptor should not be null");
+            }
+        }
+
         return new ChainImpl(interceptors.listIterator());
     }
 
@@ -33,7 +39,7 @@ public class ChainImpl implements Interceptor.Chain {
 
     private int calls;
 
-    public ChainImpl(@NonNull ListIterator<Interceptor> interceptors) {
+    ChainImpl(@NonNull ListIterator<Interceptor> interceptors) {
         this.interceptors = interceptors;
     }
 

@@ -3,12 +3,13 @@ package com.pushtorefresh.storio3.contentresolver.operations.delete;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.StorIOException;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio3.contentresolver.queries.DeleteQuery;
+import com.pushtorefresh.storio3.operations.PreparedOperation;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Completable;
@@ -37,25 +38,6 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult, DeleteQu
         this.deleteResolver = deleteResolver;
     }
 
-    /**
-     * Executes Delete Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null result of Delete Operation.
-     */
-    @WorkerThread
-    @NonNull
-    @Override
-    public DeleteResult executeAsBlocking() {
-        try {
-            return deleteResolver.performDelete(storIOContentResolver, deleteQuery);
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Delete operation. query = " + deleteQuery, exception);
-        }
-    }
 
     /**
      * Creates {@link Flowable} which will perform Delete Operation and send result to observer.
@@ -115,6 +97,25 @@ public class PreparedDeleteByQuery extends PreparedDelete<DeleteResult, DeleteQu
     @Override
     public DeleteQuery getData() {
         return deleteQuery;
+    }
+
+    @NonNull
+    @Override
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
+
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
+            try {
+                //noinspection unchecked
+                return (Result) deleteResolver.performDelete(storIOContentResolver, deleteQuery);
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Delete operation. query = " + deleteQuery, exception);
+            }
+        }
     }
 
     /**

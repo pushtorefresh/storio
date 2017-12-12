@@ -168,6 +168,7 @@ public class PreparedDeleteObjectTest {
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).delete(any(DeleteQuery.class));
             verifyNoMoreInteractions(storIOContentResolver, lowLevel);
@@ -200,6 +201,7 @@ public class PreparedDeleteObjectTest {
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).delete(any(DeleteQuery.class));
@@ -233,6 +235,7 @@ public class PreparedDeleteObjectTest {
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).delete(any(DeleteQuery.class));
@@ -266,6 +269,7 @@ public class PreparedDeleteObjectTest {
 
             verify(storIOContentResolver).delete();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).delete(any(DeleteQuery.class));

@@ -1,10 +1,15 @@
 package com.pushtorefresh.storio3.contentresolver.operations.get;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.queries.Query;
 import com.pushtorefresh.storio3.operations.PreparedOperation;
+
+import static com.pushtorefresh.storio3.impl.ChainImpl.buildChain;
 
 /**
  * Represents Get Operation for {@link StorIOContentResolver}.
@@ -23,6 +28,25 @@ public abstract class PreparedGet<Result, WrappedResult> implements PreparedOper
         this.storIOContentResolver = storIOContentResolver;
         this.query = query;
     }
+
+    /**
+     * Executes Get Operation immediately in current thread.
+     * <p>
+     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
+     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
+     * So please, call this method on some background thread. See {@link WorkerThread}.
+     *
+     * @return result of an operation. Can be null in get(Object).
+     */
+    @WorkerThread
+    @Nullable
+    public final Result executeAsBlocking() {
+        return buildChain(storIOContentResolver.interceptors(), getRealCallInterceptor())
+                .proceed(this);
+    }
+
+    @NonNull
+    protected abstract Interceptor getRealCallInterceptor();
 
     @NonNull
     @Override

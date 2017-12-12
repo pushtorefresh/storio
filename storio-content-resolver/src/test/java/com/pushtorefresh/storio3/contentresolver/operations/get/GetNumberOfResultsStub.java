@@ -79,6 +79,7 @@ public class GetNumberOfResultsStub {
     void verifyQueryBehaviorForInteger(@NonNull Integer actualNumberOfResults) {
         assertThat(actualNumberOfResults).isNotNull();
         verify(storIOContentResolver).get();
+        verify(storIOContentResolver).interceptors();
         verify(getResolverForNumberOfResults).performGet(storIOContentResolver, query);
         assertThat(actualNumberOfResults).isSameAs(numberOfResults);
         verify(cursor).close();

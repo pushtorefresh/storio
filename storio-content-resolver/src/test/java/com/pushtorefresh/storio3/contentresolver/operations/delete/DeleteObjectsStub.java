@@ -110,6 +110,7 @@ class DeleteObjectsStub {
 
     void verifyBehaviorForDeleteMultipleObjects(@NonNull DeleteResults<TestItem> deleteResults) {
         verify(storIOContentResolver).delete();
+        verify(storIOContentResolver).interceptors();
 
         if (withTypeMapping || items.size() > 1) {
             // should be called only once because of Performance!
@@ -121,7 +122,7 @@ class DeleteObjectsStub {
 
         for (final TestItem testItem : items) {
             // checks that delete was performed for each item
-            verify(deleteResolver, times(1)).performDelete(storIOContentResolver, testItem);
+            verify(deleteResolver).performDelete(storIOContentResolver, testItem);
 
             final DeleteResult expectedDeleteResult = testItemToDeleteResultMap.get(testItem);
 

@@ -130,6 +130,9 @@ class GetObjectsStub {
 
     void verifyBehavior(@NonNull List<TestItem> actualList) {
         // should be called once
+        verify(storIOContentResolver).interceptors();
+
+        // should be called once
         verify(storIOContentResolver).get();
 
         // should be called once
