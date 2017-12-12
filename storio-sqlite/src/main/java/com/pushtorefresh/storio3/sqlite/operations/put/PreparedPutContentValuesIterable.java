@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import com.pushtorefresh.storio3.StorIOException;
 import com.pushtorefresh.storio3.operations.PreparedOperation;
 import com.pushtorefresh.storio3.sqlite.Changes;
-import com.pushtorefresh.storio3.sqlite.Interceptor;
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio3.sqlite.operations.internal.RxJavaUtils;
 
@@ -98,7 +98,6 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
     public Completable asRxCompletable() {
         return RxJavaUtils.createCompletable(storIOSQLite, this);
     }
-
 
     @NonNull
     @Override

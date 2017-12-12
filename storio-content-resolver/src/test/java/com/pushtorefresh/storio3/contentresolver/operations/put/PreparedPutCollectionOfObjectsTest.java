@@ -194,6 +194,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
             verify(lowLevel, never()).update(any(UpdateQuery.class), any(ContentValues.class));
@@ -228,6 +229,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
@@ -263,6 +265,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));
@@ -298,6 +301,7 @@ public class PreparedPutCollectionOfObjectsTest {
 
             verify(storIOContentResolver).put();
             verify(storIOContentResolver).lowLevel();
+            verify(storIOContentResolver).interceptors();
             verify(storIOContentResolver).defaultRxScheduler();
             verify(lowLevel).typeMapping(TestItem.class);
             verify(lowLevel, never()).insert(any(InsertQuery.class), any(ContentValues.class));

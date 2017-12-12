@@ -3,11 +3,12 @@ package com.pushtorefresh.storio3.contentresolver.operations.put;
 import android.content.ContentValues;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.StorIOException;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.operations.internal.RxJavaUtils;
+import com.pushtorefresh.storio3.operations.PreparedOperation;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Completable;
@@ -35,23 +36,22 @@ public class PreparedPutContentValues extends PreparedPut<PutResult, ContentValu
         this.putResolver = putResolver;
     }
 
-    /**
-     * Executes Put Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null result of Put Operation.
-     */
-    @WorkerThread
     @NonNull
     @Override
-    public PutResult executeAsBlocking() {
-        try {
-            return putResolver.performPut(storIOContentResolver, contentValues);
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValues, exception);
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
+
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
+            try {
+                //noinspection unchecked
+                return (Result) putResolver.performPut(storIOContentResolver, contentValues);
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValues, exception);
+            }
         }
     }
 

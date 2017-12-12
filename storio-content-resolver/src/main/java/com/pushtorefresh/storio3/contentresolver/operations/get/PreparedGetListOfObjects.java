@@ -4,13 +4,14 @@ import android.database.Cursor;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.StorIOException;
 import com.pushtorefresh.storio3.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio3.contentresolver.queries.Query;
+import com.pushtorefresh.storio3.operations.PreparedOperation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,58 +48,58 @@ public class PreparedGetListOfObjects<T> extends PreparedGetMandatoryResult<List
         this.explicitGetResolver = explicitGetResolver;
     }
 
-    /**
-     * Executes Prepared Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null, immutable {@link List} with mapped results, list can be empty.
-     */
-    @WorkerThread
     @NonNull
     @Override
-    public List<T> executeAsBlocking() {
-        try {
-            final GetResolver<T> getResolver;
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
 
-            if (explicitGetResolver != null) {
-                getResolver = explicitGetResolver;
-            } else {
-                final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.lowLevel().typeMapping(type);
-
-                if (typeMapping == null) {
-                    throw new IllegalStateException("This type does not have type mapping: " +
-                            "type = " + type + "," +
-                            "ContentProvider was not touched by this operation, please add type mapping for this type");
-                }
-
-                getResolver = typeMapping.getResolver();
-            }
-
-            final Cursor cursor = getResolver.performGet(storIOContentResolver, query);
-
+    private class RealCallInterceptor implements Interceptor {
+        @SuppressWarnings({"TryFinallyCanBeTryWithResources", "unchecked"})
+        // Min SDK :( unchecked for empty list
+        @NonNull
+        @Override
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
             try {
-                final int count = cursor.getCount();
+                final GetResolver<T> getResolver;
 
-                if (count == 0) {
-                    //noinspection unchecked
-                    return EMPTY_LIST; // it's immutable
+                if (explicitGetResolver != null) {
+                    getResolver = explicitGetResolver;
                 } else {
-                    final List<T> list = new ArrayList<T>(count);
+                    final ContentResolverTypeMapping<T> typeMapping = storIOContentResolver.lowLevel().typeMapping(type);
 
-                    while (cursor.moveToNext()) {
-                        list.add(getResolver.mapFromCursor(storIOContentResolver, cursor));
+                    if (typeMapping == null) {
+                        throw new IllegalStateException("This type does not have type mapping: " +
+                                "type = " + type + "," +
+                                "ContentProvider was not touched by this operation, please add type mapping for this type");
                     }
 
-                    return unmodifiableList(list);
+                    getResolver = typeMapping.getResolver();
                 }
-            } finally {
-                cursor.close();
+
+                final Cursor cursor = getResolver.performGet(storIOContentResolver, query);
+
+                try {
+                    final int count = cursor.getCount();
+
+                    if (count == 0) {
+                        //noinspection unchecked
+                        return (Result) EMPTY_LIST; // it's immutable
+                    } else {
+                        final List<T> list = new ArrayList<T>(count);
+
+                        while (cursor.moveToNext()) {
+                            list.add(getResolver.mapFromCursor(storIOContentResolver, cursor));
+                        }
+
+                        return (Result) unmodifiableList(list);
+                    }
+                } finally {
+                    cursor.close();
+                }
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Get operation. query = " + query, exception);
             }
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Get operation. query = " + query, exception);
         }
     }
 

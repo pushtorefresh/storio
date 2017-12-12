@@ -2,6 +2,8 @@ package com.pushtorefresh.storio3.contentresolver.operations.put;
 
 import android.content.ContentValues;
 
+import com.pushtorefresh.storio3.StorIOException;
+import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.operations.SchedulerChecker;
 
 import org.junit.Test;
@@ -11,7 +13,10 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class PreparedPutContentValuesIterableTest {
 
@@ -124,5 +129,29 @@ public class PreparedPutContentValuesIterableTest {
                 .prepare();
 
         schedulerChecker.checkAsCompletable(operation);
+    }
+
+    @Test
+    public void shouldWrapExceptionIntoStorIOException() {
+        final PutContentValuesStub stub = PutContentValuesStub.newPutStubForMultipleContentValues();
+
+        Throwable throwable = new IllegalStateException("Test exception");
+        when(stub.putResolver.performPut(any(StorIOContentResolver.class), any(ContentValues.class)))
+                .thenThrow(throwable);
+
+        final PreparedPutContentValuesIterable operation = stub.storIOContentResolver
+                .put()
+                .contentValues(stub.contentValues)
+                .withPutResolver(stub.putResolver)
+                .prepare();
+
+        try {
+            operation.executeAsBlocking();
+            failBecauseExceptionWasNotThrown(StorIOException.class);
+        } catch (StorIOException expected) {
+            assertThat(expected)
+                    .hasMessageStartingWith("Error has occurred during Put operation. contentValues = ")
+                    .hasCause(throwable);
+        }
     }
 }

@@ -120,6 +120,9 @@ class PutObjectsStub {
         // should be called only once
         verify(storIOContentResolver).put();
 
+        // should be called only once
+        verify(storIOContentResolver).interceptors();
+
         // number of calls to putResolver's performPut() should be equal to number of objects
         verify(putResolver, times(items.size())).performPut(eq(storIOContentResolver), any(TestItem.class));
 
