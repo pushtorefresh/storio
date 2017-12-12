@@ -3,16 +3,15 @@ package com.pushtorefresh.storio3.contentresolver.operations;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
-import com.pushtorefresh.storio3.operations.PreparedOperation;
 import com.pushtorefresh.storio3.operations.PreparedCompletableOperation;
+import com.pushtorefresh.storio3.operations.PreparedOperation;
 
 import org.mockito.Mockito;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.subscribers.TestSubscriber;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 public class SchedulerChecker {
@@ -50,14 +49,16 @@ public class SchedulerChecker {
     }
 
     private void check(@NonNull PreparedOperation operation) {
-        final PreparedOperation operationSpy = spy(operation);
-
         verify(storIOContentResolver).defaultRxScheduler();
 
-        operationSpy.asRxFlowable(BackpressureStrategy.MISSING).subscribe();
+        TestSubscriber subscriber = new TestSubscriber();
+        //noinspection unchecked
+        operation.asRxFlowable(BackpressureStrategy.MISSING).subscribe(subscriber);
 
-        verify(operationSpy, never()).executeAsBlocking();
+        subscriber.assertNoValues();
+
         scheduler.triggerActions();
-        verify(operationSpy).executeAsBlocking();
+
+        subscriber.assertValueCount(1);
     }
 }

@@ -112,6 +112,9 @@ class GetObjectStub {
         verify(storIOContentResolver).get();
 
         // should be called once
+        verify(storIOContentResolver).interceptors();
+
+        // should be called once
         verify(getResolver).performGet(storIOContentResolver, query);
 
         // should be called only once because of Performance!

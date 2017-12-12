@@ -3,6 +3,7 @@ package com.pushtorefresh.storio3.contentresolver.operations.get;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.pushtorefresh.storio3.StorIOException;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.operations.SchedulerChecker;
 import com.pushtorefresh.storio3.contentresolver.queries.Query;
@@ -13,7 +14,9 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -100,6 +103,7 @@ public class PreparedGetCursorTest {
                 .executeAsBlocking();
 
         verify(storIOContentResolver).lowLevel();
+        verify(storIOContentResolver).interceptors();
         verify(lowLevel).query(query);
 
         verifyNoMoreInteractions(storIOContentResolver, lowLevel);
@@ -146,5 +150,30 @@ public class PreparedGetCursorTest {
                 .prepare();
 
         schedulerChecker.checkAsSingle(operation);
+    }
+
+    @Test
+    public void shouldWrapExceptionIntoStorIOException() {
+        final GetCursorStub stub = GetCursorStub.newInstance();
+
+        Throwable throwable = new IllegalStateException("Test exception");
+        when(stub.getResolver.performGet(any(StorIOContentResolver.class), any(Query.class)))
+                .thenThrow(throwable);
+
+        final PreparedGetCursor operation = stub.storIOContentResolver
+                .get()
+                .cursor()
+                .withQuery(stub.query)
+                .withGetResolver(stub.getResolver)
+                .prepare();
+
+        try {
+            operation.executeAsBlocking();
+            failBecauseExceptionWasNotThrown(StorIOException.class);
+        } catch (StorIOException expected) {
+            assertThat(expected)
+                    .hasMessageStartingWith("Error has occurred during Get operation. query = ")
+                    .hasCause(throwable);
+        }
     }
 }

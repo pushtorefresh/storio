@@ -12,7 +12,7 @@ import com.pushtorefresh.storio3.internal.ChangesBus;
 import com.pushtorefresh.storio3.internal.TypeMappingFinderImpl;
 import com.pushtorefresh.storio3.operations.PreparedCompletableOperation;
 import com.pushtorefresh.storio3.sqlite.Changes;
-import com.pushtorefresh.storio3.sqlite.Interceptor;
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio3.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio3.sqlite.queries.DeleteQuery;

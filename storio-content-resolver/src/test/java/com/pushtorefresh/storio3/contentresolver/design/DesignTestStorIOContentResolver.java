@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.contentresolver.Changes;
 import com.pushtorefresh.storio3.contentresolver.ContentResolverTypeMapping;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
@@ -15,6 +16,8 @@ import com.pushtorefresh.storio3.contentresolver.queries.InsertQuery;
 import com.pushtorefresh.storio3.contentresolver.queries.Query;
 import com.pushtorefresh.storio3.contentresolver.queries.UpdateQuery;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
@@ -44,6 +47,12 @@ class DesignTestStorIOContentResolver extends StorIOContentResolver {
     @Override
     public LowLevel lowLevel() {
         return lowLevel;
+    }
+
+    @NonNull
+    @Override
+    public List<Interceptor> interceptors() {
+        return Collections.emptyList();
     }
 
     private class LowLevelImpl extends LowLevel {
