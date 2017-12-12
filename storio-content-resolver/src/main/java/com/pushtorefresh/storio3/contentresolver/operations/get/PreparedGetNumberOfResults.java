@@ -4,12 +4,13 @@ import android.database.Cursor;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.StorIOException;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio3.contentresolver.queries.Query;
+import com.pushtorefresh.storio3.operations.PreparedOperation;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -27,30 +28,29 @@ public class PreparedGetNumberOfResults extends PreparedGetMandatoryResult<Integ
         this.getResolver = getResolver;
     }
 
-    /**
-     * Executes Get Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null {@link Integer} with number of results of the query.
-     */
-    @WorkerThread
     @NonNull
     @Override
-    public Integer executeAsBlocking() {
-        final Cursor cursor;
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
 
-        try {
-            cursor = getResolver.performGet(storIOContentResolver, query);
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
+            final Cursor cursor;
+
             try {
-                return getResolver.mapFromCursor(storIOContentResolver, cursor);
-            } finally {
-                cursor.close();
+                cursor = getResolver.performGet(storIOContentResolver, query);
+                try {
+                    //noinspection unchecked
+                    return (Result) getResolver.mapFromCursor(storIOContentResolver, cursor);
+                } finally {
+                    cursor.close();
+                }
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Get operation. query = " + query, exception);
             }
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Get operation. query = " + query, exception);
         }
     }
 

@@ -25,14 +25,7 @@ public abstract class IntegrationTest {
     public void setUp() {
         contentResolver = RuntimeEnvironment.application.getContentResolver();
 
-        storIOContentResolver = DefaultStorIOContentResolver.builder()
-                .contentResolver(contentResolver)
-                .addTypeMapping(TestItem.class, ContentResolverTypeMapping.<TestItem>builder()
-                        .putResolver(TestItem.PUT_RESOLVER)
-                        .getResolver(TestItem.GET_RESOLVER)
-                        .deleteResolver(TestItem.DELETE_RESOLVER)
-                        .build())
-                .build();
+        storIOContentResolver = createStoreIOContentResolver().build();
 
         ContentProviderController<IntegrationContentProvider> controller =
                 Robolectric.buildContentProvider(IntegrationContentProvider.class);
@@ -40,5 +33,16 @@ public abstract class IntegrationTest {
         ProviderInfo providerInfo = new ProviderInfo();
         providerInfo.authority = IntegrationContentProvider.AUTHORITY;
         controller.create(providerInfo);
+    }
+
+    @NonNull
+    protected DefaultStorIOContentResolver.CompleteBuilder createStoreIOContentResolver() {
+        return DefaultStorIOContentResolver.builder()
+                .contentResolver(contentResolver)
+                .addTypeMapping(TestItem.class, ContentResolverTypeMapping.<TestItem>builder()
+                        .putResolver(TestItem.PUT_RESOLVER)
+                        .getResolver(TestItem.GET_RESOLVER)
+                        .deleteResolver(TestItem.DELETE_RESOLVER)
+                        .build());
     }
 }

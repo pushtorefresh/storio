@@ -4,13 +4,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio3.operations.PreparedCompletableOperation;
-import com.pushtorefresh.storio3.sqlite.Interceptor;
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio3.sqlite.queries.DeleteQuery;
 
 import java.util.Collection;
 
-import static com.pushtorefresh.storio3.sqlite.impl.ChainImpl.buildChain;
+import static com.pushtorefresh.storio3.impl.ChainImpl.buildChain;
 
 /**
  * Prepared Delete Operation for {@link StorIOSQLite}.

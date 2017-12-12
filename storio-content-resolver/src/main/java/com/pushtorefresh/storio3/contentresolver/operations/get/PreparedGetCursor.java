@@ -4,12 +4,13 @@ import android.database.Cursor;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.StorIOException;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.operations.internal.RxJavaUtils;
 import com.pushtorefresh.storio3.contentresolver.queries.Query;
+import com.pushtorefresh.storio3.operations.PreparedOperation;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -34,23 +35,22 @@ public class PreparedGetCursor extends PreparedGetMandatoryResult<Cursor> {
         this.getResolver = getResolver;
     }
 
-    /**
-     * Executes Get Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null {@link Cursor}, can be empty.
-     */
-    @WorkerThread
     @NonNull
     @Override
-    public Cursor executeAsBlocking() {
-        try {
-            return getResolver.performGet(storIOContentResolver, query);
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Get operation. query = " + query, exception);
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
+
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
+            try {
+                //noinspection unchecked
+                return (Result) getResolver.performGet(storIOContentResolver, query);
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Get operation. query = " + query, exception);
+            }
         }
     }
 

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.contentresolver.operations.delete.PreparedDelete;
 import com.pushtorefresh.storio3.contentresolver.operations.get.PreparedGet;
 import com.pushtorefresh.storio3.contentresolver.operations.put.PreparedPut;
@@ -18,6 +19,7 @@ import com.pushtorefresh.storio3.contentresolver.queries.UpdateQuery;
 
 import com.pushtorefresh.storio3.operations.PreparedCompletableOperation;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
@@ -111,6 +113,14 @@ public abstract class StorIOContentResolver {
      */
     @NonNull
     public abstract LowLevel lowLevel();
+
+    /**
+     * Provides list of added interceptors.
+     *
+     * @return unmodified list of added {@link Interceptor} (can be empty).
+     */
+    @NonNull
+    public abstract List<Interceptor> interceptors();
 
     /**
      * API for low level operations with {@link StorIOContentResolver}, we made it separate

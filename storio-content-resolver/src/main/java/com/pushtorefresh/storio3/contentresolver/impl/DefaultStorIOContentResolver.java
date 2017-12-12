@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.TypeMappingFinder;
 import com.pushtorefresh.storio3.contentresolver.Changes;
 import com.pushtorefresh.storio3.contentresolver.ContentResolverTypeMapping;
@@ -23,7 +24,10 @@ import com.pushtorefresh.storio3.contentresolver.queries.UpdateQuery;
 import com.pushtorefresh.storio3.internal.TypeMappingFinderImpl;
 
 import com.pushtorefresh.storio3.operations.PreparedCompletableOperation;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,14 +60,18 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     @Nullable
     private final Scheduler defaultRxScheduler;
 
+    @NonNull
+    private final List<Interceptor> interceptors;
+
     protected DefaultStorIOContentResolver(@NonNull ContentResolver contentResolver,
                                            @NonNull Handler contentObserverHandler,
                                            @NonNull TypeMappingFinder typeMappingFinder,
-                                           @Nullable Scheduler defaultRxScheduler
-    ) {
+                                           @Nullable Scheduler defaultRxScheduler,
+                                           @NonNull List<Interceptor> interceptors) {
         this.contentResolver = contentResolver;
         this.contentObserverHandler = contentObserverHandler;
         this.defaultRxScheduler = defaultRxScheduler;
+        this.interceptors = interceptors;
         lowLevel = new LowLevelImpl(typeMappingFinder);
     }
 
@@ -96,6 +104,15 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
     @Override
     public LowLevel lowLevel() {
         return lowLevel;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public List<Interceptor> interceptors() {
+        return interceptors;
     }
 
     /**
@@ -154,6 +171,9 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         private TypeMappingFinder typeMappingFinder;
 
         private Scheduler defaultRxScheduler = RX_JAVA_2_IS_IN_THE_CLASS_PATH ? Schedulers.io() : null;
+
+        @NonNull
+        private List<Interceptor> interceptors = new ArrayList<Interceptor>();
 
         CompleteBuilder(@NonNull ContentResolver contentResolver) {
             this.contentResolver = contentResolver;
@@ -222,6 +242,19 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
         }
 
         /**
+         * Optional: Adds {@link Interceptor} to all database operation.
+         * Multiple interceptors would be called in the order they were added.
+         *
+         * @param interceptor non-null custom implementation of {@link Interceptor}.
+         * @return builder.
+         */
+        @NonNull
+        public CompleteBuilder addInterceptor(@NonNull Interceptor interceptor) {
+            interceptors.add(interceptor);
+            return this;
+        }
+
+        /**
          * Builds new instance of {@link DefaultStorIOContentResolver}.
          *
          * @return new instance of {@link DefaultStorIOContentResolver}.
@@ -241,7 +274,7 @@ public class DefaultStorIOContentResolver extends StorIOContentResolver {
                 typeMappingFinder.directTypeMapping(unmodifiableMap(typeMapping));
             }
 
-            return new DefaultStorIOContentResolver(contentResolver, contentObserverHandler, typeMappingFinder, defaultRxScheduler);
+            return new DefaultStorIOContentResolver(contentResolver, contentObserverHandler, typeMappingFinder, defaultRxScheduler, interceptors);
         }
     }
 

@@ -16,7 +16,7 @@ import io.reactivex.functions.Consumer;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -72,10 +72,11 @@ class GetCursorStub {
     }
 
     void verifyQueryBehaviorForCursor(@NonNull Cursor actualCursor) {
-        verify(storIOContentResolver, times(1)).get();
-        verify(getResolver, times(1)).performGet(storIOContentResolver, query);
+        verify(storIOContentResolver).get();
+        verify(storIOContentResolver).interceptors();
+        verify(getResolver).performGet(storIOContentResolver, query);
         assertThat(actualCursor).isSameAs(cursor);
-        verify(cursor, times(0)).close();
+        verify(cursor, never()).close();
         verifyNoMoreInteractions(storIOContentResolver, lowLevel, getResolver, cursor);
     }
 

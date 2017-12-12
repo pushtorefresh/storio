@@ -3,11 +3,12 @@ package com.pushtorefresh.storio3.contentresolver.operations.put;
 import android.content.ContentValues;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.StorIOException;
 import com.pushtorefresh.storio3.contentresolver.StorIOContentResolver;
 import com.pushtorefresh.storio3.contentresolver.operations.internal.RxJavaUtils;
+import com.pushtorefresh.storio3.operations.PreparedOperation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,30 +40,29 @@ public class PreparedPutContentValuesIterable extends PreparedPut<PutResults<Con
         this.putResolver = putResolver;
     }
 
-    /**
-     * Executes Put Operation immediately in current thread.
-     * <p>
-     * Notice: This is blocking I/O operation that should not be executed on the Main Thread,
-     * it can cause ANR (Activity Not Responding dialog), block the UI and drop animations frames.
-     * So please, call this method on some background thread. See {@link WorkerThread}.
-     *
-     * @return non-null results of Put Operation.
-     */
-    @WorkerThread
     @NonNull
     @Override
-    public PutResults<ContentValues> executeAsBlocking() {
-        try {
-            final Map<ContentValues, PutResult> putResultsMap = new HashMap<ContentValues, PutResult>();
+    protected Interceptor getRealCallInterceptor() {
+        return new RealCallInterceptor();
+    }
 
-            for (final ContentValues cv : contentValues) {
-                final PutResult putResult = putResolver.performPut(storIOContentResolver, cv);
-                putResultsMap.put(cv, putResult);
+    private class RealCallInterceptor implements Interceptor {
+        @NonNull
+        @Override
+        public <Result, WrappedResult, Data> Result intercept(@NonNull PreparedOperation<Result, WrappedResult, Data> operation, @NonNull Chain chain) {
+            try {
+                final Map<ContentValues, PutResult> putResultsMap = new HashMap<ContentValues, PutResult>();
+
+                for (final ContentValues cv : contentValues) {
+                    final PutResult putResult = putResolver.performPut(storIOContentResolver, cv);
+                    putResultsMap.put(cv, putResult);
+                }
+
+                //noinspection unchecked
+                return (Result) PutResults.newInstance(putResultsMap);
+            } catch (Exception exception) {
+                throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValues, exception);
             }
-
-            return PutResults.newInstance(putResultsMap);
-        } catch (Exception exception) {
-            throw new StorIOException("Error has occurred during Put operation. contentValues = " + contentValues, exception);
         }
     }
 
