@@ -6,10 +6,7 @@ apply plugin: 'jacoco'
 
 jacoco {
     // See https://github.com/jacoco/jacoco/releases
-    // Should to be upgraded when gradle will support jacoco v0.7.6 options/
-    // (https://github.com/gradle/gradle/pull/575/)
-    // For measure PowerMock tests coverage (https://github.com/jacoco/jacoco/pull/288).
-    toolVersion = '0.7.2.201409121644'
+    toolVersion = '0.7.9'
 }
 
 project.afterEvaluate {
