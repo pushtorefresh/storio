@@ -14,13 +14,13 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 public class ChangesBusTest {
 
     @Test
-    public void asObservableShouldNotReturnNullIfRxJavaInClassPath() {
+    public void asFlowableShouldNotReturnNullIfRxJavaInClassPath() {
         ChangesBus<String> changesBus = new ChangesBus<String>(true);
         assertThat(changesBus.asFlowable()).isNotNull();
     }
 
     @Test
-    public void asObservableShouldReturnNullIfRxJavaIsNotInTheClassPath() {
+    public void asFlowableShouldReturnNullIfRxJavaIsNotInTheClassPath() {
         ChangesBus<String> changesBus = new ChangesBus<String>(false);
         assertThat(changesBus.asFlowable()).isNull();
     }

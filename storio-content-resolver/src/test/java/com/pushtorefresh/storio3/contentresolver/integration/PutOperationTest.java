@@ -92,7 +92,7 @@ public class PutOperationTest extends IntegrationTest {
     }
 
     @Test
-    public void insertContentValuesAsObservable() {
+    public void insertContentValuesAsRxFlowable() {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
@@ -230,7 +230,7 @@ public class PutOperationTest extends IntegrationTest {
     }
 
     @Test
-    public void updateContentValuesAsObservable() {
+    public void updateContentValuesAsRxFlowable() {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
@@ -370,7 +370,7 @@ public class PutOperationTest extends IntegrationTest {
     }
 
     @Test
-    public void insertObjectAsObservable() {
+    public void insertObjectAsRxFlowable() {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
@@ -508,7 +508,7 @@ public class PutOperationTest extends IntegrationTest {
     }
 
     @Test
-    public void updateObjectAsObservable() {
+    public void updateObjectAsRxFlowable() {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver

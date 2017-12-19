@@ -95,7 +95,7 @@ public abstract class StorIOSQLite implements Closeable {
      * if you need to receive events on a special thread.
      * <p/>
      * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
+     * that you should manually dispose from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @return {@link io.reactivex.Flowable} of {@link Changes} subscribed to changes of all tables.
@@ -115,7 +115,7 @@ public abstract class StorIOSQLite implements Closeable {
      * if you need to receive events on a special thread.
      * <p/>
      * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
+     * that you should manually dispose from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param tables set of table names that should be monitored.
@@ -136,7 +136,7 @@ public abstract class StorIOSQLite implements Closeable {
      * if you need to receive events on a special thread.
      * <p/>
      * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
+     * that you should manually dispose from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param table table name to monitor.
@@ -163,7 +163,7 @@ public abstract class StorIOSQLite implements Closeable {
      * if you need to receive events on a special thread.
      * <p/>
      * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
+     * that you should manually dispose from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param tags set of tags that should be monitored.
@@ -187,7 +187,7 @@ public abstract class StorIOSQLite implements Closeable {
      * if you need to receive events on a special thread.
      * <p/>
      * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
+     * that you should manually dispose from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param tag tag to monitor.

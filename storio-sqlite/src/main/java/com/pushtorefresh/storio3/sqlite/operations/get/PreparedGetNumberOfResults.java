@@ -46,7 +46,7 @@ public class PreparedGetNumberOfResults extends PreparedGetMandatoryResult<Integ
      * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      * <p>
-     * Please don't forget to unsubscribe from this {@link Flowable} because
+     * Please don't forget to dispose from this {@link Flowable} because
      * it's "Hot" and endless.
      *
      * @return non-null {@link Flowable} which will emit non-null

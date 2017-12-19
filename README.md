@@ -7,9 +7,9 @@
 * Optional Type-Safe Object Mapping, if you don't want to work with `Cursor` and `ContentValues` you don't have to
 * No reflection in Operations and no annotations in the core, also `StorIO` is not ORM
 * **Full control** over queries, transaction and object mapping
-* Every Operation over `StorIO` can be executed as blocking call or as `rx.Observable`/`rx.Single`/`rx.Completable`
+* Every Operation over `StorIO` can be executed as blocking call or as `io.reactivex.Flowable`/`io.reactivex.Single`/`io.reactivex.Completable`/`io.reactivex.Maybe`
 * `RxJava` as first class citizen, but it's not required dependency!
-* **Reactive**: `rx.Observable` from `Get` Operation **will observe changes** in `StorIO` (`SQLite` or `ContentProvider`) and receive updates automatically
+* **Reactive**: `io.reactivex.Flowable` from `Get` Operation **will observe changes** in `StorIO` (`SQLite` or `ContentProvider`) and receive updates automatically
 * `StorIO` is replacements for `SQLiteDatabase` and `ContentResolver` APIs
 * `StorIO` + `RxJava` is replacement for `Loaders` API
 * We are working on `MockStorIO` (similar to [MockWebServer](https://github.com/square/okhttp/tree/master/mockwebserver)) for easy unit testing
@@ -42,19 +42,16 @@ Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tes
 #### Download:
 ```groovy
 // If you need StorIO for SQLite
-compile 'com.pushtorefresh.storio2:sqlite:2.1.0'
+implementation 'com.pushtorefresh.storio3:sqlite:3.0.0'
 
 // If you need StorIO for ContentResolver
-compile 'com.pushtorefresh.storio2:content-resolver:2.1.0'
-
-// IN StorIO 2.0 we will remove default Scheduling from Rx Operations!
-// You'll have to put subscribeOn() manually!
+implementation 'com.pushtorefresh.storio3:content-resolver:3.0.0'
 
 // Notice that RxJava is optional dependency for StorIO,
 // So if you need it -> please add it manually.
 ```
 
-You can find all releases on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ccom.pushtorefresh.storio2).
+You can find all releases on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ccom.pushtorefresh.storio3).
 
 
 #### Some examples
@@ -96,9 +93,9 @@ storIOSQLite
   .executeAsBlocking();
 ```
 
-#### Reactive? Observable.just(true)!
+#### Reactive? Single.just(true)!
 
-##### Get something as rx.Observable and receive updates!
+##### Get something as io.reactivex.Flowable and receive updates!
 ```java
 storIOSQLite
   .get()
@@ -107,9 +104,9 @@ storIOSQLite
     .table("tweets")
     .build())
   .prepare()
-  .asRxObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
+  .asRxFlowable(BackpressureStrategy.LATEST) // Get Result as io.reactivex.Flowable and subscribe to further updates of tables from Query!
   .observeOn(mainThread()) // All Rx operations work on Schedulers.io()
-  .subscribe(tweets -> { // Please don't forget to unsubscribe
+  .subscribe(tweets -> { // Please don't forget to dispose
   	  // Will be called with first result and then after each change of tables from Query
   	  // Several changes in transaction -> one notification
   	  adapter.setData(tweets);
@@ -158,18 +155,18 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 `StorIOSQLite`:
 ```groovy
 dependencies {
-  compile 'com.pushtorefresh.storio2:sqlite-annotations:insert-latest-version-here'
+  implementation 'com.pushtorefresh.storio3:sqlite-annotations:insert-latest-version-here'
 
-  annotationProcessor 'com.pushtorefresh.storio2:sqlite-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio3:sqlite-annotations-processor:insert-latest-version-here'
 }
 ```
 
 `StorIOContentResolver`:
 ```groovy
 dependencies {
-  compile 'com.pushtorefresh.storio2:content-resolver-annotations:insert-latest-version-here'
+  implementation 'com.pushtorefresh.storio3:content-resolver-annotations:insert-latest-version-here'
 
-  annotationProcessor 'com.pushtorefresh.storio2:content-resolver-annotations-processor:insert-latest-version-here'
+  annotationProcessor 'com.pushtorefresh.storio3:content-resolver-annotations-processor:insert-latest-version-here'
 }
 ```
 
@@ -274,20 +271,20 @@ Please read [`CHANGELOG`](CHANGELOG.md) and check what part of the version has c
 
 It means, that you can have your own implementation of `StorIOSQLite` and `StorIOContentResolver` with custom behavior, such as memory caching, verbose logging and so on or mock implementation for unit testing (we are working on `MockStorIO`).
 
-One of the main goals of `StorIO` — clean API for Humans which will be easy to use and understand, that's why `StorIOSQLite` and `StorIOContentResolver` have just several methods, but we understand that sometimes you need to go under the hood and `StorIO` allows you to do it: `StorIOSQLite.Internal` and `StorIOContentResolver.Internal` encapsulates low-level methods, you can use them if you need, but please try to avoid it.
+One of the main goals of `StorIO` — clean API for Humans which will be easy to use and understand, that's why `StorIOSQLite` and `StorIOContentResolver` have just several methods, but we understand that sometimes you need to go under the hood and `StorIO` allows you to do it: `StorIOSQLite.LowLevel` and `StorIOContentResolver.LowLevel` encapsulates low-level methods, you can use them if you need, but please try to avoid it.
 
 #### Queries
 
 All `Query` objects are immutable, you can share them safely.
 
 #### Concept of Prepared Operations
-You may notice that each Operation (Get, Put, Delete) should be prepared with `prepare()`. `StorIO` has an entity called `PreparedOperation<T>`, and you can use them to perform group execution of several Prepared Operations or provide `PreparedOperation<T>` as a return type of your API (for example in Model layer) and client will decide how to execute it: `executeAsBlocking()` or `asRxObservable()`. Also, Prepared Operations might be useful for ORMs based on `StorIO`.
+You may notice that each Operation (Get, Put, Delete) should be prepared with `prepare()`. `StorIO` has an entity called `PreparedOperation`, and you can use them to perform group execution of several Prepared Operations or provide `PreparedOperation` as a return type of your API (for example in Model layer) and client will decide how to execute it: `executeAsBlocking()` or `asRxFlowable()`. Also, Prepared Operations might be useful for ORMs based on `StorIO`.
 
 You can customize behavior of every Operation via `Resolvers`: `GetResolver`, `PutResolver`, `DeleteResolver`.
 
 #### Rx Support Design
-Every Operation can be executed as `rx.Observable`, `rx.Single` or `rx.Completable`. Get Operations will be automatically subscribed to the updates of the data.
-Every Observable runs on `Schedulers.io()`, in v2.0 we will remove default scheduling!
+Every Operation can be executed as `io.reactivex.Flowable`, `io.reactivex.Single`, `io.reactivex.Completable` or `io.reactivex.Maybe`. Get Operations will be automatically subscribed to the updates of the data.
+Every rx operation runs on `Schedulers.io()`. You can change it by `defaultRxScheduler()` or set it to `null` to execute on current thread.
 
 #### 3rd party additions/integrations for StorIO
 

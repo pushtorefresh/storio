@@ -59,7 +59,7 @@ public class DeleteOperationTest extends IntegrationTest {
     }
 
     @Test
-    public void deleteByQueryAsObservable() {
+    public void deleteByQueryAsRxFlowable() {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
@@ -195,7 +195,7 @@ public class DeleteOperationTest extends IntegrationTest {
     }
 
     @Test
-    public void deleteObjectasRxObservable() {
+    public void deleteObjectAsRxFlowable() {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
@@ -340,7 +340,7 @@ public class DeleteOperationTest extends IntegrationTest {
     }
 
     @Test
-    public void deleteObjectsAsObservable() {
+    public void deleteObjectsAsRxFlowable() {
         TestSubscriber<Changes> changesTestSubscriber = new TestSubscriber<Changes>();
 
         storIOContentResolver
