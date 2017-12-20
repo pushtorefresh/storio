@@ -48,7 +48,7 @@ Things become much more interesting with `RxJava`!
 
 ##### What if you want to observe changes in `StorIOContentResolver`?
 
-###### First-case: Receive updates to `Observable` on each change of Uri from `Query`
+###### First-case: Receive updates to `Flowable` on each change of Uri from `Query`
 
 ```java
 storIOContentResolver
@@ -60,7 +60,7 @@ storIOContentResolver
     .whereArgs("@artem_zin")
     .build())
   .prepare()
-  .asRxObservable() // Get Result as rx.Observable and subscribe to further updates of Uri from Query!
+  .asRxFlowable(BackpressureStrategy.LATEST) // Get Result as io.reactivex.Flowable and subscribe to further updates of Uri from Query!
   .observeOn(mainThread()) // All Rx operations work on Schedulers.io()
   .subscribe(tweets -> { // Please don't forget to unsubscribe
       // will be called with first result and then after each change of Uri from Query
@@ -90,7 +90,7 @@ storIOContentResolver
           .uri(tweetsUri)
           .build())
   .prepare()
-  .asRxObservable()
+  .asRxFlowable(BackpressureStrategy.LATEST)
   .take(1) // To get result only once and ignore further changes of this Uri
   .observeOn(mainThread())
   .subscribe(tweets -> {
@@ -132,7 +132,7 @@ storIOContentResolver
   .put()
   .object(tweet)
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxSingle()
 ```
 
 ###### Put multiple objects of some type
@@ -143,7 +143,7 @@ storIOContentResolver
   .put()
   .objects(tweets)
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxSingle()
 ```
 
 ###### Put `ContentValues`
@@ -155,7 +155,7 @@ storIOContentResolver
   .contentValues(contentValues)
   .withPutResolver(putResolver) // requires PutResolver<ContentValues>
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxSingle()
 ```
 
 `Put` Operation requires `PutResolver` which defines the behavior of `Put` Operation (insert or update).
@@ -198,7 +198,7 @@ storIOContentResolver
   .delete()
   .object(tweet)
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxCompletable()
 ``` 
 
 ###### Delete multiple objects
@@ -209,7 +209,7 @@ storIOContentResolver
   .delete()
   .objects(tweets)
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxCompletable()
 ```
 
 Delete Resolver

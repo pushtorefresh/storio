@@ -41,7 +41,7 @@ public class RxJavaUtils {
             @NonNull PreparedOperation<Result, WrappedResult, Data> operation,
             @NonNull BackpressureStrategy backpressureStrategy
     ) {
-        throwExceptionIfRxJava2IsNotAvailable("asRxObservable()");
+        throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
 
         final Flowable<Result> flowable = Flowable.create(
                 new FlowableOnSubscribeExecuteAsBlocking<Result, WrappedResult, Data>(operation), backpressureStrategy

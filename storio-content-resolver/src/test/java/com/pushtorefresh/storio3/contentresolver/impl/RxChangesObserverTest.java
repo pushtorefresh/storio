@@ -179,7 +179,7 @@ public class RxChangesObserverTest {
     }
 
     @Test
-    public void shouldUnregisterContentObserverAfterUnsubscribingFromFlowableOnSdkVersionGreaterThan15() {
+    public void shouldUnregisterContentObserverAfterDisposingFromFlowableOnSdkVersionGreaterThan15() {
         for (int sdkVersion = 16; sdkVersion < MAX_SDK_VERSION; sdkVersion++) {
             ContentResolver contentResolver = mock(ContentResolver.class);
             Set<Uri> uris = new HashSet<Uri>(3);
@@ -202,13 +202,13 @@ public class RxChangesObserverTest {
 
             disposable.dispose();
 
-            // Should unregister ContentObserver after unsubscribing from Disposable
+            // Should unregister ContentObserver after dispose from Disposable
             verify(contentResolver).unregisterContentObserver(any(ContentObserver.class));
         }
     }
 
     @Test
-    public void shouldUnregisterContentObserversForEachUriAfterUnsubscribingFromFlowableOnSdkVersionLowerThan16() {
+    public void shouldUnregisterContentObserversForEachUriAfterDisposingFromFlowableOnSdkVersionLowerThan16() {
         for (int sdkVersion = MIN_SDK_VERSION; sdkVersion < 16; sdkVersion++) {
             ContentResolver contentResolver = mock(ContentResolver.class);
             Set<Uri> uris = new HashSet<Uri>(3);

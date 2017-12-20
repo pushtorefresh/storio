@@ -68,7 +68,7 @@ public abstract class StorIOContentResolver {
      * Allows observe changes of required set of {@link Uri}.
      * <p/>
      * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
+     * that you should manually dispose from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param uris set of {@link Uri} that should be monitored.
@@ -81,7 +81,7 @@ public abstract class StorIOContentResolver {
      * Allows observe changes of required {@link Uri}.
      * <p/>
      * Notice, that returned {@link Flowable} is "Hot Flowable", it never ends, which means,
-     * that you should manually unsubscribe from it to prevent memory leak.
+     * that you should manually dispose from it to prevent memory leak.
      * Also, it can cause BackPressure problems.
      *
      * @param uri {@link Uri} that should be monitored.

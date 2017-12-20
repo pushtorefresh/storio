@@ -22,8 +22,8 @@ public class ExecuteSQLOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void execSqlObservable() {
-        Flowable<Object> observable = storIOSQLite()
+    public void execSqlAsRxFlowable() {
+        Flowable<Object> flowable = storIOSQLite()
                 .executeSQL()
                 .withQuery(RawQuery.builder()
                         .query("DROP TABLE users")

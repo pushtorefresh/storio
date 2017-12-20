@@ -49,7 +49,7 @@ public final class RxJavaUtils {
             @NonNull PreparedOperation<Result, WrappedResult, Data> operation,
             @NonNull BackpressureStrategy backpressureStrategy
     ) {
-        throwExceptionIfRxJava2IsNotAvailable("asRxObservable()");
+        throwExceptionIfRxJava2IsNotAvailable("asRxFlowable()");
 
         return subscribeOn(
                 storIOSQLite,
