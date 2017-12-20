@@ -1,6 +1,99 @@
 StorIO Change Log
 ==========
 
+## Version 3.0.0
+
+_2017_12_20_
+
+* RxJava2 support :tada::tada::tada:
+* Add `asRxMaybe`.
+* `executeSQL()` now can be executed via `asRxCompletable()`.
+* Add interceptors for ContentResolver.
+* Add ContentResolver sample.
+* Android gradle plugin 3.0.1 and support libraries 27.0.2.
+* Mockito 2.13.0 and Mockito-Kotlin 1.5.0.
+* Add gradle versions plugin.
+* Table generation with few primary keys.
+* Do not publish jar for android modules.
+
+**Migration notes:**
+* `asRxObservable` -> `asRxFlowable` (see [backpressure 2.0](https://github.com/ReactiveX/RxJava/wiki/Backpressure-(2.0))).
+* Get object `asRxFlowable()` and `asRxSingle` return `Optional` of object because RxJava2 [no longer accepts nulls](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0#nulls).
+* You can use `asRxMaybe` to retrieve value without wrapping.
+* `PreparedOperation` takes 3 parameters: `Result` - type of operation result; `WrappedResult` - `Optional` in cases when result may be null, result itself otherwise; `Data` - some operation description that can be used inside interceptor.
+* You can call `DefaultStorIOContentResolver.Builder#addInterceptor(Interceptor)` to log/debug/modify result of any operation (like it was implemented before in `DefaultStorIOSQLite`).
+ 
+**Changes:**
+
+* [PR 844](https://github.com/pushtorefresh/storio/pull/844): Override Travis install step to avoid unnecessary `./gradlew assemble`.
+* [PR 845](https://github.com/pushtorefresh/storio/pull/845): RxJava2 base support.
+* [PR 848](https://github.com/pushtorefresh/storio/pull/848): Optional for SQLite.
+* [PR 849](https://github.com/pushtorefresh/storio/pull/849): Optional for ContentResolver.
+* [PR 850](https://github.com/pushtorefresh/storio/pull/850): Add ContentResolver sample.
+* [PR 854](https://github.com/pushtorefresh/storio/pull/854): Table generation with few primary keys.
+* [PR 856](https://github.com/pushtorefresh/storio/pull/856): Rewrite optional usage to allow Maybe implementation.
+* [PR 857](https://github.com/pushtorefresh/storio/pull/857): Support io.reactivex.Maybe.
+* [PR 858](https://github.com/pushtorefresh/storio/pull/858): Rename package to storio3.
+* [PR 861](https://github.com/pushtorefresh/storio/pull/861): Fix maven url, update version.
+* [PR 862](https://github.com/pushtorefresh/storio/pull/862): Android gradle plugin 3.0.1.
+* [PR 864](https://github.com/pushtorefresh/storio/pull/864): Add interceptors for ContentResolver.
+* [PR 865](https://github.com/pushtorefresh/storio/pull/865): Add gradle versions plugin.
+* [PR 866](https://github.com/pushtorefresh/storio/pull/866): Mockito 2.13.0 and Mockito-Kotlin 1.5.0.
+* [PR 867](https://github.com/pushtorefresh/storio/pull/867): Kotlin 1.2.0.
+* [PR 870](https://github.com/pushtorefresh/storio/pull/870): Do not publish jar for android modules.
+
+## Version 2.1.0
+
+_2017_10_29_
+
+* Table generation by annotation processor, thanks to @pbochenski and @geralt-encore!
+* Remove exhaustive else from GetResolverGenerator utils.
+* Some improvements in sample-projects, thanks to @ValeriusGC (it took us almost a year to merge…)
+* Automated release and CI tweaks.
+
+**Changes:**
+
+* [PR 840](https://github.com/pushtorefresh/storio/pull/840): Table generation by annotation processor, thanks to @pbochenski and @geralt-encore!
+* [PR 835](https://github.com/pushtorefresh/storio/pull/835): Remove exhaustive else from GetResolverGenerator utils.
+* [PR 711](https://github.com/pushtorefresh/storio/pull/711): Improvements in sample-projects thanks @ValeriusGC.
+* [PR 839](https://github.com/pushtorefresh/storio/pull/839): Fix readme links.
+* [PR 841](https://github.com/pushtorefresh/storio/pull/841): Configure all signing params for automated release.
+* [PR 842](https://github.com/pushtorefresh/storio/pull/842): Download Linux Android SDK on Travis instead of macOS.
+* [PR 843](https://github.com/pushtorefresh/storio/pull/843): Minimize deploy logs, close nexus repo after upload.
+
+## Version 2.0.3
+
+_2017_10_16_
+
+* No API/implementation changes, fine-tuning automatic release process.
+
+**Changes:**
+
+* [PR 836](https://github.com/pushtorefresh/storio/pull/836): Do clean release build to exclude Jacoco from jar.
+* [PR 834](https://github.com/pushtorefresh/storio/pull/834): Use environment variable to detect publishing state.
+* [PR 833](https://github.com/pushtorefresh/storio/pull/833): Disable debug builds for library modules.
+
+## Version 2.0.2
+
+_2017_10_16_
+
+* No API/implementation changes, we're fine-tuning automated release process.
+
+## Version 2.0.1
+
+_2017_10_16_
+
+* Add automatic deploy hooks to Travis config.
+* Gradle 4.2.1.
+
+**Changes:**
+
+* [PR 830](https://github.com/pushtorefresh/storio/pull/830): Add automatic deploy hooks to Travis config.
+* [PR 825](https://github.com/pushtorefresh/storio/pull/825): Gradle 4.2.1.
+* [PR 823](https://github.com/pushtorefresh/storio/pull/823): Update readme according to Kotlin integration changes.
+* [PR 829](https://github.com/pushtorefresh/storio/pull/829): Fix test parallelWritesWithoutTransaction.
+* [PR 824](https://github.com/pushtorefresh/storio/pull/824): Fix Travis log overflow.
+
 ## Version 2.0.0
 
 _2017_09_12_
