@@ -30,10 +30,10 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void deleteObjectObservable() {
+    public void deleteObjectAsRxFlowable() {
         User user = newUser();
 
-        Flowable<DeleteResult> deleteResultObservable = storIOSQLite()
+        Flowable<DeleteResult> deleteResultFlowable = storIOSQLite()
                 .delete()
                 .object(user)
                 .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
@@ -54,10 +54,10 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void deleteCollectionOfObjectsObservable() {
+    public void deleteCollectionOfObjectsAsRxFlowable() {
         List<User> users = new ArrayList<User>();
 
-        Flowable<DeleteResults<User>> deleteResultObservable = storIOSQLite()
+        Flowable<DeleteResults<User>> deleteResultFlowable = storIOSQLite()
                 .delete()
                 .objects(users)
                 .withDeleteResolver(UserTableMeta.DELETE_RESOLVER)
@@ -79,8 +79,8 @@ public class DeleteOperationDesignTest extends OperationDesignTest {
     }
 
     @Test
-    public void deleteByQueryObservable() {
-        Flowable<DeleteResult> deleteResultObservable = storIOSQLite()
+    public void deleteByQueryAsRxFlowable() {
+        Flowable<DeleteResult> deleteResultFlowable = storIOSQLite()
                 .delete()
                 .byQuery(DeleteQuery.builder()
                         .table("users")

@@ -42,7 +42,7 @@ Things become much more interesting with `RxJava`!
 
 ##### What if you want to observe changes in `StorIOSQLite`?
 
-###### First-case: Receive updates to `Observable` on each change in tables from `Query` 
+###### First-case: Receive updates to `Flowable` on each change in tables from `Query` 
 
 ```java
 storIOSQLite
@@ -52,7 +52,7 @@ storIOSQLite
     .table("tweets")
     .build())
   .prepare()
-  .asRxObservable() // Get Result as rx.Observable and subscribe to further updates of tables from Query!
+  .asRxFlowable(BackpressureStrategy.LATEST) // Get Result as io.reactivex.Flowable and subscribe to further updates of tables from Query!
   .observeOn(mainThread()) // All Rx operations work on Schedulers.io()
   .subscribe(tweets -> { // Please don't forget to unsubscribe
       // will be called with first result and then after each change of tables from Query
@@ -84,7 +84,7 @@ storIOSQLite
     .observesTags("particular_change_tag") // Subscribe to changes with this particular tag(s).
     .build())
   .prepare()
-  .asRxObservable();
+  .asRxFlowable(BackpressureStrategy.LATEST);
 ```
 
 Also you can handle changes of tags manually
@@ -107,7 +107,7 @@ storIOSQLite
           .table("tweets")
           .build())
   .prepare()
-  .asRxObservable()
+  .asRxFlowable(BackpressureStrategy.LATEST)
   .take(1)  // To get result only once and ignore further changes of this table
   .observeOn(mainThread())
   .subscribe(tweets -> {
@@ -127,7 +127,7 @@ storIOSQLite
     .args("artem_zin")
     .build())
   .prepare()
-  .asRxObservable();
+  .asRxFlowable(BackpressureStrategy.LATEST);
 ```
 
 ###### Customize behavior of `Get` Operation with `GetResolver`
@@ -164,7 +164,7 @@ storIOSQLite
   .put()
   .object(tweet)
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxSingle()
 ```
 
 ###### Put multiple objects of some type
@@ -175,7 +175,7 @@ storIOSQLite
   .put()
   .objects(tweets)
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxSingle()
 ```
 
 ###### Put `ContentValues`
@@ -187,7 +187,7 @@ storIOSQLite
   .contentValues(contentValues)
   .withPutResolver(putResolver) // requires PutResolver<ContentValues>
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxSingle()
 ```
 
 `Put` Operation requires `PutResolver` which defines the behavior of `Put` Operation (insert or update).
@@ -234,7 +234,7 @@ storIOSQLite
   .delete()
   .object(tweet)
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxCompletable()
 ``` 
 
 ###### Delete multiple objects
@@ -245,7 +245,7 @@ storIOSQLite
   .delete()
   .objects(tweets)
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxCompletable()
 ```
 
 Delete Resolver
@@ -280,7 +280,7 @@ storIOSQLite
     .affectsTags("particular_change_tag")   // optional: and tags to notify Observers
     .build())
   .prepare()
-  .executeAsBlocking(); // or asRxObservable()
+  .executeAsBlocking(); // or asRxCompletable()
 ```
 
 Several things about `ExecSql`:
@@ -311,10 +311,10 @@ To **save you from coding boilerplate classes** we created **Annotation Processo
 ```groovy
 dependencies {
     // At the moment there is annotation processor only for StorIOSQLite
-  	compile 'com.pushtorefresh.storio:sqlite-annotations:insert-latest-version-here'
+  	implementation 'com.pushtorefresh.storio3:sqlite-annotations:insert-latest-version-here'
 
   	// We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
-  	apt 'com.pushtorefresh.storio:sqlite-annotations-processor:insert-latest-version-here'
+  	annotationProcessor 'com.pushtorefresh.storio3:sqlite-annotations-processor:insert-latest-version-here'
 }
 ```
 

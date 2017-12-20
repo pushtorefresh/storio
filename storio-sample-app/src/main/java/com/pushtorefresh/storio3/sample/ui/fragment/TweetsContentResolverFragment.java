@@ -134,12 +134,12 @@ public class TweetsContentResolverFragment extends BaseFragment implements Tweet
                         tweetsAdapter.setTweets(Collections.<Tweet>emptyList());
                     }
                 });
-        // Preventing memory leak (other Observables: Put, Delete emit result once so memory leak won't live long)
-        // Because rx.Observable from Get Operation is endless (it watches for changes of tables from query)
+        // Preventing memory leak (other Flowables: Put, Delete emit result once so memory leak won't live long)
+        // Because io.reactivex.Flowable from Get Operation is endless (it watches for changes of tables from query)
         // You can easily create memory leak (in this case you'll leak the Fragment and all it's fields)
         // So please, PLEASE manage your subscriptions
-        // We suggest same mechanism via storing all subscriptions that you want to unsubscribe
-        // In something like CompositeSubscription and unsubscribe them in appropriate moment of component lifecycle
+        // We suggest same mechanism via storing all disposables that you want to dispose
+        // In something like CompositeSubscription and dispose them in appropriate moment of component lifecycle
         disposeOnStop(disposable);
     }
 
@@ -163,7 +163,7 @@ public class TweetsContentResolverFragment extends BaseFragment implements Tweet
                 .objects(tweets)
                 .prepare()
                 .asRxCompletable()
-                .observeOn(mainThread()) // The default scheduler is Schedulers.io(), all Observables in StorIO already subscribed on this scheduler, you just need to set observeOn()
+                .observeOn(mainThread()) // The default scheduler is Schedulers.io(), all rx operators in StorIO already subscribed on this scheduler, you just need to set observeOn()
                 .subscribe(
                         new Action() {
                             @Override

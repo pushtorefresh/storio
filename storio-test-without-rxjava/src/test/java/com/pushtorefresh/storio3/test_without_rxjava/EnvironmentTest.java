@@ -15,6 +15,6 @@ public class EnvironmentTest {
 
     @Test(expected = ClassNotFoundException.class)
     public void rxJava2IsReallyNotInClassPath() throws ClassNotFoundException {
-        Class.forName("io.reactivex.Observable");
+        Class.forName("io.reactivex.Flowable");
     }
 }

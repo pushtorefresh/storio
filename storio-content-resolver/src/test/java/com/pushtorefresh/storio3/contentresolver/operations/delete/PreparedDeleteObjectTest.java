@@ -48,14 +48,14 @@ public class PreparedDeleteObjectTest {
         public void shouldDeleteObjectWithoutTypeMappingAsFlowable() {
             final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObjectWithoutTypeMapping();
 
-            final Flowable<DeleteResult> observable = deleteStub.storIOContentResolver
+            final Flowable<DeleteResult> flowable = deleteStub.storIOContentResolver
                     .delete()
                     .object(deleteStub.items.get(0))
                     .withDeleteResolver(deleteStub.deleteResolver)
                     .prepare()
                     .asRxFlowable(BackpressureStrategy.MISSING);
 
-            deleteStub.verifyBehaviorForDeleteOneObject(observable);
+            deleteStub.verifyBehaviorForDeleteOneObject(flowable);
         }
 
         @Test
@@ -106,13 +106,13 @@ public class PreparedDeleteObjectTest {
         public void shouldDeleteObjectWithTypeMappingAsFlowable() {
             final DeleteObjectsStub deleteStub = DeleteObjectsStub.newInstanceForDeleteOneObjectWithTypeMapping();
 
-            final Flowable<DeleteResult> observable = deleteStub.storIOContentResolver
+            final Flowable<DeleteResult> flowable = deleteStub.storIOContentResolver
                     .delete()
                     .object(deleteStub.items.get(0))
                     .prepare()
                     .asRxFlowable(BackpressureStrategy.MISSING);
 
-            deleteStub.verifyBehaviorForDeleteOneObject(observable);
+            deleteStub.verifyBehaviorForDeleteOneObject(flowable);
         }
 
         @Test

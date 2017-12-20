@@ -19,7 +19,7 @@ public final class Environment {
     // Thanks Retrofit for that piece of code.
     private static boolean isRxJava2InTheClassPath() {
         try {
-            Class.forName("io.reactivex.Observable");
+            Class.forName("io.reactivex.Flowable");
             return true;
         } catch (ClassNotFoundException e) {
             return false;
@@ -29,11 +29,11 @@ public final class Environment {
     /**
      * Throws RuntimeException if RxJava is not available
      *
-     * @param messagePrefix first part of exception message, for example: "Creating Observable"
+     * @param messagePrefix first part of exception message, for example: "Creating Flowable"
      */
     public static void throwExceptionIfRxJava2IsNotAvailable(@NonNull String messagePrefix) {
         if (RX_JAVA_2_IS_IN_THE_CLASS_PATH == false) {
-            throw new IllegalStateException(messagePrefix + " requires RxJava in classpath, please add it as compile dependency to the application");
+            throw new IllegalStateException(messagePrefix + " requires RxJava2 in classpath, please add it as compile dependency to the application");
         }
     }
 }

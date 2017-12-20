@@ -45,7 +45,7 @@ public class EnvironmentTest {
             Environment.throwExceptionIfRxJava2IsNotAvailable("yolo");
             failBecauseExceptionWasNotThrown(IllegalStateException.class);
         } catch (IllegalStateException expected) {
-            assertThat(expected).hasMessage("yolo requires RxJava in classpath," +
+            assertThat(expected).hasMessage("yolo requires RxJava2 in classpath," +
                             " please add it as compile dependency to the application");
         } finally {
             // Return previous value of the field

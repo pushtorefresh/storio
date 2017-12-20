@@ -115,7 +115,7 @@ public class PreparedGetListOfObjects<T> extends PreparedGetMandatoryResult<List
      * <dd>Operates on {@link StorIOContentResolver#defaultRxScheduler()} if not {@code null}.</dd>
      * </dl>
      * <p>
-     * Please don't forget to unsubscribe from this {@link Flowable}
+     * Please don't forget to dispose from this {@link Flowable}
      * because it's "Hot" and endless.
      *
      * @return non-null {@link Flowable} which will emit non-null, immutable

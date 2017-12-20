@@ -80,9 +80,9 @@ class GetCursorStub {
         verifyNoMoreInteractions(storIOContentResolver, lowLevel, getResolver, cursor);
     }
 
-    void verifyQueryBehaviorForCursor(@NonNull Flowable<Cursor> observable) {
+    void verifyQueryBehaviorForCursor(@NonNull Flowable<Cursor> flowable) {
         new FlowableBehaviorChecker<Cursor>()
-                .flowable(observable)
+                .flowable(flowable)
                 .expectedNumberOfEmissions(1)
                 .testAction(new Consumer<Cursor>() {
                     @Override

@@ -18,7 +18,7 @@ public class SampleApp extends Application {
 
     // Monitors Memory Leaks, because why not!
     // You can play with sample app and Rx subscriptions
-    // To see how it can leak memory if you won't unsubscribe.
+    // To see how it can leak memory if you won't dispose.
     @NonNull
     private RefWatcher refWatcher;
 
