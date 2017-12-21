@@ -22,7 +22,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // Automatic releases to Sonatype.
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.8.0'
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0'
 
         classpath 'com.squareup.sqldelight:gradle-plugin:0.6.1'
 
