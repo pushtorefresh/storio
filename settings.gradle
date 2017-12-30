@@ -12,6 +12,8 @@ include ':storio-sqlite-annotations-processor-test'
 include ':storio-content-resolver-annotations-processor'
 include ':storio-content-resolver-annotations-processor-test'
 
+include ':storio-sqlite-interop1to3'
+
 include ':storio-test-without-rxjava'
 
 include ':storio-basic-sample-app'
