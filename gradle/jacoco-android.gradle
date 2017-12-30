@@ -10,6 +10,10 @@ jacoco {
 }
 
 project.afterEvaluate {
+    android.testOptions.unitTests.all {
+        it.jacoco.includeNoLocationClasses = true
+    }
+
     // Grab all build types and product flavors
     def buildTypes = android.buildTypes
             .collect { type -> type.name }
