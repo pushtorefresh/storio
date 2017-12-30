@@ -1,0 +1,34 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        versionName VERSION_NAME
+        versionCode Integer.parseInt(VERSION_CODE)
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt' // multiple libs have this file -> cause build error
+    }
+}
+
+dependencies {
+    implementation libraries.storIOSQLite2
+    implementation libraries.storIOSQLite
+
+    // Do not use compileOnly because without rxJava and rxJava2 using interoperability makes sense.
+    implementation libraries.rxJava
+    implementation libraries.rxJava2
+
+    testImplementation libraries.junit
+    testImplementation libraries.kotlinStdLib
+    testImplementation libraries.mockitoKotlin
+    testImplementation libraries.assertJ
+}
+
+apply from: '../gradle/checkstyle.gradle'
+apply from: '../gradle/jacoco-android.gradle'
+apply from: '../gradle/publish-android-lib.gradle'
