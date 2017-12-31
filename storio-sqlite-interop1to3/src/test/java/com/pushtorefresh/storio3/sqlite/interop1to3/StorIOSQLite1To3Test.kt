@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanPrivate")
+
 package com.pushtorefresh.storio3.sqlite.interop1to3
 
 import com.nhaarman.mockito_kotlin.mock
@@ -15,9 +17,9 @@ import rx.observers.TestSubscriber as TestSubscriberRx1
 
 class StorIOSQLite1To3Test {
 
-    val observer1 = TestSubscriberRx1.create<Changes1>()
+    val observer1 = TestSubscriberRx1.create<Changes1>()!!
 
-    val observer3 = TestSubscriberRx2.create<Changes3>()
+    val observer3 = TestSubscriberRx2.create<Changes3>()!!
 
     lateinit var storIOSQLite1: StorIOSQLite1
 
