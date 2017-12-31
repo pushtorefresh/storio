@@ -2,6 +2,8 @@ package com.pushtorefresh.storio3.sqlite.interop1to3;
 
 import android.support.annotation.NonNull;
 
+import com.pushtorefresh.storio3.internal.Environment;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +26,13 @@ public class StorIOSQLite1To3 {
             @NonNull final com.pushtorefresh.storio.sqlite.StorIOSQLite sqlite1,
             @NonNull final com.pushtorefresh.storio3.sqlite.StorIOSQLite sqlite3
     ) {
+        com.pushtorefresh.storio.internal.Environment.throwExceptionIfRxJavaIsNotAvailable(
+                "forwardNotifications() requires rxJava2"
+        );
+        com.pushtorefresh.storio3.internal.Environment.throwExceptionIfRxJava2IsNotAvailable(
+                "forwardNotifications() requires rxJava2"
+        );
+
         sqlite1.observeChanges()
                 .subscribe(new Action1<com.pushtorefresh.storio.sqlite.Changes>() {
             @Override
