@@ -2,8 +2,6 @@ package com.pushtorefresh.storio3.sqlite.interop1to3;
 
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio3.internal.Environment;
-
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
