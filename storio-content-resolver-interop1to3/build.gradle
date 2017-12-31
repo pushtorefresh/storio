@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        versionName VERSION_NAME
+        versionCode Integer.parseInt(VERSION_CODE)
+        minSdkVersion rootProject.ext.minSdkVersion
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt' // multiple libs have this file -> cause build error
+    }
+}
+
+dependencies {
+    implementation libraries.storIOContentResolver1
+    implementation libraries.storIOContentResolver
+
+    testImplementation libraries.rxJava
+    testImplementation libraries.rxJava2
+    testImplementation libraries.junit
+    testImplementation libraries.kotlinStdLib
+    testImplementation libraries.mockitoKotlin
+    testImplementation libraries.assertJ
+    testImplementation libraries.privateConstructorChecker
+}
+
+apply from: '../gradle/checkstyle.gradle'
+apply from: '../gradle/jacoco-android.gradle'
+apply from: '../gradle/publish-android-lib.gradle'
