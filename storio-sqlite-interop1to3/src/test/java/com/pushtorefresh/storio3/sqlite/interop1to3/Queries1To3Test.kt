@@ -1,5 +1,8 @@
+@file:Suppress("MemberVisibilityCanPrivate")
+
 package com.pushtorefresh.storio3.sqlite.interop1to3
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import com.pushtorefresh.storio.sqlite.StorIOSQLite as StorIOSQLite1
@@ -35,5 +38,14 @@ class Queries1To3Test {
     fun `toV3RawQuery should work`() {
         assertThat(Queries1To3.toV3RawQuery(testEntities.rawQuery1))
                 .isEqualTo(testEntities.rawQuery3)
+    }
+
+    @Test
+    fun `constructor must be private and throw exception`() {
+        PrivateConstructorChecker
+                .forClass(Queries1To3::class.java)
+                .expectedTypeOfException(IllegalStateException::class.java)
+                .expectedExceptionMessage("No instances please.")
+                .check()
     }
 }

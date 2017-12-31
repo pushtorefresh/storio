@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 public final class Queries1To3 {
 
     private Queries1To3() {
-        throw new IllegalStateException("No instances please");
+        throw new IllegalStateException("No instances please.");
     }
 
     @NonNull

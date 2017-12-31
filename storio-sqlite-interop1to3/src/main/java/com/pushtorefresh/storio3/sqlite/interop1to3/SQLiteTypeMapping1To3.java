@@ -16,7 +16,7 @@ import static com.pushtorefresh.storio3.sqlite.interop1to3.Results1To3.toV3Delet
 public final class SQLiteTypeMapping1To3 {
 
     private SQLiteTypeMapping1To3() {
-        throw new IllegalStateException("No instances please");
+        throw new IllegalStateException("No instances please.");
     }
 
     @NonNull

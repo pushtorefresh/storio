@@ -2,6 +2,7 @@
 
 package com.pushtorefresh.storio3.sqlite.interop1to3
 
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import com.pushtorefresh.storio.sqlite.operations.put.PutResult as PutResult1
@@ -47,5 +48,14 @@ class Results1To3Test {
     fun `toV3DeleteResult should work`() {
         assertThat(Results1To3.toV3DeleteResult(testEntities.deleteResult1))
                 .isEqualTo(testEntities.deleteResult3)
+    }
+
+    @Test
+    fun `constructor must be private and throw exception`() {
+        PrivateConstructorChecker
+                .forClass(Results1To3::class.java)
+                .expectedTypeOfException(IllegalStateException::class.java)
+                .expectedExceptionMessage("No instances please.")
+                .check()
     }
 }

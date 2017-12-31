@@ -6,6 +6,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
+import com.pushtorefresh.private_constructor_checker.PrivateConstructorChecker
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentMatchers.eq
@@ -165,6 +166,15 @@ class SQLiteTypeMapping1To3Test {
     fun `toV3DeleteResolver should work`() {
         val resolver = SQLiteTypeMapping1To3.toV3DeleteResolver(storIOSQLite1, deleteResolver1)
         verifyDeleteResolver3Behavior(resolver)
+    }
+
+    @Test
+    fun `constructor must be private and throw exception`() {
+        PrivateConstructorChecker
+                .forClass(SQLiteTypeMapping1To3::class.java)
+                .expectedTypeOfException(IllegalStateException::class.java)
+                .expectedExceptionMessage("No instances please.")
+                .check()
     }
 
     private fun verifyPutResolver1Behavior(resolver: PutResolver1<String>) {
