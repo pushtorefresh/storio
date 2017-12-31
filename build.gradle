@@ -78,6 +78,7 @@ ext.libraries = [
         storIOSQLite1                            : 'com.pushtorefresh.storio:sqlite:1.13.0',
         storIOContentResolver1                   : 'com.pushtorefresh.storio:content-resolver:1.13.0',
         storIOSQLite2                            : 'com.pushtorefresh.storio2:sqlite:2.1.0',
+        storIOContentResolver2                   : 'com.pushtorefresh.storio2:content-resolver:2.1.0',
 
         // Libraries for tests and sample app
         junit                                    : 'junit:junit:4.12',
