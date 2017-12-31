@@ -3,8 +3,6 @@ package com.pushtorefresh.storio3.sqlite.interop1to3;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
-import com.pushtorefresh.storio.sqlite.operations.delete.DeleteResult;
-
 import static com.pushtorefresh.storio3.sqlite.interop1to3.Queries1To3.toV1Query;
 import static com.pushtorefresh.storio3.sqlite.interop1to3.Queries1To3.toV1RawQuery;
 import static com.pushtorefresh.storio3.sqlite.interop1to3.Queries1To3.toV3Query;
@@ -76,7 +74,7 @@ public final class SQLiteTypeMapping1To3 {
         return new com.pushtorefresh.storio.sqlite.operations.delete.DeleteResolver<T>() {
             @Override
             @NonNull
-            public DeleteResult performDelete(
+            public com.pushtorefresh.storio.sqlite.operations.delete.DeleteResult performDelete(
                     @NonNull com.pushtorefresh.storio.sqlite.StorIOSQLite storIOSQLite1,
                     @NonNull T object
             ) {
@@ -87,29 +85,29 @@ public final class SQLiteTypeMapping1To3 {
 
     @NonNull
     public static <T> com.pushtorefresh.storio.sqlite.SQLiteTypeMapping<T> toV1SQLiteTypeMapping(
-            @NonNull final com.pushtorefresh.storio3.sqlite.StorIOSQLite sqlite3,
+            @NonNull final com.pushtorefresh.storio3.sqlite.StorIOSQLite storIOSQLite3,
             @NonNull final com.pushtorefresh.storio3.sqlite.SQLiteTypeMapping<T> mapping3
     ) {
         return com.pushtorefresh.storio.sqlite.SQLiteTypeMapping.<T>builder()
-                .putResolver(toV1PutResolver(sqlite3, mapping3.putResolver()))
-                .getResolver(toV1GetResolver(sqlite3, mapping3.getResolver()))
-                .deleteResolver(toV1DeleteResolver(sqlite3, mapping3.deleteResolver()))
+                .putResolver(toV1PutResolver(storIOSQLite3, mapping3.putResolver()))
+                .getResolver(toV1GetResolver(storIOSQLite3, mapping3.getResolver()))
+                .deleteResolver(toV1DeleteResolver(storIOSQLite3, mapping3.deleteResolver()))
                 .build();
     }
 
     @NonNull
     public static <T> com.pushtorefresh.storio3.sqlite.operations.put.PutResolver<T> toV3PutResolver(
-            @NonNull final com.pushtorefresh.storio.sqlite.StorIOSQLite sqlite1,
+            @NonNull final com.pushtorefresh.storio.sqlite.StorIOSQLite storIOSQLite1,
             @NonNull final com.pushtorefresh.storio.sqlite.operations.put.PutResolver<T> resolver1
     ) {
         return new com.pushtorefresh.storio3.sqlite.operations.put.PutResolver<T>() {
             @Override
             @NonNull
             public com.pushtorefresh.storio3.sqlite.operations.put.PutResult performPut(
-                    @NonNull com.pushtorefresh.storio3.sqlite.StorIOSQLite storIOSQLite,
+                    @NonNull com.pushtorefresh.storio3.sqlite.StorIOSQLite storIOSQLite3,
                     @NonNull T object
             ) {
-                return Results1To3.toV3PutResult(resolver1.performPut(sqlite1, object));
+                return Results1To3.toV3PutResult(resolver1.performPut(storIOSQLite1, object));
             }
         };
     }

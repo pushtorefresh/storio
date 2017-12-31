@@ -27,6 +27,7 @@ dependencies {
     testImplementation libraries.kotlinStdLib
     testImplementation libraries.mockitoKotlin
     testImplementation libraries.assertJ
+    testImplementation libraries.privateConstructorChecker
 }
 
 apply from: '../gradle/checkstyle.gradle'
