@@ -52,7 +52,7 @@ public abstract class PreparedGet<Result, WrappedResult> implements PreparedOper
      */
     @WorkerThread
     @Nullable
-    public final Result executeAsBlocking() {
+    public Result executeAsBlocking() {
         return buildChain(storIOSQLite.interceptors(), getRealCallInterceptor())
                 .proceed(this);
     }
