@@ -29,7 +29,7 @@
 
 #### Documentation:
 
-* [`Why we made StorIO`](https://engineering.pushtorefresh.com/2015/07/02/storio-modern-replacement-for-sqlitedatabase-and-contentresolver-apis/)
+* [`Why we made StorIO`](docs/StorIO.md)
 * [`StorIO SQLite`](docs/StorIOSQLite.md)
 * [`StorIO ContentResolver`](docs/StorIOContentResolver.md)
 
