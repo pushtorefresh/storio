@@ -92,12 +92,12 @@ ext.libraries = [
         javaxInject                              : 'javax.inject:javax.inject:1',
         javaxAnnotationApi                       : 'javax.annotation:javax.annotation-api:1.2',
 
-        butterKnife                              : 'com.jakewharton:butterknife:7.0.1',
-        appCompat                                : 'com.android.support:appcompat-v7:' + supportLibsVersion,
-        recyclerView                             : 'com.android.support:recyclerview-v7:' + supportLibsVersion,
-        timber                                   : 'com.jakewharton.timber:timber:3.0.1',
-        leakCanary                               : 'com.squareup.leakcanary:leakcanary-android:1.5.4',
-        leakCanaryNoOp                           : 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4',
+        butterKnife                              : "com.jakewharton:butterknife:7.0.1",
+        appCompat                                : "com.android.support:appcompat-v7:$supportLibsVersion",
+        recyclerView                             : "com.android.support:recyclerview-v7:$supportLibsVersion",
+        timber                                   : "com.jakewharton.timber:timber:4.6.0",                               // https://github.com/JakeWharton/timber/blob/master/CHANGELOG.md
+        leakCanary                               : "com.squareup.leakcanary:leakcanary-android:1.5.4",                  // https://github.com/square/leakcanary/blob/master/CHANGELOG.md
+        leakCanaryNoOp                           : "com.squareup.leakcanary:leakcanary-android-no-op:1.5.4",
 
         autoService                              : 'com.google.auto.service:auto-service:1.0-rc2',
         javaPoet                                 : 'com.squareup:javapoet:1.8.0',
