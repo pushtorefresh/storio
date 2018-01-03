@@ -80,8 +80,8 @@ ext.libraries = [
         mockitoCore                              : 'org.mockito:mockito-core:2.13.0',                                   // https://github.com/mockito/mockito/blob/release/2.x/doc/release-notes/official.md
         mockitoKotlin                            : 'com.nhaarman:mockito-kotlin:1.5.0',                                 // https://github.com/nhaarman/mockito-kotlin/releases
 
-        equalsVerifier                           : 'nl.jqno.equalsverifier:equalsverifier:1.7.2',
-        privateConstructorChecker                : 'com.pushtorefresh.java-private-constructor-checker:checker:1.1.0',
+        equalsVerifier                           : 'nl.jqno.equalsverifier:equalsverifier:1.7.8',                       // http://jqno.nl/equalsverifier/changelog/#1.x
+        privateConstructorChecker                : 'com.pushtorefresh.java-private-constructor-checker:checker:1.2.0',  // https://github.com/pushtorefresh/java-private-constructor-checker/blob/master/CHANGELOG.md
         guava                                    : 'com.google.guava:guava:18.0',
         robolectric                              : 'org.robolectric:robolectric:3.5.1',
         googleTestingCompile                     : 'com.google.testing.compile:compile-testing:0.11',
