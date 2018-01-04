@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio3.sqlite.operations.get;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio3.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio3.sqlite.queries.Query;
@@ -19,5 +20,15 @@ public abstract class PreparedGetMandatoryResult<Result> extends PreparedGet<Res
 
     PreparedGetMandatoryResult(@NonNull StorIOSQLite storIOSQLite, @NonNull RawQuery rawQuery) {
         super(storIOSQLite, rawQuery);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @WorkerThread
+    @NonNull
+    public final Result executeAsBlocking() {
+        //noinspection ConstantConditions
+        return super.executeAsBlocking();
     }
 }
