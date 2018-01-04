@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.Optional;
@@ -45,6 +46,15 @@ public class PreparedGetObject<T> extends PreparedGet<T, Optional<T>> implements
         super(storIOContentResolver, query);
         this.type = type;
         this.explicitGetResolver = explicitGetResolver;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @WorkerThread
+    @Nullable
+    public final T executeAsBlocking() {
+        return super.executeAsBlocking();
     }
 
     @NonNull
