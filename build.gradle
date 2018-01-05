@@ -75,8 +75,8 @@ ext.libraries = [
 
         // Libraries for tests and sample app
         junit                                    : 'junit:junit:4.12',
-        assertJ                                  : 'org.assertj:assertj-core:3.6.2',
-        assertJAndroid                           : 'com.squareup.assertj:assertj-android:1.1.1',
+        assertJ                                  : 'org.assertj:assertj-core:3.9.0',                                    // http://joel-costigliola.github.io/assertj/assertj-core-news.html
+        assertJAndroid                           : 'com.squareup.assertj:assertj-android:1.2.0',                        // https://github.com/square/assertj-android/blob/master/CHANGELOG.md
         mockitoCore                              : 'org.mockito:mockito-core:2.13.0',                                   // https://github.com/mockito/mockito/blob/release/2.x/doc/release-notes/official.md
         mockitoKotlin                            : 'com.nhaarman:mockito-kotlin:1.5.0',                                 // https://github.com/nhaarman/mockito-kotlin/releases
 
@@ -92,21 +92,21 @@ ext.libraries = [
         javaxInject                              : 'javax.inject:javax.inject:1',
         javaxAnnotationApi                       : 'javax.annotation:javax.annotation-api:1.2',
 
-        butterKnife                              : 'com.jakewharton:butterknife:7.0.1',
-        appCompat                                : 'com.android.support:appcompat-v7:' + supportLibsVersion,
-        recyclerView                             : 'com.android.support:recyclerview-v7:' + supportLibsVersion,
-        timber                                   : 'com.jakewharton.timber:timber:3.0.1',
-        leakCanary                               : 'com.squareup.leakcanary:leakcanary-android:1.5.4',
-        leakCanaryNoOp                           : 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4',
+        butterKnife                              : "com.jakewharton:butterknife:7.0.1",
+        appCompat                                : "com.android.support:appcompat-v7:$supportLibsVersion",
+        recyclerView                             : "com.android.support:recyclerview-v7:$supportLibsVersion",
+        timber                                   : "com.jakewharton.timber:timber:4.6.0",                               // https://github.com/JakeWharton/timber/blob/master/CHANGELOG.md
+        leakCanary                               : "com.squareup.leakcanary:leakcanary-android:1.5.4",                  // https://github.com/square/leakcanary/blob/master/CHANGELOG.md
+        leakCanaryNoOp                           : "com.squareup.leakcanary:leakcanary-android-no-op:1.5.4",
 
-        autoService                              : 'com.google.auto.service:auto-service:1.0-rc2',
         javaPoet                                 : 'com.squareup:javapoet:1.8.0',
         intellijAnnotations                      : 'com.intellij:annotations:12.0',
         runtimeJar                               : files(getRuntimeJar()),
         toolsJar                                 : files(Jvm.current().getToolsJar()),
 
-        autoParcel                               : 'com.github.frankiesardo:auto-parcel:0.3',
-        autoParcelProcessor                      : 'com.github.frankiesardo:auto-parcel-processor:0.3'
+        autoService                              : "com.google.auto.service:auto-service:1.0-rc4",                      // https://github.com/google/auto/releases
+        autoParcel                               : "com.github.frankiesardo:auto-parcel:0.3.1",                         // https://github.com/frankiesardo/auto-parcel/releases
+        autoParcelProcessor                      : "com.github.frankiesardo:auto-parcel-processor:0.3.1"
 ]
 
 def getRuntimeJar() {
