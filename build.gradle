@@ -75,8 +75,8 @@ ext.libraries = [
 
         // Libraries for tests and sample app
         junit                                    : 'junit:junit:4.12',
-        assertJ                                  : 'org.assertj:assertj-core:3.6.2',
-        assertJAndroid                           : 'com.squareup.assertj:assertj-android:1.1.1',
+        assertJ                                  : 'org.assertj:assertj-core:3.9.0',                                    // http://joel-costigliola.github.io/assertj/assertj-core-news.html
+        assertJAndroid                           : 'com.squareup.assertj:assertj-android:1.2.0',                        // https://github.com/square/assertj-android/blob/master/CHANGELOG.md
         mockitoCore                              : 'org.mockito:mockito-core:2.13.0',                                   // https://github.com/mockito/mockito/blob/release/2.x/doc/release-notes/official.md
         mockitoKotlin                            : 'com.nhaarman:mockito-kotlin:1.5.0',                                 // https://github.com/nhaarman/mockito-kotlin/releases
 
