@@ -99,14 +99,14 @@ ext.libraries = [
         leakCanary                               : "com.squareup.leakcanary:leakcanary-android:1.5.4",                  // https://github.com/square/leakcanary/blob/master/CHANGELOG.md
         leakCanaryNoOp                           : "com.squareup.leakcanary:leakcanary-android-no-op:1.5.4",
 
-        autoService                              : 'com.google.auto.service:auto-service:1.0-rc2',
         javaPoet                                 : 'com.squareup:javapoet:1.8.0',
         intellijAnnotations                      : 'com.intellij:annotations:12.0',
         runtimeJar                               : files(getRuntimeJar()),
         toolsJar                                 : files(Jvm.current().getToolsJar()),
 
-        autoParcel                               : 'com.github.frankiesardo:auto-parcel:0.3',
-        autoParcelProcessor                      : 'com.github.frankiesardo:auto-parcel-processor:0.3'
+        autoService                              : "com.google.auto.service:auto-service:1.0-rc4",                      // https://github.com/google/auto/releases
+        autoParcel                               : "com.github.frankiesardo:auto-parcel:0.3.1",                         // https://github.com/frankiesardo/auto-parcel/releases
+        autoParcelProcessor                      : "com.github.frankiesardo:auto-parcel-processor:0.3.1"
 ]
 
 def getRuntimeJar() {

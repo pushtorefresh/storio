@@ -11,6 +11,7 @@ import java.util.Locale;
 
 public class LoggingInterceptor implements Interceptor {
 
+    @SuppressWarnings("LogNotTimber")   // Library should not depend on Timber.
     @NonNull
     public static LoggingInterceptor defaultLogger() {
         return new LoggingInterceptor(new Logger() {
