@@ -58,6 +58,7 @@ ext.libraries = [
         // Core libraries
         supportAnnotations                       : 'com.android.support:support-annotations:' + supportLibsVersion,
 
+        rxJava                                   : 'io.reactivex:rxjava:1.2.1',
         rxJava2                                  : 'io.reactivex.rxjava2:rxjava:2.1.6',
         rxAndroid2                               : 'io.reactivex.rxjava2:rxandroid:2.0.1',
         kotlinStdLib                             : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
@@ -72,6 +73,10 @@ ext.libraries = [
         storIOSQLiteAnnotationsProcessor         : project(':storio-sqlite-annotations-processor'),
         storIOContentResolverAnnotationsProcessor: project(':storio-content-resolver-annotations-processor'),
         storIOTestCommon                         : project(':storio-test-common'),
+
+        // StorIO old versions
+        storIOSQLite1                            : 'com.pushtorefresh.storio:sqlite:1.13.0',
+        storIOSQLite2                            : 'com.pushtorefresh.storio2:sqlite:2.1.0',
 
         // Libraries for tests and sample app
         junit                                    : 'junit:junit:4.12',
