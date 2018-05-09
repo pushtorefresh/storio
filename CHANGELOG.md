@@ -1,6 +1,27 @@
 StorIO Change Log
 ==========
 
+## Version 3.0.1
+
+_2018_05_09_
+
+* Make GetMandatoryResult operations return nonnull result.
+* Jacoco 0.7.9.
+* Assertj 3.9.0 and Assetj-android 1.2.0.
+* Timber 4.6.0.
+* AutoValue 1.0-rc4 and AutoParcel 0.3.1.
+* Private constructor checker 1.2.0.
+* EqualsVerifier 1.7.8.
+ 
+**Changes:**
+
+* [PR 868](https://github.com/pushtorefresh/storio/pull/868): Jacoco 0.7.9.
+* [PR 883](https://github.com/pushtorefresh/storio/pull/883): Make GetMandatoryResult operations return nonnull result.
+* [PR 884](https://github.com/pushtorefresh/storio/pull/884): Assertj 3.9.0 and Assetj-android 1.2.0.
+* [PR 885](https://github.com/pushtorefresh/storio/pull/885): Timber 4.6.0.
+* [PR 886](https://github.com/pushtorefresh/storio/pull/886): AutoValue 1.0-rc4 and AutoParcel 0.3.1.
+* [PR 887](https://github.com/pushtorefresh/storio/pull/887): Private constructor checker 1.2.0 and EqualsVerifier 1.7.8.
+
 ## Version 3.0.0
 
 _2017_12_20_
