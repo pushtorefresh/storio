@@ -1,6 +1,38 @@
 StorIO Change Log
 ==========
 
+## Version 3.0.1
+
+_2018_05_09_
+
+* AndroidX support
+* Gradle wrapper 4.10.2
+* Build gradle tools 3.2.1
+* Kotlin 1.2.71
+* Compile sdk 28
+* Support library 28.0.0
+* Dagger 2.18
+* Make GetMandatoryResult operations return nonnull result.
+* Jacoco 0.7.9.
+* Assertj 3.9.0 and Assetj-android 1.2.0.
+* Timber 4.6.0.
+* AutoValue 1.0-rc4 and AutoParcel 0.3.1.
+* Private constructor checker 1.2.0.
+* EqualsVerifier 1.7.8.
+ 
+**Changes:**
+
+* [PR 899](https://github.com/pushtorefresh/storio/pull/899): AndroidX support.
+* [PR 898](https://github.com/pushtorefresh/storio/pull/898): Dagger 2.18 and temporary disable SQLDelight.
+* [PR 897](https://github.com/pushtorefresh/storio/pull/897): Compile sdk 28 and support library 28.0.0.
+* [PR 894](https://github.com/pushtorefresh/storio/pull/894): Gradle wrapper 4.10.2, build gradle tools 3.2.1 and Kotlin 1.2.71.
+* [PR 868](https://github.com/pushtorefresh/storio/pull/868): Jacoco 0.7.9.
+* [PR 883](https://github.com/pushtorefresh/storio/pull/883): Make GetMandatoryResult operations return nonnull result.
+* [PR 884](https://github.com/pushtorefresh/storio/pull/884): Assertj 3.9.0 and Assetj-android 1.2.0.
+* [PR 885](https://github.com/pushtorefresh/storio/pull/885): Timber 4.6.0.
+* [PR 886](https://github.com/pushtorefresh/storio/pull/886): AutoValue 1.0-rc4 and AutoParcel 0.3.1.
+* [PR 887](https://github.com/pushtorefresh/storio/pull/887): Private constructor checker 1.2.0 and EqualsVerifier 1.7.8.
+
 ## Version 3.0.0
 
 _2017_12_20_
