@@ -127,7 +127,7 @@ public class SqlDelightActivity extends BaseActivity {
             contentValues.add(Customer.FACTORY.marshal(customer).asContentValues());
         }
 
-        storIOSQLite
+        disposeOnStop(storIOSQLite
                 .put()
                 .contentValues(contentValues)
                 .withPutResolver(Customer.CV_PUT_RESOLVER)
@@ -146,6 +146,6 @@ public class SqlDelightActivity extends BaseActivity {
                             public void accept(Throwable throwable) {
                                 safeShowShortToast(SqlDelightActivity.this, R.string.common_error);
                             }
-                        });
+                        }));
     }
 }

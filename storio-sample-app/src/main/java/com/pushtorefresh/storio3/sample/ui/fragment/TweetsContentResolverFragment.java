@@ -158,7 +158,7 @@ public class TweetsContentResolverFragment extends BaseFragment implements Tweet
         tweets.add(Tweet.newTweet("Apple", "Yosemite update: fixes for Wifi issues, yosemite-wifi-patch#142"));
 
         // Looks/reads nice, isn't it?
-        storIOContentResolver
+        disposeOnStop(storIOContentResolver
                 .put()
                 .objects(tweets)
                 .prepare()
@@ -177,7 +177,7 @@ public class TweetsContentResolverFragment extends BaseFragment implements Tweet
                                 safeShowShortToast(getActivity(), R.string.tweets_add_error_toast);
                             }
                         }
-                );
+                ));
     }
 
     /**
@@ -193,7 +193,7 @@ public class TweetsContentResolverFragment extends BaseFragment implements Tweet
     @Override
     public void onUpdateTweet(@NonNull final Long tweetId) {
         // 1.
-        storIOContentResolver
+        disposeOnStop(storIOContentResolver
                 .get()
                 .object(Tweet.class)
                 .withQuery(Query.builder()
@@ -239,6 +239,6 @@ public class TweetsContentResolverFragment extends BaseFragment implements Tweet
                         // Just for curiosity )
                         Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                     }
-                });
+                }));
     }
 }
