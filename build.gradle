@@ -84,7 +84,7 @@ ext.libraries = [
         privateConstructorChecker                : 'com.pushtorefresh.java-private-constructor-checker:checker:1.2.0',  // https://github.com/pushtorefresh/java-private-constructor-checker/blob/master/CHANGELOG.md
         guava                                    : 'com.google.guava:guava:18.0',
         robolectric                              : 'org.robolectric:robolectric:3.5.1',
-        googleTestingCompile                     : 'com.google.testing.compile:compile-testing:0.11',
+        googleTestingCompile                     : 'com.google.testing.compile:compile-testing:0.15',
 
         dagger                                   : 'com.google.dagger:dagger:' + daggerVersion,
         daggerCompiler                           : 'com.google.dagger:dagger-compiler:' + daggerVersion,
