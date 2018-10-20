@@ -30,7 +30,7 @@ Over years of our (I mean each Pushtorefresh’s developer, because as company w
 
 #### Why we made StorIO:
 
-We tired of passing 5-7 params to the `query()` method, where half of them are nulls and the other half are `String[]` arrays with one element and call to `String.valueOf()`, it’s just ridiculous and unreadable -> with StorIO you can create Queries via builders and store them separately and even reuse them.
+We tired of passing 5-7 params to the `query()` method, where half of them are nulls and the other half are `String[]` arrays with one element and call to `String.valueOf()`, it’s just ridiculous and unreadable -> with StorIO you can create Queries via builders and store them separately and even reuse them. Query is a simple wrapper for query() method of SQLiteDatabase and ContentResolver.
 
 We tired of Object-Mapping with different constraints in ORMs and DAOs -> with StorIO we don’t limit you at all, you just need to declare resolvers for each Operations: `Put`, `Get`, `Delete` per type, of course we provide some default implementations, but you can easily write your own resolvers and use `AutoValue`/`AutoParcel`/etc entities.
 
