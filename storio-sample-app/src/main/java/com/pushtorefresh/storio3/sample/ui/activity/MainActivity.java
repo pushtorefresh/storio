@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 import com.pushtorefresh.storio3.sample.R;
 import com.pushtorefresh.storio3.sample.many_to_many_sample.ManyToManyActivity;
-import com.pushtorefresh.storio3.sample.sqldelight.SqlDelightActivity;
+//import com.pushtorefresh.storio3.sample.sqldelight.SqlDelightActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -37,7 +37,8 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(this, ManyToManyActivity.class));
                 return true;
             case R.id.sqldelight:
-                startActivity(new Intent(this, SqlDelightActivity.class));
+// TODO: Enable SQLDelight example after resolving https://github.com/square/sqldelight/issues/1005
+//                startActivity(new Intent(this, SqlDelightActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);

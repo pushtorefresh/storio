@@ -7,6 +7,9 @@ buildscript {
     repositories {
         jcenter()
         google()
+        maven {
+            url 'http://dl.bintray.com/kotlin/kotlin-eap'
+        }
     }
 
     dependencies {
@@ -24,7 +27,7 @@ buildscript {
         // Automatic releases to Sonatype.
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0'
 
-        classpath 'com.squareup.sqldelight:gradle-plugin:0.6.1'
+        classpath 'com.squareup.sqldelight:gradle-plugin:1.0.0-rc2'
 
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
 
@@ -37,6 +40,9 @@ allprojects {
     repositories {
         jcenter()
         google()
+        maven {
+            url 'http://dl.bintray.com/kotlin/kotlin-eap'
+        }
     }
 
     // Workaround for preventing Gradle from stealing focus from other apps
@@ -98,6 +104,7 @@ ext.libraries = [
         timber                                   : "com.jakewharton.timber:timber:4.6.0",                               // https://github.com/JakeWharton/timber/blob/master/CHANGELOG.md
         leakCanary                               : "com.squareup.leakcanary:leakcanary-android:1.5.4",                  // https://github.com/square/leakcanary/blob/master/CHANGELOG.md
         leakCanaryNoOp                           : "com.squareup.leakcanary:leakcanary-android-no-op:1.5.4",
+        sqlDelight                               : "com.squareup.sqldelight:runtime:0.6.1",
 
         javaPoet                                 : 'com.squareup:javapoet:1.8.0',
         intellijAnnotations                      : 'com.intellij:annotations:12.0',
