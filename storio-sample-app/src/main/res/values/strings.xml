@@ -13,6 +13,7 @@
     <string name="tweets_content_resolver_sample_label">Tweets — ContentResolver Sample</string>
     <string name="many_to_many">Many to many</string>
     <string name="sqldelight">SQLDelight</string>
+    <!--suppress MissingTranslation -->
     <string name="common_loading">Loading…</string>
     <string name="common_error">Unfortunately, error has occurred :(</string>
     <string name="customers_empty">No customers :(</string>
