@@ -161,7 +161,7 @@ public class TweetsSQLiteFragment extends BaseFragment implements TweetsAdapter.
         tweets.add(Tweet.newTweet("Apple", "Yosemite update: fixes for Wifi issues, yosemite-wifi-patch#142"));
 
         // Looks/reads nice, isn't it?
-        storIOSQLite
+        disposeOnStop(storIOSQLite
                 .put()
                 .objects(tweets)
                 .prepare()
@@ -177,7 +177,7 @@ public class TweetsSQLiteFragment extends BaseFragment implements TweetsAdapter.
                     public void accept(@NonNull Throwable throwable) throws Exception {
                         safeShowShortToast(getActivity(), R.string.tweets_add_error_toast);
                     }
-                });
+                }));
     }
 
     /**
@@ -193,7 +193,7 @@ public class TweetsSQLiteFragment extends BaseFragment implements TweetsAdapter.
     @Override
     public void onUpdateTweet(@NonNull final Long tweetId) {
         // 1.
-        storIOSQLite
+        disposeOnStop(storIOSQLite
                 .get()
                 .object(Tweet.class)
                 .withQuery(Query.builder()
@@ -239,6 +239,6 @@ public class TweetsSQLiteFragment extends BaseFragment implements TweetsAdapter.
                         // Just for curiosity )
                         Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                     }
-                });
+                }));
     }
 }

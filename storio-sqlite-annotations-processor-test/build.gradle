@@ -10,9 +10,12 @@ android {
 }
 
 dependencies {
-    testImplementation libraries.storIOSQLite
-    testImplementation libraries.storIOSQLiteAnnotationsProcessor
-    testImplementation libraries.googleTestingCompile
-    testImplementation libraries.runtimeJar
-    testImplementation libraries.toolsJar
+    testImplementation      libraries.storIOSQLite
+    testImplementation      libraries.storIOSQLiteAnnotationsProcessor
+    testAnnotationProcessor libraries.storIOSQLiteAnnotationsProcessor
+    testImplementation      libraries.googleTestingCompile
+    testImplementation      libraries.runtimeJar
+    testImplementation      libraries.toolsJar
+    testAnnotationProcessor libraries.autoService
+    testAnnotationProcessor libraries.autoValue
 }
