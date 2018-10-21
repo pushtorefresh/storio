@@ -10,7 +10,7 @@ android {
         versionCode 1
         versionName '1.0'
 
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -25,8 +25,8 @@ android {
 
 // libraries declared in root build.gradle
 dependencies {
-    implementation libraries.appCompat
-    implementation libraries.recyclerView
+    implementation libraries.appCompatX
+    implementation libraries.recyclerViewX
 
     implementation libraries.storIOSQLite
 

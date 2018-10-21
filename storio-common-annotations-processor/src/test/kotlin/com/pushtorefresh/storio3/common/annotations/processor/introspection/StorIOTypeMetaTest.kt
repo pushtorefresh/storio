@@ -1,6 +1,7 @@
 package com.pushtorefresh.storio3.common.annotations.processor.introspection
 
 import com.nhaarman.mockito_kotlin.mock
+import com.squareup.javapoet.ClassName
 import nl.jqno.equalsverifier.EqualsVerifier
 import nl.jqno.equalsverifier.Warning
 import org.assertj.core.api.Assertions.assertThat
@@ -20,7 +21,8 @@ class StorIOTypeMetaTest {
     @Test
     fun constructor() {
         // when
-        val typeMeta = StorIOTestTypeMeta("TEST", "TEST", annotationMock, true)
+        val nonNullAnnotationClass = ClassName.get("androidx.core.content.ContextCompat", "NonNull")
+        val typeMeta = StorIOTestTypeMeta("TEST", "TEST", annotationMock, true, nonNullAnnotationClass)
 
         // then
         assertThat(typeMeta.simpleName).isEqualTo("TEST")
@@ -40,7 +42,8 @@ class StorIOTypeMetaTest {
     @Test
     fun toStringValitadion() {
         // given
-        val typeMeta = StorIOTestTypeMeta("TEST", "TEST", annotationMock, true)
+        val nonNullAnnotationClass = ClassName.get("androidx.core.content.ContextCompat", "NonNull")
+        val typeMeta = StorIOTestTypeMeta("TEST", "TEST", annotationMock, true, nonNullAnnotationClass)
         val expectedString = "StorIOTypeMeta(simpleName='TEST', packageName='TEST'," +
                 " storIOType=$annotationMock, needsCreator=true, creator=null," +
                 " columns=${typeMeta.columns})"
@@ -69,13 +72,15 @@ class StorIOTestColumnMeta(enclosingElement: Element,
 class StorIOTestTypeMeta(simpleName: String,
                          packageName: String,
                          storIOType: Annotation,
-                         needCreator: Boolean)
-    : StorIOTypeMeta<Annotation, StorIOTestColumnMeta>(
+                         needCreator: Boolean,
+                         nonNullAnnotationClass: ClassName
+) : StorIOTypeMeta<Annotation, StorIOTestColumnMeta>(
         simpleName,
         packageName,
         storIOType,
-        needCreator) {
-
+        needCreator,
+        nonNullAnnotationClass
+) {
     override val generateTableClass: Boolean
         get() = false
 }
