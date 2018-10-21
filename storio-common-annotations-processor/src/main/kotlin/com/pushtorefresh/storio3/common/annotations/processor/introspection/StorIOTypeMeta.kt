@@ -1,5 +1,6 @@
 package com.pushtorefresh.storio3.common.annotations.processor.introspection
 
+import com.squareup.javapoet.ClassName
 import javax.lang.model.element.ExecutableElement
 
 abstract class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : StorIOColumnMeta<*>>
@@ -7,8 +8,9 @@ abstract class StorIOTypeMeta<out TypeAnnotation : Annotation, ColumnMeta : Stor
         val simpleName: String,
         val packageName: String,
         val storIOType: TypeAnnotation,
-        var needsCreator: Boolean = false) {
-
+        var needsCreator: Boolean = false,
+        val nonNullAnnotationClass: ClassName
+) {
     var creator: ExecutableElement? = null
 
     // Yep, this is MODIFIABLE Map, please use it carefully.

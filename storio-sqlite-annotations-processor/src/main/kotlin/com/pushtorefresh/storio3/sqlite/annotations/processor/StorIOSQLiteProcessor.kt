@@ -58,7 +58,7 @@ open class StorIOSQLiteProcessor : StorIOAnnotationsProcessor<StorIOSQLiteTypeMe
         val simpleName = classElement.simpleName.toString()
         val packageName = elementUtils.getPackageOf(classElement).qualifiedName.toString()
 
-        return StorIOSQLiteTypeMeta(simpleName, packageName, storIOSQLiteType, ABSTRACT in classElement.modifiers)
+        return StorIOSQLiteTypeMeta(simpleName, packageName, storIOSQLiteType, ABSTRACT in classElement.modifiers, nonNullAnnotationClassName)
     }
 
     /**

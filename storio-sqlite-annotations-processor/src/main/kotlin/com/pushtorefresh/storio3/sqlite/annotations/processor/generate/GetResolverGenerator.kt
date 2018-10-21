@@ -1,6 +1,5 @@
 package com.pushtorefresh.storio3.sqlite.annotations.processor.generate
 
-import com.pushtorefresh.storio3.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME
 import com.pushtorefresh.storio3.common.annotations.processor.generate.Common.INDENT
 import com.pushtorefresh.storio3.common.annotations.processor.generate.Common.getFromCursorString
 import com.pushtorefresh.storio3.common.annotations.processor.generate.Generator
@@ -38,14 +37,14 @@ object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
         val builder = MethodSpec.methodBuilder("mapFromCursor")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(typeMeta.nonNullAnnotationClass)
                 .addModifiers(PUBLIC)
                 .returns(className)
                 .addParameter(ParameterSpec.builder(ClassName.get("com.pushtorefresh.storio3.sqlite", "StorIOSQLite"), "storIOSQLite")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(typeMeta.nonNullAnnotationClass)
                         .build())
                 .addParameter(ParameterSpec.builder(ClassName.get("android.database", "Cursor"), "cursor")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(typeMeta.nonNullAnnotationClass)
                         .build())
                 .addStatement("\$T object = new \$T()", className, className)
                 .addCode("\n")
@@ -76,14 +75,14 @@ object GetResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
         val builder = MethodSpec.methodBuilder("mapFromCursor")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(typeMeta.nonNullAnnotationClass)
                 .addModifiers(PUBLIC)
                 .returns(className)
                 .addParameter(ParameterSpec.builder(ClassName.get("com.pushtorefresh.storio3.sqlite", "StorIOSQLite"), "storIOSQLite")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(typeMeta.nonNullAnnotationClass)
                         .build())
                 .addParameter(ParameterSpec.builder(ClassName.get("android.database", "Cursor"), "cursor")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(typeMeta.nonNullAnnotationClass)
                         .build())
                 .addCode("\n")
 

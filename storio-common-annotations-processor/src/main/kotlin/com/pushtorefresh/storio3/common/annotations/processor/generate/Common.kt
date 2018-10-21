@@ -2,11 +2,8 @@ package com.pushtorefresh.storio3.common.annotations.processor.generate
 
 import com.pushtorefresh.storio3.common.annotations.processor.introspection.JavaType
 import com.pushtorefresh.storio3.common.annotations.processor.introspection.JavaType.*
-import com.squareup.javapoet.ClassName
 
 object Common {
-
-    val ANDROID_NON_NULL_ANNOTATION_CLASS_NAME: ClassName = ClassName.get("android.support.annotation", "NonNull")
 
     val INDENT = "    " // 4 spaces
 

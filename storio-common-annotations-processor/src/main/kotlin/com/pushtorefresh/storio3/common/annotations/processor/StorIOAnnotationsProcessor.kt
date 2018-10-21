@@ -4,6 +4,7 @@ import com.pushtorefresh.storio3.common.annotations.processor.generate.Generator
 import com.pushtorefresh.storio3.common.annotations.processor.introspection.StorIOColumnMeta
 import com.pushtorefresh.storio3.common.annotations.processor.introspection.StorIOCreatorMeta
 import com.pushtorefresh.storio3.common.annotations.processor.introspection.StorIOTypeMeta
+import com.squareup.javapoet.ClassName
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
@@ -30,6 +31,7 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
     private lateinit var elementUtils: Elements
     private lateinit var typeUtils: Types
     protected lateinit var messager: Messager
+    protected lateinit var nonNullAnnotationClassName: ClassName
 
     // cashing getters for private fields to avoid second pass since we already have result after the validation step
     protected val getters = mutableMapOf<Element, String>()
@@ -42,6 +44,11 @@ abstract class StorIOAnnotationsProcessor<TypeMeta : StorIOTypeMeta<*, *>, out C
      * @return non-null unmodifiable map(element, typeMeta)
      */
     private fun processAnnotatedClasses(roundEnvironment: RoundEnvironment, elementUtils: Elements): Map<TypeElement, TypeMeta> {
+        nonNullAnnotationClassName = if (AndroidXUtils.hasAndroidX(elementUtils)) {
+            ClassName.get("androidx.annotation", "NonNull")
+        } else {
+            ClassName.get("android.support.annotation", "NonNull")
+        }
         val elementsAnnotatedWithStorIOType = roundEnvironment.getElementsAnnotatedWith(typeAnnotationClass)
 
         val results = mutableMapOf<TypeElement, TypeMeta>()
