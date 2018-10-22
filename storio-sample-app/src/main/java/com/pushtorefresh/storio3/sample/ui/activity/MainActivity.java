@@ -6,13 +6,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.pushtorefresh.storio3.sample.R;
 import com.pushtorefresh.storio3.sample.many_to_many_sample.ManyToManyActivity;
-//import com.pushtorefresh.storio3.sample.sqldelight.SqlDelightActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static android.widget.Toast.LENGTH_LONG;
+
+//import com.pushtorefresh.storio3.sample.sqldelight.SqlDelightActivity;
 
 
 public class MainActivity extends BaseActivity {
@@ -37,8 +41,9 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(this, ManyToManyActivity.class));
                 return true;
             case R.id.sqldelight:
-// TODO: Enable SQLDelight example after resolving https://github.com/square/sqldelight/issues/1005
+//                TODO: Enable SQLDelight example after resolving https://github.com/square/sqldelight/issues/1005
 //                startActivity(new Intent(this, SqlDelightActivity.class));
+                Toast.makeText(this, "Temorary disabled", LENGTH_LONG).show();
                 return true;
         }
         return super.onOptionsItemSelected(item);

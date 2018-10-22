@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.squareup.sqldelight'
+//apply plugin: 'com.squareup.sqldelight'
 apply plugin: 'kotlin-android'
 
 android {
@@ -58,12 +58,12 @@ configurations.all { config ->
         }
     }
 }
-
-sqldelight {
-    packageName = "com.pushtorefresh.storio.sample"
-    sourceSet = files("src/main/sqldelight")
-    schemaOutputDirectory = file("src/main/sqldelight/databases")
-}
+//
+//sqldelight {
+//    packageName = "com.pushtorefresh.storio.sample"
+//    sourceSet = files("src/main/sqldelight")
+//    schemaOutputDirectory = file("src/main/sqldelight/databases")
+//}
 
 dependencies {
     implementation libraries.storIOSQLite

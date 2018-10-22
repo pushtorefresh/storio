@@ -7,9 +7,6 @@ buildscript {
     repositories {
         jcenter()
         google()
-        maven {
-            url 'http://dl.bintray.com/kotlin/kotlin-eap'
-        }
     }
 
     dependencies {
@@ -27,7 +24,7 @@ buildscript {
         // Automatic releases to Sonatype.
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0'
 
-        classpath 'com.squareup.sqldelight:gradle-plugin:1.0.0-rc2'
+//        classpath 'com.squareup.sqldelight:gradle-plugin:1.0.0-rc2'
 
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
 
@@ -40,9 +37,6 @@ allprojects {
     repositories {
         jcenter()
         google()
-        maven {
-            url 'http://dl.bintray.com/kotlin/kotlin-eap'
-        }
     }
 
     // Workaround for preventing Gradle from stealing focus from other apps
