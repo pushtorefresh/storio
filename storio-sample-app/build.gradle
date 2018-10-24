@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.squareup.sqldelight'
+//apply plugin: 'com.squareup.sqldelight'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -43,6 +44,7 @@ android {
 
     packagingOptions {
         exclude 'LICENSE.txt' // multiple libs have this file -> cause build error
+        exclude 'META-INF/proguard/androidx-annotations.pro'
     }
 }
 
@@ -56,6 +58,12 @@ configurations.all { config ->
         }
     }
 }
+//
+//sqldelight {
+//    packageName = "com.pushtorefresh.storio.sample"
+//    sourceSet = files("src/main/sqldelight")
+//    schemaOutputDirectory = file("src/main/sqldelight/databases")
+//}
 
 dependencies {
     implementation libraries.storIOSQLite
@@ -80,6 +88,9 @@ dependencies {
     implementation libraries.timber
     implementation libraries.butterKnife
     annotationProcessor libraries.butterKnife
+
+//  Waiting for https://github.com/square/sqldelight/issues/1005
+//  implementation libraries.sqlDelight
 
     compileOnly libraries.autoParcel
     annotationProcessor libraries.autoParcelProcessor

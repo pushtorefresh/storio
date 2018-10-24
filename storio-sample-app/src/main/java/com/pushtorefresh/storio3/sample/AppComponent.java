@@ -6,7 +6,7 @@ import com.pushtorefresh.storio3.sample.db.DbModule;
 import com.pushtorefresh.storio3.sample.many_to_many_sample.ManyToManyActivity;
 import com.pushtorefresh.storio3.sample.provider.ContentResolverModule;
 import com.pushtorefresh.storio3.sample.provider.SampleContentProvider;
-import com.pushtorefresh.storio3.sample.sqldelight.SqlDelightActivity;
+//import com.pushtorefresh.storio3.sample.sqldelight.SqlDelightActivity;
 import com.pushtorefresh.storio3.sample.ui.fragment.TweetsContentResolverFragment;
 import com.pushtorefresh.storio3.sample.ui.fragment.TweetsSQLiteFragment;
 import com.pushtorefresh.storio3.sqlite.StorIOSQLite;
@@ -31,8 +31,8 @@ public interface AppComponent {
 
     void inject(@NonNull ManyToManyActivity manyToManyActivity);
 
-    void inject(@NonNull SqlDelightActivity sqlDelightActivity);
-
+//    void inject(@NonNull SqlDelightActivity sqlDelightActivity);
+//
     void inject(@NonNull SampleContentProvider sampleContentProvider);
 
     @NonNull
