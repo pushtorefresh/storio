@@ -1,7 +1,7 @@
 package com.pushtorefresh.storio3.basic_sample;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.pushtorefresh.storio3.sqlite.annotations.StorIOSQLiteColumn;
 import com.pushtorefresh.storio3.sqlite.annotations.StorIOSQLiteType;

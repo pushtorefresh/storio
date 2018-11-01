@@ -2,18 +2,21 @@ package com.pushtorefresh.storio3.contentresolver.annotations.processor.introspe
 
 import com.pushtorefresh.storio3.common.annotations.processor.introspection.StorIOTypeMeta
 import com.pushtorefresh.storio3.contentresolver.annotations.StorIOContentResolverType
+import com.squareup.javapoet.ClassName
 
 class StorIOContentResolverTypeMeta(
         simpleName: String,
         packageName: String,
         storIOType: StorIOContentResolverType,
-        needsCreator: Boolean)
-    : StorIOTypeMeta<StorIOContentResolverType, StorIOContentResolverColumnMeta>(
+        needsCreator: Boolean,
+        nonNullAnnotationClass: ClassName
+) : StorIOTypeMeta<StorIOContentResolverType, StorIOContentResolverColumnMeta>(
         simpleName,
         packageName,
         storIOType,
-        needsCreator) {
-
+        needsCreator,
+        nonNullAnnotationClass
+) {
     override val generateTableClass: Boolean
         get() = false
 }

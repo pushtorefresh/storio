@@ -1,6 +1,5 @@
 package com.pushtorefresh.storio3.sqlite.annotations.processor.generate
 
-import com.pushtorefresh.storio3.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME
 import com.pushtorefresh.storio3.common.annotations.processor.generate.Common.INDENT
 import com.pushtorefresh.storio3.common.annotations.processor.generate.Generator
 import com.pushtorefresh.storio3.sqlite.annotations.processor.introspection.StorIOSQLiteTypeMeta
@@ -33,11 +32,11 @@ object PutResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
         return MethodSpec.methodBuilder("mapToInsertQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(typeMeta.nonNullAnnotationClass)
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("com.pushtorefresh.storio3.sqlite.queries", "InsertQuery"))
                 .addParameter(ParameterSpec.builder(className, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(typeMeta.nonNullAnnotationClass)
                         .build())
                 .addCode("""return InsertQuery.builder()
                             $INDENT.table(${"$"}S)
@@ -53,11 +52,11 @@ object PutResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
         return MethodSpec.methodBuilder("mapToUpdateQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(typeMeta.nonNullAnnotationClass)
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("com.pushtorefresh.storio3.sqlite.queries", "UpdateQuery"))
                 .addParameter(ParameterSpec.builder(className, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(typeMeta.nonNullAnnotationClass)
                         .build())
                 .addCode("""return UpdateQuery.builder()
                             $INDENT.table(${"$"}S)
@@ -75,11 +74,11 @@ object PutResolverGenerator : Generator<StorIOSQLiteTypeMeta> {
         val builder = MethodSpec.methodBuilder("mapToContentValues")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(typeMeta.nonNullAnnotationClass)
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("android.content", "ContentValues"))
                 .addParameter(ParameterSpec.builder(className, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(typeMeta.nonNullAnnotationClass)
                         .build())
                 .addStatement("ContentValues contentValues = new ContentValues(\$L)", typeMeta.columns.size)
                 .addCode("\n")

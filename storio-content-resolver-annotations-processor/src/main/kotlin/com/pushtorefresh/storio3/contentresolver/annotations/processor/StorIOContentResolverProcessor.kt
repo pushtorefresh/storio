@@ -65,7 +65,7 @@ open class StorIOContentResolverProcessor : StorIOAnnotationsProcessor<StorIOCon
         val simpleName = classElement.simpleName.toString()
         val packageName = elementUtils.getPackageOf(classElement).qualifiedName.toString()
 
-        return StorIOContentResolverTypeMeta(simpleName, packageName, storIOContentResolverType, ABSTRACT in classElement.modifiers)
+        return StorIOContentResolverTypeMeta(simpleName, packageName, storIOContentResolverType, ABSTRACT in classElement.modifiers, nonNullAnnotationClassName)
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.pushtorefresh.storio3.basic_sample;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.pushtorefresh.storio3.sqlite.queries.Query;
 

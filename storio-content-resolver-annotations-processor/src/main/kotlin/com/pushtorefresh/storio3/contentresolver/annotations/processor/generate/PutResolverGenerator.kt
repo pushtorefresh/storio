@@ -1,6 +1,5 @@
 package com.pushtorefresh.storio3.contentresolver.annotations.processor.generate
 
-import com.pushtorefresh.storio3.common.annotations.processor.generate.Common.ANDROID_NON_NULL_ANNOTATION_CLASS_NAME
 import com.pushtorefresh.storio3.common.annotations.processor.generate.Common.INDENT
 import com.pushtorefresh.storio3.common.annotations.processor.generate.Generator
 import com.pushtorefresh.storio3.contentresolver.annotations.processor.introspection.StorIOContentResolverTypeMeta
@@ -30,18 +29,18 @@ object PutResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
 
     }
 
-    private fun createMapToInsertQueryMethodSpec(storIOContentResolverTypeMeta: StorIOContentResolverTypeMeta, storIOContentResolverClassName: ClassName): MethodSpec {
-        var insertUri = storIOContentResolverTypeMeta.storIOType.insertUri
-        if (insertUri.isEmpty()) insertUri = storIOContentResolverTypeMeta.storIOType.uri
+    private fun createMapToInsertQueryMethodSpec(typeMeta: StorIOContentResolverTypeMeta, storIOContentResolverClassName: ClassName): MethodSpec {
+        var insertUri = typeMeta.storIOType.insertUri
+        if (insertUri.isEmpty()) insertUri = typeMeta.storIOType.uri
 
         return MethodSpec.methodBuilder("mapToInsertQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(typeMeta.nonNullAnnotationClass)
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("com.pushtorefresh.storio3.contentresolver.queries", "InsertQuery"))
                 .addParameter(ParameterSpec.builder(storIOContentResolverClassName, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(typeMeta.nonNullAnnotationClass)
                         .build())
                 .addCode("""return InsertQuery.builder()
                             $INDENT.uri(${"$"}S)
@@ -60,11 +59,11 @@ object PutResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
         return MethodSpec.methodBuilder("mapToUpdateQuery")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(typeMeta.nonNullAnnotationClass)
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("com.pushtorefresh.storio3.contentresolver.queries", "UpdateQuery"))
                 .addParameter(ParameterSpec.builder(className, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(typeMeta.nonNullAnnotationClass)
                         .build())
                 .addCode("""return UpdateQuery.builder()
                             $INDENT.uri(${"$"}S)
@@ -82,11 +81,11 @@ object PutResolverGenerator : Generator<StorIOContentResolverTypeMeta> {
         val builder = MethodSpec.methodBuilder("mapToContentValues")
                 .addJavadoc("{@inheritDoc}\n")
                 .addAnnotation(Override::class.java)
-                .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                .addAnnotation(typeMeta.nonNullAnnotationClass)
                 .addModifiers(PUBLIC)
                 .returns(ClassName.get("android.content", "ContentValues"))
                 .addParameter(ParameterSpec.builder(className, "object")
-                        .addAnnotation(ANDROID_NON_NULL_ANNOTATION_CLASS_NAME)
+                        .addAnnotation(typeMeta.nonNullAnnotationClass)
                         .build())
                 .addStatement("ContentValues contentValues = new ContentValues(\$L)", typeMeta.columns.size)
                 .addCode("\n")
