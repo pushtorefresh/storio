@@ -42,10 +42,10 @@ Easy ways to learn how to use `StorIO` -> check out `Documentation`, `Design Tes
 #### Download:
 ```groovy
 // If you need StorIO for SQLite
-implementation 'com.pushtorefresh.storio3:sqlite:3.0.0'
+implementation 'com.pushtorefresh.storio3:sqlite:3.0.1'
 
 // If you need StorIO for ContentResolver
-implementation 'com.pushtorefresh.storio3:content-resolver:3.0.0'
+implementation 'com.pushtorefresh.storio3:content-resolver:3.0.1'
 
 // Notice that RxJava is optional dependency for StorIO,
 // So if you need it -> please add it manually.
