@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
 import com.pushtorefresh.storio3.StorIOException;
+import com.pushtorefresh.storio3.operations.PreparedCompletableOperation;
 import com.pushtorefresh.storio3.operations.PreparedOperation;
 import com.pushtorefresh.storio3.sqlite.Changes;
 import com.pushtorefresh.storio3.Interceptor;
@@ -15,6 +16,7 @@ import com.pushtorefresh.storio3.sqlite.queries.RawQuery;
 import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 
@@ -24,7 +26,7 @@ import static com.pushtorefresh.storio3.impl.ChainImpl.buildChain;
 /**
  * Prepared Execute SQL Operation for {@link StorIOSQLite}.
  */
-public class PreparedExecuteSQL implements PreparedOperation<Object, Object, RawQuery> {
+public class PreparedExecuteSQL implements PreparedCompletableOperation<Object, RawQuery> {
 
     @NonNull
     private final StorIOSQLite storIOSQLite;
@@ -96,6 +98,21 @@ public class PreparedExecuteSQL implements PreparedOperation<Object, Object, Raw
     @Override
     public Single<Object> asRxSingle() {
         return RxJavaUtils.createSingle(storIOSQLite, this);
+    }
+
+    /**
+     * Creates {@link Completable} which will perform Execute SQL Operation lazily when somebody subscribes to it.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>Operates on {@link StorIOSQLite#defaultRxScheduler()} if not {@code null}.</dd>
+     * </dl>
+     *
+     * @return non-null {@link Completable} which will perform Execute SQL Operation.
+     */
+    @NonNull
+    @Override
+    public Completable asRxCompletable() {
+        return RxJavaUtils.createCompletable(storIOSQLite, this);
     }
 
     private class RealCallInterceptor implements Interceptor {
