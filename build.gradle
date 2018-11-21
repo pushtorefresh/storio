@@ -7,6 +7,7 @@ buildscript {
     repositories {
         jcenter()
         google()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
 
     dependencies {
@@ -23,6 +24,7 @@ buildscript {
 
         // Automatic releases to Sonatype.
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0'     // https://github.com/Codearte/gradle-nexus-staging-plugin/releases
+        classpath "de.marcphilipp.gradle:nexus-publish-plugin:0.1.0"                // https://github.com/marcphilipp/nexus-publish-plugin/releases
 
 //        classpath 'com.squareup.sqldelight:gradle-plugin:1.0.0-rc2'
 
