@@ -1,7 +1,6 @@
 package com.pushtorefresh.storio3.sample.db;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio3.sample.db.entities.Tweet;
@@ -31,6 +30,8 @@ import com.pushtorefresh.storio3.sqlite.impl.DefaultStorIOSQLite;
 
 import javax.inject.Singleton;
 
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory;
 import dagger.Module;
 import dagger.Provides;
 
@@ -45,7 +46,7 @@ public class DbModule {
     @Provides
     @NonNull
     @Singleton
-    public StorIOSQLite provideStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper) {
+    public StorIOSQLite provideStorIOSQLite(@NonNull SupportSQLiteOpenHelper sqLiteOpenHelper) {
         final CarStorIOSQLitePutResolver carStorIOSQLitePutResolver = new CarStorIOSQLitePutResolver();
         final CarStorIOSQLiteGetResolver carStorIOSQLiteGetResolver = new CarStorIOSQLiteGetResolver();
 
@@ -82,7 +83,13 @@ public class DbModule {
     @Provides
     @NonNull
     @Singleton
-    public SQLiteOpenHelper provideSQLiteOpenHelper(@NonNull Context context) {
-        return new DbOpenHelper(context);
+    public SupportSQLiteOpenHelper provideSQLiteOpenHelper(@NonNull Context context) {
+        SupportSQLiteOpenHelper.Configuration configuration = SupportSQLiteOpenHelper.Configuration
+                .builder(context)
+                .name(DbOpenCallback.DB_NAME)
+                .callback(new DbOpenCallback())
+                .build();
+
+        return new FrameworkSQLiteOpenHelperFactory().create(configuration);
     }
 }

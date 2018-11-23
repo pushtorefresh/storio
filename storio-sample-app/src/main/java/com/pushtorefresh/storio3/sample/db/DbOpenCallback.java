@@ -1,25 +1,28 @@
 package com.pushtorefresh.storio3.sample.db;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.NonNull;
-
 import com.pushtorefresh.storio3.sample.db.tables.TweetsTable;
 import com.pushtorefresh.storio3.sample.db.tables.UsersTable;
 import com.pushtorefresh.storio3.sample.many_to_many_sample.entities.CarTable;
 import com.pushtorefresh.storio3.sample.many_to_many_sample.entities.PersonCarRelationTable;
 import com.pushtorefresh.storio3.sample.many_to_many_sample.entities.PersonTable;
+
+import androidx.annotation.NonNull;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
 //import com.pushtorefresh.storio3.sample.sqldelight.entities.Customer;
 
-public class DbOpenHelper extends SQLiteOpenHelper {
+public class DbOpenCallback extends SupportSQLiteOpenHelper.Callback {
 
-    public DbOpenHelper(@NonNull Context context) {
-        super(context, "sample_db", null, 1);
+    public static final String DB_NAME = "sample_db";
+
+    public static final int VERSION = 1;
+
+    public DbOpenCallback() {
+        super(VERSION);
     }
 
     @Override
-    public void onCreate(@NonNull SQLiteDatabase db) {
+    public void onCreate(@NonNull SupportSQLiteDatabase db) {
         db.execSQL(TweetsTable.getCreateTableQuery());
         db.execSQL(UsersTable.getCreateTableQuery());
 
@@ -31,7 +34,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(@NonNull SQLiteDatabase db, int oldVersion, int newVersion) {
-        // no impl
+    public void onUpgrade(@NonNull SupportSQLiteDatabase db, int oldVersion, int newVersion) {
+
     }
 }

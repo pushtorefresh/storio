@@ -83,6 +83,7 @@ dependencies {
 
     implementation libraries.rxJava2
     implementation libraries.rxAndroid2
+    implementation libraries.sqliteFramework
     implementation libraries.appCompat
     implementation libraries.recyclerView
     implementation libraries.timber

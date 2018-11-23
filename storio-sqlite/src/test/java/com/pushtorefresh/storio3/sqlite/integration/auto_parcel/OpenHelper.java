@@ -1,23 +1,23 @@
 package com.pushtorefresh.storio3.sqlite.integration.auto_parcel;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.NonNull;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
 
-class OpenHelper extends SQLiteOpenHelper {
+class OpenHelper extends SupportSQLiteOpenHelper.Callback {
 
-    OpenHelper(@NonNull Context context) {
-        super(context, "auto_parcel_db", null, 1);
+    public static final String DB_NAME = "auto_parcel_db";
+
+    OpenHelper() {
+        super(1);
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SupportSQLiteDatabase db) {
         db.execSQL(BookTableMeta.SQL_CREATE_TABLE);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
 }

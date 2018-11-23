@@ -1,10 +1,6 @@
 package com.pushtorefresh.storio3.basic_sample;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.widget.Toast;
 
 import com.pushtorefresh.storio3.StorIOException;
@@ -14,6 +10,14 @@ import com.pushtorefresh.storio3.sqlite.operations.put.PutResults;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,8 +30,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SupportSQLiteOpenHelper.Configuration configuration = SupportSQLiteOpenHelper.Configuration
+                .builder(this)
+                .name(DbOpenCallback.DB_NAME)
+                .callback(new DbOpenCallback())
+                .build();
+
         storIOSQLite = DefaultStorIOSQLite.builder()
-            .sqliteOpenHelper(new DbOpenHelper(this))
+            .sqliteOpenHelper(new FrameworkSQLiteOpenHelperFactory().create(configuration))
             .addTypeMapping(Tweet.class, new TweetSQLiteTypeMapping())
             .build();
 

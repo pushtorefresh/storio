@@ -99,6 +99,8 @@ ext.libraries = [
         recyclerView                             : "com.android.support:recyclerview-v7:$supportLibsVersion",
         appCompatX                               : "androidx.appcompat:appcompat:1.0.0",
         recyclerViewX                            : "androidx.recyclerview:recyclerview:1.0.0",
+        sqlite                                   : "androidx.sqlite:sqlite:2.0.0",
+        sqliteFramework                          : "androidx.sqlite:sqlite-framework:2.0.0",
 
         timber                                   : "com.jakewharton.timber:timber:4.6.0",                               // https://github.com/JakeWharton/timber/blob/master/CHANGELOG.md
         leakCanary                               : "com.squareup.leakcanary:leakcanary-android:1.5.4",                  // https://github.com/square/leakcanary/blob/master/CHANGELOG.md
