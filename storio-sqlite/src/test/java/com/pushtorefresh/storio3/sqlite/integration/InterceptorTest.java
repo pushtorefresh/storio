@@ -1,13 +1,12 @@
 package com.pushtorefresh.storio3.sqlite.integration;
 
 import android.content.ContentValues;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.operations.PreparedOperation;
 import com.pushtorefresh.storio3.sqlite.BuildConfig;
-import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio3.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio3.sqlite.impl.DefaultStorIOSQLite;
@@ -27,6 +26,9 @@ import org.robolectric.annotation.Config;
 
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory;
 
 import static com.pushtorefresh.storio3.sqlite.integration.TweetTableMeta.COLUMN_AUTHOR_ID;
 import static com.pushtorefresh.storio3.sqlite.integration.TweetTableMeta.COLUMN_CONTENT_TEXT;
@@ -54,7 +56,14 @@ public class InterceptorTest {
 
     @Before
     public void setUp() throws Exception {
-        final SQLiteOpenHelper sqLiteOpenHelper = new TestSQLiteOpenHelper(RuntimeEnvironment.application);
+        SupportSQLiteOpenHelper.Configuration configuration = SupportSQLiteOpenHelper.Configuration
+                .builder(RuntimeEnvironment.application)
+                .name(TestSQLiteCallback.DB_NAME)
+                .callback(new TestSQLiteCallback())
+                .build();
+
+        final SupportSQLiteOpenHelper sqLiteOpenHelper = new FrameworkSQLiteOpenHelperFactory()
+                .create(configuration);
 
         callCount = new AtomicInteger(0);
         interceptor1 = createInterceptor();

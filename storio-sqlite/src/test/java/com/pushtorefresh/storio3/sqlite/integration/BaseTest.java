@@ -1,7 +1,5 @@
 package com.pushtorefresh.storio3.sqlite.integration;
 
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.pushtorefresh.storio3.sqlite.BuildConfig;
@@ -23,6 +21,9 @@ import org.robolectric.annotation.Config;
 
 import java.util.List;
 
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 
@@ -38,14 +39,20 @@ public abstract class BaseTest {
     protected StorIOSQLite storIOSQLite;
 
     @NonNull
-    protected SQLiteOpenHelper sqLiteOpenHelper;
+    protected SupportSQLiteOpenHelper sqLiteOpenHelper;
 
     @NonNull
-    protected SQLiteDatabase db;
+    protected SupportSQLiteDatabase db;
 
     @Before
     public void setUp() throws Exception {
-        sqLiteOpenHelper = new TestSQLiteOpenHelper(RuntimeEnvironment.application);
+        SupportSQLiteOpenHelper.Configuration configuration = SupportSQLiteOpenHelper.Configuration
+                .builder(RuntimeEnvironment.application)
+                .name(TestSQLiteCallback.DB_NAME)
+                .callback(new TestSQLiteCallback())
+                .build();
+
+        sqLiteOpenHelper = new FrameworkSQLiteOpenHelperFactory().create(configuration);
 
         db = sqLiteOpenHelper.getWritableDatabase();
 

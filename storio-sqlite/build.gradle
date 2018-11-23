@@ -24,10 +24,12 @@ android {
 
 dependencies {
     api                 libraries.storIOCommon
+    api                 libraries.sqlite
 
     compileOnly         libraries.rxJava2
     testImplementation  libraries.rxJava2
 
+    testImplementation  libraries.sqliteFramework
     testImplementation  libraries.junit
     testImplementation  libraries.assertJ
     testImplementation  libraries.mockitoCore

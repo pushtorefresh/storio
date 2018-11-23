@@ -5,7 +5,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -13,6 +13,9 @@ import com.pushtorefresh.storio3.sample.SampleApp;
 import com.pushtorefresh.storio3.sample.db.tables.TweetsTable;
 
 import javax.inject.Inject;
+
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import androidx.sqlite.db.SupportSQLiteQueryBuilder;
 
 public class SampleContentProvider extends ContentProvider {
 
@@ -29,7 +32,7 @@ public class SampleContentProvider extends ContentProvider {
     }
 
     @Inject
-    SQLiteOpenHelper sqLiteOpenHelper;
+    SupportSQLiteOpenHelper sqLiteOpenHelper;
 
     /**
      * {@inheritDoc}
@@ -46,14 +49,11 @@ public class SampleContentProvider extends ContentProvider {
             case URI_MATCHER_CODE_TWEETS:
                 return sqLiteOpenHelper
                         .getReadableDatabase()
-                        .query(
-                                TweetsTable.TABLE,
-                                projection,
-                                selection,
-                                selectionArgs,
-                                null,
-                                null,
-                                sortOrder
+                        .query(SupportSQLiteQueryBuilder.builder(TweetsTable.TABLE)
+                                .columns(projection)
+                                .selection(selection, selectionArgs)
+                                .orderBy(sortOrder)
+                                .create()
                         );
 
             default:
@@ -76,7 +76,7 @@ public class SampleContentProvider extends ContentProvider {
                         .getWritableDatabase()
                         .insert(
                                 TweetsTable.TABLE,
-                                null,
+                                SQLiteDatabase.CONFLICT_NONE,
                                 values
                         );
                 break;
@@ -102,6 +102,7 @@ public class SampleContentProvider extends ContentProvider {
                         .getWritableDatabase()
                         .update(
                                 TweetsTable.TABLE,
+                                SQLiteDatabase.CONFLICT_NONE,
                                 values,
                                 selection,
                                 selectionArgs

@@ -1,7 +1,6 @@
 package com.pushtorefresh.storio3.test_without_rxjava.sqlite;
 
 import android.content.ContentValues;
-import android.database.sqlite.SQLiteOpenHelper;
 
 import com.pushtorefresh.storio3.sqlite.impl.DefaultStorIOSQLite;
 import com.pushtorefresh.storio3.sqlite.operations.get.GetResolver;
@@ -12,6 +11,8 @@ import org.junit.Test;
 
 import java.util.Collection;
 
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
+
 import static org.mockito.Mockito.mock;
 
 public class DefaultStorIOSQLiteTest {
@@ -20,7 +21,7 @@ public class DefaultStorIOSQLiteTest {
     public void instantiateWithoutRxJava() {
         // Should not fail
         DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(mock(SupportSQLiteOpenHelper.class))
                 .build();
     }
 
@@ -28,7 +29,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiateGetCursor() {
         DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(mock(SupportSQLiteOpenHelper.class))
                 .build()
                 .get()
                 .cursor()
@@ -43,7 +44,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiateGetListOfObjects() {
         DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(mock(SupportSQLiteOpenHelper.class))
                 .build()
                 .get()
                 .listOfObjects(Object.class)
@@ -58,7 +59,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutObject() {
         DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(mock(SupportSQLiteOpenHelper.class))
                 .build()
                 .put()
                 .object(mock(Object.class))
@@ -70,7 +71,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutCollectionOfObjects() {
         DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(mock(SupportSQLiteOpenHelper.class))
                 .build()
                 .put()
                 .objects(mock(Collection.class))
@@ -82,7 +83,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutContentValues() {
         DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(mock(SupportSQLiteOpenHelper.class))
                 .build()
                 .put()
                 .contentValues(mock(ContentValues.class))
@@ -94,7 +95,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutContentValuesIterable() {
         DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(mock(SupportSQLiteOpenHelper.class))
                 .build()
                 .put()
                 .contentValues(mock(Iterable.class))
@@ -106,7 +107,7 @@ public class DefaultStorIOSQLiteTest {
     @Test
     public void instantiatePutContentValuesVarArgs() {
         DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(mock(SQLiteOpenHelper.class))
+                .sqliteOpenHelper(mock(SupportSQLiteOpenHelper.class))
                 .build()
                 .put()
                 .contentValues(mock(ContentValues.class), mock(ContentValues.class))

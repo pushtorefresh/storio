@@ -2,12 +2,11 @@ package com.pushtorefresh.storio3.sqlite.design;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pushtorefresh.storio3.sqlite.Changes;
 import com.pushtorefresh.storio3.Interceptor;
+import com.pushtorefresh.storio3.sqlite.Changes;
 import com.pushtorefresh.storio3.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio3.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio3.sqlite.operations.delete.PreparedDelete;
@@ -25,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Scheduler;
@@ -102,7 +102,7 @@ class DesignTestStorIOSQLite extends StorIOSQLite {
 
         @NonNull
         @Override
-        public SQLiteOpenHelper sqliteOpenHelper() {
+        public SupportSQLiteOpenHelper sqliteOpenHelper() {
             // not required in design test
             // noinspection ConstantConditions
             return null;

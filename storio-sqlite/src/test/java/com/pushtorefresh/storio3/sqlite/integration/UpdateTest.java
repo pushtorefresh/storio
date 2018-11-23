@@ -15,6 +15,8 @@ import org.robolectric.annotation.Config;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.sqlite.db.SupportSQLiteQueryBuilder;
+
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -91,7 +93,8 @@ public class UpdateTest extends BaseTest {
 
         assertThat(updateResults.numberOfUpdates()).isEqualTo(usersForUpdate.size());
 
-        final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+        final Cursor cursor = db.query(SupportSQLiteQueryBuilder.builder(UserTableMeta.TABLE).create());
+
 
         assertThat(cursor.getCount()).isEqualTo(usersForUpdate.size()); // update should not add new rows!
 
@@ -114,7 +117,7 @@ public class UpdateTest extends BaseTest {
     }
 
     private void checkOnlyOneItemInStorage(@NonNull final User user) {
-        final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+        final Cursor cursor = db.query(SupportSQLiteQueryBuilder.builder(UserTableMeta.TABLE).create());
 
         assertThat(cursor.getCount()).isEqualTo(1);
         assertThat(cursor.moveToFirst()).isTrue();

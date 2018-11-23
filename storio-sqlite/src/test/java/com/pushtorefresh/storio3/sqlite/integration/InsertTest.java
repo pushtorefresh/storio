@@ -11,6 +11,8 @@ import org.robolectric.annotation.Config;
 
 import java.util.List;
 
+import androidx.sqlite.db.SupportSQLiteQueryBuilder;
+
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -21,7 +23,7 @@ public class InsertTest extends BaseTest {
         final User user = putUserBlocking();
 
         // why we created StorIOSQLite: nobody loves nulls
-        final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+        final Cursor cursor = db.query(SupportSQLiteQueryBuilder.builder(UserTableMeta.TABLE).create());
 
         // asserting that values was really inserted to db
         assertThat(cursor.getCount()).isEqualTo(1);
@@ -40,7 +42,7 @@ public class InsertTest extends BaseTest {
         final List<User> users = putUsersBlocking(3);
 
         // asserting that values was really inserted to db
-        final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+        final Cursor cursor = db.query(SupportSQLiteQueryBuilder.builder(UserTableMeta.TABLE).create());
 
         assertThat(cursor.getCount()).isEqualTo(users.size());
 
@@ -64,13 +66,14 @@ public class InsertTest extends BaseTest {
             assertThat(existUsers).isNotNull();
             assertThat(existUsers).hasSize(1);
 
-            final Cursor cursorAfterPut = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+            final Cursor cursorAfterPut = db.query(SupportSQLiteQueryBuilder.builder(UserTableMeta.TABLE).create());
+
             assertThat(cursorAfterPut.getCount()).isEqualTo(1);
             cursorAfterPut.close();
 
             deleteUserBlocking(user);
 
-            final Cursor cursorAfterDelete = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+            final Cursor cursorAfterDelete = db.query(SupportSQLiteQueryBuilder.builder(UserTableMeta.TABLE).create());
             assertThat(cursorAfterDelete.getCount()).isEqualTo(0);
             cursorAfterDelete.close();
         }
@@ -81,7 +84,7 @@ public class InsertTest extends BaseTest {
         User user = User.newInstance(null, "user@example.com", null); // phone is null
         putUserBlocking(user);
 
-        final Cursor cursor = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+        final Cursor cursor = db.query(SupportSQLiteQueryBuilder.builder(UserTableMeta.TABLE).create());
 
         // asserting that values was really inserted to db
         assertThat(cursor.getCount()).isEqualTo(1);

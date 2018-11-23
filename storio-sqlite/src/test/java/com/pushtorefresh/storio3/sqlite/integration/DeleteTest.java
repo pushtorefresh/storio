@@ -13,6 +13,8 @@ import org.robolectric.annotation.Config;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.sqlite.db.SupportSQLiteQueryBuilder;
+
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -22,13 +24,14 @@ public class DeleteTest extends BaseTest {
     public void deleteOne() {
         final User user = putUserBlocking();
 
-        final Cursor cursorAfterInsert = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+        final Cursor cursorAfterInsert = db.query(SupportSQLiteQueryBuilder.builder(UserTableMeta.TABLE).create());
+
         assertThat(cursorAfterInsert.getCount()).isEqualTo(1);
         cursorAfterInsert.close();
 
         deleteUserBlocking(user);
 
-        final Cursor cursorAfterDelete = db.query(UserTableMeta.TABLE, null, null, null, null, null, null);
+        final Cursor cursorAfterDelete = db.query(SupportSQLiteQueryBuilder.builder(UserTableMeta.TABLE).create());
         assertThat(cursorAfterDelete.getCount()).isEqualTo(0);
         cursorAfterDelete.close();
     }
