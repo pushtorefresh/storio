@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
@@ -137,6 +138,34 @@ public class PreparedExecuteSQLTest {
     }
 
     @Test
+    public void executeSQLCompletableWithNotification() {
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
+
+        final Completable completable = stub.storIOSQLite
+                .executeSQL()
+                .withQuery(stub.rawQuery)
+                .prepare()
+                .asRxCompletable();
+
+        verify(stub.storIOSQLite).defaultRxScheduler();
+        stub.verifyBehavior(completable);
+    }
+
+    @Test
+    public void executeSQLCompletableWithoutNotifications() {
+        final Stub stub = Stub.newInstanceDoNotApplyAffectedTablesAndTags();
+
+        final Completable completable = stub.storIOSQLite
+                .executeSQL()
+                .withQuery(stub.rawQuery)
+                .prepare()
+                .asRxCompletable();
+
+        verify(stub.storIOSQLite).defaultRxScheduler();
+        stub.verifyBehavior(completable);
+    }
+
+    @Test
     public void executeSQLFlowableWithNotification() {
         final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
 
@@ -174,6 +203,19 @@ public class PreparedExecuteSQLTest {
                 .prepare();
 
         schedulerChecker.checkAsSingle(operation);
+    }
+
+    @Test
+    public void executeSQLCompletableExecutesOnSpecifiedScheduler() {
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
+        final SchedulerChecker schedulerChecker = SchedulerChecker.create(stub.storIOSQLite);
+
+        final PreparedExecuteSQL operation = stub.storIOSQLite
+                .executeSQL()
+                .withQuery(stub.rawQuery)
+                .prepare();
+
+        schedulerChecker.checkAsCompletable(operation);
     }
 
     @Test
@@ -244,6 +286,40 @@ public class PreparedExecuteSQLTest {
                 .withQuery(stub.rawQuery)
                 .prepare()
                 .asRxSingle()
+                .subscribe(testObserver);
+
+        testObserver.awaitTerminalEvent();
+        testObserver.assertNoValues();
+        testObserver.assertError(StorIOException.class);
+
+        //noinspection ThrowableResultOfMethodCallIgnored
+        StorIOException expected = (StorIOException) testObserver.errors().get(0);
+
+        IllegalStateException cause = (IllegalStateException) expected.getCause();
+        assertThat(cause).hasMessage("test exception");
+
+        verify(stub.storIOSQLite).executeSQL();
+        verify(stub.storIOSQLite).defaultRxScheduler();
+        verify(stub.storIOSQLite).lowLevel();
+        verify(stub.lowLevel).executeSQL(stub.rawQuery);
+        verify(stub.storIOSQLite).interceptors();
+        verifyNoMoreInteractions(stub.storIOSQLite, stub.lowLevel);
+    }
+
+    @Test
+    public void shouldWrapExceptionIntoStorIOExceptionCompletable() {
+        final Stub stub = Stub.newInstanceApplyNotEmptyAffectedTablesAndTags();
+
+        IllegalStateException testException = new IllegalStateException("test exception");
+        doThrow(testException).when(stub.lowLevel).executeSQL(stub.rawQuery);
+
+        final TestObserver<Object> testObserver = new TestObserver<Object>();
+
+        stub.storIOSQLite
+                .executeSQL()
+                .withQuery(stub.rawQuery)
+                .prepare()
+                .asRxCompletable()
                 .subscribe(testObserver);
 
         testObserver.awaitTerminalEvent();
@@ -366,6 +442,19 @@ public class PreparedExecuteSQLTest {
         void verifyBehavior(@NonNull Single<Object> single) {
             new FlowableBehaviorChecker<Object>()
                     .flowable(single.toFlowable())
+                    .expectedNumberOfEmissions(1)
+                    .testAction(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object anObject) {
+                            verifyBehavior();
+                        }
+                    })
+                    .checkBehaviorOfFlowable();
+        }
+
+        void verifyBehavior(@NonNull Completable completable) {
+            new FlowableBehaviorChecker<Object>()
+                    .flowable(completable.toFlowable())
                     .expectedNumberOfEmissions(1)
                     .testAction(new Consumer<Object>() {
                         @Override
