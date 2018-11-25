@@ -19,9 +19,15 @@ _2018_05_09_
 * AutoValue 1.0-rc4 and AutoParcel 0.3.1.
 * Private constructor checker 1.2.0.
 * EqualsVerifier 1.7.8.
- 
+* Gradle Nexus plugin 0.12.0.
+* Nexus publish plugin.
+* `executeSQL()` now for sure can be executed via `asRxCompletable()`.
+
 **Changes:**
 
+* [PR 905](https://github.com/pushtorefresh/storio/pull/905): executeSQL() can be executed via asRxCompletable().
+* [PR 903](https://github.com/pushtorefresh/storio/pull/903): Nexus publish plugin.
+* [PR 901](https://github.com/pushtorefresh/storio/pull/901): Gradle Nexus plugin 0.12.0.
 * [PR 899](https://github.com/pushtorefresh/storio/pull/899): AndroidX support.
 * [PR 898](https://github.com/pushtorefresh/storio/pull/898): Dagger 2.18 and temporary disable SQLDelight.
 * [PR 897](https://github.com/pushtorefresh/storio/pull/897): Compile sdk 28 and support library 28.0.0.
