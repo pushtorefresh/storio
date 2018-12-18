@@ -28,6 +28,13 @@ afterEvaluate { project ->
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
+                nexusPublishing {
+                    packageGroup = GROUP
+                    stagingProfileId = rootProject.nexusStaging.stagingProfileId
+                    username = rootProject.nexusStaging.username
+                    password = rootProject.nexusStaging.password
+                }
+
                 pom.groupId = GROUP
                 pom.artifactId = POM_ARTIFACT_ID
                 pom.version = VERSION_NAME
