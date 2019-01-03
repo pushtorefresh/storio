@@ -25,6 +25,7 @@ android {
 
 // libraries declared in root build.gradle
 dependencies {
+    implementation libraries.sqliteFramework
     implementation libraries.appCompatX
     implementation libraries.recyclerViewX
 

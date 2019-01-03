@@ -14,7 +14,7 @@ private const val OLD_VERSION_PARAM = "oldVersion"
 
 object TableGenerator : Generator<StorIOSQLiteTypeMeta> {
 
-    private val sqliteDatabase = ClassName.get("android.database.sqlite", "SQLiteDatabase")
+    private val sqliteDatabase = ClassName.get("androidx.sqlite.db", "SupportSQLiteDatabase")
 
     override fun generateJavaFile(typeMeta: StorIOSQLiteTypeMeta): JavaFile {
         val tableSpec = TypeSpec.classBuilder("${typeMeta.simpleName}Table")

@@ -20,6 +20,9 @@ import org.robolectric.annotation.Config;
 
 import java.util.List;
 
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory;
+
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -31,8 +34,14 @@ public class AutoParcelTest {
 
     @Before
     public void setUp() {
+        SupportSQLiteOpenHelper.Configuration configuration = SupportSQLiteOpenHelper.Configuration
+                .builder(RuntimeEnvironment.application)
+                .name(OpenHelper.DB_NAME)
+                .callback(new OpenHelper())
+                .build();
+
         storIOSQLite = DefaultStorIOSQLite.builder()
-                .sqliteOpenHelper(new OpenHelper(RuntimeEnvironment.application))
+                .sqliteOpenHelper(new FrameworkSQLiteOpenHelperFactory().create(configuration))
                 .addTypeMapping(Book.class, SQLiteTypeMapping.<Book>builder()
                         .putResolver(BookTableMeta.PUT_RESOLVER)
                         .getResolver(BookTableMeta.GET_RESOLVER)

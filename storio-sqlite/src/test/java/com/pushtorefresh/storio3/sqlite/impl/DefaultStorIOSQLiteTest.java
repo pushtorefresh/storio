@@ -2,15 +2,14 @@ package com.pushtorefresh.storio3.sqlite.impl;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.TypeMappingFinder;
 import com.pushtorefresh.storio3.internal.ChangesBus;
 import com.pushtorefresh.storio3.internal.TypeMappingFinderImpl;
 import com.pushtorefresh.storio3.sqlite.Changes;
-import com.pushtorefresh.storio3.Interceptor;
 import com.pushtorefresh.storio3.sqlite.SQLiteTypeMapping;
 import com.pushtorefresh.storio3.sqlite.StorIOSQLite;
 import com.pushtorefresh.storio3.sqlite.operations.delete.DeleteResolver;
@@ -33,6 +32,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
 import io.reactivex.Scheduler;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -55,11 +56,11 @@ public class DefaultStorIOSQLiteTest {
 
     @Mock
     @NonNull
-    private SQLiteOpenHelper sqLiteOpenHelper;
+    private SupportSQLiteOpenHelper sqLiteOpenHelper;
 
     @Mock
     @NonNull
-    private SQLiteDatabase sqLiteDatabase;
+    private SupportSQLiteDatabase sqLiteDatabase;
 
     @NonNull
     private DefaultStorIOSQLite storIOSQLite;
@@ -301,11 +302,10 @@ public class DefaultStorIOSQLiteTest {
 
         storIOSQLite.lowLevel().insertWithOnConflict(insertQuery, contentValues, conflictAlgorithm);
 
-        verify(sqLiteDatabase).insertWithOnConflict(
+        verify(sqLiteDatabase).insert(
                 eq("test_table"),
-                eq("custom_null_hack"),
-                same(contentValues),
-                eq(SQLiteDatabase.CONFLICT_ROLLBACK)
+                eq(SQLiteDatabase.CONFLICT_ROLLBACK),
+                same(contentValues)
         );
     }
 
@@ -602,7 +602,7 @@ public class DefaultStorIOSQLiteTest {
     class TestDefaultStorIOSQLite extends DefaultStorIOSQLite {
         private final LowLevel lowLevel;
 
-        TestDefaultStorIOSQLite(@NonNull SQLiteOpenHelper sqLiteOpenHelper, @NonNull TypeMappingFinder typeMappingFinder) {
+        TestDefaultStorIOSQLite(@NonNull SupportSQLiteOpenHelper sqLiteOpenHelper, @NonNull TypeMappingFinder typeMappingFinder) {
             super(sqLiteOpenHelper, typeMappingFinder, null, Collections.<Interceptor>emptyList());
             lowLevel = new LowLevelImpl(typeMappingFinder);
         }

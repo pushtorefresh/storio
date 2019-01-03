@@ -1,7 +1,8 @@
 package com.pushtorefresh.storio3.sqlite.annotations;
 
-import android.database.sqlite.SQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.lang.String;
+
 
 public final class WithGeneratedTableMultipleKeysTable {
     public static final String NAME = "table";
@@ -29,7 +30,7 @@ public final class WithGeneratedTableMultipleKeysTable {
     private WithGeneratedTableTable() {
     }
 
-    public static void createTable(SQLiteDatabase db) {
+    public static void createTable(SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE table (field1 INTEGER,\n"
             + "field2 INTEGER,\n"
             + "field3 INTEGER,\n"
@@ -43,7 +44,7 @@ public final class WithGeneratedTableMultipleKeysTable {
             + "PRIMARY KEY(field4, field7));");
     }
 
-    public static void updateTable(SQLiteDatabase db, int oldVersion) {
+    public static void updateTable(SupportSQLiteDatabase db, int oldVersion) {
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE table ADD COLUMN new_field_1 INTEGER");
         }
