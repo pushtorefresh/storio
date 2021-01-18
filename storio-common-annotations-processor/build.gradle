@@ -1,10 +1,10 @@
 apply plugin: 'kotlin'
 
 dependencies {
-    compile libraries.intellijAnnotations
-    compile libraries.autoService
-    compile libraries.javaPoet
-    compile libraries.kotlinStdLib
+    implementation libraries.intellijAnnotations
+    implementation libraries.autoService
+    implementation libraries.javaPoet
+    implementation libraries.kotlinStdLib
 
     testImplementation libraries.junit
     testImplementation libraries.assertJ
@@ -16,6 +16,3 @@ sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
     test.java.srcDir 'src/test/kotlin'
 }
-
-apply from: '../gradle/publish-java-lib.gradle'
-apply from: '../gradle/jacoco-non-android.gradle'

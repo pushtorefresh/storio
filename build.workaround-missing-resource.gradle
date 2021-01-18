@@ -5,19 +5,19 @@
 // Original solution comes from https://code.google.com/p/android/issues/detail?id=136013#c10
 // See also https://code.google.com/p/android/issues/detail?id=64887
 gradle.projectsEvaluated {
-  // Base path which is recognized by android studio.
-  def testClassesPath = "${buildDir}/intermediates/"
-  // Copy must be done for each variant.
-  def variants = android.libraryVariants.collect()
-
-  variants.each { variant ->
-    def variationName = variant.name.capitalize()
-    def variationPath = variant.buildType.name
-
-    // Specific copy task for each variant
-    def copyTestResourcesTask = project.tasks.create("copyTest${variationName}Resources", Copy)
-    copyTestResourcesTask.from("${projectDir}/src/test/resources")
-    copyTestResourcesTask.into("${testClassesPath}/sourceFolderJavaResources/${variationPath}")
-    copyTestResourcesTask.execute()
-  }
+//  // Base path which is recognized by android studio.
+//  def testClassesPath = "${buildDir}/intermediates/"
+//  // Copy must be done for each variant.
+//  def variants = android.libraryVariants.collect()
+//
+//  variants.each { variant ->
+//    def variationName = variant.name.capitalize()
+//    def variationPath = variant.buildType.name
+//
+//    // Specific copy task for each variant
+//    def copyTestResourcesTask = project.tasks.create("copyTest${variationName}Resources", Copy)
+//    copyTestResourcesTask.from("${projectDir}/src/test/resources")
+//    copyTestResourcesTask.into("${testClassesPath}/sourceFolderJavaResources/${variationPath}")
+//    copyTestResourcesTask.execute()
+//  }
 }

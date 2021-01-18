@@ -37,4 +37,3 @@ dependencies {
 }
 
 apply from: '../gradle/checkstyle.gradle'
-apply from: '../gradle/jacoco-android.gradle'
