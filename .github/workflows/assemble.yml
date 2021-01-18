@@ -16,4 +16,4 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Assemble
-        run: ./gradlew -PMyBook_Android_github_token=${{ github.token }} :storio-content-resolver:assemble
+        run: ./gradlew :storio-content-resolver:assemble
