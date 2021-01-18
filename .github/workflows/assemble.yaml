@@ -1,0 +1,19 @@
+name: Assemble
+
+on: [push]
+
+jobs:
+
+  assemble:
+
+    name: Assemble
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Assemble
+        run: ./gradlew -PMyBook_Android_github_token=${{ github.token }} :assemble
