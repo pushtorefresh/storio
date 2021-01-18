@@ -1,12 +1,10 @@
 apply plugin: 'kotlin'
 
 dependencies {
-    compile libraries.storIOContentResolverAnnotations
-    compile libraries.storIOCommonAnnotationsProcessor
+    implementation libraries.storIOContentResolverAnnotations
+    implementation libraries.storIOCommonAnnotationsProcessor
 }
 
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
 }
-
-apply from: '../gradle/publish-java-lib.gradle'

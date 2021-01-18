@@ -8,5 +8,3 @@ dependencies {
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
 }
-
-apply from: '../gradle/publish-java-lib.gradle'
