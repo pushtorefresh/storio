@@ -44,9 +44,9 @@ afterEvaluate { project ->
 
                     licenses {
                         license {
-                            name POM_LICENCE_NAME
-                            url POM_LICENCE_URL
-                            distribution POM_LICENCE_DIST
+                            name = POM_LICENCE_NAME
+                            url = POM_LICENCE_URL
+                            distribution = POM_LICENCE_DIST
                         }
                     }
 
@@ -60,12 +60,12 @@ afterEvaluate { project ->
                 }
 
                 // Resolve dependencies to other modules
-                whenConfigured { pom ->
-                    dependencies.findAll { dep -> dep.groupId == rootProject.name }.collect { dep ->
-                        dep.groupId = pom.groupId = project.GROUP
-                        dep.version = pom.version = project.VERSION_NAME
-                    }
-                }
+//                whenConfigured { pom ->
+//                    dependencies.findAll { dep -> dep.groupId == rootProject.name }.collect { dep ->
+//                        dep.groupId = pom.groupId = project.GROUP
+//                        dep.version = pom.version = project.VERSION_NAME
+//                    }
+//                }
             }
         }
     }
