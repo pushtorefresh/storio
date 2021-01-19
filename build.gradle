@@ -221,29 +221,3 @@ def isValidReleaseState() {
 }
 
 ext.VERSION_NAME = projectVersion()
-
-def getReleaseRepositoryUrl() {
-    return hasProperty('RELEASE_REPOSITORY_URL') ? RELEASE_REPOSITORY_URL
-            : 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-}
-
-def getSnapshotRepositoryUrl() {
-    return hasProperty('SNAPSHOT_REPOSITORY_URL') ? SNAPSHOT_REPOSITORY_URL
-            : 'https://oss.sonatype.org/content/repositories/snapshots/'
-}
-
-def getRepositoryUsername() {
-    return System.getenv('SONATYPE_USERNAME')
-}
-
-def getRepositoryPassword() {
-    return System.getenv('SONATYPE_PASSWORD')
-}
-
-apply plugin: 'io.codearte.nexus-staging'
-
-nexusStaging {
-    packageGroup = 'com.pushtorefresh'
-    username = getRepositoryUsername()
-    password = getRepositoryPassword()
-}
