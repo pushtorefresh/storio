@@ -25,7 +25,8 @@ apply plugin: 'maven-publish'
 afterEvaluate { project ->
     publishing {
         publications {
-            release(MavenPublication) {
+            maven(MavenPublication) {
+
                 groupId = GROUP
                 artifactId = POM_ARTIFACT_ID
                 version = VERSION_NAME
