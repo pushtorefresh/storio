@@ -35,6 +35,4 @@ dependencies {
     testAnnotationProcessor libraries.autoParcelProcessor
 }
 
-apply from: '../gradle/checkstyle.gradle'
-apply from: '../gradle/jacoco-android.gradle'
 apply from: '../gradle/publish-android-lib.gradle'

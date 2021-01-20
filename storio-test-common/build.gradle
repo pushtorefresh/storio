@@ -33,5 +33,3 @@ dependencies {
     testImplementation libraries.privateConstructorChecker
 }
 
-apply from: '../gradle/checkstyle.gradle'
-apply from: '../gradle/jacoco-android.gradle'

@@ -1,6 +1,7 @@
-apply plugin: 'com.android.application'
-//apply plugin: 'com.squareup.sqldelight'
-apply plugin: 'kotlin-android'
+plugins {
+    id "org.jetbrains.kotlin.android" version "1.4.21"
+    id "com.android.application"
+}
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion

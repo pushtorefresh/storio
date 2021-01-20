@@ -3,7 +3,6 @@ import org.gradle.internal.jvm.Jvm
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.2.71'   // https://github.com/JetBrains/kotlin/releases
     repositories {
         jcenter()
         google()
@@ -12,15 +11,7 @@ buildscript {
 
     dependencies {
         // Android Gradle plugin
-        classpath 'com.android.tools.build:gradle:3.2.1'
-
-        // Jacoco Test Coverage Plugin
-        // (addition to standard Jacoco plugin, allows us fail the build if coverage is not enough)
-        // https://github.com/palantir/gradle-jacoco-coverage
-        classpath 'com.palantir:jacoco-coverage:0.2.0'
-
-        // Kotlin
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:4.1.1'
 
         // Automatic releases to Sonatype.
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0'     // https://github.com/Codearte/gradle-nexus-staging-plugin/releases
@@ -62,7 +53,6 @@ ext.libraries = [
 
         rxJava2                                  : 'io.reactivex.rxjava2:rxjava:2.1.6',
         rxAndroid2                               : 'io.reactivex.rxjava2:rxandroid:2.0.1',
-        kotlinStdLib                             : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
 
         // Parts of StorIO
         storIOCommon                             : project(':storio-common'),

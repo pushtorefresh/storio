@@ -25,11 +25,11 @@ afterEvaluate { project ->
         publications {
             release(MavenPublication) {
 
+                from components.release
+
                 groupId = GROUP
                 artifactId = POM_ARTIFACT_ID
                 version = VERSION_NAME
-
-                artifact bundleReleaseAar
 
             }
         }

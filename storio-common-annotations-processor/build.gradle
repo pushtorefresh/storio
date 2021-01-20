@@ -1,10 +1,11 @@
-apply plugin: 'kotlin'
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.4.21"
+}
 
 dependencies {
     compile libraries.intellijAnnotations
     compile libraries.autoService
     compile libraries.javaPoet
-    compile libraries.kotlinStdLib
 
     testImplementation libraries.junit
     testImplementation libraries.assertJ
@@ -18,4 +19,3 @@ sourceSets {
 }
 
 apply from: '../gradle/publish-java-lib.gradle'
-apply from: '../gradle/jacoco-non-android.gradle'

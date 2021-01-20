@@ -37,6 +37,4 @@ dependencies {
     testImplementation libraries.storIOTestCommon
 }
 
-apply from: '../gradle/checkstyle.gradle'
-apply from: '../gradle/jacoco-android.gradle'
 apply from: '../gradle/publish-android-lib.gradle'

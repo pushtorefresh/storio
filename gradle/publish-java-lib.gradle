@@ -21,11 +21,11 @@ afterEvaluate { project ->
         publications {
             mavenJava(MavenPublication) {
 
+                from components.java
+
                 groupId = GROUP
                 artifactId = POM_ARTIFACT_ID
                 version = VERSION_NAME
-
-                from components.java
 
             }
         }
