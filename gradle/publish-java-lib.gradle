@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-apply plugin: 'signing'
 apply plugin: "maven-publish"
 
 afterEvaluate { project ->
@@ -26,70 +25,10 @@ afterEvaluate { project ->
                 artifactId = POM_ARTIFACT_ID
                 version = VERSION_NAME
 
-                pom {
-                    name = POM_NAME
-                    packaging = POM_PACKAGING
-                    description = POM_DESCRIPTION
-                    url = POM_URL
+                from components.java
 
-                    scm {
-                        url = POM_SCM_URL
-                        connection = POM_SCM_CONNECTION
-                        developerConnection = POM_SCM_DEV_CONNECTION
-                    }
-
-                    licenses {
-                        license {
-                            name = POM_LICENCE_NAME
-                            url = POM_LICENCE_URL
-                            distribution = POM_LICENCE_DIST
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id = POM_DEVELOPER_ID
-                            name =  POM_DEVELOPER_NAME
-                        }
-                    }
-
-                    // Resolve dependencies to other modules
-//                    whenConfigured { pom ->
-//                        dependencies.findAll { dep -> dep.groupId == rootProject.name }.collect { dep ->
-//                            dep.groupId = pom.groupId = project.GROUP
-//                            dep.version = pom.version = project.VERSION_NAME
-//                        }
-//                    }
-                }
             }
         }
-    }
 
-    signing {
-        required { isValidReleaseState() }
-        sign configurations.archives
     }
-
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from javadoc.destinationDir
-    }
-
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
-    }
-
-    task validatePublishing {
-        doLast {
-            validateTagAndVersion()
-        }
-    }
-
-    uploadArchives.dependsOn validatePublishing
 }
