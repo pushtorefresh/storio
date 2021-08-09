@@ -19,7 +19,6 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class) // Required for correct Uri impl
-@Config(constants = BuildConfig.class, sdk = 21)
 public class PutResultsTest {
 
     @Test

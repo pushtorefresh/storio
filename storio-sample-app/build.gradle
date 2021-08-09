@@ -46,6 +46,12 @@ android {
         exclude 'LICENSE.txt' // multiple libs have this file -> cause build error
         exclude 'META-INF/proguard/androidx-annotations.pro'
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 // Ensure the no-op dependency is always used in JVM tests.

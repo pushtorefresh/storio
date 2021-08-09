@@ -20,9 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 import static io.reactivex.BackpressureStrategy.LATEST;
-
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public class ObserveChangesInTableTest extends BaseTest {
 
     public class EmissionChecker extends AbstractEmissionChecker<Changes> {

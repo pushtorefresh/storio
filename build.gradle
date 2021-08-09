@@ -85,7 +85,7 @@ ext.libraries = [
         equalsVerifier                           : 'nl.jqno.equalsverifier:equalsverifier:1.7.8',                       // http://jqno.nl/equalsverifier/changelog/#1.x
         privateConstructorChecker                : 'com.pushtorefresh.java-private-constructor-checker:checker:1.2.0',  // https://github.com/pushtorefresh/java-private-constructor-checker/blob/master/CHANGELOG.md
         guava                                    : 'com.google.guava:guava:18.0',
-        robolectric                              : 'org.robolectric:robolectric:3.5.1',
+        robolectric                              : 'org.robolectric:robolectric:4.6.1',
         googleTestingCompile                     : 'com.google.testing.compile:compile-testing:0.15',
 
         dagger                                   : 'com.google.dagger:dagger:' + daggerVersion,

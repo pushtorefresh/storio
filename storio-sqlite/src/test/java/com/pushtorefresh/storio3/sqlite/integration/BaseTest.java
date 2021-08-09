@@ -29,7 +29,6 @@ import io.reactivex.schedulers.Schedulers;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public abstract class BaseTest {
 
     @Rule

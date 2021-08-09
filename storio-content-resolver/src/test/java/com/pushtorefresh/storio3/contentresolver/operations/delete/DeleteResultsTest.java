@@ -19,7 +19,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricTestRunner.class) // Required for correct Uri impl
-@Config(constants = BuildConfig.class, sdk = 21)
 public class DeleteResultsTest {
 
     @SuppressWarnings("ConstantConditions")

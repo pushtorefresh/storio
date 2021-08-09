@@ -14,6 +14,12 @@ android {
     packagingOptions {
         exclude 'LICENSE.txt' // multiple libs have this file -> cause build error
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {

@@ -34,7 +34,6 @@ import static com.pushtorefresh.storio3.sqlite.integration.TweetTableMeta.COLUMN
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public class InterceptorTest {
 
     @SuppressWarnings("NullableProblems") // @Before

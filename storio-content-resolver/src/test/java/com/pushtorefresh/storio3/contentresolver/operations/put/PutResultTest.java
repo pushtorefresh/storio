@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricTestRunner.class) // Required for correct Uri impl
-@Config(constants = BuildConfig.class, sdk = 21)
 public class PutResultTest {
 
     @Test

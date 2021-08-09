@@ -29,7 +29,6 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public class InterceptorTest extends IntegrationTest {
 
     @SuppressWarnings("NullableProblems") // @Before

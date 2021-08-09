@@ -18,7 +18,6 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(SampleRobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public class RelationsTest {
 
     @Test

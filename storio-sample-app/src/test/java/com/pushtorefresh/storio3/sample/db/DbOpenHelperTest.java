@@ -13,7 +13,6 @@ import org.robolectric.annotation.Config;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(SampleRobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public final class DbOpenHelperTest {
 
     @Test
