@@ -12,7 +12,7 @@ buildscript {
 
     dependencies {
         // Android Gradle plugin
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.5.4'
 
         // Jacoco Test Coverage Plugin
         // (addition to standard Jacoco plugin, allows us fail the build if coverage is not enough)
