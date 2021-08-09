@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 //apply plugin: 'com.squareup.sqldelight'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+//https://stackoverflow.com/a/51369831/4068957
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -76,13 +78,13 @@ dependencies {
     implementation libraries.storIOContentResolver
 
     implementation libraries.storIOSQLiteAnnotations
-    annotationProcessor libraries.storIOSQLiteAnnotationsProcessor
+    kapt libraries.storIOSQLiteAnnotationsProcessor
 
     implementation libraries.storIOContentResolverAnnotations
-    annotationProcessor libraries.storIOContentResolverAnnotationsProcessor
+    kapt libraries.storIOContentResolverAnnotationsProcessor
 
     implementation libraries.dagger
-    annotationProcessor libraries.daggerCompiler
+    kapt libraries.daggerCompiler
 
     implementation libraries.javaxInject
     implementation libraries.javaxAnnotationApi
@@ -93,13 +95,13 @@ dependencies {
     implementation libraries.recyclerView
     implementation libraries.timber
     implementation libraries.butterKnife
-    annotationProcessor libraries.butterKnife
+    kapt libraries.butterKnife
 
 //  Waiting for https://github.com/square/sqldelight/issues/1005
 //  implementation libraries.sqlDelight
 
     compileOnly libraries.autoParcel
-    annotationProcessor libraries.autoParcelProcessor
+    kapt libraries.autoParcelProcessor
 
     debugImplementation libraries.leakCanary
     releaseImplementation libraries.leakCanaryNoOp
@@ -108,5 +110,6 @@ dependencies {
     testImplementation libraries.assertJ
     testImplementation libraries.robolectric
     testImplementation libraries.leakCanaryNoOp
-    testAnnotationProcessor libraries.butterKnife
+    //https://stackoverflow.com/a/68698150/4068957
+    kaptTest libraries.butterKnife
 }

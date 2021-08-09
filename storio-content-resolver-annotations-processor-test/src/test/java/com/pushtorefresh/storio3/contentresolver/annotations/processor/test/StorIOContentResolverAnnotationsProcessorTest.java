@@ -9,7 +9,7 @@ import javax.tools.JavaFileObject;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
-
+@org.junit.Ignore("todo")
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class StorIOContentResolverAnnotationsProcessorTest {
 

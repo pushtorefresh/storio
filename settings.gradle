@@ -15,5 +15,5 @@ include ':storio-content-resolver-annotations-processor-test'
 
 include ':storio-test-without-rxjava'
 
-include ':storio-basic-sample-app'
-include ':storio-sample-app'
+//include ':storio-basic-sample-app'
+//include ':storio-sample-app'
