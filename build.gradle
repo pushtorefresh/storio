@@ -7,6 +7,7 @@ buildscript {
     repositories {
         jcenter()
         google()
+        maven { url 'https://jitpack.io' }
         maven { url "https://plugins.gradle.org/m2/" }
     }
 
@@ -39,6 +40,7 @@ allprojects {
     repositories {
         jcenter()
         google()
+        maven { url 'https://jitpack.io' }
     }
 
     // Workaround for preventing Gradle from stealing focus from other apps
@@ -55,6 +57,8 @@ ext {
 
 def supportLibsVersion = '28.0.0'
 def daggerVersion = '2.18'
+def prodStorioVersion = '3.0.0'
+def jitpackStorioVersion = 'v3.0.5'
 
 ext.libraries = [
         // Core libraries
@@ -70,9 +74,9 @@ ext.libraries = [
         storIOContentResolver                    : project(':storio-content-resolver'),
         storIOSQLiteAnnotations                  : project(':storio-sqlite-annotations'),
         storIOContentResolverAnnotations         : project(':storio-content-resolver-annotations'),
-        storIOCommonAnnotationsProcessor         : project(':storio-common-annotations-processor'),
-        storIOSQLiteAnnotationsProcessor         : project(':storio-sqlite-annotations-processor'),
-        storIOContentResolverAnnotationsProcessor: project(':storio-content-resolver-annotations-processor'),
+        storIOCommonAnnotationsProcessor         : "com.pushtorefresh.storio3:sqlite-annotations-processor:${prodStorioVersion}",
+        storIOSQLiteAnnotationsProcessor         : "com.github.justokay.storio:storio-sqlite-annotations-processor:${jitpackStorioVersion}",
+        storIOContentResolverAnnotationsProcessor: "com.pushtorefresh.storio3:sqlite-annotations-processor:${prodStorioVersion}",
         storIOTestCommon                         : project(':storio-test-common'),
 
         // Libraries for tests and sample app
@@ -109,9 +113,6 @@ ext.libraries = [
 
         javaPoet                                 : 'com.squareup:javapoet:1.8.0',
         intellijAnnotations                      : 'com.intellij:annotations:12.0',
-        runtimeJar                               : files(getRuntimeJar()),
-        toolsJar                                 : files(Jvm.current().getToolsJar()),
-
         autoService                              : "com.google.auto.service:auto-service:1.0-rc4",                      // https://github.com/google/auto/releases
         autoValue                                : "com.google.auto.value:auto-value:1.3",
         autoParcel                               : "com.github.frankiesardo:auto-parcel:0.3.1",                         // https://github.com/frankiesardo/auto-parcel/releases

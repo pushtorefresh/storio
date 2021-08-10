@@ -6,12 +6,6 @@ include ':storio-content-resolver'
 include ':storio-sqlite-annotations'
 include ':storio-content-resolver-annotations'
 
-include ':storio-common-annotations-processor'
-include ':storio-sqlite-annotations-processor'
-include ':storio-sqlite-annotations-processor-test'
-include ':storio-sqlite-annotations-processor-androidx-test'
-include ':storio-content-resolver-annotations-processor'
-include ':storio-content-resolver-annotations-processor-test'
 
 include ':storio-test-without-rxjava'
 
